@@ -11,54 +11,45 @@
 #include <stdlib.h>
 #include <new.h>
 
-#include <nut/memtool/DestroyChecker.hpp>
+#include <nut/memtool/destroychecker.hpp>
 
+#include "refcounter.hpp"
 #include "ref.hpp"
 
 namespace nut
 {
 
-struct RefCounter
-{
-	int m_value;
-
-	RefCounter(int v) : m_value(v) {}
-	inline int operator++ () { return ++m_value; }
-	inline int operator-- () { return --m_value; }
-};
-
-struct RefCounterSync
-{
-	volatile int m_value;
-
-	RefCounterSync(int v) : m_value(v) {}
-	inline int operator++ () { return ++m_value; }
-	inline int operator-- () { return --m_value; }
-};
-
+/**
+ * 可引用计数对象包装器
+ */
 template <typename T, typename COUNTER = RefCounter>
-class ObjectWrapper : public T
+class GCWrapper : public T
 {
 protected:
-	typedef void (*destroyer)(ObjectWrapper<T,COUNTER>*);
+	/** 销毁器类型 */
+	typedef void (*destroyer)(GCWrapper<T,COUNTER>*);
+
+	/** 引用计数 */
 	COUNTER m_counter;
+	/** 销毁器 */
 	destroyer m_destroyer;
 
+	/** 避免多次销毁的检查器 */
 #ifndef NDEBUG
 	DestroyChecker m_checker;
 #endif
 
 public:
-	ObjectWrapper(int c, destroyer d) : T(), m_counter(c), m_destroyer(d) {}
+	GCWrapper(int c, destroyer d) : T(), m_counter(c), m_destroyer(d) {}
 
 	template <typename Arg1>
-	ObjectWrapper(int c, destroyer d, Arg1 arg1) : T(arg1), m_counter(c), m_destroyer(d) {}
+	GCWrapper(int c, destroyer d, Arg1 arg1) : T(arg1), m_counter(c), m_destroyer(d) {}
 
 	template <typename Arg1, typename Arg2>
-	ObjectWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2) : T(arg1, arg2), m_counter(c), m_destroyer(d) {}
+	GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2) : T(arg1, arg2), m_counter(c), m_destroyer(d) {}
 
 	template <typename Arg1, typename Arg2, typename Arg3>
-	ObjectWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3) : T(arg1, arg2, arg3), m_counter(c), m_destroyer(d) {}
+	GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3) : T(arg1, arg2, arg3), m_counter(c), m_destroyer(d) {}
 
 	virtual void add_ref()
 	{
@@ -78,11 +69,14 @@ public:
 	}
 };
 
+/**
+ * 可引用计数对象生成器
+ */
 template <typename T, typename COUNTER = RefCounter>
 class gc_new : public ref<typename RefTraits<T>::plain_type>
 {
 	typedef typename RefTraits<T>::plain_type plain_type;
-	typedef ObjectWrapper<plain_type, COUNTER> wrapper_type;
+	typedef GCWrapper<plain_type, COUNTER> wrapper_type;
 
 	using weak_ref<plain_type>::m_ptr;
 
@@ -126,6 +120,9 @@ public:
 	}
 };
 
+/**
+ * 声明可引用计数
+ */
 #define DECLARE_GC_ENABLE \
 	virtual void add_ref() = 0; \
 	virtual void rls_ref() = 0; \

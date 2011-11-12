@@ -64,7 +64,8 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp" />
     <ClInclude Include="..\..\..\nut\gc\ref.hpp" />
-    <ClInclude Include="..\..\..\nut\memtool\DestroyChecker.hpp" />
+    <ClInclude Include="..\..\..\nut\gc\refcounter.hpp" />
+    <ClInclude Include="..\..\..\nut\memtool\destroychecker.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp" />
