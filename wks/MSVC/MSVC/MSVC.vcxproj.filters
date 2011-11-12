@@ -22,6 +22,9 @@
     <Filter Include="源文件\gc">
       <UniqueIdentifier>{78788a4e-8333-407b-9d1c-d244d9c90856}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\unittest">
+      <UniqueIdentifier>{8ac5dd8b-1b8d-49f4-a920-26bcced544d2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -36,10 +39,31 @@
     <ClInclude Include="..\..\..\nut\memtool\destroychecker.hpp">
       <Filter>头文件\memtool</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\unittest\testcasefailureexception.hpp">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\unittest\testfixture.hpp">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\unittest\testlogger.hpp">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\unittest\testregister.hpp">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\unittest\testrunner.hpp">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\unittest\unittest.hpp">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
       <Filter>源文件\gc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\main.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

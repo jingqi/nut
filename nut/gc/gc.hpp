@@ -21,6 +21,11 @@ namespace nut
 
 /**
  * 可引用计数对象包装器
+ *
+ * @note
+ * 使用包装器来包装的好处：
+ * 1. 析构函数的部分见gc_new的note
+ * 2. 如果对象是多继承的，计数器仍然只有一份，仍然能正常运行
  */
 template <typename T, typename COUNTER = RefCounter>
 class GCWrapper : public T
@@ -85,6 +90,12 @@ class gc_new : public ref<typename RefTraits<T>::plain_type>
 		return (wrapper_type*)::malloc(sizeof(wrapper_type));
 	}
 
+    /**
+     * @note
+     * 该处如此实现的好处：
+     * 1. 保证内存分配和销毁的代码在同一模块
+     * 2. 即使对象没有申明虚的析构函数也不会析构出错
+     */
 	static void destroy_wrapper(wrapper_type *p)
 	{
 		p->~wrapper_type();
@@ -95,7 +106,7 @@ public:
 	gc_new()
 	{
 		m_ptr = alloc_wrapper();
-		new(m_ptr) wrapper_type(1, destroy_wrapper);
+		new (m_ptr) wrapper_type(1, destroy_wrapper);
 	}
 
 	template <typename Arg1>

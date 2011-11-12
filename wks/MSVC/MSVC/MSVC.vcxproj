@@ -66,9 +66,16 @@
     <ClInclude Include="..\..\..\nut\gc\ref.hpp" />
     <ClInclude Include="..\..\..\nut\gc\refcounter.hpp" />
     <ClInclude Include="..\..\..\nut\memtool\destroychecker.hpp" />
+    <ClInclude Include="..\..\..\nut\unittest\testcasefailureexception.hpp" />
+    <ClInclude Include="..\..\..\nut\unittest\testfixture.hpp" />
+    <ClInclude Include="..\..\..\nut\unittest\testlogger.hpp" />
+    <ClInclude Include="..\..\..\nut\unittest\testregister.hpp" />
+    <ClInclude Include="..\..\..\nut\unittest\testrunner.hpp" />
+    <ClInclude Include="..\..\..\nut\unittest\unittest.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp" />
+    <ClCompile Include="..\..\..\test\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
