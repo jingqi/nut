@@ -85,7 +85,7 @@ class fixtureName : public nut::TestFixture
     }
 
 /** test assert */
-#define NUT_TA(exp) if (!(exp)) throw nut::TestCaseFailureException(#exp, __FILE__, __LINE__)
+#define NUT_TA(exp) do { if (!(exp)) throw nut::TestCaseFailureException(#exp, __FILE__, __LINE__); } while (false)
 
 /** fixture register */
 #define NUT_REGISTER_FIXTURE(fixture, groups) \

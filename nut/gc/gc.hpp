@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <new.h>
 
-#include <nut/memtool/destroychecker.hpp>
+#include <nut/debugging/destroychecker.hpp>
 
 #include "refcounter.hpp"
 #include "ref.hpp"

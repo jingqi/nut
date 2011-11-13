@@ -25,6 +25,18 @@
     <Filter Include="头文件\unittest">
       <UniqueIdentifier>{8ac5dd8b-1b8d-49f4-a920-26bcced544d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\debugging">
+      <UniqueIdentifier>{606cafde-0cc6-4373-b247-11e994a5421b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\logging">
+      <UniqueIdentifier>{96581bb1-f9ff-4a79-b239-b74d504bd960}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\threading">
+      <UniqueIdentifier>{ade82e3c-1227-431b-bcaa-59cfbd0a085b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\util">
+      <UniqueIdentifier>{07bcb9a5-2e88-4e25-83b4-2a85999b4e3b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -35,9 +47,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\nut\gc\refcounter.hpp">
       <Filter>头文件\gc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\memtool\destroychecker.hpp">
-      <Filter>头文件\memtool</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\nut\unittest\testcasefailureexception.hpp">
       <Filter>头文件\unittest</Filter>
@@ -56,6 +65,60 @@
     </ClInclude>
     <ClInclude Include="..\..\..\nut\unittest\unittest.hpp">
       <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\debugging\destroychecker.hpp">
+      <Filter>头文件\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\debugging\exception.hpp">
+      <Filter>头文件\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\debugging\sourcelocation.hpp">
+      <Filter>头文件\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\logging\logfilter.hpp">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\logging\loghandler.hpp">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\logging\loglevel.hpp">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\logging\logger.hpp">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\logging\macros.hpp">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\logging\logmanager.hpp">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\logging\logrecord.hpp">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\configfile.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\consolehelper.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\membuffer.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\stringhelper.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\time.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\condition.hpp">
+      <Filter>头文件\threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\guard.hpp">
+      <Filter>头文件\threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\mutex.hpp">
+      <Filter>头文件\threading</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

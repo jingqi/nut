@@ -62,16 +62,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\nut\debugging\destroychecker.hpp" />
+    <ClInclude Include="..\..\..\nut\debugging\exception.hpp" />
+    <ClInclude Include="..\..\..\nut\debugging\sourcelocation.hpp" />
     <ClInclude Include="..\..\..\nut\gc\gc.hpp" />
     <ClInclude Include="..\..\..\nut\gc\ref.hpp" />
     <ClInclude Include="..\..\..\nut\gc\refcounter.hpp" />
-    <ClInclude Include="..\..\..\nut\memtool\destroychecker.hpp" />
+    <ClInclude Include="..\..\..\nut\logging\logfilter.hpp" />
+    <ClInclude Include="..\..\..\nut\logging\loghandler.hpp" />
+    <ClInclude Include="..\..\..\nut\logging\loglevel.hpp" />
+    <ClInclude Include="..\..\..\nut\logging\logger.hpp" />
+    <ClInclude Include="..\..\..\nut\logging\macros.hpp" />
+    <ClInclude Include="..\..\..\nut\logging\logmanager.hpp" />
+    <ClInclude Include="..\..\..\nut\logging\logrecord.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\condition.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\guard.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\mutex.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\testcasefailureexception.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\testfixture.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\testlogger.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\testregister.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\testrunner.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\unittest.hpp" />
+    <ClInclude Include="..\..\..\nut\util\configfile.hpp" />
+    <ClInclude Include="..\..\..\nut\util\consolehelper.hpp" />
+    <ClInclude Include="..\..\..\nut\util\membuffer.hpp" />
+    <ClInclude Include="..\..\..\nut\util\stringhelper.hpp" />
+    <ClInclude Include="..\..\..\nut\util\time.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp" />
