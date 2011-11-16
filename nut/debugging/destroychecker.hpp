@@ -16,19 +16,19 @@ namespace nut
 #ifndef NDEBUG
 class DestroyChecker
 {
-	enum { CONSTRUCTED = 0x12344321, DESTRUCTED = 0xFEDCCDEF};
-	int32_t m_tag;
+    enum { CONSTRUCTED = 0x12344321, DESTRUCTED = 0xFEDCCDEF};
+    int32_t m_tag;
 
 public:
-	DestroyChecker() : m_tag(CONSTRUCTED) {}
+    DestroyChecker() : m_tag(CONSTRUCTED) {}
 
-	~DestroyChecker()
-	{
-		assert(CONSTRUCTED == m_tag);
-		m_tag = DESTRUCTED;
-	}
+    ~DestroyChecker()
+    {
+        assert(CONSTRUCTED == m_tag);
+        m_tag = DESTRUCTED;
+    }
 
-	void checkDestroy() { assert(CONSTRUCTED == m_tag); }
+    void checkDestroy() { assert(CONSTRUCTED == m_tag); }
 };
 #endif /* NDEBUG */
 

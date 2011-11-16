@@ -16,16 +16,16 @@ namespace nut
 class TestFixture
 {
 public:
-	virtual ~TestFixture() {}
+    virtual ~TestFixture() {}
 
-	virtual void setUp() = 0;
+    virtual void setUp() = 0;
 
-	virtual void tearDown() = 0;
+    virtual void tearDown() = 0;
 
 private:
     friend class TestRunner;
 
-	virtual int ___runACase(ITestLogger& logger, const int op, const char *caseName) = 0;
+    virtual int ___runACase(ITestLogger& logger, const int op, const char *caseName) = 0;
 };
 
 }

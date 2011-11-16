@@ -17,7 +17,7 @@ int main()
     // trunner.runAFixture("TestGC");
     // trunner.runACase("TestGC", "testSmoking");
 
-	printf("press any key to continue...");
+    printf("press any key to continue...");
     getch();
     return 0;
 }

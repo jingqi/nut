@@ -15,14 +15,14 @@ namespace nut
  */
 class TestCaseFailureException
 {
-	const char *m_description;
-	const char *m_file;
-	int m_line;
+    const char *m_description;
+    const char *m_file;
+    int m_line;
 
 public:
-	TestCaseFailureException(const char *des, const char *file, int line)
-		: m_description(des), m_file(file), m_line(line)
-	{}
+    TestCaseFailureException(const char *des, const char *file, int line)
+        : m_description(des), m_file(file), m_line(line)
+    {}
 
     const char* getDescription() const { return m_description; }
 

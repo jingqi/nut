@@ -17,11 +17,11 @@ namespace nut
  */
 struct RefCounter
 {
-	int m_value;
+    int m_value;
 
-	RefCounter(int v) : m_value(v) {}
-	inline int operator++ () { return ++m_value; }
-	inline int operator-- () { return --m_value; }
+    RefCounter(int v) : m_value(v) {}
+    inline int operator++ () { return ++m_value; }
+    inline int operator-- () { return --m_value; }
 };
 
 /**
@@ -29,11 +29,11 @@ struct RefCounter
  */
 struct RefCounterSync
 {
-	volatile int m_value;
+    volatile int m_value;
 
-	RefCounterSync(int v) : m_value(v) {}
-	inline int operator++ () { return ++m_value; }
-	inline int operator-- () { return --m_value; }
+    RefCounterSync(int v) : m_value(v) {}
+    inline int operator++ () { return ++m_value; }
+    inline int operator-- () { return --m_value; }
 };
 
 }
