@@ -191,71 +191,77 @@ public :
 #endif
 
 
-/**
- * the following is allowed:
- * stdout
- * stderr
- * console
- * console|nocolor
- * file|append|./logfile.log
- * file|circle|./dir/prefix
- * file|./dir/logfile.log
- * syslog
- */
-ref<LogHandler> createLogHandler(const std::string &type)
+class LogHandlerFactory
 {
-    if (type == "stdout")
+    LogHandlerFactory();
+
+public:
+    /**
+     * the following is allowed:
+     * stdout
+     * stderr
+     * console
+     * console|nocolor
+     * file|append|./logfile.log
+     * file|circle|./dir/prefix
+     * file|./dir/logfile.log
+     * syslog
+     */
+    static ref<LogHandler> createLogHandler(const std::string &type)
     {
-        return gc_new<StreamLogHandler>(ref_arg<std::ostream>(std::cout));
-    }
-    else if (type == "stderr")
-    {
-        return gc_new<StreamLogHandler>(ref_arg<std::ostream>(std::cerr));
-    }
-    else if (type.size() >= 7 && type.substr(0,7) == "console")
-    {
-        if (type.size() == 15 && type.substr(7,8) == "|nocolor")
-            return gc_new<ConsoleLogHandler>(false);
-        else
-            return gc_new<ConsoleLogHandler>(true);
-    }
-    else if (type.size() > 5 && type.substr(0,5) == "file|")
-    {
-        std::string::size_type pos = type.find_last_of('|');
-        std::string last = type.substr(pos + 1);
-        if (type.size() > 12 && type.substr(5,7) == "append|")
+        if (type == "stdout")
         {
-            return gc_new<FileLogHandler>(last.c_str(), true);
+            return gc_new<StreamLogHandler>(ref_arg<std::ostream>(std::cout));
         }
-        else if (type.size() > 12 && type.substr(5,7) == "circle|")
+        else if (type == "stderr")
         {
-            char buf[30] = {0};
-#if defined(WIN32)
-            long pid = ::GetCurrentProcessId();
+            return gc_new<StreamLogHandler>(ref_arg<std::ostream>(std::cerr));
+        }
+        else if (type.size() >= 7 && type.substr(0,7) == "console")
+        {
+            if (type.size() == 15 && type.substr(7,8) == "|nocolor")
+                return gc_new<ConsoleLogHandler>(false);
+            else
+                return gc_new<ConsoleLogHandler>(true);
+        }
+        else if (type.size() > 5 && type.substr(0,5) == "file|")
+        {
+            std::string::size_type pos = type.find_last_of('|');
+            std::string last = type.substr(pos + 1);
+            if (type.size() > 12 && type.substr(5,7) == "append|")
+            {
+                return gc_new<FileLogHandler>(last.c_str(), true);
+            }
+            else if (type.size() > 12 && type.substr(5,7) == "circle|")
+            {
+                char buf[30] = {0};
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+                long pid = ::GetCurrentProcessId();
 #else
-            pid_t pid = getpid();
+                pid_t pid = getpid();
 #endif
-            sprintf(buf, "%ld", (long)pid);
-            last += Time().formatTime("%Y-%m-%d %H-%M-%S ");
-            last += buf;
-            last += ".log";
-            return gc_new<FileLogHandler>(last.c_str(), false);
+                sprintf(buf, "%ld", (long)pid);
+                last += Time().formatTime("%Y-%m-%d %H-%M-%S ");
+                last += buf;
+                last += ".log";
+                return gc_new<FileLogHandler>(last.c_str(), false);
+            }
+            else // trunc
+            {
+                return gc_new<FileLogHandler>(last.c_str(), false);
+            }
         }
-        else // trunc
+#if defined(NUT_PLATFORM_OS_LINUX)
+        else if (type == "syslog")
         {
-            return gc_new<FileLogHandler>(last.c_str(), false);
+            return gc_new<SyslogLogHandler>(false);
         }
-    }
-#if !defined(WIN32)
-    else if (type == "syslog")
-    {
-        return gc_new<LogHandler>(gc_new<SyslogLogHandler>(false));
-    }
 #endif
 
-    /* default */
-    return gc_new<StreamLogHandler>(ref_arg<std::ostream>(std::cout));
-}
+        /* default */
+        return gc_new<StreamLogHandler>(ref_arg<std::ostream>(std::cout));
+    }
+};
 
 }
 

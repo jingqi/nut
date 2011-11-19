@@ -72,29 +72,35 @@ public :
     }
 };
 
-ref<LogFilter> createLogFilter(const std::string &arg)
+class LogFilterFactory
 {
-    bool allows[5] = {true,true,true,true,true};
-    for (size_t i = 0; i < arg.length() && i < 5; ++i)
-        if (arg[i] == '0')
-            allows[i] = false;
-    std::vector<std::string> excepts;
-    if (arg.length() > 6 && arg[5] == '|')
-    {
-        std::string::size_type begin = 6, end = arg.find_first_of(':',6);
-        while (end != std::string::npos)
-        {
-            if (begin != end)
-                excepts.push_back(arg.substr(begin, end - begin));
-            begin = end + 1;
-            end = arg.find_first_of(':',begin);
-        }
-        if (begin != arg.length())
-            excepts.push_back(arg.substr(begin));
-    }
+    LogFilterFactory();
 
-    return gc_new<DefaultLogFilter>(allows[0],allows[1],allows[2],allows[3],allows[4],excepts);
-}
+public:
+    static ref<LogFilter> createLogFilter(const std::string &arg)
+    {
+        bool allows[5] = {true,true,true,true,true};
+        for (size_t i = 0; i < arg.length() && i < 5; ++i)
+            if (arg[i] == '0')
+                allows[i] = false;
+        std::vector<std::string> excepts;
+        if (arg.length() > 6 && arg[5] == '|')
+        {
+            std::string::size_type begin = 6, end = arg.find_first_of(':',6);
+            while (end != std::string::npos)
+            {
+                if (begin != end)
+                    excepts.push_back(arg.substr(begin, end - begin));
+                begin = end + 1;
+                end = arg.find_first_of(':',begin);
+            }
+            if (begin != arg.length())
+                excepts.push_back(arg.substr(begin));
+        }
+
+        return gc_new<DefaultLogFilter>(allows[0],allows[1],allows[2],allows[3],allows[4],excepts);
+    }
+};
 
 }
 

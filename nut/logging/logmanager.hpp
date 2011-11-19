@@ -55,8 +55,8 @@ public :
             std::vector<std::string> strpos = config.readList((*it + "_pos").c_str(), ':');
             std::string strfilter = config.readString((*it + "_filter").c_str());
 
-            ref<LogHandler> handler = createLogHandler(strtype);
-            ref<LogFilter> filter = createLogFilter(strfilter);
+            ref<LogHandler> handler = LogHandlerFactory::createLogHandler(strtype);
+            ref<LogFilter> filter = LogFilterFactory::createLogFilter(strfilter);
             handler->setFilter(filter);
             if (strpos.size() == 0)
                 getRootLogger()->addHandler(handler);
