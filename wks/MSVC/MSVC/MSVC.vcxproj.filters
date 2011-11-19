@@ -123,6 +123,12 @@
     <ClInclude Include="..\..\..\nut\memtool\refarg.hpp">
       <Filter>头文件\memtool</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\gc\enref.h">
+      <Filter>头文件\gc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\gc\gcwrapper.hpp">
+      <Filter>头文件\gc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">

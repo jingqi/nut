@@ -20,7 +20,7 @@ namespace nut
 
 class LogFilter
 {
-    DECLARE_GC_ENABLE
+    NUT_DECLARE_REFERABLE
 
 public:
     virtual bool isLogable (const std::string &loggerpath, const LogRecord &log) const = 0;

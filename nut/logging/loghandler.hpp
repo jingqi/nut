@@ -31,7 +31,7 @@ namespace nut
 
 class LogHandler
 {
-    DECLARE_GC_ENABLE
+    NUT_DECLARE_REFERABLE
 
     ref<LogFilter> m_filter;
 

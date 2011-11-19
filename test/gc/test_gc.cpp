@@ -15,7 +15,7 @@ NUT_FIXTURE(TestGC)
 
     class B
     {
-        DECLARE_GC_ENABLE
+        NUT_DECLARE_REFERABLE
     };
 
     class A : public B

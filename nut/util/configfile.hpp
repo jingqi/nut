@@ -41,7 +41,7 @@ class ConfigFile
 
     std::string m_filePath;
     std::vector<Line> m_document;
-    bool m_needToSave;
+    bool m_dirty;
 
     /// test if two string are equal (ignore cases)
     static bool strieq(std::string str0, const char * str1)
@@ -57,7 +57,7 @@ class ConfigFile
 
 public :
     ConfigFile (const char *filePath)
-        : m_filePath(filePath), m_needToSave(false)
+        : m_filePath(filePath), m_dirty(false)
     {
         assert(NULL != filePath);
         std::ifstream ifs(filePath);
@@ -73,6 +73,9 @@ public :
 
             // 注释
             std::string::size_type index = strLine.find_first_of('#');
+            std::string::size_type index2 = strLine.find_first_of(';');
+            if (index2 < index)
+                index = index2;
             if (index != std::string::npos)
             {
                 line.m_comment = strLine.substr(index);
@@ -152,7 +155,7 @@ public :
 
     void flush()
     {
-        if (m_needToSave)
+        if (m_dirty)
         {
             std::ofstream ofs(m_filePath.c_str());
             for (std::vector<Line>::const_iterator it = m_document.begin(); it != m_document.end(); ++it)
@@ -171,7 +174,7 @@ public :
                     ofs << ' ';
                 ofs << it->m_comment << std::endl;
             }
-            m_needToSave = false;
+            m_dirty = false;
         }
     }
 
@@ -240,7 +243,7 @@ public :
             if (it->m_key == cfgName)
             {
                 it->m_value = value;
-                m_needToSave = true;  // tag the need of saving
+                m_dirty = true;  // tag the need of saving
                 return;
             }
         }
@@ -251,7 +254,7 @@ public :
         line.m_equalSign = true;
         line.m_value = value;
         m_document.push_back(line);
-        m_needToSave = true;   // tag the need of saving
+        m_dirty = true;   // tag the need of saving
     }
 
     void writeBool(const char * cfgName, bool value)

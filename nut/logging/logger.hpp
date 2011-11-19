@@ -24,7 +24,7 @@ namespace nut
 
 class Logger
 {
-    DECLARE_GC_ENABLE
+    NUT_DECLARE_REFERABLE
 
     std::vector<ref<LogHandler> > m_handlers;
     std::vector<ref<Logger> > m_subloggers;

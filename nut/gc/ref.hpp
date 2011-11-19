@@ -159,4 +159,20 @@ struct dynamic_ref_cast : public ref<typename RefTraits<T>::plain_type>
 
 }
 
+
+/**
+ * 声明可引用计数
+ * @note 多继承中如：
+ *      A   B
+ *       \ /
+ *        C
+ * 如果在A,B中使用了 DECLARE_GC_ENABLE 声明， 那么 C 中也要使用，
+ * 否则会出现有歧义的调用
+ */
+#define NUT_DECLARE_REFERABLE \
+    virtual void add_ref() = 0; \
+    virtual void rls_ref() = 0; \
+    template <typename ___T> friend class nut::ref;
+
+
 #endif /* head file guarder */

@@ -65,7 +65,9 @@
     <ClInclude Include="..\..\..\nut\debugging\destroychecker.hpp" />
     <ClInclude Include="..\..\..\nut\debugging\exception.hpp" />
     <ClInclude Include="..\..\..\nut\debugging\sourcelocation.hpp" />
+    <ClInclude Include="..\..\..\nut\gc\enref.h" />
     <ClInclude Include="..\..\..\nut\gc\gc.hpp" />
+    <ClInclude Include="..\..\..\nut\gc\gcwrapper.hpp" />
     <ClInclude Include="..\..\..\nut\gc\ref.hpp" />
     <ClInclude Include="..\..\..\nut\gc\refcounter.hpp" />
     <ClInclude Include="..\..\..\nut\logging\logfilter.hpp" />
