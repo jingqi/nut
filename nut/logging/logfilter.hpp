@@ -93,7 +93,7 @@ ref<LogFilter> createLogFilter(const std::string &arg)
             excepts.push_back(arg.substr(begin));
     }
 
-    return gc_new<LogFilter>(gc_new<DefaultLogFilter>(allows[0],allows[1],allows[2],allows[3],allows[4],excepts));
+    return gc_new<DefaultLogFilter>(allows[0],allows[1],allows[2],allows[3],allows[4],excepts);
 }
 
 }

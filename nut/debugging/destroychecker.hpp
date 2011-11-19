@@ -28,7 +28,7 @@ public:
         m_tag = DESTRUCTED;
     }
 
-    void checkDestroy() { assert(CONSTRUCTED == m_tag); }
+    void checkDestroy() const { assert(CONSTRUCTED == m_tag); }
 };
 #endif /* NDEBUG */
 

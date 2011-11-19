@@ -79,7 +79,7 @@ public :
 }
 
 /** used to build a SourceLocation instance */
-#define NUT_SOURCE_LOCATION       debugging::SourceLocation(__FILE__,__LINE__,__FUNCTION__)
+#define NUT_SOURCE_LOCATION       nut::SourceLocation(__FILE__,__LINE__,__FUNCTION__)
 
 /** used to initilize a SourceLocation instance */
 #define NUT_SOURCE_LOCATION_ARGS  __FILE__,__LINE__,__FUNCTION__

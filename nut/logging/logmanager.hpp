@@ -25,7 +25,7 @@ class LogManager
     LogManager();
     ~LogManager();
 
-    static Logger& getRootLogger()
+    static ref<Logger> getRootLogger()
     {
         static ref<Logger> root;
         static Mutex root_mutex;
@@ -34,15 +34,15 @@ class LogManager
         {
             Guard<Mutex> guard(&root_mutex);
             if (root.isNull())
-                root = gc_new<Logger>(NULL, "");
+                root = gc_new<Logger>((Logger*)NULL, "");
         }
-        return *root;
+        return root;
     }
 
 public :
-    static Logger& getLogger(const std::string &path)
+    static weak_ref<Logger> getLogger(const std::string &path)
     {
-        return getRootLogger().getLogger(path);
+        return getRootLogger()->getLogger(path);
     }
 
     static void loadConfig(const ConfigFile &config)
@@ -55,20 +55,20 @@ public :
             std::vector<std::string> strpos = config.readList((*it + "_pos").c_str(), ':');
             std::string strfilter = config.readString((*it + "_filter").c_str());
 
-            std::tr1::shared_ptr<LogHandler> handler = createLogHandler(strtype);
-            std::tr1::shared_ptr<LogFilter> filter = createLogFilter(strfilter);
+            ref<LogHandler> handler = createLogHandler(strtype);
+            ref<LogFilter> filter = createLogFilter(strfilter);
             handler->setFilter(filter);
             if (strpos.size() == 0)
-                getRootLogger().addHandler(handler);
+                getRootLogger()->addHandler(handler);
             else
                 for (std::vector<std::string>::const_iterator it = strpos.begin(), ite = strpos.end(); it != ite; ++it)
-                    getLogger(*it).addHandler(handler);
+                    getLogger(*it)->addHandler(handler);
         }
     }
 
     static void loadConfig(const char *configfile)
     {
-        loadConfig(util::ConfigFile(configfile));
+        loadConfig(ConfigFile(configfile));
     }
 };
 

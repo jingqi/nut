@@ -56,33 +56,33 @@ public:
 
     template <typename Arg1, typename Arg2>
     GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2)
-        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg1>::value(arg2)), m_counter(c), m_destroyer(d)
+        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg2>::value(arg2)), m_counter(c), m_destroyer(d)
     {}
 
     template <typename Arg1, typename Arg2, typename Arg3>
     GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3)
-        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg1>::value(arg2), RefargTraits<Arg1>::value(arg3)), 
+        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg2>::value(arg2), RefargTraits<Arg3>::value(arg3)),
         m_counter(c), m_destroyer(d)
     {}
 
     template <typename Arg1, typename Arg2, typename Arg3, typename Arg4>
     GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4)
-        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg1>::value(arg2), RefargTraits<Arg1>::value(arg3), 
-        RefargTraits<Arg1>::value(arg4)), m_counter(c), m_destroyer(d)
+        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg2>::value(arg2), RefargTraits<Arg3>::value(arg3),
+        RefargTraits<Arg4>::value(arg4)), m_counter(c), m_destroyer(d)
     {}
 
     template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
     GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5)
-        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg1>::value(arg2), RefargTraits<Arg1>::value(arg3), 
-        RefargTraits<Arg1>::value(arg4), RefargTraits<Arg1>::value(arg5)), m_counter(c), m_destroyer(d)
+        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg2>::value(arg2), RefargTraits<Arg3>::value(arg3),
+        RefargTraits<Arg4>::value(arg4), RefargTraits<Arg5>::value(arg5)), m_counter(c), m_destroyer(d)
     {}
 
     template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
               typename Arg6>
     GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5,
               Arg6 arg6)
-        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg1>::value(arg2), RefargTraits<Arg1>::value(arg3),
-        RefargTraits<Arg1>::value(arg4), RefargTraits<Arg1>::value(arg5), RefargTraits<Arg1>::value(arg6)), 
+        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg2>::value(arg2), RefargTraits<Arg3>::value(arg3),
+        RefargTraits<Arg4>::value(arg4), RefargTraits<Arg5>::value(arg5), RefargTraits<Arg6>::value(arg6)),
         m_counter(c), m_destroyer(d)
     {}
 

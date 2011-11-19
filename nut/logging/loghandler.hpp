@@ -206,18 +206,18 @@ ref<LogHandler> createLogHandler(const std::string &type)
 {
     if (type == "stdout")
     {
-        return gc_new<LogHandler>(gc_new<StreamLogHandler>(std::cout));
+        return gc_new<StreamLogHandler>(ref_arg<std::ostream>(std::cout));
     }
     else if (type == "stderr")
     {
-        return gc_new<LogHandler>(gc_new<StreamLogHandler>(std::cerr));
+        return gc_new<StreamLogHandler>(ref_arg<std::ostream>(std::cerr));
     }
     else if (type.size() >= 7 && type.substr(0,7) == "console")
     {
         if (type.size() == 15 && type.substr(7,8) == "|nocolor")
-            return gc_new<LogHandler>(gc_new<ConsoleLogHandler>(false));
+            return gc_new<ConsoleLogHandler>(false);
         else
-            return gc_new<LogHandler>(gc_new<ConsoleLogHandler>(true));
+            return gc_new<ConsoleLogHandler>(true);
     }
     else if (type.size() > 5 && type.substr(0,5) == "file|")
     {
@@ -225,7 +225,7 @@ ref<LogHandler> createLogHandler(const std::string &type)
         std::string last = type.substr(pos + 1);
         if (type.size() > 12 && type.substr(5,7) == "append|")
         {
-            return gc_new<LogHandler>(gc_new<FileLogHandler>(last.c_str(), true));
+            return gc_new<FileLogHandler>(last.c_str(), true);
         }
         else if (type.size() > 12 && type.substr(5,7) == "circle|")
         {
@@ -236,14 +236,14 @@ ref<LogHandler> createLogHandler(const std::string &type)
             pid_t pid = getpid();
 #endif
             sprintf(buf, "%ld", (long)pid);
-            last += util::Time().formatTime("%Y-%m-%d %H-%M-%S ");
+            last += Time().formatTime("%Y-%m-%d %H-%M-%S ");
             last += buf;
             last += ".log";
-            return gc_new<LogHandler>(gc_new<FileLogHandler>(last.c_str(), false));
+            return gc_new<FileLogHandler>(last.c_str(), false);
         }
         else // trunc
         {
-            return gc_new<LogHandler>(gc_new<FileLogHandler>(last.c_str(), false));
+            return gc_new<FileLogHandler>(last.c_str(), false);
         }
     }
 #if !defined(WIN32)
@@ -254,7 +254,7 @@ ref<LogHandler> createLogHandler(const std::string &type)
 #endif
 
     /* default */
-    return gc_new<LogHandler>(gc_new<StreamLogHandler>(std::cout));
+    return gc_new<StreamLogHandler>(ref_arg<std::ostream>(std::cout));
 }
 
 }

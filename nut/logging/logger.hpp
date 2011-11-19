@@ -42,7 +42,7 @@ private :
     Logger& operator=(const Logger&);
 
 private :
-    friend class LogManager;
+    template <typename T, typename C> friend class GCWrapper;
 
     Logger(weak_ref<Logger> parent, const std::string &path)
         : m_parent(parent), m_loggerPath(path)
@@ -80,7 +80,7 @@ private :
         m_cheker.checkDestroy();
 #endif
 
-        for (std::vector<std::tr1::shared_ptr<LogHandler> >::const_iterator it = m_handlers.begin(),
+        for (std::vector<ref<LogHandler> >::const_iterator it = m_handlers.begin(),
             ite = m_handlers.end(); it != ite; ++it)
         {
             LogFilter* filter = (*it)->getFilter();
@@ -136,7 +136,7 @@ public :
             va_start(ap, format);
             int n = vsnprintf(buf, size, format, ap);
             va_end(ap);
-            if (n > -1 && n < size)
+            if (n > -1 && n < (int)size)
                 break;
 
             if (n > -1)
@@ -156,7 +156,7 @@ public :
         log(m_loggerPath, LogRecord(level,sl,msg));
     }
 
-    Logger& getLogger(const std::string &relativepath)
+    weak_ref<Logger> getLogger(const std::string &relativepath)
     {
 #ifndef NDEBUG
         m_cheker.checkDestroy();
@@ -165,7 +165,7 @@ public :
         Guard<Mutex> g(&m_mutex);
 
         if (relativepath.length() == 0)
-            return *this;
+            return this;
 
         std::vector<ref<Logger> >::const_iterator it = m_subloggers.begin(),
             ite = m_subloggers.end();
@@ -173,7 +173,7 @@ public :
         for (; it != ite && current != (*it)->getLoggerName(); ++it) {}
         if (it == ite)
         {
-            m_subloggers.push_back(std::tr1::shared_ptr<Logger>(new Logger(this,
+            m_subloggers.push_back(ref<Logger>(gc_new<Logger>(this,
                 (m_loggerPath.length() == 0 ? current : m_loggerPath + "." + current))));
             it = m_subloggers.end() - 1;
         }
