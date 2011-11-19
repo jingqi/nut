@@ -7,15 +7,10 @@
 #ifndef ___HEADFILE___38990555_F0A8_4BA9_BE50_9A477A2A3F47_
 #define ___HEADFILE___38990555_F0A8_4BA9_BE50_9A477A2A3F47_
 
-#include <nut/platform/platform.hpp>
-
 #include <string>
 #include <vector>
-#ifdef NUT_PLATFORM_OS_WINDOWS
-#   include <memory>
-#else
-#   include <tr1/memory>
-#endif
+
+#include <nut/gc/gc.hpp>
 
 #include "loglevel.hpp"
 #include "logrecord.hpp"
@@ -25,9 +20,9 @@ namespace nut
 
 class LogFilter
 {
-public :
-    virtual ~LogFilter() {}
+    DECLARE_GC_ENABLE
 
+public:
     virtual bool isLogable (const std::string &loggerpath, const LogRecord &log) const = 0;
 };
 
@@ -40,10 +35,9 @@ public :
     DefaultLogFilter (LogLevel minLevel, const std::vector<std::string> &excepts = std::vector<std::string>())
         : m_excepts(excepts)
     {
-        int i = 0;
-        for (; i < minLevel; ++i)
+        for (int i = 0; i < minLevel; ++i)
             m_allowMask[i] = false;
-        for (; i < COUNT_OF_LOG_LEVEL; ++i)
+        for (int i = 0; i < COUNT_OF_LOG_LEVEL; ++i)
             m_allowMask[i] = true;
     }
 
@@ -62,11 +56,11 @@ public :
     {
         if (!m_allowMask[log.getLevel()])
             return false;
-        for (std::vector<std::string>::const_iterator it = m_excepts.begin(), ite = m_excepts.end();
-            it != ite; ++it)
+        for (std::vector<std::string>::const_iterator iter = m_excepts.begin(), end = m_excepts.end();
+            iter != end; ++iter)
         {
-            if (it->length() <= loggerpath.length() &&
-                *it == loggerpath.substr(0,it->length()))
+            if (iter->length() <= loggerpath.length() &&
+                *iter == loggerpath.substr(0, iter->length()))
                 return false;
         }
         return true;
@@ -78,7 +72,7 @@ public :
     }
 };
 
-inline std::tr1::shared_ptr<LogFilter> createLogFilter(const std::string &arg)
+ref<LogFilter> createLogFilter(const std::string &arg)
 {
     bool allows[5] = {true,true,true,true,true};
     for (size_t i = 0; i < arg.length() && i < 5; ++i)
@@ -99,7 +93,7 @@ inline std::tr1::shared_ptr<LogFilter> createLogFilter(const std::string &arg)
             excepts.push_back(arg.substr(begin));
     }
 
-    return std::tr1::shared_ptr<LogFilter>(new DefaultLogFilter(allows[0],allows[1],allows[2],allows[3],allows[4],excepts));
+    return gc_new<LogFilter>(gc_new<DefaultLogFilter>(allows[0],allows[1],allows[2],allows[3],allows[4],excepts));
 }
 
 }

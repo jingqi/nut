@@ -12,34 +12,30 @@
 #include <string>
 #include <vector>
 
-#if defined(WIN32) // for shared_ptr
-#   include <memory>
-#else
-#   include <tr1/memory>
-#endif
+#include <nut/gc/gc.hpp>
+#include <nut/threading/mutex.hpp>
+#include <nut/threading/guard.hpp>
+#include <nut/debugging/destroychecker.hpp>
 
-#include <threading/Mutex.h>
-#include <threading/Guard.h>
-
-#include "LogHandler.h"
+#include "loghandler.hpp"
 
 namespace nut
 {
 
 class Logger
 {
-    std::vector<std::tr1::shared_ptr<LogHandler> > m_handlers;
-    std::vector<std::tr1::shared_ptr<Logger> > m_subloggers;
-    Logger *m_parent;
+    DECLARE_GC_ENABLE
+
+    std::vector<ref<LogHandler> > m_handlers;
+    std::vector<ref<Logger> > m_subloggers;
+    weak_ref<Logger> m_parent;
     std::string m_loggerPath;
     int m_destructTag;
-    threading::Mutex m_mutex;
+    Mutex m_mutex;
 
-    enum Tag
-    {
-        CONSTRUCTED_TAG = 0xA5A55A5A,
-        DESTRUCTED_TAG = 0x0,
-    };
+#ifndef NDEBUG
+    DestroyChecker m_cheker;
+#endif
 
 private :
     Logger(const Logger&);
@@ -48,8 +44,8 @@ private :
 private :
     friend class LogManager;
 
-    Logger(Logger *parent, const std::string &path)
-        : m_parent(parent), m_loggerPath(path),m_destructTag(CONSTRUCTED_TAG)
+    Logger(weak_ref<Logger> parent, const std::string &path)
+        : m_parent(parent), m_loggerPath(path)
     {}
 
     static std::string getFirstParent(const std::string &loggerpath)
@@ -80,9 +76,9 @@ private :
 
     void log(const std::string &loggerpath, const LogRecord &record) const
     {
-        assert(checkDestruct());
-        if (!checkDestruct())
-            return;
+#ifndef NDEBUG
+        m_cheker.checkDestroy();
+#endif
 
         for (std::vector<std::tr1::shared_ptr<LogHandler> >::const_iterator it = m_handlers.begin(),
             ite = m_handlers.end(); it != ite; ++it)
@@ -95,48 +91,39 @@ private :
             m_parent->log(loggerpath, record);
     }
 
-    bool checkDestruct() const
-    {
-        return (this != NULL && m_destructTag == CONSTRUCTED_TAG);
-    }
-
 public :
-    ~Logger()
+    void addHandler(ref<LogHandler> handler)
     {
-        assert(checkDestruct());
-        m_destructTag = DESTRUCTED_TAG; // a tag of destructed
-            // (some peole may use logging in the global static destruction domain, this may cause problems)
-    }
+#ifndef NDEBUG
+        m_cheker.checkDestroy();
+#endif
 
-    void addHandler(std::tr1::shared_ptr<LogHandler> handler)
-    {
-        assert(checkDestruct());
-        if (!checkDestruct())
-            return;
         m_handlers.push_back(handler);
     }
 
     void log(const LogRecord &record) const
     {
-        assert(checkDestruct());
-        if (!checkDestruct())
-            return;
+#ifndef NDEBUG
+        m_cheker.checkDestroy();
+#endif
+
         log(m_loggerPath, record);
     }
 
-    void log(LogLevel level, const debugging::SourceLocation &sl, const std::string &msg) const
+    void log(LogLevel level, const SourceLocation &sl, const std::string &msg) const
     {
-        assert(checkDestruct());
-        if (!checkDestruct())
-            return;
+#ifndef NDEBUG
+        m_cheker.checkDestroy();
+#endif
+
         log(m_loggerPath, LogRecord(level,sl,msg));
     }
 
-    void log(LogLevel level, const debugging::SourceLocation &sl, const char *format, ...) const
+    void log(LogLevel level, const SourceLocation &sl, const char *format, ...) const
     {
-        assert(checkDestruct());
-        if (!checkDestruct())
-            return;
+#ifndef NDEBUG
+        m_cheker.checkDestroy();
+#endif
 
         assert(NULL != format);
         size_t size = 100;
@@ -171,16 +158,16 @@ public :
 
     Logger& getLogger(const std::string &relativepath)
     {
-        assert(checkDestruct());
-        if (!checkDestruct())
-            return *this; /* actually not very safe */
+#ifndef NDEBUG
+        m_cheker.checkDestroy();
+#endif
 
-        threading::Guard<threading::Mutex> g(&m_mutex);
+        Guard<Mutex> g(&m_mutex);
 
         if (relativepath.length() == 0)
             return *this;
 
-        std::vector<std::tr1::shared_ptr<Logger> >::const_iterator it = m_subloggers.begin(),
+        std::vector<ref<Logger> >::const_iterator it = m_subloggers.begin(),
             ite = m_subloggers.end();
         std::string current = getFirstParent(relativepath);
         for (; it != ite && current != (*it)->getLoggerName(); ++it) {}
@@ -195,17 +182,19 @@ public :
 
     std::string getLoggerPath()
     {
-        assert(checkDestruct());
-        if (!checkDestruct())
-            return "";
+#ifndef NDEBUG
+        m_cheker.checkDestroy();
+#endif
+
         return m_loggerPath;
     }
 
     std::string getLoggerName()
     {
-        assert(checkDestruct());
-        if (!checkDestruct())
-            return "";
+#ifndef NDEBUG
+        m_cheker.checkDestroy();
+#endif
+
         return getLoggerName(m_loggerPath);
     }
 

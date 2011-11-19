@@ -12,6 +12,7 @@
 // #include <new.h>
 #include <new>
 
+#include <nut/memtool/refarg.hpp>
 #include <nut/debugging/destroychecker.hpp>
 
 #include "refcounter.hpp"
@@ -49,13 +50,41 @@ public:
     GCWrapper(int c, destroyer d) : T(), m_counter(c), m_destroyer(d) {}
 
     template <typename Arg1>
-    GCWrapper(int c, destroyer d, Arg1 arg1) : T(arg1), m_counter(c), m_destroyer(d) {}
+    GCWrapper(int c, destroyer d, Arg1 arg1)
+        : T(RefargTraits<Arg1>::value(arg1)), m_counter(c), m_destroyer(d)
+    {}
 
     template <typename Arg1, typename Arg2>
-    GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2) : T(arg1, arg2), m_counter(c), m_destroyer(d) {}
+    GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2)
+        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg1>::value(arg2)), m_counter(c), m_destroyer(d)
+    {}
 
     template <typename Arg1, typename Arg2, typename Arg3>
-    GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3) : T(arg1, arg2, arg3), m_counter(c), m_destroyer(d) {}
+    GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3)
+        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg1>::value(arg2), RefargTraits<Arg1>::value(arg3)), 
+        m_counter(c), m_destroyer(d)
+    {}
+
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+    GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4)
+        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg1>::value(arg2), RefargTraits<Arg1>::value(arg3), 
+        RefargTraits<Arg1>::value(arg4)), m_counter(c), m_destroyer(d)
+    {}
+
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
+    GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5)
+        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg1>::value(arg2), RefargTraits<Arg1>::value(arg3), 
+        RefargTraits<Arg1>::value(arg4), RefargTraits<Arg1>::value(arg5)), m_counter(c), m_destroyer(d)
+    {}
+
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
+              typename Arg6>
+    GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5,
+              Arg6 arg6)
+        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg1>::value(arg2), RefargTraits<Arg1>::value(arg3),
+        RefargTraits<Arg1>::value(arg4), RefargTraits<Arg1>::value(arg5), RefargTraits<Arg1>::value(arg6)), 
+        m_counter(c), m_destroyer(d)
+    {}
 
     virtual void add_ref()
     {
@@ -130,10 +159,40 @@ public:
         m_ptr = alloc_wrapper();
         new (m_ptr) wrapper_type(1, destroy_wrapper, arg1, arg2, arg3);
     }
+
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+    gc_new(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4)
+    {
+        m_ptr = alloc_wrapper();
+        new (m_ptr) wrapper_type(1, destroy_wrapper, arg1, arg2, arg3, arg4);
+    }
+
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
+    gc_new(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5)
+    {
+        m_ptr = alloc_wrapper();
+        new (m_ptr) wrapper_type(1, destroy_wrapper, arg1, arg2, arg3, arg4, arg5);
+    }
+
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
+              typename Arg6>
+    gc_new(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5,
+           Arg6 arg6)
+    {
+        m_ptr = alloc_wrapper();
+        new (m_ptr) wrapper_type(1, destroy_wrapper, arg1, arg2, arg3, arg4, arg5,
+                                 arg6);
+    }
 };
 
 /**
  * 声明可引用计数
+ * @note 多继承中如：
+ *      A   B
+ *       \ /
+ *        C
+ * 如果在A,B中使用了 DECLARE_GC_ENABLE 声明， 那么 C 中也要使用，
+ * 否则会出现有歧义的调用
  */
 #define DECLARE_GC_ENABLE \
     virtual void add_ref() = 0; \

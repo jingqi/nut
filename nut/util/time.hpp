@@ -12,14 +12,7 @@
 #include <stdlib.h>     /* for malloc() and free() */
 #include <string>
 #include <assert.h>
-#if !defined(WIN32)
-#   include <stdint.h>     /* for uint8_t and so on */
-#else
-    typedef unsigned __int8 uint8_t;
-    typedef unsigned __int16 uint16_t;
-    typedef unsigned __int32 uint32_t;
-    typedef __int64 int64_t;
-#endif
+#include <stdint.h>     /* for uint8_t and so on */
 
 namespace nut
 {

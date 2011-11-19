@@ -31,13 +31,13 @@ public :
         : m_level(level), m_sourceLocation(sl), m_message(message)
     {}
 
-    LogRecord(const util::Time &time, LogLevel level, const debugging::SourceLocation &sl, const std::string &message)
+    LogRecord(const Time &time, LogLevel level, const SourceLocation &sl, const std::string &message)
         : m_time(time), m_level(level), m_sourceLocation(sl), m_message(message)
     {}
 
-    const util::Time& getTime() const { return m_time; }
+    const Time& getTime() const { return m_time; }
     LogLevel getLevel() const { return m_level; }
-    const debugging::SourceLocation& getSourceLocation() const { return m_sourceLocation; }
+    const SourceLocation& getSourceLocation() const { return m_sourceLocation; }
     const std::string& getMessage() const { return m_message; }
 
     std::string toString() const

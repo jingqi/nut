@@ -9,14 +9,12 @@
 #ifndef ___HEADFILE___6FFFC04E_FFB6_47F6_80AA_8FD1AF3B201F_
 #define ___HEADFILE___6FFFC04E_FFB6_47F6_80AA_8FD1AF3B201F_
 
-#include <util/ConfigFile.h>
-#if defined(WIN32)
-#   include <memory>
-#else
-#   include <tr1/memory>         // for shared_ptr
-#endif
+#include <nut/platform/platform.hpp>
+#include <nut/util/configfile.hpp>
+#include <nut/threading/mutex.hpp>
+#include <nut/threading/guard.hpp>
 
-#include "Logger.h"
+#include "logger.hpp"
 
 namespace nut
 {
@@ -29,14 +27,14 @@ class LogManager
 
     static Logger& getRootLogger()
     {
-        static Logger* volatile root = NULL;
-        static threading::Mutex root_mutex;
+        static ref<Logger> root;
+        static Mutex root_mutex;
 
-        if (NULL == root)
+        if (root.isNull())
         {
-            threading::Guard<threading::Mutex> guard(&root_mutex);
-            if (NULL == root)
-                root = new Logger(NULL, "");
+            Guard<Mutex> guard(&root_mutex);
+            if (root.isNull())
+                root = gc_new<Logger>(NULL, "");
         }
         return *root;
     }
@@ -47,7 +45,7 @@ public :
         return getRootLogger().getLogger(path);
     }
 
-    static void loadConfig(const util::ConfigFile &config)
+    static void loadConfig(const ConfigFile &config)
     {
         std::vector<std::string> handlers = config.readList("LogHandlers",',');
         for (std::vector<std::string>::const_iterator it = handlers.begin(), ite = handlers.end();

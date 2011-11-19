@@ -75,6 +75,7 @@
     <ClInclude Include="..\..\..\nut\logging\macros.hpp" />
     <ClInclude Include="..\..\..\nut\logging\logmanager.hpp" />
     <ClInclude Include="..\..\..\nut\logging\logrecord.hpp" />
+    <ClInclude Include="..\..\..\nut\memtool\refarg.hpp" />
     <ClInclude Include="..\..\..\nut\threading\condition.hpp" />
     <ClInclude Include="..\..\..\nut\threading\guard.hpp" />
     <ClInclude Include="..\..\..\nut\threading\mutex.hpp" />

@@ -120,6 +120,9 @@
     <ClInclude Include="..\..\..\nut\threading\mutex.hpp">
       <Filter>头文件\threading</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\memtool\refarg.hpp">
+      <Filter>头文件\memtool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">

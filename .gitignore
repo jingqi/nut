@@ -6,3 +6,4 @@
 /wks/MSVC/ipch
 /wks/MSVC/MSVC/Debug
 /tmp
+*.pyc
