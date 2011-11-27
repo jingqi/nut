@@ -18,7 +18,7 @@ struct ref_arg
 };
 
 template <typename T>
-class const_ref_arg
+struct const_ref_arg
 {
     const T& ref;
     const_ref_arg(const T& arg) : ref(arg) {}
