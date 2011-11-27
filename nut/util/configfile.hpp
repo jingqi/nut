@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file -
  * @author jingqi
  * @date 2010-7-9
@@ -56,7 +56,7 @@ class ConfigFile
     }
 
 public :
-    ConfigFile (const char *filePath)
+    ConfigFile(const char *filePath)
         : m_filePath(filePath), m_dirty(false)
     {
         assert(NULL != filePath);
@@ -148,7 +148,7 @@ public :
         }
     }
 
-    ~ConfigFile ()
+    ~ConfigFile()
     {
         flush();
     }
@@ -178,6 +178,12 @@ public :
         }
     }
 
+    /** set dirty flag */
+    void setDirty(bool dirty = true)
+    {
+        m_dirty = dirty;
+    }
+
     std::string readString(const char *cfgName, const char *defaultValue = "") const
     {
         for (std::vector<Line>::const_iterator it = m_document.begin(); it != m_document.end(); ++it)
@@ -188,7 +194,7 @@ public :
         return defaultValue;
     }
 
-    bool readBool (const char *cfgName, bool defaultValue = false) const
+    bool readBool(const char *cfgName, bool defaultValue = false) const
     {
         std::string s = readString(cfgName);
         if (s == "0" || strieq(s,"false") || strieq(s,"no"))
@@ -198,7 +204,7 @@ public :
         return defaultValue;
     }
 
-    long readNum (const char *cfgName, long defaultValue = 0) const
+    long readNum(const char *cfgName, long defaultValue = 0) const
     {
         std::string s = readString(cfgName);
         if (s.length() == 0)
@@ -208,7 +214,7 @@ public :
         return ret;
     }
 
-    double readDecimal (const char *cfgName, double defaultValue = 0.0) const
+    double readDecimal(const char *cfgName, double defaultValue = 0.0) const
     {
         std::string s = readString(cfgName);
         if (s.length() == 0)
