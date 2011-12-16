@@ -9,15 +9,19 @@
 
 #include <assert.h>
 
+namespace nut { class TestRegister; }
+
+extern "C" __declspec(dllimport) nut::TestRegister*& nut_get_register_header();
+
+#define NUT_UNITTEST_IMPL \
+extern "C" __declspec(dllexport) nut::TestRegister*& nut_get_register_header() \
+{ \
+    static nut::TestRegister* header = NULL; \
+    return header; \
+}
+
 namespace nut
 {
-
-template <typename T>
-T*& __getListHead()
-{
-    static T* g_header = NULL;
-    return g_header;
-}
 
 class TestRegister
 {
@@ -43,8 +47,8 @@ public:
         m_groups = splitGroups(groups);
 
         // 将实例添加到链表中
-        m_pnext = __getListHead<TestRegister>();
-        __getListHead<TestRegister>() = this;
+        m_pnext = nut_get_register_header();
+        nut_get_register_header() = this;
     }
 
     bool matchGroup(const char *groupName) const

@@ -37,6 +37,9 @@
     <Filter Include="头文件\util">
       <UniqueIdentifier>{07bcb9a5-2e88-4e25-83b4-2a85999b4e3b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\logging">
+      <UniqueIdentifier>{be89f9d3-9aea-452a-93b8-7df99944fe19}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -136,6 +139,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\main.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\logging\test_logging.cpp">
+      <Filter>源文件\logging</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

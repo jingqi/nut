@@ -7,8 +7,9 @@
 #ifndef ___HEADFILE___814FCD2E_2F65_4787_93E5_ECDE19588938_
 #define ___HEADFILE___814FCD2E_2F65_4787_93E5_ECDE19588938_
 
+#include <nut/platform/platform.hpp>
 
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
 #  include <windows.h>
 #else
 #  include <pthread.h>
@@ -20,7 +21,7 @@ namespace nut
 
 class Mutex
 {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
     CRITICAL_SECTION m_criticalSection;
 #else
     pthread_mutex_t m_mutex;
@@ -29,7 +30,7 @@ class Mutex
 public :
     Mutex ()
     {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         ::InitializeCriticalSection(&m_criticalSection);
 #else
         pthread_mutexattr_t attr;
@@ -41,14 +42,14 @@ public :
 
     ~Mutex ()
     {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         ::DeleteCriticalSection(&m_criticalSection);
 #else
         pthread_mutex_destroy(&m_mutex);
 #endif
     }
 
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
     inline LPCRITICAL_SECTION innerMutex() { return &m_criticalSection; }
 #else
     inline pthread_mutex_t* innerMutex() { return &m_mutex; }
@@ -59,7 +60,7 @@ public :
      */
     inline void lock()
     {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         ::EnterCriticalSection(&m_criticalSection);
 #else
         pthread_mutex_lock(&m_mutex);
@@ -71,7 +72,7 @@ public :
      */
     inline void unlock()
     {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         ::LeaveCriticalSection(&m_criticalSection);
 #else
         pthread_mutex_unlock(&m_mutex);
@@ -84,7 +85,7 @@ public :
      */
     inline bool trylock()
     {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         return TRUE == ::TryEnterCriticalSection(&m_criticalSection);
 #else
         int lock_result = pthread_mutex_trylock(&m_mutex);
@@ -106,7 +107,7 @@ public :
      */
     inline bool timedlock(unsigned s, unsigned ms = 0)
     {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         return trylock();
 #else
         struct timespec abstime;

@@ -10,7 +10,7 @@
 #include <nut/memtool/refarg.hpp>
 #include <nut/debugging/destroychecker.hpp>
 #include "refcounter.hpp"
-#include "enref.h"
+#include "enref.hpp"
 
 namespace nut
 {
