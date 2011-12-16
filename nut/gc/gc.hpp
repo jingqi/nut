@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2011-11-11 18:49
@@ -20,7 +20,7 @@ namespace nut
 {
 
 /**
- * ¿ÉÒıÓÃ¼ÆÊı¶ÔÏóÉú³ÉÆ÷
+ * å¯å¼•ç”¨è®¡æ•°å¯¹è±¡ç”Ÿæˆå™¨
  */
 template <typename T, typename COUNTER = RefCounter>
 class gc_new : public ref<typename RefTraits<T>::plain_type>
@@ -37,9 +37,9 @@ class gc_new : public ref<typename RefTraits<T>::plain_type>
 
     /**
      * @note
-     * ¸Ã´¦Èç´ËÊµÏÖµÄºÃ´¦£º
-     * 1. ±£Ö¤ÄÚ´æ·ÖÅäºÍÏú»ÙµÄ´úÂëÔÚÍ¬Ò»Ä£¿é
-     * 2. ¼´Ê¹¶ÔÏóÃ»ÓĞÉêÃ÷ĞéµÄÎö¹¹º¯ÊıÒ²²»»áÎö¹¹³ö´í
+     * è¯¥å¤„å¦‚æ­¤å®ç°çš„å¥½å¤„ï¼š
+     * 1. ä¿è¯å†…å­˜åˆ†é…å’Œé”€æ¯çš„ä»£ç åœ¨åŒä¸€æ¨¡å—
+     * 2. å³ä½¿å¯¹è±¡æ²¡æœ‰ç”³æ˜è™šçš„ææ„å‡½æ•°ä¹Ÿä¸ä¼šææ„å‡ºé”™
      */
     static void destroy_wrapper(wrapper_type *p)
     {
