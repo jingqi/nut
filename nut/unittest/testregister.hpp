@@ -11,7 +11,7 @@
 
 namespace nut { class TestRegister; }
 
-extern "C" __declspec(dllimport) nut::TestRegister*& nut_get_register_header();
+extern "C" __declspec(dllexport) nut::TestRegister*& nut_get_register_header();
 
 #define NUT_UNITTEST_IMPL \
 extern "C" __declspec(dllexport) nut::TestRegister*& nut_get_register_header() \

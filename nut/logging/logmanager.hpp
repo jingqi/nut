@@ -16,7 +16,7 @@
 
 #include "logger.hpp"
 
-extern "C" __declspec(dllimport) nut::ref<nut::Logger> nut_get_root_logger();
+extern "C" __declspec(dllexport) nut::ref<nut::Logger> nut_get_root_logger();
 
 #define NUT_LOGGING_IMPL \
 extern "C" __declspec(dllexport) nut::ref<nut::Logger> nut_get_root_logger() \
