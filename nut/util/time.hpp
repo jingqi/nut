@@ -40,7 +40,7 @@ public :
      * 从1970年1月1日起算的时间(秒)
      * @param s
      */
-    Time(int64_t s)
+    Time(time_t s)
         : seconds(s)
     {
         timeInfo = *localtime(&seconds);
@@ -112,29 +112,29 @@ public :
         return seconds <= another.seconds;
     }
 
-    Time operator +(long period) const
+    Time operator +(time_t period) const
     {
         return Time(seconds + period);
     }
 
-    Time operator -(long period) const
+    Time operator -(time_t period) const
     {
         return Time(seconds - period);
     }
 
-    Time& operator +=(long period)
+    Time& operator +=(time_t period)
     {
         seconds += period;
         return *this;
     }
 
-    Time& operator -=(long period)
+    Time& operator -=(time_t period)
     {
         seconds -= period;
         return *this;
     }
 
-    long operator -(const Time &another) const
+    time_t operator -(const Time &another) const
     {
         return seconds - another.seconds;
     }
@@ -148,7 +148,7 @@ public :
         timeInfo = *localtime(&seconds);
     }
 
-    int64_t getOriSeconds() const
+    time_t getOriSeconds() const
     {
         return seconds;
     }
