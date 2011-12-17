@@ -78,6 +78,9 @@
     <ClInclude Include="..\..\..\nut\logging\logmanager.hpp" />
     <ClInclude Include="..\..\..\nut\logging\logrecord.hpp" />
     <ClInclude Include="..\..\..\nut\memtool\refarg.hpp" />
+    <ClInclude Include="..\..\..\nut\numeric\byte_array_number.hpp" />
+    <ClInclude Include="..\..\..\nut\numeric\SignedInteger.hpp" />
+    <ClInclude Include="..\..\..\nut\numeric\unsignedinteger.hpp" />
     <ClInclude Include="..\..\..\nut\threading\condition.hpp" />
     <ClInclude Include="..\..\..\nut\threading\guard.hpp" />
     <ClInclude Include="..\..\..\nut\threading\mutex.hpp" />
@@ -97,6 +100,7 @@
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp" />
     <ClCompile Include="..\..\..\test\logging\test_logging.cpp" />
     <ClCompile Include="..\..\..\test\main.cpp" />
+    <ClCompile Include="..\..\..\test\numeric\test_signedinteger.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

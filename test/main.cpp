@@ -12,9 +12,11 @@ using namespace nut;
 
 int main()
 {
+    printf("\n%s\n", NUT_PLATFORM_STR);
+
     StreamTestLogger l(cout);
     TestRunner trunner(l);
-    trunner.runAGroup("logging");
+    trunner.runAGroup("quiet");
     // trunner.runAFixture("TestGC");
     // trunner.runACase("TestGC", "testSmoking");
 

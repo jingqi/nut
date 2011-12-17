@@ -40,6 +40,12 @@
     <Filter Include="源文件\logging">
       <UniqueIdentifier>{be89f9d3-9aea-452a-93b8-7df99944fe19}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\numeric">
+      <UniqueIdentifier>{a0f4a4be-8c96-42bc-b29c-65f88a29ecbc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\numeric">
+      <UniqueIdentifier>{d7d572d4-3a7b-4cf7-b727-d0ffc2b4bfb1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -132,6 +138,15 @@
     <ClInclude Include="..\..\..\nut\gc\gcwrapper.hpp">
       <Filter>头文件\gc</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\SignedInteger.hpp">
+      <Filter>头文件\numeric</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\byte_array_number.hpp">
+      <Filter>头文件\numeric</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\unsignedinteger.hpp">
+      <Filter>头文件\numeric</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -142,6 +157,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\logging\test_logging.cpp">
       <Filter>源文件\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\numeric\test_signedinteger.cpp">
+      <Filter>源文件\numeric</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
