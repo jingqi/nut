@@ -185,6 +185,9 @@ inline void multiply(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
     {
         machine_word_type carry = 0;
         const machine_dword_type mult1 = reinterpret_cast<const machine_word_type*>(a)[i];
+        if (mult1 == 0)
+            continue;
+
         register size_t j = 0;
         for (; i + j < word_count; ++j)
         {
@@ -210,6 +213,9 @@ inline void multiply(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
     {
         uint8_t carry = 0;
         const uint16_t mult1 = a[i];
+        if (mult1 == 0)
+            return;
+
         for (register size_t j = 0; i + j < N; ++j)
         {
             uint16_t mult2 = b[j];
@@ -233,6 +239,7 @@ inline void multiply(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
  */
 inline void divide(const uint8_t *a, const uint8_t *b, uint8_t *x, uint8_t *y, size_t N)
 {
+    
 }
 
 /** 比特与 */

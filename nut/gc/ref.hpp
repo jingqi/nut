@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2011-11-11 18:49
@@ -11,7 +11,7 @@ namespace nut
 {
 
 /**
- * ÈõÒıÓÃ
+ * å¼±å¼•ç”¨
  */
 template <typename T>
 class weak_ref
@@ -20,16 +20,16 @@ protected:
     T *m_ptr;
 
 public:
-    /** Ä¬ÈÏ¹¹Ôìº¯Êı */
+    /** é»˜è®¤æ„é€ å‡½æ•° */
     weak_ref() : m_ptr(NULL) {}
 
     weak_ref(T *ptr) : m_ptr(ptr) {}
 
-    /** ÒşÊ½ÀàĞÍ×ª»» */
+    /** éšå¼ç±»å‹è½¬æ¢ */
     template <typename U>
     weak_ref(const weak_ref<U>& r) : m_ptr(r.pointer()) {}
 
-    /** @note ¸´ÖÆ¹¹Ôìº¯Êı±ØĞëÔÚÉÏÊöº¯ÊıµÄºóÃæ */
+    /** @note å¤åˆ¶æ„é€ å‡½æ•°å¿…é¡»åœ¨ä¸Šè¿°å‡½æ•°çš„åé¢ */
     weak_ref(const weak_ref<T>& r) : m_ptr(r.m_ptr) {}
 
     ~weak_ref() { m_ptr = NULL; }
@@ -57,10 +57,12 @@ public:
 public:
     inline bool isNull() const { return m_ptr == NULL; }
     inline T* pointer() const { return m_ptr; }
+    inline void assign(T *p) { m_ptr = p; }
+    inline void clear() { m_ptr = NULL; }
 };
 
 /**
- * Ç¿ÒıÓÃ
+ * å¼ºå¼•ç”¨
  */
 template <typename T>
 class ref : public weak_ref<T>
@@ -68,34 +70,16 @@ class ref : public weak_ref<T>
 protected:
     using weak_ref<T>::m_ptr;
 
-    void assign(T *p)
-    {
-        if (p != NULL)
-            p->add_ref();
-        if (m_ptr != NULL)
-            m_ptr->rls_ref();
-        m_ptr = p;
-    }
-
-    void clear()
-    {
-        if (m_ptr != NULL)
-        {
-            m_ptr->rls_ref();
-            m_ptr = NULL;
-        }
-    }
-
 public:
     ref() {}
 
     ref(T *p) { assign(p); }
 
-    /** ÒşÊ½ÀàĞÍ×ª»» */
+    /** éšå¼ç±»å‹è½¬æ¢ */
     template <typename U>
     ref(const weak_ref<U>& r) { assign(r.pointer()); }
 
-    /** @note ¸´ÖÆ¹¹Ôìº¯Êı±ØĞëÔÚÉÏÊöº¯ÊıµÄºóÃæ */
+    /** @note å¤åˆ¶æ„é€ å‡½æ•°å¿…é¡»åœ¨ä¸Šè¿°å‡½æ•°çš„åé¢ */
     ref(const ref<T>& r) { assign(r.m_ptr); }
 
     ~ref() { clear(); }
@@ -112,6 +96,26 @@ public:
     {
         assign(r.m_ptr);
         return *this;
+    }
+
+public:
+    void assign(T *p)
+    {
+        // å…ˆæ·»åŠ å¼•ç”¨ï¼Œä»¥å…å…ˆå‡å°‘å¼•ç”¨çš„è¯å¼•å‘è¿é”ååº”
+        if (p != NULL)
+            p->add_ref();
+        if (m_ptr != NULL)
+            m_ptr->rls_ref();
+        m_ptr = p;
+    }
+
+    void clear()
+    {
+        if (m_ptr != NULL)
+        {
+            m_ptr->rls_ref();
+            m_ptr = NULL;
+        }
     }
 };
 
@@ -161,13 +165,13 @@ struct dynamic_ref_cast : public ref<typename RefTraits<T>::plain_type>
 
 
 /**
- * ÉùÃ÷¿ÉÒıÓÃ¼ÆÊı
- * @note ¶à¼Ì³ĞÖĞÈç£º
+ * å£°æ˜å¯å¼•ç”¨è®¡æ•°
+ * @note å¤šç»§æ‰¿ä¸­å¦‚ï¼š
  *      A   B
  *       \ /
  *        C
- * Èç¹ûÔÚA,BÖĞÊ¹ÓÃÁË DECLARE_GC_ENABLE ÉùÃ÷£¬ ÄÇÃ´ C ÖĞÒ²ÒªÊ¹ÓÃ£¬
- * ·ñÔò»á³öÏÖÓĞÆçÒåµÄµ÷ÓÃ
+ * å¦‚æœåœ¨A,Bä¸­ä½¿ç”¨äº† DECLARE_GC_ENABLE å£°æ˜ï¼Œ é‚£ä¹ˆ C ä¸­ä¹Ÿè¦ä½¿ç”¨ï¼Œ
+ * å¦åˆ™ä¼šå‡ºç°æœ‰æ­§ä¹‰çš„è°ƒç”¨
  */
 #define NUT_DECLARE_REFERABLE \
     virtual void add_ref() = 0; \
