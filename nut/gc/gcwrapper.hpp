@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2011-11-19
@@ -17,26 +17,26 @@ namespace nut
 
 
 /**
- * ¿ÉÒıÓÃ¼ÆÊı¶ÔÏó°ü×°Æ÷
+ * å¯å¼•ç”¨è®¡æ•°å¯¹è±¡åŒ…è£…å™¨
  *
  * @note
- * Ê¹ÓÃ°ü×°Æ÷À´°ü×°µÄºÃ´¦£º
- * 1. Îö¹¹º¯ÊıµÄ²¿·Ö¼ûgc_newµÄnote
- * 2. Èç¹û¶ÔÏóÊÇ¶à¼Ì³ĞµÄ£¬¼ÆÊıÆ÷ÈÔÈ»Ö»ÓĞÒ»·İ£¬ÈÔÈ»ÄÜÕı³£ÔËĞĞ
+ * ä½¿ç”¨åŒ…è£…å™¨æ¥åŒ…è£…çš„å¥½å¤„ï¼š
+ * 1. ææ„å‡½æ•°çš„éƒ¨åˆ†è§gc_newçš„note
+ * 2. å¦‚æœå¯¹è±¡æ˜¯å¤šç»§æ‰¿çš„ï¼Œè®¡æ•°å™¨ä»ç„¶åªæœ‰ä¸€ä»½ï¼Œä»ç„¶èƒ½æ­£å¸¸è¿è¡Œ
  */
 template <typename T, typename COUNTER = RefCounter>
 class GCWrapper : public T
 {
 protected:
-    /** Ïú»ÙÆ÷ÀàĞÍ */
+    /** é”€æ¯å™¨ç±»å‹ */
     typedef void (*destroyer)(GCWrapper<T,COUNTER>*);
 
-    /** ÒıÓÃ¼ÆÊı */
+    /** å¼•ç”¨è®¡æ•° */
     COUNTER m_counter;
-    /** Ïú»ÙÆ÷ */
+    /** é”€æ¯å™¨ */
     destroyer m_destroyer;
 
-    /** ±ÜÃâ¶à´ÎÏú»ÙµÄ¼ì²éÆ÷ */
+    /** é¿å…å¤šæ¬¡é”€æ¯çš„æ£€æŸ¥å™¨ */
 #ifndef NDEBUG
     DestroyChecker m_checker;
 #endif
@@ -103,15 +103,15 @@ template <typename T, typename COUNTER>
 class GCWrapper<enref<T>,COUNTER> : public enref<T>
 {
 protected:
-    /** Ïú»ÙÆ÷ÀàĞÍ */
+    /** é”€æ¯å™¨ç±»å‹ */
     typedef void (*destroyer)(GCWrapper<enref<T>,COUNTER>*);
 
-    /** ÒıÓÃ¼ÆÊı */
+    /** å¼•ç”¨è®¡æ•° */
     COUNTER m_counter;
-    /** Ïú»ÙÆ÷ */
+    /** é”€æ¯å™¨ */
     destroyer m_destroyer;
 
-    /** ±ÜÃâ¶à´ÎÏú»ÙµÄ¼ì²éÆ÷ */
+    /** é¿å…å¤šæ¬¡é”€æ¯çš„æ£€æŸ¥å™¨ */
 #ifndef NDEBUG
     DestroyChecker m_checker;
 #endif
