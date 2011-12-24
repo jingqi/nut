@@ -60,7 +60,7 @@ public :
 
             ref<LogHandler> handler = LogHandlerFactory::createLogHandler(strtype);
             ref<LogFilter> filter = LogFilterFactory::createLogFilter(strfilter);
-            handler->setFilter(filter);
+            handler->addFilter(filter);
             if (strpos.size() == 0)
                 nut_get_root_logger()->addHandler(handler);
             else

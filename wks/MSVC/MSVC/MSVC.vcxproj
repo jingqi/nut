@@ -74,6 +74,7 @@
     <ClInclude Include="..\..\..\nut\logging\loghandler.hpp" />
     <ClInclude Include="..\..\..\nut\logging\loglevel.hpp" />
     <ClInclude Include="..\..\..\nut\logging\logger.hpp" />
+    <ClInclude Include="..\..\..\nut\logging\logpath.hpp" />
     <ClInclude Include="..\..\..\nut\logging\macros.hpp" />
     <ClInclude Include="..\..\..\nut\logging\logmanager.hpp" />
     <ClInclude Include="..\..\..\nut\logging\logrecord.hpp" />

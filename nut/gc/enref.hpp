@@ -20,7 +20,7 @@ namespace nut
 template <typename T>
 class enref : public T
 {
-    NUT_DECLARE_REFERABLE
+    NUT_GC_REFERABLE
 
 public :
     enref()

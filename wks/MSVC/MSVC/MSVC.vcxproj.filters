@@ -147,6 +147,9 @@
     <ClInclude Include="..\..\..\nut\numeric\unsignedinteger.hpp">
       <Filter>头文件\numeric</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\logging\logpath.hpp">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">

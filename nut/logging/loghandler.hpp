@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 #include <nut/platform/platform.hpp>
 
@@ -31,62 +32,61 @@ namespace nut
 
 class LogHandler
 {
-    NUT_DECLARE_REFERABLE
+    NUT_GC_REFERABLE
 
-    ref<LogFilter> m_filter;
-
-protected :
     Mutex m_mutex;
+    std::vector<ref<LogFilter> > m_filters;
 
-public :
+public:
     virtual ~LogHandler() {}
 
-    virtual void handleLog(const std::string &loggerpath, const LogRecord &l) = 0;
+    virtual void handleLog(const std::string &logPath, const LogRecord &rec) = 0;
 
-    void setFilter(ref<LogFilter> filter)
+    void addFilter(ref<LogFilter> filter)
     {
         Guard<Mutex> g(&m_mutex);
-        m_filter = filter;
+        m_filters.push_back(filter);
     }
-
-    LogFilter* getFilter()
+    
+    /**
+     * @return
+     *      true, 通过筛选
+     *      false, 在筛选过程中被剔除
+     */
+    void handleLog(const std::string logPath, const LogRecord& rec, bool applyFilter)
     {
         Guard<Mutex> g(&m_mutex);
-        return m_filter.pointer();
+        if (applyFilter && !LogFilter::isLogable(logPath, rec, m_filters))
+            return;
+        handleLog(logPath, rec);
     }
 };
 
 class StreamLogHandler : public LogHandler
 {
     std::ostream &m_os;
-    using LogHandler::m_mutex;
 
-public :
+public:
     StreamLogHandler (std::ostream &os) : m_os(os) {}
 
-    virtual void handleLog(const std::string &loggerpath, const LogRecord &l)
+    virtual void handleLog(const std::string &logPath, const LogRecord &rec)
     {
-        Guard<Mutex> g(&m_mutex);
-        m_os << l.toString() << std::endl;
+        m_os << rec.toString() << std::endl;
         m_os.flush();
     }
 };
 
 class ConsoleLogHandler : public LogHandler
 {
-    bool mColored;
-    using LogHandler::m_mutex;
-
+    bool m_colored;
+    
 public :
-    ConsoleLogHandler(bool colored = true)
-        : mColored(colored)
-    {}
+    ConsoleLogHandler(bool colored = true) : m_colored(colored) {}
 
     virtual void handleLog(const std::string &loggerpath, const LogRecord &l)
     {
-        Guard<Mutex> g(&m_mutex);
         std::cout << "[" << l.getTime().toString() << "] ";
-        if (mColored)
+        if (m_colored)
         {
             switch(l.getLevel())
             {
@@ -112,7 +112,7 @@ public :
 
         std::cout << logLevelToStr(l.getLevel());
 
-        if (mColored)
+        if (m_colored)
             ConsoleHelper::setTextColor();
 
         std::cout << " " << l.getSourceLocation().toString() << "  " << l.getMessage() << "\n";
@@ -123,7 +123,6 @@ public :
 class FileLogHandler : public LogHandler
 {
     std::ofstream m_ofs;
-    using LogHandler::m_mutex;
 
 public :
     FileLogHandler (const char *file, bool append = false)
@@ -136,10 +135,9 @@ public :
         }
     }
 
-    virtual void handleLog(const std::string &loggerpath, const LogRecord & l)
+    virtual void handleLog(const std::string &logPath, const LogRecord & rec)
     {
-        Guard<Mutex> g(&m_mutex);
-        m_ofs << l.toString() << std::endl;
+        m_ofs << rec.toString() << std::endl;
         m_ofs.flush();
     }
 };
@@ -147,7 +145,6 @@ public :
 #if defined(NUT_PLATFORM_OS_LINUX)
 class SyslogLogHandler : public LogHandler
 {
-    using LogHandler::m_mutex;
     bool m_closesyslog;
 
 public :
@@ -161,11 +158,10 @@ public :
             closelog();  // the oposite way is openlog()
     }
 
-    virtual void handleLog(const std::string &loggerpath, const LogRecord &l)
+    virtual void handleLog(const std::string &logPath, const LogRecord &rec)
     {
-        Guard<threading::Mutex> g(&m_mutex);
         int level = 0;
-        switch (l.getLevel())
+        switch (rec.getLevel())
         {
         case LL_DEBUG:
             level = LOG_DEBUG;
@@ -185,7 +181,7 @@ public :
         default:
             level = LOG_ERR;
         }
-        syslog(level,(l.getSourceLocation().toString() + "  " + l.getMessage()).c_str());
+        syslog(level, (rec.getSourceLocation().toString() + "  " + rec.getMessage()).c_str());
     }
 };
 #endif

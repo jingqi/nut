@@ -17,6 +17,7 @@
 #include <nut/threading/guard.hpp>
 #include <nut/debugging/destroychecker.hpp>
 
+#include "logpath.hpp"
 #include "loghandler.hpp"
 
 namespace nut
@@ -24,71 +25,44 @@ namespace nut
 
 class Logger
 {
-    NUT_DECLARE_REFERABLE
+    NUT_GC_REFERABLE
+    NUT_GC_PRIVATE_GCNEW
 
     std::vector<ref<LogHandler> > m_handlers;
     std::vector<ref<Logger> > m_subloggers;
+    std::vector<ref<LogFilter> > m_filters;
     weak_ref<Logger> m_parent;
     std::string m_loggerPath;
-    int m_destructTag;
     Mutex m_mutex;
 
 #ifndef NDEBUG
     DestroyChecker m_cheker;
 #endif
 
-private :
+private:
     Logger(const Logger&);
     Logger& operator=(const Logger&);
 
-private :
-    template <typename T, typename C> friend class GCWrapper;
-
+private:
     Logger(weak_ref<Logger> parent, const std::string &path)
         : m_parent(parent), m_loggerPath(path)
     {}
 
-    static std::string getFirstParent(const std::string &loggerpath)
-    {
-        std::string::size_type i = loggerpath.find_first_of('.');
-        return loggerpath.substr(0, i);
-    }
-
-    static std::string getLoggerName(const std::string &loggerpath)
-    {
-        std::string::size_type i = loggerpath.find_last_of('.');
-        if (i == std::string::npos)
-            i = 0;
-        else
-            ++i;
-        return loggerpath.substr(i);
-    }
-
-    static std::string subLoggerPath(const std::string &loggerpath)
-    {
-        std::string::size_type i = loggerpath.find_first_of('.');
-        if (i == std::string::npos)
-            i = loggerpath.length();
-        else
-            ++i;
-        return loggerpath.substr(i);
-    }
-
-    void log(const std::string &loggerpath, const LogRecord &record) const
+    void log(const std::string &logPath, const LogRecord &rec) const
     {
 #ifndef NDEBUG
         m_cheker.checkDestroy();
 #endif
 
-        for (std::vector<ref<LogHandler> >::const_iterator it = m_handlers.begin(),
-            ite = m_handlers.end(); it != ite; ++it)
-        {
-            LogFilter* filter = (*it)->getFilter();
-            if (filter == NULL  || filter->isLogable(loggerpath,record))
-                (*it)->handleLog(loggerpath, record);
-        }
-        if (m_parent != NULL)
-            m_parent->log(loggerpath, record);
+        if (!LogFilter::isLogable(logPath, rec, m_filters))
+            return;
+
+        for (std::vector<ref<LogHandler> >::const_iterator iter = m_handlers.begin(),
+            end = m_handlers.end(); iter != end; ++iter)
+                (*iter)->handleLog(logPath, rec, true);
+
+        if (!m_parent.isNull())
+            m_parent->log(logPath, rec);
     }
 
 public :
@@ -99,6 +73,15 @@ public :
 #endif
 
         m_handlers.push_back(handler);
+    }
+
+    void addFilter(ref<LogFilter> filter)
+    {
+#ifndef NDEBUG
+        m_cheker.checkDestroy();
+#endif
+
+        m_filters.push_back(filter);
     }
 
     void log(const LogRecord &record) const
@@ -116,7 +99,7 @@ public :
         m_cheker.checkDestroy();
 #endif
 
-        log(m_loggerPath, LogRecord(level,sl,msg));
+        log(m_loggerPath, LogRecord(level, sl, msg));
     }
 
     void log(LogLevel level, const SourceLocation &sl, const char *format, ...) const
@@ -153,7 +136,7 @@ public :
         if (NULL != buf)
             free(buf);
 
-        log(m_loggerPath, LogRecord(level,sl,msg));
+        log(m_loggerPath, LogRecord(level, sl, msg));
     }
 
     weak_ref<Logger> getLogger(const std::string &relativepath)
@@ -167,17 +150,17 @@ public :
         if (relativepath.length() == 0)
             return this;
 
-        std::vector<ref<Logger> >::const_iterator it = m_subloggers.begin(),
-            ite = m_subloggers.end();
-        std::string current = getFirstParent(relativepath);
-        for (; it != ite && current != (*it)->getLoggerName(); ++it) {}
-        if (it == ite)
+        std::vector<ref<Logger> >::const_iterator iter = m_subloggers.begin(),
+            end = m_subloggers.end();
+        const std::string current = LogPath::getFirstParent(relativepath);
+        while (iter != end && current != (*iter)->getLoggerName()) ++iter;
+        if (iter == end)
         {
             m_subloggers.push_back(ref<Logger>(gc_new<Logger>(this,
                 (m_loggerPath.length() == 0 ? current : m_loggerPath + "." + current))));
-            it = m_subloggers.end() - 1;
+            iter = m_subloggers.end() - 1;
         }
-        return (*it)->getLogger(subLoggerPath(relativepath));
+        return (*iter)->getLogger(LogPath::subLogPath(relativepath));
     }
 
     std::string getLoggerPath()
@@ -195,7 +178,7 @@ public :
         m_cheker.checkDestroy();
 #endif
 
-        return getLoggerName(m_loggerPath);
+        return LogPath::getName(m_loggerPath);
     }
 
 };
