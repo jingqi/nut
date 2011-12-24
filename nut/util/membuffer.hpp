@@ -12,13 +12,14 @@
 #include <string.h>  /* for memset() and memcpy() */
 #include <stdlib.h>  /* for malloc() and free() */
 #include <stdio.h> /* for size_t */
+#include <stdint.h>
 
 namespace nut
 {
 
 class MemBuffer
 {
-    unsigned char *m_buf;
+    uint8_t *m_buf;
     size_t m_buflen;
     size_t m_datalen;
 
@@ -28,21 +29,22 @@ private :
      */
     void _assure(size_t size_needed, bool extra_space = true)
     {
-        static const float SCALE = 1.5; /** must be bigger than 1.00 */
-
         if (m_buflen >= size_needed)
             return;
 
+        /* new size */
+        size_t new_buflen = (!extra_space ? size_needed :
+            (m_buflen * 3 / 2 < size_needed ? size_needed : m_buflen * 3 / 2));
+
         /* allocate */
-        size_t new_buflen = (extra_space ? size_t(size_needed * SCALE) : size_needed);
-        unsigned char *new_buf = (unsigned char*)malloc(new_buflen);
+        uint8_t *new_buf = (uint8_t*)::malloc(new_buflen);
         assert(NULL != new_buf);
 
         /* copy memory */
         if (NULL != m_buf)
         {
-            memcpy(new_buf, m_buf, m_datalen);
-            free(m_buf);
+            ::memcpy(new_buf, m_buf, m_datalen);
+            ::free(m_buf);
         }
         m_buf = new_buf;
         m_buflen = new_buflen;
@@ -55,11 +57,11 @@ public :
      * @param len initial data size
      * @param fillv initial data filling
      */
-    explicit MemBuffer(size_t len, unsigned char fillv = 0)
+    explicit MemBuffer(size_t len, uint8_t fillv = 0)
         : m_buf(NULL), m_buflen(0), m_datalen(0)
     {
         _assure(len, false);
-        memset(m_buf, fillv, len);
+        ::memset(m_buf, fillv, len);
         m_datalen = len;
     }
 
@@ -75,7 +77,7 @@ public :
             return;
 
         _assure(len, false);
-        memcpy(m_buf, buf, len);
+        ::memcpy(m_buf, buf, len);
         m_datalen = len;
     }
 
@@ -91,13 +93,13 @@ public :
             return;
 
         size_t len = 0;
-        while (((const unsigned char*)buf)[len] != termByte)
+        while (((const uint8_t*)buf)[len] != termByte)
             ++len;
         if (includeTermByte)
             ++len;
 
         _assure(len, false);
-        memcpy(m_buf, buf, len);
+        ::memcpy(m_buf, buf, len);
         m_datalen = len;
     }
 
@@ -108,43 +110,43 @@ public :
         if (NULL == buf)
             return;
 
-        _assure(_size, false);
-        memcpy(m_buf, ((unsigned char*)buf) + index, _size);
-        m_datalen = _size;
+        _assure(size, false);
+        ::memcpy(m_buf, ((const uint8_t*)buf) + index, size);
+        m_datalen = size;
     }
 
-    MemBuffer(const MemBuffer &x)
+    MemBuffer(const MemBuffer& x)
         : m_buf(NULL), m_buflen(0), m_datalen(0)
     {
         if (0 == x.m_datalen)
             return;
 
         _assure(x.m_datalen, false);
-        memcpy(m_buf, x.m_buf, x.m_datalen);
+        ::memcpy(m_buf, x.m_buf, x.m_datalen);
         m_datalen = x.m_datalen;
     }
 
-    ~MemBuffer() { clear(); }
-
-    /**
-     * clear data and buffer
-     */
-    void clear()
+    ~MemBuffer()
     {
         if (NULL != m_buf)
-            free(m_buf);
+            ::free(m_buf);
         m_buf = NULL;
         m_buflen = 0;
         m_datalen = 0;
     }
 
-    MemBuffer& operator= (const MemBuffer &x)
+    /**
+     * clear data
+     */
+    void clear() { m_datalen = 0; }
+
+    MemBuffer& operator=(const MemBuffer &x)
     {
         if (&x == this)
             return *this;
 
         _assure(x.m_datalen, false);
-        memcpy(m_buf, x.m_buf, x.m_datalen);
+        ::memcpy(m_buf, x.m_buf, x.m_datalen);
         m_datalen = x.m_datalen;
         return *this;
     }
@@ -156,7 +158,7 @@ public :
     {
         if (m_datalen != x.m_datalen)
             return false;
-        for (size_t i = 0; i < m_datalen; ++i)
+        for (register size_t i = 0; i < m_datalen; ++i)
             if (m_buf[i] != x.m_buf[i])
                 return false;
         return true;
@@ -164,35 +166,41 @@ public :
 
     bool operator!=(const MemBuffer &x) const { return !(*this == x); }
 
-    unsigned char& operator[](size_t idx) const
+    const uint8_t& operator[](size_t idx) const
     {
         assert(idx < m_datalen);
         return m_buf[idx];
+    }
+
+    uint8_t& operator[](size_t idx)
+    {
+        assert(idx < m_datalen);
+        return const_cast<uint8_t&>(static_cast<const MemBuffer&>(*this)[idx]);
     }
 
     /**
      * resize the data size
      * @param fillv, If new bytes are added, this will fill them
      */
-    void resize(size_t n, unsigned char fillv = 0)
+    void resize(size_t n, uint8_t fillv = 0)
     {
         _assure(n);
         if (n > m_datalen)
-            memset(m_buf + m_datalen, fillv, n - m_datalen);
+            ::memset(m_buf + m_datalen, fillv, n - m_datalen);
         m_datalen = n;
     }
 
     void append(const MemBuffer &x)
     {
         _assure(m_datalen + x.m_datalen);
-        memcpy(m_buf + m_datalen, x.m_buf, x.m_datalen);
+        ::memcpy(m_buf + m_datalen, x.m_buf, x.m_datalen);
         m_datalen += x.m_datalen;
     }
 
-    void append(size_t len, unsigned char fillv = 0)
+    void append(size_t len, uint8_t fillv = 0)
     {
         _assure(m_datalen + len);
-        memset(m_buf + m_datalen, fillv, len);
+        ::memset(m_buf + m_datalen, fillv, len);
         m_datalen += len;
     }
 
@@ -203,18 +211,18 @@ public :
             return;
 
         _assure(m_datalen + len);
-        memcpy(m_buf + m_datalen, buf, len);
+        ::memcpy(m_buf + m_datalen, buf, len);
         m_datalen += len;
     }
 
-    void append(const void *buf, unsigned char termByte, bool includeTermByte)
+    void append(const void *buf, uint8_t termByte, bool includeTermByte)
     {
         assert(NULL != buf);
         if (NULL == buf)
             return;
 
         size_t len = 0;
-        while (((const unsigned char*)buf)[len] != termByte)
+        while (((const uint8_t*)buf)[len] != termByte)
             ++len;
         if (includeTermByte)
             ++len;
@@ -227,13 +235,15 @@ public :
         if (NULL == buf)
             return;
 
-        append(buf + index, _size);
+        append(((const uint8_t*)buf) + index, size);
     }
 
     /**
      * get the naked pointer
      */
-    inline unsigned char* buffer() const { return m_buf; }
+    inline const uint8_t* buffer() const { return m_buf; }
+
+    inline uint8_t* buffer() { return const_cast<uint8_t*>(static_cast<const MemBuffer&>(*this).buffer()); }
 
     inline size_t length() const { return size(); }
 
