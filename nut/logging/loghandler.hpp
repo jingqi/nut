@@ -18,7 +18,7 @@
 #   include <syslog.h>
 #endif
 
-#include <nut/util/consolehelper.hpp>
+#include <nut/util/consoleutil.hpp>
 #include <nut/util/time.hpp>
 #include <nut/threading/mutex.hpp>
 #include <nut/threading/guard.hpp>
@@ -91,19 +91,19 @@ public :
             switch(l.getLevel())
             {
             case LL_DEBUG:
-                ConsoleHelper::setTextColor(ConsoleHelper::WHITE, ConsoleHelper::BLUE);
+                ConsoleUtil::setTextColor(ConsoleUtil::WHITE, ConsoleUtil::BLUE);
                 break;
             case LL_INFO:
-                ConsoleHelper::setTextColor(ConsoleHelper::WHITE, ConsoleHelper::GREEN);
+                ConsoleUtil::setTextColor(ConsoleUtil::WHITE, ConsoleUtil::GREEN);
                 break;
             case LL_WARN:
-                ConsoleHelper::setTextColor(ConsoleHelper::WHITE, ConsoleHelper::YELLOW);
+                ConsoleUtil::setTextColor(ConsoleUtil::WHITE, ConsoleUtil::YELLOW);
                 break;
             case LL_ERROR:
-                ConsoleHelper::setTextColor(ConsoleHelper::WHITE, ConsoleHelper::PINK);
+                ConsoleUtil::setTextColor(ConsoleUtil::WHITE, ConsoleUtil::PINK);
                 break;
             case LL_FATAL:
-                ConsoleHelper::setTextColor(ConsoleHelper::WHITE, ConsoleHelper::RED);
+                ConsoleUtil::setTextColor(ConsoleUtil::WHITE, ConsoleUtil::RED);
                 break;
             default:
                 break;
@@ -113,7 +113,7 @@ public :
         std::cout << logLevelToStr(l.getLevel());
 
         if (m_colored)
-            ConsoleHelper::setTextColor();
+            ConsoleUtil::setTextColor();
 
         std::cout << " " << l.getSourceLocation().toString() << "  " << l.getMessage() << "\n";
         std::cout.flush();

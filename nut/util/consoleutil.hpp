@@ -18,7 +18,7 @@
 namespace nut
 {
 
-class ConsoleHelper
+class ConsoleUtil
 {
 public :
     enum ConsoleColor

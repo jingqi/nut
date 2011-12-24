@@ -77,7 +77,7 @@ public:
             for (std::vector<TestCaseFailureException>::iterator i = m_failures.begin(); i != m_failures.end(); ++i)
             {
                 m_ostream << i->getDescription() << std::endl <<
-                    i->getFile() << " " << i->getLine() << std::endl;
+                    i->getFile() << " " << i->getLine() << std::endl << std::endl;
             }
         }
 

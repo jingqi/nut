@@ -214,7 +214,7 @@ inline void multiply(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
         uint8_t carry = 0;
         const uint16_t mult1 = a[i];
         if (mult1 == 0)
-            return;
+            continue;
 
         for (register size_t j = 0; i + j < N; ++j)
         {

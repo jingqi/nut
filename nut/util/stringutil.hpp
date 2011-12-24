@@ -15,6 +15,8 @@
 #include <string>
 #include <vector>
 
+#include <nut/platform/platform.hpp>
+
 namespace nut
 {
 
@@ -31,9 +33,10 @@ inline std::string toString(char c)
 
 inline std::string toString(long i)
 {
-    char buf[30];
-    memset(buf,0,30);
-    sprintf(buf,"%ld",i);
+    const int BUF_SIZE = 30;
+    char buf[BUF_SIZE];
+    ::memset(buf, 0, BUF_SIZE);
+    ::ltoa(i, buf, 10);
     return buf;
 }
 
@@ -51,30 +54,34 @@ inline std::string toString(bool b)
 
 inline std::string toString(double d)
 {
-    char buf[30];
-    memset(buf,0,30);
-    sprintf(buf,"%lf",d);
+    const int BUF_SIZE = 30;
+    char buf[BUF_SIZE];
+    ::memset(buf, 0, BUF_SIZE);
+    ::sprintf(buf, "%lf", d);
     return buf;
 }
 
 inline std::string toString(float f)
 {
-    char buf[30];
-    memset(buf,0,30);
-    sprintf(buf,"%f",f);
+    const int BUF_SIZE = 30;
+    char buf[BUF_SIZE];
+    ::memset(buf, 0, BUF_SIZE);
+    ::sprintf(buf, "%f", f);
     return buf;
 }
 
 inline std::string toString(const void *p)
 {
-    char buf[30];
-    memset(buf,0,30);
+    const int BUF_SIZE = 30;
+    char buf[BUF_SIZE];
+    ::memset(buf, 0, BUF_SIZE);
 
-#if defined(WINDOWS)  // windows
-    sprintf(buf,"0x%p",p);  // e.g. 0x002E459F
-#else  // linux
-//    sprintf(buf,"%p",p);    // e.g. 0x2e459f
-    sprintf(buf,"0x%08X",p);  // e.g. 0x002E459F
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+    ::sprintf(buf,"0x%p",p);    // e.g. 0x002E459F
+#elif defined(NUT_PLATFORM_OS_LINUX)
+    ::sprintf(buf,"0x%08X",p);  // e.g. 使用 0x%08X 格式输出 0x002E459F, 如果使用 %p 格式, 则输出为 0x2e459f
+#else
+#   error platform not supported
 #endif
 
     return buf;
@@ -85,6 +92,7 @@ inline std::string toString(void *p)
     return toString((const void*)p);
 }
 
+/** 打印内存块 */
 inline std::string toString(const void *p, size_t align, size_t count)
 {
     assert(NULL != p && 0 != align && 0 != count);
@@ -123,7 +131,7 @@ inline std::string toString(const char *str)
 {
     assert(NULL != str);
     if (NULL == str)
-        return "";
+        return "(null str)";
     return str;
 }
 
@@ -164,17 +172,43 @@ inline std::string toString(const std::vector<T> &v, const std::string &split = 
     return ret;
 }
 
-/** split the string */
-inline std::vector<std::string> split(const std::string &str, const std::string &sstr, bool ignoreEmpty = false)
+/**
+ * 用整个字符串来分割字符串
+ */
+inline std::vector<std::string> str_split(const std::string &str, const std::string &sstr, bool ignoreEmpty = false)
 {
+    assert(sstr.length() > 0);
+
     std::vector<std::string> ret;
-    std::string::size_type begin = 0, end = str.find_first_of(sstr);
-    while (end != std::string::npos)
+    std::string::size_type begin = 0, end = str.find(sstr);
+    while (std::string::npos != end)
     {
         if (!ignoreEmpty || begin != end)
-            ret.push_back(str.substr(begin,end-begin));
+            ret.push_back(str.substr(begin, end - begin));
         begin = end + sstr.length();
-        end = str.find(sstr,begin);
+        end = str.find(sstr, begin);
+    }
+    if (!ignoreEmpty || begin < str.length())
+        ret.push_back(str.substr(begin));
+    return ret;
+}
+
+/**
+ * @param sstr
+ *      该字符串中的每一个字符都是分割字符
+ */
+inline std::vector<std::string> chr_split(const std::string &str, const std::string &sstr, bool ignoreEmpty = false)
+{
+    assert(sstr.length() > 0);
+
+    std::vector<std::string> ret;
+    std::string::size_type begin = 0, end = str.find_first_of(sstr);
+    while (std::string::npos != end)
+    {
+        if (!ignoreEmpty || begin != end)
+            ret.push_back(str.substr(begin, end - begin));
+        begin = end + 1;
+        end = str.find_first_of(sstr, begin);
     }
     if (!ignoreEmpty || begin < str.length())
         ret.push_back(str.substr(begin));
@@ -182,9 +216,9 @@ inline std::vector<std::string> split(const std::string &str, const std::string 
 }
 
 /** split the string */
-inline std::vector<std::string> split(const std::string &str, char c, bool ignoreEmpty = false)
+inline std::vector<std::string> chr_split(const std::string &str, char c, bool ignoreEmpty = false)
 {
-    return split(str, toString(c), ignoreEmpty);
+    return chr_split(str, toString(c), ignoreEmpty);
 }
 
 inline std::string format(const char *fmt, ...)
@@ -197,7 +231,7 @@ inline std::string format(const char *fmt, ...)
     va_list ap;
     while (NULL != buf)
     {
-        va_start(ap,fmt);
+        va_start(ap, fmt);
         int n = vsnprintf(buf, size, fmt, ap);
         va_end(ap);
         if (n > -1 && n < (int)size)
@@ -219,14 +253,31 @@ inline std::string format(const char *fmt, ...)
     return ret;
 }
 
-inline std::string trim(const std::string &str, const std::string &blanks)
+/* 去除首尾空白 */
+inline std::string trim(const std::string& str, const std::string& blanks = " \t\r\n")
 {
-    std::string::size_type begin = str.find_first_not_of(blanks),
+    const std::string::size_type begin = str.find_first_not_of(blanks),
         end = str.find_last_not_of(blanks);
-    if (begin == std::string::npos || end == std::string::npos)
+    if (std::string::npos == begin || std::string::npos == end)
         return std::string();
     else
         return str.substr(begin, end - begin + 1);
+}
+
+/** 去除左边空白 */
+inline std::string ltrim(const std::string& str, const std::string& blanks = " \t\r\n")
+{
+    const std::string::size_type begin = str.find_first_not_of(blanks);
+    return str.substr(begin);
+}
+
+/** 去除右边空白 */
+inline std::string rtrim(const std::string& str, const std::string& blanks = " \t\r\n")
+{
+    const std::string::size_type end = str.find_last_not_of(blanks);
+    if (std::string::npos == end)
+        return std::string();
+    return str.substr(0, end + 1);
 }
 
 }
