@@ -156,6 +156,9 @@
     <ClInclude Include="..\..\..\nut\unittest\streamtestlogger.hpp">
       <Filter>头文件\unittest</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\unittest\consoletestlogger.hpp">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">

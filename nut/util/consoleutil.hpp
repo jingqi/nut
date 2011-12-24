@@ -7,10 +7,12 @@
 #ifndef ___HEADFILE___77946953_2090_4060_9651_10D87F3FB5B6_
 #define ___HEADFILE___77946953_2090_4060_9651_10D87F3FB5B6_
 
+#include <nut/platform/platform.hpp>
+
 #include <assert.h>
 #include <stdio.h>
 #include <string>
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <conio.h>
 #   include <windows.h>
 #endif
@@ -36,7 +38,7 @@ public :
 
     static void setTextColor(ConsoleColor forecolor = DEFAULT, ConsoleColor backcolor = DEFAULT)
     {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         const unsigned fgtable[9] =
         {
             FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE,                         /* 默认 */
@@ -94,7 +96,7 @@ public :
 
     static void setBackGroundColor (ConsoleColor forecolor = DEFAULT, ConsoleColor bkcolor = DEFAULT)
     {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         const char fgtable[9] =
         {
             '7','0','4','2','1','6','D','B','F'
@@ -114,7 +116,7 @@ public :
 
     static void pause ()
     {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         ::getch();
 #else
         ::fflush(stdin);
@@ -126,7 +128,7 @@ public :
     static std::string getPassword ()
     {
         std::string ret;
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         int c = 0;
         do
         {

@@ -9,6 +9,9 @@
 
 #include <assert.h>
 #include <ostream>
+#include <vector>
+
+#include "testlogger.hpp"
 
 namespace nut
 {

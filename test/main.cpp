@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <nut/unittest/unittest.hpp>
-#include <nut/unittest/streamtestlogger.hpp>
+#include <nut/unittest/consoletestlogger.hpp>
 #include <nut/unittest/testrunner.hpp>
 #include <nut/logging/logmanager.hpp>
 
@@ -14,7 +14,7 @@ int main()
 {
     printf("\n%s\n", NUT_PLATFORM_STR);
 
-    StreamTestLogger l(cout);
+    ConsoleTestLogger l;
     TestRunner trunner(l);
     trunner.runAGroup("quiet");
     // trunner.runAFixture("TestGC");
