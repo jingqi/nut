@@ -14,6 +14,7 @@ NUT_FIXTURE(TestStringUtil)
     NUT_CASE(testSplit)
     NUT_CASE(testFormat)
     NUT_CASE(testTrim)
+    NUT_CASE(testStrieq)
     NUT_CASES_END()
 
 
@@ -66,6 +67,14 @@ NUT_FIXTURE(TestStringUtil)
         NUT_TA(trim(" ab\r\t") == "ab");
         NUT_TA(ltrim(" ab\r\t") == "ab\r\t");
         NUT_TA(rtrim(" ab\r\t") == " ab");
+    }
+
+    void testStrieq()
+    {
+        NUT_TA(!strieq("a", "ab"));
+        NUT_TA(!strieq("ac", "ab"));
+        NUT_TA(strieq("ab", "ab"));
+        NUT_TA(strieq("aB", "ab"));
     }
 };
 

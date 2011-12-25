@@ -108,9 +108,6 @@
     <ClInclude Include="..\..\..\nut\logging\logrecord.hpp">
       <Filter>头文件\logging</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\util\configfile.hpp">
-      <Filter>头文件\util</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\util\membuffer.hpp">
       <Filter>头文件\util</Filter>
     </ClInclude>
@@ -158,6 +155,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\nut\unittest\consoletestlogger.hpp">
       <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\propertyfile.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\configfile.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\tuple.hpp">
+      <Filter>头文件\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

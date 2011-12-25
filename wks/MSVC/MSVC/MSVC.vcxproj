@@ -94,10 +94,12 @@
     <ClInclude Include="..\..\..\nut\unittest\testrunner.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\unittest.hpp" />
     <ClInclude Include="..\..\..\nut\util\configfile.hpp" />
+    <ClInclude Include="..\..\..\nut\util\propertyfile.hpp" />
     <ClInclude Include="..\..\..\nut\util\consoleutil.hpp" />
     <ClInclude Include="..\..\..\nut\util\membuffer.hpp" />
     <ClInclude Include="..\..\..\nut\util\stringutil.hpp" />
     <ClInclude Include="..\..\..\nut\util\time.hpp" />
+    <ClInclude Include="..\..\..\nut\util\tuple.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp" />

@@ -280,6 +280,18 @@ inline std::string rtrim(const std::string& str, const std::string& blanks = " \
     return str.substr(0, end + 1);
 }
 
+/** 忽略大小写的字符串比较 */
+inline bool strieq(const std::string& str1, const std::string& str2)
+{
+    if (str1.length() != str2.length())
+        return false;
+    const int len = str1.length();
+    for (register int i = 0; i < len; ++i)
+        if ((str1.at(i) | 0x20) != (str2.at(i) | 0x20))
+            return false;
+    return true;
+}
+
 }
 
 #endif /* head file guarder */

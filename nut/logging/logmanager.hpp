@@ -10,7 +10,7 @@
 #define ___HEADFILE___6FFFC04E_FFB6_47F6_80AA_8FD1AF3B201F_
 
 #include <nut/platform/platform.hpp>
-#include <nut/util/configfile.hpp>
+#include <nut/util/propertyfile.hpp>
 #include <nut/threading/mutex.hpp>
 #include <nut/threading/guard.hpp>
 
@@ -48,15 +48,16 @@ public :
         return nut_get_root_logger()->getLogger(path);
     }
 
-    static void loadConfig(const ConfigFile &config)
+    static void loadConfig(ref<PropertyFile> config)
     {
-        std::vector<std::string> handlers = config.readList("LogHandlers",',');
+        assert(!config.isNull());
+        std::vector<std::string> handlers = config->getList("LogHandlers",',');
         for (std::vector<std::string>::const_iterator it = handlers.begin(), ite = handlers.end();
             it != ite; ++it)
         {
-            std::string strtype = config.readString((*it + "_type").c_str());
-            std::vector<std::string> strpos = config.readList((*it + "_pos").c_str(), ':');
-            std::string strfilter = config.readString((*it + "_filter").c_str());
+            std::string strtype = config->getString((*it + "_type").c_str());
+            std::vector<std::string> strpos = config->getList((*it + "_pos").c_str(), ':');
+            std::string strfilter = config->getString((*it + "_filter").c_str());
 
             ref<LogHandler> handler = LogHandlerFactory::createLogHandler(strtype);
             ref<LogFilter> filter = LogFilterFactory::createLogFilter(strfilter);
@@ -71,7 +72,7 @@ public :
 
     static void loadConfig(const char *configfile)
     {
-        loadConfig(ConfigFile(configfile));
+        loadConfig(gc_new<PropertyFile>(configfile));
     }
 };
 
