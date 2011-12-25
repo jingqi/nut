@@ -88,8 +88,15 @@ class ConfigFile
                 ret->m_space1 = ret->m_name.substr(0, index - 0);
                 ret->m_name.erase(0, index - 0);
                 index = ret->m_name.find_last_not_of(" \t");
-                ret->m_space2 = ret->m_name.substr(index);
-                ret->m_name.erase(index);
+                if (std::string::npos != index)
+                {
+                    ret->m_space2 = ret->m_name.substr(index + 1);
+                    ret->m_name.erase(index + 1);
+                }
+                else
+                {
+                    ret->m_space2.clear();
+                }
             }
             else
             {
