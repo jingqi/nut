@@ -185,5 +185,8 @@
     <ClCompile Include="..\..\..\test\util\test_propertyfile.cpp">
       <Filter>源文件\util</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\test\util\test_configfile.cpp">
+      <Filter>源文件\util</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

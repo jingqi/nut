@@ -42,10 +42,6 @@ class ConfigFile
         std::string m_comment;
         std::vector<ref<Line> > m_lines;
 
-        Sector()
-            : m_space0(0), m_space1(0)
-        {}
-
         static ref<Sector> parseSectorName(const std::string& line)
         {
             const std::string::size_type index1 = line.find_first_of('[');
