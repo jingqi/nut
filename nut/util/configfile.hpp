@@ -213,6 +213,7 @@ public:
             if ((*iter)->m_name == sector)
             {
                 m_sectors.erase(iter);
+                m_dirty = true;
                 return true;
             }
         }
@@ -310,6 +311,7 @@ public:
             if ((*iter)->m_key == key)
             {
                 lines->erase(iter);
+                m_dirty = true;
                 return true;
             }
         }
@@ -434,6 +436,7 @@ public:
             if ((*iter)->m_key == key)
             {
                 (*iter)->m_value = value;
+                m_dirty = true;
                 return;
             }
         }
@@ -441,6 +444,7 @@ public:
         line->m_key = key;
         line->m_value = value;
         lines->push_back(line);
+        m_dirty = true;
     }
 
     void setBool(const char *sector, const char *key, bool value)

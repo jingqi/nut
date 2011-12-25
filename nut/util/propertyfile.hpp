@@ -220,6 +220,7 @@ public:
             if ((*iter)->m_key == key)
             {
                 m_lines.erase(iter);
+                m_dirty = true;
                 return true;
             }
         }
