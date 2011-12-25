@@ -442,6 +442,7 @@ public:
         }
         ref<Line> line = gc_new<Line>();
         line->m_key = key;
+        line->m_equalSign = true;
         line->m_value = value;
         lines->push_back(line);
         m_dirty = true;
