@@ -1,0 +1,8 @@
+readString1=abc
+readString2=abc # comment
+ read String3  = ab c # comment
+ 
+readNum1 = 123
+readNum2 = 123 # com
+
+readList1 = a,b,cd
