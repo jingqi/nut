@@ -195,6 +195,8 @@ public:
         for (std::vector<ref<Line> >::const_iterator iter = m_lines.begin(), end = m_lines.end();
             iter != end; ++iter)
         {
+            if (!(*iter)->m_equalSign)
+                continue;
             ret.push_back((*iter)->m_key);
         }
         return ret;
