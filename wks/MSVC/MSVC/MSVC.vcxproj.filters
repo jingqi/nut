@@ -126,9 +126,6 @@
     <ClInclude Include="..\..\..\nut\memtool\refarg.hpp">
       <Filter>头文件\memtool</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\gc\enref.h">
-      <Filter>头文件\gc</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\gc\gcwrapper.hpp">
       <Filter>头文件\gc</Filter>
     </ClInclude>
@@ -164,6 +161,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\nut\util\tuple.hpp">
       <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\gc\enref.hpp">
+      <Filter>头文件\gc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

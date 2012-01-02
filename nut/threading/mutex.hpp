@@ -56,7 +56,7 @@ public :
 #endif
 
     /**
-     * @brief lock the mutex, which may blocked the thread
+     * lock the mutex, which may blocked the thread
      */
     inline void lock()
     {
@@ -68,7 +68,7 @@ public :
     }
 
     /**
-     * @brief unlock the mutex
+     * unlock the mutex
      */
     inline void unlock()
     {
@@ -81,7 +81,8 @@ public :
 
     /**
      * try lock the mutex
-     * @return true, if lock successed
+     * @return
+     *      true, if lock successed
      */
     inline bool trylock()
     {
@@ -90,20 +91,23 @@ public :
 #else
         int lock_result = pthread_mutex_trylock(&m_mutex);
         /** returned values :
-            0, lock ok
-            EBUSY, The mutex is already locked.
-            EINVAL, Mutex is not an initialized mutex.
-            EFAULT, Mutex is an invalid pointer.
-        */
+         *  0, lock ok
+         *  EBUSY, The mutex is already locked.
+         *  EINVAL, Mutex is not an initialized mutex.
+         *  EFAULT, Mutex is an invalid pointer.
+         */
         return 0 == lock_result;
 #endif
     }
 
     /**
      * try lock the mutex in given time
-     * @param s, The timeout value in seconds
-     * @param ms, The timeout value in milliseconds
-     * @return true, if lock successed
+     * @param s
+     *      The timeout value in seconds
+     * @param ms
+     *      The timeout value in milliseconds
+     * @return
+     *      true, if lock successed
      */
     inline bool timedlock(unsigned s, unsigned ms = 0)
     {
@@ -116,12 +120,12 @@ public :
         abstime.tv_nsec += ((long)ms) * 1000 * 1000;
         int lock_result = pthread_mutex_timedlock(&m_mutex, &abstime);
         /** returned values :
-            0, lock ok
-            EAGAIN, The mutex couldn't be acquired because the maximum number of recursive locks for the mutex has been exceeded.
-            EDEADLK, The current thread already owns the mutex.
-            EINVAL, The mutex was created with the protocol attribute having the value PTHREAD_PRIO_PROTECT and the calling thread's priority is higher than the mutex' current priority ceiling; the process or thread would have blocked, and the abs_timeout parameter specified a nanoseconds field value less than zero or greater than or equal to 1000 million; or the value specified by mutex doesn't refer to an initialized mutex object.
-            ETIMEDOUT, The mutex couldn't be locked before the specified timeout expired
-        */
+         *  0, lock ok
+         *  EAGAIN, The mutex couldn't be acquired because the maximum number of recursive locks for the mutex has been exceeded.
+         *  EDEADLK, The current thread already owns the mutex.
+         *  EINVAL, The mutex was created with the protocol attribute having the value PTHREAD_PRIO_PROTECT and the calling thread's priority is higher than the mutex' current priority ceiling; the process or thread would have blocked, and the abs_timeout parameter specified a nanoseconds field value less than zero or greater than or equal to 1000 million; or the value specified by mutex doesn't refer to an initialized mutex object.
+         *  ETIMEDOUT, The mutex couldn't be locked before the specified timeout expired
+         */
         return 0 == lock_result;
 #endif
     }

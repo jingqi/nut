@@ -111,7 +111,7 @@ protected:
     /** 销毁器 */
     destroyer m_destroyer;
 
-    /** 避免多次销毁的检查器 */
+    /** 检查多次销毁的检查器 */
 #ifndef NDEBUG
     DestroyChecker m_checker;
 #endif

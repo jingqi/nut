@@ -17,18 +17,20 @@ namespace nut
 
 class SourceLocation
 {
+    enum { BUF_SIZE = 25 };
+
     const char *m_path;    // source file path
     int m_line;            // source file line
     const char *m_func;    // source function
-    char m_buf[20];        // source file line string
+    char m_buf[BUF_SIZE];        // source file line string
 
 public :
-    SourceLocation (const char *file, int line, const char *func)
+    SourceLocation(const char *file, int line, const char *func)
         : m_path(file), m_line(line), m_func(func)
     {
         assert(NULL != file && line >= 0 && NULL != func);
         sprintf(m_buf,"%d",line);
-        m_buf[19] = 0;
+        m_buf[BUF_SIZE - 1] = 0;
     }
 
     bool operator== (const SourceLocation& x) const
@@ -43,9 +45,9 @@ public :
         return !(*this == x);
     }
 
-    const char* getFilePath () const { return m_path; }
+    const char* getFilePath() const { return m_path; }
 
-    const char* getFileName () const
+    const char* getFileName() const
     {
         assert(NULL != m_path);
         const char *ret = m_path;
@@ -57,16 +59,16 @@ public :
         return ret;
     }
 
-    int getLineNumber () const { return m_line; }
+    int getLineNumber() const { return m_line; }
 
-    const char* getLineNumberStr () const { return m_buf; }
+    const char* getLineNumberStr() const { return m_buf; }
 
     /**
      * @return this method may return NULL if the souce is not in a function
      */
-    const char* getFunctionName () const { return m_func; }
+    const char* getFunctionName() const { return m_func; }
 
-    std::string toString () const
+    std::string toString() const
     {
         std::string ret = std::string(getFileName()) + ":" + m_buf;
         if (m_func != NULL)

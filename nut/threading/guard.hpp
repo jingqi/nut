@@ -18,9 +18,12 @@ class Guard
 
 public :
     /**
-     * @param lock, a pointer to a lock, NULL will be ignored
-     * @param need_lock, true for lock the lock
-     * @param need_unlock, true for unlock the lock
+     * @param lock
+     *      a pointer to a lock, NULL will be ignored
+     * @param need_lock
+     *      whether need to lock it
+     * @param need_unlock
+     *      whether need to unlock it
      */
     Guard(T *lock, bool need_lock = true, bool need_unlock = true)
         : m_lock(lock), m_needUnlock(need_unlock)

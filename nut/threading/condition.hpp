@@ -7,7 +7,9 @@
 #ifndef ___HEADFILE___B926495D_967A_45A2_8F56_4FFB10F2E34B_
 #define ___HEADFILE___B926495D_967A_45A2_8F56_4FFB10F2E34B_
 
-#if defined(WIN32)
+#include <nut/platform/platform.hpp>
+
+#if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <windows.h>
 #else
 #   include <pthread.h>
@@ -20,7 +22,7 @@ namespace nut
 
 class Condition
 {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
     CONDITION_VARIABLE m_cond;
 #else
     pthread_cond_t m_cond;
@@ -29,7 +31,7 @@ class Condition
 public :
     Condition()
     {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         ::InitializeConditionVariable(&m_cond);
 #else
         pthread_cond_init(&m_cond, NULL);
@@ -38,7 +40,7 @@ public :
 
     ~Condition()
     {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         /* no need to destroy in windows */
 #else
         pthread_cond_destroy(&m_cond);
@@ -47,7 +49,7 @@ public :
 
     bool signal()
     {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         ::WakeConditionVariable(&m_cond);
         return true;
 #else
@@ -57,7 +59,7 @@ public :
 
     bool broadcast()
     {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         ::WakeAllConditionVariable(&m_cond);
         return true;
 #else
@@ -70,7 +72,7 @@ public :
      */
     bool wait(Mutex &mutex)
     {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         return TRUE == ::SleepConditionVariableCS(&m_cond,mutex.innerMutex(), INFINITE);
 #else
         return 0 == pthread_cond_wait(&m_cond, mutex.innerMutex());
@@ -82,7 +84,7 @@ public :
      */
     bool timedwait(Mutex &mutex, unsigned s, unsigned ms = 0)
     {
-#if defined(WIN32)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         DWORD dwMilliseconds = s * 1000 + ms;
         return TRUE == ::SleepConditionVariableCS(&m_cond,mutex.innerMutex(), dwMilliseconds);
 #else

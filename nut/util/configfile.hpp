@@ -251,7 +251,7 @@ public:
                 for (std::vector<ref<Line> >::const_iterator iter2 = lines.begin(), end2 = lines.end();
                     iter2 != end2; ++iter2)
                 {
-                    if (!(*iter)->m_equalSign)
+                    if (!(*iter2)->m_equalSign)
                         continue;
                     ret.push_back((*iter2)->m_key);
                 }
