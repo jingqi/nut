@@ -35,9 +35,8 @@ class Logger
     std::string m_loggerPath;
     Mutex m_mutex;
 
-#ifndef NDEBUG
-    DestroyChecker m_cheker;
-#endif
+    /** 析构检查器 */
+    NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
     Logger(const Logger&);
@@ -50,9 +49,7 @@ private:
 
     void log(const std::string &logPath, const LogRecord &rec) const
     {
-#ifndef NDEBUG
-        m_cheker.checkDestroy();
-#endif
+        NUT_DEBUGGING_ASSERT_ALIVE;
 
         if (!LogFilter::isLogable(logPath, rec, m_filters))
             return;
@@ -68,45 +65,35 @@ private:
 public :
     void addHandler(ref<LogHandler> handler)
     {
-#ifndef NDEBUG
-        m_cheker.checkDestroy();
-#endif
+        NUT_DEBUGGING_ASSERT_ALIVE;
 
         m_handlers.push_back(handler);
     }
 
     void addFilter(ref<LogFilter> filter)
     {
-#ifndef NDEBUG
-        m_cheker.checkDestroy();
-#endif
+        NUT_DEBUGGING_ASSERT_ALIVE;
 
         m_filters.push_back(filter);
     }
 
     void log(const LogRecord &record) const
     {
-#ifndef NDEBUG
-        m_cheker.checkDestroy();
-#endif
+        NUT_DEBUGGING_ASSERT_ALIVE;
 
         log(m_loggerPath, record);
     }
 
     void log(LogLevel level, const SourceLocation &sl, const std::string &msg) const
     {
-#ifndef NDEBUG
-        m_cheker.checkDestroy();
-#endif
+        NUT_DEBUGGING_ASSERT_ALIVE;
 
         log(m_loggerPath, LogRecord(level, sl, msg));
     }
 
     void log(LogLevel level, const SourceLocation &sl, const char *format, ...) const
     {
-#ifndef NDEBUG
-        m_cheker.checkDestroy();
-#endif
+        NUT_DEBUGGING_ASSERT_ALIVE;
 
         assert(NULL != format);
         size_t size = 100;
@@ -141,9 +128,7 @@ public :
 
     weak_ref<Logger> getLogger(const std::string &relativepath)
     {
-#ifndef NDEBUG
-        m_cheker.checkDestroy();
-#endif
+        NUT_DEBUGGING_ASSERT_ALIVE;
 
         Guard<Mutex> g(&m_mutex);
 
@@ -165,18 +150,14 @@ public :
 
     std::string getLoggerPath()
     {
-#ifndef NDEBUG
-        m_cheker.checkDestroy();
-#endif
+        NUT_DEBUGGING_ASSERT_ALIVE;
 
         return m_loggerPath;
     }
 
     std::string getLoggerName()
     {
-#ifndef NDEBUG
-        m_cheker.checkDestroy();
-#endif
+        NUT_DEBUGGING_ASSERT_ALIVE;
 
         return LogPath::getName(m_loggerPath);
     }

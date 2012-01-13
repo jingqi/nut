@@ -37,9 +37,7 @@ protected:
     destroyer m_destroyer;
 
     /** 避免多次销毁的检查器 */
-#ifndef NDEBUG
-    DestroyChecker m_checker;
-#endif
+    NUT_DEBUGGING_DESTROY_CHECKER
 
 public:
     GCWrapper(int c, destroyer d) : T(), m_counter(c), m_destroyer(d) {}
@@ -83,17 +81,13 @@ public:
 
     virtual void add_ref()
     {
-#ifndef NDEBUG
-        m_checker.checkDestroy();
-#endif
+        NUT_DEBUGGING_ASSERT_ALIVE;
         ++m_counter;
     }
 
     virtual void rls_ref()
     {
-#ifndef NDEBUG
-        m_checker.checkDestroy();
-#endif
+        NUT_DEBUGGING_ASSERT_ALIVE;
         if (--m_counter == 0)
             m_destroyer(this);
     }
@@ -112,9 +106,7 @@ protected:
     destroyer m_destroyer;
 
     /** 检查多次销毁的检查器 */
-#ifndef NDEBUG
-    DestroyChecker m_checker;
-#endif
+    NUT_DEBUGGING_DESTROY_CHECKER
 
 public:
     GCWrapper(int c, destroyer d) : T(), m_counter(c), m_destroyer(d) {}
@@ -153,17 +145,13 @@ public:
 
     virtual void add_ref()
     {
-#ifndef NDEBUG
-        m_checker.checkDestroy();
-#endif
+        NUT_DEBUGGING_ASSERT_ALIVE;
         ++m_counter;
     }
 
     virtual void rls_ref()
     {
-#ifndef NDEBUG
-        m_checker.checkDestroy();
-#endif
+        NUT_DEBUGGING_ASSERT_ALIVE;
         if (--m_counter == 0)
             m_destroyer(this);
     }

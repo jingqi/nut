@@ -13,10 +13,14 @@
 namespace nut
 {
 
-#ifndef NDEBUG
 class DestroyChecker
 {
-    enum { CONSTRUCTED = 0x12344321, DESTRUCTED = 0xFEDCCDEF};
+    enum
+    {
+        CONSTRUCTED = 0x12344321,
+        DESTRUCTED = 0xDEADBEEF /* magic dead-beaf */
+    };
+
     int32_t m_tag;
 
 public:
@@ -28,10 +32,19 @@ public:
         m_tag = DESTRUCTED;
     }
 
-    void checkDestroy() const { assert(CONSTRUCTED == m_tag); }
+    inline void assertAlive() const { assert(CONSTRUCTED == m_tag); }
 };
-#endif /* NDEBUG */
 
 }
+
+#ifndef NDEBUG
+/** 析构检查器 */
+#   define NUT_DEBUGGING_DESTROY_CHECKER nut::DestroyChecker __destroy_checker_;
+/** 检查析构 */
+#   define NUT_DEBUGGING_ASSERT_ALIVE __destroy_checker_.assertAlive()
+#else
+#   define NUT_DEBUGGING_DESTROY_CHECKER ((void)0);
+#   define NUT_DEBUGGING_ASSERT_ALIVE ((void)0)
+#endif
 
 #endif /* head file guarder */

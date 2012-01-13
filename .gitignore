@@ -3,7 +3,9 @@
 *.opensdf
 *.sdf
 /wks/MSVC/Debug
+/wks/MSVC/Release
 /wks/MSVC/ipch
 /wks/MSVC/MSVC/Debug
+/wks/MSVC/MSVC/Release
 /tmp
 *.pyc
