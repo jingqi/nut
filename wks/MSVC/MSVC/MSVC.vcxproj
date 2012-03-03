@@ -88,6 +88,9 @@
     <ClInclude Include="..\..\..\nut\threading\condition.hpp" />
     <ClInclude Include="..\..\..\nut\threading\guard.hpp" />
     <ClInclude Include="..\..\..\nut\threading\mutex.hpp" />
+    <ClInclude Include="..\..\..\nut\tree\bstree.hpp" />
+    <ClInclude Include="..\..\..\nut\tree\btree.hpp" />
+    <ClInclude Include="..\..\..\nut\tree\rbtree.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\consoletestlogger.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\streamtestlogger.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\testcasefailureexception.hpp" />

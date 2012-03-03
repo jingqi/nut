@@ -49,6 +49,9 @@
     <Filter Include="源文件\util">
       <UniqueIdentifier>{1a33d577-2005-458f-a87f-0912ca5b567a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\tree">
+      <UniqueIdentifier>{4e5616e5-67b5-46f4-b9a9-745f46d65ac8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -164,6 +167,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\nut\gc\enref.hpp">
       <Filter>头文件\gc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\tree\bstree.hpp">
+      <Filter>头文件\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\tree\btree.hpp">
+      <Filter>头文件\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\tree\rbtree.hpp">
+      <Filter>头文件\tree</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
