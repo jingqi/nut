@@ -31,42 +31,94 @@ public:
     {
         while (NULL != sub_root)
         {
-            if (key < sub_root->key())
-                sub_root = sub_root->left();
-            else if (sub_root->key() < key)
-                sub_root = sub_root->right();
+            if (key < sub_root->getKey())
+                sub_root = sub_root->getLeftChild();
+            else if (sub_root->getKey() < key)
+                sub_root = sub_root->getRightChild();
             else
                 return sub_root;
         }
         return NULL;
     }
 
+    /**
+     * 插入新节点到二叉查找树
+     *
+     * @return 新的根
+     */
     static NODE* insert(NODE *root, NODE *new_node)
     {
         assert(NULL != new_node);
         NODE *parent = NULL;
+        bool insertToLeft = true;
         for (NODE *x = root; NULL != x; )
         {
             parent = x;
-            if (new_node->key() < x->key())
-                x = x->left();
+            if (new_node->getKey() < x->getKey())
+            {
+                x = x->getLeftChild();
+                insertToLeft = true;
+            }
             else
-                x = x->right();
+            {
+                x = x->getRightChild();
+                insertToLeft = false;
+            }
         }
 
-        new_node->parent(parent);
+        new_node->setParent(parent);
         if (NULL == parent)
-            return new_node;
-        else if (new_node->key() < parent->key())
-            parent->left(new_node);
+            root = new_node;
+        else if (insertToLeft)
+            parent->setLeftChild(new_node);
         else
-            parent->right(new_node);
+            parent->setRightChild(new_node);
         return root;
     }
 
-    static NODE* remove(NODE *root, const K& key)
+    /**
+     * 从二叉查找树中删除已有节点
+     */
+    static NODE* remove(NODE *root, NODE *to_be_del)
     {
-        // TODO
+        assert(NULL != to_be_del);
+        NODE *escaper = NULL;
+        if (NULL == to_be_del->getLeftChild() || NULL == to_be_del->getRightChild())
+            escaper = to_be_del;
+        else
+            escaper = successor(to_be_del);
+
+        NODE *sublink = NULL;
+        if (NULL != escaper->getLeftChild())
+            sublink = escaper->getLeftChild();
+        else
+            sublink = escaper->getRightChild();
+        assert(NULL != sublink);
+
+        NODE *sublink_parent = escaper->getParent();
+        if (NULL != sublink)
+            sublink->setParent(sublink_parent);
+
+        if (NULL == sublink_parent)
+            root = sublink;
+        else if (escaper == sublink_parent->getLeftChild())
+            sublink_parent->setLeftChild(sublink);
+        else
+            sublink_parent->setRightChild(sublink);
+
+        if (escaper != to_be_del)
+        {
+            escaper->setParent(to_be_del->getParent());
+            escaper->setLeftChild(to_be_del->getLeftChild());
+            escaper->setRightChild(to_be_del->getRightChild());
+            if (NULL == to_be_del->getParent())
+                root = escaper;
+            else if (to_be_del == to_be_del->getParent()->getLeftChild())
+                x->getParent()->setLeftChild(escaper);
+            else
+                x->getParent()->setRightChild(escaper);
+        }
+        return root;
     }
 
     /**
@@ -75,8 +127,8 @@ public:
     static NODE* minimum(NODE *sub_root)
     {
         assert(NULL != sub_root);
-        while (NULL != sub_root->left())
-            sub_root = sub_root->left();
+        while (NULL != sub_root->getLeftChild())
+            sub_root = sub_root->getLeftChild();
         return sub_root;
     }
     
@@ -86,8 +138,8 @@ public:
     static NODE* maximum(NODE *sub_root)
     {
         assert(NULL != sub_root);
-        while (NULL != sub_root->right())
-            sub_root = sub_root->right();
+        while (NULL != sub_root->getRightChild())
+            sub_root = sub_root->getRightChild();
         return sub_root;
     }
 
@@ -97,13 +149,13 @@ public:
     static NODE* successor(NODE *x)
     {
         assert(NULL != x);
-        if (NULL != x->right())
-            return minimum(x->right());
-        NODE *parent = x->parent();
-        while (NULL != parent && x == parent->right())
+        if (NULL != x->getRightChild())
+            return minimum(x->getRightChild());
+        NODE *parent = x->getParent();
+        while (NULL != parent && x == parent->getRightChild())
         {
             x = parent;
-            parent = x->parent();
+            parent = x->getParent();
         }
         return parent;
     }
@@ -114,13 +166,13 @@ public:
     static NODE* predecessor(NODE *x)
     {
         assert(NULL != x);
-        if (NULL != x->left())
-            return maximum(x->left());
-        NODE *parent = x->parent();
-        while (NULL != parent && x == parent->left())
+        if (NULL != x->getLeftChild())
+            return maximum(x->getLeftChild());
+        NODE *parent = x->getParent();
+        while (NULL != parent && x == parent->getLeftChild())
         {
             x = parent;
-            parent = x->parent();
+            parent = x->getParent();
         }
         return parent;
     }

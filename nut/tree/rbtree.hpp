@@ -86,22 +86,22 @@ public:
         else
             escaper = _tree_successor(x);
 
-        RBTreeNode *sublink = NULL, sublink_parent = NULL;
+        RBTreeNode *sublink = NULL;
         if (NULL != escaper->left)
             sublink = escaper->left;
         else
             sublink = escaper->right;
 
-        sublink_parent = escaper->parent;
+        RBTreeNode *sublink_parent = escaper->parent;
         if (NULL != sublink)
-            sublink->parent = escaper->parent;
+            sublink->parent = sublink_parent;
 
-        if (NULL == escaper->parent)
+        if (NULL == sublink_parent)
             m_root = sublink;
-        else if (escaper == escaper->parent->left)
-            escaper->parent->left = sublink;
+        else if (escaper == sublink_parent->left)
+            sublink_parent->left = sublink;
         else
-            escaper->parent->right = sublink;
+            sublink_parent->right = sublink;
 
         bool red_escaper = escaper->red;
         if (escaper != x)
@@ -109,6 +109,7 @@ public:
             // replace x with escaper
             escaper->left = x->left;
             escaper->right = x->right;
+            escaper->parent = x->parent;
             escaper->red = x->red;
             if (NULL == x->parent)
                 m_root = escaper;

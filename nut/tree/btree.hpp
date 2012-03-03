@@ -39,7 +39,7 @@ public:
             : m_parent_of_sub_root(parent_of_sub_root), m_current(current), m_eof(eof)
         {
             assert( (m_eof && NULL == m_current) ||
-                (m_eof && NULL != m_current && NULL == m_current->right()) ||
+                (m_eof && NULL != m_current && NULL == m_current->getRightChild()) ||
                 (!m_eof && NULL != m_current));
         }
 
@@ -59,19 +59,19 @@ public:
         {
             assert(NULL != m_current);
             assert(!m_eof); // no next
-            if (NULL != m_current->right())
+            if (NULL != m_current->getRightChild())
             {
-                m_current = m_current->right();
-                while (NULL != m_current->left())
-                    m_current = m_current->left();
+                m_current = m_current->getRightChild();
+                while (NULL != m_current->getLeftChild())
+                    m_current = m_current->getLeftChild();
             }
             else
             {
-                NODE *parent = m_current->parent();
-                while (m_parent_of_sub_root != parent && m_current == parent->right())
+                NODE *parent = m_current->getParent();
+                while (m_parent_of_sub_root != parent && m_current == parent->getRightChild())
                 {
                     m_current = parent;
-                    parent = m_current->parent();
+                    parent = m_current->getParent();
                 }
                 if (m_parent_of_sub_root == parent)
                     m_eof = true; // end
@@ -88,17 +88,19 @@ public:
             {
                 m_eof = false;
             }
-            else if (NULL != m_current->left())
+            else if (NULL != m_current->getLeftChild())
             {
-                m_current = m_current->left();
-                while (NULL != m_current->right())
-                    m_current = m_current->right();
-            } else {
-                NODE *parent = m_current->parent();
-                while (m_parent_of_sub_root != parent && m_current = parent->left())
+                m_current = m_current->getLeftChild();
+                while (NULL != m_current->getRightChild())
+                    m_current = m_current->getRightChild();
+            }
+            else
+            {
+                NODE *parent = m_current->getParent();
+                while (m_parent_of_sub_root != parent && m_current = parent->getLeftChild())
                 {
                     m_current = parent;
-                    parent = m_current->parent();
+                    parent = m_current->getParent();
                 }
                 assert(m_parent_of_sub_root != parent); // no pre
                 m_current = parent;
@@ -138,9 +140,9 @@ public:
         if (NULL == sub_root)
             return InorderTraversalIterator(NULL, NULL, true);
 
-        const parent_of_sub_root = sub_root->parent();
-        while (NULL != sub_root->left())
-            sub_root = sub_root->left();
+        const parent_of_sub_root = sub_root->getParent();
+        while (NULL != sub_root->getLeftChild())
+            sub_root = sub_root->getLeftChild();
         return InorderTraversalIterator(parent_of_sub_root, sub_root, false);
     }
 
@@ -150,18 +152,18 @@ public:
         if (NULL == sub_root)
             return InorderTraversalIterator(NULL, NULL, true);
 
-        const parent_of_sub_root = sub_root->parent();
-        while (NULL != sub_root->right())
-            sub_root = sub_root->right();
+        const parent_of_sub_root = sub_root->getParent();
+        while (NULL != sub_root->getRightChild())
+            sub_root = sub_root->getRightChild();
         return InorderTraversalIterator(parent_of_sub_root, sub_root, true);
     }
 
     /**
      * 前序遍历迭代器
      *
-     *        B
+     *        A
      *       / \
-     *      A   C
+     *      B   C
      */
     class PreorderTraversalIterator
     {
@@ -174,7 +176,7 @@ public:
             : m_parent_of_sub_root(parent_of_sub_root), m_current(current), m_eof(eof)
         {
             assert( (m_eof && NULL == m_current) ||
-                (m_eof && NULL != m_current && NULL == m_current->left() && NULL == m_current->right()) ||
+                (m_eof && NULL != m_current && NULL == m_current->getLeftChild() && NULL == m_current->getRightChild()) ||
                 (!m_eof && NULL != m_current) );
         }
 
@@ -194,27 +196,27 @@ public:
         {
             assert(NULL != m_current);
             assert(!m_eof); // no next
-            if (NULL != m_current->left())
+            if (NULL != m_current->getLeftChild())
             {
-                m_current = m_current->left();
+                m_current = m_current->getLeftChild();
             }
-            else if (NULL != m_current->right())
+            else if (NULL != m_current->getRightChild())
             {
-                m_current = m_current->right();
+                m_current = m_current->getRightChild();
             }
             else
             {
-                NODE *parent = m_current->parent();
+                NODE *parent = m_current->getParent();
                 while (m_parent_of_sub_root != parent &&
-                    (m_current == parent->right() || NULL == parent->right()))
+                    (m_current == parent->getRightChild() || NULL == parent->getRightChild()))
                 {
                     m_current = parent;
-                    parent = m_current->parent();
+                    parent = m_current->getParent();
                 }
                 if (m_parent_of_sub_root == parent)
                     m_eof = true; // end
                 else
-                    m_current = parent->right();
+                    m_current = parent->getRightChild();
             }
             return *this;
         }
@@ -228,12 +230,25 @@ public:
             }
             else
             {
-                NODE *parent = m_current->parent();
+                NODE *parent = m_current->getParent();
                 assert(m_parent_of_sub_root != parent); // no pre
-                if (m_current == parent->right() && NULL != parent->left())
-                    m_current = parent->left();
-                else
+                if (m_current == parent->getLeftChild() || NULL == parent->getLeftChild())
+                {
                     m_current = parent;
+                }
+                else
+                {
+                    m_current = parent->getLeftChild();
+                    while (true)
+                    {
+                        if (NULL != m_current->getRightChild())
+                            m_current = m_current->getRightChild();
+                        else if (NULL != m_current->getLeftChild())
+                            m_current = m_current->getLeftChild();
+                        else
+                            break;
+                    }
+                }
             }
             return *this;
         }
@@ -269,21 +284,28 @@ public:
     {
         if (NULL == sub_root)
             return PreorderTraversalIterator(NULL, NULL, true);
-        return PreorderTraversalIterator(sub_root->parent(), sub_root, false);
+        return PreorderTraversalIterator(sub_root->getParent(), sub_root, false);
     }
 
+    /** 前序遍历的终止迭代器 */
     static PreorderTraversalIterator preorder_traversal_end(NODE *sub_root)
     {
         if (NULL == sub_root)
             return PreorderTraversalIterator(NULL, NULL, true);
 
-        const NODE* parent_of_sub_root = sub_root->parent();
-        while (NULL != sub_root->right())
-            sub_root = sub_root->right();
+        const NODE* parent_of_sub_root = sub_root->getParent();
+        while (NULL != sub_root->getRightChild())
+            sub_root = sub_root->getRightChild();
         return PreorderTraversalIterator(parent_of_sub_root, sub_root, true);
     }
 
-    /** 后序遍历迭代器 */
+    /**
+     * 后序遍历迭代器
+     *
+     *        C
+     *       / \
+     *      A   B
+     */
     class PostorderTraversalIterator
     {
         const NODE *m_parent_of_sub_root;
@@ -295,7 +317,7 @@ public:
             : m_parent_of_sub_root(parent_of_sub_root), m_current(current), m_eof(eof)
         {
             assert( (m_eof && NULL == m_current) ||
-                (m_eof && NULL != m_current && m_parent_of_sub_root == m_current->parent()) ||
+                (m_eof && NULL != m_current && m_parent_of_sub_root == m_current->getParent()) ||
                 (!m_eof && NULL != m_current) );
         }
 
@@ -315,19 +337,29 @@ public:
         {
             assert(NULL != m_current);
             assert(!m_eof); // no next
-            NODE *parent = m_current->parent();
-            if (m_parent_of_sub_root != parent)
+            NODE *parent = m_current->getParent();
+            if (m_parent_of_sub_root == parent)
             {
-                m_eof = true;
+                m_eof = true; // end
             }
-            else if (m_current == parent->left() && NULL != parent->right())
+            else if (m_current == parent->getRightChild() || NULL == parent->getRightChild())
             {
-                m_current = parent.right();
+                m_current = parent;
             }
             else
             {
-                m_prent = parent;
+                m_current = parent.getRightChild();
+                while (true)
+                {
+                    if (NULL != m_current->getLeftChild())
+                        m_current = m_current->getLeftChild();
+                    else if (NULL != m_current->getRightChild())
+                        m_current = m_current->getRightChild();
+                    else
+                        break;
+                }
             }
+
             return *this;
         }
 
@@ -338,27 +370,25 @@ public:
             {
                 m_eof = false;
             }
-            else if (NULL != m_current->right())
+            else if (NULL != m_current->getRightChild())
             {
-                m_current = m_current->right();
+                m_current = m_current->getRightChild();
             }
-            else if (NULL != m_current->left())
+            else if (NULL != m_current->getLeftChild())
             {
-                m_current = m_current->left();
+                m_current = m_current->getLeftChild();
             }
             else
             {
-                NODE *parent = m_current->parent();
+                NODE *parent = m_current->getParent();
                 while (m_parent_of_sub_root != parent &&
-                    (m_current == parent->left() || NULL == m_current->left()))
+                    (m_current == parent->getLeftChild() || NULL == m_current->getLeftChild()))
                 {
                     m_current = parent;
-                    parent = m_current->parent();
+                    parent = m_current->getParent();
                 }
-                if (m_parent_of_sub_root == parent)
-                    m_eof = true; // end
-                else
-                    m_current = parent->left();
+                assert(m_parent_of_sub_root != parent); // no pre
+                m_current = parent->getLeftChild();
             }
             return *this;
         }
@@ -389,22 +419,24 @@ public:
         }
     };
 
+    /** 后序遍历的起始迭代器 */
     static PostorderTraversalIterator postorder_traversal_begin(NODE *sub_root)
     {
         if (NULL == sub_root)
             return PostorderTraversalIterator(NULL, NULL, true);
 
-        const NODE* parent_of_sub_root = sub_root->parent();
-        while (NULL != sub_root->left())
-            sub_root = sub_root->left();
+        const NODE* parent_of_sub_root = sub_root->getParent();
+        while (NULL != sub_root->getLeftChild())
+            sub_root = sub_root->getLeftChild();
         return PostorderTraversalIterator(parent_of_sub_root, sub_root, false);
     }
 
+    /** 后序遍历的终止迭代器 */
     static PostorderTraversalIterator postorder_traversal_end(NODE *sub_root)
     {
         if (NULL == sub_root)
             return PostorderTraversalIterator(NULL, NULL, true);
-        return PostorderTraversalIterator(sub_root->parent(), sub_root, true);
+        return PostorderTraversalIterator(sub_root->getParent(), sub_root, true);
     }
 };
 
