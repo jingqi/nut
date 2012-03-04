@@ -213,13 +213,13 @@ private:
 
         NODE& operator*() const
         {
-            assert(NULL != m_current);
+            assert(!m_eof && NULL != m_current);
             return *m_current;
         }
 
         NODE* operator->() const 
         { 
-            assert(NULL != m_current);
+            assert(!m_eof && NULL != m_current);
             return m_current;
         }
 
@@ -378,13 +378,13 @@ private:
 
         NODE& operator*() const
         {
-            assert(NULL != m_current);
+            assert(!m_eof && NULL != m_current);
             return *m_current;
         }
 
         NODE* operator->() const
         {
-            assert(NULL != m_current);
+            assert(!m_eof && NULL != m_current);
             return m_current;
         }
 
@@ -437,7 +437,7 @@ private:
             {
                 NODE *parent = m_current->getParent();
                 while (m_parent_of_sub_root != parent &&
-                    (m_current == parent->getLeftChild() || NULL == m_current->getLeftChild()))
+                    (m_current == parent->getLeftChild() || NULL == parent->getLeftChild()))
                 {
                     m_current = parent;
                     parent = m_current->getParent();
