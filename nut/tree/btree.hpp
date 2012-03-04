@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file -
  * @author jingqi
  * @date 2012-03-02
@@ -9,6 +9,7 @@
 #define ___HEADFILE_BDA2D5F4_E926_4BBB_A415_DE4463C47D1A_
 
 #include <assert.h>
+#include <iterator>
 
 namespace nut
 {
@@ -19,8 +20,7 @@ namespace nut
 template <typename NODE>
 class BTree
 {
-public:
-
+private:
     /**
      * 中序遍历迭代器
      *
@@ -30,12 +30,19 @@ public:
      */
     class InorderTraversalIterator
     {
-        const NODE *m_parent_of_sub_root;
+        const NODE * const m_parent_of_sub_root;
         NODE *m_current;
         bool m_eof;
 
     public:
-        InorderTraversalIterator(NODE *parent_of_sub_root, NODE *current, bool eof = false)
+        typedef std::bidirectional_iterator_tag iterator_category;
+        typedef NODE                            value_type;
+        typedef ptrdiff_t                       difference_type;
+        typedef NODE                            reference;
+        typedef NODE*                           pointer;
+
+    public:
+        InorderTraversalIterator(const NODE *parent_of_sub_root, NODE *current, bool eof = false)
             : m_parent_of_sub_root(parent_of_sub_root), m_current(current), m_eof(eof)
         {
             assert( (m_eof && NULL == m_current) ||
@@ -67,11 +74,11 @@ public:
             }
             else
             {
-                NODE *parent = m_current->getParent();
-                while (m_parent_of_sub_root != parent && m_current == parent->getRightChild())
+                NODE *current = m_current, *parent = m_current->getParent();
+                while (m_parent_of_sub_root != parent && current == parent->getRightChild())
                 {
-                    m_current = parent;
-                    parent = m_current->getParent();
+                    current = parent;
+                    parent = current->getParent();
                 }
                 if (m_parent_of_sub_root == parent)
                     m_eof = true; // end
@@ -97,7 +104,7 @@ public:
             else
             {
                 NODE *parent = m_current->getParent();
-                while (m_parent_of_sub_root != parent && m_current = parent->getLeftChild())
+                while (m_parent_of_sub_root != parent && m_current == parent->getLeftChild())
                 {
                     m_current = parent;
                     parent = m_current->getParent();
@@ -124,8 +131,8 @@ public:
 
         bool operator==(const InorderTraversalIterator& i) const
         {
-            return m_parent_of_sub_root == i->m_parent_of_sub_root &&
-                m_current == i.m_current && m_eof = i.m_eof;
+            return m_parent_of_sub_root == i.m_parent_of_sub_root &&
+                m_current == i.m_current && m_eof == i.m_eof;
         }
 
         bool operator!=(const InorderTraversalIterator& i) const
@@ -134,30 +141,47 @@ public:
         }
     };
 
+public:
+    typedef InorderTraversalIterator inorder_iterator;
+    typedef std::reverse_iterator<inorder_iterator> inorder_reverse_iterator;
+
     /** 中序遍历的起始迭代器 */
-    static InorderTraversalIterator inorder_traversal_begin(NODE *sub_root)
+    static inorder_iterator inorder_traversal_begin(NODE *sub_root)
     {
         if (NULL == sub_root)
-            return InorderTraversalIterator(NULL, NULL, true);
+            return inorder_iterator(NULL, NULL, true);
 
-        const parent_of_sub_root = sub_root->getParent();
+        NODE *parent_of_sub_root = sub_root->getParent();
         while (NULL != sub_root->getLeftChild())
             sub_root = sub_root->getLeftChild();
-        return InorderTraversalIterator(parent_of_sub_root, sub_root, false);
+        return inorder_iterator(parent_of_sub_root, sub_root, false);
     }
 
     /** 中序遍历的终止迭代器 */
-    static InorderTraversalIterator inorder_traversal_end(NODE *sub_root)
+    static inorder_iterator inorder_traversal_end(NODE *sub_root)
     {
         if (NULL == sub_root)
-            return InorderTraversalIterator(NULL, NULL, true);
+            return inorder_iterator(NULL, NULL, true);
 
-        const parent_of_sub_root = sub_root->getParent();
+        NODE *parent_of_sub_root = sub_root->getParent();
         while (NULL != sub_root->getRightChild())
             sub_root = sub_root->getRightChild();
-        return InorderTraversalIterator(parent_of_sub_root, sub_root, true);
+        return inorder_iterator(parent_of_sub_root, sub_root, true);
     }
 
+    /** 逆中序遍历的终止迭代器 */
+    static inorder_reverse_iterator inorder_traversal_rbegin(NODE *sub_root)
+    {
+        return inorder_reverse_iterator(inorder_traversal_end(sub_root));
+    }
+
+    /** 逆中序遍历的终止迭代器 */
+    static inorder_reverse_iterator inorder_traversal_rend(NODE *sub_root)
+    {
+        return inorder_reverse_iterator(inorder_traversal_begin(sub_root));
+    }
+
+private:
     /**
      * 前序遍历迭代器
      *
@@ -167,12 +191,19 @@ public:
      */
     class PreorderTraversalIterator
     {
-        const NODE *m_parent_of_sub_root;
+        const NODE * const m_parent_of_sub_root;
         NODE *m_current;
         bool m_eof;
 
     public:
-        PreorderTraversalIterator(NODE *parent_of_sub_root, NODE *current, bool eof = false)
+        typedef std::bidirectional_iterator_tag iterator_category;
+        typedef NODE                            value_type;
+        typedef ptrdiff_t                       difference_type;
+        typedef NODE                            reference;
+        typedef NODE*                           pointer;
+
+    public:
+        PreorderTraversalIterator(const NODE *parent_of_sub_root, NODE *current, bool eof = false)
             : m_parent_of_sub_root(parent_of_sub_root), m_current(current), m_eof(eof)
         {
             assert( (m_eof && NULL == m_current) ||
@@ -206,12 +237,12 @@ public:
             }
             else
             {
-                NODE *parent = m_current->getParent();
+                NODE *current = m_current, *parent = m_current->getParent();
                 while (m_parent_of_sub_root != parent &&
-                    (m_current == parent->getRightChild() || NULL == parent->getRightChild()))
+                    (current == parent->getRightChild() || NULL == parent->getRightChild()))
                 {
-                    m_current = parent;
-                    parent = m_current->getParent();
+                    current = parent;
+                    parent = current->getParent();
                 }
                 if (m_parent_of_sub_root == parent)
                     m_eof = true; // end
@@ -279,26 +310,43 @@ public:
         }
     };
 
+public:
+    typedef PreorderTraversalIterator preorder_iterator;
+    typedef std::reverse_iterator<preorder_iterator> preorder_reverse_iterator;
+
     /** 前序遍历的起始迭代器 */
-    static PreorderTraversalIterator preorder_traversal_begin(NODE *sub_root)
+    static preorder_iterator preorder_traversal_begin(NODE *sub_root)
     {
         if (NULL == sub_root)
-            return PreorderTraversalIterator(NULL, NULL, true);
-        return PreorderTraversalIterator(sub_root->getParent(), sub_root, false);
+            return preorder_iterator(NULL, NULL, true);
+        return preorder_iterator(sub_root->getParent(), sub_root, false);
     }
 
     /** 前序遍历的终止迭代器 */
-    static PreorderTraversalIterator preorder_traversal_end(NODE *sub_root)
+    static preorder_iterator preorder_traversal_end(NODE *sub_root)
     {
         if (NULL == sub_root)
-            return PreorderTraversalIterator(NULL, NULL, true);
+            return preorder_iterator(NULL, NULL, true);
 
         const NODE* parent_of_sub_root = sub_root->getParent();
         while (NULL != sub_root->getRightChild())
             sub_root = sub_root->getRightChild();
-        return PreorderTraversalIterator(parent_of_sub_root, sub_root, true);
+        return preorder_iterator(parent_of_sub_root, sub_root, true);
     }
 
+    /** 逆前序遍历的终止迭代器 */
+    static preorder_reverse_iterator preorder_traversal_rbegin(NODE *sub_root)
+    {
+        return preorder_reverse_iterator(preorder_traversal_end(sub_root));
+    }
+
+    /** 逆前序遍历的终止迭代器 */
+    static preorder_reverse_iterator preorder_traversal_rend(NODE *sub_root)
+    {
+        return preorder_reverse_iterator(preorder_traversal_begin(sub_root));
+    }
+
+private:
     /**
      * 后序遍历迭代器
      *
@@ -308,12 +356,19 @@ public:
      */
     class PostorderTraversalIterator
     {
-        const NODE *m_parent_of_sub_root;
+        const NODE * const m_parent_of_sub_root;
         NODE *m_current;
         bool m_eof;
 
     public:
-        PostorderTraversalIterator(NODE *parent_of_sub_root, NODE *current, bool eof = false)
+        typedef std::bidirectional_iterator_tag iterator_category;
+        typedef NODE                            value_type;
+        typedef ptrdiff_t                       difference_type;
+        typedef NODE                            reference;
+        typedef NODE*                           pointer;
+
+    public:
+        PostorderTraversalIterator(const NODE *parent_of_sub_root, NODE *current, bool eof = false)
             : m_parent_of_sub_root(parent_of_sub_root), m_current(current), m_eof(eof)
         {
             assert( (m_eof && NULL == m_current) ||
@@ -348,7 +403,7 @@ public:
             }
             else
             {
-                m_current = parent.getRightChild();
+                m_current = parent->getRightChild();
                 while (true)
                 {
                     if (NULL != m_current->getLeftChild())
@@ -419,24 +474,40 @@ public:
         }
     };
 
+public:
+    typedef PostorderTraversalIterator postorder_iterator;
+    typedef std::reverse_iterator<postorder_iterator> postorder_reverse_iterator;
+
     /** 后序遍历的起始迭代器 */
-    static PostorderTraversalIterator postorder_traversal_begin(NODE *sub_root)
+    static postorder_iterator postorder_traversal_begin(NODE *sub_root)
     {
         if (NULL == sub_root)
-            return PostorderTraversalIterator(NULL, NULL, true);
+            return postorder_iterator(NULL, NULL, true);
 
-        const NODE* parent_of_sub_root = sub_root->getParent();
+        NODE* parent_of_sub_root = sub_root->getParent();
         while (NULL != sub_root->getLeftChild())
             sub_root = sub_root->getLeftChild();
-        return PostorderTraversalIterator(parent_of_sub_root, sub_root, false);
+        return postorder_iterator(parent_of_sub_root, sub_root, false);
     }
 
     /** 后序遍历的终止迭代器 */
-    static PostorderTraversalIterator postorder_traversal_end(NODE *sub_root)
+    static postorder_iterator postorder_traversal_end(NODE *sub_root)
     {
         if (NULL == sub_root)
-            return PostorderTraversalIterator(NULL, NULL, true);
-        return PostorderTraversalIterator(sub_root->getParent(), sub_root, true);
+            return postorder_iterator(NULL, NULL, true);
+        return postorder_iterator(sub_root->getParent(), sub_root, true);
+    }
+
+    /** 逆后序遍历的起始迭代器 */
+    static postorder_reverse_iterator postorder_traversal_rbegin(NODE *sub_root)
+    {
+        return postorder_reverse_iterator(postorder_traversal_end(sub_root));
+    }
+
+    /** 逆后序遍历的终止迭代器 */
+    static postorder_reverse_iterator postorder_traversal_rend(NODE *sub_root)
+    {
+        return postorder_reverse_iterator(postorder_traversal_begin(sub_root));
     }
 };
 

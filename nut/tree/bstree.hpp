@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2012-03-02
@@ -14,7 +14,7 @@ namespace nut
 {
 
 /**
- * ¶ş²æ²éÕÒÊ÷
+ * äºŒå‰æŸ¥æ‰¾æ ‘
  */
 template <typename K, typename NODE>
 class BSTree
@@ -22,10 +22,10 @@ class BSTree
 public:
 
     /**
-     * ²éÕÒÊı¾İËùÔÚµÄ½Úµã
+     * æŸ¥æ‰¾æ•°æ®æ‰€åœ¨çš„èŠ‚ç‚¹
      *
      * @return
-     *      Ã»ÓĞÕÒµ½Ôò·µ»Ø NULL
+     *      æ²¡æœ‰æ‰¾åˆ°åˆ™è¿”å› NULL
      */
     static NODE* search(NODE *sub_root, const K& key)
     {
@@ -42,9 +42,9 @@ public:
     }
 
     /**
-     * ²åÈëĞÂ½Úµãµ½¶ş²æ²éÕÒÊ÷
+     * æ’å…¥æ–°èŠ‚ç‚¹åˆ°äºŒå‰æŸ¥æ‰¾æ ‘
      *
-     * @return ĞÂµÄ¸ù
+     * @return æ–°çš„æ ¹
      */
     static NODE* insert(NODE *root, NODE *new_node)
     {
@@ -77,7 +77,7 @@ public:
     }
 
     /**
-     * ´Ó¶ş²æ²éÕÒÊ÷ÖĞÉ¾³ıÒÑÓĞ½Úµã
+     * ä»äºŒå‰æŸ¥æ‰¾æ ‘ä¸­åˆ é™¤å·²æœ‰èŠ‚ç‚¹
      */
     static NODE* remove(NODE *root, NODE *to_be_del)
     {
@@ -93,7 +93,6 @@ public:
             sublink = escaper->getLeftChild();
         else
             sublink = escaper->getRightChild();
-        assert(NULL != sublink);
 
         NODE *sublink_parent = escaper->getParent();
         if (NULL != sublink)
@@ -114,15 +113,15 @@ public:
             if (NULL == to_be_del->getParent())
                 root = escaper;
             else if (to_be_del == to_be_del->getParent()->getLeftChild())
-                x->getParent()->setLeftChild(escaper);
+                to_be_del->getParent()->setLeftChild(escaper);
             else
-                x->getParent()->setRightChild(escaper);
+                to_be_del->getParent()->setRightChild(escaper);
         }
         return root;
     }
 
     /**
-     * ÕÒµ½×îĞ¡Êı¾İËùÔÚµÄ½Úµã
+     * æ‰¾åˆ°æœ€å°æ•°æ®æ‰€åœ¨çš„èŠ‚ç‚¹
      */
     static NODE* minimum(NODE *sub_root)
     {
@@ -133,7 +132,7 @@ public:
     }
     
     /**
-     * ÕÒµ½×î´óÊı¾İËùÔÚµÄ½Úµã
+     * æ‰¾åˆ°æœ€å¤§æ•°æ®æ‰€åœ¨çš„èŠ‚ç‚¹
      */
     static NODE* maximum(NODE *sub_root)
     {
@@ -144,7 +143,7 @@ public:
     }
 
     /**
-     * °´ÕÕÊı¾İ´óĞ¡Ë³ĞòÕÒµ½ÏÂÒ»¸ö½áµã
+     * æŒ‰ç…§æ•°æ®å¤§å°é¡ºåºæ‰¾åˆ°ä¸‹ä¸€ä¸ªç»“ç‚¹
      */
     static NODE* successor(NODE *x)
     {
@@ -161,7 +160,7 @@ public:
     }
     
     /**
-     * °´ÕÕÊı¾İ´óĞ¡Ë³ĞòÕÒµ½ÉÏÒ»¸ö½áµã
+     * æŒ‰ç…§æ•°æ®å¤§å°é¡ºåºæ‰¾åˆ°ä¸Šä¸€ä¸ªç»“ç‚¹
      */
     static NODE* predecessor(NODE *x)
     {

@@ -112,6 +112,7 @@
     <ClCompile Include="..\..\..\test\logging\test_logging.cpp" />
     <ClCompile Include="..\..\..\test\main.cpp" />
     <ClCompile Include="..\..\..\test\numeric\test_signedinteger.cpp" />
+    <ClCompile Include="..\..\..\test\tree\test_bst.cpp" />
     <ClCompile Include="..\..\..\test\util\test_configfile.cpp" />
     <ClCompile Include="..\..\..\test\util\test_propertyfile.cpp" />
     <ClCompile Include="..\..\..\test\util\test_stringutil.cpp" />

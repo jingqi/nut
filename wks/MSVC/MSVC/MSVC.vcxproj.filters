@@ -52,6 +52,9 @@
     <Filter Include="头文件\tree">
       <UniqueIdentifier>{4e5616e5-67b5-46f4-b9a9-745f46d65ac8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\tree">
+      <UniqueIdentifier>{b9138b1b-bfe5-43df-85ea-8f7c73a3c432}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -199,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\util\test_configfile.cpp">
       <Filter>源文件\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\tree\test_bst.cpp">
+      <Filter>源文件\tree</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
