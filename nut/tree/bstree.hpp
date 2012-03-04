@@ -78,6 +78,8 @@ public:
 
     /**
      * 从二叉查找树中删除已有节点
+     *
+     * @return 新的根
      */
     static NODE* remove(NODE *root, NODE *to_be_del)
     {

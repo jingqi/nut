@@ -10,161 +10,115 @@
 
 #include <assert.h>
 
+#include "bstree.hpp"
+
 namespace nut
 {
 
 /**
  * Red-Black-Tree
  */
-template <typename T>
+template <typename K, typename NODE>
 class RBTree
 {
-protected:
-    struct RBTreeNode
-    {
-        T data;
-        RBTreeNode *parent;
-        RBTreeNode *left;
-        RBTreeNode *right;
-        bool red;
-
-        RBTreeNode(const T& v)
-            : data(v), parent(NULL), left(NULL), right(NULL), red(true)
-        {}
-    };
-
-    RBTreeNode *m_root;
-    size_t m_size;
-
 public:
-    RBTree()
-        : m_root(NULL), m_size(0)
-    {}
-
-    size_t size() const { return m_size; }
-
     /**
-     * insert a tree node into RBTree and fixup balance
+     * 插入新节点到二叉查找树
+     *
+     * @return 新的根
      */
-    void rb_insert(RBTreeNode *x)
+    static NODE* insert(NODE *root, NODE *new_node)
     {
-        assert(NULL != x);
-        RBTreeNode *parent = NULL, *current = m_root;
-        while (NULL != current)
+        assert(NULL != new_node);
+        NODE *parent = NULL;
+        bool insertToLeft = true;
+        for (NODE *current = root; NULL != current; )
         {
             parent = current;
-            if (x->data < current->data)
-                current = current->left;
+            if (new_node->getKey() < current->getKey())
+            {
+                current = current->getLeftChild();
+                insertToLeft = true;
+            }
             else
-                current = current->right;
+            {
+                current = current->getRightChild();
+                insertToLeft = false;
+            }
         }
 
-        x->parent = parent;
+        new_node->setParent(parent);
         if (NULL == parent)
-            m_root = x;
-        else if (x->data < parent->data)
-            parent->left = x;
+            root = new_node;
+        else if (insertToLeft)
+            parent->setLeftChild(new_node);
         else
-            parent->right = x;
+            parent->setRightChild(new_node);
 
-        x->left = NULL;
-        x->right = NULL;
-        x->red = true;
-        _rb_insert_fixup(x);
-        ++m_size;
+        new_node->setRed(true);
+        root = _rb_insert_fixup(root, new_node);
+
+        return root;
     }
 
     /**
-     * remove a tree node from RBTree and fixup balance
+     * 从红黑树中删除已有节点
+     *
+     * @return 新的根
      */
-    void rb_delete(RBTreeNode *x)
+    static NODE* remove(NODE *root, NODE *to_be_del)
     {
-        assert(NULL != x);
-        RBTreeNode *escaper = NULL;
-        if (NULL == x->left || NULL == x->right)
-            escaper = x;
+        assert(NULL != to_be_del);
+        NODE *escaper = NULL;
+        if (NULL == to_be_del->getLeftChild() || NULL == to_be_del->getRightChild())
+            escaper = to_be_del;
         else
-            escaper = _tree_successor(x);
+            escaper = BSTree<T,NODE>::successor(to_be_del);
 
-        RBTreeNode *sublink = NULL;
-        if (NULL != escaper->left)
-            sublink = escaper->left;
+        NODE *sublink = NULL;
+        if (NULL != escaper->getLeftChild())
+            sublink = escaper->getLeftChild();
         else
-            sublink = escaper->right;
+            sublink = escaper->getRightChild();
 
-        RBTreeNode *sublink_parent = escaper->parent;
+        NODE *sublink_parent = escaper->getParent();
         if (NULL != sublink)
-            sublink->parent = sublink_parent;
+            sublink->setParent(sublink_parent);
 
         if (NULL == sublink_parent)
-            m_root = sublink;
-        else if (escaper == sublink_parent->left)
-            sublink_parent->left = sublink;
+            root = sublink;
+        else if (escaper == sublink_parent->getLeftChild())
+            sublink_parent->setLeftChild(sublink);
         else
-            sublink_parent->right = sublink;
+            sublink_parent->setRightChild(sublink);
 
-        bool red_escaper = escaper->red;
-        if (escaper != x)
+        const bool red_escaper = escaper->isRed();
+        if (escaper != to_be_del)
         {
             // replace x with escaper
-            escaper->left = x->left;
-            escaper->right = x->right;
-            escaper->parent = x->parent;
-            escaper->red = x->red;
-            if (NULL == x->parent)
-                m_root = escaper;
-            else if (x == x->parent->left)
-                x->parent->left = escaper;
+            escaper->setLeft(to_be_del->getLeftChild());
+            escaper->setRight(to_be_del->getRightChild());
+            escaper->setParent(to_be_del->getParent());
+            escaper->setRed(x->isRed);
+            if (NULL == x->getParent())
+                root = escaper;
+            else if (x == x->getParent()->getLeftChild())
+                x->getParent()->setLeftChild(escaper);
             else
-                x->parent->right = escaper;
+                x->getParent()->setRightChild(escaper);
         }
 
         if (!red_escaper)
-            _rb_delete_fixup(sublink, sublink_parent);
-        --m_size;
+            root = _rb_delete_fixup(root, sublink, sublink_parent);
+
+        return root;
     }
 
 private:
     /**
-     * get minimum node of binary search tree x
+     * 左旋转
      */
-    static inline RBTreeNode* _tree_minimum(RBTreeNode *x)
-    {
-        assert(NULL != x);
-        while (NULL != x->left)
-            x = x->left;
-        return x;
-    }
-
-    /**
-     * get maximum node of binary search tree x
-     */
-    static inline RBTreeNode* _tree_maximum(RBTreeNode *x)
-    {
-        assert(NULL != x);
-        while (NULL != x->right)
-            x = x->right;
-        return x;
-    }
-
-    /**
-     * get next node in value sequence
-     */
-    static RBTreeNode* _tree_successor(RBTreeNode *x)
-    {
-        assert(NULL != x);
-        if (NULL != x->right)
-            return _tree_minimum(x->right);
-        RBTreeNode *parent = x->parent;
-        while (NULL != parent && x == parent->right)
-        {
-            x = parent;
-            parent = x->parent;
-        }
-        return parent;
-    }
-
-    void _left_rotate(RBTreeNode *x)
+    static NODE* _left_rotate(NODE *root, NODE *x)
     {
         //
         //       |                           |
@@ -174,22 +128,27 @@ private:
         //        / \                     / \
         //
         assert(NULL != x);
-        RBTreeNode *y = x->right;
-        x->right = y->left;
-        if (NULL != y->left)
-            y->left->parent = x;
-        y->parent = x->parent;
-        if (NULL == x->parent)
-            m_root = y;
-        else if (x == x->parent->left)
-            x->parent->left = y;
+        NODE *y = x->getRightChild();
+        x->setRightChild(y->getLeftChild());
+        if (NULL != y->getLeftChild())
+            y->getLeftChild()->setParent(x);
+        y->setParent(x->getParent());
+        if (NULL == x->getParent())
+            root = y;
+        else if (x == x->getParent()->getLeftChild())
+            x->getParent()->setLeftChild(y);
         else
-            x->parent->right = y;
-        y->left = x;
-        x->parent = y;
+            x->getParent()->setRightChild(y);
+        y->setLeftChild(x);
+        x->setParent(y);
+
+        return root;
     }
 
-    void _right_rotate(RBTreeNode *x)
+    /**
+     * 右旋转
+     */
+    static NODE* _right_rotate(NODE *root, NODE *x)
     {
         //
         //        |                           |
@@ -199,32 +158,34 @@ private:
         //     / \                             / \
         //
         assert(NULL != x);
-        RBTreeNode *y = x.left;
-        x->left = y->right;
-        if (NULL != y->right)
-            y->right->parent = x;
-        y->parent = x->parent;
-        if (NULL == x->parent)
-            m_root = y;
-        else if (x == x->parent->left)
-            x->parent->left = y;
+        NODE *y = x->getLeftChild();
+        x->setLeftChild(y->getRightChild());
+        if (NULL != y->getRightChild())
+            y->getRightChild()->setParent(x);
+        y->setParent(x->getParent());
+        if (NULL == x->getParent())
+            root = y;
+        else if (x == x->getParent()->getLeftChild())
+            x->getParent()->setLeftChild(y);
         else
-            x->parent->right = y;
-        y->right = x;
-        x->parent = y;
+            x->getParent()->setRightChild(y);
+        y->setRightChild(x);
+        x->setParent(y);
+
+        return root;
     }
 
-    void _rb_insert_fixup(RBTreeNode *x)
+    static NODE* _rb_insert_fixup(NODE *root, NODE *x)
     {
-        assert(NULL != x && x->red);
-        while (NULL != x->parent && x->parent->red)
+        assert(NULL != x && x->isRed());
+        while (NULL != x->getParent() && x->getParent()->isRed())
         {
-            RBTreeNode *parent = x->parent;
-            assert(NULL != parent->parent); // because the root is always black
-            if (parent == parent->parent->left)
+            NODE *parent = x->getParent();
+            assert(NULL != parent->getParent()); // because the root is always black
+            if (parent == parent->getParent()->getLeftChild())
             {
-                RBTreeNode *uncle = parent->parent->right;
-                if (NULL != uncle && uncle->red)
+                NODE *uncle = parent->getParent()->getRightChild();
+                if (NULL != uncle && uncle->isRed())
                 {
                     // case 1:
                     //
@@ -235,14 +196,14 @@ private:
                     //      \                   \
                     //      [R]                  R
                     //
-                    parent->red = false;
-                    uncle->red = false;
-                    parent->parent->red = true;
-                    x = parent->parent;
+                    parent->setRed(false);
+                    uncle->setRed(false);
+                    parent->getParent()->setRed(true);
+                    x = parent->getParent();
                 }
                 else
                 {
-                    if (x == parent->right)
+                    if (x == parent->getRightChild())
                     {
                         // case 2:
                         //
@@ -254,7 +215,7 @@ private:
                         //     [R]            [R]
                         //
                         x = parent;
-                        _left_rotate(x);
+                        root = _left_rotate(root, x);
                     }
 
                     // case 3:
@@ -266,15 +227,15 @@ private:
                     //      /                               \
                     //     [R]                               B
                     //
-                    parent->red = false;
-                    parent->parent->red = true;
-                    _right_rotate(parent->parent);
+                    parent->setRed(false);
+                    parent->getParent()->setRed(true);
+                    root = _right_rotate(root, parent->getParent());
                 }
             }
             else
             {
-                RBTreeNode *uncle = parent->parent->left;
-                if (NULL != uncle && uncle->red)
+                NODE *uncle = parent->getParent()->getLeftChild();
+                if (NULL != uncle && uncle->isRed())
                 {
                     // case 1:
                     //
@@ -285,14 +246,14 @@ private:
                     //        /                   /
                     //      [R]                  R
                     //
-                    parent->red = false;
-                    uncle->red = false;
-                    parent->parent->red = true;
-                    x = parent->parent;
+                    parent->setRed(false);
+                    uncle->setRed(false);
+                    parent->getParent()->setRed(true);
+                    x = parent->getParent();
                 }
                 else
                 {
-                    if (x == parent->left)
+                    if (x == parent->getLeftChild())
                     {
                         // case 2:
                         //
@@ -304,7 +265,7 @@ private:
                         //     [R]                    [R]
                         //
                         x = parent;
-                        _right_rotate(x);
+                        root = _right_rotate(root, x);
                     }
 
                     // case 3:
@@ -316,27 +277,28 @@ private:
                     //            \                   /
                     //            [R]                B
                     //
-                    parent->red = false;
-                    parent->parent->red = true;
-                    _left_rotate(parent->parent);
+                    parent->setRed(false);
+                    parent->getParent()->setRed(true);
+                    root = _left_rotate(root, parent->getParent());
                 }
             }
         }
-        m_root->red = false; // root is always black
+        root->setRed(false); // root is always black
+        return root;
     }
 
-    void _rb_delete_fixup(RBTreeNode *sublink, RBTreeNode *sublink_parent)
+    static NODE* _rb_delete_fixup(NODE *root, NODE *sublink, NODE *sublink_parent)
     {
-        while (sublink != m_root && (NULL == sublink || !sublink->red))
+        while (sublink != root && (NULL == sublink || !sublink->isRed()))
         {
             assert(NULL != sublink_parent); // because sublink is not root
-            if (sublink == sublink_parent->left)
+            if (sublink == sublink_parent->getLeftChild())
             {
-                RBTreeNode *brother = sublink_parent->right;
+                NODE *brother = sublink_parent->getRightChild();
                 assert(NULL != brother); // because before deleting, there must be a right branch here to ensure 
                 // the same black height with left branch
 
-                if (brother->red)
+                if (brother->isRed())
                 {
                     // case 1:
                     //
@@ -347,13 +309,13 @@ private:
                     //      / \                           / \
                     //     B   B                        [B]  B
                     //
-                    brother->red = false;
-                    sublink_parent->red = true;
-                    _left_rotate(sublink_parent);
-                    brother = sublink_parent->right;
+                    brother->setRed(false);
+                    sublink_parent->setRed(true);
+                    root = _left_rotate(root, sublink_parent);
+                    brother = sublink_parent->getRight();
                 }
 
-                if ((NULL == brother->left || !brother->left->red) && (NULL == brother->right || !brother->right->red))
+                if ((NULL == brother->getLeftChild() || !brother->getLeftChild()->isRed()) && (NULL == brother->getRightChild() || !brother->getRightChild()->isRed()))
                 {
                     // case 2:
                     //
@@ -364,13 +326,13 @@ private:
                     //     / \                    / \
                     //    B   B                  B   B
                     //
-                    brother->red = true;
+                    brother->setRed(true);
                     sublink = sublink_parent;
-                    sublink_parent = sublink->parent;
+                    sublink_parent = sublink->getParent();
                 }
                 else
                 {
-                    if (NULL == brother->right || !brother->right->red)
+                    if (NULL == brother->getRightChild() || !brother->getRightChild()->isRed())
                     {
                         // case 3:
                         //
@@ -383,10 +345,10 @@ private:
                         //                                          \
                         //                                           B
                         //
-                        brother->left->red = false;
-                        brother->red = true;
-                        _right_rotate(brother);
-                        brother = sublink_parent->right;
+                        brother->getLeftChild()->setRed(false);
+                        brother->setRed(true);
+                        root = _right_rotate(root, brother);
+                        brother = sublink_parent->getRightChild();
                     }
 
                     // case 4:
@@ -398,21 +360,21 @@ private:
                     //      / \                               / \
                     //     ?   R                             B   ?
                     //
-                    brother->red = sublink_parent->red;
-                    sublink_parent->red = false;
-                    brother->right->red = false;
-                    _left_rotate(sublink_parent);
-                    sublink = m_root; // end the loop
+                    brother->setRed(sublink_parent->isRed());
+                    sublink_parent->setRed(false);
+                    brother->getRightChild()->setRed(false);
+                    root = _left_rotate(root, sublink_parent);
+                    sublink = root; // end the loop
                     sublink_parent = NULL;
                }
             }
             else
             {
-                RBTreeNode *brother = sublink_parent->left;
+                NODE *brother = sublink_parent->getLeftChild();
                 assert(NULL != brother); // because before deleting, there must be a left branch here to ensure 
                 // the same black height with right branch
 
-                if (brother->red)
+                if (brother->isRed())
                 {
                     // case 1:
                     //
@@ -423,13 +385,13 @@ private:
                     //  / \                                   / \
                     // B   B                                 B  [B]
                     //
-                    brother->red = false;
-                    sublink_parent->red = true;
-                    _right_rotate(sublink_parent);
-                    brother = sublink_parent->left;
+                    brother->setRed(false);
+                    sublink_parent->setRed(true);
+                    root = _right_rotate(root, sublink_parent);
+                    brother = sublink_parent->getLeftChild();
                 }
 
-                if ((NULL == brother->left || !brother->left->red) && (NULL == brother->right || !brother->right->red))
+                if ((NULL == brother->getLeftChild() || !brother->getLeftChild()->isRed()) && (NULL == brother->getRightChild() || !brother->getRightChild()->isRed()))
                 {
                     // case 2:
                     //
@@ -440,13 +402,13 @@ private:
                     //  / \                    / \
                     // B   B                  B   B
                     //
-                    brother->red = true;
+                    brother->setRed(true);
                     sublink = sublink_parent;
-                    sublink_parent = sublink->parent;
+                    sublink_parent = sublink->getParent();
                 }
                 else
                 {
-                    if (NULL == brother->left || !brother->left->red)
+                    if (NULL == brother->getLeftChild() || !brother->getLeftChild()->isRed())
                     {
                         // case 3:
                         //
@@ -459,10 +421,10 @@ private:
                         //                                /
                         //                               B
                         //
-                        brother->right->red = false;
-                        brother->red = true;
-                        _left_rotate(brother);
-                        brother = sublink_parent->left;
+                        brother->getRightChild()->setRed(false);
+                        brother->setRed(true);
+                        root = _left_rotate(root, brother);
+                        brother = sublink_parent->getLeftChild();
                     }
 
                     // case 4:
@@ -474,16 +436,17 @@ private:
                     //  / \                                       / \
                     // R   ?                                     ?   B
                     //
-                    brother->red = sublink_parent->red;
-                    sublink_parent->red = false;
-                    brother->left->red = false;
-                    _right_rotate(sublink_parent);
-                    sublink = m_root; // end the loop
+                    brother->setRed(sublink_parent->isRed());
+                    sublink_parent->setRed(false);
+                    brother->getLeftChild()->setRed(false);
+                    root = _right_rotate(root, sublink_parent);
+                    sublink = root; // end the loop
                     sublink_parent = NULL;
                 }
             }
         }
-        sublink->red = false;
+        sublink->setRed(false);
+        return root;
     }
 };
 
