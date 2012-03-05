@@ -49,6 +49,9 @@
     <Filter Include="源文件\util">
       <UniqueIdentifier>{1a33d577-2005-458f-a87f-0912ca5b567a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\concurrent">
+      <UniqueIdentifier>{153ceb08-b54a-4553-be0d-104bc31ff229}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -164,6 +167,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\nut\gc\enref.hpp">
       <Filter>头文件\gc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\concurrent\atomic.hpp">
+      <Filter>头文件\concurrent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\concurrent\concurrentqueue.hpp">
+      <Filter>头文件\concurrent</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

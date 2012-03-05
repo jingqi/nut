@@ -65,6 +65,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\nut\concurrent\atomic.hpp" />
+    <ClInclude Include="..\..\..\nut\concurrent\concurrentqueue.hpp" />
     <ClInclude Include="..\..\..\nut\debugging\destroychecker.hpp" />
     <ClInclude Include="..\..\..\nut\debugging\exception.hpp" />
     <ClInclude Include="..\..\..\nut\debugging\sourcelocation.hpp" />
