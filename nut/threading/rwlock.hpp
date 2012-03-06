@@ -22,6 +22,8 @@ namespace nut
 class RwLock
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+    /** windows下的共享锁是在Windows Vista/Server 2008极其以后的版本中提供的 */
+    SRWLOCK m_rwlock;
 #else
     pthread_rwlock_t m_rwlock;
 #endif
@@ -30,6 +32,7 @@ public:
     RwLock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+        ::InitializeSRWLock(&m_rwlock);
 #else
         int rs = pthread_rwlock_init(&m_rwlock, NULL);
         assert(0 == rs);
@@ -39,6 +42,7 @@ public:
     ~RwLock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+        /** SRWLock 无需删除或销毁，系统自动执行清理工作 */
 #else
         int rs = pthread_rwlock_destroy(&m_rwlock);
 #endif
@@ -47,6 +51,7 @@ public:
     inline void lockRead()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+        ::AcquireSRWLockShared(&m_rwlock);
 #else
         int rs = pthread_rwlock_rdlock(&m_rwlock);
         assert(0 == rs);
@@ -56,6 +61,7 @@ public:
     inline bool trylockRead()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+        return FALSE != TryAcquireSRWLockShared(&m_rwlock);
 #else
         return 0 == pthread_rwlock_tryrdlock(&m_rwlock);
 #endif
@@ -64,6 +70,7 @@ public:
     inline void lockWrite()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+        ::AcquireSRWLockExclusive(&m_rwlock);
 #else
         int rs = pthread_rwlock_wrlock(&m_rwlock);
         assert(0 == rs);
@@ -73,14 +80,26 @@ public:
     inline bool trylockWrite()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+        return FALSE != ::TryAcquireSRWLockExclusive(&m_rwlock);
 #else
         return 0 == pthread_rwlock_trywrlock(&m_rwlock);
 #endif
     }
 
-    inline void unlock()
+    inline void unlockRead()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+        ::ReleaseSRWLockShared(&m_rwlock);
+#else
+        int rs = pthread_rwlock_unlock(&m_rwlock);
+        assert(0 == rs);
+#endif
+    }
+
+    inline void unlockWrite()
+    {
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        ::ReleaseSRWLockExclusive(&m_rwlock);
 #else
         int rs = pthread_rwlock_unlock(&m_rwlock);
         assert(0 == rs);
