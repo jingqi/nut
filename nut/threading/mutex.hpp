@@ -15,6 +15,7 @@
 #  include <pthread.h>
 #endif
 
+#define USE_CRITICAL_SECTION
 
 namespace nut
 {
@@ -22,8 +23,9 @@ namespace nut
 class Mutex
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-    /** windows下临界区只能线程间同步，不能进程间同步。
-        windows下互斥量能够线程间、进程间(需要命名)同步 */
+    /** windows下:
+        临界区只能线程间同步，不能进程间同步； 互斥量能够线程间、进程间(需要命名)同步。
+        临界区可以喝信号量配合；互斥量不行。 */
 #   if defined(USE_CRITICAL_SECTION)
     CRITICAL_SECTION m_criticalSection; // 使用临界区
 #   else

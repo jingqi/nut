@@ -15,7 +15,7 @@
 #   include <pthread.h>
 #endif
 
-#include "mutex.h"
+#include "mutex.hpp"
 
 namespace nut
 {
@@ -73,7 +73,11 @@ public :
     bool wait(Mutex &mutex)
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+#   if defined(USE_CRITICAL_SECTION)
         return TRUE == ::SleepConditionVariableCS(&m_cond,mutex.innerMutex(), INFINITE);
+#   else
+#        error not supported!
+#   endif
 #else
         return 0 == pthread_cond_wait(&m_cond, mutex.innerMutex());
 #endif
@@ -85,8 +89,12 @@ public :
     bool timedwait(Mutex &mutex, unsigned s, unsigned ms = 0)
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+#   if defined(USE_CRITICAL_SECTION)
         DWORD dwMilliseconds = s * 1000 + ms;
-        return TRUE == ::SleepConditionVariableCS(&m_cond,mutex.innerMutex(), dwMilliseconds);
+        return TRUE == ::SleepConditionVariableCS(&m_cond, mutex.innerMutex(), dwMilliseconds);
+#   else
+#        error not supported!
+#   endif
 #else
         struct timespec abstime;
         clock_gettime(CLOCK_REALTIME, &abstime);
