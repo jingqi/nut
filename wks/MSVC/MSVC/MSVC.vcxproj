@@ -88,6 +88,10 @@
     <ClInclude Include="..\..\..\nut\threading\condition.hpp" />
     <ClInclude Include="..\..\..\nut\threading\guard.hpp" />
     <ClInclude Include="..\..\..\nut\threading\mutex.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\rwlock.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\selfish.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\spinlock.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\threading.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\consoletestlogger.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\streamtestlogger.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\testcasefailureexception.hpp" />

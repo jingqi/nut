@@ -165,6 +165,18 @@
     <ClInclude Include="..\..\..\nut\gc\enref.hpp">
       <Filter>头文件\gc</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\rwlock.hpp">
+      <Filter>头文件\threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\selfish.hpp">
+      <Filter>头文件\threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\spinlock.hpp">
+      <Filter>头文件\threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\threading.hpp">
+      <Filter>头文件\threading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
