@@ -25,39 +25,17 @@ namespace nut
 template <typename T>
 class ConcurentQueue
 {
-#if defined(NUT_PLATFORM_BITS_64)
-    typedef uint128_t cas_type;
-#elif defined(NUT_PLATFORM_BITS_32)
-    typedef uint64_t cas_type;
-#elif defined(NUT_PLATFORM_BITS_16)
-    typedef uint32_t cas_type;
-#endif
-
-    template <typename U>
-    union CASPtr
-    {
-        typedef struct
-        {
-            U *ptr;
-            unsigned int tag;
-        } uptr;
-        cas_type cas;
-
-        CASPtr(U *p = NULL, unsigned int t = 0) : ptr(p), tag(t) {}
-    };
-    static_assert(sizeof(CASPtr::uptr) == sizeof(cas_type));
-
     struct Node
     {
         T data;
-        CASPtr<Node> pre;
-        CASPtr<Node> next;
+        TagedPtr<Node> pre;
+        TagedPtr<Node> next;
 
-        Node(T& v) : data(v) {}
+        Node(const T& v) : data(v) {}
     };
     
-    CASPtr<Node> volatile m_head;
-    CASPtr<Node> volatile m_tail;
+    TagedPtr<Node> volatile m_head;
+    TagedPtr<Node> volatile m_tail;
 
 public:
     ConcurentQueue()
@@ -72,6 +50,7 @@ public:
     ~ConcurentQueue()
     {
         clear();
+        assert(NULL != m_head.ptr);
         ::free(m_head.ptr);
         m_head.cas = 0;
         m_end.cas = 0;
@@ -83,14 +62,14 @@ public:
         while (true)
         {
             // read the tail
-            CASPtr oldTail(m_tail);
+            TagedPtr oldTail(m_tail);
 
             // set node's next ptr
             new_node->next.ptr = oldTail.ptr;
             new_node->next.tag = oldTail.tag + 1;
 
             // try CAS the tail
-            CASPtr newNode(new_node, oldTail.tag + 1);
+            TagedPtr newNode(new_node, oldTail.tag + 1);
             if (atomic_cas(&(m_tail.cas), oldTail.cas, newNode.cas)) {
                 oldTail.ptr->pre.ptr = new_node;
                 oldTail.ptr->pre.tag = oldTail.tag;

@@ -65,8 +65,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\nut\concurrent\atomic.hpp" />
-    <ClInclude Include="..\..\..\nut\concurrent\concurrentqueue.hpp" />
     <ClInclude Include="..\..\..\nut\debugging\destroychecker.hpp" />
     <ClInclude Include="..\..\..\nut\debugging\exception.hpp" />
     <ClInclude Include="..\..\..\nut\debugging\sourcelocation.hpp" />
@@ -75,6 +73,9 @@
     <ClInclude Include="..\..\..\nut\gc\gcwrapper.hpp" />
     <ClInclude Include="..\..\..\nut\gc\ref.hpp" />
     <ClInclude Include="..\..\..\nut\gc\refcounter.hpp" />
+    <ClInclude Include="..\..\..\nut\lockfree\atomic.hpp" />
+    <ClInclude Include="..\..\..\nut\lockfree\concurrentqueue.hpp" />
+    <ClInclude Include="..\..\..\nut\lockfree\concurrentstack.hpp" />
     <ClInclude Include="..\..\..\nut\logging\logfilter.hpp" />
     <ClInclude Include="..\..\..\nut\logging\loghandler.hpp" />
     <ClInclude Include="..\..\..\nut\logging\loglevel.hpp" />

@@ -12,7 +12,7 @@
 #define ___HEADFILE_CBAE01C9_CF0C_4836_A4DC_E7B0934DEA6E_
 
 #include <stdint.h>
-#include <nut/platform/platforms.hpp>
+#include <nut/platform/platform.hpp>
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <windows.h>
@@ -135,8 +135,6 @@ inline uint16_t atomic_add(uint16_t volatile *addend, uint16_t value)
 {
 #if defined(NUT_PLATFORM_OS_LINUX)
     return __sync_fetch_and_add(addend, value);
-#elif defined(NUT_PLATFORM_OS_WINDOWS)
-    return InterlockedExchangeAdd16(addend, value);
 #else
     uint16_t old;
     do {
@@ -145,6 +143,38 @@ inline uint16_t atomic_add(uint16_t volatile *addend, uint16_t value)
     return old;
 #endif
 }
+
+/**
+ * 为了避免ABA问题而引入的带标签的指针
+ */
+template <typename T>
+union TagedPtr
+{
+    /** 双指针对应的CAS操作数类型 */
+#if defined(NUT_PLATFORM_BITS_64)
+    typedef uint128_t cas_type;
+#elif defined(NUT_PLATFORM_BITS_32)
+    typedef uint64_t cas_type;
+#elif defined(NUT_PLATFORM_BITS_16)
+    typedef uint32_t cas_type;
+#else
+#   error platform not supported!
+#endif
+
+    typedef struct
+    {
+        T *ptr;
+        unsigned int tag;
+    } tagedptr;
+
+    cas_type cas;
+
+    TagedPtr(T *p = NULL, unsigned int t = 0)
+        : ptr(p), tag(t)
+    {}
+};
+static_assert(sizeof(TagedPtr<void>::tagedptr) == sizeof(TagedPtr<void>::cas_type), "size not match");
+static_assert(sizeof(TagedPtr<void>) == sizeof(TagedPtr<void>::cas_type), "size not match");
 
 }
 
