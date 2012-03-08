@@ -73,7 +73,7 @@ typedef ExceptionA Exception;
 }
 
 #if !defined(THROW_ON_FALSE)
-#   define THROW_ON_FALSE(e,c) do { if (!(e)) throw debugging::ExceptionA((c), (#e), __FILE__, __LINE__, __FUNCTION__); } while (false)
+#   define THROW_ON_FALSE(e,c) do { if (!(e)) throw nut::ExceptionA((c), (#e), __FILE__, __LINE__, __FUNCTION__); } while (false)
 #endif
 
 #endif /* head file guarder */

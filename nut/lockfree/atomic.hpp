@@ -21,6 +21,18 @@
 namespace nut
 {
 
+inline bool atomic_cas(void * volatile *dest, void *oldval, void *newval)
+{
+#if defined(NUT_PLATFORM_OS_LINUX)
+    return __sync_val_compare_and_swap(dest, oldval, newval);
+#elif defined(NUT_PLATFORM_OS_WINDOWS)
+    static_assert(sizeof(long) == sizeof(uint32_t));
+    return InterlockedCompareExchangePointer(dest, newval, oldval) == oldval;
+#else
+#   error platform not supported!
+#endif
+}
+
 #if defined(NUT_PLATFORM_BITS_64)
 
 inline bool atomic_cas(uint128_t volatile *dest, uint64_t oldval, uint64_t newval)
