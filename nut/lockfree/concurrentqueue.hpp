@@ -72,9 +72,55 @@ public:
         enqueue(np);
     }
 
+    /** 线程安全的出队 */
+    bool dequeue(T *p)
+    {
+        assert(NULL != p);
+        while(true)
+        {
+            //  获取旧值
+            TagedPtr<Node> oldHead = m_head, oldTail = m_tail;
+            TagedPtr<Node> firstNodePrev = oldHead.ptr->prev;
+
+            if (oldHead == m_head)
+            {
+                if (oldTail == oldHead)
+                    return false;
+
+                if (firstNodePrev.tag != oldHead.tag)
+                {
+                    fixList(oldTail, oldHead);
+                    continue;
+                }
+
+                // 中间操作
+                T ret = (firstNodePrev.ptr)->data;
+
+                // 构建新值
+                TagedPtr<Node> newHead(firstNodePrev.ptr, oldHead.tag + 1);
+
+                // 尝试CAS操作
+                if (atomic_cas(&(m_head.cas), oldHead.cas, newHead.cas))
+                {
+                    // TODO 有问题，没有析构data域
+                    m_nodeAlloc.deallocate(oldHead.ptr, 1);
+                    *p = ret;
+                    return true;
+                }
+            }
+        }
+    }
+    
+    void clear()
+    {
+        // TODO
+    }
+
+private:
     /** 线程安全的入队 */
     void enqueue(Node *new_node)
     {
+        assert(NULL != new_node);
         while (true)
         {
             /**
@@ -108,53 +154,6 @@ public:
         }
     }
 
-    /** 线程安全的出队 */
-    T dequeue()
-    {
-        while(true)
-        {
-            //  获取旧值
-            TagedPtr<Node> oldHead = m_head, oldTail = m_tail;
-            TagedPtr<Node> firstNodePrev = oldHead.ptr->prev;
-
-            if (oldHead == m_head)
-            {
-                if (oldTail != oldHead)
-                {
-                    if (firstNodePrev.tag != oldHead.tag)
-                    {
-                        fixList(oldTail, oldHead);
-                        continue;
-                    }
-
-                    // 中间操作
-                    T val = (firstNodePrev.ptr)->data;
-
-                    // 构建新值
-                    TagedPtr<Node> newHead(firstNodePrev.ptr, oldHead.tag + 1);
-
-                    // 尝试CAS操作
-                    if (atomic_cas(&(m_head.cas), oldHead.cas, newHead.cas))
-                    {
-                        m_nodeAlloc.deallocate(oldHead.ptr, 1);
-                        return val;
-                    }
-                }
-                else
-                {
-                    throw ExceptionA(-1, "dequeue with empty queue", NUT_SOURCE_LOCATION_ARGS)
-                }
-            }
-        }
-    }
-
-    /** 非线程安全 */
-    void clear()
-    {
-        // TODO
-    }
-
-private:
     void fixList(const TagedPtr<Node>& tail, const TagedPtr<Node>& head)
     {
         TagedPtr<Node> curNode = tail;
