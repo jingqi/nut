@@ -162,7 +162,7 @@ inline uint16_t atomic_add(uint16_t volatile *addend, uint16_t value)
 template <typename T>
 union TagedPtr
 {
-    /** 双指针对应的CAS操作数类型 */
+    /** 整体对应的CAS操作数类型 */
 #if defined(NUT_PLATFORM_BITS_64)
     typedef uint128_t cas_type;
 #elif defined(NUT_PLATFORM_BITS_32)
@@ -181,9 +181,13 @@ union TagedPtr
 
     cas_type cas;
 
-    TagedPtr(T *p = NULL, unsigned int t = 0)
-        : ptr(p), tag(t)
-    {}
+    TagedPtr() : cas(0) {}
+
+    TagedPtr(T *p, unsigned int t) : ptr(p), tag(t) {}
+
+    inline bool operator==(const TagedPtr<T>& x) const { return cas == x.cas; }
+
+    inline bool operator!=(const TagedPtr<T>& x) const { return cas != x.cas; }
 };
 static_assert(sizeof(TagedPtr<void>::tagedptr) == sizeof(TagedPtr<void>::cas_type), "size not match");
 static_assert(sizeof(TagedPtr<void>) == sizeof(TagedPtr<void>::cas_type), "size not match");
