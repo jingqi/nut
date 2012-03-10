@@ -57,7 +57,7 @@ class ConcurrentQueue
     };
     
     /** 尝试出队的结果 */
-    enum DequeueAttempResult
+    enum DequeueAttemptResult
     {
         DEQUEUE_SUCCESS /* 成功 */,
         CONCURRENT_FAILURE /* 并发失败 */,
@@ -75,7 +75,7 @@ class ConcurrentQueue
     TagedPtr<Node> volatile m_head;
     TagedPtr<Node> volatile m_tail;
 
-    /** 用于消隐的数组 */
+    /** 用于消隐的碰撞数组 */
     TagedPtr<Node> volatile m_collisions[COLLISIONS_ARRAY_SIZE];
 
 public:
@@ -224,7 +224,7 @@ public:
     {
         while (true)
         {
-            const DequeueAttempResult rs = dequeueAttemp(p);
+            const DequeueAttemptResult rs = dequeueAttempt(p);
             if (rs == EMPTY_QUEUE_FAILURE)
                 return false;
             else if (rs == DEQUEUE_SUCCESS || tryToEliminateDequeue(p))
@@ -251,7 +251,7 @@ private:
     }
 
     /** 尝试出队 */
-    DequeueAttempResult dequeueAttemp(T *p)
+    DequeueAttemptResult dequeueAttempt(T *p)
     {
         uint8_t tmp[sizeof(T)];
 
@@ -304,8 +304,8 @@ private:
             return false;
 
         // 添加到碰撞数组
-        const TagedPtr<Node> newColnodeToAdd(new_node, oldCollisionToAdd.tag + 1);
-        if (!atomic_cas(&(m_collisions[i].cas), oldCollisionToAdd.cas, newColnodeToAdd.cas))
+        const TagedPtr<Node> newCollisionToAdd(new_node, oldCollisionToAdd.tag + 1);
+        if (!atomic_cas(&(m_collisions[i].cas), oldCollisionToAdd.cas, newCollisionToAdd.cas))
             return false;
 
         // 等待一段时间
@@ -330,8 +330,6 @@ private:
 
     bool tryToEliminateDequeue(T *p)
     {
-        uint8_t tmp[sizeof(T)];
-
         const unsigned int seen_head = m_head.tag;
         const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
         const TagedPtr<Node> oldCollision(m_collisions[i].cas);
@@ -342,15 +340,13 @@ private:
         if (oldCollision.ptr->seg > seen_head)
             return false;
 
-        ::memcpy(&(oldCollision.ptr->data), tmp, sizeof(T));
-
         const TagedPtr<Node> newCollision(reinterpret_cast<Node*>(COLLISION_DONE_PTR), oldCollision.tag);
         if (atomic_cas(&(m_collisions[i].cas), oldCollision.cas, newCollision.cas))
         {
-            m_nodeAlloc.deallocate(oldCollision.ptr, 1);
             if (NULL != p)
-                *p = *reinterpret_cast<T*>(tmp);
-            m_dataAlloc.destroy(reinterpret_cast<T*>(tmp));
+                *p = oldCollision.ptr->data;
+            m_dataAlloc.destroy(&(oldCollision.ptr->data));
+            m_nodeAlloc.deallocate(oldCollision.ptr, 1);
             return true;
         }
         return false;

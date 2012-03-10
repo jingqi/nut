@@ -206,5 +206,8 @@
     <ClCompile Include="..\..\..\test\lockfree\test_queue.cpp">
       <Filter>源文件\lockfree</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\test\lockfree\test_stack.cpp">
+      <Filter>源文件\lockfree</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
