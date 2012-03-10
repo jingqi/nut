@@ -55,6 +55,12 @@
     <Filter Include="源文件\lockfree">
       <UniqueIdentifier>{da107126-ee62-4630-9287-133e59035a06}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\tree">
+      <UniqueIdentifier>{21610087-e93f-4c0f-a665-b9e0b03475be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\tree">
+      <UniqueIdentifier>{5c5978fe-2f89-4d55-977f-65b48321c995}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -192,6 +198,15 @@
     <ClInclude Include="..\..\..\nut\threading\threading.hpp">
       <Filter>头文件\threading</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\tree\bstree.hpp">
+      <Filter>头文件\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\tree\btree.hpp">
+      <Filter>头文件\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\tree\rbtree.hpp">
+      <Filter>头文件\tree</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -220,6 +235,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\lockfree\test_stack.cpp">
       <Filter>源文件\lockfree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\tree\test_bst.cpp">
+      <Filter>源文件\tree</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
