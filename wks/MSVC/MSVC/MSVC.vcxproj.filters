@@ -52,6 +52,9 @@
     <Filter Include="头文件\lockfree">
       <UniqueIdentifier>{153ceb08-b54a-4553-be0d-104bc31ff229}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\lockfree">
+      <UniqueIdentifier>{da107126-ee62-4630-9287-133e59035a06}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -199,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\util\test_configfile.cpp">
       <Filter>源文件\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\lockfree\test_queue.cpp">
+      <Filter>源文件\lockfree</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

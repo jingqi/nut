@@ -21,21 +21,31 @@
 namespace nut
 {
 
+/**
+ * 指针CAS操作
+ *
+ * @return 操作成功则返回true
+ */
 inline bool atomic_cas(void * volatile *dest, void *oldval, void *newval)
 {
 #if defined(NUT_PLATFORM_OS_LINUX)
     return __sync_val_compare_and_swap(dest, oldval, newval);
 #elif defined(NUT_PLATFORM_OS_WINDOWS)
-    static_assert(sizeof(long) == sizeof(uint32_t));
     return InterlockedCompareExchangePointer(dest, newval, oldval) == oldval;
 #else
 #   error platform not supported!
 #endif
 }
 
+
 #if defined(NUT_PLATFORM_BITS_64)
 
-inline bool atomic_cas(uint128_t volatile *dest, uint64_t oldval, uint64_t newval)
+/**
+ * 128位CAS操作
+ *
+ * @return 操作成功则返回true
+ */
+inline bool atomic_cas(int128_t volatile *dest, int128_t oldval, int128_t newval)
 {
 #if defined(NUT_PLATFORM_OS_LINUX)
     return __sync_val_compare_and_swap(dest, oldval, newval);
@@ -46,6 +56,17 @@ inline bool atomic_cas(uint128_t volatile *dest, uint64_t oldval, uint64_t newva
 #endif
 }
 
+
+/**
+ * 128位CAS操作
+ *
+ * @return 操作成功则返回true
+ */
+inline bool atomic_cas(uint128_t volatile *dest, uint128_t oldval, uint128_t newval)
+{
+    return atomic_cas(reinterpret_cast<int128_t volatile*>(dest), static_cast<int128_t>(oldval), static_cast<int128_t>(newval));
+}
+
 #endif
 
 /**
@@ -53,7 +74,7 @@ inline bool atomic_cas(uint128_t volatile *dest, uint64_t oldval, uint64_t newva
  *
  * @return 操作成功则返回true
  */
-inline bool atomic_cas(uint64_t volatile *dest, uint64_t oldval, uint64_t newval)
+inline bool atomic_cas(int64_t volatile *dest, int64_t oldval, int64_t newval)
 {
 #if defined(NUT_PLATFORM_OS_LINUX)
     return __sync_val_compare_and_swap(dest, oldval, newval);
@@ -63,6 +84,18 @@ inline bool atomic_cas(uint64_t volatile *dest, uint64_t oldval, uint64_t newval
 #   error platform not supported!
 #endif
 }
+
+
+/**
+ * 64位CAS操作
+ *
+ * @return 操作成功则返回true
+ */
+inline bool atomic_cas(uint64_t volatile *dest, uint64_t oldval, uint64_t newval)
+{
+    return atomic_cas(reinterpret_cast<int64_t volatile*>(dest), static_cast<int64_t>(oldval), static_cast<int64_t>(newval));
+}
+
 
 /**
  * 32位CAS操作
@@ -74,19 +107,30 @@ inline bool atomic_cas(uint32_t volatile *dest, uint32_t oldval, uint32_t newval
 #if defined(NUT_PLATFORM_OS_LINUX)
     return __sync_val_compare_and_swap(dest, oldval, newval);
 #elif defined(NUT_PLATFORM_OS_WINDOWS)
-    static_assert(sizeof(long) == sizeof(uint32_t));
     return InterlockedCompareExchange(dest, newval, oldval) == oldval;
 #else
 #   error platform not supported!
 #endif
 }
 
+
+/**
+ * 32位CAS操作
+ *
+ * @return 操作成功则返回true
+ */
+inline bool atomic_cas(int32_t volatile *dest, int32_t oldval, int32_t newval)
+{
+    return atomic_cas(reinterpret_cast<uint32_t volatile*>(dest), static_cast<uint32_t>(oldval), static_cast<uint32_t>(newval));
+}
+
+
 /**
  * 16位CAS操作
  *
  * @return 操作成功则返回true
  */
-inline bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newval)
+inline bool atomic_cas(int16_t volatile *dest, int16_t oldval, int16_t newval)
 {
 #if defined(NUT_PLATFORM_OS_LINUX)
     return __sync_val_compare_and_swap(dest, oldval, newval);
@@ -97,6 +141,73 @@ inline bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newval
 #endif
 }
 
+
+/**
+ * 16位CAS操作
+ *
+ * @return 操作成功则返回true
+ */
+inline bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newval)
+{
+    return atomic_cas(reinterpret_cast<int16_t volatile*>(dest), static_cast<int16_t>(oldval), static_cast<int16_t>(newval));
+}
+
+
+#if defined(NUT_PLATFORM_BITS_64)
+
+/**
+ * 128位原子加
+ *
+ * @return 返回旧值
+ */
+inline int128_t atomic_add(int128_t volatile *addend, int128_t value)
+{
+#   if defined(NUT_PLATFORM_OS_LINUX)
+    return __sync_fetch_and_add(addend, value);
+#   elif defined(NUT_PLATFORM_OS_WINDOWS)
+    return InterlockedExchangeAdd128(addend, value);
+#   else
+    int128_t old;
+    do {
+        old = *addend;
+    } while (!(atomic_cas(addend, old, old + value)));
+    return old;
+#   endif
+}
+
+/**
+ * 128位原子加
+ *
+ * @return 返回旧值
+ */
+inline uint128_t atomic_add(uint128_t volatile *addend, uint128_t value)
+{
+    return static_cast<uint128_t>(atomic_add(reinterpret_cast<int128_t volatile*>(addend), static_cast<int128_t>(value)));
+}
+
+#endif
+
+
+/**
+ * 64位原子加
+ *
+ * @return 返回旧值
+ */
+inline int64_t atomic_add(int64_t volatile *addend, int64_t value)
+{
+#if defined(NUT_PLATFORM_OS_LINUX)
+    return __sync_fetch_and_add(addend, value);
+#elif defined(NUT_PLATFORM_OS_WINDOWS)
+    return InterlockedExchangeAdd64(addend, value);
+#else
+    int64_t old;
+    do {
+        old = *addend;
+    } while (!atomic_cas(addend, old, old + value));
+    return old;
+#endif
+}
+
 /**
  * 64位原子加
  *
@@ -104,17 +215,7 @@ inline bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newval
  */
 inline uint64_t atomic_add(uint64_t volatile *addend, uint64_t value)
 {
-#if defined(NUT_PLATFORM_OS_LINUX)
-    return __sync_fetch_and_add(addend, value);
-#elif defined(NUT_PLATFORM_OS_WINDOWS)
-    return InterlockedExchangeAdd64(addend, value);
-#else
-    uint64_t old;
-    do {
-        old = *addend;
-    } while (!atomic_cas(addend, old, old + value));
-    return old;
-#endif
+    return static_cast<uint64_t>(atomic_add(reinterpret_cast<int64_t volatile*>(addend), static_cast<int64_t>(value)));
 }
 
 /**
@@ -127,7 +228,6 @@ inline uint32_t atomic_add(uint32_t volatile *addend, uint32_t value)
 #if defined(NUT_PLATFORM_OS_LINUX)
     return __sync_fetch_and_add(addend, value);
 #elif defined(NUT_PLATFORM_OS_WINDOWS)
-    static_assert(sizeof(long) == sizeof(uint32_t));
     return InterlockedExchangeAdd(addend, value);
 #else
     uint32_t old;
@@ -139,22 +239,42 @@ inline uint32_t atomic_add(uint32_t volatile *addend, uint32_t value)
 }
 
 /**
+ * 32位原子加
+ *
+ * @return 返回旧值
+ */
+ inline int32_t atomic_add(int32_t volatile *addend, int32_t value)
+ {
+    return static_cast<int32_t>(atomic_add(reinterpret_cast<uint32_t volatile*>(addend), static_cast<uint32_t>(value)));
+ }
+
+/**
  * 16位原子加
  *
  * @return 返回旧值
  */
-inline uint16_t atomic_add(uint16_t volatile *addend, uint16_t value)
+inline int16_t atomic_add(int16_t volatile *addend, int16_t value)
 {
 #if defined(NUT_PLATFORM_OS_LINUX)
     return __sync_fetch_and_add(addend, value);
 #else
-    uint16_t old;
+    int16_t old;
     do {
         old = *addend;
     } while (!atomic_cas(addend, old, old + value));
     return old;
 #endif
 }
+
+/**
+ * 128位原子加
+ *
+ * @return 返回旧值
+ */
+ inline uint16_t atomic_add(uint16_t volatile *addend, uint16_t value)
+ {
+    return static_cast<uint16_t>(atomic_add(reinterpret_cast<int16_t volatile*>(addend), static_cast<int16_t>(value)));
+ }
 
 /**
  * 为了避免ABA问题而引入的带标签的指针
@@ -173,11 +293,11 @@ union TagedPtr
 #   error platform not supported!
 #endif
 
-    typedef struct
+    struct
     {
         T *ptr;
         unsigned int tag;
-    } tagedptr;
+    };
 
     cas_type cas;
 
@@ -185,11 +305,9 @@ union TagedPtr
 
     TagedPtr(T *p, unsigned int t) : ptr(p), tag(t) {}
 
-    inline bool operator==(const TagedPtr<T>& x) const { return cas == x.cas; }
-
-    inline bool operator!=(const TagedPtr<T>& x) const { return cas != x.cas; }
+    TagedPtr(cas_type c) : cas(c) {}
 };
-static_assert(sizeof(TagedPtr<void>::tagedptr) == sizeof(TagedPtr<void>::cas_type), "size not match");
+static_assert(sizeof(void*) + sizeof(unsigned int) == sizeof(TagedPtr<void>::cas_type), "size not match");
 static_assert(sizeof(TagedPtr<void>) == sizeof(TagedPtr<void>::cas_type), "size not match");
 
 }

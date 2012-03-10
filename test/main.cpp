@@ -16,7 +16,7 @@ int main()
 
     ConsoleTestLogger l;
     TestRunner trunner(l);
-    trunner.runAGroup("quiet");
+    trunner.runAGroup("lockfree");
     // trunner.runAFixture("TestGC");
     // trunner.runACase("TestGC", "testSmoking");
 
