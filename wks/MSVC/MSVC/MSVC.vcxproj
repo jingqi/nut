@@ -73,6 +73,9 @@
     <ClInclude Include="..\..\..\nut\gc\gcwrapper.hpp" />
     <ClInclude Include="..\..\..\nut\gc\ref.hpp" />
     <ClInclude Include="..\..\..\nut\gc\refcounter.hpp" />
+    <ClInclude Include="..\..\..\nut\lockfree\atomic.hpp" />
+    <ClInclude Include="..\..\..\nut\lockfree\concurrentqueue.hpp" />
+    <ClInclude Include="..\..\..\nut\lockfree\concurrentstack.hpp" />
     <ClInclude Include="..\..\..\nut\logging\logfilter.hpp" />
     <ClInclude Include="..\..\..\nut\logging\loghandler.hpp" />
     <ClInclude Include="..\..\..\nut\logging\loglevel.hpp" />
@@ -110,6 +113,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp" />
+    <ClCompile Include="..\..\..\test\lockfree\test_queue.cpp" />
+    <ClCompile Include="..\..\..\test\lockfree\test_stack.cpp" />
     <ClCompile Include="..\..\..\test\logging\test_logging.cpp" />
     <ClCompile Include="..\..\..\test\main.cpp" />
     <ClCompile Include="..\..\..\test\numeric\test_signedinteger.cpp" />
