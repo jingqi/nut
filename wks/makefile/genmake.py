@@ -42,7 +42,8 @@ def main():
     # 虚拟目标
     ret += 'all: $(TARGET)\n\n'
     ret += 'clean:\n' '\trm -rf $(OBJ_DIR)\n\n'
-    ret += 'rebuild: clean, all\n\n'
+    ret += 'rebuild: clean all\n\n'
+    ret += 'run: $(TARGET)\n' '\t$(TARGET)\n\n'
 
     # 所有的依赖关系
     all_srcs, all_objs = [], []
