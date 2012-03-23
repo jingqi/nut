@@ -85,6 +85,7 @@
     <ClInclude Include="..\..\..\nut\logging\logmanager.hpp" />
     <ClInclude Include="..\..\..\nut\logging\logrecord.hpp" />
     <ClInclude Include="..\..\..\nut\memtool\refarg.hpp" />
+    <ClInclude Include="..\..\..\nut\mem\scoped_alloc.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\byte_array_number.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\SignedInteger.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\unsignedinteger.hpp" />

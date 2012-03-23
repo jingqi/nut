@@ -61,6 +61,9 @@
     <Filter Include="源文件\tree">
       <UniqueIdentifier>{5c5978fe-2f89-4d55-977f-65b48321c995}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\mem">
+      <UniqueIdentifier>{41823d73-0684-4920-bcbd-24eeade40542}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -206,6 +209,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\nut\tree\rbtree.hpp">
       <Filter>头文件\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\mem\scoped_alloc.hpp">
+      <Filter>头文件\mem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
