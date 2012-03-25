@@ -3,7 +3,7 @@
  * @author jingqi
  * @date 2010-8-17
  * @brief
- * last-edit : 2011-12-16 13:52:33 jingqi
+ * last-edit : 2012-03-25 19:39:34 jingqi
  */
 
 #ifndef ___HEADFILE___6FFFC04E_FFB6_47F6_80AA_8FD1AF3B201F_
@@ -15,6 +15,8 @@
 #include <nut/threading/guard.hpp>
 
 #include "logger.hpp"
+
+#if defined(NUT_PLATFORM_OS_WINDOWS)
 
 extern "C" __declspec(dllexport) nut::ref<nut::Logger> nut_get_root_logger();
 
@@ -32,6 +34,28 @@ extern "C" __declspec(dllexport) nut::ref<nut::Logger> nut_get_root_logger() \
     } \
     return root; \
 }
+
+#else
+
+extern "C" nut::ref<nut::Logger> nut_get_root_logger();
+
+#define NUT_LOGGING_IMPL \
+extern "C" nut::ref<nut::Logger> nut_get_root_logger() \
+{ \
+    static nut::ref<nut::Logger> root; \
+    static nut::Mutex root_mutex; \
+ \
+    if (root.isNull()) \
+    { \
+        nut::Guard<nut::Mutex> guard(&root_mutex); \
+        if (root.isNull()) \
+            root = nut::gc_new<nut::Logger>((nut::Logger*)NULL, ""); \
+    } \
+    return root; \
+}
+
+#endif
+
 
 namespace nut
 {

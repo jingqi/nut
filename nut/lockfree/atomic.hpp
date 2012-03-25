@@ -2,29 +2,31 @@
  * @file -
  * @author jingqi
  * @date 2012-03-05
- * @last-edit 2012-03-05 20:19:43 jingqi
+ * @last-edit 2012-03-25 22:33:29 jingqi
  * @brief
- *      »ù±¾ÉÏ´ó²¿·ÖµÄÎŞËø²¢·¢Êı¾İ½á¹¹¶¼ÊÇÒÀ¿¿´¦ÀíÆ÷Ìá¹©µÄCAS(compare and swap)²Ù×÷À´
- * ÊµÏÖµÄ; °üÀ¨Ô­×Ó¼Ó¡¢Ô­×Ó¼õ¡¢×ÔĞıËøµÈÒ²ÊÇÒÀ¿¿Õâ¸öÀ´ÊµÏÖµÄ¡£
+ *      åŸºæœ¬ä¸Šå¤§éƒ¨åˆ†çš„æ— é”å¹¶å‘æ•°æ®ç»“æ„éƒ½æ˜¯ä¾é å¤„ç†å™¨æä¾›çš„CAS(compare and swap)æ“ä½œæ¥
+ * å®ç°çš„; åŒ…æ‹¬åŸå­åŠ ã€åŸå­å‡ã€è‡ªæ—‹é”ç­‰ä¹Ÿæ˜¯ä¾é è¿™ä¸ªæ¥å®ç°çš„ã€‚
  */
 
 #ifndef ___HEADFILE_CBAE01C9_CF0C_4836_A4DC_E7B0934DEA6E_
 #define ___HEADFILE_CBAE01C9_CF0C_4836_A4DC_E7B0934DEA6E_
 
-#include <stdint.h>
 #include <nut/platform/platform.hpp>
+#include <nut/platform/stdint.hpp>
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <windows.h>
 #endif
 
+#include <nut/debugging/static_assert.hpp>
+
 namespace nut
 {
 
 /**
- * Ö¸ÕëCAS²Ù×÷
+ * æŒ‡é’ˆCASæ“ä½œ
  *
- * @return ²Ù×÷³É¹¦Ôò·µ»Øtrue
+ * @return æ“ä½œæˆåŠŸåˆ™è¿”å›true
  */
 inline bool atomic_cas(void * volatile *dest, void *oldval, void *newval)
 {
@@ -41,14 +43,23 @@ inline bool atomic_cas(void * volatile *dest, void *oldval, void *newval)
 #if defined(NUT_PLATFORM_BITS_64)
 
 /**
- * 128Î»CAS²Ù×÷
+ * 128ä½CASæ“ä½œ
  *
- * @return ²Ù×÷³É¹¦Ôò·µ»Øtrue
+ * @return æ“ä½œæˆåŠŸåˆ™è¿”å›true
  */
 inline bool atomic_cas(int128_t volatile *dest, int128_t oldval, int128_t newval)
 {
 #if defined(NUT_PLATFORM_OS_LINUX)
-    return __sync_val_compare_and_swap(dest, oldval, newval);
+    /** __sync_val_compare_and_swap() does not support 128 bits, so we get it by ourself */
+    uint64_t old_low = (uint64_t)oldval, old_high = (uint64_t)(oldval >> 64);
+    uint64_t new_low = (uint64_t)newval, new_high = (uint64_t)(newval >> 64);
+    bool  ret;
+    __asm__ __volatile__(
+        "lock cmpxchg16b %1;\n"
+        "sete %0;\n"
+        :"=m"(ret),"+m" (*dest)
+        :"a" (old_low), "d" (old_high), "b" (new_low), "c" (new_high));
+    return ret;
 #elif defined(NUT_PLATFORM_OS_WINDOWS)
     return InterlockedCompareExchange128(dest, newval, oldval) == oldval;
 #else
@@ -58,9 +69,9 @@ inline bool atomic_cas(int128_t volatile *dest, int128_t oldval, int128_t newval
 
 
 /**
- * 128Î»CAS²Ù×÷
+ * 128ä½CASæ“ä½œ
  *
- * @return ²Ù×÷³É¹¦Ôò·µ»Øtrue
+ * @return æ“ä½œæˆåŠŸåˆ™è¿”å›true
  */
 inline bool atomic_cas(uint128_t volatile *dest, uint128_t oldval, uint128_t newval)
 {
@@ -70,9 +81,9 @@ inline bool atomic_cas(uint128_t volatile *dest, uint128_t oldval, uint128_t new
 #endif
 
 /**
- * 64Î»CAS²Ù×÷
+ * 64ä½CASæ“ä½œ
  *
- * @return ²Ù×÷³É¹¦Ôò·µ»Øtrue
+ * @return æ“ä½œæˆåŠŸåˆ™è¿”å›true
  */
 inline bool atomic_cas(int64_t volatile *dest, int64_t oldval, int64_t newval)
 {
@@ -87,9 +98,9 @@ inline bool atomic_cas(int64_t volatile *dest, int64_t oldval, int64_t newval)
 
 
 /**
- * 64Î»CAS²Ù×÷
+ * 64ä½CASæ“ä½œ
  *
- * @return ²Ù×÷³É¹¦Ôò·µ»Øtrue
+ * @return æ“ä½œæˆåŠŸåˆ™è¿”å›true
  */
 inline bool atomic_cas(uint64_t volatile *dest, uint64_t oldval, uint64_t newval)
 {
@@ -98,9 +109,9 @@ inline bool atomic_cas(uint64_t volatile *dest, uint64_t oldval, uint64_t newval
 
 
 /**
- * 32Î»CAS²Ù×÷
+ * 32ä½CASæ“ä½œ
  *
- * @return ²Ù×÷³É¹¦Ôò·µ»Øtrue
+ * @return æ“ä½œæˆåŠŸåˆ™è¿”å›true
  */
 inline bool atomic_cas(uint32_t volatile *dest, uint32_t oldval, uint32_t newval)
 {
@@ -115,9 +126,9 @@ inline bool atomic_cas(uint32_t volatile *dest, uint32_t oldval, uint32_t newval
 
 
 /**
- * 32Î»CAS²Ù×÷
+ * 32ä½CASæ“ä½œ
  *
- * @return ²Ù×÷³É¹¦Ôò·µ»Øtrue
+ * @return æ“ä½œæˆåŠŸåˆ™è¿”å›true
  */
 inline bool atomic_cas(int32_t volatile *dest, int32_t oldval, int32_t newval)
 {
@@ -126,9 +137,9 @@ inline bool atomic_cas(int32_t volatile *dest, int32_t oldval, int32_t newval)
 
 
 /**
- * 16Î»CAS²Ù×÷
+ * 16ä½CASæ“ä½œ
  *
- * @return ²Ù×÷³É¹¦Ôò·µ»Øtrue
+ * @return æ“ä½œæˆåŠŸåˆ™è¿”å›true
  */
 inline bool atomic_cas(int16_t volatile *dest, int16_t oldval, int16_t newval)
 {
@@ -143,9 +154,9 @@ inline bool atomic_cas(int16_t volatile *dest, int16_t oldval, int16_t newval)
 
 
 /**
- * 16Î»CAS²Ù×÷
+ * 16ä½CASæ“ä½œ
  *
- * @return ²Ù×÷³É¹¦Ôò·µ»Øtrue
+ * @return æ“ä½œæˆåŠŸåˆ™è¿”å›true
  */
 inline bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newval)
 {
@@ -153,12 +164,12 @@ inline bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newval
 }
 
 
-#if defined(NUT_PLATFORM_BITS_64)
+#if defined(NUT_PLATFORM_BITS_64) && false
 
 /**
- * 128Î»Ô­×Ó¼Ó
+ * 128ä½åŸå­åŠ 
  *
- * @return ·µ»Ø¾ÉÖµ
+ * @return è¿”å›æ—§å€¼
  */
 inline int128_t atomic_add(int128_t volatile *addend, int128_t value)
 {
@@ -176,9 +187,9 @@ inline int128_t atomic_add(int128_t volatile *addend, int128_t value)
 }
 
 /**
- * 128Î»Ô­×Ó¼Ó
+ * 128ä½åŸå­åŠ 
  *
- * @return ·µ»Ø¾ÉÖµ
+ * @return è¿”å›æ—§å€¼
  */
 inline uint128_t atomic_add(uint128_t volatile *addend, uint128_t value)
 {
@@ -189,9 +200,9 @@ inline uint128_t atomic_add(uint128_t volatile *addend, uint128_t value)
 
 
 /**
- * 64Î»Ô­×Ó¼Ó
+ * 64ä½åŸå­åŠ 
  *
- * @return ·µ»Ø¾ÉÖµ
+ * @return è¿”å›æ—§å€¼
  */
 inline int64_t atomic_add(int64_t volatile *addend, int64_t value)
 {
@@ -209,9 +220,9 @@ inline int64_t atomic_add(int64_t volatile *addend, int64_t value)
 }
 
 /**
- * 64Î»Ô­×Ó¼Ó
+ * 64ä½åŸå­åŠ 
  *
- * @return ·µ»Ø¾ÉÖµ
+ * @return è¿”å›æ—§å€¼
  */
 inline uint64_t atomic_add(uint64_t volatile *addend, uint64_t value)
 {
@@ -219,9 +230,9 @@ inline uint64_t atomic_add(uint64_t volatile *addend, uint64_t value)
 }
 
 /**
- * 32Î»Ô­×Ó¼Ó
+ * 32ä½åŸå­åŠ 
  *
- * @return ·µ»Ø¾ÉÖµ
+ * @return è¿”å›æ—§å€¼
  */
 inline uint32_t atomic_add(uint32_t volatile *addend, uint32_t value)
 {
@@ -239,9 +250,9 @@ inline uint32_t atomic_add(uint32_t volatile *addend, uint32_t value)
 }
 
 /**
- * 32Î»Ô­×Ó¼Ó
+ * 32ä½åŸå­åŠ 
  *
- * @return ·µ»Ø¾ÉÖµ
+ * @return è¿”å›æ—§å€¼
  */
  inline int32_t atomic_add(int32_t volatile *addend, int32_t value)
  {
@@ -249,9 +260,9 @@ inline uint32_t atomic_add(uint32_t volatile *addend, uint32_t value)
  }
 
 /**
- * 16Î»Ô­×Ó¼Ó
+ * 16ä½åŸå­åŠ 
  *
- * @return ·µ»Ø¾ÉÖµ
+ * @return è¿”å›æ—§å€¼
  */
 inline int16_t atomic_add(int16_t volatile *addend, int16_t value)
 {
@@ -267,9 +278,9 @@ inline int16_t atomic_add(int16_t volatile *addend, int16_t value)
 }
 
 /**
- * 128Î»Ô­×Ó¼Ó
+ * 128ä½åŸå­åŠ 
  *
- * @return ·µ»Ø¾ÉÖµ
+ * @return è¿”å›æ—§å€¼
  */
  inline uint16_t atomic_add(uint16_t volatile *addend, uint16_t value)
  {
@@ -277,17 +288,20 @@ inline int16_t atomic_add(int16_t volatile *addend, int16_t value)
  }
 
 /**
- * ÎªÁË±ÜÃâABAÎÊÌâ¶øÒıÈëµÄ´ø±êÇ©µÄÖ¸Õë
+ * ä¸ºäº†é¿å…ABAé—®é¢˜è€Œå¼•å…¥çš„å¸¦æ ‡ç­¾çš„æŒ‡é’ˆ
  */
 template <typename T>
 union TagedPtr
 {
-    /** ÕûÌå¶ÔÓ¦µÄCAS²Ù×÷ÊıÀàĞÍ */
+    /** æ•´ä½“å¯¹åº”çš„CASæ“ä½œæ•°ç±»å‹ */
 #if defined(NUT_PLATFORM_BITS_64)
+    typedef uint64_t tag_type;
     typedef uint128_t cas_type;
 #elif defined(NUT_PLATFORM_BITS_32)
+    typedef uint32_t tag_type;
     typedef uint64_t cas_type;
 #elif defined(NUT_PLATFORM_BITS_16)
+    typedef uint16_t tag_type;
     typedef uint32_t cas_type;
 #else
 #   error platform not supported!
@@ -296,19 +310,21 @@ union TagedPtr
     struct
     {
         T *ptr;
-        unsigned int tag;
+        tag_type tag;
     };
 
     cas_type cas;
 
     TagedPtr() : cas(0) {}
 
-    TagedPtr(T *p, unsigned int t) : ptr(p), tag(t) {}
+    TagedPtr(T *p, tag_type t) : ptr(p), tag(t) {}
 
     TagedPtr(cas_type c) : cas(c) {}
 };
-static_assert(sizeof(void*) + sizeof(unsigned int) == sizeof(TagedPtr<void>::cas_type), "size not match");
-static_assert(sizeof(TagedPtr<void>) == sizeof(TagedPtr<void>::cas_type), "size not match");
+
+NUT_STATIC_ASSERT(sizeof(void*) == sizeof(TagedPtr<void>::tag_type));
+NUT_STATIC_ASSERT(sizeof(void*) * 2 == sizeof(TagedPtr<void>::cas_type));
+NUT_STATIC_ASSERT(sizeof(TagedPtr<void>) == sizeof(TagedPtr<void>::cas_type));
 
 }
 

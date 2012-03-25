@@ -11,7 +11,7 @@ namespace nut
 {
 
 /**
- * µ¥Ôª²âÊÔÊ§°ÜÊ±ËùÅ×³öµÄÒì³£
+ * å•å…ƒæµ‹è¯•å¤±è´¥æ—¶æ‰€æŠ›å‡ºçš„å¼‚å¸¸
  */
 class TestCaseFailureException
 {

@@ -11,7 +11,7 @@
 #include <string.h>  /* for memset() */
 #include <stdio.h>  /* for sprintf(), vsnprintf() and so on */
 #include <stdarg.h> /* for va_start() */
-#include <stdlib.h> /* for malloc() and free()*/
+#include <stdlib.h> /* for malloc() free() ltoa() */
 #include <string>
 #include <vector>
 
@@ -36,7 +36,11 @@ inline std::string toString(long i)
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
     ::memset(buf, 0, BUF_SIZE);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
     ::ltoa(i, buf, 10);
+#else
+    ::sprintf(buf, "%ld", i);
+#endif
     return buf;
 }
 
@@ -75,14 +79,7 @@ inline std::string toString(const void *p)
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
     ::memset(buf, 0, BUF_SIZE);
-
-#if defined(NUT_PLATFORM_OS_WINDOWS)
-    ::sprintf(buf,"0x%p",p);    // e.g. 0x002E459F
-#elif defined(NUT_PLATFORM_OS_LINUX)
-    ::sprintf(buf,"0x%08X",p);  // e.g. 使用 0x%08X 格式输出 0x002E459F, 如果使用 %p 格式, 则输出为 0x2e459f
-#else
-#   error platform not supported
-#endif
+    ::sprintf(buf,"0x%p",p);    // windows: 0x002E459F, linux: 0x2e459f
 
     return buf;
 }

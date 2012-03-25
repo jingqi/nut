@@ -50,7 +50,7 @@ NUT_FIXTURE(TestBSTree)
     
     void setUp()
     {
-        // 构建这样一颗树
+        // 鏋勫缓杩欐牱涓�棰楁爲
         //       4
         //     /   \
         //    2     6
@@ -75,7 +75,7 @@ NUT_FIXTURE(TestBSTree)
 
     void testInorderIterator()
     {
-        // 中序遍历
+        // 涓簭閬嶅巻
         int i = 0;
         int inorder[7] = {1, 2, 3, 4, 5, 6, 7 };
         for (BTree<Node>::inorder_iterator iter = BTree<Node>::inorder_traversal_begin(root), end = BTree<Node>::inorder_traversal_end(root);
@@ -97,7 +97,7 @@ NUT_FIXTURE(TestBSTree)
 
     void testPreorderIterator()
     {
-        // 前序遍历
+        // 鍓嶅簭閬嶅巻
         int order[7] = {4, 2, 1, 3, 6, 5, 7 };
         int i = 0;
         for (BTree<Node>::preorder_iterator iter = BTree<Node>::preorder_traversal_begin(root), end = BTree<Node>::preorder_traversal_end(root);
@@ -119,7 +119,7 @@ NUT_FIXTURE(TestBSTree)
 
     void testPostorderIterator()
     {
-        // 后序遍历
+        // 鍚庡簭閬嶅巻
         int order[7] = {1, 3, 2, 5, 7, 6, 4 };
         int i = 0;
         for (BTree<Node>::postorder_iterator iter = BTree<Node>::postorder_traversal_begin(root), end = BTree<Node>::postorder_traversal_end(root);

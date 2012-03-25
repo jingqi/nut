@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @data 2011-12-24
- * @last-edit 2011-12-24 20:47:40 jingqi
+ * @last-edit 2012-03-25 22:42:57 jingqi
  */
 
 #ifndef ___HEADFILE_ABC2859B_32EC_4725_A95F_A4EA1F6DD526_
@@ -83,7 +83,7 @@ public:
         ConsoleUtil::setTextColor();
         std::cout << "  ";
         ConsoleUtil::setTextColor(0 == m_countOfFailedFixtures ? ConsoleUtil::GREEN : ConsoleUtil::RED);
-        std::cout << (0 == m_countOfFailedFixtures ? "¡Ì" : "¡Á");
+        std::cout << (0 == m_countOfFailedFixtures ? "âˆš" : "Ã—");
         ConsoleUtil::setTextColor();
         std::cout << std::endl << "> total cases  : ";
         ConsoleUtil::setTextColor(ConsoleUtil::BLUE);
@@ -95,7 +95,7 @@ public:
         ConsoleUtil::setTextColor();
         std::cout << "  ";
         ConsoleUtil::setTextColor(0 == m_countOfFailedCases ? ConsoleUtil::GREEN : ConsoleUtil::RED);
-        std::cout << (0 == m_countOfFailedCases ? "¡Ì" : "¡Á");
+        std::cout << (0 == m_countOfFailedCases ? "âˆš" : "Ã—");
         ConsoleUtil::setTextColor();
         std::cout << std::endl;
 
@@ -146,7 +146,7 @@ public:
             ++m_countOfFailedCases;
             std::cout << "  ";
             ConsoleUtil::setTextColor(ConsoleUtil::RED);
-            std::cout << "¡Á";
+            std::cout << "Ã—";
             ConsoleUtil::setTextColor();
             std::cout << std::endl;
         }
@@ -154,7 +154,7 @@ public:
         {
             std::cout << "  ";
             ConsoleUtil::setTextColor(ConsoleUtil::GREEN);
-            std::cout << "¡Ì";
+            std::cout << "âˆš";
             ConsoleUtil::setTextColor();
             std::cout << std::endl;
         }

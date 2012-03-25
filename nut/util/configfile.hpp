@@ -2,11 +2,13 @@
  * @file -
  * @author jingqi
  * @date 2011-12-25
- * @last-edit 2011-12-25 13:36:51 jingqi
+ * @last-edit 2012-03-25 21:28:52 jingqi
  */
 
 #ifndef ___HEADFILE_C9DB1FAD_B2DA_45F6_AE36_818B4BB68EC1_
 #define ___HEADFILE_C9DB1FAD_B2DA_45F6_AE36_818B4BB68EC1_
+
+#include <nut/platform/platform.hpp>
 
 #include <assert.h>
 #include <fstream>
@@ -473,7 +475,11 @@ public:
         const int BUF_LEN = 30;
         char buf[BUF_LEN];
         ::memset(buf, 0, BUF_LEN);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         ::ltoa(value, buf, 10);
+#else
+        ::sprintf(buf, "%ld", value);
+#endif
         setString(sector, key, buf);
     }
 

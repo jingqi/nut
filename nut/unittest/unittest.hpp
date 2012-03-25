@@ -9,7 +9,7 @@
 
 /*
 
-Ê¹ÓÃÊ¾Àý£º
+ä½¿ç”¨ç¤ºä¾‹ï¼š
 
 #include <nut/unittest/unittest.hpp>
 

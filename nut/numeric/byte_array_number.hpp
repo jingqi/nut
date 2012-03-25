@@ -2,17 +2,18 @@
  * @file -
  * @author jingqi
  * @date 2011-12-17
- * @last-edit 2011-12-17 16:46:28 jingqi
+ * @last-edit 2012-03-25 21:15:25 jingqi
  */
 
 #ifndef ___HEADFILE_1C442178_8186_41B7_ACBC_AB8307B57A5E_
 #define ___HEADFILE_1C442178_8186_41B7_ACBC_AB8307B57A5E_
 
 #include <assert.h>
-#include <stdint.h>
 #include <string.h> // for memset(), memcpy()
+#include <stdlib.h> // for malloc()
 
 #include <nut/platform/platform.hpp>
+#include <nut/platform/stdint.hpp>
 
 #if defined(NUT_PLATFORM_BITS_64)
 #   define machine_hword_type uint32_t
@@ -243,7 +244,7 @@ inline void divide(const uint8_t *a, const uint8_t *b, uint8_t *x, uint8_t *y, s
 }
 
 /** 比特与 */
-inline void and(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
+inline void bit_and(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
     const size_t word_count = N / sizeof(machine_word_type);
@@ -254,7 +255,7 @@ inline void and(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 }
 
 /** 比特或 */
-inline void or(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
+inline void bit_or(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
     const size_t word_count = N / sizeof(machine_word_type);
@@ -265,7 +266,7 @@ inline void or(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 }
 
 /** 比特异或 */
-inline void xor(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
+inline void bit_xor(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
     const size_t word_count = N / sizeof(machine_word_type);
@@ -276,7 +277,7 @@ inline void xor(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 }
 
 /** 比特同或 */
-inline void sameOr(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
+inline void bit_nxor(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
     const size_t word_count = N / sizeof(machine_word_type);
@@ -287,7 +288,7 @@ inline void sameOr(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 }
 
 /** 比特否 */
-inline void not(const uint8_t *a, uint8_t *x, size_t N)
+inline void bit_not(const uint8_t *a, uint8_t *x, size_t N)
 {
     assert(NULL != a && NULL != x && N > 0);
     const size_t word_count = N / sizeof(machine_word_type);

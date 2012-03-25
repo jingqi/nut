@@ -2,14 +2,20 @@
  * @file -
  * @author jingqi
  * @date 2012-03-05
- * @last-edit 2012-03-05 21:18:16 jingqi
+ * @last-edit 2012-03-25 19:20:04 jingqi
  */
 
 #ifndef ___HEADFILE_039EC871_866B_4C6A_AF26_747D92A9ADA7_
 #define ___HEADFILE_039EC871_866B_4C6A_AF26_747D92A9ADA7_
 
+#include <nut/platform/platform.hpp>
+
 #include <assert.h>
-#include <allocators>
+#include <stdlib.h> // for rand()
+
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+#   include <allocators>
+#endif
 
 #include "atomic.hpp"
 
@@ -19,13 +25,13 @@ namespace nut
 template <typename T, typename AllocT = std::allocator<T> >
 class ConcurrentStack
 {
-    /** ÕâÀï¸ù¾İ¾ßÌåÇé¿öÅäÖÃ */
+    /** è¿™é‡Œæ ¹æ®å…·ä½“æƒ…å†µé…ç½® */
     enum
     {
-        /** ÏûÒşÊ¹ÓÃµÄÅö×²Êı×éµÄ´óĞ¡ */
+        /** æ¶ˆéšä½¿ç”¨çš„ç¢°æ’æ•°ç»„çš„å¤§å° */
         COLLISIONS_ARRAY_SIZE = 5,
 
-        /** ÏûÒşÈë¶ÓÊ±µÈ´ıÅö×²µÄºÁÃëÊı */
+        /** æ¶ˆéšå…¥é˜Ÿæ—¶ç­‰å¾…ç¢°æ’çš„æ¯«ç§’æ•° */
         ELIMINATE_ENQUEUE_DELAY_MICROSECONDS = 10,
     };
 
@@ -37,25 +43,25 @@ class ConcurrentStack
         Node(const T& v) : data(v), next(NULL) {}
     };
 
-    /** ³¢ÊÔ³öÕ»µÄ½á¹û */
+    /** å°è¯•å‡ºæ ˆçš„ç»“æœ */
     enum PopAttemptResult
     {
-        POP_SUCCESS /* ³É¹¦ */,
-        CONCURRENT_FAILURE /* ²¢·¢Ê§°Ü */,
-        EMPTY_STACK_FAILURE /* ¿ÕÕ» */
+        POP_SUCCESS /* æˆåŠŸ */,
+        CONCURRENT_FAILURE /* å¹¶å‘å¤±è´¥ */,
+        EMPTY_STACK_FAILURE /* ç©ºæ ˆ */
     };
 
-    /** ÏûÒşÊı×éµÄÖ¸Õë³£Á¿ */
-    enum { COLLISION_EMPTY_PTR = NULL, COLLISION_DONE_PTR = -1 };
+    /** æ¶ˆéšæ•°ç»„çš„æŒ‡é’ˆå¸¸é‡ */
+    enum { COLLISION_EMPTY_PTR = (int)NULL, COLLISION_DONE_PTR = -1 };
 
     typedef AllocT                                data_allocator_type;
-    typedef typename AllocT::rebind<Node>::other  node_allocator_type;
+    typedef typename AllocT::template rebind<Node>::other  node_allocator_type;
 
     data_allocator_type m_dataAlloc;
     node_allocator_type m_nodeAlloc;
     TagedPtr<Node> volatile m_top;
 
-    /** ÓÃÓÚÏûÒşµÄÅö×²Êı×é */
+    /** ç”¨äºæ¶ˆéšçš„ç¢°æ’æ•°ç»„ */
     TagedPtr<Node> volatile m_collisions[COLLISIONS_ARRAY_SIZE];
 
 public:
@@ -172,19 +178,19 @@ private:
         if (oldCollisionToAdd.ptr != reinterpret_cast<Node*>(COLLISION_EMPTY_PTR))
             return false;
 
-        // Ìí¼Óµ½Åö×²Êı×é
+        // æ·»åŠ åˆ°ç¢°æ’æ•°ç»„
         const TagedPtr<Node> newCollisionToAdd(new_node, oldCollisionToAdd.tag + 1);
         if (!atomic_cas(&(m_collisions[i].cas), oldCollisionToAdd.cas, newCollisionToAdd.cas))
             return false;
 
-        // µÈ´ıÒ»¶ÎÊ±¼ä
+        // ç­‰å¾…ä¸€æ®µæ—¶é—´
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         ::Sleep(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS);
 #elif defined(NUT_PLATFORM_OS_LINUX)
         usleep(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS);
 #endif
 
-        // ¼ì²éÏûÒşÊÇ·ñ³É¹¦
+        // æ£€æŸ¥æ¶ˆéšæ˜¯å¦æˆåŠŸ
         const TagedPtr<Node> oldCollisionToRemove(m_collisions[i].cas);
         const TagedPtr<Node> newCollisionToRemove(reinterpret_cast<Node*>(COLLISION_EMPTY_PTR), oldCollisionToAdd.tag + 1);
         if (oldCollisionToRemove.ptr == reinterpret_cast<Node*>(COLLISION_DONE_PTR) ||

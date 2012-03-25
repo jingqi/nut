@@ -5,8 +5,6 @@
 
 using namespace nut;
 
-static int obj_count = 0;
-
 NUT_FIXTURE(TestConcurrentStack)
 {
     NUT_CASES_BEGIN()

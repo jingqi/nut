@@ -4,7 +4,7 @@
 import os,sys
 
 CC = 'g++'
-CC_FLAGS = '-Wall -g'
+CC_FLAGS = '-Wall -g -lpthread'
 
 SRC_DIR = '../../test'
 INCLUDE_PATH = ['../..']
@@ -57,12 +57,12 @@ def main():
         dep = obj + dep[dep.index(':'): ]
 
         ret += dep
-        ret += '\tmkdir -p ' + os.path.split(obj)[0] + '\n'
-        ret += '\t$(CC) $(CC_FLAGS) $< -o $@\n\n'
+        ret += '\t@mkdir -p ' + os.path.split(obj)[0] + '\n'
+        ret += '\t$(CC) -c $(CC_FLAGS) $< -o $@\n\n'
 
     # 最终目标
     ret += '$(TARGET): ' + ' '.join(all_objs) + '\n'
-    ret += '\t$(CC) -o $@ $^\n'
+    ret += '\t$(CC) $(CC_FLAGS) $^ -o $@\n\n'
 
     return ret
 
