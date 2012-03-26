@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file -
  * @author jingqi
  * @date 2012-03-05
@@ -164,7 +164,7 @@ inline bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newval
 }
 
 
-#if defined(NUT_PLATFORM_BITS_64) && false
+#if defined(NUT_PLATFORM_BITS_64)
 
 /**
  * 128位原子加
