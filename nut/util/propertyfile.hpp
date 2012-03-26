@@ -7,6 +7,8 @@
 #ifndef ___HEADFILE___C3889B7F_89FD_4968_A677_E85C8BB7EC22_
 #define ___HEADFILE___C3889B7F_89FD_4968_A677_E85C8BB7EC22_
 
+#include <nut/platform/platform.hpp>
+
 #include <fstream>
 #include <string>
 #include <vector>
@@ -328,7 +330,11 @@ public:
         const int BUF_LEN = 30;
         char buf[BUF_LEN];
         ::memset(buf, 0, BUF_LEN);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         ::ltoa(value, buf, 10);
+#else
+        ::sprintf(buf, "%ld", value);
+#endif
         setString(key, buf);
     }
 

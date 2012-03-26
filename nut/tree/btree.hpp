@@ -2,13 +2,14 @@
  * @file -
  * @author jingqi
  * @date 2012-03-02
- * @last-edit 2012-03-02 21:31:10 jingqi
+ * @last-edit 2012-03-25 21:26:58 jingqi
  */
 
 #ifndef ___HEADFILE_BDA2D5F4_E926_4BBB_A415_DE4463C47D1A_
 #define ___HEADFILE_BDA2D5F4_E926_4BBB_A415_DE4463C47D1A_
 
 #include <assert.h>
+#include <stddef.h> // for ptrdiff_t
 #include <iterator>
 
 namespace nut
@@ -38,7 +39,7 @@ private:
         typedef std::bidirectional_iterator_tag iterator_category;
         typedef NODE                            value_type;
         typedef ptrdiff_t                       difference_type;
-        typedef NODE                            reference;
+        typedef NODE&                           reference;
         typedef NODE*                           pointer;
 
     public:
@@ -199,7 +200,7 @@ private:
         typedef std::bidirectional_iterator_tag iterator_category;
         typedef NODE                            value_type;
         typedef ptrdiff_t                       difference_type;
-        typedef NODE                            reference;
+        typedef NODE&                           reference;
         typedef NODE*                           pointer;
 
     public:
@@ -364,7 +365,7 @@ private:
         typedef std::bidirectional_iterator_tag iterator_category;
         typedef NODE                            value_type;
         typedef ptrdiff_t                       difference_type;
-        typedef NODE                            reference;
+        typedef NODE&                           reference;
         typedef NODE*                           pointer;
 
     public:

@@ -2,17 +2,22 @@
  * @file -
  * @author jingqi
  * @date 2012-03-04
- * @last-edit 2012-03-05 18:27:26 jingqi
+ * @last-edit 2012-03-25 19:14:04 jingqi
  */
 
 #ifndef ___HEADFILE_C020D343_98AA_41A4_AFE8_01825671348C_
 #define ___HEADFILE_C020D343_98AA_41A4_AFE8_01825671348C_
 
+#include <nut/platform/platform.hpp>
+
 #include <assert.h>
 #include <string.h> // for memcpy()
-#include <allocators>
+#include <stdlib.h> // for rand()
 
-#include <nut/platform/platform.hpp>
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+#   include <allocators>
+#endif
+
 #include <nut/debugging/sourcelocation.hpp>
 #include <nut/debugging/exception.hpp>
 
@@ -65,10 +70,10 @@ class ConcurrentQueue
     };
 
     /** 消隐数组的指针常量 */
-    enum { COLLISION_EMPTY_PTR = NULL, COLLISION_DONE_PTR = -1 };
+    enum { COLLISION_EMPTY_PTR = (int)NULL, COLLISION_DONE_PTR = -1 };
 
     typedef AllocT                                data_allocator_type;
-    typedef typename AllocT::rebind<Node>::other  node_allocator_type;
+    typedef typename AllocT::template rebind<Node>::other  node_allocator_type;
 
     data_allocator_type m_dataAlloc;
     node_allocator_type m_nodeAlloc;
@@ -209,7 +214,7 @@ public:
         Node *new_node = m_nodeAlloc.allocate(1);
         m_dataAlloc.construct(&(new_node->data), v);
 
-        const unsigned int seen_tail = m_tail.tag;
+        const typename TagedPtr<Node>::tag_type seen_tail = m_tail.tag;
         while (true)
         {
             if (enqueueAttempt(new_node))

@@ -1,11 +1,11 @@
-/**
+﻿/**
  * @file -
  * @author jingqi
  * @date 2011-11-13
  * @brief
  *   see http://sourceforge.net/apps/mediawiki/predef/index.php?title=Main_Page
  *
- * @last-edit 2012-03-23 21:38:45 jingqi
+ * @last-edit 2012-03-25 18:53:32 jingqi
  */
 
 #ifndef ___HEADFILE___6689E00A_B262_4C15_A826_19665AF8EC32_
@@ -26,19 +26,17 @@
 #   error unknown os
 #endif
 
-/** 系统位数 */
-#if defined(_WIN64) || defined(WIN64) || defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || \
-    defined(__x86_64) || defined(_M_X64) || defined(__ia64__) || defined(_IA64) || defined(__IA64__) || \
-    defined(__ia64) || defined(_M_IA64)
+/** 指针位数 */
+#if defined(_WIN64) || defined(WIN64) || defined(__amd64__) || defined(__amd64) || defined(__LP64__) || \
+    defined(_LP64) || defined(__x86_64__) || defined(__x86_64) || defined(_M_X64) || defined(__ia64__) || \
+    defined(_IA64) || defined(__IA64__) || defined(__ia64) || defined(_M_IA64)
 #   define NUT_PLATFORM_BITS_NAME "64"
 #   define NUT_PLATFORM_BITS_64
-    static_assert(sizeof(void*) == 8, "bad guess for machine word");
-#elif defined(_WIN32) || defined(WIN32) || defined(__32BIT__) || defined(i386) || defined(__i386__) || \
-    defined(__i486__) || defined(__i586__) || defined(__i686__) || defined(__i386) || defined(_M_IX86) || \
-    defined(__X86__) || defined(_X86_) || defined(__I86__)
+#elif defined(_WIN32) || defined(WIN32) || defined(__32BIT__) || defined(__ILP32__) || defined(_ILP32) || \
+    defined(i386) || defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__) || \
+    defined(__i386) || defined(_M_IX86) || defined(__X86__) || defined(_X86_) || defined(__I86__)
 #   define NUT_PLATFORM_BITS_NAME "32"
 #   define NUT_PLATFORM_BITS_32
-    static_assert(sizeof(void*) == 4, "bad guess for machine word");
 #else
 #   define NUT_PLATFORM_BITS_NAME "Unknown"
 #   error unknown bits

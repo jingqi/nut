@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2011-12-16
- * @last-edit 2011-12-16 23:30:57 jingqi
+ * @last-edit 2012-03-25 21:16:32 jingqi
  */
 #ifndef ___HEADFILE_0CE9CDA7_BE91_4F03_AD03_F54E44BBC782_
 #define ___HEADFILE_0CE9CDA7_BE91_4F03_AD03_F54E44BBC782_
@@ -176,6 +176,7 @@ public :
     int minSize() const
     {
         // TODO
+        return 0;
     }
 
     long longValue() const

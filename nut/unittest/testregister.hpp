@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2011-11-12 13:16
@@ -8,8 +8,14 @@
 #define ___HEADFILE___53924D54_39B0_4377_B555_4096B8CC3619_
 
 #include <assert.h>
+#include <string.h> // for strcmp()
+#include <string>
+#include <vector>
+#include <nut/platform/platform.hpp>
 
 namespace nut { class TestRegister; }
+
+#if defined(NUT_PLATFORM_OS_WINDOWS)
 
 extern "C" __declspec(dllexport) nut::TestRegister*& nut_get_register_header();
 
@@ -19,6 +25,20 @@ extern "C" __declspec(dllexport) nut::TestRegister*& nut_get_register_header() \
     static nut::TestRegister* header = NULL; \
     return header; \
 }
+
+#else
+
+extern "C" nut::TestRegister*& nut_get_register_header();
+
+#define NUT_UNITTEST_IMPL \
+extern "C" nut::TestRegister*& nut_get_register_header() \
+{ \
+    static nut::TestRegister* header = NULL; \
+    return header; \
+}
+
+#endif
+
 
 namespace nut
 {
@@ -36,17 +56,17 @@ class TestRegister
 
 public:
     TestRegister(const char *fixtureName, const char *groups, new_fixture_func n, delete_fixture_func d)
-        : m_fixtureName(fixtureName), m_newFunc(n), m_deleteFunc(d)
+        : m_newFunc(n), m_deleteFunc(d), m_fixtureName(fixtureName)
     {
         assert(NULL != fixtureName);
         assert(NULL != groups);
         assert(NULL != n);
         assert(NULL != d);
 
-        // ·ÖÀë³ö×é±ğ
+        // åˆ†ç¦»å‡ºç»„åˆ«
         m_groups = splitGroups(groups);
 
-        // ½«ÊµÀıÌí¼Óµ½Á´±íÖĞ
+        // å°†å®ä¾‹æ·»åŠ åˆ°é“¾è¡¨ä¸­
         m_pnext = nut_get_register_header();
         nut_get_register_header() = this;
     }
@@ -75,13 +95,13 @@ public:
     }
 
 private:
-    /** ÅĞ¶Ï×Ö·ûÊÇ·ñÊÇ¿Õ°× */
+    /** åˆ¤æ–­å­—ç¬¦æ˜¯å¦æ˜¯ç©ºç™½ */
     static inline bool isBlank(char c)
     {
         return c == ' ' || c == '\r' || c == '\n' || c == '\t';
     }
 
-    /** È¥³ı×Ö·û´®Ä©Î²µÄ¿Õ°× */
+    /** å»é™¤å­—ç¬¦ä¸²æœ«å°¾çš„ç©ºç™½ */
     static std::string trimEnd(const std::string& s)
     {
         std::string ret = s;
@@ -95,12 +115,12 @@ private:
         return ret;
     }
 
-    /** ²ğ·ÖÈç "test, quiet" µÄ×Ö·û´®Îª ["test", "quiet"] */
+    /** æ‹†åˆ†å¦‚ "test, quiet" çš„å­—ç¬¦ä¸²ä¸º ["test", "quiet"] */
     static std::vector<std::string> splitGroups(const char *groups)
     {
         assert(NULL != groups);
 
-        const char GROUP_SPLITER = ','; // ·Ö×é·Ö¸ô·û
+        const char GROUP_SPLITER = ','; // åˆ†ç»„åˆ†éš”ç¬¦
 
         std::vector<std::string> ret;
         std::string s;
@@ -108,10 +128,10 @@ private:
         {
             if (GROUP_SPLITER == groups[i])
             {
-                // È¥³ıÎ²²¿¿Õ¸ñ
+                // å»é™¤å°¾éƒ¨ç©ºæ ¼
                 s = trimEnd(s);
 
-                // Ìí¼Óµ½½á¹û
+                // æ·»åŠ åˆ°ç»“æœ
                 if (s.length() > 0)
                 {
                     ret.push_back(s);

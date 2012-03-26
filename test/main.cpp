@@ -1,5 +1,10 @@
 
-#include <conio.h>
+#include <nut/platform/platform.hpp>
+
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+#   include <conio.h>
+#endif
+
 #include <stdio.h>
 #include <iostream>
 #include <nut/unittest/unittest.hpp>
@@ -21,9 +26,16 @@ int main()
     // trunner.runACase("TestGC", "testSmoking");
 
     printf("press any key to continue...");
+#if defined(NUT_PLATFORM_OS_WINDOWS)
     getch();
+#else
+    getchar();
+#endif
+
     return 0;
 }
 
 NUT_LOGGING_IMPL
 NUT_UNITTEST_IMPL
+
+

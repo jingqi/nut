@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2011-11-12 13:27
@@ -9,7 +9,7 @@
 
 /*
 
-Ê¹ÓÃÊ¾Àý£º
+ä½¿ç”¨ç¤ºä¾‹ï¼š
 
 #include <nut/unittest/unittest.hpp>
 
