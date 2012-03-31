@@ -12,6 +12,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string>
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <conio.h>
 #   include <windows.h>
@@ -63,8 +64,8 @@ public :
             BACKGROUND_BLUE | BACKGROUND_GREEN,                   /* 青 = 蓝 + 绿 */
             BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE,  /* 白 = 红 + 绿 + 蓝*/
         };
-        unsigned color = fgtable[forecolor]|bgtable[backcolor];
-        ::SetConsoleTextAttribute(::GetStdHandle(STD_OUTPUT_HANDLE),color);
+        unsigned color = fgtable[forecolor] | bgtable[backcolor];
+        ::SetConsoleTextAttribute(::GetStdHandle(STD_OUTPUT_HANDLE), color);
 #else
         const unsigned fgtable[9] =
         {
@@ -94,27 +95,29 @@ public :
 #endif
     }
 
-    static void setBackGroundColor (ConsoleColor forecolor = DEFAULT, ConsoleColor bkcolor = DEFAULT)
+    static void setBackGroundColor(ConsoleColor forecolor = DEFAULT, ConsoleColor bkcolor = DEFAULT)
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         const char fgtable[9] =
         {
-            '7','0','4','2','1','6','D','B','F'
+            '7', '0', '4', '2', '1', '6', 'D', 'B', 'F'
         };
         const char bgtable[9] =
         {
-            '0','0','4','2','1','6','D','B','F'
+            '0', '0', '4', '2', '1', '6', 'D', 'B', 'F'
         };
-        char buf[9] = {'c','o','l','o','r',' ',0,0,0};
+        char buf[9] = {'c', 'o', 'l', 'o', 'r', ' ', 0, 0, 0};
         buf[6] = bgtable[bkcolor];
         buf[7] = fgtable[forecolor];
         ::system(buf);
 #else
         /* not supported now */
+        (void) forecolor;
+        (void) bkcolor;
 #endif
     }
 
-    static void pause ()
+    static void pause()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         ::getch();
@@ -127,30 +130,31 @@ public :
 
     static std::string getPassword ()
     {
-        std::string ret;
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+        std::string ret;
         int c = 0;
         do
         {
             c = ::getch();
             switch(c)
             {
-            case '\r' :
-            case '\n' :
+            case '\r':
+            case '\n':
                 break;
-            case 8 :      /* back space */
+
+            case '\b':      /* back space, ASCII is 0x08 */
                 if (ret.size() > 0)
                 {
                     ret.erase(ret.end() - 1);
                     ::printf("\b \b");
                 }
                 break;
-            default :
-                ret.push_back((char)c);
+
+            default:
+                ret.push_back((char) c);
                 ::printf("*");
             }
-        }
-        while('\r' != c && '\n' != c);
+        } while ('\r' != c && '\n' != c);
         return ret;
 #else
         return ::getpass("");

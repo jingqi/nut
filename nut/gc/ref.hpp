@@ -23,25 +23,20 @@ public:
     /** 默认构造函数 */
     weak_ref() : m_ptr(NULL) {}
 
+    /** 构造函数 */
     weak_ref(T *ptr) : m_ptr(ptr) {}
 
     /** 隐式类型转换 */
     template <typename U>
     weak_ref(const weak_ref<U>& r) : m_ptr(r.pointer()) {}
 
-    /** @note 复制构造函数必须在上述函数的后面 */
+    /** 复制构造函数(因为是特化模板，故必须放在上述模板函数的后面) */
     weak_ref(const weak_ref<T>& r) : m_ptr(r.m_ptr) {}
 
     ~weak_ref() { m_ptr = NULL; }
 
 public:
-    template <typename U>
-    inline weak_ref<T>& operator= (const weak_ref<U>& r)
-    {
-        m_ptr = r.pointer();
-        return *this;
-    }
-
+    /** 赋值操作符 */
     inline weak_ref<T>& operator= (const weak_ref<T>& r)
     {
         m_ptr = r.m_ptr;
@@ -73,30 +68,38 @@ protected:
 public:
     ref() {}
 
-    ref(T *p) { assign(p); }
+    /** 类型转换 */
+    explicit ref(T *p) { assign(p); }
+
+    /** 类型转换 */
+    template <typename U>
+    explicit ref(const weak_ref<U>& r) { assign(r.pointer()); }
 
     /** 隐式类型转换 */
     template <typename U>
-    ref(const weak_ref<U>& r) { assign(r.pointer()); }
+    ref(const ref<U>& r) { assign(r.pointer()); }
 
-    /** @note 复制构造函数必须在上述函数的后面 */
+    /** 复制构造函数(因为是特化模板，故必须放在上述模板函数的后面) */
     ref(const ref<T>& r) { assign(r.m_ptr); }
 
     ~ref() { clear(); }
 
 public:
-    template <typename U>
-    ref<T>& operator= (const weak_ref<U>& r)
-    {
-        assign(r.pointer());
-        return *this;
-    }
-
     ref<T>& operator= (const ref<T>& r)
     {
         assign(r.m_ptr);
         return *this;
     }
+	
+	bool operator== (const weak_ref<T>& r) const
+	{
+		return weak_ref<T>::operator==(this, r);
+	}
+
+	bool operator!= (const weak_ref<T>& r) const
+	{
+		return weak_ref::operator!=(this, r);
+	}
 
 public:
     void assign(T *p)

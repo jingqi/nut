@@ -71,6 +71,8 @@ public:
 
     virtual void handleLog(const std::string &logPath, const LogRecord &rec)
     {
+        (void) logPath; // unused
+
         m_os << rec.toString() << std::endl;
         m_os.flush();
     }
@@ -85,6 +87,8 @@ public :
 
     virtual void handleLog(const std::string &loggerpath, const LogRecord &l)
     {
+        (void) loggerpath; // unused
+
         std::cout << "[" << l.getTime().toString() << "] ";
         if (m_colored)
         {
@@ -137,6 +141,8 @@ public :
 
     virtual void handleLog(const std::string &logPath, const LogRecord & rec)
     {
+        (void) logPath; // unused
+
         m_ofs << rec.toString() << std::endl;
         m_ofs.flush();
     }
@@ -160,6 +166,8 @@ public :
 
     virtual void handleLog(const std::string &logPath, const LogRecord &rec)
     {
+        (void) logPath; // unused
+
         int level = 0;
         switch (rec.getLevel())
         {

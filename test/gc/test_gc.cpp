@@ -47,7 +47,7 @@ NUT_FIXTURE(TestGC)
 
             NUT_TA(2 == obj_count);
 
-            pb = NULL;
+            pb.clear();
             NUT_TA(1 == obj_count);
         }
 

@@ -49,14 +49,14 @@ class ConfigFile
             const std::string::size_type index1 = line.find_first_of('[');
             const std::string::size_type index2 = line.find_first_of(']');
             if (std::string::npos == index1 || std::string::npos == index2 || index1 > index2)
-                return NULL;
+                return ref<Sector>(NULL);
             const std::string::size_type index3 = line.find_first_of("#;", index2);
 
             for (register size_t i = 0; i < index1; ++i)
             {
                 const char c = line.at(i);
                 if (c != ' ' && c != '\t')
-                    return NULL;
+                    return ref<Sector>(NULL);
             }
 
             const size_t linelen = line.length();
@@ -66,7 +66,7 @@ class ConfigFile
                 if (c == '#' || c == ';')
                     break;
                 else if (c != ' ' && c != '\t')
-                    return NULL;
+                    return ref<Sector>(NULL);
             }
 
             ref<Sector> ret = gc_new<Sector>();
