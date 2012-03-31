@@ -20,11 +20,8 @@ protected:
     T *m_ptr;
 
 public:
-    /** 默认构造函数 */
-    weak_ref() : m_ptr(NULL) {}
-
     /** 构造函数 */
-    weak_ref(T *ptr) : m_ptr(ptr) {}
+    weak_ref(T *ptr = NULL) : m_ptr(ptr) {}
 
     /** 隐式类型转换 */
     template <typename U>
@@ -66,21 +63,21 @@ protected:
     using weak_ref<T>::m_ptr;
 
 public:
-    ref() {}
+    ref() : weak_ref<T>(NULL) {}
 
     /** 类型转换 */
-    explicit ref(T *p) { assign(p); }
+    explicit ref(T *p) : weak_ref<T>(NULL) { assign(p); }
 
     /** 类型转换 */
     template <typename U>
-    explicit ref(const weak_ref<U>& r) { assign(r.pointer()); }
+    explicit ref(const weak_ref<U>& r) : weak_ref<T>(NULL) { assign(r.pointer()); }
 
     /** 隐式类型转换 */
     template <typename U>
-    ref(const ref<U>& r) { assign(r.pointer()); }
+    ref(const ref<U>& r) : weak_ref<T>(NULL) { assign(r.pointer()); }
 
     /** 复制构造函数(因为是特化模板，故必须放在上述模板函数的后面) */
-    ref(const ref<T>& r) { assign(r.m_ptr); }
+    ref(const ref<T>& r) : weak_ref<T>(NULL) { assign(r.m_ptr); }
 
     ~ref() { clear(); }
 
@@ -93,12 +90,12 @@ public:
 	
 	bool operator== (const weak_ref<T>& r) const
 	{
-		return weak_ref<T>::operator==(this, r);
+		return m_ptr == r.pointer();
 	}
 
 	bool operator!= (const weak_ref<T>& r) const
 	{
-		return weak_ref::operator!=(this, r);
+		return m_ptr != r.pointer();
 	}
 
 public:
