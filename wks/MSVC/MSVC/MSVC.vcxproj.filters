@@ -64,6 +64,9 @@
     <Filter Include="头文件\mem">
       <UniqueIdentifier>{41823d73-0684-4920-bcbd-24eeade40542}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\platform">
+      <UniqueIdentifier>{7525b6bf-43dc-436a-a53a-6f938530c9d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -210,8 +213,23 @@
     <ClInclude Include="..\..\..\nut\tree\rbtree.hpp">
       <Filter>头文件\tree</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\mem\scoped_alloc.hpp">
+    <ClInclude Include="..\..\..\nut\mem\autofree.h">
       <Filter>头文件\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\mem\scoped_gc.hpp">
+      <Filter>头文件\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\memtool\singleton.hpp">
+      <Filter>头文件\memtool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\debugging\static_assert.hpp">
+      <Filter>头文件\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\platform\platform.hpp">
+      <Filter>头文件\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\platform\stdint.hpp">
+      <Filter>头文件\platform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
