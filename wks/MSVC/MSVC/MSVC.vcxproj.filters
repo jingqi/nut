@@ -67,6 +67,9 @@
     <Filter Include="头文件\platform">
       <UniqueIdentifier>{7525b6bf-43dc-436a-a53a-6f938530c9d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\mem">
+      <UniqueIdentifier>{b85d0dbf-7120-4cf2-b5aa-9da0f38df56d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -213,9 +216,6 @@
     <ClInclude Include="..\..\..\nut\tree\rbtree.hpp">
       <Filter>头文件\tree</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\mem\autofree.h">
-      <Filter>头文件\mem</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\mem\scoped_gc.hpp">
       <Filter>头文件\mem</Filter>
     </ClInclude>
@@ -262,6 +262,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\tree\test_bst.cpp">
       <Filter>源文件\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\mem\test_scoped_gc.cpp">
+      <Filter>源文件\mem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
