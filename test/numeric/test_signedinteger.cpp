@@ -11,6 +11,8 @@ NUT_FIXTURE(TestSignedInteger)
     NUT_CASES_BEGIN()
     NUT_CASE(testSmoking)
     NUT_CASE(testComparator)
+	NUT_CASE(testMathOperator)
+	NUT_CASE(testBitOperator)
     NUT_CASES_END()
 
     void setUp() {}
@@ -42,6 +44,35 @@ NUT_FIXTURE(TestSignedInteger)
         NUT_TA(SignedInteger<3>(9) > SignedInteger<3>(5));
         NUT_TA(!(SignedInteger<3>(2) < SignedInteger<3>(2)));
     }
+
+	void testMathOperator()
+	{
+		NUT_TA(SignedInteger<3>(2) + SignedInteger<3>(-3) == SignedInteger<3>(-1));
+
+		NUT_TA(SignedInteger<3>(2) - SignedInteger<3>(-3) == SignedInteger<3>(5));
+
+		NUT_TA(SignedInteger<3>(2) * SignedInteger<3>(-3) == SignedInteger<3>(-6));
+
+		NUT_TA(SignedInteger<3>(4) / SignedInteger<3>(3) == SignedInteger<3>(4/3));
+		NUT_TA(SignedInteger<3>(4) / SignedInteger<3>(-3) == SignedInteger<3>(4/-3));
+		NUT_TA(SignedInteger<3>(-4) / SignedInteger<3>(3) == SignedInteger<3>(-4/3));
+		NUT_TA(SignedInteger<3>(-4) / SignedInteger<3>(-3) == SignedInteger<3>(-4/-3));
+
+		NUT_TA(SignedInteger<3>(4) % SignedInteger<3>(3) == SignedInteger<3>(4%3));
+		NUT_TA(SignedInteger<3>(4) % SignedInteger<3>(-3) == SignedInteger<3>(4%-3));
+		NUT_TA(SignedInteger<3>(-4) % SignedInteger<3>(3) == SignedInteger<3>(-4%3));
+		NUT_TA(SignedInteger<3>(-4) % SignedInteger<3>(-3) == SignedInteger<3>(-4%-3));
+	}
+
+	void testBitOperator()
+	{
+		NUT_TA((SignedInteger<3>(5) | SignedInteger<3>(3)) == SignedInteger<3>(5|3));
+		NUT_TA((SignedInteger<3>(5) & SignedInteger<3>(3)) == SignedInteger<3>(5&3));
+		NUT_TA((SignedInteger<3>(5) ^ SignedInteger<3>(3)) == SignedInteger<3>(5^3));
+
+		NUT_TA((SignedInteger<3>(5) << 2) == SignedInteger<3>(5 << 2));
+		NUT_TA((SignedInteger<3>(5) >> 1) == SignedInteger<3>(5 >> 1));
+	}
 };
 
 NUT_REGISTER_FIXTURE(TestSignedInteger, "numeric,quiet")

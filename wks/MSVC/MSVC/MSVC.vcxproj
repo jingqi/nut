@@ -90,7 +90,7 @@
     <ClInclude Include="..\..\..\nut\mem\autofree.h" />
     <ClInclude Include="..\..\..\nut\mem\scoped_gc.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\byte_array_number.hpp" />
-    <ClInclude Include="..\..\..\nut\numeric\SignedInteger.hpp" />
+    <ClInclude Include="..\..\..\nut\numeric\signedinteger.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\unsignedinteger.hpp" />
     <ClInclude Include="..\..\..\nut\platform\platform.hpp" />
     <ClInclude Include="..\..\..\nut\platform\stdint.hpp" />

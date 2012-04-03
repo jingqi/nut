@@ -147,9 +147,6 @@
     <ClInclude Include="..\..\..\nut\gc\gcwrapper.hpp">
       <Filter>头文件\gc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\numeric\SignedInteger.hpp">
-      <Filter>头文件\numeric</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\numeric\byte_array_number.hpp">
       <Filter>头文件\numeric</Filter>
     </ClInclude>
@@ -230,6 +227,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\nut\platform\stdint.hpp">
       <Filter>头文件\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\signedinteger.hpp">
+      <Filter>头文件\numeric</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
