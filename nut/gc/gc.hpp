@@ -9,7 +9,6 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-// #include <new.h>
 #include <new>
 
 #include "gcwrapper.hpp"

@@ -231,6 +231,9 @@
     <ClInclude Include="..\..\..\nut\numeric\signedinteger.hpp">
       <Filter>头文件\numeric</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\biginteger.hpp">
+      <Filter>头文件\numeric</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -264,6 +267,9 @@
       <Filter>源文件\tree</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\test\numeric\test_unsignedinteger.cpp">
+      <Filter>源文件\numeric</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\numeric\test_biginteger.cpp">
       <Filter>源文件\numeric</Filter>
     </ClCompile>
   </ItemGroup>

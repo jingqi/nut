@@ -27,13 +27,13 @@ public:
 
 	explicit UnsignedInteger(unsigned long v)
 	{
-		unsigned_expand(reinterpret_cast<const uint8_t*>(&v), sizeof(v), m_bytes, N);
+		expand_unsigned(reinterpret_cast<const uint8_t*>(&v), sizeof(v), m_bytes, N);
 	}
 
 	UnsignedInteger(const uint8_t *buf, size_t len)
 	{
 		assert(NULL != buf);
-		unsigned_expand(buf, len, m_bytes, N);
+		expand_unsigned(buf, len, m_bytes, N);
 	}
 
 	template <size_t M>
@@ -97,14 +97,14 @@ public:
 	UnsignedInteger<N> operator/(const UnsignedInteger<N>& x) const
 	{
 		UnsignedInteger<N> ret;
-		unsigned_divide(m_bytes, x.m_bytes, ret.m_bytes, NULL, N);
+		divide_unsigned(m_bytes, x.m_bytes, ret.m_bytes, NULL, N);
 		return ret;
 	}
 
 	UnsignedInteger<N> operator%(const UnsignedInteger<N>& x) const
 	{
 		UnsignedInteger<N> ret;
-		unsigned_divide(m_bytes, x.m_bytes, NULL, ret.m_bytes, N);
+		divide_unsigned(m_bytes, x.m_bytes, NULL, ret.m_bytes, N);
 		return ret;
 	}
 
@@ -220,19 +220,19 @@ public:
 	UnsignedInteger<N> operator>>(size_t count) const
 	{
 		UnsignedInteger<N> ret;
-		unsigned_shift_right(m_bytes, ret.m_bytes, N, count);
+		shift_right_unsigned(m_bytes, ret.m_bytes, N, count);
 		return ret;
 	}
 
 	UnsignedInteger<N>& operator<<=(size_t count) const
 	{
-		shift_left(m_bytes, m_bytes, N, count);
+		shift_left_assign(m_bytes, N, count);
 		return *this;
 	}
 
 	UnsignedInteger<N>& operator>>=(size_t count) const
 	{
-		unsigned_shift_right(m_bytes, m_bytes, N, count);
+		shift_right_assign_unsigned(m_bytes, N, count);
 		return *this;
 	}
 
@@ -248,7 +248,7 @@ public:
 
 	bool operator<(const UnsignedInteger<N>& x) const
 	{
-		return unsigned_less_then(m_bytes, x.m_bytes, N);
+		return less_then_unsigned(m_bytes, x.m_bytes, N);
 	}
 
 	bool operator>(const UnsignedInteger<N>& x) const
@@ -316,7 +316,7 @@ public:
 	unsigned long ulong_value() const
 	{
 		unsigned long ret = 0;
-		signed_expand(m_bytes, N, reinterpret_cast<uint8_t*>(&ret), sizeof(ret));
+		expand_signed(m_bytes, N, reinterpret_cast<uint8_t*>(&ret), sizeof(ret));
 		return ret;
 	}
 };

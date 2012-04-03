@@ -29,7 +29,7 @@ public :
 
     explicit SignedInteger(long v)
     {
-        signed_expand(reinterpret_cast<const uint8_t*>(&v), sizeof(v), m_bytes, N);
+        expand_signed(reinterpret_cast<const uint8_t*>(&v), sizeof(v), m_bytes, N);
     }
 
     /** 
@@ -113,14 +113,14 @@ public :
 	SignedInteger<N> operator/(const SignedInteger<N>& x) const
 	{
 		SignedInteger<N> ret;
-		signed_divide(m_bytes, x.m_bytes, ret.m_bytes, NULL, N);
+		divide_signed(m_bytes, x.m_bytes, ret.m_bytes, NULL, N);
 		return ret;
 	}
 
 	SignedInteger<N> operator%(const SignedInteger<N>& x) const
 	{
 		SignedInteger<N> ret;
-		signed_divide(m_bytes, x.m_bytes, NULL, ret.m_bytes, N);
+		divide_signed(m_bytes, x.m_bytes, NULL, ret.m_bytes, N);
 		return ret;
 	}
 
@@ -236,7 +236,7 @@ public :
 	SignedInteger<N> operator>>(size_t count) const
 	{
 		SignedInteger<N> ret;
-		signed_shift_right(m_bytes, ret.m_bytes, N, count);
+		shift_right_signed(m_bytes, ret.m_bytes, N, count);
 		return ret;
 	}
 
@@ -264,7 +264,7 @@ public :
 
     bool operator<(const SignedInteger<N>& x) const
     {
-        return signed_less_then(m_bytes, x.m_bytes, N);
+        return less_then_signed(m_bytes, x.m_bytes, N);
     }
 
     bool operator>(const SignedInteger<N>& x) const
@@ -330,15 +330,15 @@ public:
     }
 
     /** 能够存储数据而不丢失符号的最小字节数组长度 */
-    int min_buffer_size() const
+    int significant_size() const
     {
-		return signed_min_size(m_bytes, N);
+		return significant_size_signed(m_bytes, N);
 	}
 
     long long_value() const
     {
         long ret = 0;
-        signed_expand(m_bytes, N, reinterpret_cast<uint8_t*>(&ret), sizeof(long));
+        expand_signed(m_bytes, N, reinterpret_cast<uint8_t*>(&ret), sizeof(long));
         return ret;
     }
 };
