@@ -263,5 +263,8 @@
     <ClCompile Include="..\..\..\test\tree\test_bst.cpp">
       <Filter>源文件\tree</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\test\numeric\test_unsignedinteger.cpp">
+      <Filter>源文件\numeric</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

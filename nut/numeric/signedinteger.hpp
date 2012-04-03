@@ -29,14 +29,14 @@ public :
 
     explicit SignedInteger(long v)
     {
-        signed_expand(reinterpret_cast<const uint8_t*>(&v), sizeof(long), m_bytes, N);
+        signed_expand(reinterpret_cast<const uint8_t*>(&v), sizeof(v), m_bytes, N);
     }
 
     /** 
      * @param withSign
      *      传入的缓冲区是否带符号，如果不带符号，将被视为无符号正数
      */
-    SignedInteger(const uint8_t* buf, size_t len, bool withSign)
+    SignedInteger(const uint8_t *buf, size_t len, bool withSign)
     {
         assert(NULL != buf && len > 0);
         if (withSign)
@@ -252,7 +252,6 @@ public :
 		return *this;
 	}
 
-
     bool operator==(const SignedInteger<N>& x) const
     {
         return 0 == ::memcmp(m_bytes, x.m_bytes, N);
@@ -310,12 +309,12 @@ public:
 		return *this;
 	}
 
-    bool isPositive() const
+    bool is_positive() const
     {
         return signed_is_positive(m_bytes, N);
     }
 
-    bool isZero() const
+    bool is_zero() const
     {
         return is_zero(m_bytes, N);
     }
@@ -327,16 +326,16 @@ public:
 
     uint8_t* buffer()
     {
-        return const_cast<uint8_t[]>(static_cast<const SignedInteger<N>&>(*this).buffer());
+        return const_cast<uint8_t*>(static_cast<const SignedInteger<N>&>(*this).buffer());
     }
 
     /** 能够存储数据而不丢失符号的最小字节数组长度 */
-    int minSize() const
+    int min_buffer_size() const
     {
 		return signed_min_size(m_bytes, N);
 	}
 
-    long longValue() const
+    long long_value() const
     {
         long ret = 0;
         signed_expand(m_bytes, N, reinterpret_cast<uint8_t*>(&ret), sizeof(long));

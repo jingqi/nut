@@ -376,7 +376,7 @@ inline void circle_shift_right(const uint8_t *a, uint8_t *x, size_t N, size_t co
 }
 
 /**
- * 相除
+ * (有符号数)相除
  * @param x
  *      商
  * @param y
@@ -384,7 +384,8 @@ inline void circle_shift_right(const uint8_t *a, uint8_t *x, size_t N, size_t co
  */
 inline void signed_divide(const uint8_t *a, const uint8_t *b, uint8_t *x, uint8_t *y, size_t N)
 {
-	assert(NULL != a && NULL != b && (NULL != x || NULL != y) && N > 0);
+	assert(NULL != a && NULL != b && N > 0);
+	assert(NULL != x || NULL != y);
 
 	// 常量
 	const size_t divided_len = signed_min_size(a, N);
@@ -416,25 +417,101 @@ inline void signed_divide(const uint8_t *a, const uint8_t *b, uint8_t *x, uint8_
 		}
 	}
 
+	const bool remained_is_zero = is_zero(remained + 1, divider_len);
 	if (NULL != x)
 	{
-		// 修正补数形式的商
-		signed_expand(x, divided_len, x, N);
-		if (is_zero(remained + 1, divider_len))
+		/**
+		 修正补数形式的商:
+		   如果除尽且除数为负数，则商加1
+		   如果未除尽且商为负数，则商加1
+		 */
+		if (remained_is_zero)
 		{
 			if (!divider_positive)
-				increase(x, x, N);
+				increase(x, x, divided_len);
 		}
 		else
 		{
-			if (!signed_is_positive(x, N))
-				increase(x, x, N);
+			if (!signed_is_positive(x, divided_len))
+				increase(x, x, divided_len);
 		}
+		signed_expand(x, divided_len, x, N);
 	}
 	if (NULL != y)
+	{
+		/**
+		 恢复余数:
+		 如果未除尽且余数符号与被除数不一致，余数需加修正
+		 */
+		if (!remained_is_zero && remained_positive != divided_positive)
+		{
+			if (divider_positive == divided_positive)
+				add(remained + 1, b, remained + 1, divider_len);
+			else
+				sub(remained + 1, b, remained + 1, divider_len);
+		}
 		signed_expand(remained + 1, divider_len, y, N);
+	}
 
 	::free(remained);
+}
+
+/**
+ * (无符号数)相除
+ * @param x
+ *    商
+ * @param y
+ *    余数
+ */
+inline void unsigned_divide(const uint8_t *a, const uint8_t *b, uint8_t *x, uint8_t *y, size_t N)
+{
+	assert(NULL != a && NULL != b && N > 0);
+	assert(NULL != x || NULL != y);
+
+	// 常量
+	const size_t divided_len = unsigned_min_size(a, N);
+	const size_t divider_len = unsigned_min_size(b, N);
+
+	// 逐位试商
+	uint8_t *remained = (uint8_t*) ::malloc(sizeof(uint8_t) * (divider_len + 1)); // 余数 remained[1 ~ (divider_len + 1)], remained[0]用于左移补位
+	::memset(remained + 1, 0, divider_len); // 初始化余数
+	bool remained_positive = true;
+	for (register size_t i = 0; i < divided_len; ++i)
+	{
+		remained[0] = a[divided_len - i - 1]; // 余数左移时的低位补位部分
+		if (NULL != x)
+			x[divided_len - i - 1] = 0; // 初始化商，注意，兼容 x==a 的情况
+
+		for (register size_t j = 0; j < 8; ++j)
+		{
+			shift_left(remained, remained, divider_len + 1, 1); // 余数左移1位
+			if (remained_positive)
+				sub(remained + 1, b, remained + 1, divider_len);
+			else
+				add(remained + 1, b, remained + 1, divider_len);
+
+			remained_positive = signed_is_positive(remained + 1, divider_len);
+			if (NULL != x && remained_positive)
+				x[divided_len - i - 1] |= (1 << (7 - j));
+		}
+
+		// 商
+		if (NULL != x)
+			unsigned_expand(x, divided_len, x, N);
+		// 余数
+		if (NULL != y)
+		{
+			/**
+			 恢复余数:
+			 如果未除尽且余数符号与被除数不一致，余数需加上除数
+			 */
+			if (!is_zero(remained + 1, divider_len) && !remained_positive)
+				add(remained + 1, b, remained + 1, divider_len);
+			unsigned_expand(remained + 1, divider_len, y, N);
+		}
+
+		::free(remained);
+	}
 }
 
 /** 比特与 */

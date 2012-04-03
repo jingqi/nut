@@ -8,13 +8,320 @@
 #ifndef ___HEADFILE_070364DB_A9E6_411B_A19E_5F9711AFD997_
 #define ___HEADFILE_070364DB_A9E6_411B_A19E_5F9711AFD997_
 
+#include <assert.h>
+#include "byte_array_number.hpp"
+
 namespace nut
 {
 
 template <size_t N>
 class UnsignedInteger
 {
+	uint8_t m_bytes[N];
+
+public:
+	UnsignedInteger()
+	{
+		::memset(m_bytes, 0, N);
+	}
+
+	explicit UnsignedInteger(unsigned long v)
+	{
+		unsigned_expand(reinterpret_cast<const uint8_t*>(&v), sizeof(v), m_bytes, N);
+	}
+
+	UnsignedInteger(const uint8_t *buf, size_t len)
+	{
+		assert(NULL != buf);
+		unsigned_expand(buf, len, m_bytes, N);
+	}
+
+	template <size_t M>
+	explicit UnsignedInteger(const UnsignedInteger<M>& x)
+	{
+		unsigned_expand(x.m_bytes, M, m_bytes, N);
+	}
+
+	UnsignedInteger(const UnsignedInteger<N>& x)
+	{
+		::memcpy(m_bytes, x.m_bytes, N);
+	}
+
+#ifndef NDEBUG
+	~UnsignedInteger()
+	{
+		::memset(m_bytes, 0xFE, N);
+	}
+#endif
+
+public:
+	UnsignedInteger<N>& operator=(const UnsignedInteger<N>& x)
+	{
+		::memcpy(m_bytes, x.m_bytes, N);
+		return *this;
+	}
+
+	const uint8_t& operator[](size_t i) const
+	{
+		assert(0 <= i && i < N);
+		return m_bytes[i];
+	}
+
+	uint8_t& operator[](size_t i)
+	{
+		assert(0 <= i && i < N);
+		return const_cast<uint8_t&>(static_cast<const UnsignedInteger<N>&>(*this)[i]);
+	}
+
+	UnsignedInteger<N> operator+(const UnsignedInteger<N>& x) const
+	{
+		UnsignedInteger<N> ret;
+		add(m_bytes, x.m_bytes, ret.m_bytes, N);
+		return ret;
+	}
+
+	UnsignedInteger<N> operator-(const UnsignedInteger<N>& x) const
+	{
+		UnsignedInteger<N> ret;
+		sub(m_bytes, x.m_bytes, ret.m_bytes, N);
+		return ret;
+	}
+
+	UnsignedInteger<N> operator*(const UnsignedInteger<N>& x) const
+	{
+		UnsignedInteger<N> ret;
+		multiply(m_bytes, x.m_bytes, ret.m_bytes, N);
+		return ret;
+	}
+
+	UnsignedInteger<N> operator/(const UnsignedInteger<N>& x) const
+	{
+		UnsignedInteger<N> ret;
+		unsigned_divide(m_bytes, x.m_bytes, ret.m_bytes, NULL, N);
+		return ret;
+	}
+
+	UnsignedInteger<N> operator%(const UnsignedInteger<N>& x) const
+	{
+		UnsignedInteger<N> ret;
+		unsigned_divide(m_bytes, x.m_bytes, NULL, ret.m_bytes, N);
+		return ret;
+	}
+
+	UnsignedInteger<N>& operator+=(const UnsignedInteger<N>& x)
+	{
+		add(m_bytes, x.m_bytes, m_bytes, N);
+		return *this;
+	}
+
+	UnsignedInteger<N>& operator-=(const UnsignedInteger<N>& x)
+	{
+		sub(m_bytes, x.m_bytes, m_bytes, N);
+		return *this;
+	}
+
+	UnsignedInteger<N>& operator*=(const UnsignedInteger<N>& x)
+	{
+		multiply(m_bytes, x.m_bytes, m_bytes, N);
+		return *this;
+	}
+
+	UnsignedInteger<N>& operator/=(const UnsignedInteger<N>& x)
+	{
+		unsigned_divide(m_bytes, x.m_bytes, m_bytes, NULL, N);
+		return *this;
+	}
+
+	UnsignedInteger<N>& operator%=(const UnsignedInteger<N>& x)
+	{
+		unsigned_divide(m_bytes, x.m_bytes, NULL, m_bytes, N);
+		return *this;
+	}
+
+	UnsignedInteger<N>& operator++()
+	{
+		increase(m_bytes, m_bytes, N);
+		return *this;
+	}
+
+	UnsignedInteger<N> operator++(int)
+	{
+		UnsignedInteger<N> ret(*this);
+		increase(m_bytes, m_bytes, N);
+		return ret;
+	}
+
+	UnsignedInteger<N>& operator--()
+	{
+		decrease(m_bytes, m_bytes, N);
+		return *this;
+	}
+
+	UnsignedInteger<N> operator--(int)
+	{
+		UnsignedInteger<N> ret(*this);
+		decrease(m_bytes, m_bytes, N);
+		return ret;
+	}
+
+	UnsignedInteger<N> operator|(const  UnsignedInteger<N>& x) const
+	{
+		UnsignedInteger<N> ret;
+		bit_or(m_bytes, x.m_bytes, ret.m_bytes, N);
+		return ret;
+	}
+
+	UnsignedInteger<N> operator&(const UnsignedInteger<N>& x) const
+	{
+		UnsignedInteger<N> ret;
+		bit_and(m_bytes, x.m_bytes, ret.m_bytes, N);
+		return ret;
+	}
+
+	UnsignedInteger<N> operator^(const UnsignedInteger<N>& x) const
+	{
+		UnsignedInteger<N> ret;
+		bit_xor(m_bytes, x.m_bytes, ret.m_bytes, N);
+		return ret;
+	}
+
+	UnsignedInteger<N> operator~() const
+	{
+		UnsignedInteger<N> ret;
+		bit_not(m_bytes, ret.m_bytes, N);
+		return ret;
+	}
+
+	UnsignedInteger<N>& operator|=(const UnsignedInteger<N>& x)
+	{
+		bit_or(m_bytes, x.m_bytes, m_bytes, N);
+		return *this;
+	}
+
+	UnsignedInteger<N>& operator&=(const UnsignedInteger<N>& x)
+	{
+		bit_and(m_bytes, x.m_bytes, m_bytes, N);
+		return *this;
+	}
+
+	UnsignedInteger<N>& operator^=(const UnsignedInteger<N>& x)
+	{
+		bit_xor(m_bytes, x.m_bytes, m_bytes, N);
+		return *this;
+	}
+
+	UnsignedInteger<N> operator<<(size_t count) const
+	{
+		UnsignedInteger<N> ret;
+		shift_left(m_bytes, ret.m_bytes, N, count);
+		return ret;
+	}
+
+	UnsignedInteger<N> operator>>(size_t count) const
+	{
+		UnsignedInteger<N> ret;
+		unsigned_shift_right(m_bytes, ret.m_bytes, N, count);
+		return ret;
+	}
+
+	UnsignedInteger<N>& operator<<=(size_t count) const
+	{
+		shift_left(m_bytes, m_bytes, N, count);
+		return *this;
+	}
+
+	UnsignedInteger<N>& operator>>=(size_t count) const
+	{
+		unsigned_shift_right(m_bytes, m_bytes, N, count);
+		return *this;
+	}
+
+	bool operator==(const UnsignedInteger<N>& x) const
+	{
+		return 0 == ::memcmp(m_bytes, x.m_bytes, N);
+	}
+
+	bool operator!=(const UnsignedInteger<N>& x) const
+	{
+		return !(*this == x);
+	}
+
+	bool operator<(const UnsignedInteger<N>& x) const
+	{
+		return unsigned_less_then(m_bytes, x.m_bytes, N);
+	}
+
+	bool operator>(const UnsignedInteger<N>& x) const
+	{
+		return x < *this;
+	}
+
+	bool operator<=(const UnsignedInteger<N>& x) const
+	{
+		return !(x < *this);
+	}
+
+	bool operator>=(const UnsignedInteger<N>& x) const
+	{
+		return !(*this < x);
+	}
+
+public:
+	UnsignedInteger<N> circle_shift_left(size_t count) const
+	{
+		UnsignedInteger<N> ret;
+		circle_shift_left(m_bytes, ret.m_bytes, N, count);
+		return ret;
+	}
+
+	UnsignedInteger<N>& self_circle_shift_left(size_t count) const
+	{
+		circle_shift_left(m_bytes, m_bytes, N, count);
+		return *this;
+	}
+
+	UnsignedInteger<N> circle_shift_right(size_t count) const
+	{
+		UnsignedInteger<N> ret;
+		circle_shift_right(m_bytes, ret.m_bytes, N, count);
+		return ret;
+	}
+
+	UnsignedInteger<N>& self_circle_shift_right(size_t count) const
+	{
+		circle_shift_right(m_bytes, m_bytes, N, count);
+		return *this;
+	}
+
+	bool is_zero() const
+	{
+		return is_zero(m_bytes, N);
+	}
+
+	const uint8_t* buffer() const
+	{
+		return m_bytes;
+	}
+
+	uint8_t* buffer()
+	{
+		return const_cast<uint8_t*>(static_cast<const UnsignedInteger<N>&>(*this).buffer());
+	}
+
+	int min_buffer_size() const
+	{
+		return unsigned_min_size(m_bytes, N);
+	}
+
+	unsigned long ulong_value() const
+	{
+		unsigned long ret = 0;
+		signed_expand(m_bytes, N, reinterpret_cast<uint8_t*>(&ret), sizeof(ret));
+		return ret;
+	}
 };
+
+}
 
 #endif /* head file guarder */
 
