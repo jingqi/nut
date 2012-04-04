@@ -43,7 +43,7 @@ private:
 		if (m_buffer_len >= size_needed)
 			return;
 
-		int newcap = m_buffer_len * 3 / 2;
+		size_t newcap = m_buffer_len * 3 / 2;
 		if (newcap < size_needed)
 			newcap = size_needed;
 		uint8_t *newbuf = (uint8_t*) ::malloc(sizeof(uint8_t) * newcap);
@@ -244,8 +244,7 @@ public:
 		ret.ensure_cap(x.m_significant_len);
 		divide_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, NULL, 0, ret.m_buffer, x.m_significant_len);
 		ret.m_significant_len = x.m_significant_len;
-		// TODO
-		ret.m_positive = ((m_positive && x.m_positive) || (!m_positive && !x.m_positive));
+		ret.m_positive = m_positive;
 		ret.adjust_significant_len();
 		return ret;
 	}
