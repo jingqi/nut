@@ -47,8 +47,9 @@ private:
 		if (newcap < size_needed)
 			newcap = size_needed;
 		uint8_t *newbuf = (uint8_t*) ::malloc(sizeof(uint8_t) * newcap);
-		if (NULL != m_buffer && m_significant_len > 0)
+		if (m_significant_len > 0)
 			::memcpy(newbuf, m_buffer, m_significant_len);
+		::memset(newbuf, 0, newcap - m_significant_len);
 		if (NULL != m_buffer)
 			::free(m_buffer);
 		m_buffer = newbuf;
@@ -73,6 +74,7 @@ public:
 			v = -v; // 即使取反的过程中溢出也没问题
 		::memcpy(m_buffer, &v, sizeof(v));
 		m_significant_len = sizeof(v);
+		adjust_significant_len();
 	}
 
 	BigInteger(const uint8_t *buf, size_t len, bool withSign)
@@ -83,7 +85,7 @@ public:
 		::memcpy(m_buffer, buf, len);
 		if (withSign && !is_positive_signed(buf, len))
 		{
-			opposite_signed(m_buffer, m_buffer, len);
+			opposite_assign_signed(m_buffer, len);
 			m_positive = false;
 		}
 		m_significant_len = len;
@@ -97,6 +99,7 @@ public:
 		if (x.m_significant_len > 0)
 			::memcpy(m_buffer, x.m_buffer, x.m_significant_len);
 		m_significant_len = x.m_significant_len;
+		adjust_significant_len();
 	}
 
 	~BigInteger()
@@ -112,6 +115,7 @@ public:
 			::memcpy(m_buffer, x.m_buffer, x.m_significant_len);
 		m_positive = x.m_positive;
 		m_significant_len = x.m_significant_len;
+		adjust_significant_len();
 	}
 
 	bool operator==(const BigInteger& x) const
@@ -153,15 +157,10 @@ public:
 			return x.m_positive;
 
 		// 同号非零值进行比较
-		const size_t max_sig = (m_significant_len > x.m_significant_len ? m_significant_len : x.m_significant_len);
-		for (register int i = max_sig - 1; i >= 0; ++i)
-		{
-			const uint8_t op1 = (i < m_significant_len ? m_buffer[i] : 0);
-			const uint8_t op2 = (i < x.m_significant_len ? x.m_buffer[i] : 0);
-			if (op1 != op2)
-				return (m_positive && op1 < op2) || (!m_positive && op1 > op2);
-		}
-		return false;
+		if (m_positive)
+			return less_then_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len);
+		else
+			return less_then_unsigned(x.m_buffer, x.m_significant_len, m_buffer, m_significant_len);
 	}
 
 	bool operator>(const BigInteger& x) const
@@ -189,7 +188,6 @@ public:
 			add_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, ret.m_buffer, max_sig + 1);
 			ret.m_significant_len = max_sig + 1;
 			ret.m_positive = m_positive;
-			return ret;
 		}
 		else
 		{
@@ -243,9 +241,10 @@ public:
 	BigInteger operator%(const BigInteger& x) const
 	{
 		BigInteger ret;
-		ret.ensure_cap(m_significant_len);
-		divide_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, NULL, 0, ret.m_buffer, m_significant_len);
-		ret.m_significant_len = m_significant_len;
+		ret.ensure_cap(x.m_significant_len);
+		divide_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, NULL, 0, ret.m_buffer, x.m_significant_len);
+		ret.m_significant_len = x.m_significant_len;
+		// TODO
 		ret.m_positive = ((m_positive && x.m_positive) || (!m_positive && !x.m_positive));
 		ret.adjust_significant_len();
 		return ret;
@@ -320,8 +319,7 @@ public:
 	BigInteger operator>>(size_t count) const
 	{
 		BigInteger ret(*this);
-		shift_right_assign_unsigned(ret.m_buffer, m_significant_len, count);
-		ret.m_significant_len = m_significant_len + count / 8 + 1;
+		shift_right_assign_unsigned(ret.m_buffer, ret.m_significant_len, count);
 		ret.adjust_significant_len();
 		return ret;
 	}
@@ -348,10 +346,7 @@ public:
 	{
 		assert((m_buffer == NULL && m_buffer_len == 0 && m_significant_len == 0) ||
 			(m_buffer != NULL && m_buffer_len > 0 && m_significant_len <= m_buffer_len));
-		for (register size_t i = 0; i < m_significant_len; ++i)
-			if (0 != m_buffer[i])
-				return false;
-		return true;
+		return 0 == m_significant_len || nut::is_zero(m_buffer, m_significant_len);
 	}
 
 	bool is_positive() const
@@ -362,7 +357,7 @@ public:
 	long long_value() const
 	{
 		long ret = 0;
-		::memcpy(&ret, m_buffer, sizeof(ret));
+		expand_unsigned(m_buffer, m_significant_len, (uint8_t*)&ret, sizeof(ret));
 		return (m_positive ? ret : -ret);
 	}
 };

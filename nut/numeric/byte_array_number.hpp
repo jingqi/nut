@@ -227,7 +227,7 @@ inline void expand_assign_unsigned(uint8_t *x, size_t M, size_t N)
  * (有符号数、无符号数)相加
  * x<N> = a<N> + b<N>
  *
- * @return 传递进位
+ * @return 进位
  */
 inline uint8_t add(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 {
@@ -259,7 +259,7 @@ inline uint8_t add(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
  * (有符号数、无符号数)相加
  * a<N> += b<N>
  *
- * @return 传递进位
+ * @return 进位
  */
 inline uint8_t add_assign(uint8_t *a, const uint8_t *b, size_t N)
 {
@@ -270,6 +270,8 @@ inline uint8_t add_assign(uint8_t *a, const uint8_t *b, size_t N)
 /**
  * (有符号数)相加
  * x<P> = a<M> + b<N>
+ *
+ * @return 进位
  */
 inline uint8_t add_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N, uint8_t *x, size_t P)
 {
@@ -300,6 +302,9 @@ inline uint8_t add_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N
 
 /**
  * (无符号数)相加
+ * x<P> = a<M> + b<N>
+ *
+ * @return 进位
  */
 inline uint8_t add_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t N, uint8_t *x, size_t P)
 {
@@ -329,8 +334,9 @@ inline uint8_t add_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t
 
 /**
  * (有符号数、无符号数)加1
+ * x<N> = a<N> + 1
  *
- * @return 传递进位
+ * @return 进位
  */
 inline uint8_t increase(const uint8_t *a, uint8_t *x, size_t N)
 {
@@ -358,8 +364,9 @@ inline uint8_t increase(const uint8_t *a, uint8_t *x, size_t N)
 
 /**
  * (有符号数、无符号数)加1
+ * x<N> += 1
  *
- * @return 传递进位
+ * @return 进位
  */
 inline uint8_t increase_assign(uint8_t *x, size_t N)
 {
@@ -387,8 +394,9 @@ inline uint8_t increase_assign(uint8_t *x, size_t N)
 
 /**
  * (有符号数、无符号数)相减
+ * x<N> = a<N> - b<N>
  *
- * @return 传递进位
+ * @return 进位
  */
 inline uint8_t sub(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 {
@@ -418,8 +426,9 @@ inline uint8_t sub(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 
 /**
  * (有符号数、无符号数)相减
+ * a<N> -= b<N>
  *
- * @return 传递进位
+ * @return 进位
  */
 inline uint8_t sub_assign(uint8_t *a, const uint8_t *b, size_t N)
 {
@@ -429,8 +438,9 @@ inline uint8_t sub_assign(uint8_t *a, const uint8_t *b, size_t N)
 
 /**
  * (有符号数)相减
+ * x<P> = a<M> - b<N>
  *
- * @return 传递进位
+ * @return 进位
  */
 inline uint8_t sub_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N, uint8_t *x, size_t P)
 {
@@ -460,9 +470,10 @@ inline uint8_t sub_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N
 }
 
 /**
- * (无符号数)加1
+ * (无符号数)相减
+ * x<P> = a<M> - b<N>
  *
- * @return 传递进位
+ * @return 进位
  */
 inline uint8_t sub_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t N, uint8_t *x, size_t P)
 {
@@ -492,8 +503,9 @@ inline uint8_t sub_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t
 
 /**
  * (有符号数、无符号数)减1
+ * x<N> = a<N> - 1
  *
- * @return 传递进位
+ * @return 进位
  */
 inline uint8_t decrease(const uint8_t *a, uint8_t *x, size_t N)
 {
@@ -521,8 +533,9 @@ inline uint8_t decrease(const uint8_t *a, uint8_t *x, size_t N)
 
 /**
  * (有符号数、无符号数)减1
+ * x<N> -= 1
  *
- * @return 传递进位
+ * @return 进位
  */
 inline uint8_t decrease_assign(uint8_t *x, size_t N)
 {
@@ -550,8 +563,9 @@ inline uint8_t decrease_assign(uint8_t *x, size_t N)
 
 /**
  * (有符号数)取相反数
+ * x<N> = -a<N>
  *
- * @return 传递进位
+ * @return 进位
  */
 inline uint8_t opposite_signed(const uint8_t *a, uint8_t *x, size_t N)
 {
@@ -577,6 +591,12 @@ inline uint8_t opposite_signed(const uint8_t *a, uint8_t *x, size_t N)
 	return carry;
 }
 
+/**
+ * (有符号数)取相反数
+ * x<N> = -x<N>
+ *
+ * @return 进位
+ */
 inline uint8_t opposite_assign_signed(uint8_t *x, size_t N)
 {
 	assert(NULL != x && N > 0);
@@ -585,6 +605,7 @@ inline uint8_t opposite_assign_signed(uint8_t *x, size_t N)
 
 /**
  * 相乘
+ * x<N> = a<N> * b<N>
  */
 inline void multiply(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 {
@@ -643,7 +664,8 @@ inline void multiply(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 }
 
 /**
- * 相乘
+ * (有符号数)相乘
+ * x<P> = a<M> * b<N>
  */
 inline void multiply_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N, uint8_t *x, size_t P)
 {
@@ -674,7 +696,8 @@ inline void multiply_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t
 }
 
 /**
- * 相乘
+ * (无符号数)相乘
+ * x<P> = a<M> * b<N>
  */
 inline void multiply_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t N, uint8_t *x, size_t P)
 {
@@ -703,6 +726,7 @@ inline void multiply_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size
 
 /**
  * 左移
+ * x<N> = a<N> << count
  */
 inline void shift_left(const uint8_t *a, uint8_t *x, size_t N, size_t count)
 {
@@ -718,6 +742,7 @@ inline void shift_left(const uint8_t *a, uint8_t *x, size_t N, size_t count)
 
 /**
  * 左移
+ * x<N> <<= count
  */
 inline void shift_left_assign(uint8_t *x, size_t N, size_t count)
 {
@@ -727,6 +752,7 @@ inline void shift_left_assign(uint8_t *x, size_t N, size_t count)
 
 /**
  * (无符号数)右移
+ * x<N> = a<N> >> count
  */
 inline void shift_right_unsigned(const uint8_t *a, uint8_t *x, size_t N, size_t count)
 {
@@ -740,6 +766,10 @@ inline void shift_right_unsigned(const uint8_t *a, uint8_t *x, size_t N, size_t 
 	}
 }
 
+/**
+ * (无符号数)右移
+ * x<N> >>= count
+ */
 inline void shift_right_assign_unsigned(uint8_t *x, size_t N, size_t count)
 {
 	assert(NULL != x && N > 0);
@@ -748,6 +778,7 @@ inline void shift_right_assign_unsigned(uint8_t *x, size_t N, size_t count)
 
 /**
  * (有符号数)右移
+ * x<N> = a<N> >> count
  */
 inline void shift_right_signed(const uint8_t *a, uint8_t *x, size_t N, size_t count)
 {
@@ -762,6 +793,10 @@ inline void shift_right_signed(const uint8_t *a, uint8_t *x, size_t N, size_t co
 	}
 }
 
+/**
+ * (有符号数)右移
+ * x<N> >>= count
+ */
 inline void shift_right_assign_signed(uint8_t *x, size_t N, size_t count)
 {
 	assert(NULL != x && N > 0);
@@ -770,6 +805,7 @@ inline void shift_right_assign_signed(uint8_t *x, size_t N, size_t count)
 
 /**
  * 循环左移
+ * x<N> = a<N> <<< count
  */
 inline void circle_shift_left(const uint8_t *a, uint8_t *x, size_t N, size_t count)
 {
@@ -788,6 +824,7 @@ inline void circle_shift_left(const uint8_t *a, uint8_t *x, size_t N, size_t cou
 
 /**
  * 循环右移
+ * x<N> = a<N> >>> count
  */
 inline void circle_shift_right(const uint8_t *a, uint8_t *x, size_t N, size_t count)
 {
@@ -806,6 +843,8 @@ inline void circle_shift_right(const uint8_t *a, uint8_t *x, size_t N, size_t co
 
 /**
  * (有符号数)相除
+ * x<N> = a<N> / b<N>
+ * y<N> = a<N> % b<N>
  *
  * @param x
  *      商
@@ -816,6 +855,7 @@ inline void divide_signed(const uint8_t *a, const uint8_t *b, uint8_t *x, uint8_
 {
 	assert(NULL != a && NULL != b && N > 0);
 	assert(NULL != x || NULL != y);
+	assert(!is_zero(b, N)); // 被除数不能为0
 
 	// 常量
 	const size_t divided_len = significant_size_signed(a, N);
@@ -902,6 +942,7 @@ inline void divide_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N
 	assert(NULL != a && M > 0 && NULL != b && N > 0);
 	assert((NULL != x && P > 0) || (NULL != y && Q > 0));
 	assert(x != b); // 允许 x==a，但是不允许 x==b，否则会破坏数据
+	assert(!is_zero(b, N)); // 被除数不能为0
 
 	// 常量
 	const size_t divided_len = significant_size_signed(a, M);
@@ -991,6 +1032,7 @@ inline void divide_unsigned(const uint8_t *a, const uint8_t *b, uint8_t *x, uint
 {
 	assert(NULL != a && NULL != b && N > 0);
 	assert(NULL != x || NULL != y);
+	assert(!is_zero(b, N)); // 被除数不能为0
 
 	// 常量
 	const size_t divided_len = significant_size_unsigned(a, N);
@@ -1054,6 +1096,7 @@ inline void divide_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t
 	assert(NULL != a && M > 0 && NULL != b && N > 0);
 	assert((NULL != x && P > 0) || (NULL != y && Q > 0));
 	assert(x != b); // 允许 x==a，但是不允许 x==b，否则会破坏数据
+	assert(!is_zero(b, N)); // 被除数不能为0
 
 	// 常量
 	const size_t divided_len = significant_size_unsigned(a, M);
