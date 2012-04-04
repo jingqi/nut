@@ -49,7 +49,7 @@ private:
 		uint8_t *newbuf = (uint8_t*) ::malloc(sizeof(uint8_t) * newcap);
 		if (m_significant_len > 0)
 			::memcpy(newbuf, m_buffer, m_significant_len);
-		::memset(newbuf, 0, newcap - m_significant_len);
+		::memset(newbuf + m_significant_len, 0, newcap - m_significant_len);
 		if (NULL != m_buffer)
 			::free(m_buffer);
 		m_buffer = newbuf;
