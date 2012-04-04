@@ -69,6 +69,8 @@ inline bool is_positive_signed(const uint8_t *a, size_t N)
 
 /**
  * (有符号数)有效字节数
+ *
+ * @return 返回值>=1
  */
 inline size_t significant_size_signed(const uint8_t *a, size_t N)
 {
@@ -83,6 +85,8 @@ inline size_t significant_size_signed(const uint8_t *a, size_t N)
 
 /**
  * (无符号数)有效字节数
+ *
+ * @return 返回值>=1
  */
 inline size_t significant_size_unsigned(const uint8_t *a, size_t N)
 {
@@ -161,13 +165,13 @@ inline bool less_then_signed(const uint8_t *a, size_t M, const uint8_t *b, size_
 	if (positive1 != positive2)
 		return positive2;
 
-	const uint8_t filla = (positive1 ? 0 : 0xFF), fillb = (positive2 ? 0 : 0xFF);
+	const uint8_t fill = (positive1 ? 0 : 0xFF);
 	const size_t word_count = (M < N ? M : N) / sizeof(word_type);
 	for (register int i = (M > N ? M : N) - 1, bound = sizeof(word_type) * word_count;
 		i >= bound; --i)
 	{
-		const uint8_t op1 = (i < (int) M ? a[i] : filla);
-		const uint8_t op2 = (i < (int) N ? b[i] : fillb);
+		const uint8_t op1 = (i < (int) M ? a[i] : fill);
+		const uint8_t op2 = (i < (int) N ? b[i] : fill);
 		if (op1 != op2)
 			return op1 < op2;
 	}
@@ -672,11 +676,12 @@ inline void multiply_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t
 	assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
 	const uint8_t filla = (is_positive_signed(a,M) ? 0 : 0xFF), fillb = (is_positive_signed(b,N) ? 0 : 0xFF);
 	uint8_t *ret = (uint8_t*) ::malloc(P);
+	::memset(ret, 0, P);
 	for (register size_t i = 0; i < P; ++i)
 	{
 		uint8_t carry = 0;
 		const uint16_t mult1 = (i < M ? a[i] : filla);
-		if (i < M && 0 == filla)
+		if (i >= M && 0 == filla)
 			break;
 		if (mult1 == 0)
 			continue;
