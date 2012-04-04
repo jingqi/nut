@@ -703,6 +703,7 @@ inline void multiply_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size
 {
 	assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
 	uint8_t *ret = (uint8_t*) ::malloc(P);
+	::memset(ret, 0, P);
 	for (register size_t i = 0; i < P && i < M; ++i)
 	{
 		uint8_t carry = 0;
