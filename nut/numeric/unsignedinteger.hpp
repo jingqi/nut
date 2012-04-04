@@ -226,13 +226,13 @@ public:
 
 	UnsignedInteger<N>& operator<<=(size_t count) const
 	{
-		shift_left_assign(m_bytes, N, count);
+		shift_left(m_bytes, m_bytes, N, count);
 		return *this;
 	}
 
 	UnsignedInteger<N>& operator>>=(size_t count) const
 	{
-		shift_right_assign_unsigned(m_bytes, N, count);
+		shift_right_unsigned(m_bytes, m_bytes, N, count);
 		return *this;
 	}
 

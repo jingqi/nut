@@ -85,7 +85,7 @@ public:
 		::memcpy(m_buffer, buf, len);
 		if (withSign && !is_positive_signed(buf, len))
 		{
-			opposite_assign_signed(m_buffer, len);
+			opposite_signed(m_buffer, m_buffer, len);
 			m_positive = false;
 		}
 		m_significant_len = len;
@@ -196,7 +196,7 @@ public:
 			ret.m_positive = m_positive;
 			if (!is_positive_signed(ret.m_buffer, max_sig + 1))
 			{
-				opposite_assign_signed(ret.m_buffer, max_sig + 1);
+				opposite_signed(ret.m_buffer, ret.m_buffer, max_sig + 1);
 				ret.m_positive = !m_positive;
 			}
 		}
@@ -309,7 +309,7 @@ public:
 	{
 		BigInteger ret(*this);
 		ret.ensure_cap(m_significant_len + count / 8 + 1);
-		shift_left_assign(ret.m_buffer, m_significant_len + count / 8 + 1, count);
+		shift_left(ret.m_buffer, ret.m_buffer, m_significant_len + count / 8 + 1, count);
 		ret.m_significant_len = m_significant_len + count / 8 + 1;
 		ret.adjust_significant_len();
 		return ret;
@@ -318,7 +318,7 @@ public:
 	BigInteger operator>>(size_t count) const
 	{
 		BigInteger ret(*this);
-		shift_right_assign_unsigned(ret.m_buffer, ret.m_significant_len, count);
+		shift_right_unsigned(ret.m_buffer, ret.m_buffer, ret.m_significant_len, count);
 		ret.adjust_significant_len();
 		return ret;
 	}

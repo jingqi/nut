@@ -144,39 +144,39 @@ public :
 
 	SignedInteger<N>& operator/=(const SignedInteger<N>& x)
 	{
-		signed_divide(m_bytes, x.m_bytes, m_bytes, NULL, N);
+		divide_signed(m_bytes, x.m_bytes, m_bytes, NULL, N);
 		return *this;
 	}
 
 	SignedInteger<N>& operator%=(const SignedInteger<N>& x)
 	{
-		signed_divide(m_bytes, x.m_bytes, NULL, m_bytes, N);
+		divide_signed(m_bytes, x.m_bytes, NULL, m_bytes, N);
 		return *this;
 	}
 
 	SignedInteger<N>& operator++()
 	{
-		increase(m_bytes, m_bytes, N);
+		increase(m_bytes, N);
 		return *this;
 	}
 
 	SignedInteger<N> operator++(int)
 	{
 		SignedInteger<N> ret(*this);
-		increase(m_bytes, m_bytes, N);
+		increase(m_bytes, N);
 		return ret;
 	}
 
 	SignedInteger<N>& operator--()
 	{
-		decrease(m_bytes, m_bytes, N);
+		decrease(m_bytes, N);
 		return *this;
 	}
 
 	SignedInteger<N> operator--(int)
 	{
 		SignedInteger<N> ret(*this);
-		decrease(m_bytes, m_bytes, N);
+		decrease(m_bytes, N);
 		return ret;
 	}
 
@@ -248,7 +248,7 @@ public :
 
 	SignedInteger<N>& operator>>=(size_t count) const
 	{
-		signed_shift_right(m_bytes, m_bytes, N, count);
+		shift_right_signed(m_bytes, m_bytes, N, count);
 		return *this;
 	}
 
@@ -285,12 +285,12 @@ public :
 public:
 	SignedInteger<N> circle_shift_left(size_t count) const
 	{
-		SignedInteger ret;
+		SignedInteger<N> ret;
 		circle_shift_left(m_bytes, ret.m_bytes, N, count);
 		return ret;
 	}
 
-	SignedInteger<N>& self_circle_shift_left(size_t count)
+	SignedInteger<N>& circle_shift_left_assign(size_t count)
 	{
 		circle_shift_left(m_bytes, m_bytes, N, count);
 		return *this;
@@ -303,7 +303,7 @@ public:
 		return ret;
 	}
 
-	SignedInteger<N>& self_circle_shift_right(size_t count)
+	SignedInteger<N>& circle_shift_right_assign(size_t count)
 	{
 		circle_shift_right(m_bytes, m_bytes, N, count);
 		return *this;
@@ -311,7 +311,7 @@ public:
 
     bool is_positive() const
     {
-        return signed_is_positive(m_bytes, N);
+        return is_positive_signed(m_bytes, N);
     }
 
     bool is_zero() const
