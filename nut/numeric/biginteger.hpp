@@ -40,19 +40,22 @@ private:
 	/** 重新分配内存 */
 	void ensure_cap(size_t size_needed)
 	{
+		// 分配内存足够了，无需调整
 		if (m_buffer_len >= size_needed)
 			return;
 
+		// 计算新内存块的大小
 		size_t newcap = m_buffer_len * 3 / 2;
 		if (newcap < size_needed)
 			newcap = size_needed;
-		uint8_t *newbuf = (uint8_t*) ::malloc(sizeof(uint8_t) * newcap);
-		if (m_significant_len > 0)
-			::memcpy(newbuf, m_buffer, m_significant_len);
-		::memset(newbuf + m_significant_len, 0, newcap - m_significant_len);
-		if (NULL != m_buffer)
-			::free(m_buffer);
-		m_buffer = newbuf;
+
+		// 分配新内存块并拷贝数据
+		if (NULL == m_buffer)
+			m_buffer = (uint8_t*) ::malloc(sizeof(uint8_t) * newcap);
+		else
+			m_buffer = (uint8_t*) ::realloc(m_buffer, sizeof(uint8_t) * newcap);
+		assert(NULL != m_buffer);
+		::memset(m_buffer + m_significant_len, 0, size_needed - m_significant_len);
 		m_buffer_len = newcap;
 	}
 
