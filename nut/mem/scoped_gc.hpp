@@ -8,16 +8,12 @@
 #ifndef ___HEADFILE_38E24C42_E36D_453F_A61D_4FE033FF649D_
 #define ___HEADFILE_38E24C42_E36D_453F_A61D_4FE033FF649D_
 
-#include <nut/platform/platform.hpp>
-
-#if defined(NUT_PLATFORM_OS_WINDOWS)
-#   include <allocators>
-#endif
-
 #include <assert.h>
 #include <nut/platform/stdint.hpp>
 #include <nut/memtool/refarg.hpp>
 #include <nut/debugging/static_assert.hpp>
+
+#include "sys_ma.hpp"
 
 namespace nut
 {
@@ -25,7 +21,7 @@ namespace nut
 /**
  * 由该分配器生成的对象将统一由该分配器的clear()函数进行清理
  */
-template <typename AllocT = std::allocator<uint8_t> >
+template <typename MemAlloc = sys_ma>
 class scoped_gc
 {
     enum
@@ -57,8 +53,7 @@ class scoped_gc
         destruct_func_type destruct_func;
     };
 
-	typedef typename AllocT::template rebind<uint8_t>::other byte_allocator_type;
-	byte_allocator_type m_byte_allocator;
+	MemAlloc m_mem_alloc;
 	Block *m_currentBlock;
 	uint8_t *m_end;
     DestructorNode *m_destructChain;
@@ -105,7 +100,7 @@ private:
 		{
 			if (cb >= DEFAULT_BLOCK_BODY_SIZE)
 			{
-				Block *newBlk = (Block*) m_byte_allocator.allocate(BLOCK_HEADER_SIZE + cb);
+				Block *newBlk = (Block*) m_mem_alloc.alloc(BLOCK_HEADER_SIZE + cb);
 				assert(NULL != newBlk);
 				newBlk->blockSize = BLOCK_HEADER_SIZE + cb;
 				if (NULL != m_currentBlock)
@@ -123,7 +118,7 @@ private:
 			}
 			else
 			{
-				Block *newBlk = (Block*) m_byte_allocator.allocate(DEFAULT_BLOCK_LEN);
+				Block *newBlk = (Block*) m_mem_alloc.alloc(DEFAULT_BLOCK_LEN);
 				assert(NULL != newBlk);
 				newBlk->blockSize = DEFAULT_BLOCK_LEN;
 				newBlk->prev = m_currentBlock;
@@ -169,7 +164,7 @@ public:
         while (NULL != m_currentBlock)
         {
 			Block *prev = m_currentBlock->prev;
-			m_byte_allocator.deallocate((uint8_t*) m_currentBlock, m_currentBlock->blockSize);
+			m_mem_alloc.free((uint8_t*) m_currentBlock, m_currentBlock->blockSize);
 			m_currentBlock = prev;
         }
 		m_end = NULL;
