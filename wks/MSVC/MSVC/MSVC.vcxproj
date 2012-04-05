@@ -87,7 +87,9 @@
     <ClInclude Include="..\..\..\nut\logging\logrecord.hpp" />
     <ClInclude Include="..\..\..\nut\memtool\refarg.hpp" />
     <ClInclude Include="..\..\..\nut\memtool\singleton.hpp" />
+    <ClInclude Include="..\..\..\nut\mem\lengthfixed_mp.hpp" />
     <ClInclude Include="..\..\..\nut\mem\scoped_gc.hpp" />
+    <ClInclude Include="..\..\..\nut\mem\sys_ma.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\byte_array_number.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\SignedInteger.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\unsignedinteger.hpp" />
@@ -125,6 +127,7 @@
     <ClCompile Include="..\..\..\test\lockfree\test_stack.cpp" />
     <ClCompile Include="..\..\..\test\logging\test_logging.cpp" />
     <ClCompile Include="..\..\..\test\main.cpp" />
+    <ClCompile Include="..\..\..\test\mem\test_lengthfixed_mp.cpp" />
     <ClCompile Include="..\..\..\test\mem\test_scoped_gc.cpp" />
     <ClCompile Include="..\..\..\test\numeric\test_signedinteger.cpp" />
     <ClCompile Include="..\..\..\test\tree\test_bst.cpp" />

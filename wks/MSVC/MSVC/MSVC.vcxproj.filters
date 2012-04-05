@@ -231,6 +231,12 @@
     <ClInclude Include="..\..\..\nut\platform\stdint.hpp">
       <Filter>头文件\platform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\mem\sys_ma.hpp">
+      <Filter>头文件\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\mem\lengthfixed_mp.hpp">
+      <Filter>头文件\mem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -264,6 +270,9 @@
       <Filter>源文件\tree</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\test\mem\test_scoped_gc.cpp">
+      <Filter>源文件\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\mem\test_lengthfixed_mp.cpp">
       <Filter>源文件\mem</Filter>
     </ClCompile>
   </ItemGroup>
