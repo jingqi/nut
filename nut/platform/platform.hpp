@@ -54,6 +54,13 @@
 #   error unknown compiler
 #endif
 
+/** 模块API定义 */
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+#   define DLL_API extern "C" __declspec(dllexport)
+#else
+#   define DLL_API extern "C"
+#endif
+
 /** 字符串 */
 #define NUT_PLATFORM_STR "OS: " NUT_PLATFORM_OS_NAME ", Bits: " NUT_PLATFORM_BITS_NAME ", Compiler: " NUT_PLATFORM_CC_NAME
 

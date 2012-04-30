@@ -16,12 +16,10 @@
 
 #include "logger.hpp"
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
-
-extern "C" __declspec(dllexport) nut::ref<nut::Logger> nut_get_root_logger();
+DLL_API nut::ref<nut::Logger> nut_get_root_logger();
 
 #define NUT_LOGGING_IMPL \
-extern "C" __declspec(dllexport) nut::ref<nut::Logger> nut_get_root_logger() \
+DLL_API nut::ref<nut::Logger> nut_get_root_logger() \
 { \
     static nut::ref<nut::Logger> root; \
     static nut::Mutex root_mutex; \
@@ -34,27 +32,6 @@ extern "C" __declspec(dllexport) nut::ref<nut::Logger> nut_get_root_logger() \
     } \
     return root; \
 }
-
-#else
-
-extern "C" nut::ref<nut::Logger> nut_get_root_logger();
-
-#define NUT_LOGGING_IMPL \
-extern "C" nut::ref<nut::Logger> nut_get_root_logger() \
-{ \
-    static nut::ref<nut::Logger> root; \
-    static nut::Mutex root_mutex; \
- \
-    if (root.isNull()) \
-    { \
-        nut::Guard<nut::Mutex> guard(&root_mutex); \
-        if (root.isNull()) \
-            root = nut::gc_new<nut::Logger>((nut::Logger*)NULL, ""); \
-    } \
-    return root; \
-}
-
-#endif
 
 
 namespace nut
