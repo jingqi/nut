@@ -101,6 +101,21 @@ public:
 			}
 		}
 	}
+
+    void* alloc(size_t cb)
+    {
+        assert(G == cb);
+        void *p =  alloc();
+        assert(NULL != p);
+        return p;
+    }
+
+    void free(void *p, size_t cb)
+    {
+        assert(NULL != p);
+        assert(G == cb);
+        free(p);
+    }
 };
 
 }
