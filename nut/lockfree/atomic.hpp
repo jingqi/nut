@@ -89,13 +89,20 @@ inline bool atomic_cas(int64_t volatile *dest, int64_t oldval, int64_t newval)
 {
 #if defined(NUT_PLATFORM_OS_LINUX)
     return __sync_val_compare_and_swap(dest, oldval, newval);
-#elif defined(NUT_PLATFORM_OS_WINDOWS)
+#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
     return InterlockedCompareExchange64(dest, newval, oldval) == oldval;
+#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_GCC)
+    int64_t prev;
+    __asm__ __volatile__(
+        "lock ; cmpxchgq %1,%2"
+        : "=a" (prev)
+        : "q" (newval), "m" (*dest), "0" (oldval)
+        : "memory");
+    return prev == oldval;
 #else
 #   error platform not supported!
 #endif
 }
-
 
 /**
  * 64位CAS操作
@@ -107,6 +114,24 @@ inline bool atomic_cas(uint64_t volatile *dest, uint64_t oldval, uint64_t newval
     return atomic_cas(reinterpret_cast<int64_t volatile*>(dest), static_cast<int64_t>(oldval), static_cast<int64_t>(newval));
 }
 
+/**
+ * 32位CAS操作
+ *
+ * @return 操作成功则返回true
+ */
+inline bool atomic_cas(int32_t volatile *dest, int32_t oldval, int32_t newval)
+{
+#if defined(NUT_PLATFORM_OS_LINUX)
+    return __sync_val_compare_and_swap(dest, oldval, newval);
+#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
+    return InterlockedCompareExchange(reinterpret_cast<uint32_t volatile*>(dest), static_cast<uint32_t>(newval), static_cast<uint32_t>(oldval)) == oldval;
+#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_GCC)
+    NUT_STATIC_ASSERT(sizeof(int32_t) == sizeof(LONG));
+    return InterlockedCompareExchange(reinterpret_cast<LONG volatile*>(dest), static_cast<LONG>(newval), static_cast<LONG>(oldval)) == oldval;
+#else
+#   error platform not supported!
+#endif
+}
 
 /**
  * 32位CAS操作
@@ -115,26 +140,8 @@ inline bool atomic_cas(uint64_t volatile *dest, uint64_t oldval, uint64_t newval
  */
 inline bool atomic_cas(uint32_t volatile *dest, uint32_t oldval, uint32_t newval)
 {
-#if defined(NUT_PLATFORM_OS_LINUX)
-    return __sync_val_compare_and_swap(dest, oldval, newval);
-#elif defined(NUT_PLATFORM_OS_WINDOWS)
-    return InterlockedCompareExchange(dest, newval, oldval) == oldval;
-#else
-#   error platform not supported!
-#endif
+    return atomic_cas(reinterpret_cast<int32_t volatile*>(dest), static_cast<int32_t>(oldval), static_cast<int32_t>(newval));
 }
-
-
-/**
- * 32位CAS操作
- *
- * @return 操作成功则返回true
- */
-inline bool atomic_cas(int32_t volatile *dest, int32_t oldval, int32_t newval)
-{
-    return atomic_cas(reinterpret_cast<uint32_t volatile*>(dest), static_cast<uint32_t>(oldval), static_cast<uint32_t>(newval));
-}
-
 
 /**
  * 16位CAS操作
@@ -145,13 +152,20 @@ inline bool atomic_cas(int16_t volatile *dest, int16_t oldval, int16_t newval)
 {
 #if defined(NUT_PLATFORM_OS_LINUX)
     return __sync_val_compare_and_swap(dest, oldval, newval);
-#elif defined(NUT_PLATFORM_OS_WINDOWS)
+#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
     return InterlockedCompareExchange16(dest, newval, oldval) == oldval;
+#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_GCC)
+    int16_t prev;
+    __asm__ __volatile__(
+        "lock ; cmpxchgw %w1,%2"
+        :"=a"(prev)
+        :"q"(newval), "m"(*dest), "0"(oldval)
+        : "memory");
+    return prev == oldval;
 #else
 #   error platform not supported!
 #endif
 }
-
 
 /**
  * 16位CAS操作
@@ -173,17 +187,17 @@ inline bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newval
  */
 inline int128_t atomic_add(int128_t volatile *addend, int128_t value)
 {
-#   if defined(NUT_PLATFORM_OS_LINUX)
+#if defined(NUT_PLATFORM_OS_LINUX)
     return __sync_fetch_and_add(addend, value);
-#   elif defined(NUT_PLATFORM_OS_WINDOWS)
+#elif defined(NUT_PLATFORM_OS_WINDOWS)
     return InterlockedExchangeAdd128(addend, value);
-#   else
+#else
     int128_t old;
     do {
         old = *addend;
     } while (!(atomic_cas(addend, old, old + value)));
     return old;
-#   endif
+#endif
 }
 
 /**
@@ -198,7 +212,6 @@ inline uint128_t atomic_add(uint128_t volatile *addend, uint128_t value)
 
 #endif
 
-
 /**
  * 64位原子加
  *
@@ -208,7 +221,7 @@ inline int64_t atomic_add(int64_t volatile *addend, int64_t value)
 {
 #if defined(NUT_PLATFORM_OS_LINUX)
     return __sync_fetch_and_add(addend, value);
-#elif defined(NUT_PLATFORM_OS_WINDOWS)
+#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
     return InterlockedExchangeAdd64(addend, value);
 #else
     int64_t old;
@@ -234,12 +247,15 @@ inline uint64_t atomic_add(uint64_t volatile *addend, uint64_t value)
  *
  * @return 返回旧值
  */
-inline uint32_t atomic_add(uint32_t volatile *addend, uint32_t value)
+inline int32_t atomic_add(int32_t volatile *addend, int32_t value)
 {
 #if defined(NUT_PLATFORM_OS_LINUX)
     return __sync_fetch_and_add(addend, value);
-#elif defined(NUT_PLATFORM_OS_WINDOWS)
-    return InterlockedExchangeAdd(addend, value);
+#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
+    return static_cast<int32_t>(InterlockedExchangeAdd(reinterpret_cast<uint32_t volatile*>(addend), static_cast<uint32_t>(value)));
+#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_GCC)
+    NUT_STATIC_ASSERT(sizeof(int32_t) == sizeof(LONG));
+    return static_cast<int32_t>(InterlockedExchangeAdd(reinterpret_cast<LONG volatile*>(addend), static_cast<LONG>(value)));
 #else
     uint32_t old;
     do {
@@ -254,9 +270,9 @@ inline uint32_t atomic_add(uint32_t volatile *addend, uint32_t value)
  *
  * @return 返回旧值
  */
- inline int32_t atomic_add(int32_t volatile *addend, int32_t value)
+ inline uint32_t atomic_add(uint32_t volatile *addend, uint32_t value)
  {
-    return static_cast<int32_t>(atomic_add(reinterpret_cast<uint32_t volatile*>(addend), static_cast<uint32_t>(value)));
+    return static_cast<uint32_t>(atomic_add(reinterpret_cast<int32_t volatile*>(addend), static_cast<int32_t>(value)));
  }
 
 /**
@@ -278,7 +294,7 @@ inline int16_t atomic_add(int16_t volatile *addend, int16_t value)
 }
 
 /**
- * 128位原子加
+ * 16位原子加
  *
  * @return 返回旧值
  */

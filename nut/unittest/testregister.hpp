@@ -15,29 +15,14 @@
 
 namespace nut { class TestRegister; }
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
-
-extern "C" __declspec(dllexport) nut::TestRegister*& nut_get_register_header();
+DLL_API nut::TestRegister*& nut_get_register_header();
 
 #define NUT_UNITTEST_IMPL \
-extern "C" __declspec(dllexport) nut::TestRegister*& nut_get_register_header() \
+DLL_API nut::TestRegister*& nut_get_register_header() \
 { \
     static nut::TestRegister* header = NULL; \
     return header; \
 }
-
-#else
-
-extern "C" nut::TestRegister*& nut_get_register_header();
-
-#define NUT_UNITTEST_IMPL \
-extern "C" nut::TestRegister*& nut_get_register_header() \
-{ \
-    static nut::TestRegister* header = NULL; \
-    return header; \
-}
-
-#endif
 
 
 namespace nut
