@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2012-03-10
@@ -8,29 +8,34 @@
 #ifndef ___HEADFILE_160547E9_5A30_4A78_A5FF_76E0C5EBE229_
 #define ___HEADFILE_160547E9_5A30_4A78_A5FF_76E0C5EBE229_
 
+#include <list>
 #include <vector>
+#include <stack>
 #include <allocators>
+
+#include <nut/debugging/static_assert.hpp>
+#include <nut/util/tuple.hpp>
 
 namespace nut
 {
 
 /**
- * ¶àÎ¬rtree
+ * å¤šç»´rtree
  * 
- * @param DataT Êı¾İÀàĞÍ; ¿ÉÒÔÊÇ int¡¢void*, obj* µÈ
- * @param NumT Êı×ÖÀàĞÍ; ¿ÉÒÔÊÇ int¡¢float µÈ
- * @param DIMENSIONS ÇøÓòÎ¬Êı; ´óÓÚµÈÓÚ2
- * @param RealNumT ÊµÊı£¬±ÜÃâ³Ë·¨ÔËËãÒç³ö£¬³£ÓÃµÄÊÇfloat£¬doubleµÈ
- * @param MAX_ENTRY_COUNT ½Úµã×î´óº¢×ÓÊı; ´óÓÚµÈÓÚ2
- * @param MIN_ENTRY_COUNT ½Úµã×îĞ¡º¢×ÓÊı; Ğ¡ÓÚ×î´óº¢×ÓÊı
- * @param AllocT ÄÚ´æ·ÖÅäÆ÷
+ * @param DataT æ•°æ®ç±»å‹; å¯ä»¥æ˜¯ intã€void*, obj* ç­‰
+ * @param NumT æ•°å­—ç±»å‹; å¯ä»¥æ˜¯ intã€float ç­‰
+ * @param DIMENSIONS åŒºåŸŸç»´æ•°; å¤§äºç­‰äº2
+ * @param RealNumT å®æ•°ï¼Œé¿å…ä¹˜æ³•è¿ç®—æº¢å‡ºï¼Œå¸¸ç”¨çš„æ˜¯floatï¼Œdoubleç­‰
+ * @param MAX_ENTRY_COUNT èŠ‚ç‚¹æœ€å¤§å­©å­æ•°; å¤§äºç­‰äº2
+ * @param MIN_ENTRY_COUNT èŠ‚ç‚¹æœ€å°å­©å­æ•°; å°äºæœ€å¤§å­©å­æ•°
+ * @param AllocT å†…å­˜åˆ†é…å™¨
  */
 template <typename DataT, typename NumT, size_t DIMENSIONS = 2, typename RealNumT = double,
     size_t MAX_ENTRY_COUNT = 5, size_t MIN_ENTRY_COUNT = MAX_ENTRY_COUNT / 2,
     typename AllocT = std::allocator<DataT> >
 class RTree
 {
-    /** ¶àÎ¬ÇøÓò */
+    /** å¤šç»´åŒºåŸŸ */
     struct Rect
     {
         NumT left[DIMENSIONS];
@@ -44,7 +49,21 @@ class RTree
                 right[i] = 0;
             }
         }
+
+        bool operator==(const Rect& x) const
+        {
+            for (register int i = 0; i < DIMENSIONS; ++i)
+                if (left[i] != x.left[i] || right[i] != x.right[i])
+                    return false
+            return true;
+        }
+
+        bool operator!=(const Rect& x) const
+        {
+            return !(*this == x);
+        }
         
+        /** æ‰€å çš„ç©ºé—´ */
         RealNumT acreage() const
         {
             RealNumT acr = 1;
@@ -54,41 +73,54 @@ class RTree
             }
             return acr;
         }
-        
+
+        /** æ‰©å±•åˆ°åŒ…å®¹æŒ‡å®šçš„åŒºåŸŸæ‰€éœ€è¦æ‰©å±•çš„ç©ºé—´ */
         RealNumT acreageNeeded(const Rect& x) const
         {
             RealNumT new_acr = 1;
             for (register int i = 0; i < DIMENSIONS; ++i)
             {
-                new_acr *= max(right[i], x.right[i]) - min(left[i] - x.left[i]);
+                new_acr *= max(right[i], x.right[i]) - min(left[i], x.left[i]);
             }
             return new_acr - acreage();
         }
+
+        /** æ‰©å±•åŒºåŸŸï¼Œä»¥ä¾¿åŒ…å«ç›®æ ‡åŒºåŸŸ */
+        void expandToContain(const Rect& x)
+        {
+            for (register int i = 0; i < DIMENSIONS; ++i)
+            {
+                left[i] = min(left[i], x.left[i]);
+                right[i] = max(right[i], x.right[i]);
+            }
+        }
     };
 
-    /** ½Úµã */
+    /** èŠ‚ç‚¹ */
     struct Node
     {
         Rect rect;
         Node *parent;
+        bool treeNode;
 
-        Node() : parent(NULL) {}
-        Node(const Rect& rt) : rect(rt), parent(NULL) {}
+        Node(bool tn) : parent(NULL), treeNode(treeNode) {}
+        Node(const Rect& rt, bool tn) : rect(rt), parent(NULL), treeNode(tn) {}
     };
 
-    /** Ê÷½Úµã */
+    /** æ ‘èŠ‚ç‚¹ */
     struct TreeNode : public Node
     {
         Node *children[MAX_ENTRY_COUNT];
 
         TreeNode()
+            : Node(true)
         {
             ::memset(children, 0, sizeof(Node*) * MAX_ENTRY_COUNT);
         }
         
         size_t childCount()
         {
-            // ¶ş·Ö²éÕÒ
+            // äºŒåˆ†æŸ¥æ‰¾
             int left = -1, right = MAX_ENTRY_COUNT;
             while (left + 1 < right)
             {
@@ -109,15 +141,29 @@ class RTree
             children[childCount()] = child;
             return true;
         }
+
+        void clearChildren()
+        {
+            for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
+                children[i] = NULL;
+        }
+
+        void fitRect()
+        {
+            assert(NULL != children[0]);
+            rect = children[0]->rect;
+            for (register int i = 1; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
+                rect.expandToContain(children[i]->rect);
+        }
     };
 
-    /** Êı¾İ½Úµã */
+    /** æ•°æ®èŠ‚ç‚¹ */
     struct DataNode : public Node
     {
         DataT data;
 
-        DataNode(const DataT& v) : data(v) {}
-        DataNode(const Rect& rt, const DataT& v) : Node(rt), data(v) {}
+        DataNode(const DataT& v) : Node(false), data(v) {}
+        DataNode(const Rect& rt, const DataT& v) : Node(rt, false), data(v) {}
     };
 
     typedef AllocT                                   data_allocator_type;
@@ -134,9 +180,9 @@ public:
     RTree()
         : m_root(NULL), m_height(1), m_size(0)
     {
-        static_assert(DIMENSIONS >= 2, "Dimensions for rtree is too small");
-        static_assert(MAX_ENTRY_COUNT >= 2, "Maximum entry count for rtree node is too small");
-        static_assert(MIN_ENTRY_COUNT >= 1 && MIN_ENTRY_COUNT <= (MAX_ENTRY_COUNT + 1) / 2, "Minimum entry count for rtree node is not proper");
+        NUT_STATIC_ASSERT(DIMENSIONS >= 2); // ç©ºé—´ç»´æ•°
+        NUT_STATIC_ASSERT(MAX_ENTRY_COUNT >= 2); // æœ€å¤§å­èŠ‚ç‚¹æ•°
+        NUT_STATIC_ASSERT(1 <= MIN_ENTRY_COUNT && MIN_ENTRY_COUNT <= (MAX_ENTRY_COUNT + 1) / 2); // æœ€å°å­èŠ‚ç‚¹æ•°
 
         m_root = m_treenodeAlloc.allocate(1);
         new (m_root) ();
@@ -145,15 +191,17 @@ public:
     void insert(const Rect& rect, const DataT& data)
     {
         DataNode *dataNode = m_datanodeAlloc.allocate(1);
-        new (dataNode) (rect, data);
+        assert(NULL != dataNode);
+        new (dataNode) DataNode(rect, data);
         insert(dataNode, m_height);
         ++m_size;
     }
 
     bool remove()
-    {}
+    {
+    }
 
-    std::vector<T> search(const Area& area)
+    std::vector<DataT> search(const Rect& area)
     {}
 
 private:
@@ -161,16 +209,30 @@ private:
     {
         assert(NULL != node);
         TreeNode *n = chooseNode(node->rect, depth);
-        TreeNode *ll = n.appendChild(node) ? NULL : splitNode(n, node);
+        TreeNode *ll = n->appendChild(node) ? NULL : splitNode(n, node);
+        TreeNode *r = adjustTree(n, ll);
+        if (NULL != r)
+        {
+            // new root
+            TreeNode *nln = m_treenodeAlloc.allocate(1);
+            new (nln) TreeNode(m_root->rect, NULL);
+            nln.appendChild(m_root);
+            nln.appendChild(r);
+            nln.expandToContain(r);
+            m_root = nln;
+            ++height;
+        }
     }
 
-    /** ¸ù¾İÄ¿±êÇøÓòÑ¡ÇøÊÊºÏµÄ½Úµã */
+    /** æ ¹æ®ç›®æ ‡åŒºåŸŸé€‰åŒºé€‚åˆçš„èŠ‚ç‚¹ */
     TreeNode* chooseNode(const Rect& rectToAdd, size_t depth)
     {
-        TreeNode *ret = root;
+        TreeNode *ret = m_root;
         while (depth > 1)
         {
             TreeNode *nn = NULL;
+
+            // choose the least enlargement child
             RealNumT least = 0;
             for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != ret->children[i]; ++i)
             {
@@ -187,10 +249,13 @@ private:
         return ret;
     }
     
+    /** æ‹†åˆ†èŠ‚ç‚¹ */
     TreeNode* splitNode(TreeNode *parent, Node *child)
     {
         assert(NULL != parent && NULL != child);
-        std::vector<Node*> remained;
+
+        // æ‰‹æœºæ‰€æœ‰çš„å­èŠ‚ç‚¹
+        std::list<Node*> remained;
         remained.push_back(child);
         for (register int i = 0; i < MAX_ENTRY_COUNT; ++i)
         {
@@ -198,12 +263,162 @@ private:
             remained.push_back(parent->children[i]);
         }
         
-        Tuple<Node*, Node*> seeds = linerPickSeeds(remained);
+        // æŒ‘é€‰ä¸¤ä¸ªç§å­ï¼Œå¹¶åˆ†åˆ«ä½œä¸º parent å’Œ uncle (parentçš„å…„å¼ŸèŠ‚ç‚¹) çš„ä¸€ä¸ªå­èŠ‚ç‚¹
+        Tuple<Node*, Node*> seeds = linerPickSeeds(&remained);
+        parent->clearChildren();
+        parent->rect = seeds.first->rect;
+        parent->appendChild(seeds.first);
+        Node *uncle = m_treenodeAlloc.allocate(1);
+        assert(NULL != uncle);
+        new (uncle) TreeNode(seeds.second->rect, NULL);
+        uncle->appendChild(seeds.second);
+
+        int count1 = 1, count2 = 1;
+        while (!remained.empty())
+        {
+            if (remained.size() == MIN_ENTRY_COUNT - count1)
+            {
+                for (std::list<Node*>::iterator iter = remained.begin(), end = remained.end();
+                    iter != end; ++iter)
+                {
+                    parent->appendChild(*iter);
+                    parent->rect.expandToContain((*iter)->rect);
+                }
+                break;
+            }
+            else if (remained.size() == MIN_ENTRY_COUNT - count2)
+            {
+                for (std::list<Node*>::iterator iter = remained.begin(), end = remained.end();
+                    iter != end; ++iter)
+                {
+                    uncle->appendChild(*iter);
+                    uncle->rect.expandToContain((*iter)->rect);
+                }
+                break;
+            }
+
+            TreeNode *e = pickNext(&remained, parent->rect, uncle->rect);
+            assert(NULL != e);
+            RealNumT el1 = parent->rect.acreageNeeded(e->rect), el2 = uncle->rect.acreageNeeded(e->rect);
+            if (el1 < el2 || (el1 == el2 && count1 < count2))
+            {
+                parent->appendChild(e);
+                parent->rect.expandToContain(e->rect);
+                ++count1;
+            }
+            else
+            {
+                uncle->appendChild(e);
+                uncle->rect.expandToContain(e->rect);
+                ++count2;
+            }
+        }
+
+        return uncle;
     }
     
-    Tuple<Node*, Node*> linerPickSeeds(const std::vector<Node*> children)
+    Tuple<Node*, Node*> linerPickSeeds(std::list<Node*> *children)
     {
-        
+        assert(NULL != children);
+        typedef std::list<Node*> list_t;
+        typedef list_t::iterator iter_t;
+        iter_t highestLowSide[DIMENSIONS];
+        iter_t lowestHighSide[DIMENSIONS];
+        iter_t highestHighSide[DIMENSIONS];
+        iter_t lowestLowSide[DIMENSIONS];
+        for (iter_t iter = children->begin(), end = children->end();
+            iter != end; ++iter)
+        {
+            assert(NULL != *iter);
+            for (register int j = 0; j < DIMENSIONS; ++j)
+            {
+                if (i == 0 || (*iter)->rect.left[j] < (*lowestLowSide)[j]->rect.left[j])
+                    lowestLowSide[j] = iter;
+                if (i == 0 || (*iter)->rect.left[j] > (*highestLowSide)[j]->rect.left[j])
+                    highestLowSide[j] = iter;
+                if (i == 0 || (*iter)->rect.right[j] < (*lowestHighSide)[j]->rect.right[j])
+                    lowestHighSide[j] = iter;
+                if (i == 0 || (*iter)->rect.right[j] > (*highestHighSide)[j]->rect.right[j])
+                    highestHighSide[j] = iter;
+            }
+        }
+
+        int greatest_separation_idx = 0;
+        RealNumT greatest_separation = 0;
+        for (register int i = 0; i < DIMENSIONS; ++i)
+        {
+            RealNumT width = highestHighSide[i]->rect.right[i] - lowestLowSide[i]->rect.left[i];
+            RealNumT separation = highestLowSide[i]->rect.left[i] - lowestHighSide[i]->rect.right[i];
+            if (separation < 0)
+                separation = -separation;
+            RealNumT nomalize = separation / width;
+            if (i == 0 || nomalize > greatest_separation)
+            {
+                greatest_separation_idx = i;
+                greatest_separation = nomalize;
+            }
+        }
+
+        assert(highestLowSide[greatest_separation_idx] != lowestHighSide[greatest_separation_idx]);
+        Tuple<Node*, Node*> ret(*highestLowSide[greatest_separation_idx], *lowestHighSide[greatest_separation_idx]);
+        children->erase(highestLowSide[greatest_separation_idx]);
+        children->erase(lowestHighSide[greatest_separation_idx]); // ç”±äºæ˜¯listï¼Œä¸Šæ¬¡åˆ é™¤æ“ä½œåè¿­ä»£å™¨è¿˜æœªå¤±æ•ˆ
+        return ret;
+    }
+
+    Node* pickNext(std::list<Node*> *remained, const Rect& r1, const Rect& r2)
+    {
+        assert(NULL != remained);
+        std::list<Node*>::iterator maxDiffIndex = remained->begin();
+        RealNumT maxDiff = 0;
+        for (std::list<Node*>::iterator iter = remained->begin(), end = iter->end();
+            iter != end; ++iter)
+        {
+            RealNumT diff = r1.acreageNeeded((*iter)->rect) - r2.acreageNeeded((*iter)->rect);
+            if (diff < 0)
+                diff = -diff;
+            if (diff > maxDiff)
+            {
+                maxDiffIndex = iter;
+                maxDiff = diff;
+            }
+        }
+        Node *ret = *maxDiffIndex;
+        assert(NULL != ret);
+        remained->erase(maxDiffIndex);
+        return ret;
+    }
+
+    TreeNode* adjustTree(TreeNode *n, TreeNode *nn)
+    {
+        assert(NULL != n && NULL != nn);
+        while (true)
+        {
+            // adjust range of N
+            n->fitRect();
+
+            // if N is root, stop
+            TreeNode *parent = dynamic_cast<TreeNode*>(n->parent);
+            if (NULL == parent)
+                return nn;
+
+            if (NULL != nn)
+                nn = parent->appendChild(nn) ? NULL : splitNode(parent, nn);
+            n = parent;
+        }
+    }
+
+    DataNode* findDataNode(const Rect& r)
+    {
+        std::stack<TreeNode*> st;
+        st.push(m_root);
+        while (!st.empty())
+        {
+            TreeNode *n = st.pop();
+            if ()
+            {
+            }
+        }
     }
 };
 
