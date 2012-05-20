@@ -20,7 +20,9 @@ NUT_FIXTURE(TestRTree)
     {}
 
     void testSmoking()
-    {}
+    {
+        RTree<int, int> r;
+    }
 };
 
 NUT_REGISTER_FIXTURE(TestRTree, "tree")

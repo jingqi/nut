@@ -94,6 +94,14 @@ class RTree
                 right[i] = max(right[i], x.right[i]);
             }
         }
+
+        bool contains(const Rect& x)
+        {
+            for (register int i = 0; i < DIMENSIONS; ++i)
+                if (!(left[i] <= x.left[i] && x.right[i] <= right[i]))
+                    return false;
+            return true;
+        }
     };
 
     /** 节点 */
@@ -142,6 +150,25 @@ class RTree
             return true;
         }
 
+        bool removeChild(Node *child)
+        {
+            for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
+            {
+                if (children[i] == child)
+                {
+                    child->parent = NULL;
+                    children[i] = NULL;
+                    for (register int j = i; j + 1 < MAX_ENTRY_COUNT && NULL != children[j + 1]; ++j)
+                    {
+                        children[j] = children[j + 1];
+                        children[j + 1] = NULL;
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
         void clearChildren()
         {
             for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
@@ -185,7 +212,7 @@ public:
         NUT_STATIC_ASSERT(1 <= MIN_ENTRY_COUNT && MIN_ENTRY_COUNT <= (MAX_ENTRY_COUNT + 1) / 2); // 最小子节点数
 
         m_root = m_treenodeAlloc.allocate(1);
-        new (m_root) ();
+        new (m_root) TreeNode();
     }
 
     void insert(const Rect& rect, const DataT& data)
@@ -197,8 +224,14 @@ public:
         ++m_size;
     }
 
-    bool remove()
+    bool removeFirst(const Rect& r)
     {
+        DataNode *dn = findFirstDataNode(r);
+        if (NULL == dn)
+            return false;
+        assert(NULL != dn->parent);
+        TreeNode *l = dynamic_cast<TreeNode*>(dn->parent);
+
     }
 
     std::vector<DataT> search(const Rect& area)
@@ -408,17 +441,27 @@ private:
         }
     }
 
-    DataNode* findDataNode(const Rect& r)
+    DataNode* findFirstDataNode(const Rect& r)
     {
         std::stack<TreeNode*> st;
         st.push(m_root);
         while (!st.empty())
         {
             TreeNode *n = st.pop();
-            if ()
+            assert(NULL != n);
+            for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != n->children[i]; ++i)
             {
+                Node *child = n->children[i];
+                if (child->rect.contains(r))
+                {
+                    if (child->treeNode)
+                        st.push(dynamic_cast<TreeNode*>(child));
+                    else
+                        return dynamic_cast<DataNode*>(child);
+                }
             }
         }
+        return NULL;
     }
 };
 
