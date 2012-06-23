@@ -103,6 +103,12 @@
     <Filter Include="源文件\util\string">
       <UniqueIdentifier>{7f233c5a-13e7-49b9-b5d1-fe63d81eda75}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\tree\rtree">
+      <UniqueIdentifier>{c8880340-891b-43d1-abb4-616c485e40e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\tree\rtree">
+      <UniqueIdentifier>{b2c43c34-c33b-4190-b36d-4a72eb0200a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -312,6 +318,15 @@
     <ClInclude Include="..\..\..\nut\util\sqlite3helper\wrapers.hpp">
       <Filter>头文件\util\sqlite3helper</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\tree\rtree\rtree.hpp">
+      <Filter>头文件\tree\rtree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\tree\rtree\rtree_iter.hpp">
+      <Filter>头文件\tree\rtree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\tree\rtree\mdarea.hpp">
+      <Filter>头文件\tree\rtree</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -367,6 +382,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\util\string\test_stringutil.cpp">
       <Filter>源文件\util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\tree\rtree\test_rtree.cpp">
+      <Filter>源文件\tree\rtree</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -12,9 +12,12 @@
 #include <vector>
 #include <stack>
 #include <allocators>
+#include <xutility>
 
 #include <nut/debugging/static_assert.hpp>
 #include <nut/util/tuple.hpp>
+
+#include "mdarea.hpp"
 
 namespace nut
 {
@@ -35,87 +38,27 @@ template <typename DataT, typename NumT, size_t DIMENSIONS = 2, typename RealNum
     typename AllocT = std::allocator<DataT> >
 class RTree
 {
-    /** 多维区域 */
-    struct Rect
-    {
-        NumT left[DIMENSIONS];
-        NumT right[DIMENSIONS];
+public:
+    typedef MDArea<NumT, DIMENSIONS, RealNumT> Area;
 
-        Rect()
-        {
-            for (register int i = 0; i < DIMENSIONS; ++i)
-            {
-                left[i] = 0;
-                right[i] = 0;
-            }
-        }
-
-        bool operator==(const Rect& x) const
-        {
-            for (register int i = 0; i < DIMENSIONS; ++i)
-                if (left[i] != x.left[i] || right[i] != x.right[i])
-                    return false
-            return true;
-        }
-
-        bool operator!=(const Rect& x) const
-        {
-            return !(*this == x);
-        }
-        
-        /** 所占的空间 */
-        RealNumT acreage() const
-        {
-            RealNumT acr = 1;
-            for (register int i = 0; i < DIMENSIONS; ++i)
-            {
-                acr *= right[i] - left[i];
-            }
-            return acr;
-        }
-
-        /** 扩展到包容指定的区域所需要扩展的空间 */
-        RealNumT acreageNeeded(const Rect& x) const
-        {
-            RealNumT new_acr = 1;
-            for (register int i = 0; i < DIMENSIONS; ++i)
-            {
-                new_acr *= max(right[i], x.right[i]) - min(left[i], x.left[i]);
-            }
-            return new_acr - acreage();
-        }
-
-        /** 扩展区域，以便包含目标区域 */
-        void expandToContain(const Rect& x)
-        {
-            for (register int i = 0; i < DIMENSIONS; ++i)
-            {
-                left[i] = min(left[i], x.left[i]);
-                right[i] = max(right[i], x.right[i]);
-            }
-        }
-
-        bool contains(const Rect& x)
-        {
-            for (register int i = 0; i < DIMENSIONS; ++i)
-                if (!(left[i] <= x.left[i] && x.right[i] <= right[i]))
-                    return false;
-            return true;
-        }
-    };
-
-    /** 节点 */
+private:
+    /**
+     * 节点基类
+     */
     struct Node
     {
-        Rect rect;
+        Area rect;
         Node *parent;
-        bool treeNode;
+        bool treeNode; // 是树节点还是数据节点
 
         Node(bool tn) : parent(NULL), treeNode(treeNode) {}
-        Node(const Rect& rt, bool tn) : rect(rt), parent(NULL), treeNode(tn) {}
+        Node(const Area& rt, bool tn) : rect(rt), parent(NULL), treeNode(tn) {}
+        virtual ~Node() {}
     };
 
-    /** 树节点 */
+    /**
+     * 树节点
+     */
     struct TreeNode : public Node
     {
         Node *children[MAX_ENTRY_COUNT];
@@ -144,9 +87,11 @@ class RTree
         bool appendChild(Node *child)
         {
             assert(NULL != child);
+
             if (NULL != children[MAX_ENTRY_COUNT - 1])
                 return false;
             children[childCount()] = child;
+            child->parent = this; // 附带设置 parent
             return true;
         }
 
@@ -156,8 +101,10 @@ class RTree
             {
                 if (children[i] == child)
                 {
-                    child->parent = NULL;
+                    children[i]->parent = NULL; // 附带设置 parent
                     children[i] = NULL;
+
+                    // 保持紧凑
                     for (register int j = i; j + 1 < MAX_ENTRY_COUNT && NULL != children[j + 1]; ++j)
                     {
                         children[j] = children[j + 1];
@@ -172,9 +119,15 @@ class RTree
         void clearChildren()
         {
             for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
+            {
+                children[i]->parent = NULL; // 附带设置 parent
                 children[i] = NULL;
+            }
         }
 
+        /**
+         * 调整区域，使父节点区域恰好包含所有子节点区域
+         */
         void fitRect()
         {
             assert(NULL != children[0]);
@@ -184,13 +137,15 @@ class RTree
         }
     };
 
-    /** 数据节点 */
+    /**
+     * 数据节点
+     */
     struct DataNode : public Node
     {
         DataT data;
 
         DataNode(const DataT& v) : Node(false), data(v) {}
-        DataNode(const Rect& rt, const DataT& v) : Node(rt, false), data(v) {}
+        DataNode(const Area& rt, const DataT& v) : Node(rt, false), data(v) {}
     };
 
     typedef AllocT                                   data_allocator_type;
@@ -199,9 +154,22 @@ class RTree
 
     treenode_allocator_type m_treenodeAlloc;
     datanode_allocator_type m_datanodeAlloc;
-    TreeNode *m_root;
-    size_t m_height;
-    size_t m_size;
+    TreeNode *m_root; // 根节点
+    size_t m_height; // 高度
+    size_t m_size; // 容量
+
+    /**
+     * 扩展到包容指定的区域所需要扩展的空间
+     */
+    static RealNumT acreageNeeded(const Area& x, const Area& y)
+    {
+        RealNumT new_acr = 1;
+        for (register int i = 0; i < DIMENSIONS; ++i)
+        {
+            new_acr *= std::max(x.right[i], y.right[i]) - std::min(x.left[i], y.left[i]);
+        }
+        return new_acr - x.acreage();
+    }
 
 public:
     RTree()
@@ -212,10 +180,14 @@ public:
         NUT_STATIC_ASSERT(1 <= MIN_ENTRY_COUNT && MIN_ENTRY_COUNT <= (MAX_ENTRY_COUNT + 1) / 2); // 最小子节点数
 
         m_root = m_treenodeAlloc.allocate(1);
+        assert(NULL != m_root);
         new (m_root) TreeNode();
     }
 
-    void insert(const Rect& rect, const DataT& data)
+    /**
+     * 插入数据
+     */
+    void insert(const Area& rect, const DataT& data)
     {
         DataNode *dataNode = m_datanodeAlloc.allocate(1);
         assert(NULL != dataNode);
@@ -224,23 +196,48 @@ public:
         ++m_size;
     }
 
-    bool removeFirst(const Rect& r)
+    /**
+     * 移除第一个与给定区域相同的数据
+     */
+    bool removeFirst(const Area& rect)
     {
-        DataNode *dn = findFirstDataNode(r);
+        DataNode *dn = findFirstDataNode(rect);
         if (NULL == dn)
             return false;
         assert(NULL != dn->parent);
         TreeNode *l = dynamic_cast<TreeNode*>(dn->parent);
-
+        // TODO
     }
 
-    std::vector<DataT> search(const Rect& area)
-    {}
+    bool remove(const Area& rect, const DataT& data)
+    {
+        // TODO
+    }
+
+    /**
+     * 查找与指定区域相交的数据
+     */
+    std::vector<DataT> searchIntersect(const Area& rect)
+    {
+        // TODO
+    }
+
+    /**
+     * 查找包含在指定区域的数据
+     */
+    std::vector<DataT> searchContains(const Area& rect)
+    {
+        // TODO
+    }
 
 private:
+    /**
+     * 将节点插入深度为 depth 的位置
+     */
     void insert(Node *node, size_t depth)
     {
         assert(NULL != node);
+
         TreeNode *n = chooseNode(node->rect, depth);
         TreeNode *ll = n->appendChild(node) ? NULL : splitNode(n, node);
         TreeNode *r = adjustTree(n, ll);
@@ -248,17 +245,20 @@ private:
         {
             // new root
             TreeNode *nln = m_treenodeAlloc.allocate(1);
-            new (nln) TreeNode(m_root->rect, NULL);
-            nln.appendChild(m_root);
-            nln.appendChild(r);
-            nln.expandToContain(r);
+            assert(NULL != nln);
+            new (nln) TreeNode();
+            nln->appendChild(m_root);
+            nln->appendChild(r);
+            nln->fitRect();
             m_root = nln;
-            ++height;
+            ++m_height;
         }
     }
 
-    /** 根据目标区域选区适合的节点 */
-    TreeNode* chooseNode(const Rect& rectToAdd, size_t depth)
+    /**
+     * 根据目标区域选区适合的节点
+     */
+    TreeNode* chooseNode(const Area& rectToAdd, size_t depth)
     {
         TreeNode *ret = m_root;
         while (depth > 1)
@@ -269,10 +269,11 @@ private:
             RealNumT least = 0;
             for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != ret->children[i]; ++i)
             {
-                RealNumT el = ret->children[i]->rect.acreageNeeded(rectToAdd);
+                RealNumT el = acreageNeeded(ret->children[i]->rect, rectToAdd);
                 if (0 == i || el < least)
                 {
-                    nn = dynamic_cast<TreeNode*>(ret->children[i]);
+                    nn = dynamic_cast<TreeNode*>(ret->children[i]); // 因为 depth > 1，这里应当是成功的
+                    assert(NULL != nn);
                     least = el;
                 }
             }
@@ -282,7 +283,9 @@ private:
         return ret;
     }
     
-    /** 拆分节点 */
+    /**
+     * 拆分节点
+     */
     TreeNode* splitNode(TreeNode *parent, Node *child)
     {
         assert(NULL != parent && NULL != child);
@@ -301,10 +304,11 @@ private:
         parent->clearChildren();
         parent->rect = seeds.first->rect;
         parent->appendChild(seeds.first);
-        Node *uncle = m_treenodeAlloc.allocate(1);
+        TreeNode *uncle = m_treenodeAlloc.allocate(1);
         assert(NULL != uncle);
-        new (uncle) TreeNode(seeds.second->rect, NULL);
+        new (uncle) TreeNode();
         uncle->appendChild(seeds.second);
+        uncle->fitRect();
 
         int count1 = 1, count2 = 1;
         while (!remained.empty())
@@ -330,9 +334,9 @@ private:
                 break;
             }
 
-            TreeNode *e = pickNext(&remained, parent->rect, uncle->rect);
+            Node *e = pickNext(&remained, parent->rect, uncle->rect);
             assert(NULL != e);
-            RealNumT el1 = parent->rect.acreageNeeded(e->rect), el2 = uncle->rect.acreageNeeded(e->rect);
+            RealNumT el1 = acreageNeeded(parent->rect, e->rect), el2 = acreageNeeded(uncle->rect, e->rect);
             if (el1 < el2 || (el1 == el2 && count1 < count2))
             {
                 parent->appendChild(e);
@@ -365,13 +369,13 @@ private:
             assert(NULL != *iter);
             for (register int j = 0; j < DIMENSIONS; ++j)
             {
-                if (i == 0 || (*iter)->rect.left[j] < (*lowestLowSide)[j]->rect.left[j])
+                if (j == 0 || (*iter)->rect.left[j] < (*lowestLowSide[j])->rect.left[j])
                     lowestLowSide[j] = iter;
-                if (i == 0 || (*iter)->rect.left[j] > (*highestLowSide)[j]->rect.left[j])
+                if (j == 0 || (*iter)->rect.left[j] > (*highestLowSide[j])->rect.left[j])
                     highestLowSide[j] = iter;
-                if (i == 0 || (*iter)->rect.right[j] < (*lowestHighSide)[j]->rect.right[j])
+                if (j == 0 || (*iter)->rect.right[j] < (*lowestHighSide[j])->rect.right[j])
                     lowestHighSide[j] = iter;
-                if (i == 0 || (*iter)->rect.right[j] > (*highestHighSide)[j]->rect.right[j])
+                if (j == 0 || (*iter)->rect.right[j] > (*highestHighSide[j])->rect.right[j])
                     highestHighSide[j] = iter;
             }
         }
@@ -380,8 +384,8 @@ private:
         RealNumT greatest_separation = 0;
         for (register int i = 0; i < DIMENSIONS; ++i)
         {
-            RealNumT width = highestHighSide[i]->rect.right[i] - lowestLowSide[i]->rect.left[i];
-            RealNumT separation = highestLowSide[i]->rect.left[i] - lowestHighSide[i]->rect.right[i];
+            RealNumT width = (*highestHighSide[i])->rect.right[i] - (*lowestLowSide[i])->rect.left[i];
+            RealNumT separation = (*highestLowSide[i])->rect.left[i] - (*lowestHighSide[i])->rect.right[i];
             if (separation < 0)
                 separation = -separation;
             RealNumT nomalize = separation / width;
@@ -399,15 +403,15 @@ private:
         return ret;
     }
 
-    Node* pickNext(std::list<Node*> *remained, const Rect& r1, const Rect& r2)
+    Node* pickNext(std::list<Node*> *remained, const Area& r1, const Area& r2)
     {
         assert(NULL != remained);
         std::list<Node*>::iterator maxDiffIndex = remained->begin();
         RealNumT maxDiff = 0;
-        for (std::list<Node*>::iterator iter = remained->begin(), end = iter->end();
+        for (std::list<Node*>::iterator iter = remained->begin(), end = remained->end();
             iter != end; ++iter)
         {
-            RealNumT diff = r1.acreageNeeded((*iter)->rect) - r2.acreageNeeded((*iter)->rect);
+            RealNumT diff = acreageNeeded(r1, (*iter)->rect) - acreageNeeded(r2, (*iter)->rect);
             if (diff < 0)
                 diff = -diff;
             if (diff > maxDiff)
@@ -441,7 +445,7 @@ private:
         }
     }
 
-    DataNode* findFirstDataNode(const Rect& r)
+    DataNode* findFirstDataNode(const Area& r)
     {
         std::stack<TreeNode*> st;
         st.push(m_root);

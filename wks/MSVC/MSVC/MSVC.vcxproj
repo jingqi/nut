@@ -113,6 +113,9 @@
     <ClInclude Include="..\..\..\nut\tree\bstree.hpp" />
     <ClInclude Include="..\..\..\nut\tree\btree.hpp" />
     <ClInclude Include="..\..\..\nut\tree\rbtree.hpp" />
+    <ClInclude Include="..\..\..\nut\tree\rtree\mdarea.hpp" />
+    <ClInclude Include="..\..\..\nut\tree\rtree\rtree.hpp" />
+    <ClInclude Include="..\..\..\nut\tree\rtree\rtree_iter.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\consoletestlogger.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\streamtestlogger.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\testcasefailureexception.hpp" />
@@ -149,6 +152,7 @@
     <ClCompile Include="..\..\..\test\threading\test_threadpool.cpp" />
     <ClCompile Include="..\..\..\test\security\digest\test_md5.cpp" />
     <ClCompile Include="..\..\..\test\security\encrypt\test_aes.cpp" />
+    <ClCompile Include="..\..\..\test\tree\rtree\test_rtree.cpp" />
     <ClCompile Include="..\..\..\test\tree\test_bst.cpp" />
     <ClCompile Include="..\..\..\test\util\string\test_stringutil.cpp" />
     <ClCompile Include="..\..\..\test\util\test_configfile.cpp" />
