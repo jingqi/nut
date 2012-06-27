@@ -94,6 +94,8 @@
     <ClInclude Include="..\..\..\nut\numeric\byte_array_number.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\signedinteger.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\unsignedinteger.hpp" />
+    <ClInclude Include="..\..\..\nut\platform\os.hpp" />
+    <ClInclude Include="..\..\..\nut\platform\path.hpp" />
     <ClInclude Include="..\..\..\nut\platform\platform.hpp" />
     <ClInclude Include="..\..\..\nut\platform\stdint.hpp" />
     <ClInclude Include="..\..\..\nut\threading\condition.hpp" />

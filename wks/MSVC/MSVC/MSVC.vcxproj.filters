@@ -240,6 +240,12 @@
     <ClInclude Include="..\..\..\nut\mem\lengthfixed_mp.hpp">
       <Filter>头文件\mem</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\platform\os.hpp">
+      <Filter>头文件\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\platform\path.hpp">
+      <Filter>头文件\platform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">

@@ -9,6 +9,8 @@
 #define ___HEADFILE_291DFB4C_7D29_4D61_A691_EF83FB86CD36_
 
 #include <assert.h>
+#include <string>
+#include <vector>
 
 #include "platform.hpp"
 

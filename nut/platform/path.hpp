@@ -11,14 +11,16 @@
 #include <assert.h>
 #include <string>
 #include <vector>
-#include <unistd.h> // for access()
 
 #include "platform.hpp"
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <windows.h>
+#else
+#   include <unistd.h> // for access()
 #endif
 
+#include <nut/util/tuple.hpp>
 
 namespace nut
 {
@@ -34,7 +36,7 @@ public:
      */
     static inline char seperator()
     {
-#if defined(NUT_PLATFORM_OS_WINDOWS
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         return '\\';
 #else
         return '/';
@@ -69,7 +71,7 @@ public:
         
         // 找到最后一个 '/'
         const std::string p(path);
-        std::string::size_type p1 = p.last_index_of('\\'), p2 = p.last_index_of('/');
+        std::string::size_type p1 = p.find_last_of('\\'), p2 = p.find_last_of('/');
         if (std::string::npos == p1 && std::string::npos == p2)
             return Tuple<std::string, std::string>("", p);
         else if (std::string::npos != p1 && std::string::npos != p2)
@@ -147,6 +149,9 @@ public:
     static inline bool exists(const char *path)
     {
         assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        return ::FileExists(path);
+#else
         /*
          *  0-检查文件是否存在
          *  1-检查文件是否可运行
@@ -155,6 +160,7 @@ public:
          *  6-检查文件是否可读/写访问
          */
         return 0 == ::access(path, 0);
+#endif
     }
 
     /**
