@@ -289,6 +289,32 @@ inline bool strieq(const std::string& str1, const std::string& str2)
     return true;
 }
 
+/**
+ * 匹配字符串的开头
+ */
+inline bool starts_with(const std::string& s, const std::string& head)
+{
+    if (s.length() < head.length())
+        return false;
+    for (register int i = 0, len = head.length(); i < len; ++i)
+        if (s.at(i) != head.at(i))
+            return false;
+    return true;
+}
+
+/**
+ * 匹配字符串的结尾
+ */
+inline bool ends_with(const std::string& s, const std::string& tail)
+{
+    if (s.length() < tail.length())
+        return false;
+    for (register int i = 1, len = tail.length(); i <= len; ++i)
+        if (s.at(s.length() - i) != tail.at(tail.length() - i))
+            return false;
+    return true;
+}
+
 }
 
 #endif /* head file guarder */

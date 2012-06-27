@@ -11,16 +11,18 @@
 #include <assert.h>
 #include <string>
 #include <vector>
+#include <stdio.h> // for sprintf()
 
 #include "platform.hpp"
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <windows.h>
+#   include <io.h>    // for mkdir()
 #else
 #   include <dirent.h>  // for DIR, dirent
 #   include <limits.h>   // for PATH_MAX
 #   include <sys/stat.h> // for lstat()
-#   include <stdlib.h>
+#   include <sys/types.h>  // for mkdir()
 #endif
 
 namespace nut
@@ -106,7 +108,7 @@ public:
     /**
      * 复制文件
      */
-    static bool copyFile(const char *src, const char *dest)
+    static bool copyfile(const char *src, const char *dest)
     {
         assert(NULL != src && NULL != dest);
 
@@ -134,6 +136,22 @@ public:
         ::fclose(inFile);
         ::fclose(outFile);
         return true;
+#endif
+    }
+
+    static bool removefile(const char *path)
+    {
+        assert(NULL != path);
+        return -1 != ::remove(path);
+    }
+
+    static bool mkdir(const char *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        return 0 == ::mkdir(path);
+#else
+        return 0 == ::mkdir(dir.c_str(), S_IWRITE);
 #endif
     }
 };

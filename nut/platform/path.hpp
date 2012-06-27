@@ -16,8 +16,11 @@
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <windows.h>
+#   include<io.h> // for _access()
+#   include <sys/stat.h> // for stat()
 #else
 #   include <unistd.h> // for access()
+#   include <sys/stat.h> // for stat()
 #endif
 
 #include <nut/util/tuple.hpp>
@@ -51,11 +54,11 @@ public:
         return '\\' == c || '/' == c;
     }
 
-    static std::string abspath(const std::string& p) {}
-    static std::string realpath() {}
-    static std::string relpath() {}
+    // static std::string abspath(const std::string& p) {}
+    // static std::string realpath() {}
+    // static std::string relpath() {}
 
-    static std::string sep() {}
+    // static std::string sep() {}
 
     /**
      * 从路径中划分出父路径和 文件/文件夹 名
@@ -141,7 +144,7 @@ public:
         return Tuple<std::string,std::string>(p.substr(0,pos),p.substr(pos));
     }
 
-    static void splitunc() {}
+    // static void splitunc() {}
 
     /**
      * 检查路径是否存在
@@ -150,7 +153,7 @@ public:
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        return ::FileExists(path);
+        return -1 != ::_access(path, 0);
 #else
         /*
          *  0-检查文件是否存在
@@ -166,26 +169,69 @@ public:
     /**
      * last access time
      */
-    static time_t getatime()
-    {}
+    // static time_t getatime() {}
 
     /**
      * last modified time
      */
-    static time_t getmtime() {}
+    // static time_t getmtime() {}
 
     /**
      * created time
      */
-    static time_t getctime() {}
+    // static time_t getctime() {}
 
-    static long getsize() {}
+    /**
+     * 获取文件大小
+     */
+    static long getsize(const char *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        struct _stat info;
+        ::_stat(path, &info);
+        return info.st_size;
+#else
+        struct stat info;
+        if (0 != ::stat(path, &info))
+            return -1L;
+        return info.st_size;
+#endif
+    }
 
-    static bool isabs() {}
-    static bool isdir() {}
-    static bool isfile() {}
-    static bool islink() {}
-    static bool ismount() {}
+    // static bool isabs() {}
+
+    static bool isdir(const char *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        return 0 != (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesA(path));
+#else
+        // TODO
+#endif
+    }
+
+    static bool isfile(const char *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        return 0 != (FILE_ATTRIBUTE_NORMAL & ::GetFileAttributesA(path));
+#else
+        // TODO
+#endif
+    }
+
+    static bool islink(const char *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        return false;
+#else
+        // TODO
+#endif
+    }
+
+    // static bool ismount() {}
 
     /**
      * 连接两个子路径
@@ -209,15 +255,27 @@ public:
 
         // 处理根目录 '/', 'c:\\'
         std::string bpath(b);
-        if ('\\' == b[0] || '/' == b[0] || std::string::npos != b.indexof(':'))
+        if ('\\' == b[0] || '/' == b[0] || std::string::npos != bpath.find_first_of(':'))
             return bpath;
 
         // 连接
         if ('\\' != *apath.rbegin() && '/' != *apath.rbegin())
-            apath.append(seperator());
+            apath += seperator();
         if ('\0' != b[0])
             apath.append(bpath);
         return apath;
+    }
+
+    static inline std::string join(const char *a, const char *b, const char *c)
+    {
+        assert(NULL != a && NULL != b && NULL != c);
+        return join(join(a, b).c_str(),c);
+    }
+
+    static inline std::string join(const char *a, const char *b, const char *c, const char *d)
+    {
+        assert(NULL != a && NULL != b && NULL != c && NULL != d);
+        return join(join(a, b, c).c_str(), d);
     }
 };
 
