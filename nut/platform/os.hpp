@@ -129,9 +129,9 @@ public:
         const int BUF_LEN = 4096;
         char buf[BUF_LEN];
         int readed = -1;
-        while ((readed = ::fread(buf, BUF_LEN, 1, inFile)) > 0)
+        while ((readed = ::fread(buf, 1, BUF_LEN, inFile)) > 0)
         {
-            ::fwrite(buf, readed, 1, outFile);
+            ::fwrite(buf, 1, readed, outFile);
         }
         ::fclose(inFile);
         ::fclose(outFile);
