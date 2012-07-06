@@ -70,6 +70,18 @@
     <Filter Include="源文件\mem">
       <UniqueIdentifier>{b85d0dbf-7120-4cf2-b5aa-9da0f38df56d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\security">
+      <UniqueIdentifier>{85b3e43e-4f43-40c1-b35c-822a05da2f31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\security\digest">
+      <UniqueIdentifier>{c955cc37-77cf-4058-ad28-a8fb29c282f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\security">
+      <UniqueIdentifier>{49f59d30-334f-4bcf-8b04-ba7643f31187}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\security\digest">
+      <UniqueIdentifier>{20c153cb-f6b7-495b-9816-238cd03d3c33}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -246,6 +258,9 @@
     <ClInclude Include="..\..\..\nut\platform\path.hpp">
       <Filter>头文件\platform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\security\digest\md5.hpp">
+      <Filter>头文件\security\digest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -289,6 +304,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\mem\test_lengthfixed_mp.cpp">
       <Filter>源文件\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\security\digest\test_md5.cpp">
+      <Filter>源文件\security\digest</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
