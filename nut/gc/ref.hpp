@@ -7,6 +7,8 @@
 #ifndef ___HEADFILE___9698630E_2BC3_42BB_91C2_734500687C95_
 #define ___HEADFILE___9698630E_2BC3_42BB_91C2_734500687C95_
 
+#include <assert.h>
+
 namespace nut
 {
 

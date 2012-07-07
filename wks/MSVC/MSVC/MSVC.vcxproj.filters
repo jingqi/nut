@@ -82,6 +82,12 @@
     <Filter Include="源文件\security\digest">
       <UniqueIdentifier>{20c153cb-f6b7-495b-9816-238cd03d3c33}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\security\encrypt">
+      <UniqueIdentifier>{a00e0c28-c778-456a-a52a-de5a62358c4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\security\encrypt">
+      <UniqueIdentifier>{1025b502-7aae-4732-b417-41c20d45c96c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -261,6 +267,9 @@
     <ClInclude Include="..\..\..\nut\security\digest\md5.hpp">
       <Filter>头文件\security\digest</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\security\encrypt\aes.hpp">
+      <Filter>头文件\security\encrypt</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -307,6 +316,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\security\digest\test_md5.cpp">
       <Filter>源文件\security\digest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\security\encrypt\test_aes.cpp">
+      <Filter>源文件\security\encrypt</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
