@@ -11,7 +11,7 @@
 #include <assert.h>
 
 #include <nut/debugging/static_assert.hpp>
-#include <nut/lockfree/atomic.hpp>
+#include <nut/threading/lockfree/atomic.hpp>
 
 #include "sys_ma.hpp"
 

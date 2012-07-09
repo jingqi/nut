@@ -1,7 +1,7 @@
 
 #include <nut/unittest/unittest.hpp>
 
-#include <nut/lockfree/concurrentstack.hpp>
+#include <nut/threading/lockfree/concurrentstack.hpp>
 
 using namespace nut;
 
