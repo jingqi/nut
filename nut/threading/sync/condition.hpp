@@ -16,6 +16,7 @@
 #endif
 
 #include "mutex.hpp"
+#include "spinlock.hpp"
 
 namespace nut
 {
@@ -28,7 +29,13 @@ class Condition
     pthread_cond_t m_cond;
 #endif
 
-public :
+public:
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+    typedef SpinLock condition_lock_type; // windows 下condition只能配合临界区
+#else
+    typedef Mutex condition_lock_type;
+#endif
+
     Condition()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -70,14 +77,10 @@ public :
     /**
      * release lock, wait for signal or interrupt, lock and wake
      */
-    bool wait(Mutex &mutex)
+    bool wait(condition_lock_type &mutex)
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-#   if defined(USE_CRITICAL_SECTION)
-        return TRUE == ::SleepConditionVariableCS(&m_cond,mutex.innerMutex(), INFINITE);
-#   else
-#        error not supported!
-#   endif
+        return TRUE == ::SleepConditionVariableCS(&m_cond, mutex.innerMutex(), INFINITE);
 #else
         return 0 == pthread_cond_wait(&m_cond, mutex.innerMutex());
 #endif
@@ -86,15 +89,11 @@ public :
     /**
      * work the same as above
      */
-    bool timedwait(Mutex &mutex, unsigned s, unsigned ms = 0)
+    bool timedwait(condition_lock_type &mutex, unsigned s, unsigned ms = 0)
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-#   if defined(USE_CRITICAL_SECTION)
         DWORD dwMilliseconds = s * 1000 + ms;
         return TRUE == ::SleepConditionVariableCS(&m_cond, mutex.innerMutex(), dwMilliseconds);
-#   else
-#        error not supported!
-#   endif
 #else
         struct timespec abstime;
         clock_gettime(CLOCK_REALTIME, &abstime);

@@ -7,6 +7,7 @@
 #ifndef ___HEADFILE___814FCD2E_2F65_4787_93E5_ECDE19588938_
 #define ___HEADFILE___814FCD2E_2F65_4787_93E5_ECDE19588938_
 
+#include <assert.h>
 #include <nut/platform/platform.hpp>
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -15,22 +16,13 @@
 #  include <pthread.h>
 #endif
 
-#define USE_CRITICAL_SECTION
-
 namespace nut
 {
 
 class Mutex
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-    /** windows下:
-        临界区只能线程间同步，不能进程间同步； 互斥量能够线程间、进程间(需要命名)同步。
-        临界区可以喝信号量配合；互斥量不行。 */
-#   if defined(USE_CRITICAL_SECTION)
-    CRITICAL_SECTION m_criticalSection; // 使用临界区
-#   else
-    HANDLE m_hmutex; // 使用互斥量
-#   endif
+    HANDLE m_hmutex;
 #else
     pthread_mutex_t m_mutex;
 #endif
@@ -39,38 +31,26 @@ public :
     Mutex ()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-#   if defined(USE_CRITICAL_SECTION)
-        ::InitializeCriticalSection(&m_criticalSection);
-#   else
         m_hmutex = ::CreateMutex(NULL, FALSE, NULL);
-#   endif
 #else
-        pthread_mutexattr_t attr;
-        pthread_mutexattr_init(&attr);
-        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP); /* make the mutex recursive */
-        pthread_mutex_init(&m_mutex, &attr);
+        ::pthread_mutexattr_t attr;
+        ::pthread_mutexattr_init(&attr);
+        ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP); /* make the mutex recursive */
+        ::pthread_mutex_init(&m_mutex, &attr);
 #endif
     }
 
     ~Mutex ()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-#   if defined(USE_CRITICAL_SECTION)
-        ::DeleteCriticalSection(&m_criticalSection);
-#   else
         ::ReleaseMutex(m_hmutex);
-#   endif
 #else
-        pthread_mutex_destroy(&m_mutex);
+        ::pthread_mutex_destroy(&m_mutex);
 #endif
     }
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-#   if defined(USE_CRITICAL_SECTION)
-    inline CRITICAL_SECTION innerMutex() { return m_criticalSection; }
-#   else
     inline HANDLE innerMutex() { return m_hmutex; }
-#   endif
 #else
     inline pthread_mutex_t* innerMutex() { return &m_mutex; }
 #endif
@@ -81,13 +61,9 @@ public :
     inline void lock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-#   if defined(USE_CRITICAL_SECTION)
-        ::EnterCriticalSection(&m_criticalSection);
-#   else
         ::WaitForSingleObject(m_hmutex, INFINITE);
-#   endif
 #else
-        pthread_mutex_lock(&m_mutex);
+        ::pthread_mutex_lock(&m_mutex);
 #endif
     }
 
@@ -97,13 +73,9 @@ public :
     inline void unlock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-#   if defined(USE_CRITICAL_SECTION)
-        ::LeaveCriticalSection(&m_criticalSection);
-#   else
         ::ReleaseMutex(m_hmutex);
-#   endif
 #else
-        pthread_mutex_unlock(&m_mutex);
+        ::pthread_mutex_unlock(&m_mutex);
 #endif
     }
 
@@ -115,13 +87,9 @@ public :
     inline bool trylock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-#   if defined(USE_CRITICAL_SECTION)
-        return TRUE == ::TryEnterCriticalSection(&m_criticalSection);
-#   else
         return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, 0);
-#   endif
 #else
-        int lock_result = pthread_mutex_trylock(&m_mutex);
+        int lock_result = ::pthread_mutex_trylock(&m_mutex);
         /** returned values :
          *  0, lock ok
          *  EBUSY, The mutex is already locked.
@@ -144,17 +112,13 @@ public :
     inline bool timedlock(unsigned s, unsigned ms = 0)
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-#   if defined(USE_CRITICAL_SECTION)
-        return trylock();
-#   else
         return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, ms);
-#   endif
 #else
         struct timespec abstime;
         clock_gettime(CLOCK_REALTIME, &abstime);
         abstime.tv_sec += s;
         abstime.tv_nsec += ((long)ms) * 1000 * 1000;
-        int lock_result = pthread_mutex_timedlock(&m_mutex, &abstime);
+        int lock_result = ::pthread_mutex_timedlock(&m_mutex, &abstime);
         /** returned values :
          *  0, lock ok
          *  EAGAIN, The mutex couldn't be acquired because the maximum number of recursive locks for the mutex has been exceeded.
