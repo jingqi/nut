@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file -
  * @author jingqi
  * @date 2012-07-10
@@ -22,7 +22,7 @@ namespace nut
 {
 
 /**
- * �̳߳�
+ * 线程池
  */
 class ThreadPool
 {
@@ -52,6 +52,12 @@ public:
         assert(thread_count > 0);
     }
 
+    ~ThreadPool()
+    {
+        // 避免内存问题
+        join();
+    }
+
     void add_task(thread_process_type process, void* arg = NULL)
     {
         assert(NULL != process);
@@ -73,6 +79,12 @@ public:
     void interupt()
     {
         m_interupt = true;
+    }
+
+    void join()
+    {
+        for (size_t i = 0; i < m_threads.size(); ++i)
+            m_threads[i]->join();
     }
 
 private:

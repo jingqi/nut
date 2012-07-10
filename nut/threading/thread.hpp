@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file -
  * @author jingqi
  * @date 2012-07-09
@@ -79,10 +79,14 @@ public:
 
     virtual ~Thread()
     {
+        // 避免回收资源导致内存异常
+        if (m_hasStarted)
+        {
+            join();
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        if (m_hasFinished)
             ::CloseHandle(m_handle);
 #endif
+        }
     }
 
     void setThreadProcess(thread_process_type process)
