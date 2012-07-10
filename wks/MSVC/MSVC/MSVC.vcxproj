@@ -102,10 +102,11 @@
     <ClInclude Include="..\..\..\nut\threading\sync\guard.hpp" />
     <ClInclude Include="..\..\..\nut\threading\sync\mutex.hpp" />
     <ClInclude Include="..\..\..\nut\threading\sync\rwlock.hpp" />
-    <ClInclude Include="..\..\..\nut\threading\sync\selfish.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\sync\semaphore.hpp" />
     <ClInclude Include="..\..\..\nut\threading\sync\spinlock.hpp" />
     <ClInclude Include="..\..\..\nut\threading\sync\threading.hpp" />
     <ClInclude Include="..\..\..\nut\threading\thread.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\threadpool.hpp" />
     <ClInclude Include="..\..\..\nut\tree\bstree.hpp" />
     <ClInclude Include="..\..\..\nut\tree\btree.hpp" />
     <ClInclude Include="..\..\..\nut\tree\rbtree.hpp" />

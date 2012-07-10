@@ -234,9 +234,6 @@
     <ClInclude Include="..\..\..\nut\threading\sync\rwlock.hpp">
       <Filter>头文件\threading\sync</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\threading\sync\selfish.hpp">
-      <Filter>头文件\threading\sync</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\threading\sync\spinlock.hpp">
       <Filter>头文件\threading\sync</Filter>
     </ClInclude>
@@ -254,6 +251,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\nut\threading\lockfree\concurrentstack.hpp">
       <Filter>头文件\threading\lockfree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\threadpool.hpp">
+      <Filter>头文件\threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\sync\semaphore.hpp">
+      <Filter>头文件\threading\sync</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -35,12 +35,12 @@ private:
     DWORD m_tid;
 #else
     pthread_t m_pthread;
-#else
+#endif
 
     thread_process_type m_thread_process;
     void *m_thread_arg;
     bool m_hasStarted;
-    bool m_hasFinished;
+    bool mutable m_hasFinished;
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     static DWORD WINAPI thread_entry(LPVOID p)
@@ -68,10 +68,10 @@ private:
     Thread& operator=(const Thread& x);
 
 public:
-    Thread(thread_process_type process = NULL, void *arg)
+    Thread(thread_process_type process = NULL, void *arg = NULL)
         :
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        m_handle(NULL), m_tid(0)
+        m_handle(NULL), m_tid(0),
 #endif
         m_thread_process(process), m_thread_arg(arg),
         m_hasStarted(false), m_hasFinished(false)
