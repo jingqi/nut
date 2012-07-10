@@ -36,16 +36,19 @@ public :
         ::pthread_mutexattr_t attr;
         ::pthread_mutexattr_init(&attr);
         ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP); /* make the mutex recursive */
-        ::pthread_mutex_init(&m_mutex, &attr);
+        int rs = ::pthread_mutex_init(&m_mutex, &attr);
+        assert(0 == rs);
 #endif
     }
 
     ~Mutex ()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        ::ReleaseMutex(m_hmutex);
+        BOOL rs = ::ReleaseMutex(m_hmutex);
+        assert(rs);
 #else
-        ::pthread_mutex_destroy(&m_mutex);
+        int rs = ::pthread_mutex_destroy(&m_mutex);
+        assert(0 == rs);
 #endif
     }
 
@@ -61,9 +64,11 @@ public :
     inline void lock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        ::WaitForSingleObject(m_hmutex, INFINITE);
+        DWORD rs = ::WaitForSingleObject(m_hmutex, INFINITE);
+        assert(WAIT_OBJECT_0 == rs);
 #else
-        ::pthread_mutex_lock(&m_mutex);
+        int rs = ::pthread_mutex_lock(&m_mutex);
+        assert(0 == rs);
 #endif
     }
 
@@ -73,9 +78,11 @@ public :
     inline void unlock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        ::ReleaseMutex(m_hmutex);
+        BOOL rs = ::ReleaseMutex(m_hmutex);
+        assert(rs);
 #else
-        ::pthread_mutex_unlock(&m_mutex);
+        int rs = ::pthread_mutex_unlock(&m_mutex);
+        assert(0 == rs);
 #endif
     }
 

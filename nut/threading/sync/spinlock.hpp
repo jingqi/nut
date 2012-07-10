@@ -31,7 +31,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         ::InitializeCriticalSection(&m_criticalSection);
 #else
-        ::pthread_spin_init(&m_spinlock, NULL);
+        int rs = ::pthread_spin_init(&m_spinlock, NULL);
+        assert(0 == rs);
 #endif
     }
 
@@ -40,7 +41,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         ::DeleteCriticalSection(&m_criticalSection);
 #else
-        ::pthread_spin_destroy(&m_spinlock);
+        int rs = ::pthread_spin_destroy(&m_spinlock);
+        assert(0 == rs);
 #endif
     }
 

@@ -41,7 +41,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         ::InitializeConditionVariable(&m_cond);
 #else
-        pthread_cond_init(&m_cond, NULL);
+        int rs = pthread_cond_init(&m_cond, NULL);
+        assert(0 == rs);
 #endif
     }
 
@@ -50,7 +51,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         /* no need to destroy in windows */
 #else
-        pthread_cond_destroy(&m_cond);
+        int rs = pthread_cond_destroy(&m_cond);
+        assert(0 == rs);
 #endif
     }
 
