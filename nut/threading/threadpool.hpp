@@ -35,7 +35,7 @@ public:
     {
         thread_process_type process;
         void *arg;
-        Task(thread_process_type p, void *a) : process(p), arg(a) {}
+        Task(thread_process_type p = NULL, void *a = NULL) : process(p), arg(a) {}
     };
 
     size_t m_thread_count;
@@ -54,6 +54,7 @@ public:
 
     void add_task(thread_process_type process, void* arg = NULL)
     {
+        assert(NULL != process);
         Guard<Condition::condition_lock_type> guard(&m_lock);
         m_task_queue.push(Task(process, arg));
         m_condition.signal();
@@ -61,7 +62,7 @@ public:
 
     void start()
     {
-        for (int i = m_threads.size(); i < m_thread_count; ++i)
+        for (size_t i = m_threads.size(); i < m_thread_count; ++i)
         {
             ref<Thread> t = gc_new<Thread>(thread_process, this);
             m_threads.push_back(t);

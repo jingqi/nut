@@ -302,5 +302,8 @@
     <ClCompile Include="..\..\..\test\threading\lockfree\test_stack.cpp">
       <Filter>源文件\threading\lockfree</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\test\threading\test_threadpool.cpp">
+      <Filter>源文件\threading</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

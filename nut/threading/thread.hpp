@@ -56,7 +56,7 @@ private:
             pthis->run(pthis->m_thread_arg);
         pthis->m_hasFinished = true;
 
-#if defined(NUT_PLATFORM_OS_WINDOWS
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         return 0;
 #else
         return NULL;
