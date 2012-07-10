@@ -112,7 +112,8 @@ public :
     inline bool timedlock(unsigned s, unsigned ms = 0)
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, ms);
+        DWORD dwMilliseconds = s * 1000 + ms;
+        return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, dwMilliseconds);
 #else
         struct timespec abstime;
         clock_gettime(CLOCK_REALTIME, &abstime);
