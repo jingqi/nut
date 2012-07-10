@@ -79,29 +79,31 @@ public:
     /**
      * release lock, wait for signal or interrupt, lock and wake
      */
-    bool wait(condition_lock_type &mutex)
+    bool wait(condition_lock_type *mutex)
     {
+        assert(NULL != mutex);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        return TRUE == ::SleepConditionVariableCS(&m_cond, mutex.innerMutex(), INFINITE);
+        return TRUE == ::SleepConditionVariableCS(&m_cond, mutex->innerMutex(), INFINITE);
 #else
-        return 0 == pthread_cond_wait(&m_cond, mutex.innerMutex());
+        return 0 == pthread_cond_wait(&m_cond, mutex->innerMutex());
 #endif
     }
 
     /**
      * work the same as above
      */
-    bool timedwait(condition_lock_type &mutex, unsigned s, unsigned ms = 0)
+    bool timedwait(condition_lock_type *mutex, unsigned s, unsigned ms = 0)
     {
+        assert(NULL != mutex);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         DWORD dwMilliseconds = s * 1000 + ms;
-        return TRUE == ::SleepConditionVariableCS(&m_cond, mutex.innerMutex(), dwMilliseconds);
+        return TRUE == ::SleepConditionVariableCS(&m_cond, mutex->innerMutex(), dwMilliseconds);
 #else
         struct timespec abstime;
         clock_gettime(CLOCK_REALTIME, &abstime);
         abstime.tv_sec += s;
         abstime.tv_nsec += ((long)ms) * 1000 * 1000;
-        return 0 == pthread_cond_timedwait(&m_cond, mutex.innerMutex(), &abstime);
+        return 0 == pthread_cond_timedwait(&m_cond, mutex->innerMutex(), &abstime);
 #endif
     }
 };
