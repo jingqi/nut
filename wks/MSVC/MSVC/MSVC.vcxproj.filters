@@ -49,12 +49,6 @@
     <Filter Include="源文件\util">
       <UniqueIdentifier>{1a33d577-2005-458f-a87f-0912ca5b567a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\lockfree">
-      <UniqueIdentifier>{153ceb08-b54a-4553-be0d-104bc31ff229}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\lockfree">
-      <UniqueIdentifier>{da107126-ee62-4630-9287-133e59035a06}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\tree">
       <UniqueIdentifier>{21610087-e93f-4c0f-a665-b9e0b03475be}</UniqueIdentifier>
     </Filter>
@@ -69,6 +63,18 @@
     </Filter>
     <Filter Include="源文件\mem">
       <UniqueIdentifier>{b85d0dbf-7120-4cf2-b5aa-9da0f38df56d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\threading\sync">
+      <UniqueIdentifier>{a0c43bf1-ab5e-4a7d-830a-61f7e6e6fc20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\threading\lockfree">
+      <UniqueIdentifier>{eba3114f-14ac-40ac-a664-7b8e199b71ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\threading">
+      <UniqueIdentifier>{a168620a-1056-43e5-aa38-ad2d763dd1ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\threading\lockfree">
+      <UniqueIdentifier>{4b3ca1e1-9ba1-45fc-b99c-92733fad8dd5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -135,15 +141,6 @@
     <ClInclude Include="..\..\..\nut\util\time.hpp">
       <Filter>头文件\util</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\threading\condition.hpp">
-      <Filter>头文件\threading</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\threading\guard.hpp">
-      <Filter>头文件\threading</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\threading\mutex.hpp">
-      <Filter>头文件\threading</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\memtool\refarg.hpp">
       <Filter>头文件\memtool</Filter>
     </ClInclude>
@@ -182,27 +179,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\nut\gc\enref.hpp">
       <Filter>头文件\gc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\lockfree\atomic.hpp">
-      <Filter>头文件\lockfree</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\lockfree\concurrentqueue.hpp">
-      <Filter>头文件\lockfree</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\lockfree\concurrentstack.hpp">
-      <Filter>头文件\lockfree</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\threading\rwlock.hpp">
-      <Filter>头文件\threading</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\threading\selfish.hpp">
-      <Filter>头文件\threading</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\threading\spinlock.hpp">
-      <Filter>头文件\threading</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\threading\threading.hpp">
-      <Filter>头文件\threading</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\nut\tree\bstree.hpp">
       <Filter>头文件\tree</Filter>
@@ -246,6 +222,42 @@
     <ClInclude Include="..\..\..\nut\platform\path.hpp">
       <Filter>头文件\platform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\sync\condition.hpp">
+      <Filter>头文件\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\sync\guard.hpp">
+      <Filter>头文件\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\sync\mutex.hpp">
+      <Filter>头文件\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\sync\rwlock.hpp">
+      <Filter>头文件\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\sync\spinlock.hpp">
+      <Filter>头文件\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\sync\threading.hpp">
+      <Filter>头文件\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\thread.hpp">
+      <Filter>头文件\threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\lockfree\atomic.hpp">
+      <Filter>头文件\threading\lockfree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\lockfree\concurrentqueue.hpp">
+      <Filter>头文件\threading\lockfree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\lockfree\concurrentstack.hpp">
+      <Filter>头文件\threading\lockfree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\threadpool.hpp">
+      <Filter>头文件\threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\threading\sync\semaphore.hpp">
+      <Filter>头文件\threading\sync</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -269,12 +281,6 @@
     <ClCompile Include="..\..\..\test\util\test_configfile.cpp">
       <Filter>源文件\util</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\test\lockfree\test_queue.cpp">
-      <Filter>源文件\lockfree</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\test\lockfree\test_stack.cpp">
-      <Filter>源文件\lockfree</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\test\tree\test_bst.cpp">
       <Filter>源文件\tree</Filter>
     </ClCompile>
@@ -289,6 +295,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\mem\test_lengthfixed_mp.cpp">
       <Filter>源文件\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\threading\lockfree\test_queue.cpp">
+      <Filter>源文件\threading\lockfree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\threading\lockfree\test_stack.cpp">
+      <Filter>源文件\threading\lockfree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\threading\test_threadpool.cpp">
+      <Filter>源文件\threading</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -74,9 +74,6 @@
     <ClInclude Include="..\..\..\nut\gc\gcwrapper.hpp" />
     <ClInclude Include="..\..\..\nut\gc\ref.hpp" />
     <ClInclude Include="..\..\..\nut\gc\refcounter.hpp" />
-    <ClInclude Include="..\..\..\nut\lockfree\atomic.hpp" />
-    <ClInclude Include="..\..\..\nut\lockfree\concurrentqueue.hpp" />
-    <ClInclude Include="..\..\..\nut\lockfree\concurrentstack.hpp" />
     <ClInclude Include="..\..\..\nut\logging\logfilter.hpp" />
     <ClInclude Include="..\..\..\nut\logging\loghandler.hpp" />
     <ClInclude Include="..\..\..\nut\logging\loglevel.hpp" />
@@ -98,13 +95,18 @@
     <ClInclude Include="..\..\..\nut\platform\path.hpp" />
     <ClInclude Include="..\..\..\nut\platform\platform.hpp" />
     <ClInclude Include="..\..\..\nut\platform\stdint.hpp" />
-    <ClInclude Include="..\..\..\nut\threading\condition.hpp" />
-    <ClInclude Include="..\..\..\nut\threading\guard.hpp" />
-    <ClInclude Include="..\..\..\nut\threading\mutex.hpp" />
-    <ClInclude Include="..\..\..\nut\threading\rwlock.hpp" />
-    <ClInclude Include="..\..\..\nut\threading\selfish.hpp" />
-    <ClInclude Include="..\..\..\nut\threading\spinlock.hpp" />
-    <ClInclude Include="..\..\..\nut\threading\threading.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\lockfree\atomic.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\lockfree\concurrentqueue.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\lockfree\concurrentstack.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\sync\condition.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\sync\guard.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\sync\mutex.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\sync\rwlock.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\sync\semaphore.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\sync\spinlock.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\sync\threading.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\thread.hpp" />
+    <ClInclude Include="..\..\..\nut\threading\threadpool.hpp" />
     <ClInclude Include="..\..\..\nut\tree\bstree.hpp" />
     <ClInclude Include="..\..\..\nut\tree\btree.hpp" />
     <ClInclude Include="..\..\..\nut\tree\rbtree.hpp" />
@@ -126,8 +128,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp" />
-    <ClCompile Include="..\..\..\test\lockfree\test_queue.cpp" />
-    <ClCompile Include="..\..\..\test\lockfree\test_stack.cpp" />
     <ClCompile Include="..\..\..\test\logging\test_logging.cpp" />
     <ClCompile Include="..\..\..\test\main.cpp" />
     <ClCompile Include="..\..\..\test\numeric\test_biginteger.cpp" />
@@ -135,6 +135,9 @@
     <ClCompile Include="..\..\..\test\mem\test_scoped_gc.cpp" />
     <ClCompile Include="..\..\..\test\numeric\test_signedinteger.cpp" />
     <ClCompile Include="..\..\..\test\numeric\test_unsignedinteger.cpp" />
+    <ClCompile Include="..\..\..\test\threading\lockfree\test_queue.cpp" />
+    <ClCompile Include="..\..\..\test\threading\lockfree\test_stack.cpp" />
+    <ClCompile Include="..\..\..\test\threading\test_threadpool.cpp" />
     <ClCompile Include="..\..\..\test\tree\test_bst.cpp" />
     <ClCompile Include="..\..\..\test\util\test_configfile.cpp" />
     <ClCompile Include="..\..\..\test\util\test_propertyfile.cpp" />

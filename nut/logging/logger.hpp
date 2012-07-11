@@ -13,8 +13,8 @@
 #include <vector>
 
 #include <nut/gc/gc.hpp>
-#include <nut/threading/mutex.hpp>
-#include <nut/threading/guard.hpp>
+#include <nut/threading/sync/mutex.hpp>
+#include <nut/threading/sync/guard.hpp>
 #include <nut/debugging/destroychecker.hpp>
 
 #include "logpath.hpp"

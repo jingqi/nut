@@ -16,6 +16,7 @@
 #endif
 
 #include "mutex.hpp"
+#include "spinlock.hpp"
 
 namespace nut
 {
@@ -28,13 +29,20 @@ class Condition
     pthread_cond_t m_cond;
 #endif
 
-public :
+public:
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+    typedef SpinLock condition_lock_type; // windows 下condition只能配合临界区
+#else
+    typedef Mutex condition_lock_type;
+#endif
+
     Condition()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         ::InitializeConditionVariable(&m_cond);
 #else
-        pthread_cond_init(&m_cond, NULL);
+        int rs = pthread_cond_init(&m_cond, NULL);
+        assert(0 == rs);
 #endif
     }
 
@@ -43,7 +51,8 @@ public :
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         /* no need to destroy in windows */
 #else
-        pthread_cond_destroy(&m_cond);
+        int rs = pthread_cond_destroy(&m_cond);
+        assert(0 == rs);
 #endif
     }
 
@@ -70,37 +79,31 @@ public :
     /**
      * release lock, wait for signal or interrupt, lock and wake
      */
-    bool wait(Mutex &mutex)
+    bool wait(condition_lock_type *mutex)
     {
+        assert(NULL != mutex);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-#   if defined(USE_CRITICAL_SECTION)
-        return TRUE == ::SleepConditionVariableCS(&m_cond,mutex.innerMutex(), INFINITE);
-#   else
-#        error not supported!
-#   endif
+        return TRUE == ::SleepConditionVariableCS(&m_cond, mutex->innerMutex(), INFINITE);
 #else
-        return 0 == pthread_cond_wait(&m_cond, mutex.innerMutex());
+        return 0 == pthread_cond_wait(&m_cond, mutex->innerMutex());
 #endif
     }
 
     /**
      * work the same as above
      */
-    bool timedwait(Mutex &mutex, unsigned s, unsigned ms = 0)
+    bool timedwait(condition_lock_type *mutex, unsigned s, unsigned ms = 0)
     {
+        assert(NULL != mutex);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-#   if defined(USE_CRITICAL_SECTION)
         DWORD dwMilliseconds = s * 1000 + ms;
-        return TRUE == ::SleepConditionVariableCS(&m_cond, mutex.innerMutex(), dwMilliseconds);
-#   else
-#        error not supported!
-#   endif
+        return TRUE == ::SleepConditionVariableCS(&m_cond, mutex->innerMutex(), dwMilliseconds);
 #else
         struct timespec abstime;
         clock_gettime(CLOCK_REALTIME, &abstime);
         abstime.tv_sec += s;
         abstime.tv_nsec += ((long)ms) * 1000 * 1000;
-        return 0 == pthread_cond_timedwait(&m_cond, mutex.innerMutex(), &abstime);
+        return 0 == pthread_cond_timedwait(&m_cond, mutex->innerMutex(), &abstime);
 #endif
     }
 };

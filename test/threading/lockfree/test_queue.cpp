@@ -1,7 +1,7 @@
 
 #include <nut/unittest/unittest.hpp>
 
-#include <nut/lockfree/concurrentqueue.hpp>
+#include <nut/threading/lockfree/concurrentqueue.hpp>
 
 using namespace nut;
 
