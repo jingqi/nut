@@ -258,6 +258,9 @@
     <ClInclude Include="..\..\..\nut\threading\sync\semaphore.hpp">
       <Filter>头文件\threading\sync</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\gc\ptr.hpp">
+      <Filter>头文件\gc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
