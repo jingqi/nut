@@ -109,7 +109,7 @@ protected:
     NUT_DEBUGGING_DESTROY_CHECKER
 
 public:
-    GCWrapper(int c, destroyer d) : T(), m_counter(c), m_destroyer(d) {}
+    GCWrapper(int c, destroyer d) : enref<T>(), m_counter(c), m_destroyer(d) {}
 
     template <typename Arg1>
     GCWrapper(int c, destroyer d, Arg1 arg1)
