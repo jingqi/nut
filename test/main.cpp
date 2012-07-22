@@ -21,7 +21,7 @@ int main()
 
     ConsoleTestLogger l;
     TestRunner trunner(l);
-    trunner.runAGroup("threading");
+    trunner.runAGroup("security");
     // trunner.runAFixture("TestGC");
     // trunner.runACase("TestGC", "testSmoking");
 

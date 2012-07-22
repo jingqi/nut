@@ -159,7 +159,7 @@ public:
 
 /** 即使用户类的构造函数是private的，也能用gc_new */
 #define NUT_GC_PRIVATE_GCNEW \
-template <typename T, typename C> friend class GCWrapper;
+template <typename ___T, typename ___C> friend class nut::GCWrapper;
 
 }
 

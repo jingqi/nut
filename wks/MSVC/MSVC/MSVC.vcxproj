@@ -108,6 +108,8 @@
     <ClInclude Include="..\..\..\nut\threading\sync\threading.hpp" />
     <ClInclude Include="..\..\..\nut\threading\thread.hpp" />
     <ClInclude Include="..\..\..\nut\threading\threadpool.hpp" />
+    <ClInclude Include="..\..\..\nut\security\digest\md5.hpp" />
+    <ClInclude Include="..\..\..\nut\security\encrypt\aes.hpp" />
     <ClInclude Include="..\..\..\nut\tree\bstree.hpp" />
     <ClInclude Include="..\..\..\nut\tree\btree.hpp" />
     <ClInclude Include="..\..\..\nut\tree\rbtree.hpp" />
@@ -139,6 +141,8 @@
     <ClCompile Include="..\..\..\test\threading\lockfree\test_queue.cpp" />
     <ClCompile Include="..\..\..\test\threading\lockfree\test_stack.cpp" />
     <ClCompile Include="..\..\..\test\threading\test_threadpool.cpp" />
+    <ClCompile Include="..\..\..\test\security\digest\test_md5.cpp" />
+    <ClCompile Include="..\..\..\test\security\encrypt\test_aes.cpp" />
     <ClCompile Include="..\..\..\test\tree\test_bst.cpp" />
     <ClCompile Include="..\..\..\test\util\test_configfile.cpp" />
     <ClCompile Include="..\..\..\test\util\test_propertyfile.cpp" />
