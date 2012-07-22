@@ -105,6 +105,69 @@ public:
 #endif
     }
 
+    static std::vector<std::wstring> listdir(const wchar_t *path, bool except_file = false,
+        bool except_dir = false, bool except_initial_dot = false)
+    {
+        assert(NULL != path);
+        std::vector<std::wstring> ret;
+
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        wchar_t search_path[MAX_PATH];
+        ::swprintf(search_path, L"%s\\*", path); /* 加上通配符 */
+
+        WIN32_FIND_DATAW wfd;
+        HANDLE hFind = ::FindFirstFileW(search_path, &wfd);
+        if (hFind == INVALID_HANDLE_VALUE)
+            return ret;
+
+        do
+        {
+            if (except_initial_dot && wfd.cFileName[0] == L'.')
+                continue;
+            if (except_file && !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+                continue;
+            if (except_dir && (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+                continue;
+
+            ret.push_back(wfd.cFileName);
+        } while (::FindNextFileW(hFind, &wfd));
+
+        // 关闭查找句柄
+        ::FindClose(hFind);
+        return ret;
+#else
+        DIR *dp = NULL;
+        struct dirent *dirp = NULL;
+        if ((dp = ::opendir(path)) == NULL)
+            return ret;
+
+        while ((dirp = ::readdir(dp)) != NULL)
+        {
+            if (except_initial_dot && dirp->d_name[0] == '.')
+                continue;
+
+            if (except_file || except_dir)
+            {
+                wchar_t file_path[PATH_MAX];
+                ::swprintf(file_path, "%s/%s", path, dirp->d_name);
+                struct stat buf;
+                if (::lstat(file_path, &buf) < 0)
+                    continue;
+                if (except_file && !S_ISDIR(buf.st_mode))
+                    continue;
+                if (except_dir && S_ISDIR(buf.st_mode))
+                    continue;
+            }
+
+            ret.push_back(dirp->d_name);
+        }
+
+        // 释放DIR (struct dirent是由DIR维护的，无需额外释放)
+        ::closedir(dp);
+        return ret;
+#endif
+    }
+
     /**
      * 复制文件
      */
@@ -139,19 +202,70 @@ public:
 #endif
     }
 
-    static bool removefile(const char *path)
+    static bool copyfile(const wchar_t *src, const wchar_t *dest)
+    {
+        assert(NULL != src && NULL != dest);
+
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        return FALSE != ::CopyFileW(src, dest, TRUE);
+#else
+        FILE *inFile = ::fopen(src, "rb");
+        if (NULL == inFile)
+            return false;
+
+        FILE *outFile = ::fopen(dest, "wb+");
+        if (NULL == outFile)
+        {
+            ::fclose(inFIle);
+            return false;
+        }
+
+        const int BUF_LEN = 4096;
+        char buf[BUF_LEN];
+        int readed = -1;
+        while ((readed = ::fread(buf, 1, BUF_LEN, inFile)) > 0)
+        {
+            ::fwrite(buf, 1, readed, outFile);
+        }
+        ::fclose(inFile);
+        ::fclose(outFile);
+        return true;
+#endif
+    }
+
+    static inline bool removefile(const char *path)
     {
         assert(NULL != path);
         return -1 != ::remove(path);
     }
 
-    static bool mkdir(const char *path)
+    static inline bool removefile(const wchar_t *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        return 0 == ::mkdir(path);
+        return FALSE != ::DeleteFileW(path);
 #else
-        return 0 == ::mkdir(dir.c_str(), S_IWRITE);
+        return -1 != :;remove(path);
+#endif
+    }
+
+    static inline bool mkdir(const char *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        return 0 == ::CreateDirectoryA(path, NULL);
+#else
+        return 0 == ::mkdir(path, S_IWRITE);
+#endif
+    }
+
+    static inline bool mkdir(const wchar_t *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        return FALSE != ::CreateDirectoryW(path, NULL);
+#else
+        return 0 == ::mkdir(path, S_IWRITE)
 #endif
     }
 };
