@@ -15,6 +15,10 @@
 using namespace std;
 using namespace nut;
 
+#if defined(NUT_PLATFORM_CC_VC)
+#   pragma warning(disable: 4996 4190)
+#endif
+
 int main()
 {
     printf("\n%s\n", NUT_PLATFORM_STR);
@@ -37,5 +41,4 @@ int main()
 
 NUT_LOGGING_IMPL
 NUT_UNITTEST_IMPL
-
 

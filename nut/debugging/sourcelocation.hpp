@@ -12,6 +12,14 @@
 #include <stdio.h> /* for sprintf() */
 #include <string>
 
+#include <nut/platform/platform.hpp>
+
+
+#if defined(NUT_PLATFORM_CC_VC)
+#   pragma warning(push)
+#   pragma warning(disable: 4996)
+#endif
+
 namespace nut
 {
 
@@ -86,6 +94,10 @@ public :
 /** used to initilize a SourceLocation instance */
 #define NUT_SOURCE_LOCATION_ARGS  __FILE__,__LINE__,__FUNCTION__
 
+
+#if defined(NUT_PLATFORM_CC_VC)
+#   pragma warning(pop)
+#endif
 
 #endif /* head file guarder */
 

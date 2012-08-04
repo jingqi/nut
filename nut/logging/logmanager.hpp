@@ -16,6 +16,11 @@
 
 #include "logger.hpp"
 
+#if defined(NUT_PLATFORM_CC_VC)
+#   pragma warning(push)
+#   pragma warning(disable:4190)
+#endif
+
 DLL_API nut::ref<nut::Logger> nut_get_root_logger();
 
 #define NUT_LOGGING_IMPL \
@@ -33,6 +38,9 @@ DLL_API nut::ref<nut::Logger> nut_get_root_logger() \
     return root; \
 }
 
+#if defined(NUT_PLATFORM_CC_VC)
+#   pragma warning(pop)
+#endif
 
 namespace nut
 {

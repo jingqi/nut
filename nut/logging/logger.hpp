@@ -20,6 +20,12 @@
 #include "logpath.hpp"
 #include "loghandler.hpp"
 
+
+#if defined(NUT_PLATFORM_CC_VC)
+#   pragma warning(push)
+#   pragma warning(disable: 4996)
+#endif
+
 namespace nut
 {
 
@@ -165,6 +171,11 @@ public :
 };
 
 }
+
+
+#if defined(NUT_PLATFORM_CC_VC)
+#   pragma warning(pop)
+#endif
 
 #endif // head file guarder
 

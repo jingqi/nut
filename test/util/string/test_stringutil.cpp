@@ -2,7 +2,7 @@
 #include <nut/unittest/unittest.hpp>
 
 #include <iostream>
-#include <nut/util/stringutil.hpp>
+#include <nut/util/string/stringutil.hpp>
 
 using namespace std;
 using namespace nut;

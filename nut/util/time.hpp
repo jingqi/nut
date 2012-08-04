@@ -14,6 +14,13 @@
 #include <assert.h>
 #include <stdint.h>     /* for uint8_t and so on */
 
+#include <nut/platform/platform.hpp>
+
+#if defined(NUT_PLATFORM_CC_VC)
+#   pragma warning(push)
+#   pragma warning(disable: 4996)
+#endif
+
 namespace nut
 {
 
@@ -265,5 +272,10 @@ public :
 };
 
 }
+
+
+#if defined(NUT_PLATFORM_CC_VC)
+#   pragma warning(pop)
+#endif
 
 #endif /* head file guarder */
