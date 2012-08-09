@@ -285,6 +285,9 @@
     <ClInclude Include="..\..\..\nut\gc\ptr.hpp">
       <Filter>头文件\gc</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\delegate.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -337,6 +340,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\security\encrypt\test_aes.cpp">
       <Filter>源文件\security\encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\util\test_delegate.cpp">
+      <Filter>源文件\util</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

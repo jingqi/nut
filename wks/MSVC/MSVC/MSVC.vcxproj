@@ -122,6 +122,7 @@
     <ClInclude Include="..\..\..\nut\unittest\testrunner.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\unittest.hpp" />
     <ClInclude Include="..\..\..\nut\util\configfile.hpp" />
+    <ClInclude Include="..\..\..\nut\util\delegate.hpp" />
     <ClInclude Include="..\..\..\nut\util\propertyfile.hpp" />
     <ClInclude Include="..\..\..\nut\util\consoleutil.hpp" />
     <ClInclude Include="..\..\..\nut\util\membuffer.hpp" />
@@ -145,6 +146,7 @@
     <ClCompile Include="..\..\..\test\security\encrypt\test_aes.cpp" />
     <ClCompile Include="..\..\..\test\tree\test_bst.cpp" />
     <ClCompile Include="..\..\..\test\util\test_configfile.cpp" />
+    <ClCompile Include="..\..\..\test\util\test_delegate.cpp" />
     <ClCompile Include="..\..\..\test\util\test_propertyfile.cpp" />
     <ClCompile Include="..\..\..\test\util\test_stringutil.cpp" />
   </ItemGroup>
