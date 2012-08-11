@@ -7,6 +7,9 @@
 #ifndef ___HEADFILE___1767487A_1A0E_11E0_A9DB_485B391122F8_
 #define ___HEADFILE___1767487A_1A0E_11E0_A9DB_485B391122F8_
 
+#include <string>
+#include <exception>
+
 namespace nut
 {
     
@@ -14,14 +17,14 @@ namespace nut
  * 带源文件名等调试信息的异常类型
  * @param CharT 错误信息的字符格式, 可以是 char、wchar_t 等
  */
-template <typename CharT>
-class ExceptionBase
+template <typename StringT>
+class ExceptionBase : public std::exception
 {
+    long m_code;                 // 错误码
+    StringT m_message;           // 错误附带信息
     const char *m_sourceFile;    // 源代码文件
     int m_sourceLine;            // 源代码行数
     const char *m_func;          // 源代码函数
-    long m_code;                 // 错误码
-    const CharT *m_message;      // 错误附带信息
 
 public :
     /**
@@ -31,15 +34,17 @@ public :
      * @param sl 源代码行数， __LINE__
      * @param fc 源代码函数， __FUNCTION__
      */
-    ExceptionBase(long cd, const CharT *msg = NULL, const char *sf = NULL, int sl = -1, const char *fc = NULL)
+    ExceptionBase(long cd, StringT msg, const char *sf = NULL, int sl = -1, const char *fc = NULL)
         : m_code(cd), m_message(msg), m_sourceFile(sf), m_sourceLine(sl), m_func(fc)
     {}
+
+    virtual ~ExceptionBase() throw() {}
 
     /// 获取错误码
     long getCode() const { return m_code; }
 
     /// 获取出错信息
-    const CharT* getMessage() const { return m_message; }
+    StringT getMessage() const { return m_message; }
 
     /// 获取源文件名
     const char* getSourceFile() const
@@ -66,8 +71,8 @@ public :
     const char* getSourceFunc() const { return m_func; }
 };
 
-typedef ExceptionBase<char> ExceptionA;
-typedef ExceptionBase<wchar_t> ExceptionW;
+typedef ExceptionBase<std::string> ExceptionA;
+typedef ExceptionBase<std::wstring> ExceptionW;
 typedef ExceptionA Exception;
 
 }
