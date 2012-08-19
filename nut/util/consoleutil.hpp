@@ -2,6 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2010-4-15
+ * @last-edit 2012-08-19 19:11:15 jingqi
  */
 
 #ifndef ___HEADFILE___77946953_2090_4060_9651_10D87F3FB5B6_
@@ -16,6 +17,8 @@
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <conio.h>
 #   include <windows.h>
+#else
+#   include <unistd.h>
 #endif
 
 namespace nut

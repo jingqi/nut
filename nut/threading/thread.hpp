@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-07-09
- * @last-edit 2012-07-09 22:12:37 jingqi
+ * @last-edit 2012-08-19 18:40:27 jingqi
  */
 
 #ifndef ___HEADFILE_93CDBEEC_8BDC_4AE9_A2D1_717CAC0ECD85_
@@ -16,6 +16,7 @@
 #   include <windows.h>
 #else
 #   include <pthread.h>
+#   include <signal.h> // for pthread_kill()
 #endif
 
 namespace nut
@@ -164,7 +165,7 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         ::WaitForSingleObject(m_handle, INFINITE);
 #else
-        ::pthread_join(&m_pthread, NULL);
+        ::pthread_join(m_pthread, NULL);
 #endif
     }
 

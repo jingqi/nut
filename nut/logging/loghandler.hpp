@@ -2,6 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2010-8-17
+ * @last-edit 2012-08-19 19:10:08 jingqi
  */
 
 #ifndef ___HEADFILE___4CDF318F_AF06_4CEF_BAC8_DE26853A73AB_
@@ -15,6 +16,7 @@
 #include <nut/platform/platform.hpp>
 
 #if defined(NUT_PLATFORM_OS_LINUX)
+#   include <unistd.h> // for getpid()
 #   include <syslog.h>
 #endif
 

@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-04-03
- * @last-edit 2012-04-03 18:14:47 jingqi
+ * @last-edit 2012-08-19 18:52:54 jingqi
  */
 
 #ifndef ___HEADFILE_0D8E9B0B_ACDC_4FD5_A0BE_71D75F7A5EFE_
@@ -119,6 +119,8 @@ public:
 		m_positive = x.m_positive;
 		m_significant_len = x.m_significant_len;
 		adjust_significant_len();
+
+        return *this;
 	}
 
 	bool operator==(const BigInteger& x) const

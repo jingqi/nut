@@ -1,4 +1,12 @@
 ﻿
+#include <nut/platform/platform.hpp>
+
+#if defined(NUT_PLATFORM_OS_LINUX)
+#   include <unistd.h>
+#endif
+
+#include <stdio.h>
+
 #include <nut/unittest/unittest.hpp>
 
 #include <nut/threading/threadpool.hpp>
@@ -16,7 +24,8 @@ NUT_FIXTURE(TestThreading)
 
     static void custom(void *p)
     {
-        printf("%c", (char)p);
+        int c = reinterpret_cast<char*>(p) - (char*)NULL;
+        printf("%c", c);
     }
 
     void testManual()
@@ -24,7 +33,11 @@ NUT_FIXTURE(TestThreading)
         ref<ThreadPool> tp = gc_new<ThreadPool>(2);
         tp->start();
 
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         Sleep(1000);
+#else
+        sleep(1);
+#endif
         printf("a");
         tp->add_task(custom, (void*)'A');
         printf("b");
@@ -32,7 +45,11 @@ NUT_FIXTURE(TestThreading)
         printf("c");
         tp->add_task(custom, (void*)'C');
 
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         Sleep(2000);
+#else
+        sleep(2);
+#endif
         printf("x");
         tp->add_task(custom, (void*)'X');
         printf("y");

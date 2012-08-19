@@ -1,4 +1,7 @@
 
+#include <stdio.h>
+
+
 #include <nut/unittest/unittest.hpp>
 
 #include <nut/security/encrypt/aes.hpp>

@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-04-05
- * @last-edit 2012-04-05 14:38:22 jingqi
+ * @last-edit 2012-08-19 18:52:05 jingqi
  */
 
 #ifndef ___HEADFILE_155BBE6F_6F7B_4B42_A097_B9C87EE5EEE0_
@@ -85,7 +85,7 @@ public:
 		assert(NULL != p);
 		while(true)
 		{
-			if (m_free_num >= MAX_FREE_BLOCKS)
+			if (m_free_num >= (int) MAX_FREE_BLOCKS)
 			{
 				m_mem_alloc.free(p, G);
 				return;

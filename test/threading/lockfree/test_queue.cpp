@@ -1,4 +1,11 @@
 
+
+#include <nut/platform/platform.hpp>
+
+#if defined(NUT_PLATFORM_OS_LINUX)
+#   include <unistd.h>
+#endif
+
 #include <nut/unittest/unittest.hpp>
 
 #include <nut/threading/lockfree/concurrentqueue.hpp>

@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-03-06
- * @last-edit 2012-03-06 13:03:12 jingqi
+ * @last-edit 2012-08-19 18:44:41 jingqi
  */
 
 #ifndef ___HEADFILE_D7B6E0B3_59D4_458E_A8EB_0878F6F42145_
@@ -31,7 +31,7 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         ::InitializeCriticalSection(&m_criticalSection);
 #else
-        int rs = ::pthread_spin_init(&m_spinlock, NULL);
+        int rs = ::pthread_spin_init(&m_spinlock, PTHREAD_PROCESS_PRIVATE);
         assert(0 == rs);
 #endif
     }
