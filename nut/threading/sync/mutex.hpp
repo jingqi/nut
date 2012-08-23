@@ -44,7 +44,7 @@ public :
     ~Mutex ()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        BOOL rs = ::ReleaseMutex(m_hmutex);
+        BOOL rs = ::CloseHandle(m_hmutex);
         assert(rs);
 #else
         int rs = ::pthread_mutex_destroy(&m_mutex);

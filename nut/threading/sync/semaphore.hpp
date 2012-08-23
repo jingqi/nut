@@ -47,7 +47,8 @@ public:
     ~Semaphore()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        ::CloseHandle(m_sema);
+        BOOL rs = ::CloseHandle(m_sema);
+        assert(rs);
 #else
         int rs = ::sem_destroy(&m_sem);
         assert(0 == rs);
