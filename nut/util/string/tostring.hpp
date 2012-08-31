@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 
@@ -95,7 +95,7 @@ inline std::string toString(void *p)
     return toString((const void*)p);
 }
 
-/** ´òÓ¡ÄÚ´æ¿é */
+/** æ‰“å°å†…å­˜å— */
 inline std::string toString(const void *p, size_t align, size_t count)
 {
     assert(NULL != p && 0 != align && 0 != count);

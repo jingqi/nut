@@ -94,6 +94,15 @@
     <Filter Include="源文件\security\encrypt">
       <UniqueIdentifier>{1025b502-7aae-4732-b417-41c20d45c96c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\util\string">
+      <UniqueIdentifier>{cbe09b2d-e419-45dc-8260-2edf5a72dbf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\util\sqlite3helper">
+      <UniqueIdentifier>{f0283209-e4e1-4191-abab-413cc72e01ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\util\string">
+      <UniqueIdentifier>{7f233c5a-13e7-49b9-b5d1-fe63d81eda75}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -173,9 +182,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\nut\logging\logpath.hpp">
       <Filter>头文件\logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\util\stringutil.hpp">
-      <Filter>头文件\util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\nut\util\consoleutil.hpp">
       <Filter>头文件\util</Filter>
@@ -288,6 +294,24 @@
     <ClInclude Include="..\..\..\nut\util\delegate.hpp">
       <Filter>头文件\util</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\string\tostring.hpp">
+      <Filter>头文件\util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\string\stringutil.hpp">
+      <Filter>头文件\util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\sqlite3helper\connection.hpp">
+      <Filter>头文件\util\sqlite3helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\sqlite3helper\preparedstatement .hpp">
+      <Filter>头文件\util\sqlite3helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\sqlite3helper\resultset.hpp">
+      <Filter>头文件\util\sqlite3helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\sqlite3helper\wrapers.hpp">
+      <Filter>头文件\util\sqlite3helper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -301,9 +325,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\numeric\test_signedinteger.cpp">
       <Filter>源文件\numeric</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\test\util\test_stringutil.cpp">
-      <Filter>源文件\util</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\test\util\test_propertyfile.cpp">
       <Filter>源文件\util</Filter>
@@ -343,6 +364,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\util\test_delegate.cpp">
       <Filter>源文件\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\util\string\test_stringutil.cpp">
+      <Filter>源文件\util\string</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -126,6 +126,10 @@
     <ClInclude Include="..\..\..\nut\util\propertyfile.hpp" />
     <ClInclude Include="..\..\..\nut\util\consoleutil.hpp" />
     <ClInclude Include="..\..\..\nut\util\membuffer.hpp" />
+    <ClInclude Include="..\..\..\nut\util\sqlite3helper\connection.hpp" />
+    <ClInclude Include="..\..\..\nut\util\sqlite3helper\preparedstatement .hpp" />
+    <ClInclude Include="..\..\..\nut\util\sqlite3helper\resultset.hpp" />
+    <ClInclude Include="..\..\..\nut\util\sqlite3helper\wrapers.hpp" />
     <ClInclude Include="..\..\..\nut\util\string\stringutil.hpp" />
     <ClInclude Include="..\..\..\nut\util\string\tostring.hpp" />
     <ClInclude Include="..\..\..\nut\util\time.hpp" />
