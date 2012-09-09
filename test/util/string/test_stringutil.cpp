@@ -1,4 +1,4 @@
-
+﻿
 #include <nut/unittest/unittest.hpp>
 
 #include <iostream>
@@ -15,6 +15,7 @@ NUT_FIXTURE(TestStringUtil)
     NUT_CASE(testFormat)
     NUT_CASE(testTrim)
     NUT_CASE(testStrieq)
+    NUT_CASE(testwstr)
     NUT_CASES_END()
 
 
@@ -75,6 +76,13 @@ NUT_FIXTURE(TestStringUtil)
         NUT_TA(!strieq("ac", "ab"));
         NUT_TA(strieq("ab", "ab"));
         NUT_TA(strieq("aB", "ab"));
+    }
+
+    void testwstr()
+    {
+        NUT_TA(wstr2str(L"c5&汉") == "c5&汉");
+
+        NUT_TA(str2wstr("c5&汉") == L"c5&汉");
     }
 };
 

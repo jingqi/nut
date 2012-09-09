@@ -11,9 +11,15 @@
 #include <string.h>  /* for memset() */
 #include <stdio.h>  /* for sprintf(), vsnprintf() and so on */
 #include <stdarg.h> /* for va_start() */
-#include <stdlib.h> /* for malloc() free() ltoa() */
+#include <stdlib.h> /* for malloc() free() ltoa() wcstombs() and so on */
 #include <string>
 #include <vector>
+
+#include <nut/platform/platform.hpp>
+
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+#   include <windows.h>
+#endif
 
 #include "tostring.hpp"
 
@@ -170,6 +176,53 @@ inline bool ends_with(const std::string& s, const std::string& tail)
         if (s.at(s.length() - i) != tail.at(tail.length() - i))
             return false;
     return true;
+}
+
+inline std::string wstr2str(const std::wstring& wstr)
+{
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+    const int n = ::WideCharToMultiByte(CP_ACP /* code page */, 0 /* flags */,
+        wstr.c_str(), wstr.length() + 1, NULL, 0, NULL, NULL);
+    char *p = new char[n];
+    ::memset(p, 0, n * sizeof(char));
+    ::WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), wstr.length() + 1, p, n, NULL, NULL);
+    std::string ret(p);
+    delete[] p;
+    return ret;
+#else
+    const int n = ::wcstombs(NULL, wstr.c_str(), 0) + 1; // '\0' is added
+    if (n <= 0)
+        return std::string();
+    char *p = new char[n];
+    ::memset(p, 0, n * sizeof(char));
+    ::wcstombs(p, wstr.c_str(), n);
+    std::string ret(p);
+    delete[] p;
+    return ret;
+#endif
+}
+
+inline std::wstring str2wstr(const std::string& str)
+{
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+    const int n = ::MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.length() + 1, NULL, 0);
+    wchar_t *p = new wchar_t[n];
+    ::memset(p, 0, n * sizeof(wchar_t));
+    ::MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.length() + 1, p, n);
+    std::wstring ret(p);
+    delete[] p;
+    return ret;
+#else
+    const int n = ::mbstowcs(NULL, str.c_str(), 0) + 1;
+    if (n <= 0)
+        return std::wstring();
+    wchar_t *p = new wchar_t[n];
+    ::memset(p, 0, n * sizeof(wchar_t));
+    ::mbstowcs(p, str.c_str(), n);
+    std::wstring ret(p);
+    delete[] p;
+    return ret;
+#endif
 }
 
 }

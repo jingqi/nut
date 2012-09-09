@@ -1,8 +1,8 @@
-﻿/**
+/**
  * @file -
  * @author jingqi
  * @date 2012-06-23
- * @last-edit 2012-06-23 15:38:33 jingqi
+ * @last-edit 2012-09-09 13:21:58 jingqi
  */
 
 #ifndef ___HEADFILE_E6D40B10_E5D6_4092_A38B_4E69E5B8E123_
@@ -96,7 +96,7 @@ public:
         else if (std::string::npos == p1)
             p1 = p2;
 
-        assert(p1 >= 0 && std::string::npos != p1);
+        assert(std::string::npos != p1);
         if (0 == p1 || ':' == path[p1 - 1]) // 磁盘号 + 根目录
             return Tuple<std::string, std::string>(p.substr(0, p1 + 1), p.substr(p1 + 1));
         else
@@ -117,7 +117,7 @@ public:
         else if (std::wstring::npos == p1)
             p1 = p2;
 
-        assert(p1 >= 0 && std::wstring::npos != p1);
+        assert(std::wstring::npos != p1);
         if (0 == p1 || L':' == path[p1 - 1]) // 磁盘号 + 根目录
             return Tuple<std::wstring, std::wstring>(p.substr(0, p1 + 1), p.substr(p1 + 1));
         else
