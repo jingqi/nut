@@ -226,8 +226,7 @@ public:
         return true;
     }
 
-    bool executeUpdate(const char *sql,
-        const ParamWraper& arg1 = ParamWraper::none(),
+    bool executeUpdate(const char *sql, const ParamWraper& arg1,
         const ParamWraper& arg2 = ParamWraper::none(),
         const ParamWraper& arg3 = ParamWraper::none(),
         const ParamWraper& arg4 = ParamWraper::none(),
