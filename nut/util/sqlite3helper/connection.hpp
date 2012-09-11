@@ -206,6 +206,21 @@ public:
         return true;
     }
 
+    /** 压缩数据库 */
+    bool vacuum()
+    {
+        assert(isValid());
+        char *msg = NULL;
+        int rs = ::sqlite3_exec(m_sqlite, "vacuum;", NULL, NULL, &msg);
+        Sqlite3Freer _f(msg);
+        if (SQLITE_OK != rs)
+        {
+            onError(rs, msg);
+            return false;
+        }
+        return true;
+    }
+
     bool executeUpdate(const char *sql)
     {
         assert(NULL != sql && isValid());
