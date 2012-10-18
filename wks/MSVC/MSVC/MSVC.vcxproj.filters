@@ -312,6 +312,9 @@
     <ClInclude Include="..\..\..\nut\util\sqlite3helper\wrapers.hpp">
       <Filter>头文件\util\sqlite3helper</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\string\kmp.hpp">
+      <Filter>头文件\util\string</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -366,6 +369,9 @@
       <Filter>源文件\util</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\test\util\string\test_stringutil.cpp">
+      <Filter>源文件\util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\util\string\test_kmp.cpp">
       <Filter>源文件\util\string</Filter>
     </ClCompile>
   </ItemGroup>

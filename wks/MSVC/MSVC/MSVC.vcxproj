@@ -130,6 +130,7 @@
     <ClInclude Include="..\..\..\nut\util\sqlite3helper\preparedstatement .hpp" />
     <ClInclude Include="..\..\..\nut\util\sqlite3helper\resultset.hpp" />
     <ClInclude Include="..\..\..\nut\util\sqlite3helper\wrapers.hpp" />
+    <ClInclude Include="..\..\..\nut\util\string\kmp.hpp" />
     <ClInclude Include="..\..\..\nut\util\string\stringutil.hpp" />
     <ClInclude Include="..\..\..\nut\util\string\tostring.hpp" />
     <ClInclude Include="..\..\..\nut\util\time.hpp" />
@@ -150,6 +151,7 @@
     <ClCompile Include="..\..\..\test\security\digest\test_md5.cpp" />
     <ClCompile Include="..\..\..\test\security\encrypt\test_aes.cpp" />
     <ClCompile Include="..\..\..\test\tree\test_bst.cpp" />
+    <ClCompile Include="..\..\..\test\util\string\test_kmp.cpp" />
     <ClCompile Include="..\..\..\test\util\string\test_stringutil.cpp" />
     <ClCompile Include="..\..\..\test\util\test_configfile.cpp" />
     <ClCompile Include="..\..\..\test\util\test_delegate.cpp" />
