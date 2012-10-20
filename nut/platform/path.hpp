@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-06-23
- * @last-edit 2012-10-20 15:52:14 jingqi
+ * @last-edit 2012-10-20 16:10:36 jingqi
  */
 
 #ifndef ___HEADFILE_E6D40B10_E5D6_4092_A38B_4E69E5B8E123_
@@ -296,10 +296,8 @@ public:
         ::_wstat(path, &info);
         return info.st_size;
 #else
-        struct stat info;
-        if (0 != ::stat(path, &info))
-            return -1L;
-        return info.st_size;
+        const std::string p = wstr2str(path);
+        return getsize(p.c_str());
 #endif
     }
 
