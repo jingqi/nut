@@ -81,7 +81,6 @@ NUT_FIXTURE(TestStringUtil)
     void testwstr()
     {
         NUT_TA(wstr2str(L"c5&汉") == "c5&汉");
-
         NUT_TA(str2wstr("c5&汉") == L"c5&汉");
     }
 };

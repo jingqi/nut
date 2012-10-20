@@ -21,6 +21,11 @@ using namespace nut;
 
 int main()
 {
+#if defined(NUT_PLATFORM_OS_LINUX)
+    // 解决 wcout 无法显示中文以及 char/wchar_t 相互转换问题
+    setlocale(LC_ALL, "zh_CN.UTF8");
+#endif
+
     printf("\n%s\n", NUT_PLATFORM_STR);
 
     ConsoleTestLogger l;
