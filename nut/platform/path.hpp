@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-06-23
- * @last-edit 2012-09-09 13:21:58 jingqi
+ * @last-edit 2012-10-20 15:52:14 jingqi
  */
 
 #ifndef ___HEADFILE_E6D40B10_E5D6_4092_A38B_4E69E5B8E123_
@@ -24,6 +24,7 @@
 #endif
 
 #include <nut/util/tuple.hpp>
+#include <nut/util/string/stringutil.hpp>
 
 namespace nut
 {
@@ -249,14 +250,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return -1 != ::_waccess(path, 0);
 #else
-        /*
-         *  0-检查文件是否存在
-         *  1-检查文件是否可运行
-         *  2-检查文件是否可写访问
-         *  4-检查文件是否可读访问
-         *  6-检查文件是否可读/写访问
-         */
-        return 0 == ::access(path, 0);
+        const std::string p = wstr2str(path);
+        return exists(p.c_str());
 #endif
     }
 
