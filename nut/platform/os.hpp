@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-06-23
- * @last-edit 2012-06-23 15:41:27 jingqi
+ * @last-edit 2012-10-20 16:12:57 jingqi
  */
 
 #ifndef ___HEADFILE_291DFB4C_7D29_4D61_A691_EF83FB86CD36_
@@ -185,7 +185,7 @@ public:
         FILE *outFile = ::fopen(dest, "wb+");
         if (NULL == outFile)
         {
-            ::fclose(inFIle);
+            ::fclose(inFile);
             return false;
         }
         
@@ -216,7 +216,7 @@ public:
         FILE *outFile = ::fopen(dest, "wb+");
         if (NULL == outFile)
         {
-            ::fclose(inFIle);
+            ::fclose(inFile);
             return false;
         }
 
