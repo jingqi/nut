@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-06-23
- * @last-edit 2012-10-20 16:12:57 jingqi
+ * @last-edit 2012-10-20 16:53:53 jingqi
  */
 
 #ifndef ___HEADFILE_291DFB4C_7D29_4D61_A691_EF83FB86CD36_
@@ -24,6 +24,8 @@
 #   include <sys/stat.h> // for lstat()
 #   include <sys/types.h>  // for mkdir()
 #endif
+
+#include <nut/util/string/stringutil.hpp>
 
 namespace nut
 {
@@ -136,34 +138,10 @@ public:
         ::FindClose(hFind);
         return ret;
 #else
-        DIR *dp = NULL;
-        struct dirent *dirp = NULL;
-        if ((dp = ::opendir(path)) == NULL)
-            return ret;
-
-        while ((dirp = ::readdir(dp)) != NULL)
-        {
-            if (except_initial_dot && dirp->d_name[0] == '.')
-                continue;
-
-            if (except_file || except_dir)
-            {
-                wchar_t file_path[PATH_MAX];
-                ::swprintf(file_path, "%s/%s", path, dirp->d_name);
-                struct stat buf;
-                if (::lstat(file_path, &buf) < 0)
-                    continue;
-                if (except_file && !S_ISDIR(buf.st_mode))
-                    continue;
-                if (except_dir && S_ISDIR(buf.st_mode))
-                    continue;
-            }
-
-            ret.push_back(dirp->d_name);
-        }
-
-        // 释放DIR (struct dirent是由DIR维护的，无需额外释放)
-        ::closedir(dp);
+        const std::string p = wstr2str(path);
+        const std::vector<std::string> dirs = listdir(p.c_str(), except_file, except_dir, except_initial_dot);
+        for (int i = 0, size = dirs.size(); i < size; ++i)
+            ret.push_back(str2wstr(dirs[i]));
         return ret;
 #endif
     }
@@ -209,27 +187,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return FALSE != ::CopyFileW(src, dest, TRUE);
 #else
-        FILE *inFile = ::fopen(src, "rb");
-        if (NULL == inFile)
-            return false;
-
-        FILE *outFile = ::fopen(dest, "wb+");
-        if (NULL == outFile)
-        {
-            ::fclose(inFile);
-            return false;
-        }
-
-        const int BUF_LEN = 4096;
-        char buf[BUF_LEN];
-        int readed = -1;
-        while ((readed = ::fread(buf, 1, BUF_LEN, inFile)) > 0)
-        {
-            ::fwrite(buf, 1, readed, outFile);
-        }
-        ::fclose(inFile);
-        ::fclose(outFile);
-        return true;
+        const std::string s = wstr2str(src), d = wstr2str(dest);
+        return copyfile(s.c_str(), d.c_str());
 #endif
     }
 
@@ -245,7 +204,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return FALSE != ::DeleteFileW(path);
 #else
-        return -1 != :;remove(path);
+        const std::string p = wstr2str(path);
+        return removefile(p.c_str());
 #endif
     }
 
@@ -265,7 +225,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return FALSE != ::CreateDirectoryW(path, NULL);
 #else
-        return 0 == ::mkdir(path, S_IWRITE)
+        const std::string p = wstr2str(path);
+        return OS::mkdir(p.c_str());
 #endif
     }
 };
