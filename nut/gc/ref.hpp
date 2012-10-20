@@ -155,6 +155,8 @@ struct RefTraits<ref<T> >
 template <typename T>
 struct static_ref_cast : public ref<typename RefTraits<T>::plain_type>
 {
+    using ref<typename RefTraits<T>::plain_type>::assign;
+
     template <typename U>
     static_ref_cast(const weak_ref<U>& r)
     {
@@ -165,6 +167,8 @@ struct static_ref_cast : public ref<typename RefTraits<T>::plain_type>
 template <typename T>
 struct dynamic_ref_cast : public ref<typename RefTraits<T>::plain_type>
 {
+    using ref<typename RefTraits<T>::plain_type>::assign;
+
     template <typename U>
     dynamic_ref_cast(const weak_ref<U>& r)
     {
