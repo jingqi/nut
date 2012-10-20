@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-08-10
- * @last-edit 2012-08-10 22:53:07 jingqi
+ * @last-edit 2012-10-20 17:18:19 jingqi
  */
 
 #ifndef ___HEADFILE_B51CBEE3_B5FB_4481_AE29_559B709E3B26_
@@ -14,6 +14,7 @@
 #include <sqlite3.h>
 
 #include <nut/gc/gc.hpp>
+#include <nut/util/string/stringutil.hpp>
 
 #include "wrapers.hpp"
 
@@ -34,7 +35,7 @@ class ResultSet
         {
             const char *n = ::sqlite3_column_name(m_stmt->raw(), i);
             assert(NULL != n);
-            if (0 == ::stricmp(n, columnName))
+            if (strieq(n, columnName))
                 return i;
         }
         return -1;
