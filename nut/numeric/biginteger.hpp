@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-04-03
- * @last-edit 2012-11-05 21:41:05 jingqi
+ * @last-edit 2012-11-05 22:29:31 jingqi
  */
 
 #ifndef ___HEADFILE_0D8E9B0B_ACDC_4FD5_A0BE_71D75F7A5EFE_
@@ -68,7 +68,10 @@ private:
 public:
     BigInteger()
         : m_positive(true), m_buffer(NULL), m_buffer_len(0), m_significant_len(0)
-    {}
+    {
+        ensure_cap(sizeof(int));
+        m_significant_len = 1;
+    }
 
     explicit BigInteger(long v)
         : m_positive(v >= 0), m_buffer(NULL), m_buffer_len(0), m_significant_len(0)
@@ -368,10 +371,23 @@ public:
         expand_unsigned(m_buffer, m_significant_len, (uint8_t*)&ret, sizeof(ret));
         return (m_positive ? ret : -ret);
     }
-	
+
+private:
+    static inline bool is_valid_radix(size_t radix)
+    {
+        return 1 < radix && radix <= 36;
+    }
+
+    static inline char num2char(size_t n)
+    {
+        assert(0 <= n && n < 36);
+        return (n < 10 ? '0' + n : 'A' + n - 10);
+    }
+
+public:
 	std::string toString(size_t radix = 10) const
 	{
-        assert(radix > 1 && radix <= 36);
+        assert(is_valid_radix(radix));
 		BigInteger tmp(*this);
 		const bool positive = tmp.is_positive();
 		if (!positive)
@@ -381,13 +397,8 @@ public:
 		std::string ret;
         do
         {
-            const BigInteger rest = tmp % RADIX;
-            size_t r = (size_t) rest.long_value();
-            assert(r < radix);
-            if (r < 10)
-                ret.push_back('0' + r);
-            else
-                ret.push_back('A' + r - 10);
+            const size_t n = (size_t) (tmp % RADIX).long_value();
+            ret.push_back(num2char(n));
 
             tmp /= RADIX;
         } while (!tmp.is_zero());
@@ -396,6 +407,67 @@ public:
         std::reverse(ret.begin(), ret.end());
         return ret;
 	}
+
+private:
+    static inline bool is_blank(char c)
+    {
+        return ' ' == c || '\t' == c;
+    }
+
+    static inline size_t skip_blank(const std::string& s, size_t start)
+    {
+        while (start < s.length() && is_blank(s[start]))
+            ++start;
+        return start;
+    }
+
+    static inline bool is_valid_char(char c, size_t radix)
+    {
+        assert(is_valid_radix(radix));
+        if (radix <= 10)
+            return '0' <= c && c <= '0' + (int) radix - 1;
+        if ('0' <= c && c <= '9')
+            return true;
+        return 'a' <= (c | 0x20) && (c | 0x20) <= 'a' + (int) radix - 10 - 1;
+    }
+
+    static inline size_t char2num(char c)
+    {
+        assert(is_valid_char(c, 36));
+        if ('0' <= c && c <= '9')
+            return c - '0';
+        return (c | 0x20) - 'a' + 10;
+    }
+
+public:
+    static BigInteger valueOf(const std::string& s, size_t radix = 10)
+    {
+        assert(radix > 1 && radix <= 36);
+        BigInteger ret;
+
+        // 略过空白
+        size_t index = skip_blank(s, 0);
+        if (index >= s.length())
+            return ret;
+
+        // 正负号
+        bool positive = ('-' != s[index]);
+        if ('+' == s[index] || '-' == s[index])
+            if ((index = skip_blank(s, index + 1)) >= s.length())
+                return ret;
+
+        // 数字值
+        const BigInteger RADIX(radix);
+        while (index < s.length() && is_valid_char(s[index], radix))
+        {
+            ret *= RADIX;
+            ret += BigInteger(char2num(s[index]));
+            index = skip_blank(s, index + 1);
+        }
+        if (!positive)
+            ret = -ret;
+        return ret;
+    }
 };
 
 }

@@ -19,6 +19,7 @@ NUT_FIXTURE(TestBigInteger)
 	NUT_CASE(testMod)
     NUT_CASE(testBitOperator)
     NUT_CASE(testToString)
+    NUT_CASE(testValueOf)
 	NUT_CASES_END()
 
 	void setUp() {}
@@ -128,6 +129,19 @@ NUT_FIXTURE(TestBigInteger)
         NUT_TA(BigInteger(13).toString(8) == "15");
 
         NUT_TA(BigInteger(5).toString(2) == "101");
+    }
+
+    void testValueOf()
+    {
+        NUT_TA(BigInteger::valueOf("0").long_value() == 0);
+        NUT_TA(BigInteger::valueOf("10").long_value() == 10);
+        NUT_TA(BigInteger::valueOf("-14").long_value() == -14);
+
+        NUT_TA(BigInteger::valueOf("4a", 0x10).long_value() == 0x4a);
+
+        NUT_TA(BigInteger::valueOf("15", 8).long_value() == 13);
+
+        NUT_TA(BigInteger::valueOf("101",2).long_value() == 5);
     }
 };
 
