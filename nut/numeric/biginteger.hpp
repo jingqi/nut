@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-04-03
- * @last-edit 2012-11-05 22:29:31 jingqi
+ * @last-edit 2012-11-05 22:37:54 jingqi
  */
 
 #ifndef ___HEADFILE_0D8E9B0B_ACDC_4FD5_A0BE_71D75F7A5EFE_
@@ -384,6 +384,12 @@ private:
         return (n < 10 ? '0' + n : 'A' + n - 10);
     }
 
+    static inline wchar_t num2wchar(size_t n)
+    {
+        assert(0 <= n && n < 36);
+        return (n < 10 ? L'0' + n : L'A' + n - 10);
+    }
+
 public:
 	std::string toString(size_t radix = 10) const
 	{
@@ -408,13 +414,48 @@ public:
         return ret;
 	}
 
+	std::wstring toWString(size_t radix = 10) const
+	{
+        assert(is_valid_radix(radix));
+		BigInteger tmp(*this);
+		const bool positive = tmp.is_positive();
+		if (!positive)
+            tmp = -tmp;
+
+        const BigInteger RADIX(radix);
+		std::wstring ret;
+        do
+        {
+            const size_t n = (size_t) (tmp % RADIX).long_value();
+            ret.push_back(num2wchar(n));
+
+            tmp /= RADIX;
+        } while (!tmp.is_zero());
+        if (!positive)
+            ret.push_back(L'-');
+        std::reverse(ret.begin(), ret.end());
+        return ret;
+	}
+
 private:
     static inline bool is_blank(char c)
     {
         return ' ' == c || '\t' == c;
     }
 
+    static inline bool is_blank(wchar_t c)
+    {
+        return L' ' == c || L'\t' == c;
+    }
+
     static inline size_t skip_blank(const std::string& s, size_t start)
+    {
+        while (start < s.length() && is_blank(s[start]))
+            ++start;
+        return start;
+    }
+
+    static inline size_t skip_blank(const std::wstring& s, size_t start)
     {
         while (start < s.length() && is_blank(s[start]))
             ++start;
@@ -431,12 +472,30 @@ private:
         return 'a' <= (c | 0x20) && (c | 0x20) <= 'a' + (int) radix - 10 - 1;
     }
 
+    static inline bool is_valid_char(wchar_t c, size_t radix)
+    {
+        assert(is_valid_radix(radix));
+        if (radix <= 10)
+            return L'0' <= c && c <= L'0' + (int) radix - 1;
+        if (L'0' <= c && c <= L'9')
+            return true;
+        return L'a' <= (c | 0x20) && (c | 0x20) <= L'a' + (int) radix - 10 - 1;
+    }
+
     static inline size_t char2num(char c)
     {
         assert(is_valid_char(c, 36));
         if ('0' <= c && c <= '9')
             return c - '0';
         return (c | 0x20) - 'a' + 10;
+    }
+
+    static inline size_t char2num(wchar_t c)
+    {
+        assert(is_valid_char(c, 36));
+        if (L'0' <= c && c <= L'9')
+            return c - L'0';
+        return (c | 0x20) - L'a' + 10;
     }
 
 public:
@@ -453,6 +512,35 @@ public:
         // 正负号
         bool positive = ('-' != s[index]);
         if ('+' == s[index] || '-' == s[index])
+            if ((index = skip_blank(s, index + 1)) >= s.length())
+                return ret;
+
+        // 数字值
+        const BigInteger RADIX(radix);
+        while (index < s.length() && is_valid_char(s[index], radix))
+        {
+            ret *= RADIX;
+            ret += BigInteger(char2num(s[index]));
+            index = skip_blank(s, index + 1);
+        }
+        if (!positive)
+            ret = -ret;
+        return ret;
+    }
+
+    static BigInteger valueOf(const std::wstring& s, size_t radix = 10)
+    {
+        assert(radix > 1 && radix <= 36);
+        BigInteger ret;
+
+        // 略过空白
+        size_t index = skip_blank(s, 0);
+        if (index >= s.length())
+            return ret;
+
+        // 正负号
+        bool positive = (L'-' != s[index]);
+        if (L'+' == s[index] || L'-' == s[index])
             if ((index = skip_blank(s, index + 1)) >= s.length())
                 return ret;
 

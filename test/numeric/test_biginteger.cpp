@@ -121,27 +121,43 @@ NUT_FIXTURE(TestBigInteger)
     void testToString()
     {
         NUT_TA(BigInteger(0).toString() == "0");
+        NUT_TA(BigInteger(0).toWString() == L"0");
+
         NUT_TA(BigInteger(10).toString() == "10");
+        NUT_TA(BigInteger(10).toWString() == L"10");
+
         NUT_TA(BigInteger(-15).toString() == "-15");
+        NUT_TA(BigInteger(-15).toWString() == L"-15");
 
         NUT_TA(BigInteger(0x4A).toString(0x10) == "4A");
+        NUT_TA(BigInteger(0x4A).toWString(0x10) == L"4A");
 
         NUT_TA(BigInteger(13).toString(8) == "15");
+        NUT_TA(BigInteger(13).toWString(8) == L"15");
 
         NUT_TA(BigInteger(5).toString(2) == "101");
+        NUT_TA(BigInteger(5).toWString(2) == L"101");
     }
 
     void testValueOf()
     {
         NUT_TA(BigInteger::valueOf("0").long_value() == 0);
+        NUT_TA(BigInteger::valueOf(L"0").long_value() == 0);
+
         NUT_TA(BigInteger::valueOf("10").long_value() == 10);
+        NUT_TA(BigInteger::valueOf(L"10").long_value() == 10);
+
         NUT_TA(BigInteger::valueOf("-14").long_value() == -14);
+        NUT_TA(BigInteger::valueOf(L"-14").long_value() == -14);
 
         NUT_TA(BigInteger::valueOf("4a", 0x10).long_value() == 0x4a);
+        NUT_TA(BigInteger::valueOf(L"4a", 0x10).long_value() == 0x4a);
 
         NUT_TA(BigInteger::valueOf("15", 8).long_value() == 13);
+        NUT_TA(BigInteger::valueOf(L"15", 8).long_value() == 13);
 
         NUT_TA(BigInteger::valueOf("101",2).long_value() == 5);
+        NUT_TA(BigInteger::valueOf(L"101",2).long_value() == 5);
     }
 };
 
