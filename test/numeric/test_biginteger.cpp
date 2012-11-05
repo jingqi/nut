@@ -12,13 +12,14 @@ using namespace nut;
 NUT_FIXTURE(TestBigInteger)
 {
 	NUT_CASES_BEGIN()
-		NUT_CASE(testSmoking)
-		NUT_CASE(testComparator)
-		NUT_CASE(testMathOperator)
-		NUT_CASE(testDivide)
-		NUT_CASE(testMod)
-		NUT_CASE(testBitOperator)
-		NUT_CASES_END()
+	NUT_CASE(testSmoking)
+	NUT_CASE(testComparator)
+	NUT_CASE(testMathOperator)
+	NUT_CASE(testDivide)
+	NUT_CASE(testMod)
+    NUT_CASE(testBitOperator)
+    NUT_CASE(testToString)
+	NUT_CASES_END()
 
 	void setUp() {}
 	void tearDown() {}
@@ -115,6 +116,19 @@ NUT_FIXTURE(TestBigInteger)
 		NUT_TA((BigInteger(5) << 2) == BigInteger(5 << 2));
 		NUT_TA((BigInteger(5) >> 1) == BigInteger(5 >> 1));
 	}
+
+    void testToString()
+    {
+        NUT_TA(BigInteger(0).toString() == "0");
+        NUT_TA(BigInteger(10).toString() == "10");
+        NUT_TA(BigInteger(-15).toString() == "-15");
+
+        NUT_TA(BigInteger(0x4A).toString(0x10) == "4A");
+
+        NUT_TA(BigInteger(13).toString(8) == "15");
+
+        NUT_TA(BigInteger(5).toString(2) == "101");
+    }
 };
 
 NUT_REGISTER_FIXTURE(TestBigInteger, "numeric,quiet")

@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-04-03
- * @last-edit 2012-08-19 18:52:54 jingqi
+ * @last-edit 2012-11-05 21:41:05 jingqi
  */
 
 #ifndef ___HEADFILE_0D8E9B0B_ACDC_4FD5_A0BE_71D75F7A5EFE_
@@ -368,6 +368,34 @@ public:
         expand_unsigned(m_buffer, m_significant_len, (uint8_t*)&ret, sizeof(ret));
         return (m_positive ? ret : -ret);
     }
+	
+	std::string toString(size_t radix = 10) const
+	{
+        assert(radix > 1 && radix <= 36);
+		BigInteger tmp(*this);
+		const bool positive = tmp.is_positive();
+		if (!positive)
+            tmp = -tmp;
+
+        const BigInteger RADIX(radix);
+		std::string ret;
+        do
+        {
+            const BigInteger rest = tmp % RADIX;
+            size_t r = (size_t) rest.long_value();
+            assert(r < radix);
+            if (r < 10)
+                ret.push_back('0' + r);
+            else
+                ret.push_back('A' + r - 10);
+
+            tmp /= RADIX;
+        } while (!tmp.is_zero());
+        if (!positive)
+            ret.push_back('-');
+        std::reverse(ret.begin(), ret.end());
+        return ret;
+	}
 };
 
 }
