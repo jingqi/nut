@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2011-12-16
@@ -32,9 +32,9 @@ public :
         expand_signed(reinterpret_cast<const uint8_t*>(&v), sizeof(v), m_bytes, N);
     }
 
-    /** 
+    /**
      * @param withSign
-     *      ´«ÈëµÄ»º³åÇøÊÇ·ñ´ø·ûºÅ£¬Èç¹û²»´ø·ûºÅ£¬½«±»ÊÓÎªÎŞ·ûºÅÕıÊı
+     *      ä¼ å…¥çš„ç¼“å†²åŒºæ˜¯å¦å¸¦ç¬¦å·ï¼Œå¦‚æœä¸å¸¦ç¬¦å·ï¼Œå°†è¢«è§†ä¸ºæ— ç¬¦å·æ­£æ•°
      */
     SignedInteger(const uint8_t *buf, size_t len, bool withSign)
     {
@@ -96,12 +96,12 @@ public :
         return ret;
     }
 
-	SignedInteger<N> operator-() const
-	{
-		SignedInteger<N> ret;
-		signed_opposite(m_bytes, ret.m_bytes, N);
-		return ret;
-	}
+    SignedInteger<N> operator-() const
+    {
+        SignedInteger<N> ret;
+        signed_opposite(m_bytes, ret.m_bytes, N);
+        return ret;
+    }
 
     SignedInteger<N> operator*(const SignedInteger<N>& x) const
     {
@@ -110,19 +110,19 @@ public :
         return ret;
     }
 
-	SignedInteger<N> operator/(const SignedInteger<N>& x) const
-	{
-		SignedInteger<N> ret;
-		divide_signed(m_bytes, x.m_bytes, ret.m_bytes, NULL, N);
-		return ret;
-	}
+    SignedInteger<N> operator/(const SignedInteger<N>& x) const
+    {
+        SignedInteger<N> ret;
+        divide_signed(m_bytes, x.m_bytes, ret.m_bytes, NULL, N);
+        return ret;
+    }
 
-	SignedInteger<N> operator%(const SignedInteger<N>& x) const
-	{
-		SignedInteger<N> ret;
-		divide_signed(m_bytes, x.m_bytes, NULL, ret.m_bytes, N);
-		return ret;
-	}
+    SignedInteger<N> operator%(const SignedInteger<N>& x) const
+    {
+        SignedInteger<N> ret;
+        divide_signed(m_bytes, x.m_bytes, NULL, ret.m_bytes, N);
+        return ret;
+    }
 
     SignedInteger<N>& operator+=(const SignedInteger<N>& x)
     {
@@ -142,115 +142,115 @@ public :
         return *this;
     }
 
-	SignedInteger<N>& operator/=(const SignedInteger<N>& x)
-	{
-		divide_signed(m_bytes, x.m_bytes, m_bytes, NULL, N);
-		return *this;
-	}
+    SignedInteger<N>& operator/=(const SignedInteger<N>& x)
+    {
+        divide_signed(m_bytes, x.m_bytes, m_bytes, NULL, N);
+        return *this;
+    }
 
-	SignedInteger<N>& operator%=(const SignedInteger<N>& x)
-	{
-		divide_signed(m_bytes, x.m_bytes, NULL, m_bytes, N);
-		return *this;
-	}
+    SignedInteger<N>& operator%=(const SignedInteger<N>& x)
+    {
+        divide_signed(m_bytes, x.m_bytes, NULL, m_bytes, N);
+        return *this;
+    }
 
-	SignedInteger<N>& operator++()
-	{
-		increase(m_bytes, N);
-		return *this;
-	}
+    SignedInteger<N>& operator++()
+    {
+        increase(m_bytes, N);
+        return *this;
+    }
 
-	SignedInteger<N> operator++(int)
-	{
-		SignedInteger<N> ret(*this);
-		increase(m_bytes, N);
-		return ret;
-	}
+    SignedInteger<N> operator++(int)
+    {
+        SignedInteger<N> ret(*this);
+        increase(m_bytes, N);
+        return ret;
+    }
 
-	SignedInteger<N>& operator--()
-	{
-		decrease(m_bytes, N);
-		return *this;
-	}
+    SignedInteger<N>& operator--()
+    {
+        decrease(m_bytes, N);
+        return *this;
+    }
 
-	SignedInteger<N> operator--(int)
-	{
-		SignedInteger<N> ret(*this);
-		decrease(m_bytes, N);
-		return ret;
-	}
+    SignedInteger<N> operator--(int)
+    {
+        SignedInteger<N> ret(*this);
+        decrease(m_bytes, N);
+        return ret;
+    }
 
-	SignedInteger<N> operator|(const  SignedInteger<N>& x) const
-	{
-		SignedInteger<N> ret;
-		bit_or(m_bytes, x.m_bytes, ret.m_bytes, N);
-		return ret;
-	}
+    SignedInteger<N> operator|(const  SignedInteger<N>& x) const
+    {
+        SignedInteger<N> ret;
+        bit_or(m_bytes, x.m_bytes, ret.m_bytes, N);
+        return ret;
+    }
 
-	SignedInteger<N> operator&(const SignedInteger<N>& x) const
-	{
-		SignedInteger<N> ret;
-		bit_and(m_bytes, x.m_bytes, ret.m_bytes, N);
-		return ret;
-	}
+    SignedInteger<N> operator&(const SignedInteger<N>& x) const
+    {
+        SignedInteger<N> ret;
+        bit_and(m_bytes, x.m_bytes, ret.m_bytes, N);
+        return ret;
+    }
 
-	SignedInteger<N> operator^(const SignedInteger<N>& x) const
-	{
-		SignedInteger<N> ret;
-		bit_xor(m_bytes, x.m_bytes, ret.m_bytes, N);
-		return ret;
-	}
+    SignedInteger<N> operator^(const SignedInteger<N>& x) const
+    {
+        SignedInteger<N> ret;
+        bit_xor(m_bytes, x.m_bytes, ret.m_bytes, N);
+        return ret;
+    }
 
-	SignedInteger<N> operator~() const
-	{
-		SignedInteger<N> ret;
-		bit_not(m_bytes, ret.m_bytes, N);
-		return ret;
-	}
+    SignedInteger<N> operator~() const
+    {
+        SignedInteger<N> ret;
+        bit_not(m_bytes, ret.m_bytes, N);
+        return ret;
+    }
 
-	SignedInteger<N>& operator|=(const SignedInteger<N>& x)
-	{
-		bit_or(m_bytes, x.m_bytes, m_bytes, N);
-		return *this;
-	}
+    SignedInteger<N>& operator|=(const SignedInteger<N>& x)
+    {
+        bit_or(m_bytes, x.m_bytes, m_bytes, N);
+        return *this;
+    }
 
-	SignedInteger<N>& operator&=(const SignedInteger<N>& x)
-	{
-		bit_and(m_bytes, x.m_bytes, m_bytes, N);
-		return *this;
-	}
+    SignedInteger<N>& operator&=(const SignedInteger<N>& x)
+    {
+        bit_and(m_bytes, x.m_bytes, m_bytes, N);
+        return *this;
+    }
 
-	SignedInteger<N>& operator^=(const SignedInteger<N>& x)
-	{
-		bit_xor(m_bytes, x.m_bytes, m_bytes, N);
-		return *this;
-	}
+    SignedInteger<N>& operator^=(const SignedInteger<N>& x)
+    {
+        bit_xor(m_bytes, x.m_bytes, m_bytes, N);
+        return *this;
+    }
 
-	SignedInteger<N> operator<<(size_t count) const
-	{
-		SignedInteger<N> ret;
-		shift_left(m_bytes, ret.m_bytes, N, count);
-		return ret;
-	}
+    SignedInteger<N> operator<<(size_t count) const
+    {
+        SignedInteger<N> ret;
+        shift_left(m_bytes, ret.m_bytes, N, count);
+        return ret;
+    }
 
-	SignedInteger<N> operator>>(size_t count) const
-	{
-		SignedInteger<N> ret;
-		shift_right_signed(m_bytes, ret.m_bytes, N, count);
-		return ret;
-	}
+    SignedInteger<N> operator>>(size_t count) const
+    {
+        SignedInteger<N> ret;
+        shift_right_signed(m_bytes, ret.m_bytes, N, count);
+        return ret;
+    }
 
-	SignedInteger<N>& operator<<=(size_t count) const
-	{
-		shift_left(m_bytes, m_bytes, N, count);
-		return *this;
-	}
+    SignedInteger<N>& operator<<=(size_t count) const
+    {
+        shift_left(m_bytes, m_bytes, N, count);
+        return *this;
+    }
 
-	SignedInteger<N>& operator>>=(size_t count) const
-	{
-		shift_right_signed(m_bytes, m_bytes, N, count);
-		return *this;
-	}
+    SignedInteger<N>& operator>>=(size_t count) const
+    {
+        shift_right_signed(m_bytes, m_bytes, N, count);
+        return *this;
+    }
 
     bool operator==(const SignedInteger<N>& x) const
     {
@@ -283,31 +283,31 @@ public :
     }
 
 public:
-	SignedInteger<N> circle_shift_left(size_t count) const
-	{
-		SignedInteger<N> ret;
-		circle_shift_left(m_bytes, ret.m_bytes, N, count);
-		return ret;
-	}
+    SignedInteger<N> circle_shift_left(size_t count) const
+    {
+        SignedInteger<N> ret;
+        circle_shift_left(m_bytes, ret.m_bytes, N, count);
+        return ret;
+    }
 
-	SignedInteger<N>& circle_shift_left_assign(size_t count)
-	{
-		circle_shift_left(m_bytes, m_bytes, N, count);
-		return *this;
-	}
+    SignedInteger<N>& circle_shift_left_assign(size_t count)
+    {
+        circle_shift_left(m_bytes, m_bytes, N, count);
+        return *this;
+    }
 
-	SignedInteger<N> circle_shift_right(size_t count) const
-	{
-		SignedInteger ret;
-		circle_shift_right(m_bytes, ret.m_bytes, N, count);
-		return ret;
-	}
+    SignedInteger<N> circle_shift_right(size_t count) const
+    {
+        SignedInteger ret;
+        circle_shift_right(m_bytes, ret.m_bytes, N, count);
+        return ret;
+    }
 
-	SignedInteger<N>& circle_shift_right_assign(size_t count)
-	{
-		circle_shift_right(m_bytes, m_bytes, N, count);
-		return *this;
-	}
+    SignedInteger<N>& circle_shift_right_assign(size_t count)
+    {
+        circle_shift_right(m_bytes, m_bytes, N, count);
+        return *this;
+    }
 
     bool is_positive() const
     {
@@ -329,11 +329,11 @@ public:
         return const_cast<uint8_t*>(static_cast<const SignedInteger<N>&>(*this).buffer());
     }
 
-    /** ÄÜ¹»´æ´¢Êı¾İ¶ø²»¶ªÊ§·ûºÅµÄ×îĞ¡×Ö½ÚÊı×é³¤¶È */
+    /** èƒ½å¤Ÿå­˜å‚¨æ•°æ®è€Œä¸ä¸¢å¤±ç¬¦å·çš„æœ€å°å­—èŠ‚æ•°ç»„é•¿åº¦ */
     int significant_size() const
     {
-		return significant_size_signed(m_bytes, N);
-	}
+        return significant_size_signed(m_bytes, N);
+    }
 
     long long_value() const
     {
