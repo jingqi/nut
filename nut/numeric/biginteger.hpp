@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2012-04-03
@@ -17,17 +17,17 @@ namespace nut
 {
 
 /**
- * ÎŞÏŞ´óÕûÊı
+ * æ— é™å¤§æ•´æ•°
  */
 class BigInteger
 {
 	bool m_positive;
-	uint8_t *m_buffer; // »º³åÇø
-	size_t m_buffer_len; // »º³åÇø³¤¶È
-	size_t m_significant_len; // »º³åÇøÓĞĞ§Î»³¤¶È
+	uint8_t *m_buffer; // ç¼“å†²åŒº
+	size_t m_buffer_len; // ç¼“å†²åŒºå­—èŠ‚é•¿åº¦
+	size_t m_significant_len; // ç¼“å†²åŒºæœ‰æ•ˆä½å­—èŠ‚é•¿åº¦
 
 private:
-	/** ÊÍ·ÅÄÚ´æ */
+	/** é‡Šæ”¾å†…å­˜ */
 	void free_mem()
 	{
 		if (NULL != m_buffer)
@@ -37,19 +37,19 @@ private:
 		m_significant_len = 0;
 	}
 
-	/** ÖØĞÂ·ÖÅäÄÚ´æ */
+	/** é‡æ–°åˆ†é…å†…å­˜ */
 	void ensure_cap(size_t size_needed)
 	{
-		// ·ÖÅäÄÚ´æ×ã¹»ÁË£¬ÎŞĞèµ÷Õû
+		// åˆ†é…å†…å­˜è¶³å¤Ÿäº†ï¼Œæ— éœ€è°ƒæ•´
 		if (m_buffer_len >= size_needed)
 			return;
 
-		// ¼ÆËãĞÂÄÚ´æ¿éµÄ´óĞ¡
+		// è®¡ç®—æ–°å†…å­˜å—çš„å¤§å°
 		size_t newcap = m_buffer_len * 3 / 2;
 		if (newcap < size_needed)
 			newcap = size_needed;
 
-		// ·ÖÅäĞÂÄÚ´æ¿é²¢¿½±´Êı¾İ
+		// åˆ†é…æ–°å†…å­˜å—å¹¶æ‹·è´æ•°æ®
 		if (NULL == m_buffer)
 			m_buffer = (uint8_t*) ::malloc(sizeof(uint8_t) * newcap);
 		else
@@ -74,7 +74,7 @@ public:
 	{
 		ensure_cap(sizeof(v));
 		if (!m_positive)
-			v = -v; // ¼´Ê¹È¡·´µÄ¹ı³ÌÖĞÒç³öÒ²Ã»ÎÊÌâ
+			v = -v; // å³ä½¿å–åçš„è¿‡ç¨‹ä¸­æº¢å‡ºä¹Ÿæ²¡é—®é¢˜
 		::memcpy(m_buffer, &v, sizeof(v));
 		m_significant_len = sizeof(v);
 		adjust_significant_len();
@@ -161,7 +161,7 @@ public:
 		else if (m_positive != x.m_positive)
 			return x.m_positive;
 
-		// Í¬ºÅ·ÇÁãÖµ½øĞĞ±È½Ï
+		// åŒå·éé›¶å€¼è¿›è¡Œæ¯”è¾ƒ
 		if (m_positive)
 			return less_then_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len);
 		else
