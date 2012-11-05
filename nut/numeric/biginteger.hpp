@@ -35,6 +35,7 @@ private:
         m_buffer = NULL;
         m_buffer_len = 0;
         m_significant_len = 0;
+		m_positive = true;
     }
 
     /** 重新分配内存 */
@@ -116,6 +117,8 @@ public:
         ensure_cap(x.m_significant_len);
         if (x.m_significant_len > 0)
             ::memcpy(m_buffer, x.m_buffer, x.m_significant_len);
+        if (m_significant_len > x.m_significant_len)
+            ::memset(m_buffer + x.m_significant_len, 0, m_significant_len - x.m_significant_len);
         m_positive = x.m_positive;
         m_significant_len = x.m_significant_len;
         adjust_significant_len();
@@ -344,6 +347,7 @@ public:
     void clear()
     {
         m_significant_len = 0;
+		m_positive = true;
     }
 
     bool is_zero() const
