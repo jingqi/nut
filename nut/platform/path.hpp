@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file -
  * @author jingqi
  * @date 2012-06-23
@@ -83,15 +83,12 @@ public:
      * "/ab.txt" -> "/" "ab.txt"
      * "c:\\tmp" -> "c:\\" "tmp"
      */
-    static Tuple<std::string,std::string> split(const char *path)
+    static Tuple<std::string,std::string> split(const std::string &path)
     {
-        assert(NULL != path);
-        
         // 找到最后一个 '/'
-        const std::string p(path);
-        std::string::size_type p1 = p.find_last_of('\\'), p2 = p.find_last_of('/');
+        std::string::size_type p1 = path.find_last_of('\\'), p2 = path.find_last_of('/');
         if (std::string::npos == p1 && std::string::npos == p2)
-            return Tuple<std::string, std::string>("", p);
+            return Tuple<std::string, std::string>("", path);
         else if (std::string::npos != p1 && std::string::npos != p2)
             p1 = (p1 > p2 ? p1 : p2);
         else if (std::string::npos == p1)
@@ -99,20 +96,17 @@ public:
 
         assert(std::string::npos != p1);
         if (0 == p1 || ':' == path[p1 - 1]) // 磁盘号 + 根目录
-            return Tuple<std::string, std::string>(p.substr(0, p1 + 1), p.substr(p1 + 1));
+            return Tuple<std::string, std::string>(path.substr(0, p1 + 1), path.substr(p1 + 1));
         else
-            return Tuple<std::string, std::string>(p.substr(0, p1), p.substr(p1 + 1));
+            return Tuple<std::string, std::string>(path.substr(0, p1), path.substr(p1 + 1));
     }
 
-    static Tuple<std::wstring,std::wstring> split(const wchar_t *path)
+    static Tuple<std::wstring,std::wstring> split(const std::wstring& path)
     {
-        assert(NULL != path);
-
         // 找到最后一个 '/'
-        const std::wstring p(path);
-        std::wstring::size_type p1 = p.find_last_of(L'\\'), p2 = p.find_last_of(L'/');
+        std::wstring::size_type p1 = path.find_last_of(L'\\'), p2 = path.find_last_of(L'/');
         if (std::wstring::npos == p1 && std::wstring::npos == p2)
-            return Tuple<std::wstring, std::wstring>(L"", p);
+            return Tuple<std::wstring, std::wstring>(L"", path);
         else if (std::wstring::npos != p1 && std::wstring::npos != p2)
             p1 = (p1 > p2 ? p1 : p2);
         else if (std::wstring::npos == p1)
@@ -120,9 +114,9 @@ public:
 
         assert(std::wstring::npos != p1);
         if (0 == p1 || L':' == path[p1 - 1]) // 磁盘号 + 根目录
-            return Tuple<std::wstring, std::wstring>(p.substr(0, p1 + 1), p.substr(p1 + 1));
+            return Tuple<std::wstring, std::wstring>(path.substr(0, p1 + 1), path.substr(p1 + 1));
         else
-            return Tuple<std::wstring, std::wstring>(p.substr(0, p1), p.substr(p1 + 1));
+            return Tuple<std::wstring, std::wstring>(path.substr(0, p1), path.substr(p1 + 1));
     }
 
     /**
@@ -132,9 +126,8 @@ public:
      * "c:\\mn\\p" -> "c:" "\\mn\\p"
      * "/mnt/sdcard" -> "" "/mnt/sdcard"
      */
-    static Tuple<std::string,std::string> splitdrive(const char *path)
+    static Tuple<std::string,std::string> splitdrive(const std::string& path)
     {
-        assert(NULL != path);
         int pos = -1;
         for (int i = 0; '\0' != path[i]; ++i)
         {
@@ -148,13 +141,11 @@ public:
         }
         if (pos < 0)
             return Tuple<std::string,std::string>("", path);
-        const std::string p(path);
-        return Tuple<std::string,std::string>(p.substr(0, pos + 1), p.substr(pos + 1));
+        return Tuple<std::string,std::string>(path.substr(0, pos + 1), path.substr(pos + 1));
     }
 
-    static Tuple<std::wstring,std::wstring> splitdrive(const wchar_t *path)
+    static Tuple<std::wstring,std::wstring> splitdrive(const std::wstring& path)
     {
-        assert(NULL != path);
         int pos = -1;
         for (int i = 0; L'\0' != path[i]; ++i)
         {
@@ -168,8 +159,7 @@ public:
         }
         if (pos < 0)
             return Tuple<std::wstring,std::wstring>(L"", path);
-        const std::wstring p(path);
-        return Tuple<std::wstring,std::wstring>(p.substr(0, pos + 1), p.substr(pos + 1));
+        return Tuple<std::wstring,std::wstring>(path.substr(0, pos + 1), path.substr(pos + 1));
     }
 
     /**
@@ -178,12 +168,10 @@ public:
      * 例如：
      * "a.txt" -> "a" ".txt"
      */
-    static Tuple<std::string,std::string> splitext(const char *path)
+    static Tuple<std::string,std::string> splitext(const std::string& path)
     {
-        assert(NULL != path);
-        const std::string p(path);
         int pos = -1;
-        for (int i = p.length() - 1; i >= 0; --i)
+        for (int i = path.length() - 1; i >= 0; --i)
         {
             if ('\\' == path[i] || '/' == path[i])
                 break;
@@ -196,16 +184,14 @@ public:
             }
         }
         if (pos < 0)
-            return Tuple<std::string,std::string>(p,"");
-        return Tuple<std::string,std::string>(p.substr(0,pos),p.substr(pos));
+            return Tuple<std::string,std::string>(path,"");
+        return Tuple<std::string,std::string>(path.substr(0,pos),path.substr(pos));
     }
 
-    static Tuple<std::wstring,std::wstring> splitext(const wchar_t *path)
+    static Tuple<std::wstring,std::wstring> splitext(const std::wstring& path)
     {
-        assert(NULL != path);
-        const std::wstring p(path);
         int pos = -1;
-        for (int i = p.length() - 1; i >= 0; --i)
+        for (int i = path.length() - 1; i >= 0; --i)
         {
             if (L'\\' == path[i] || L'/' == path[i])
                 break;
@@ -218,8 +204,8 @@ public:
             }
         }
         if (pos < 0)
-            return Tuple<std::wstring,std::wstring>(p, L"");
-        return Tuple<std::wstring,std::wstring>(p.substr(0, pos),p.substr(pos));
+            return Tuple<std::wstring,std::wstring>(path, L"");
+        return Tuple<std::wstring,std::wstring>(path.substr(0, pos),path.substr(pos));
     }
 
     // static void splitunc() {}
@@ -244,6 +230,8 @@ public:
 #endif
     }
 
+    static inline bool exists(const std::string& path) { return exists(path.c_str()); }
+
     static inline bool exists(const wchar_t *path)
     {
         assert(NULL != path);
@@ -254,6 +242,8 @@ public:
         return exists(p.c_str());
 #endif
     }
+
+    static inline bool exists(const std::wstring& path) { return exists(path.c_str()); }
 
     /**
      * last access time
@@ -288,6 +278,8 @@ public:
 #endif
     }
 
+    static inline long getsize(const std::string& path) { return getsize(path.c_str()); }
+
     static long getsize(const wchar_t *path)
     {
         assert(NULL != path);
@@ -301,6 +293,8 @@ public:
 #endif
     }
 
+    static inline long getsize(const std::wstring& path) { return getsize(path.c_str()); }
+
     // static bool isabs() {}
 
     static bool isdir(const char *path)
@@ -313,6 +307,8 @@ public:
 #endif
     }
 
+    static inline bool isdir(const std::string& path) { return isdir(path.c_str()); }
+
     static bool isdir(const wchar_t *path)
     {
         assert(NULL != path);
@@ -322,6 +318,8 @@ public:
         // TODO
 #endif
     }
+
+    static inline bool isdir(const std::wstring& path) { return isdir(path.c_str()); }
 
     static bool isfile(const char *path)
     {
@@ -333,6 +331,8 @@ public:
 #endif
     }
 
+    static inline bool isfile(const std::string& path) { return isfile(path.c_str()); }
+
     static bool isfile(const wchar_t *path)
     {
         assert(NULL != path);
@@ -342,6 +342,8 @@ public:
         // TODO
 #endif
     }
+
+    static inline bool isfile(const std::wstring& path) { return isfile(path.c_str()); }
 
     static bool islink(const char *path)
     {
@@ -353,6 +355,8 @@ public:
 #endif
     }
 
+    static inline bool islink(const std::string& path) { return islink(path.c_str()); };
+
     static bool islink(const wchar_t *path)
     {
         assert(NULL != path);
@@ -362,6 +366,8 @@ public:
         // TODO
 #endif
     }
+
+    static inline bool islink(const std::wstring& path) { return islink(path.c_str()); }
 
     // static bool ismount() {}
 
@@ -373,78 +379,68 @@ public:
      * "/" "sd" -> "/sd"
      * "c:" "\\tmp" -> "c:\\tmp"
      */
-    static std::string join(const char *a, const char *b)
+    static std::string join(const std::string& a, const std::string& b)
     {
-        assert(NULL != a && NULL != b);
-
         if ('\0' == a[0])
             return b;
             
         // 处理磁盘号
-        std::string apath(a);
-        if (':' == a[apath.length() - 1])
-            return apath + b;
+        if (':' == *a.rbegin())
+            return a + b;
 
         // 处理根目录 '/', 'c:\\'
-        std::string bpath(b);
-        if ('\\' == b[0] || '/' == b[0] || std::string::npos != bpath.find_first_of(':'))
-            return bpath;
+        if ('\\' == b[0] || '/' == b[0] || std::string::npos != b.find_first_of(':'))
+            return b;
 
         // 连接
-        if ('\\' != *apath.rbegin() && '/' != *apath.rbegin())
-            apath += seperator();
+        std::string ret(a);
+        if ('\\' != *a.rbegin() && '/' != *a.rbegin())
+            ret += seperator();
         if ('\0' != b[0])
-            apath.append(bpath);
-        return apath;
+            ret.append(b);
+        return ret;
     }
 
-    static std::wstring join(const wchar_t *a, const wchar_t *b)
+    static std::wstring join(const std::wstring& a, const std::wstring& b)
     {
-        assert(NULL != a && NULL != b);
-
         if (L'\0' == a[0])
             return b;
 
         // 处理磁盘号
-        std::wstring apath(a);
-        if (L':' == a[apath.length() - 1])
-            return apath + b;
+        if (L':' == *a.rbegin())
+            return a + b;
 
         // 处理根目录 '/', 'c:\\'
-        std::wstring bpath(b);
-        if (L'\\' == b[0] || L'/' == b[0] || std::wstring::npos != bpath.find_first_of(L':'))
-            return bpath;
+        if (L'\\' == b[0] || L'/' == b[0] || std::wstring::npos != b.find_first_of(L':'))
+            return b;
 
         // 连接
-        if (L'\\' != *apath.rbegin() && L'/' != *apath.rbegin())
-            apath += wseperator();
+        std::wstring ret(a);
+        if (L'\\' != *a.rbegin() && L'/' != *a.rbegin())
+            ret += wseperator();
         if (L'\0' != b[0])
-            apath.append(bpath);
-        return apath;
+            ret.append(b);
+        return ret;
     }
 
-    static inline std::string join(const char *a, const char *b, const char *c)
+    static inline std::string join(const std::string& a, const std::string& b, const std::string& c)
     {
-        assert(NULL != a && NULL != b && NULL != c);
-        return join(join(a, b).c_str(),c);
+        return join(join(a, b), c);
     }
 
-    static inline std::wstring join(const wchar_t *a, const wchar_t *b, const wchar_t *c)
+    static inline std::wstring join(const std::wstring& a, const std::wstring& b, const std::wstring& c)
     {
-        assert(NULL != a && NULL != b && NULL != c);
-        return join(join(a, b).c_str(),c);
+        return join(join(a, b),c);
     }
 
-    static inline std::string join(const char *a, const char *b, const char *c, const char *d)
+    static inline std::string join(const std::string& a, const std::string& b, const std::string& c, const std::string& d)
     {
-        assert(NULL != a && NULL != b && NULL != c && NULL != d);
-        return join(join(a, b, c).c_str(), d);
+        return join(join(a, b, c), d);
     }
 
-    static inline std::wstring join(const wchar_t *a, const wchar_t *b, const wchar_t *c, const wchar_t *d)
+    static inline std::wstring join(const std::wstring& a, const std::wstring& b, const std::wstring& c, const std::wstring& d)
     {
-        assert(NULL != a && NULL != b && NULL != c && NULL != d);
-        return join(join(a, b, c).c_str(), d);
+        return join(join(a, b, c), d);
     }
 };
 

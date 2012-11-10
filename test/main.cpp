@@ -30,7 +30,7 @@ int main()
 
     ConsoleTestLogger l;
     TestRunner trunner(l);
-    trunner.runAGroup("numeric");
+    trunner.runAGroup("platform");
     // trunner.runAFixture("TestGC");
     // trunner.runACase("TestGC", "testSmoking");
 

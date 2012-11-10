@@ -103,6 +103,9 @@
     <Filter Include="源文件\util\string">
       <UniqueIdentifier>{7f233c5a-13e7-49b9-b5d1-fe63d81eda75}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\platform">
+      <UniqueIdentifier>{7874e9df-c776-414b-a8f8-53c6e0c19e11}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -373,6 +376,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\util\string\test_kmp.cpp">
       <Filter>源文件\util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\platform\test_os.cpp">
+      <Filter>源文件\platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\platform\test_path.cpp">
+      <Filter>源文件\platform</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

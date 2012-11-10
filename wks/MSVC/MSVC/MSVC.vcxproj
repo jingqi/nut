@@ -145,6 +145,8 @@
     <ClCompile Include="..\..\..\test\mem\test_scoped_gc.cpp" />
     <ClCompile Include="..\..\..\test\numeric\test_signedinteger.cpp" />
     <ClCompile Include="..\..\..\test\numeric\test_unsignedinteger.cpp" />
+    <ClCompile Include="..\..\..\test\platform\test_os.cpp" />
+    <ClCompile Include="..\..\..\test\platform\test_path.cpp" />
     <ClCompile Include="..\..\..\test\threading\lockfree\test_queue.cpp" />
     <ClCompile Include="..\..\..\test\threading\lockfree\test_stack.cpp" />
     <ClCompile Include="..\..\..\test\threading\test_threadpool.cpp" />

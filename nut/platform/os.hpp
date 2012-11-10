@@ -107,6 +107,12 @@ public:
 #endif
     }
 
+    static inline std::vector<std::string> listdir(const std::string& path, bool except_file = false,
+            bool except_dir = false, bool except_initial_dot = false)
+    {
+        return listdir(path.c_str(), except_file, except_dir, except_initial_dot);
+    }
+
     static std::vector<std::wstring> listdir(const wchar_t *path, bool except_file = false,
         bool except_dir = false, bool except_initial_dot = false)
     {
@@ -146,6 +152,12 @@ public:
 #endif
     }
 
+    static inline std::vector<std::wstring> listdir(const std::wstring& path, bool except_file = false,
+        bool except_dir = false, bool except_initial_dot = false)
+    {
+        return listdir(path.c_str(), except_file, except_dir, except_initial_dot);
+    }
+
     /**
      * 复制文件
      */
@@ -180,6 +192,8 @@ public:
 #endif
     }
 
+    static inline bool copyfile(const std::string& src, const std::string& dest) { return copyfile(src.c_str(), dest.c_str()); }
+
     static bool copyfile(const wchar_t *src, const wchar_t *dest)
     {
         assert(NULL != src && NULL != dest);
@@ -192,11 +206,15 @@ public:
 #endif
     }
 
+    static inline bool copyfile(const std::wstring& src, const std::wstring& dest) { return copyfile(src.c_str(), dest.c_str()); }
+
     static inline bool removefile(const char *path)
     {
         assert(NULL != path);
         return -1 != ::remove(path);
     }
+
+    static inline bool removefile(const std::string& path) { return removefile(path.c_str()); }
 
     static inline bool removefile(const wchar_t *path)
     {
@@ -209,6 +227,8 @@ public:
 #endif
     }
 
+    static inline bool removefile(const std::wstring& path) { return removefile(path.c_str()); }
+
     static inline bool mkdir(const char *path)
     {
         assert(NULL != path);
@@ -218,6 +238,8 @@ public:
         return 0 == ::mkdir(path, S_IWRITE);
 #endif
     }
+
+    static inline bool mkdir(const std::string& path) { return mkdir(path.c_str()); }
 
     static inline bool mkdir(const wchar_t *path)
     {
@@ -229,6 +251,8 @@ public:
         return OS::mkdir(p.c_str());
 #endif
     }
+
+    static inline bool mkdir(const std::wstring& path) { return mkdir(path.c_str()); }
 };
 
 }
