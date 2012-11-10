@@ -248,17 +248,108 @@ public:
     /**
      * last access time
      */
-    // static time_t getatime() {}
+    static time_t getatime(const char *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        struct _stat info;
+        ::_stat(path, &info);
+        return info.st_atime;
+#else
+        struct stat info;
+        if (0 != ::stat(path, &info))
+            return 0;
+        return info.st_atime;
+#endif
+    }
+
+    static inline time_t getatime(const std::string& path) { return getatime(path.c_str()); }
+
+    static time_t getatime(const wchar_t *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        struct _stat info;
+        ::_wstat(path, &info);
+        return info.st_atime;
+#else
+        const std::string p = wstr2str(path);
+        return getatime(p.c_str());
+#endif
+    }
+
+    static inline time_t getatime(const std::wstring& path) { return getatime(path.c_str()); }
+
 
     /**
      * last modified time
      */
-    // static time_t getmtime() {}
+    static time_t getmtime(const char *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        struct _stat info;
+        ::_stat(path, &info);
+        return info.st_mtime;
+#else
+        struct stat info;
+        if (0 != ::stat(path, &info))
+            return 0;
+        return info.st_mtime;
+#endif
+    }
+
+    static inline time_t getmtime(const std::string& path) { return getmtime(path.c_str()); }
+
+    static time_t getmtime(const wchar_t *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        struct _stat info;
+        ::_wstat(path, &info);
+        return info.st_mtime;
+#else
+        const std::string p = wstr2str(path);
+        return getmtime(p.c_str());
+#endif
+    }
+
+    static inline time_t getmtime(const std::wstring& path) { return getmtime(path.c_str()); }
 
     /**
      * created time
      */
-    // static time_t getctime() {}
+    static time_t getctime(const char *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        struct _stat info;
+        ::_stat(path, &info);
+        return info.st_ctime;
+#else
+        struct stat info;
+        if (0 != ::stat(path, &info))
+            return 0;
+        return info.st_ctime;
+#endif
+    }
+
+    static inline time_t getctime(const std::string& path) { return getctime(path.c_str()); }
+
+    static time_t getctime(const wchar_t *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        struct _stat info;
+        ::_wstat(path, &info);
+        return info.st_ctime;
+#else
+        const std::string p = wstr2str(path);
+        return getctime(p.c_str());
+#endif
+    }
+
+    static inline time_t getctime(const std::wstring& path) { return getctime(path.c_str()); }
 
     /**
      * 获取文件大小
