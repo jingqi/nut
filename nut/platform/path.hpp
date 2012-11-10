@@ -69,11 +69,11 @@ public:
         return L'\\' == c || L'/' == c;
     }
 
-    // static std::string abspath(const std::string& p) {}
-    // static std::string realpath() {}
-    // static std::string relpath() {}
+    // TODO static std::string abspath(const std::string& p) {}
+    // TODO static std::string realpath() {}
+    // TODO static std::string relpath() {}
 
-    // static std::string sep() {}
+    // TODO static std::string sep() {}
 
     /**
      * 从路径中划分出父路径和 文件/文件夹 名
@@ -208,7 +208,7 @@ public:
         return Tuple<std::wstring,std::wstring>(path.substr(0, pos),path.substr(pos));
     }
 
-    // static void splitunc() {}
+    // TODO static void splitunc() {}
 
     /**
      * 检查路径是否存在
@@ -386,7 +386,7 @@ public:
 
     static inline long getsize(const std::wstring& path) { return getsize(path.c_str()); }
 
-    // static bool isabs() {}
+    // TODO static bool isabs() {}
 
     static bool isdir(const char *path)
     {
@@ -394,7 +394,10 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return 0 != (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesA(path));
 #else
-        // TODO
+        struct stat info;
+        if (0 != ::stat(path, &info))
+            return false;
+        return S_ISDIR(info.st_mode);
 #endif
     }
 
@@ -406,7 +409,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return 0 != (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(path));
 #else
-        // TODO
+        const std::string p = wstr2str(path);
+        return isdir(p.c_str());
 #endif
     }
 
@@ -418,7 +422,10 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return 0 != (FILE_ATTRIBUTE_NORMAL & ::GetFileAttributesA(path));
 #else
-        // TODO
+        struct stat info;
+        if (0 != ::stat(path, &info))
+            return false;
+        return S_ISFILE(info.st_mode);
 #endif
     }
 
@@ -430,7 +437,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return 0 != (FILE_ATTRIBUTE_NORMAL & ::GetFileAttributesW(path));
 #else
-        // TODO
+        const std::string p = wstr2str(path);
+        return isfile(p.c_str());
 #endif
     }
 
@@ -442,7 +450,10 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return false;
 #else
-        // TODO
+        struct stat info;
+        if (0 != ::stat(path, &info))
+            return false;
+        return S_ISLINK(info.st_mode);
 #endif
     }
 
@@ -454,13 +465,14 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return false;
 #else
-        // TODO
+        const std::string p = wstr2str(path);
+        return isfile(p.c_str());
 #endif
     }
 
     static inline bool islink(const std::wstring& path) { return islink(path.c_str()); }
 
-    // static bool ismount() {}
+    // TODO static bool ismount() {}
 
     /**
      * 连接两个子路径
