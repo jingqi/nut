@@ -58,12 +58,16 @@ public:
         join();
     }
 
-    void add_task(thread_process_type process, void* arg = NULL)
+    bool add_task(thread_process_type process, void* arg = NULL)
     {
         assert(NULL != process);
         Guard<Condition::condition_lock_type> guard(&m_lock);
+        if (m_interupt)
+            return false;
+
         m_task_queue.push(Task(process, arg));
         m_condition.signal();
+        return true;
     }
 
     void start()
@@ -79,12 +83,20 @@ public:
     void interupt()
     {
         m_interupt = true;
+        m_condition.broadcast();
     }
 
     void join()
     {
         for (size_t i = 0; i < m_threads.size(); ++i)
             m_threads[i]->join();
+    }
+
+    void terminate()
+    {
+        m_interupt = true;
+        for (size_t i = 0; i < m_threads.size(); ++i)
+            m_threads[i]->terminate();
     }
 
 private:
@@ -98,8 +110,10 @@ private:
             Task t;
             {
                 Guard<Condition::condition_lock_type> guard(&(pthis->m_lock));
-                while (pthis->m_task_queue.empty())
+                while (!pthis->m_interupt && pthis->m_task_queue.empty())
                     pthis->m_condition.wait(&(pthis->m_lock));
+                if (pthis->m_interupt)
+                    continue;
                 t = pthis->m_task_queue.front();
                 pthis->m_task_queue.pop();
             }
