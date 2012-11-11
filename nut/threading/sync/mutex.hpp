@@ -10,7 +10,7 @@
 #include <assert.h>
 #include <nut/platform/platform.hpp>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
 #  include <windows.h>
 #else
 #  include <pthread.h>
@@ -21,7 +21,7 @@ namespace nut
 
 class Mutex
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
     HANDLE m_hmutex;
 #else
     pthread_mutex_t m_mutex;
@@ -30,7 +30,7 @@ class Mutex
 public :
     Mutex ()
     {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         m_hmutex = ::CreateMutex(NULL, FALSE, NULL);
 #else
         ::pthread_mutexattr_t attr;
@@ -43,7 +43,7 @@ public :
 
     ~Mutex ()
     {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         BOOL rs = ::CloseHandle(m_hmutex);
         assert(rs);
 #else
@@ -52,7 +52,7 @@ public :
 #endif
     }
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
     inline HANDLE innerMutex() { return m_hmutex; }
 #else
     inline pthread_mutex_t* innerMutex() { return &m_mutex; }
@@ -63,7 +63,7 @@ public :
      */
     inline void lock()
     {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         DWORD rs = ::WaitForSingleObject(m_hmutex, INFINITE);
         assert(WAIT_OBJECT_0 == rs);
 #else
@@ -77,7 +77,7 @@ public :
      */
     inline void unlock()
     {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         BOOL rs = ::ReleaseMutex(m_hmutex);
         assert(rs);
 #else
@@ -93,7 +93,7 @@ public :
      */
     inline bool trylock()
     {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, 0);
 #else
         int lock_result = ::pthread_mutex_trylock(&m_mutex);
@@ -119,8 +119,24 @@ public :
     inline bool timedlock(unsigned s, unsigned ms = 0)
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+#   if !defined(NUT_PLATFORM_CC_MINGW)
         DWORD dwMilliseconds = s * 1000 + ms;
         return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, dwMilliseconds);
+#   else
+        struct timespec abstime;
+        // TODO mingw 没有定义clock_gettime();
+        abstime.tv_sec = s;
+        abstime.tv_nsec = ((long)ms) * 1000 * 1000;
+        int lock_result = ::pthread_mutex_timedlock(&m_mutex, &abstime);
+        /** returned values :
+         *  0, lock ok
+         *  EAGAIN, The mutex couldn't be acquired because the maximum number of recursive locks for the mutex has been exceeded.
+         *  EDEADLK, The current thread already owns the mutex.
+         *  EINVAL, The mutex was created with the protocol attribute having the value PTHREAD_PRIO_PROTECT and the calling thread's priority is higher than the mutex' current priority ceiling; the process or thread would have blocked, and the abs_timeout parameter specified a nanoseconds field value less than zero or greater than or equal to 1000 million; or the value specified by mutex doesn't refer to an initialized mutex object.
+         *  ETIMEDOUT, The mutex couldn't be locked before the specified timeout expired
+         */
+        return 0 == lock_result;
+#   endif
 #else
         struct timespec abstime;
         clock_gettime(CLOCK_REALTIME, &abstime);

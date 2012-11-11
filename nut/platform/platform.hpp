@@ -46,7 +46,11 @@
 #if defined(_MSC_VER)
 #	define NUT_PLATFORM_CC_NAME "VC"
 #	define NUT_PLATFORM_CC_VC
-#elif defined(__GNUG__) || defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW64__)
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+#	define NUT_PLATFORM_CC_NAME "MINGW"
+#	define NUT_PLATFORM_CC_MINGW
+#	define NUT_PLATFORM_CC_GCC
+#elif defined(__GNUG__) || defined(__GNUC__)
 #	define NUT_PLATFORM_CC_NAME "GCC"
 #	define NUT_PLATFORM_CC_GCC
 #else

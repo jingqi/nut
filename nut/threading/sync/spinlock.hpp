@@ -11,7 +11,7 @@
 #include <assert.h>
 #include <nut/platform/platform.hpp>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
 #   include <windows.h>
 #else
 #   include <pthread.h>
@@ -19,7 +19,7 @@
 
 class SpinLock
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
     CRITICAL_SECTION m_criticalSection;
 #else
     pthread_spinlock_t m_spinlock;
@@ -28,7 +28,7 @@ class SpinLock
 public:
     SpinLock()
     {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         ::InitializeCriticalSection(&m_criticalSection);
 #else
         int rs = ::pthread_spin_init(&m_spinlock, PTHREAD_PROCESS_PRIVATE);
@@ -38,7 +38,7 @@ public:
 
     ~SpinLock()
     {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         ::DeleteCriticalSection(&m_criticalSection);
 #else
         int rs = ::pthread_spin_destroy(&m_spinlock);
@@ -46,7 +46,7 @@ public:
 #endif
     }
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
     inline CRITICAL_SECTION* innerMutex() { return &m_criticalSection; }
 #else
     inline pthread_spinlock_t* innerMutex() { return &m_spinlock; }
@@ -54,7 +54,7 @@ public:
 
     inline void lock()
     {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         ::EnterCriticalSection(&m_criticalSection);
 #else
         int rs = ::pthread_spin_lock(&m_spinlock);
@@ -64,7 +64,7 @@ public:
 
     inline bool trylock()
     {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         return TRUE == ::TryEnterCriticalSection(&m_criticalSection);
 #else
         return 0 == ::pthread_spin_trylock(&m_spinlock);
@@ -73,7 +73,7 @@ public:
 
     inline void unlock()
     {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         ::LeaveCriticalSection(&m_criticalSection);
 #else
         int rs = ::pthread_spin_unlock(&m_spinlock);
