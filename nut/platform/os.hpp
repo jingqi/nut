@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-06-23
- * @last-edit 2012-10-20 16:53:53 jingqi
+ * @last-edit 2012-11-11 14:12:31 jingqi
  */
 
 #ifndef ___HEADFILE_291DFB4C_7D29_4D61_A691_EF83FB86CD36_
@@ -55,13 +55,13 @@ public:
         ::sprintf(search_path, "%s\\*", path); /* 加上通配符 */
 
         WIN32_FIND_DATAA wfd;
-        HANDLE hFind = ::FindFirstFileA(search_path, &wfd);
+        const HANDLE hFind = ::FindFirstFileA(search_path, &wfd);
         if (hFind == INVALID_HANDLE_VALUE)
             return ret;
 
         do
         {
-            if (except_initial_dot && wfd.cFileName[0] == '.')
+            if (except_initial_dot && '.' == wfd.cFileName[0])
                 continue;
             if (except_file && !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
                 continue;
@@ -124,13 +124,13 @@ public:
         ::swprintf(search_path, L"%s\\*", path); /* 加上通配符 */
 
         WIN32_FIND_DATAW wfd;
-        HANDLE hFind = ::FindFirstFileW(search_path, &wfd);
+        const HANDLE hFind = ::FindFirstFileW(search_path, &wfd);
         if (hFind == INVALID_HANDLE_VALUE)
             return ret;
 
         do
         {
-            if (except_initial_dot && wfd.cFileName[0] == L'.')
+            if (except_initial_dot && L'.' == wfd.cFileName[0])
                 continue;
             if (except_file && !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
                 continue;
@@ -253,6 +253,157 @@ public:
     }
 
     static inline bool mkdir(const std::wstring& path) { return mkdir(path.c_str()); }
+
+    /**
+     * 删除空目录
+     */
+    static inline bool removedir(const char *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        return FALSE != ::RemoveDirectoryA(path);
+#else
+        return 0 == ::rmdir(path);
+#endif
+    }
+
+    static inline bool removedir(const std::string& path) { return removedir(path.c_str()); }
+
+    static inline bool removedir(const wchar_t *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        return FALSE != ::RemoveDirectoryW(path);
+#else
+        const std::string p = wstr2str(path);
+        return removedir(p.c_str());
+#endif
+    }
+
+    static inline bool removedir(const std::wstring& path) { return removedir(path.c_str()); }
+
+    /**
+     * 删除目录树
+     */
+    static bool removetree(const char *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        // 删除文件
+        if (0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesA(path)))
+            return FALSE != ::DeleteFileA(path);
+
+        // 遍历文件夹
+        char full_path[MAX_PATH];
+        ::sprintf(full_path, "%s\\*", path); /* 加上通配符 */
+
+        WIN32_FIND_DATAA wfd;
+        const HANDLE hFind = ::FindFirstFileA(full_path, &wfd);
+        if (hFind == INVALID_HANDLE_VALUE)
+            return false;
+
+        bool ret = true;
+        do
+        {
+            // 忽略 . 和 ..
+            if (('.' == wfd.cFileName[0] && '\0' == wfd.cFileName[1]) ||
+                ('.' == wfd.cFileName[0] && '.' == wfd.cFileName[1] && '\0' == wfd.cFileName[2]))
+                continue;
+
+            ::sprintf(full_path, "%s\\%s", path, wfd.cFileName);
+            ret = removetree(full_path);
+        } while (ret && ::FindNextFileA(hFind, &wfd));
+
+        // 关闭查找句柄
+        ::FindClose(hFind);
+
+        // 移除空文件夹
+        if (ret)
+            ret = (FALSE != ::RemoveDirectoryA(path));
+        return ret;
+#else
+        struct stat info;
+        if (0 != ::stat(path, &info))
+            return false;
+
+        // 删除文件
+        if (!S_ISDIR(info.st_mode))
+            return 0 == ::unlink(path); // 这里就不用 remove() 了
+
+        // 遍历文件夹
+        DIR *dp = NULL;
+        struct dirent *dirp = NULL;
+        if ((dp = ::opendir(path)) == NULL)
+            return false;
+
+        bool ret = true;
+        char full_path[MAX_PATH];
+        while (ret && (dirp = ::readdir(dp)) != NULL)
+        {
+            // 忽略 . 和 ..
+            if (('.' == dirp->d_name[0] && '\0' == dirp->d->d_name[1]) ||
+                ('.' == dirp->d_name[0] && '.' == dirp->d_name[1] && '\0' == dirp->d_name[2]))
+                continue;
+
+            ::sprintf(full_path, "%s/%s", path, dirp->d_name);
+            ret = removetree(full_path);
+        }
+
+        // 释放DIR (struct dirent是由DIR维护的，无需额外释放)
+        ::closedir(dp);
+
+        // 删除空目录
+        if (ret)
+            ret = ::rmdir(path);
+        return ret;
+#endif
+    }
+
+    static bool removetree(const std::string& path) { return removetree(path.c_str()); }
+
+    static bool removetree(const wchar_t *path)
+    {
+        assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        // 删除文件
+        if (0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(path)))
+            return FALSE != ::DeleteFileW(path);
+
+        // 遍历文件夹
+        wchar_t full_path[MAX_PATH];
+        ::swprintf(full_path, L"%s\\*", path); /* 加上通配符 */
+
+        WIN32_FIND_DATAW wfd;
+        const HANDLE hFind = ::FindFirstFileW(full_path, &wfd);
+        if (hFind == INVALID_HANDLE_VALUE)
+            return false;
+
+        bool ret = true;
+        do
+        {
+            // 忽略 . 和 ..
+            if ((L'.' == wfd.cFileName[0] && L'\0' == wfd.cFileName[1]) ||
+                (L'.' == wfd.cFileName[0] && L'.' == wfd.cFileName[1] && L'\0' == wfd.cFileName[2]))
+                continue;
+
+            ::swprintf(full_path, L"%s\\%s", path, wfd.cFileName);
+            ret = removetree(full_path);
+        } while (ret && ::FindNextFileW(hFind, &wfd));
+
+        // 关闭查找句柄
+        ::FindClose(hFind);
+
+        // 移除空文件夹
+        if (ret)
+            ret = (FALSE != ::RemoveDirectoryW(path));
+        return ret;
+#else
+        const std::string p = wstr2str(path);
+        return removetree(p.c_str());
+#endif
+    }
+
+    static bool removetree(const std::wstring& path) { return removetree(path.c_str()); }
 };
 
 }
