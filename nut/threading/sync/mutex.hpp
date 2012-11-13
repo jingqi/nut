@@ -10,9 +10,11 @@
 #include <assert.h>
 #include <nut/platform/platform.hpp>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
 #  include <windows.h>
-#else
+#endif
+
+#if !defined(NUT_PLATFORM_OS_WINDOWS) || defined(NUT_PLATFORM_CC_MINGW)
 #  include <pthread.h>
 #endif
 
@@ -107,6 +109,25 @@ public :
 #endif
     }
 
+#if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
+    /** time between jan 1, 1601 and jan 1, 1970 in units of 100 nanoseconds */
+#   define PTW32_TIMESPEC_TO_FILETIME_OFFSET (LONGLONG)((((LONGLONG) 27111902L << 32)+(LONGLONG) 3577643008L ))
+    /**
+     * mingw 没有定义clock_gettime(), 这里参考其pthread_mutex_timedlock.c ptw32_relmillisecs.c 的实现
+     */
+    static void clock_getrealtime(struct timespec *ts)
+    {
+        assert(NULL != ts);
+        SYSTEMTIME st;
+        ::GetSystemTime(&st);
+        FILETIME ft;
+        ::SystemTimeToFileTime(&st, &ft);
+        ts->tv_sec = (int)((*(LONGLONG *)&ft - PTW32_TIMESPEC_TO_FILETIME_OFFSET) / 10000000L);
+        ts->tv_nsec = (int)((*(LONGLONG *)&ft - PTW32_TIMESPEC_TO_FILETIME_OFFSET - ((LONGLONG)ts->tv_sec * (LONGLONG)10000000L)) * 100);
+    }
+#   undef PTW32_TIMESPEC_TO_FILETIME_OFFSET
+#endif
+
     /**
      * try lock the mutex in given time
      * @param s
@@ -118,28 +139,16 @@ public :
      */
     inline bool timedlock(unsigned s, unsigned ms = 0)
     {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
-#   if !defined(NUT_PLATFORM_CC_MINGW)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         DWORD dwMilliseconds = s * 1000 + ms;
         return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, dwMilliseconds);
-#   else
-        struct timespec abstime;
-        // TODO mingw 没有定义clock_gettime();
-        abstime.tv_sec = s;
-        abstime.tv_nsec = ((long)ms) * 1000 * 1000;
-        int lock_result = ::pthread_mutex_timedlock(&m_mutex, &abstime);
-        /** returned values :
-         *  0, lock ok
-         *  EAGAIN, The mutex couldn't be acquired because the maximum number of recursive locks for the mutex has been exceeded.
-         *  EDEADLK, The current thread already owns the mutex.
-         *  EINVAL, The mutex was created with the protocol attribute having the value PTHREAD_PRIO_PROTECT and the calling thread's priority is higher than the mutex' current priority ceiling; the process or thread would have blocked, and the abs_timeout parameter specified a nanoseconds field value less than zero or greater than or equal to 1000 million; or the value specified by mutex doesn't refer to an initialized mutex object.
-         *  ETIMEDOUT, The mutex couldn't be locked before the specified timeout expired
-         */
-        return 0 == lock_result;
-#   endif
 #else
         struct timespec abstime;
+#   if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
+        clock_getrealtime(&abstime);
+#   else
         clock_gettime(CLOCK_REALTIME, &abstime);
+#   endif
         abstime.tv_sec += s;
         abstime.tv_nsec += ((long)ms) * 1000 * 1000;
         int lock_result = ::pthread_mutex_timedlock(&m_mutex, &abstime);

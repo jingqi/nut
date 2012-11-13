@@ -11,11 +11,12 @@
 
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
 #   include <windows.h>
-#include "spinlock.hpp"
+#   include "spinlock.hpp"
 #else
 #   include <pthread.h>
-#include "mutex.hpp"
 #endif
+
+#include "mutex.hpp"
 
 
 namespace nut
@@ -95,20 +96,16 @@ public:
     bool timedwait(condition_lock_type *mutex, unsigned s, unsigned ms = 0)
     {
         assert(NULL != mutex);
-#if defined(NUT_PLATFORM_OS_WINDOWS)
-#   if !defined(NUT_PLATFORM_CC_MINGW)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         DWORD dwMilliseconds = s * 1000 + ms;
         return TRUE == ::SleepConditionVariableCS(&m_cond, mutex->innerMutex(), dwMilliseconds);
-#   else
-        struct timespec abstime;
-        // TOOD mingw 没有定义clock_gettime()
-        abstime.tv_sec = s;
-        abstime.tv_nsec = ((long)ms) * 1000 * 1000;
-        return 0 == pthread_cond_timedwait(&m_cond, mutex->innerMutex(), &abstime);
-#   endif
 #else
         struct timespec abstime;
+#   if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
+        Mutex::clock_getrealtime(&abstime);
+#   else
         clock_gettime(CLOCK_REALTIME, &abstime);
+#   endif
         abstime.tv_sec += s;
         abstime.tv_nsec += ((long)ms) * 1000 * 1000;
         return 0 == pthread_cond_timedwait(&m_cond, mutex->innerMutex(), &abstime);
