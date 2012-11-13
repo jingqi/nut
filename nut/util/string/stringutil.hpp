@@ -2,6 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2010-8-18
+ * @last-edit 2012-11-13 15:32:42 jingqi
  */
 
 #ifndef ___HEADFILE___8BC3081E_4374_470D_9E66_CC7F414ED9B7_
@@ -14,6 +15,7 @@
 #include <stdlib.h> /* for malloc() free() ltoa() wcstombs() and so on */
 #include <string>
 #include <vector>
+#include <wchar.h>
 
 #include <nut/platform/platform.hpp>
 
@@ -53,6 +55,24 @@ inline std::vector<std::string> str_split(const std::string &str, const std::str
     return ret;
 }
 
+inline std::vector<std::wstring> str_split(const std::wstring &str, const std::wstring &sstr, bool ignoreEmpty = false)
+{
+    assert(sstr.length() > 0);
+
+    std::vector<std::wstring> ret;
+    std::wstring::size_type begin = 0, end = str.find(sstr);
+    while (std::wstring::npos != end)
+    {
+        if (!ignoreEmpty || begin != end)
+            ret.push_back(str.substr(begin, end - begin));
+        begin = end + sstr.length();
+        end = str.find(sstr, begin);
+    }
+    if (!ignoreEmpty || begin < str.length())
+        ret.push_back(str.substr(begin));
+    return ret;
+}
+
 /**
  * @param sstr
  *      该字符串中的每一个字符都是分割字符
@@ -75,10 +95,33 @@ inline std::vector<std::string> chr_split(const std::string &str, const std::str
     return ret;
 }
 
+inline std::vector<std::wstring> chr_split(const std::wstring &str, const std::wstring &sstr, bool ignoreEmpty = false)
+{
+    assert(sstr.length() > 0);
+
+    std::vector<std::wstring> ret;
+    std::wstring::size_type begin = 0, end = str.find_first_of(sstr);
+    while (std::wstring::npos != end)
+    {
+        if (!ignoreEmpty || begin != end)
+            ret.push_back(str.substr(begin, end - begin));
+        begin = end + 1;
+        end = str.find_first_of(sstr, begin);
+    }
+    if (!ignoreEmpty || begin < str.length())
+        ret.push_back(str.substr(begin));
+    return ret;
+}
+
 /** split the string */
 inline std::vector<std::string> chr_split(const std::string &str, char c, bool ignoreEmpty = false)
 {
-    return chr_split(str, toString(c), ignoreEmpty);
+    return chr_split(str, std::string(1, c), ignoreEmpty);
+}
+
+inline std::vector<std::wstring> chr_split(const std::wstring &str, wchar_t c, bool ignoreEmpty = false)
+{
+    return chr_split(str, std::wstring(1, c), ignoreEmpty);
 }
 
 inline std::string format(const char *fmt, ...)
@@ -124,10 +167,26 @@ inline std::string trim(const std::string& str, const std::string& blanks = " \t
         return str.substr(begin, end - begin + 1);
 }
 
+inline std::wstring trim(const std::wstring& str, const std::wstring& blanks = L" \t\r\n")
+{
+    const std::wstring::size_type begin = str.find_first_not_of(blanks),
+        end = str.find_last_not_of(blanks);
+    if (std::wstring::npos == begin || std::wstring::npos == end)
+        return std::wstring();
+    else
+        return str.substr(begin, end - begin + 1);
+}
+
 /** 去除左边空白 */
 inline std::string ltrim(const std::string& str, const std::string& blanks = " \t\r\n")
 {
     const std::string::size_type begin = str.find_first_not_of(blanks);
+    return str.substr(begin);
+}
+
+inline std::wstring ltrim(const std::wstring& str, const std::wstring& blanks = L" \t\r\n")
+{
+    const std::wstring::size_type begin = str.find_first_not_of(blanks);
     return str.substr(begin);
 }
 
@@ -140,13 +199,30 @@ inline std::string rtrim(const std::string& str, const std::string& blanks = " \
     return str.substr(0, end + 1);
 }
 
+inline std::wstring rtrim(const std::wstring& str, const std::wstring& blanks = L" \t\r\n")
+{
+    const std::wstring::size_type end = str.find_last_not_of(blanks);
+    if (std::wstring::npos == end)
+        return std::wstring();
+    return str.substr(0, end + 1);
+}
+
 /** 忽略大小写的字符串比较 */
 inline bool strieq(const std::string& str1, const std::string& str2)
 {
     if (str1.length() != str2.length())
         return false;
-    const int len = str1.length();
-    for (register int i = 0; i < len; ++i)
+    for (register size_t i = 0, len = str1.length(); i < len; ++i)
+        if ((str1.at(i) | 0x20) != (str2.at(i) | 0x20))
+            return false;
+    return true;
+}
+
+inline bool strieq(const std::wstring& str1, const std::wstring& str2)
+{
+    if (str1.length() != str2.length())
+        return false;
+    for (register size_t i = 0, len = str1.length(); i < len; ++i)
         if ((str1.at(i) | 0x20) != (str2.at(i) | 0x20))
             return false;
     return true;
@@ -159,7 +235,17 @@ inline bool starts_with(const std::string& s, const std::string& head)
 {
     if (s.length() < head.length())
         return false;
-    for (register int i = 0, len = head.length(); i < len; ++i)
+    for (register size_t i = 0, len = head.length(); i < len; ++i)
+        if (s.at(i) != head.at(i))
+            return false;
+    return true;
+}
+
+inline bool starts_with(const std::wstring& s, const std::wstring& head)
+{
+    if (s.length() < head.length())
+        return false;
+    for (register size_t i = 0, len = head.length(); i < len; ++i)
         if (s.at(i) != head.at(i))
             return false;
     return true;
@@ -172,7 +258,17 @@ inline bool ends_with(const std::string& s, const std::string& tail)
 {
     if (s.length() < tail.length())
         return false;
-    for (register int i = 1, len = tail.length(); i <= len; ++i)
+    for (register size_t i = 1, len = tail.length(); i <= len; ++i)
+        if (s.at(s.length() - i) != tail.at(tail.length() - i))
+            return false;
+    return true;
+}
+
+inline bool ends_with(const std::wstring& s, const std::wstring& tail)
+{
+    if (s.length() < tail.length())
+        return false;
+    for (register size_t i = 1, len = tail.length(); i <= len; ++i)
         if (s.at(s.length() - i) != tail.at(tail.length() - i))
             return false;
     return true;
