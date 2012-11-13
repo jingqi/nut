@@ -106,6 +106,9 @@
     <Filter Include="源文件\platform">
       <UniqueIdentifier>{7874e9df-c776-414b-a8f8-53c6e0c19e11}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\util\timer">
+      <UniqueIdentifier>{1e249ce9-6f65-4fa9-aeb4-7c0b9977266e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -317,6 +320,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\nut\util\string\kmp.hpp">
       <Filter>头文件\util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\timer\timermanager.hpp">
+      <Filter>头文件\util\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\timer\timeval.hpp">
+      <Filter>头文件\util\timer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

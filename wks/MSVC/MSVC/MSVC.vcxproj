@@ -134,6 +134,8 @@
     <ClInclude Include="..\..\..\nut\util\string\stringutil.hpp" />
     <ClInclude Include="..\..\..\nut\util\string\tostring.hpp" />
     <ClInclude Include="..\..\..\nut\util\time.hpp" />
+    <ClInclude Include="..\..\..\nut\util\timer\timermanager.hpp" />
+    <ClInclude Include="..\..\..\nut\util\timer\timeval.hpp" />
     <ClInclude Include="..\..\..\nut\util\tuple.hpp" />
   </ItemGroup>
   <ItemGroup>
