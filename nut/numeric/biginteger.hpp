@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-04-03
- * @last-edit 2012-11-05 22:37:54 jingqi
+ * @last-edit 2012-11-13 21:21:56 jingqi
  */
 
 #ifndef ___HEADFILE_0D8E9B0B_ACDC_4FD5_A0BE_71D75F7A5EFE_
@@ -10,6 +10,8 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include <string>
+#include <algorithm> // for std::reverse()
 
 #include "byte_array_number.hpp"
 

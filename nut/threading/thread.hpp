@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-07-09
- * @last-edit 2012-08-19 18:40:27 jingqi
+ * @last-edit 2012-11-13 22:16:35 jingqi
  */
 
 #ifndef ___HEADFILE_93CDBEEC_8BDC_4AE9_A2D1_717CAC0ECD85_
@@ -28,7 +28,7 @@ class Thread
 
 public:
     typedef void (*thread_process_type)(void*);
-    virtual void run(void *arg) {}
+    virtual void run(void *arg) { (void)arg; }
 
 private:
 #if defined(NUT_PLATFORM_OS_WINDOWS)

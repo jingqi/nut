@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-06-23
- * @last-edit 2012-10-20 16:10:36 jingqi
+ * @last-edit 2012-11-13 21:30:25 jingqi
  */
 
 #ifndef ___HEADFILE_E6D40B10_E5D6_4092_A38B_4E69E5B8E123_
@@ -425,7 +425,7 @@ public:
         struct stat info;
         if (0 != ::stat(path, &info))
             return false;
-        return S_ISFILE(info.st_mode);
+        return S_ISREG(info.st_mode); // regular file
 #endif
     }
 
@@ -453,7 +453,7 @@ public:
         struct stat info;
         if (0 != ::stat(path, &info))
             return false;
-        return S_ISLINK(info.st_mode);
+        return S_ISLNK(info.st_mode);
 #endif
     }
 

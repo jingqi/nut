@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-06-23
- * @last-edit 2012-11-11 14:12:31 jingqi
+ * @last-edit 2012-11-13 21:28:38 jingqi
  */
 
 #ifndef ___HEADFILE_291DFB4C_7D29_4D61_A691_EF83FB86CD36_
@@ -23,6 +23,7 @@
 #   include <limits.h>   // for PATH_MAX
 #   include <sys/stat.h> // for lstat()
 #   include <sys/types.h>  // for mkdir()
+#   include <unistd.h> // for rmdir()
 #endif
 
 #include <nut/util/string/stringutil.hpp>
@@ -337,11 +338,11 @@ public:
             return false;
 
         bool ret = true;
-        char full_path[MAX_PATH];
+        char full_path[PATH_MAX];
         while (ret && (dirp = ::readdir(dp)) != NULL)
         {
             // 忽略 . 和 ..
-            if (('.' == dirp->d_name[0] && '\0' == dirp->d->d_name[1]) ||
+            if (('.' == dirp->d_name[0] && '\0' == dirp->d_name[1]) ||
                 ('.' == dirp->d_name[0] && '.' == dirp->d_name[1] && '\0' == dirp->d_name[2]))
                 continue;
 

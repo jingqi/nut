@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-11-12
- * @last-edit 2012-11-12 22:04:36 jingqi
+ * @last-edit 2012-11-13 22:04:33 jingqi
  */
 
 #ifndef ___HEADFILE_5CAFD4E0_0BB4_474D_A465_CD320415264E_
@@ -62,7 +62,7 @@ public:
     }
 #else
     void set(const struct timeval& tv) { set(tv.tv_sec, tv.tv_usec); }
-    void set(const timespec_t& tv) { set(tv.tv_sec, tv.tv_nsec / NSECS_PER_USEC); }
+    void set(const struct timespec& tv) { set(tv.tv_sec, tv.tv_nsec / NSECS_PER_USEC); }
 #endif
 
     static TimeVal now()

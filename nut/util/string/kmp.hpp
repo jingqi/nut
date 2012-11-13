@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-10-18
- * @last-edit 2012-10-18 19:39:11 jingqi
+ * @last-edit 2012-11-13 21:36:50 jingqi
  */
 
 #ifndef ___HEADFILE_A04A7FB7_1516_4EF0_A8B9_44C5AABBF7EC_
@@ -99,7 +99,7 @@ inline int kmp_search(const char *src, size_t len_src, size_t start, const char 
     int state = 0; // 状态，其实代表着已经匹配的字符串长度
     while (i < len_src && ((size_t) state) < len_target)
         state = kmp_update(src[i++], state, target, next);
-    if (state == len_target)
+    if (state == (int)len_target)
         return i - len_target;
     return -1;
 }
@@ -111,7 +111,7 @@ inline int kmp_search(const wchar_t *src, size_t len_src, size_t start, const wc
     int state = 0; // 状态，其实代表着已经匹配的字符串长度
     while (i < len_src && ((size_t) state) < len_target)
         state = kmp_update(src[i++], state, target, next);
-    if (state == len_target)
+    if (state == (int)len_target)
         return i - len_target;
     return -1;
 }
