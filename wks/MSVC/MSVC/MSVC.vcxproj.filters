@@ -327,6 +327,9 @@
     <ClInclude Include="..\..\..\nut\util\timer\timeval.hpp">
       <Filter>头文件\util\timer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\security\digest\adler32.hpp">
+      <Filter>头文件\security\digest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -391,6 +394,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\platform\test_path.cpp">
       <Filter>源文件\platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\security\digest\test_adler32.cpp">
+      <Filter>源文件\security\digest</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

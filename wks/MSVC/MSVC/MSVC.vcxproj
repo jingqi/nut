@@ -96,6 +96,7 @@
     <ClInclude Include="..\..\..\nut\platform\path.hpp" />
     <ClInclude Include="..\..\..\nut\platform\platform.hpp" />
     <ClInclude Include="..\..\..\nut\platform\stdint.hpp" />
+    <ClInclude Include="..\..\..\nut\security\digest\adler32.hpp" />
     <ClInclude Include="..\..\..\nut\threading\lockfree\atomic.hpp" />
     <ClInclude Include="..\..\..\nut\threading\lockfree\concurrentqueue.hpp" />
     <ClInclude Include="..\..\..\nut\threading\lockfree\concurrentstack.hpp" />
@@ -149,6 +150,7 @@
     <ClCompile Include="..\..\..\test\numeric\test_unsignedinteger.cpp" />
     <ClCompile Include="..\..\..\test\platform\test_os.cpp" />
     <ClCompile Include="..\..\..\test\platform\test_path.cpp" />
+    <ClCompile Include="..\..\..\test\security\digest\test_adler32.cpp" />
     <ClCompile Include="..\..\..\test\threading\lockfree\test_queue.cpp" />
     <ClCompile Include="..\..\..\test\threading\lockfree\test_stack.cpp" />
     <ClCompile Include="..\..\..\test\threading\test_threadpool.cpp" />
