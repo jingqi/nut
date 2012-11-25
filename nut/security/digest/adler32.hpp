@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2012-11-19
@@ -16,7 +16,7 @@ namespace nut
 
 class Adler32
 {
-    /** 65521ÊÇĞ¡ÓÚ2^16µÄ×î´óËØÊı */
+    /** 65521æ˜¯å°äº2^16çš„æœ€å¤§ç´ æ•° */
     enum { MOD_ADLER = 65521 };
 
     uint32_t m_result;
@@ -51,11 +51,11 @@ public:
 };
 
 /**
- * ¹ö¶¯hash
+ * æ»šåŠ¨hash
  */
 class RollingAdler32
 {
-    /** 65521ÊÇĞ¡ÓÚ2^16µÄ×î´óËØÊı */
+    /** 65521æ˜¯å°äº2^16çš„æœ€å¤§ç´ æ•° */
     enum { MOD_ADLER = 65521 };
 
     uint32_t m_result;
