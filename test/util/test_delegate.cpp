@@ -43,12 +43,14 @@ NUT_FIXTURE(TestDelegate)
         NUT_TA(g_t == 0);
         d1();
         NUT_TA(g_t == 100);
+        NUT_TA(d1 == d1);
 
         delegate<int(int)> d2;
         d2.connect(this, &TestDelegate::tm);
         d2.connect(&tf);
         int rs = d2(3);
         NUT_TA(g_t == 111 && rs == 4);
+        NUT_TA(d2 == d2);
 
         d2.disconnect(&tf);
         rs = d2(5);

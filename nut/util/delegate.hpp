@@ -11,10 +11,18 @@
 #include <assert.h>
 #include <vector>
 
+#include <nut/platform/platform.hpp>
+
 namespace nut
 {
 
 template <typename T> class delegate;
+
+#if defined(NUT_PLATFORM_CC_VC)
+#   define __THISCALL __thiscall
+#else
+#   define __THISCALL
+#endif
 
 #define __DELEGATE(TEMPLATE_ARGS, FUNCTION_ARGS, FUNCTION_PARA) \
 template <typename Ret TEMPLATE_ARGS> \
@@ -126,6 +134,47 @@ public: \
         } \
         return *this; \
     } \
+ \
+    bool operator==(const self& x) const \
+    { \
+        if (m_holders.size() != x.m_holders.size()) \
+            return false; \
+        for (register size_t i = m_holders.size(); i > 0; --i) \
+        { \
+            assert(NULL != m_holders[i - 1] && NULL != x.m_holders[i - 1]); \
+            if (m_holders[i - 1]->holderType() != x.m_holders[i - 1]->holderType()) \
+                return false; \
+            switch (m_holders[i - 1]->holderType()) \
+            { \
+            case FUNCTOR: { \
+                typedef FunctorHolder<Ret(*)(FUNCTION_ARGS)> *holder_type; \
+                holder_type fh1 = dynamic_cast<holder_type>(m_holders[i - 1]); \
+                holder_type fh2 = dynamic_cast<holder_type>(x.m_holders[i - 1]); \
+                assert(NULL != fh1 && NULL != fh2); \
+                if (fh1->func != fh2->func) \
+                    return false; \
+                break; \
+            } \
+ \
+            case MEMBER_FUNCTION: { \
+                typedef MemHolder<IHolder*, Ret(__THISCALL IHolder::*)(FUNCTION_ARGS)> *holder_type; \
+                holder_type mh1 = (holder_type)(m_holders[i - 1]); \
+                holder_type mh2 = (holder_type)(x.m_holders[i - 1]); \
+                assert(NULL != mh1 && NULL != mh2); \
+                if (mh1->obj != mh2->obj || mh1->memFunc != mh2->memFunc) \
+                    return false; \
+                break; \
+            } \
+ \
+            default: \
+                assert(false); \
+                return false; \
+            } \
+        } \
+        return true;\
+    } \
+ \
+    bool operator!=(const self& x) const { return !(*this == x); } \
  \
     template <typename FunctorPtr> \
     void connect(FunctorPtr func) \
