@@ -109,6 +109,12 @@
     <Filter Include="头文件\util\timer">
       <UniqueIdentifier>{1e249ce9-6f65-4fa9-aeb4-7c0b9977266e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\pconsole">
+      <UniqueIdentifier>{725f643e-cac0-4354-9836-005909361bc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\pconsole">
+      <UniqueIdentifier>{8a2d5239-dade-423d-8c09-019c8f7f570c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -330,6 +336,27 @@
     <ClInclude Include="..\..\..\nut\security\digest\adler32.hpp">
       <Filter>头文件\security\digest</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\numeric_algo.hpp">
+      <Filter>头文件\numeric</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\security\encrypt\rsa.hpp">
+      <Filter>头文件\security\encrypt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\pconsole\cmdexit.hpp">
+      <Filter>头文件\pconsole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\pconsole\cmdhelp.hpp">
+      <Filter>头文件\pconsole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\pconsole\icommand.hpp">
+      <Filter>头文件\pconsole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\pconsole\iconsole.hpp">
+      <Filter>头文件\pconsole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\pconsole\pconsole.hpp">
+      <Filter>头文件\pconsole</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -397,6 +424,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\security\digest\test_adler32.cpp">
       <Filter>源文件\security\digest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\pconsole\test_pconsole.cpp">
+      <Filter>源文件\pconsole</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
