@@ -357,6 +357,9 @@
     <ClInclude Include="..\..\..\nut\pconsole\pconsole.hpp">
       <Filter>头文件\pconsole</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\mrucache.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -427,6 +430,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\pconsole\test_pconsole.cpp">
       <Filter>源文件\pconsole</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\util\test_mrucache.cpp">
+      <Filter>源文件\util</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

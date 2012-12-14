@@ -10,6 +10,6 @@
 /tmp
 *.pyc
 *~
-wks/makefile/makefile
-wks/makefile/output
+/wks/makefile/makefile
+/wks/makefile/output
 

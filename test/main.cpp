@@ -30,8 +30,8 @@ int main()
 
     ConsoleTestLogger l;
     TestRunner trunner(l);
-    trunner.runAGroup("pconsole");
-    // trunner.runAFixture("TestGC");
+    // trunner.runAGroup("pconsole");
+    trunner.runAFixture("TestMRUCache");
     // trunner.runACase("TestGC", "testSmoking");
 
     printf("press any key to continue...");

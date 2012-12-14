@@ -131,6 +131,7 @@
     <ClInclude Include="..\..\..\nut\unittest\unittest.hpp" />
     <ClInclude Include="..\..\..\nut\util\configfile.hpp" />
     <ClInclude Include="..\..\..\nut\util\delegate.hpp" />
+    <ClInclude Include="..\..\..\nut\util\mrucache.hpp" />
     <ClInclude Include="..\..\..\nut\util\propertyfile.hpp" />
     <ClInclude Include="..\..\..\nut\util\consoleutil.hpp" />
     <ClInclude Include="..\..\..\nut\util\membuffer.hpp" />
@@ -169,6 +170,7 @@
     <ClCompile Include="..\..\..\test\util\string\test_stringutil.cpp" />
     <ClCompile Include="..\..\..\test\util\test_configfile.cpp" />
     <ClCompile Include="..\..\..\test\util\test_delegate.cpp" />
+    <ClCompile Include="..\..\..\test\util\test_mrucache.cpp" />
     <ClCompile Include="..\..\..\test\util\test_propertyfile.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
