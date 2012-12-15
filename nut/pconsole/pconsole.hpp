@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-12-10
- * @last-edit 2012-12-10 21:34:35 jingqi
+ * @last-edit 2012-12-15 13:34:27 jingqi
  * @brief
  */
 
@@ -66,7 +66,6 @@ public:
 
         // 从命令行读取命令并执行
         std::string l;
-        char c = '\0';
         while (true)
         {
             const char c = getchar();

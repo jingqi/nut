@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-12-15
- * @last-edit 2012-12-15 01:15:56 jingqi
+ * @last-edit 2012-12-15 13:58:50 jingqi
  * @brief
  */
 
@@ -41,7 +41,7 @@ class MRUCache
     const size_t m_capacity;
     std::map<K,Node*> m_map;
     Node *m_listHead, *m_listEnd;
-    SpinLock m_lock;
+    SpinLock m_lock; // 注意，linux下自旋锁不可重入
 
     static inline Node* alloc_node()
     {
@@ -110,13 +110,21 @@ public:
     {
         Guard<SpinLock> g(&m_lock);
 
-        std::map<K,Node*>::const_iterator const n = m_map.find(k);
+        typename std::map<K,Node*>::const_iterator const n = m_map.find(k);
         if (n == m_map.end())
         {
             Node* const p = new_node(k,v);
             m_map.insert(std::pair<K,Node*>(k,p));
             while (m_map.size() > m_capacity)
-                remove(m_listEnd->key);
+            {
+                assert(NULL != m_listEnd);
+                typename std::map<K,Node*>::iterator const nn = m_map.find(m_listEnd->key);
+                assert(nn != m_map.end());
+                Node* const pp = nn->second;
+                m_map.erase(nn);
+                removeListNode(pp);
+                delete_node(pp);
+            }
             pushListHead(p);
             return;
         }
@@ -130,7 +138,7 @@ public:
     {
         Guard<SpinLock> g(&m_lock);
 
-        std::map<K,Node*>::iterator const n = m_map.find(k);
+        typename std::map<K,Node*>::iterator const n = m_map.find(k);
         if (n == m_map.end())
             return;
         Node* const p = n->second;
@@ -144,7 +152,7 @@ public:
         assert(NULL != out);
         Guard<SpinLock> g(&m_lock);
 
-        std::map<K,Node*>::const_iterator const n = m_map.find(k);
+        typename std::map<K,Node*>::const_iterator const n = m_map.find(k);
         if (n == m_map.end())
             return false;
         *out = n->second->value;
