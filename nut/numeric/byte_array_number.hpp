@@ -495,7 +495,7 @@ inline uint8_t sub(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
     register uint8_t carry = 1;
     for (register size_t i = 0; i < N; ++i)
     {
-        const uint16 pluser1 = a[i];
+        const uint16_t pluser1 = a[i];
         uint16_t pluser2 = static_cast<uint8_t>(~(b[i]));
         pluser2 += pluser1 + carry;
         
@@ -872,7 +872,7 @@ inline void multiply_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size
 
     // 避免区域交叉覆盖
     uint8_t *retx = x;
-    if (a - N < x && x < a - count / 8)
+    if ((a - P < x && x < a + M) || (b - P < x && x < b + N))
         retx = (uint8_t*) ::malloc(sizeof(uint8_t) * P);
 
     // 乘法
@@ -1332,7 +1332,6 @@ inline void divide_unsigned(const uint8_t *a, const uint8_t *b, uint8_t *x, uint
             expand_unsigned(quotient, dividend_len, x, N);
         }
 
-
         /**
             恢复余数:
             如果未除尽且余数符号与被除数不一致，余数需加上除数
@@ -1366,11 +1365,7 @@ inline void divide_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0);
     assert((NULL != x && P > 0) || (NULL != y && Q > 0));
-    assert(NULL == x || P <= 0 || x + P <= a || x >= a + M); // 避免区域交叉覆盖
-    assert(NULL == x || P <= 0 || x + P <= b || x >= b + N); // 避免区域交叉覆盖
-    assert(NULL == y || Q <= 0 || y + Q <= a || y >= a + M); // 避免区域交叉覆盖
-    assert(NULL == y || Q <= 0 || y + Q <= b || y >= b + N); // 避免区域交叉覆盖
-    assert(NULL == x || P <= 0 || NULL == y || Q <= 0 || x + P <= y || x >= y + Q); // 避免区域交叉覆盖
+    assert(NULL == x || P <= 0 || NULL == y || Q <= 0 || y >= x + P || x >= y + Q); // 避免区域交叉覆盖
     assert(!is_zero(b, N)); // 被除数不能为0
 
     // 常量
