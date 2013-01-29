@@ -1440,25 +1440,49 @@ inline void bit_and(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
 
-    // 避免区域交叉覆盖
-    uint8_t *retx = x;
-    if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (uint8_t*) ::malloc(sizeof(uint8_t) * N);
+    if ((x <= a || x >= a + N) && (x <= b || x >= b + N))
+    {
+#if !defined(OPTIMIZE)
+        for (register size_t i = 0; i < N; ++i)
+            x[i] = a[i] & b[i];
+#else
+        const size_t word_count = N / sizeof(word_type);
+        for (register size_t i = 0; i < word_count; ++i)
+            reinterpret_cast<word_type*>(x)[i] = reinterpret_cast<const word_type*>(a)[i] & reinterpret_cast<const word_type*>(b)[i];
+        for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
+            x[i] = a[i] & b[i];
+#endif
+    }
+    else if ((x <= a - N || x >= a) && (x <= b - N || x >= b))
+    {
+#if !defined(OPTIMIZE)
+        for (register size_t i = N - 1; i >= 0; --i)
+            x[i] = a[i] & b[i];
+#else
+        const size_t word_count = N / sizeof(word_type);
+        for (register int i = N - 1, limit = word_count * sizeof(word_type); i >= limit; --i)
+            x[i] = a[i] & b[i];
+        for (register int i = word_count - 1; i >= 0; --i)
+            reinterpret_cast<word_type*>(x)[i] = reinterpret_cast<const word_type*>(a)[i] & reinterpret_cast<const word_type*>(b)[i];
+#endif
+    }
+    else
+    {
+        // 避免区域交叉覆盖
+        uint8_t *retx = (uint8_t*) ::malloc(sizeof(uint8_t) * N);
 
 #if !defined(OPTIMIZE)
-    for (register size_t i = 0; i < N; ++i)
-        retx[i] = a[i] & b[i];
+        for (register size_t i = 0; i < N; ++i)
+            retx[i] = a[i] & b[i];
 #else
-    const size_t word_count = N / sizeof(word_type);
-    for (register size_t i = 0; i < word_count; ++i)
-        reinterpret_cast<word_type*>(retx)[i] = reinterpret_cast<const word_type*>(a)[i] & reinterpret_cast<const word_type*>(b)[i];
-    for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
-        retx[i] = a[i] & b[i];
+        const size_t word_count = N / sizeof(word_type);
+        for (register size_t i = 0; i < word_count; ++i)
+            reinterpret_cast<word_type*>(retx)[i] = reinterpret_cast<const word_type*>(a)[i] & reinterpret_cast<const word_type*>(b)[i];
+        for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
+            retx[i] = a[i] & b[i];
 #endif
 
-    // 回写数据
-    if (retx != x)
-    {
+        // 回写数据
         ::memcpy(x, retx, N);
         ::free(retx);
     }
@@ -1472,25 +1496,49 @@ inline void bit_or(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
 
-    // 避免区域交叉覆盖
-    uint8_t *retx = x;
-    if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (uint8_t*) ::malloc(sizeof(uint8_t) * N);
+    if ((x <= a || x >= a + N) && (x <= b || x >= b + N))
+    {
+#if !defined(OPTIMIZE)
+        for (register size_t i = 0; i < N; ++i)
+            x[i] = a[i] | b[i];
+#else
+        const size_t word_count = N / sizeof(word_type);
+        for (register size_t i = 0; i < word_count; ++i)
+            reinterpret_cast<word_type*>(x)[i] = reinterpret_cast<const word_type*>(a)[i] | reinterpret_cast<const word_type*>(b)[i];
+        for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
+            x[i] = a[i] | b[i];
+#endif
+    }
+    else if ((x <= a - N || x >= a) && (x <= b - N || x >= b))
+    {
+#if !defined(OPTIMIZE)
+        for (register int i = N - 1; i >= 0; --i)
+            x[i] = a[i] | b[i];
+#else
+        const size_t word_count = N / sizeof(word_type);
+        for (register int i = N - 1, limit = word_count * sizeof(word_type); i >= limit; --i)
+            x[i] = a[i] | b[i];
+        for (register int i = word_count - 1; i >= 0; --i)
+            reinterpret_cast<word_type*>(x)[i] = reinterpret_cast<const word_type*>(a)[i] | reinterpret_cast<const word_type*>(b)[i];
+#endif
+    }
+    else
+    {
+        // 避免区域交叉覆盖
+        uint8_t *retx = (uint8_t*) ::malloc(sizeof(uint8_t) * N);
 
 #if !defined(OPTIMIZE)
-    for (register size_t i = 0; i < N; ++i)
-        retx[i] = a[i] | b[i];
+        for (register size_t i = 0; i < N; ++i)
+            retx[i] = a[i] | b[i];
 #else
-    const size_t word_count = N / sizeof(word_type);
-    for (register size_t i = 0; i < word_count; ++i)
-        reinterpret_cast<word_type*>(retx)[i] = reinterpret_cast<const word_type*>(a)[i] | reinterpret_cast<const word_type*>(b)[i];
-    for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
-        retx[i] = a[i] | b[i];
+        const size_t word_count = N / sizeof(word_type);
+        for (register size_t i = 0; i < word_count; ++i)
+            reinterpret_cast<word_type*>(retx)[i] = reinterpret_cast<const word_type*>(a)[i] | reinterpret_cast<const word_type*>(b)[i];
+        for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
+            retx[i] = a[i] | b[i];
 #endif
 
-    // 回写数据
-    if (retx != x)
-    {
+        // 回写数据
         ::memcpy(x, retx, N);
         ::free(retx);
     }
@@ -1504,25 +1552,49 @@ inline void bit_xor(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
 
-    // 避免区域交叉覆盖
-    uint8_t *retx = x;
-    if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (uint8_t*) ::malloc(sizeof(uint8_t) * N);
+    if ((x <= a || x >= a + N) && (x <= b || x >= b + N))
+    {
+#if !defined(OPTIMIZE)
+        for (register size_t i = 0; i < N; ++i)
+            x[i] = a[i] ^ b[i];
+#else
+        const size_t word_count = N / sizeof(word_type);
+        for (register size_t i = 0; i < word_count; ++i)
+            reinterpret_cast<word_type*>(x)[i] = reinterpret_cast<const word_type*>(a)[i] ^ reinterpret_cast<const word_type*>(b)[i];
+        for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
+            x[i] = a[i] ^ b[i];
+#endif
+    }
+    else if ((x <= a - N || x >= a) && (x <= b - N || x >= b))
+    {
+#if !defined(OPTIMIZE)
+        for (register int i = N - 1; i >= 0; --i)
+            x[i] = a[i] ^ b[i];
+#else
+        const size_t word_count = N / sizeof(word_type);
+        for (register int i = N - 1, limit = word_count * sizeof(word_type); i >= limit; --i)
+            x[i] = a[i] ^ b[i];
+        for (register int i = word_count - 1; i >= 0; --i)
+            reinterpret_cast<word_type*>(x)[i] = reinterpret_cast<const word_type*>(a)[i] ^ reinterpret_cast<const word_type*>(b)[i];
+#endif
+    }
+    else
+    {
+        // 避免区域交叉覆盖
+        uint8_t *retx = (uint8_t*) ::malloc(sizeof(uint8_t) * N);
 
 #if !defined(OPTIMIZE)
-    for (register size_t i = 0; i < N; ++i)
-        retx[i] = a[i] ^ b[i];
+        for (register size_t i = 0; i < N; ++i)
+            retx[i] = a[i] ^ b[i];
 #else
-    const size_t word_count = N / sizeof(word_type);
-    for (register size_t i = 0; i < word_count; ++i)
-        reinterpret_cast<word_type*>(retx)[i] = reinterpret_cast<const word_type*>(a)[i] ^ reinterpret_cast<const word_type*>(b)[i];
-    for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
-        retx[i] = a[i] ^ b[i];
+        const size_t word_count = N / sizeof(word_type);
+        for (register size_t i = 0; i < word_count; ++i)
+            reinterpret_cast<word_type*>(retx)[i] = reinterpret_cast<const word_type*>(a)[i] ^ reinterpret_cast<const word_type*>(b)[i];
+        for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
+            retx[i] = a[i] ^ b[i];
 #endif
 
-    // 回写数据
-    if (retx != x)
-    {
+        // 回写数据
         ::memcpy(x, retx, N);
         ::free(retx);
     }
@@ -1536,25 +1608,49 @@ inline void bit_nxor(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
 
-    // 避免区域交叉覆盖
-    uint8_t *retx = x;
-    if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (uint8_t*) ::malloc(sizeof(uint8_t) * N);
+    if ((x <= a || x >= a + N) && (x <= b || x >= b + N))
+    {
+#if !defined(OPTIMIZE)
+        for (register size_t i = 0; i < N; ++i)
+            x[i] = ~(a[i] ^ b[i]);
+#else
+        const size_t word_count = N / sizeof(word_type);
+        for (register size_t i = 0; i < word_count; ++i)
+            reinterpret_cast<word_type*>(x)[i] = ~(reinterpret_cast<const word_type*>(a)[i] ^ reinterpret_cast<const word_type*>(b)[i]);
+        for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
+            x[i] = ~(a[i] ^ b[i]);
+#endif
+    }
+    else if ((x <= a - N || x >= a) && (x <= b - N || x >= b))
+    {
+#if !defined(OPTIMIZE)
+        for (register int i = N - 1; i >= 0; --i)
+            x[i] = ~(a[i] ^ b[i]);
+#else
+        const size_t word_count = N / sizeof(word_type);
+        for (register int i = N - 1, limit = word_count * sizeof(word_type); i >= limit; --i)
+            x[i] = ~(a[i] ^ b[i]);
+        for (register int i = word_count - 1; i >= 0; --i)
+            reinterpret_cast<word_type*>(x)[i] = ~(reinterpret_cast<const word_type*>(a)[i] ^ reinterpret_cast<const word_type*>(b)[i]);
+#endif
+    }
+    else
+    {
+        // 避免区域交叉覆盖
+        uint8_t *retx = (uint8_t*) ::malloc(sizeof(uint8_t) * N);
 
 #if !defined(OPTIMIZE)
-    for (register size_t i = 0; i < N; ++i)
-        retx[i] = ~(a[i] ^ b[i]);
+        for (register size_t i = 0; i < N; ++i)
+            retx[i] = ~(a[i] ^ b[i]);
 #else
-    const size_t word_count = N / sizeof(word_type);
-    for (register size_t i = 0; i < word_count; ++i)
-        reinterpret_cast<word_type*>(retx)[i] = ~(reinterpret_cast<const word_type*>(a)[i] ^ reinterpret_cast<const word_type*>(b)[i]);
-    for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
-        retx[i] = ~(a[i] ^ b[i]);
+        const size_t word_count = N / sizeof(word_type);
+        for (register size_t i = 0; i < word_count; ++i)
+            reinterpret_cast<word_type*>(retx)[i] = ~(reinterpret_cast<const word_type*>(a)[i] ^ reinterpret_cast<const word_type*>(b)[i]);
+        for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
+            retx[i] = ~(a[i] ^ b[i]);
 #endif
 
-    // 回写数据
-    if (retx != x)
-    {
+        // 回写数据
         ::memcpy(x, retx, N);
         ::free(retx);
     }
@@ -1568,27 +1664,31 @@ inline void bit_not(const uint8_t *a, uint8_t *x, size_t N)
 {
     assert(NULL != a && NULL != x && N > 0);
 
-    // 避免区域交叉覆盖
-    uint8_t *retx = x;
-    if (a < x && x < a + N)
-        retx = (uint8_t*) ::malloc(sizeof(uint8_t) * N);
-
-#if !defined(OPTIMIZE)
-    for (register size_t i = 0; i < N; ++i)
-        retx[i] = ~(a[i]);
-#else
-    const size_t word_count = N / sizeof(word_type);
-    for (register size_t i = 0; i < word_count; ++i)
-        reinterpret_cast<word_type*>(retx)[i] = ~(reinterpret_cast<const word_type*>(a)[i]);
-    for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
-        retx[i] = ~(a[i]);
-#endif
-
-    // 回写数据
-    if (retx != x)
+    if (x < a)
     {
-        ::memcpy(x, retx, N);
-        ::free(retx);
+#if !defined(OPTIMIZE)
+        for (register size_t i = 0; i < N; ++i)
+            x[i] = ~(a[i]);
+#else
+        const size_t word_count = N / sizeof(word_type);
+        for (register size_t i = 0; i < word_count; ++i)
+            reinterpret_cast<word_type*>(x)[i] = ~(reinterpret_cast<const word_type*>(a)[i]);
+        for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
+            x[i] = ~(a[i]);
+#endif
+    }
+    else
+    {
+#if !defined(OPTIMIZE)
+        for (register int i = N - 1; i >= 0; --i)
+            x[i] = ~(a[i]);
+#else
+        const size_t word_count = N / sizeof(word_type);
+        for (register int i = N - 1, limit = word_count * sizeof(word_type); i >= limit; --i)
+            x[i] = ~(a[i]);
+        for (register int i = word_count - 1; i >= 0; --i)
+            reinterpret_cast<word_type*>(x)[i] = ~(reinterpret_cast<const word_type*>(a)[i]);
+#endif
     }
 }
 
