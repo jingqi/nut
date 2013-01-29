@@ -1378,7 +1378,7 @@ inline void divide_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t
     if ((a - P < x && x < a) || (b - P < x && x < b + N)) // 兼容 x==a 的情况
         quotient = (uint8_t*) ::malloc(sizeof(uint8_t) * quotient_len);
     uint8_t *remainder = y; // 余数，不能为 NULL
-    if (NULL == y || Q <= divisor_len || (a - Q < y && y < a + M) || (b - Q < y && y < b + N))
+    if (NULL == y || Q < divisor_len || (a - Q < y && y < a + M) || (b - Q < y && y < b + N))
         remainder = (uint8_t*) ::malloc(sizeof(uint8_t) * divisor_len);
 
     // 逐位试商
