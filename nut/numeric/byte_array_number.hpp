@@ -1324,31 +1324,31 @@ inline void divide_unsigned(const uint8_t *a, const uint8_t *b, uint8_t *x, uint
             if (remainder_positive && NULL != quotient)
                 quotient[dividend_byte_pos] |= (1 << (7 - j));
         }
-
-        // 商
-        if (NULL != x)
-        {
-            assert(NULL != quotient);
-            expand_unsigned(quotient, dividend_len, x, N);
-        }
-
-        /**
-            恢复余数:
-            如果未除尽且余数符号与被除数不一致，余数需加上除数
-        */
-        if (NULL != y)
-        {
-            if (!is_zero(remainder, divisor_len) && !remainder_positive)
-                add(remainder, b, remainder, divisor_len);
-            expand_unsigned(remainder, divisor_len, y, N);
-        }
-
-        // 释放空间
-        if (quotient != x)
-            ::free(quotient);
-        if (remainder != y)
-            ::free(remainder);
     }
+
+    // 商
+    if (NULL != x)
+    {
+        assert(NULL != quotient);
+        expand_unsigned(quotient, dividend_len, x, N);
+    }
+
+    /**
+        恢复余数:
+        如果未除尽且余数符号与被除数不一致，余数需加上除数
+    */
+    if (NULL != y)
+    {
+        if (!is_zero(remainder, divisor_len) && !remainder_positive)
+            add(remainder, b, remainder, divisor_len);
+        expand_unsigned(remainder, divisor_len, y, N);
+    }
+
+    // 释放空间
+    if (quotient != x)
+        ::free(quotient);
+    if (remainder != y)
+        ::free(remainder);
 }
 
 /**
@@ -1408,28 +1408,28 @@ inline void divide_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t
             if (remainder_positive && NULL != quotient && dividend_byte_pos < P)
                 quotient[dividend_byte_pos] |= (1 << (7 - j));
         }
-
-        // 商
-        if (NULL != x)
-            expand_unsigned(quotient, quotient_len, x, P);
-
-        /**
-            恢复余数:
-            如果未除尽且余数符号与被除数不一致，余数需加上除数
-        */
-        if (NULL != y)
-        {
-            if (!is_zero(remainder, divisor_len) && !remainder_positive)
-                add(remainder, b, remainder, divisor_len);
-            expand_unsigned(remainder, divisor_len, y, Q);
-        }
-
-        // 释放空间
-        if (quotient != x)
-            ::free(quotient);
-        if (remainder != y)
-            ::free(remainder);
     }
+    
+    // 商
+    if (NULL != x)
+        expand_unsigned(quotient, quotient_len, x, P);
+
+    /**
+        恢复余数:
+        如果未除尽且余数符号与被除数不一致，余数需加上除数
+    */
+    if (NULL != y)
+    {
+        if (!is_zero(remainder, divisor_len) && !remainder_positive)
+            add(remainder, b, remainder, divisor_len);
+        expand_unsigned(remainder, divisor_len, y, Q);
+    }
+
+    // 释放空间
+    if (quotient != x)
+        ::free(quotient);
+    if (remainder != y)
+        ::free(remainder);
 }
 
 /**
