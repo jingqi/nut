@@ -94,10 +94,10 @@ public:
         ::memcpy(m_bytes, buf, len);
         if (withSign && !is_positive_signed(buf, len))
         {
-            opposite_signed(m_bytes, m_bytes, len);
+            negate_signed(m_bytes, m_bytes, len);
             m_signum = -1;
         }
-        else if (is_zero(buf, len))
+        else if (nut::is_zero(buf, len))
         {
             m_signum = 0;
         }
@@ -209,7 +209,7 @@ public:
                 negate_signed(ret.m_bytes, ret.m_bytes, max_sig + 1);
                 ret.m_signum = (m_signum > 0 ? -1 : 1);
             }
-            else if (is_zero(ret.m_bytes, max_sig + 1))
+            else if (nut::is_zero(ret.m_bytes, max_sig + 1))
             {
                 ret.m_signum = 0;
             }
@@ -259,6 +259,8 @@ public:
         divide_unsigned(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, ret.m_bytes, m_significant_len, NULL, 0);
         ret.m_significant_len = m_significant_len;
         ret.m_signum = (m_signum == x.m_signum ? 1 : -1);
+        if (nut::is_zero(ret.m_bytes, m_significant_len))
+            ret.m_signum = 0;
         ret.adjust_significant_len();
         return ret;
     }
@@ -275,6 +277,8 @@ public:
         divide_unsigned(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, NULL, 0, ret.m_bytes, x.m_significant_len);
         ret.m_significant_len = x.m_significant_len;
         ret.m_signum = m_signum;
+        if (nut::is_zero(ret.m_bytes, m_significant_len))
+            ret.m_signum = 0;
         ret.adjust_significant_len();
         return ret;
     }

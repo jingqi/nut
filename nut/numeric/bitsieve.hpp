@@ -116,7 +116,7 @@ public:
         do
         {
             // Calculate base mod convertedStep
-            divide_unsigned(b.buffer(), N, (uint8_t*)&convertedStep, sizeof(convertedStep), q.buffer(), N, (uint8_t*)&start, sizeof(start));
+            divide_unsigned(b.bytes(), N, (uint8_t*)&convertedStep, sizeof(convertedStep), q.bytes(), N, (uint8_t*)&start, sizeof(start));
 
             // Take each multiple of step out of sieve
             start = convertedStep - start;

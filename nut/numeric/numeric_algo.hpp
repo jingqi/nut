@@ -9,6 +9,7 @@
 #define ___HEADFILE_058D89EB_50A2_4934_AF92_FC4F82613999_
 
 #include "unsignedinteger.hpp"
+#include "biginteger.hpp"
 #include "bitsieve.hpp"
 
 namespace nut
@@ -31,11 +32,40 @@ inline UnsignedInteger<N> modular_exponentiation(const UnsignedInteger<N>& _a, c
     return ret;
 }
 
+inline BigInteger modular_exponentiation(const BigInteger& a, const BigInteger& b, const BigInteger& n)
+{
+    BigInteger ret(1);
+    for (register size_t i = b.significant_size() * 8; i > 0; --i) // 从高位向低有效位取bit
+    {
+        ret = (ret * ret) % n;
+        if (0 != b.bit_at(i - 1))
+            ret = (ret * a) % n;
+    }
+    return ret;
+}
+
 /**
  * 利用二进制特性的gcd算法
  */
 template <size_t N>
 UnsignedInteger<N> gcd(const UnsignedInteger<N>& a, const UnsignedInteger<N>& b)
+{
+    if (b.is_zero())
+        return a;
+
+    if (a.bit_at(0) == 0 && b.bit_at(0) == 0)
+        return gcd(a >> 1, b >> 1) << 1;
+    else if (a.bit_at(0) == 0)
+        return gcd(a >> 1, b);
+    else if (b.bit_at(0) == 0)
+        return gcd(a, b >> 1);
+    else if (a > b)
+        return gcd((a - b) >> 1, b);
+    else
+        return gcd(a, (b - a) >> 1);
+}
+
+inline BigInteger gcd(const BigInteger& a, const BigInteger& b)
 {
     if (b.is_zero())
         return a;
@@ -155,7 +185,7 @@ UnsignedInteger<N> nextProbablePrime(const UnsignedInteger<N>& n)
     UnsignedInteger<N> result = n + UnsignedInteger<N>(1);
 
     // Fastpath for small numbers
-    if (bit_length(result.buffer(), N) < SMALL_PRIME_THRESHOLD)
+    if (bit_length(result.bytes(), N) < SMALL_PRIME_THRESHOLD)
     {
 
         // Ensure an odd number
@@ -165,7 +195,7 @@ UnsignedInteger<N> nextProbablePrime(const UnsignedInteger<N>& n)
         while(true)
         {
             // Do cheap "pre-test" if applicable
-            if (bit_length(result.buffer(), N) > 6) {
+            if (bit_length(result.bytes(), N) > 6) {
                 long r = (result % SMALL_PRIME_PRODUCT).ulong_value();
                 if ((r%3==0)  || (r%5==0)  || (r%7==0)  || (r%11==0) || 
                     (r%13==0) || (r%17==0) || (r%19==0) || (r%23==0) || 
@@ -176,7 +206,7 @@ UnsignedInteger<N> nextProbablePrime(const UnsignedInteger<N>& n)
             }
 
             // All candidates of bitLength 2 and 3 are prime by this point
-            if (bit_length(result.buffer(), N) < 4)
+            if (bit_length(result.bytes(), N) < 4)
                 return result;
 
             // The expensive test
@@ -192,7 +222,7 @@ UnsignedInteger<N> nextProbablePrime(const UnsignedInteger<N>& n)
         --result;
 
     // Looking for the next large prime
-    int searchLen = (bit_length(result.buffer(), N) / 20) * 64;
+    int searchLen = (bit_length(result.bytes(), N) / 20) * 64;
 
     while(true) {
         BitSieve searchSieve(result, searchLen);
