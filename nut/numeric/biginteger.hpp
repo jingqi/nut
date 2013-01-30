@@ -24,18 +24,18 @@ namespace nut
 class BigInteger
 {
     int m_signum; // -1 小于0, 0 等于0, 1 大于0
-    uint8_t *m_buffer; // 缓冲区
-    size_t m_buffer_len; // 缓冲区字节长度
+    uint8_t *m_bytes; // 缓冲区
+    size_t m_bytes_cap; // 缓冲区字节长度
     size_t m_significant_len; // 缓冲区有效位字节长度
 
 private:
     /** 释放内存 */
     void free_mem()
     {
-        if (NULL != m_buffer)
-            ::free(m_buffer);
-        m_buffer = NULL;
-        m_buffer_len = 0;
+        if (NULL != m_bytes)
+            ::free(m_bytes);
+        m_bytes = NULL;
+        m_bytes_cap = 0;
         m_significant_len = 0;
 		m_signum = 0;
     }
@@ -44,57 +44,57 @@ private:
     void ensure_cap(size_t size_needed)
     {
         // 分配内存足够了，无需调整
-        if (m_buffer_len >= size_needed)
+        if (m_bytes_cap >= size_needed)
             return;
 
         // 计算新内存块的大小
-        size_t newcap = m_buffer_len * 3 / 2;
+        size_t newcap = m_bytes_cap * 3 / 2;
         if (newcap < size_needed)
             newcap = size_needed;
 
         // 分配新内存块并拷贝数据
-        if (NULL == m_buffer)
-            m_buffer = (uint8_t*) ::malloc(sizeof(uint8_t) * newcap);
+        if (NULL == m_bytes)
+            m_bytes = (uint8_t*) ::malloc(sizeof(uint8_t) * newcap);
         else
-            m_buffer = (uint8_t*) ::realloc(m_buffer, sizeof(uint8_t) * newcap);
-        assert(NULL != m_buffer);
-        ::memset(m_buffer + m_significant_len, 0, size_needed - m_significant_len);
-        m_buffer_len = newcap;
+            m_bytes = (uint8_t*) ::realloc(m_bytes, sizeof(uint8_t) * newcap);
+        assert(NULL != m_bytes);
+        ::memset(m_bytes + m_significant_len, 0, size_needed - m_significant_len);
+        m_bytes_cap = newcap;
     }
 
     inline void adjust_significant_len()
     {
-        m_significant_len = significant_size_unsigned(m_buffer, m_significant_len);
+        m_significant_len = significant_size_unsigned(m_bytes, m_significant_len);
     }
 
 public:
     BigInteger()
-        : m_signum(0), m_buffer(NULL), m_buffer_len(0), m_significant_len(0)
+        : m_signum(0), m_bytes(NULL), m_bytes_cap(0), m_significant_len(0)
     {
         ensure_cap(sizeof(int));
         m_significant_len = 1;
     }
 
     explicit BigInteger(long v)
-        : m_signum(v > 0 ? 1 : (v == 0 ? 0 : -1)), m_buffer(NULL), m_buffer_len(0), m_significant_len(0)
+        : m_signum(v > 0 ? 1 : (v == 0 ? 0 : -1)), m_bytes(NULL), m_bytes_cap(0), m_significant_len(0)
     {
         ensure_cap(sizeof(v));
         if (v < 0)
             v = -v; // 即使取反的过程中溢出也没问题
-        ::memcpy(m_buffer, &v, sizeof(v));
+        ::memcpy(m_bytes, &v, sizeof(v));
         m_significant_len = sizeof(v);
         adjust_significant_len();
     }
 
     BigInteger(const uint8_t *buf, size_t len, bool withSign)
-        : m_signum(0), m_buffer(NULL), m_buffer_len(0), m_significant_len(0)
+        : m_signum(0), m_bytes(NULL), m_bytes_cap(0), m_significant_len(0)
     {
         assert(NULL != buf && len > 0);
         ensure_cap(len);
-        ::memcpy(m_buffer, buf, len);
+        ::memcpy(m_bytes, buf, len);
         if (withSign && !is_positive_signed(buf, len))
         {
-            opposite_signed(m_buffer, m_buffer, len);
+            opposite_signed(m_bytes, m_bytes, len);
             m_signum = -1;
         }
         else if (is_zero(buf, len))
@@ -110,11 +110,11 @@ public:
     }
 
     BigInteger(const BigInteger& x)
-        : m_signum(x.m_signum), m_buffer(NULL), m_buffer_len(0), m_significant_len(0)
+        : m_signum(x.m_signum), m_bytes(NULL), m_bytes_cap(0), m_significant_len(0)
     {
         ensure_cap(x.m_significant_len);
         if (x.m_significant_len > 0)
-            ::memcpy(m_buffer, x.m_buffer, x.m_significant_len);
+            ::memcpy(m_bytes, x.m_bytes, x.m_significant_len);
         m_significant_len = x.m_significant_len;
         adjust_significant_len();
     }
@@ -129,7 +129,7 @@ public:
     {
         ensure_cap(x.m_significant_len);
         if (x.m_significant_len > 0)
-            ::memcpy(m_buffer, x.m_buffer, x.m_significant_len);
+            ::memcpy(m_bytes, x.m_bytes, x.m_significant_len);
         m_signum = x.m_signum;
         m_significant_len = x.m_significant_len;
         adjust_significant_len();
@@ -144,7 +144,7 @@ public:
         else if (0 == m_signum && 0 == x.m_signum)
             return true;
 
-        return equal_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len);
+        return equal_unsigned(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len);
     }
 
     bool operator!=(const BigInteger& x) const
@@ -163,9 +163,9 @@ public:
 
         // 同号非零值进行比较
         if (m_signum > 0)
-            return less_then_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len);
+            return less_then_unsigned(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len);
         else
-            return less_then_unsigned(x.m_buffer, x.m_significant_len, m_buffer, m_significant_len);
+            return less_then_unsigned(x.m_bytes, x.m_significant_len, m_bytes, m_significant_len);
     }
 
     bool operator>(const BigInteger& x) const
@@ -195,21 +195,21 @@ public:
         ret.ensure_cap(max_sig + 1);
         if (m_signum == x.m_signum)
         {
-            add_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, ret.m_buffer, max_sig + 1);
+            add_unsigned(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, ret.m_bytes, max_sig + 1);
             ret.m_significant_len = max_sig + 1;
             ret.m_signum = m_signum;
         }
         else
         {
-            sub_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, ret.m_buffer, max_sig + 1);
+            sub_unsigned(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, ret.m_bytes, max_sig + 1);
             ret.m_significant_len = max_sig + 1;
             ret.m_signum = m_signum;
-            if (!is_positive_signed(ret.m_buffer, max_sig + 1))
+            if (!is_positive_signed(ret.m_bytes, max_sig + 1))
             {
-                negate_signed(ret.m_buffer, ret.m_buffer, max_sig + 1);
+                negate_signed(ret.m_bytes, ret.m_bytes, max_sig + 1);
                 ret.m_signum = (m_signum > 0 ? -1 : 1);
             }
-            else if (is_zero(ret.m_buffer, max_sig + 1))
+            else if (is_zero(ret.m_bytes, max_sig + 1))
             {
                 ret.m_signum = 0;
             }
@@ -240,7 +240,7 @@ public:
             return ret;
 
         ret.ensure_cap(m_significant_len + x.m_significant_len);
-        multiply_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, ret.m_buffer, m_significant_len + x.m_significant_len);
+        multiply_unsigned(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, ret.m_bytes, m_significant_len + x.m_significant_len);
         ret.m_significant_len = m_significant_len + x.m_significant_len;
         ret.adjust_significant_len();
         ret.m_signum = (m_signum == x.m_signum ? 1 : -1);
@@ -256,7 +256,7 @@ public:
             return ret;
 
         ret.ensure_cap(m_significant_len);
-        divide_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, ret.m_buffer, m_significant_len, NULL, 0);
+        divide_unsigned(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, ret.m_bytes, m_significant_len, NULL, 0);
         ret.m_significant_len = m_significant_len;
         ret.m_signum = (m_signum == x.m_signum ? 1 : -1);
         ret.adjust_significant_len();
@@ -272,7 +272,7 @@ public:
             return ret;
 
         ret.ensure_cap(x.m_significant_len);
-        divide_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, NULL, 0, ret.m_buffer, x.m_significant_len);
+        divide_unsigned(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, NULL, 0, ret.m_bytes, x.m_significant_len);
         ret.m_significant_len = x.m_significant_len;
         ret.m_signum = m_signum;
         ret.adjust_significant_len();
@@ -339,7 +339,7 @@ public:
     {
         BigInteger ret(*this);
         ret.ensure_cap(m_significant_len + count / 8 + 1);
-        shift_left(ret.m_buffer, ret.m_buffer, m_significant_len + count / 8 + 1, count);
+        shift_left(ret.m_bytes, ret.m_bytes, m_significant_len + count / 8 + 1, count);
         ret.m_significant_len = m_significant_len + count / 8 + 1;
         ret.adjust_significant_len();
         return ret;
@@ -348,7 +348,7 @@ public:
     BigInteger operator>>(size_t count) const
     {
         BigInteger ret(*this);
-        shift_right_unsigned(ret.m_buffer, ret.m_buffer, ret.m_significant_len, count);
+        shift_right_unsigned(ret.m_bytes, ret.m_bytes, ret.m_significant_len, count);
         ret.adjust_significant_len();
         return ret;
     }
@@ -382,20 +382,37 @@ public:
         return m_signum >= 0;
     }
 
-    uint8_t* buffer() const
+    const uint8_t* bytes() const
     {
-        return m_buffer;
+        return m_bytes;
+    }
+
+    uint8_t* bytes()
+    {
+        return const_cast<uint8_t*>(static_cast<const BigInteger&>(*this).bytes());
     }
 
     int significant_size() const
     {
         return m_significant_len;
     }
+    
+    /**
+     * 返回正数比特位
+     *
+     * @return 0 or 1
+     */
+    int bit_at(size_t i) const
+    {
+        if (i >= m_significant_len * 8)
+            return 0;
+        return (m_bytes[i / 8] >> (i % 8)) & 0x01;
+    }
 
     long long_value() const
     {
         long ret = 0;
-        expand_unsigned(m_buffer, m_significant_len, (uint8_t*)&ret, sizeof(ret));
+        expand_unsigned(m_bytes, m_significant_len, (uint8_t*)&ret, sizeof(ret));
         return (m_signum > 0 ? ret : -ret);
     }
 

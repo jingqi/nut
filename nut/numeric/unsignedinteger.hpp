@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2011-12-17
@@ -268,7 +268,7 @@ public:
 
 public:
     /**
-     * Ñ­»·×óÒÆ
+     * å¾ªç¯å·¦ç§»
      */
     UnsignedInteger<N> circle_shift_left(size_t count) const
     {
@@ -278,7 +278,7 @@ public:
     }
 
     /**
-     * Ñ­»·×óÒÆ
+     * å¾ªç¯å·¦ç§»
      */
     UnsignedInteger<N>& self_circle_shift_left(size_t count) const
     {
@@ -287,7 +287,7 @@ public:
     }
 
     /**
-     * Ñ­»·ÓÒÒÆ
+     * å¾ªç¯å³ç§»
      */
     UnsignedInteger<N> circle_shift_right(size_t count) const
     {
@@ -297,7 +297,7 @@ public:
     }
 
     /**
-     * Ñ­»·ÓÒÒÆ
+     * å¾ªç¯å³ç§»
      */
     UnsignedInteger<N>& self_circle_shift_right(size_t count) const
     {
@@ -310,20 +310,20 @@ public:
         return nut::is_zero(m_bytes, N);
     }
 
-    const uint8_t* buffer() const
+    const uint8_t* bytes() const
     {
         return m_bytes;
     }
 
-    uint8_t* buffer()
+    uint8_t* bytes()
     {
-        return const_cast<uint8_t*>(static_cast<const UnsignedInteger<N>&>(*this).buffer());
+        return const_cast<uint8_t*>(static_cast<const UnsignedInteger<N>&>(*this).bytes());
     }
 
     /**
-     * ÄÜ¹»´æ´¢Êı¾İ¶ø²»¶ªÊ§·ûºÅµÄ×îĞ¡×Ö½ÚÊı×é³¤¶È
+     * èƒ½å¤Ÿå­˜å‚¨æ•°æ®è€Œä¸ä¸¢å¤±ç¬¦å·çš„æœ€å°å­—èŠ‚æ•°ç»„é•¿åº¦
      *
-     * @return ·µ»ØÖµ>=1
+     * @return è¿”å›å€¼>=1
      */
     int significant_size() const
     {

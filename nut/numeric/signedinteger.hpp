@@ -350,14 +350,14 @@ public:
         return nut::is_zero(m_bytes, N);
     }
 
-    const uint8_t* buffer() const
+    const uint8_t* bytesbytes() const
     {
         return m_bytes;
     }
 
-    uint8_t* buffer()
+    uint8_t* bytes()
     {
-        return const_cast<uint8_t*>(static_cast<const SignedInteger<N>&>(*this).buffer());
+        return const_cast<uint8_t*>(static_cast<const SignedInteger<N>&>(*this).bytes());
     }
 
     /**
