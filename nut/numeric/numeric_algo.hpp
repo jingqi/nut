@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2012-11-25
@@ -15,14 +15,14 @@ namespace nut
 {
 
 /**
- * Çó(a**b)%n£¬¼´aµÄb´Î·½(Ä£n)
+ * æ±‚(a**b)%nï¼Œå³açš„bæ¬¡æ–¹(æ¨¡n)
  */
 template <size_t N>
 inline UnsignedInteger<N> modular_exponentiation(const UnsignedInteger<N>& _a, const UnsignedInteger<N>& b, const UnsignedInteger<N>& _n)
 {
     const UnsignedInteger<N * 2> a(_a), n(_n);
     UnsignedInteger<N * 2> ret(1);
-    for (register size_t i = N * 8; i > 0; --i) // ´Ó¸ßÎ»ÏòµÍÓĞĞ§Î»È¡bit
+    for (register size_t i = N * 8; i > 0; --i) // ä»é«˜ä½å‘ä½æœ‰æ•ˆä½å–bit
     {
         ret = (ret * ret) % n;
         if (0 != b.bit_at(i - 1))
@@ -32,7 +32,28 @@ inline UnsignedInteger<N> modular_exponentiation(const UnsignedInteger<N>& _a, c
 }
 
 /**
- * Å·¼¸ÀïµÂ(EUCLID)Ëã·¨£¬Çó×î´ó¹«Ô¼Êı
+ * åˆ©ç”¨äºŒè¿›åˆ¶ç‰¹æ€§çš„gcdç®—æ³•
+ */
+template <size_t N>
+UnsignedInteger<N> gcd(const UnsignedInteger<N>& a, const UnsignedInteger<N>& b)
+{
+    if (b.is_zero())
+        return a;
+
+    if (a.bit_at(0) == 0 && b.bit_at(0) == 0)
+        return gcd(a >> 1, b >> 1) << 1;
+    else if (a.bit_at(0) == 0)
+        return gcd(a >> 1, b);
+    else if (b.bit_at(0) == 0)
+        return gcd(a, b >> 1);
+    else if (a > b)
+        return gcd((a - b) >> 1, b);
+    else
+        return gcd(a, (b - a) >> 1);
+}
+
+/**
+ * æ¬§å‡ é‡Œå¾·(EUCLID)ç®—æ³•ï¼Œæ±‚æœ€å¤§å…¬çº¦æ•°
  */
 template <size_t N>
 UnsignedInteger<N> euclid_gcd(const UnsignedInteger<N>& a, const UnsignedInteger<N>& b)
@@ -43,7 +64,7 @@ UnsignedInteger<N> euclid_gcd(const UnsignedInteger<N>& a, const UnsignedInteger
 }
 
 /**
- * Å·¼¸ÀïµÃ(EUCLID)Ëã·¨µÄÍÆ¹ãĞÎÊ½
+ * æ¬§å‡ é‡Œå¾—(EUCLID)ç®—æ³•çš„æ¨å¹¿å½¢å¼
  * d = gcd(a, b) = ax + by
  */
 template <size_t N>
@@ -69,15 +90,15 @@ void extended_euclid(const UnsignedInteger<N>& a, const UnsignedInteger<N>& b,
 }
 
 /**
- * Î±ËØÊı²âÊÔ·¨
+ * ä¼ªç´ æ•°æµ‹è¯•æ³•
  */
 template <size_t N>
 bool psedoprime(const UnsignedInteger<N>& n)
 {
     const UnsignedInteger<N> ONE(1);
     if (ONE != modular_exponentiation(2, n - 1, n))
-        return false; // Ò»¶¨ÊÇºÏÊı
-    return true; // ¿ÉÄÜÊÇËØÊı
+        return false; // ä¸€å®šæ˜¯åˆæ•°
+    return true; // å¯èƒ½æ˜¯ç´ æ•°
 }
 
 template <size_t N>
@@ -99,7 +120,7 @@ bool _miller_rabin_witness(const UnsignedInteger<N>& a, const UnsignedInteger<N>
 }
 
 /**
- * Miller-Rabin ËØÊı²âÊÔ
+ * Miller-Rabin ç´ æ•°æµ‹è¯•
  */
 template <size_t N>
 bool miller_rabin(const UnsignedInteger<N>& n, unsigned s)
@@ -113,13 +134,13 @@ bool miller_rabin(const UnsignedInteger<N>& n, unsigned s)
         ++a; // a = random(1, n -1);
 
         if (_miller_rabin_witness(a, n))
-            return false; // Ò»¶¨ÊÇºÏÊı
+            return false; // ä¸€å®šæ˜¯åˆæ•°
     }
-    return true; // ¼¸ºõ¿Ï¶¨ÊÇËØÊı
+    return true; // å‡ ä¹è‚¯å®šæ˜¯ç´ æ•°
 }
 
 /**
- * È¡ÏÂÒ»¸ö¿ÉÄÜµÄËØÊı
+ * å–ä¸‹ä¸€ä¸ªå¯èƒ½çš„ç´ æ•°
  */
 template <size_t N>
 UnsignedInteger<N> nextProbablePrime(const UnsignedInteger<N>& n)
