@@ -1798,17 +1798,17 @@ inline size_t bit_length(const uint8_t *a,  size_t N)
     assert(NULL != a && N > 0);
 #if !defined(OPTIMIZE)
     for (register int i = N - 1; i >= 0; --i)
-        if (0 != a[N])
-            return i * 8 + _bit_length(a[N]);
+        if (0 != a[i])
+            return i * 8 + _bit_length(a[i]);
     return 0;
 #else
     const size_t bits32_count = N / sizeof(uint32_t);
     for (register int i = N - 1, limit = bits32_count * sizeof(uint32_t); i >= limit; --i)
-        if (0 != a[N])
-            return i * 8 + _bit_length(a[N]);
+        if (0 != a[i])
+            return i * 8 + _bit_length(a[i]);
     for (register int i = bits32_count - 1; i >= 0; --i)
         if (0 != reinterpret_cast<const uint32_t*>(a)[i])
-            return i * 32 + reinterpret_cast<const uint32_t*>(a)[i];
+            return i * 32 + _bit_length(reinterpret_cast<const uint32_t*>(a)[i]);
     return 0;
 #endif
 }
