@@ -23,7 +23,7 @@ namespace nut
  */
 class BigInteger
 {
-    bool m_positive; // 是否大于等于0
+    int m_signum; // -1 小于0, 0 等于0, 1 大于0
     uint8_t *m_buffer; // 缓冲区
     size_t m_buffer_len; // 缓冲区字节长度
     size_t m_significant_len; // 缓冲区有效位字节长度
@@ -37,7 +37,7 @@ private:
         m_buffer = NULL;
         m_buffer_len = 0;
         m_significant_len = 0;
-		m_positive = true;
+		m_signum = 0;
     }
 
     /** 重新分配内存 */
@@ -69,17 +69,17 @@ private:
 
 public:
     BigInteger()
-        : m_positive(true), m_buffer(NULL), m_buffer_len(0), m_significant_len(0)
+        : m_signum(0), m_buffer(NULL), m_buffer_len(0), m_significant_len(0)
     {
         ensure_cap(sizeof(int));
         m_significant_len = 1;
     }
 
     explicit BigInteger(long v)
-        : m_positive(v >= 0), m_buffer(NULL), m_buffer_len(0), m_significant_len(0)
+        : m_signum(v > 0 ? 1 : (v == 0 ? 0 : -1)), m_buffer(NULL), m_buffer_len(0), m_significant_len(0)
     {
         ensure_cap(sizeof(v));
-        if (!m_positive)
+        if (v < 0)
             v = -v; // 即使取反的过程中溢出也没问题
         ::memcpy(m_buffer, &v, sizeof(v));
         m_significant_len = sizeof(v);
@@ -87,7 +87,7 @@ public:
     }
 
     BigInteger(const uint8_t *buf, size_t len, bool withSign)
-        : m_positive(true), m_buffer(NULL), m_buffer_len(0), m_significant_len(0)
+        : m_signum(0), m_buffer(NULL), m_buffer_len(0), m_significant_len(0)
     {
         assert(NULL != buf && len > 0);
         ensure_cap(len);
@@ -95,14 +95,22 @@ public:
         if (withSign && !is_positive_signed(buf, len))
         {
             opposite_signed(m_buffer, m_buffer, len);
-            m_positive = false;
+            m_signum = -1;
+        }
+        else if (is_zero(buf, len))
+        {
+            m_signum = 0;
+        }
+        else
+        {
+            m_signum = 1;
         }
         m_significant_len = len;
         adjust_significant_len();
     }
 
     BigInteger(const BigInteger& x)
-        : m_positive(x.m_positive), m_buffer(NULL), m_buffer_len(0), m_significant_len(0)
+        : m_signum(x.m_signum), m_buffer(NULL), m_buffer_len(0), m_significant_len(0)
     {
         ensure_cap(x.m_significant_len);
         if (x.m_significant_len > 0)
@@ -122,9 +130,7 @@ public:
         ensure_cap(x.m_significant_len);
         if (x.m_significant_len > 0)
             ::memcpy(m_buffer, x.m_buffer, x.m_significant_len);
-        if (m_significant_len > x.m_significant_len)
-            ::memset(m_buffer + x.m_significant_len, 0, m_significant_len - x.m_significant_len);
-        m_positive = x.m_positive;
+        m_signum = x.m_signum;
         m_significant_len = x.m_significant_len;
         adjust_significant_len();
 
@@ -133,23 +139,12 @@ public:
 
     bool operator==(const BigInteger& x) const
     {
-        const bool zero1 = is_zero(), zero2 = x.is_zero();
-        if (zero1 && zero2)
+        if (m_signum != x.m_signum)
+            return false;
+        else if (0 == m_signum && 0 == x.m_signum)
             return true;
-        else if (zero1 || zero2)
-            return false;
-        else if (m_positive != x.m_positive)
-            return false;
 
-        const size_t max_sig = (m_significant_len > x.m_significant_len ? m_significant_len : x.m_significant_len);
-        for (register size_t i = 0; i < max_sig; ++i)
-        {
-            const uint8_t op1 = (i < m_significant_len ? m_buffer[i] : 0);
-            const uint8_t op2 = (i < x.m_significant_len ? x.m_buffer[i] : 0);
-            if (op1 != op2)
-                return false;
-        }
-        return true;
+        return equal_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len);
     }
 
     bool operator!=(const BigInteger& x) const
@@ -159,18 +154,15 @@ public:
 
     bool operator<(const BigInteger& x) const
     {
-        const bool zero1 = is_zero(), zero2 = x.is_zero();
-        if (zero1 && zero2)
+        if (m_signum < x.m_signum)
+            return true;
+        else if (m_signum > x.m_signum)
             return false;
-        else if (zero1)
-            return x.m_positive;
-        else if (zero2)
-            return !m_positive;
-        else if (m_positive != x.m_positive)
-            return x.m_positive;
+        else if (0 == m_signum && 0 == m_signum)
+            return false;
 
         // 同号非零值进行比较
-        if (m_positive)
+        if (m_signum > 0)
             return less_then_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len);
         else
             return less_then_unsigned(x.m_buffer, x.m_significant_len, m_buffer, m_significant_len);
@@ -193,24 +185,33 @@ public:
 
     BigInteger operator+(const BigInteger& x) const
     {
-        const size_t max_sig = (m_significant_len > x.m_significant_len ? m_significant_len : x.m_significant_len);
+        if (0 == m_signum)
+            return x;
+        else if (0 == x.m_signum)
+            return *this;
+
         BigInteger ret;
+        const size_t max_sig = (m_significant_len > x.m_significant_len ? m_significant_len : x.m_significant_len);
         ret.ensure_cap(max_sig + 1);
-        if (x.m_positive == m_positive)
+        if (m_signum == x.m_signum)
         {
             add_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, ret.m_buffer, max_sig + 1);
             ret.m_significant_len = max_sig + 1;
-            ret.m_positive = m_positive;
+            ret.m_signum = m_signum;
         }
         else
         {
             sub_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, ret.m_buffer, max_sig + 1);
             ret.m_significant_len = max_sig + 1;
-            ret.m_positive = m_positive;
+            ret.m_signum = m_signum;
             if (!is_positive_signed(ret.m_buffer, max_sig + 1))
             {
-                opposite_signed(ret.m_buffer, ret.m_buffer, max_sig + 1);
-                ret.m_positive = !m_positive;
+                negate_signed(ret.m_buffer, ret.m_buffer, max_sig + 1);
+                ret.m_signum = (m_signum > 0 ? -1 : 1);
+            }
+            else if (is_zero(ret.m_buffer, max_sig + 1))
+            {
+                ret.m_signum = 0;
             }
         }
         ret.adjust_significant_len();
@@ -224,40 +225,56 @@ public:
 
     BigInteger operator-() const
     {
+        if (0 == m_signum)
+            return *this;
+
         BigInteger ret(*this);
-        ret.m_positive = !m_positive;
+        ret.m_signum = -m_signum;
         return ret;
     }
 
     BigInteger operator*(const BigInteger& x) const
     {
         BigInteger ret;
+        if (0 == m_signum || 0 == x.m_signum)
+            return ret;
+
         ret.ensure_cap(m_significant_len + x.m_significant_len);
         multiply_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, ret.m_buffer, m_significant_len + x.m_significant_len);
         ret.m_significant_len = m_significant_len + x.m_significant_len;
         ret.adjust_significant_len();
-        ret.m_positive = ((m_positive && x.m_positive) || (!m_positive && !x.m_positive));
+        ret.m_signum = (m_signum == x.m_signum ? 1 : -1);
         return ret;
     }
 
     BigInteger operator/(const BigInteger& x) const
     {
+        assert(!x.is_zero());
+
         BigInteger ret;
+        if (0 == m_signum)
+            return ret;
+
         ret.ensure_cap(m_significant_len);
         divide_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, ret.m_buffer, m_significant_len, NULL, 0);
         ret.m_significant_len = m_significant_len;
-        ret.m_positive = ((m_positive && x.m_positive) || (!m_positive && !x.m_positive));
+        ret.m_signum = (m_signum == x.m_signum ? 1 : -1);
         ret.adjust_significant_len();
         return ret;
     }
 
     BigInteger operator%(const BigInteger& x) const
     {
+        assert(!x.is_zero());
+
         BigInteger ret;
+        if (0 == m_signum)
+            return ret;
+
         ret.ensure_cap(x.m_significant_len);
         divide_unsigned(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, NULL, 0, ret.m_buffer, x.m_significant_len);
         ret.m_significant_len = x.m_significant_len;
-        ret.m_positive = m_positive;
+        ret.m_signum = m_signum;
         ret.adjust_significant_len();
         return ret;
     }
@@ -352,19 +369,17 @@ public:
     void clear()
     {
         m_significant_len = 0;
-		m_positive = true;
+        m_signum = 0;
     }
 
     bool is_zero() const
     {
-        assert((m_buffer == NULL && m_buffer_len == 0 && m_significant_len == 0) ||
-            (m_buffer != NULL && m_buffer_len > 0 && m_significant_len <= m_buffer_len));
-        return 0 == m_significant_len || nut::is_zero(m_buffer, m_significant_len);
+        return 0 == m_signum;
     }
 
     bool is_positive() const
     {
-        return m_positive || is_zero();
+        return m_signum >= 0;
     }
 
     uint8_t* buffer() const
@@ -381,7 +396,7 @@ public:
     {
         long ret = 0;
         expand_unsigned(m_buffer, m_significant_len, (uint8_t*)&ret, sizeof(ret));
-        return (m_positive ? ret : -ret);
+        return (m_signum > 0 ? ret : -ret);
     }
 
 private:

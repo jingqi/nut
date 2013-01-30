@@ -110,6 +110,57 @@ inline size_t significant_size_unsigned(const uint8_t *a, size_t N)
     return ret;
 }
 
+inline bool equal_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t N)
+{
+    assert(NULL != a && M > 0 && NULL != b && N > 0);
+
+#if !defined(OPTIMIZE)
+    const size_t limit = (M > N ? M : N);
+    for (register size_t i = 0; i < limit; ++i)
+        if ((i < M ? a[i] : 0) != (i < N ? b[i] : 0))
+            return false;
+    return true;
+#else
+    const size_t word_count = (M < N ? M : N) / sizeof(word_type);
+    for (register size_t i = 0; i < word_count; ++i)
+        if (reinterpret_cast<const word_type*>(a)[i] != reinterpret_cast<const word_type*>(b)[i])
+            return false;
+    const size_t limit = (M > N ? M : N);
+    for (register size_t i = word_count * sizeof(word_type); i < limit; ++i)
+        if ((i < M ? a[i] : 0) != (i < N ? b[i] : 0))
+            return false;
+    return true;
+#endif
+}
+
+inline bool equal_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N)
+{
+    assert(NULL != a && M > 0 && NULL != b && N > 0);
+
+    const bool positive1 = is_positive_signed(a, M), positive2 = is_positive_signed(b, N);
+    if (positive1 != positive2)
+        return false;
+
+#if !defined(OPTIMIZE)
+    const uint8_t fill = (positive1 ? 0 : 0xFF);
+    const size_t limit = (M > N ? M : N);
+    for (register size_t i = 0; i < limit; ++i)
+        if ((i < M ? a[i] : fill) != (i < N ? b[i] : fill))
+            return false;
+    return true;
+#else
+    const size_t word_count = (M < N ? M : N) / sizeof(word_type);
+    for (register size_t i = 0; i < word_count; ++i)
+        if (reinterpret_cast<const word_type*>(a)[i] != reinterpret_cast<const word_type*>(b)[i])
+            return false;
+    const size_t limit = (M > N ? M : N);
+    for (register size_t i = word_count * sizeof(word_type); i < limit; ++i)
+        if ((i < M ? a[i] : 0) != (i < N ? b[i] : 0))
+            return false;
+    return true;
+#endif
+}
+
 /**
  * (无符号数)小于
  *
@@ -702,7 +753,7 @@ inline uint8_t decrease(uint8_t *x, size_t N)
  *
  * @return 进位
  */
-inline uint8_t opposite_signed(const uint8_t *a, uint8_t *x, size_t N)
+inline uint8_t negate_signed(const uint8_t *a, uint8_t *x, size_t N)
 {
     assert(NULL != a && NULL != x && N > 0);
 
