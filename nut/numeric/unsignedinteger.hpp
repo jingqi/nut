@@ -267,6 +267,9 @@ public:
     }
 
 public:
+    /**
+     * 循环左移
+     */
     UnsignedInteger<N> circle_shift_left(size_t count) const
     {
         UnsignedInteger<N> ret;
@@ -274,12 +277,18 @@ public:
         return ret;
     }
 
+    /**
+     * 循环左移
+     */
     UnsignedInteger<N>& self_circle_shift_left(size_t count) const
     {
         circle_shift_left(m_bytes, m_bytes, N, count);
         return *this;
     }
 
+    /**
+     * 循环右移
+     */
     UnsignedInteger<N> circle_shift_right(size_t count) const
     {
         UnsignedInteger<N> ret;
@@ -287,6 +296,9 @@ public:
         return ret;
     }
 
+    /**
+     * 循环右移
+     */
     UnsignedInteger<N>& self_circle_shift_right(size_t count) const
     {
         circle_shift_right(m_bytes, m_bytes, N, count);
@@ -308,9 +320,14 @@ public:
         return const_cast<uint8_t*>(static_cast<const UnsignedInteger<N>&>(*this).buffer());
     }
 
-    int min_buffer_size() const
+    /**
+     * 能够存储数据而不丢失符号的最小字节数组长度
+     *
+     * @return 返回值>=1
+     */
+    int significant_size() const
     {
-        return unsigned_min_size(m_bytes, N);
+        return nut::significant_size_unsigned(m_bytes, N);
     }
 
     unsigned long ulong_value() const

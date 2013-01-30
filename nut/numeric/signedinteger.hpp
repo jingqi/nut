@@ -283,6 +283,28 @@ public :
     }
 
 public:
+    /**
+     * 物理比特右移动，即符号位补0
+     */
+    SignedInteger<N> physical_shift_right(size_t count) const
+    {
+        SignedInteger<N> ret;
+        shift_right_unsigned(m_bytes, ret.m_bytes, N, count);
+        return ret;
+    }
+
+    /**
+     * 物理比特右移动，即符号位补0
+     */
+    SignedInteger<N>& self_physical_shift_right(size_t count)
+    {
+        shift_right_unsigned(m_bytes, m_bytes, N, count);
+        return *this;
+    }
+
+    /**
+     * 循环左移
+     */
     SignedInteger<N> circle_shift_left(size_t count) const
     {
         SignedInteger<N> ret;
@@ -290,12 +312,18 @@ public:
         return ret;
     }
 
-    SignedInteger<N>& circle_shift_left_assign(size_t count)
+    /**
+     * 循环左移
+     */
+    SignedInteger<N>& self_circle_shift_left(size_t count)
     {
         circle_shift_left(m_bytes, m_bytes, N, count);
         return *this;
     }
 
+    /**
+     * 循环右移
+     */
     SignedInteger<N> circle_shift_right(size_t count) const
     {
         SignedInteger ret;
@@ -303,7 +331,10 @@ public:
         return ret;
     }
 
-    SignedInteger<N>& circle_shift_right_assign(size_t count)
+    /**
+     * 循环右移
+     */
+    SignedInteger<N>& self_circle_shift_right(size_t count)
     {
         circle_shift_right(m_bytes, m_bytes, N, count);
         return *this;
@@ -316,7 +347,7 @@ public:
 
     bool is_zero() const
     {
-        return is_zero(m_bytes, N);
+        return nut::is_zero(m_bytes, N);
     }
 
     const uint8_t* buffer() const
@@ -329,7 +360,11 @@ public:
         return const_cast<uint8_t*>(static_cast<const SignedInteger<N>&>(*this).buffer());
     }
 
-    /** 能够存储数据而不丢失符号的最小字节数组长度 */
+    /**
+     * 能够存储数据而不丢失符号的最小字节数组长度
+     *
+     * @return 返回值>=1
+     */
     int significant_size() const
     {
         return significant_size_signed(m_bytes, N);
