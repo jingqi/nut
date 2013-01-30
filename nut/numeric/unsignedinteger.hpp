@@ -128,32 +128,32 @@ public:
 
     UnsignedInteger<N>& operator/=(const UnsignedInteger<N>& x)
     {
-        unsigned_divide(m_bytes, x.m_bytes, m_bytes, NULL, N);
+        divide_unsigned(m_bytes, x.m_bytes, m_bytes, NULL, N);
         return *this;
     }
 
     UnsignedInteger<N>& operator%=(const UnsignedInteger<N>& x)
     {
-        unsigned_divide(m_bytes, x.m_bytes, NULL, m_bytes, N);
+        divide_unsigned(m_bytes, x.m_bytes, NULL, m_bytes, N);
         return *this;
     }
 
     UnsignedInteger<N>& operator++()
     {
-        increase(m_bytes, m_bytes, N);
+        increase(m_bytes, N);
         return *this;
     }
 
     UnsignedInteger<N> operator++(int)
     {
         UnsignedInteger<N> ret(*this);
-        increase(m_bytes, m_bytes, N);
+        increase(m_bytes, N);
         return ret;
     }
 
     UnsignedInteger<N>& operator--()
     {
-        decrease(m_bytes, m_bytes, N);
+        decrease(m_bytes, N);
         return *this;
     }
 
@@ -295,7 +295,7 @@ public:
 
     bool is_zero() const
     {
-        return is_zero(m_bytes, N);
+        return nut::is_zero(m_bytes, N);
     }
 
     const uint8_t* buffer() const
@@ -318,6 +318,15 @@ public:
         unsigned long ret = 0;
         expand_signed(m_bytes, N, reinterpret_cast<uint8_t*>(&ret), sizeof(ret));
         return ret;
+    }
+
+    /**
+     * @return 0 or 1
+     */
+    int bit_at(size_t i) const
+    {
+        assert(i < N * 8);
+        return (m_bytes[i / 8] >> (i % 8)) & 0x01;
     }
 };
 

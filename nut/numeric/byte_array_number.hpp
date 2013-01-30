@@ -1692,6 +1692,113 @@ inline void bit_not(const uint8_t *a, uint8_t *x, size_t N)
     }
 }
 
+inline size_t _bit_length(uint32_t a)
+{
+    if (a == 0)
+        return 0;
+
+    size_t ret = 31;
+    if (a >> 16 == 0)
+    {
+        ret -= 16;
+        a <<= 16;
+    }
+    if (a >> 24 == 0)
+    {
+        ret -= 8;
+        a <<= 8;
+    }
+    if (a >> 28 == 0)
+    {
+        ret -= 4;
+        a <<= 4;
+    }
+    if (a >> 30 == 0)
+    {
+        ret -= 2;
+        a <<= 2;
+    }
+    ret += a >> 31;
+    return ret;
+}
+
+inline size_t _bit_length(uint8_t a)
+{
+    if (a == 0)
+        return 0;
+
+    size_t ret = 7;
+    if (a >> 4 == 0)
+    {
+        ret -= 4;
+        a <<= 4;
+    }
+    if (a >> 6 == 0)
+    {
+        ret -= 2;
+        a <<= 2;
+    }
+    ret += a >> 7;
+    return ret;
+}
+
+inline size_t bit_length(const uint8_t *a,  size_t N)
+{
+    assert(NULL != a && N > 0);
+#if !defined(OPTIMIZE)
+    for (register int i = N - 1; i >= 0; --i)
+        if (0 != a[N])
+            return i * 8 + _bit_length(a[N]);
+    return 0;
+#else
+    const size_t bits32_count = N / sizeof(uint32_t);
+    for (register int i = N - 1, limit = bits32_count * sizeof(uint32_t); i >= limit; --i)
+        if (0 != a[N])
+            return i * 8 + _bit_length(a[N]);
+    for (register int i = bits32_count - 1; i >= 0; --i)
+        if (0 != reinterpret_cast<const uint32_t*>(a)[i])
+            return i * 32 + reinterpret_cast<const uint32_t*>(a)[i];
+    return 0;
+#endif
+}
+
+inline size_t _bit_count(uint32_t a)
+{
+	a = a - ((a >> 1) & 0x55555555);
+	a = (a & 0x33333333) + ((a >> 2) & 0x33333333);
+	a = (a + (a >> 4)) & 0x0f0f0f0f;
+	a = a + (a >> 8);
+	a = a + (a >> 16);
+	return a & 0x3f;
+}
+
+inline size_t _bit_count(uint8_t a)
+{
+    a = a - ((a >> 1) & 0x55);
+	a = (a & 0x33) + ((a >> 2) & 0x33);
+	a = (a + (a >> 4)) & 0x0f;
+    return a & 0x0f;
+}
+
+inline size_t bit_count(const uint8_t *a, size_t N)
+{
+    assert(NULL != a && N > 0);
+#if !defined(OPTIMIZE)
+    size_t ret = 0;
+    for (register size_t i = 0; i < N; ++i)
+        ret += _bit_count(a[i]);
+    return ret;
+#else
+    const size_t bits32_count = N / sizeof(uint32_t);
+    size_t ret = 0;
+    for (register size_t i = 0; i < bits32_count; ++i)
+        ret += _bit_count(reinterpret_cast<const uint32_t*>(a)[i]);
+    for (register size_t i = bits32_count * sizeof(uint32_t); i < N; ++i)
+        ret += _bit_count(a[i]);
+    return ret;
+#endif
+}
+
 }
 
 #undef OPTIMIZE

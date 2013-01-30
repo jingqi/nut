@@ -341,6 +341,15 @@ public:
         expand_signed(m_bytes, N, reinterpret_cast<uint8_t*>(&ret), sizeof(long));
         return ret;
     }
+    
+    /**
+     * @return 0 or 1
+     */
+    int bit_at(size_t i) const
+    {
+        assert(i < N * 8);
+        return (m_bytes[i / 8] >> (i % 8)) & 0x01;
+    }
 };
 
 }

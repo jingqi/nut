@@ -23,7 +23,7 @@ namespace nut
  */
 class BigInteger
 {
-    bool m_positive;
+    bool m_positive; // 是否大于等于0
     uint8_t *m_buffer; // 缓冲区
     size_t m_buffer_len; // 缓冲区字节长度
     size_t m_significant_len; // 缓冲区有效位字节长度
@@ -365,6 +365,16 @@ public:
     bool is_positive() const
     {
         return m_positive || is_zero();
+    }
+
+    uint8_t* buffer() const
+    {
+        return m_buffer;
+    }
+
+    int significant_size() const
+    {
+        return m_significant_len;
     }
 
     long long_value() const
