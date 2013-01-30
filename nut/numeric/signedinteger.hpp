@@ -27,7 +27,7 @@ public :
         ::memset(m_bytes, 0, N);
     }
 
-    explicit SignedInteger(long v)
+    explicit SignedInteger(long long v)
     {
         expand_signed(reinterpret_cast<const uint8_t*>(&v), sizeof(v), m_bytes, N);
     }
@@ -373,7 +373,14 @@ public:
     long long_value() const
     {
         long ret = 0;
-        expand_signed(m_bytes, N, reinterpret_cast<uint8_t*>(&ret), sizeof(long));
+        expand_signed(m_bytes, N, reinterpret_cast<uint8_t*>(&ret), sizeof(ret));
+        return ret;
+    }
+
+    int64_t i64_value() const
+    {
+        int64_t ret = 0;
+        expand_signed(m_bytes, N, reinterpret_cast<uint8_t*>(&ret), sizeof(ret));
         return ret;
     }
     

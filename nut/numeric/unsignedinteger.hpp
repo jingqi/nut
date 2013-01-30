@@ -25,7 +25,7 @@ public:
         ::memset(m_bytes, 0, N);
     }
 
-    explicit UnsignedInteger(unsigned long v)
+    explicit UnsignedInteger(unsigned long long v)
     {
         expand_unsigned(reinterpret_cast<const uint8_t*>(&v), sizeof(v), m_bytes, N);
     }
@@ -333,7 +333,14 @@ public:
     unsigned long ulong_value() const
     {
         unsigned long ret = 0;
-        expand_signed(m_bytes, N, reinterpret_cast<uint8_t*>(&ret), sizeof(ret));
+        expand_unsigned(m_bytes, N, reinterpret_cast<uint8_t*>(&ret), sizeof(ret));
+        return ret;
+    }
+
+    uint64_t u64_value() const
+    {
+        uint64_t ret = 0;
+        expand_unsigned(m_bytes, N, reinterpret_cast<uint8_t*>(&ret), sizeof(ret));
         return ret;
     }
 

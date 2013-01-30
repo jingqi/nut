@@ -41,7 +41,7 @@ class _BitSieve
     /**
      * Stores the bits in this bitSieve.
      */
-    long *m_bits;
+    int64_t *m_bits;
     int m_bits_cap;
 
     /**
@@ -70,7 +70,8 @@ class _BitSieve
     {
         m_length = 150 * 64;
         m_bits_cap = unitIndex(m_length - 1) + 1;
-        m_bits = new long[m_bits_cap];
+        m_bits = new int64_t[m_bits_cap];
+        ::memset(m_bits, 0, m_bits_cap * sizeof(int64_t));
 
         // Mark 1 as composite
         set(0);
@@ -103,7 +104,8 @@ public:
          * odd number).
          */
         m_bits_cap = unitIndex(searchLen-1) + 1;
-        m_bits = new long[m_bits_cap];
+        m_bits = new int64_t[m_bits_cap];
+        ::memset(m_bits, 0, m_bits_cap * sizeof(int64_t));
         m_length = searchLen;
         int start = 0;
         
@@ -113,10 +115,11 @@ public:
         // Construct the large sieve at an even offset specified by base
         UnsignedInteger<N> b(base);
         UnsignedInteger<N> q;
+        int debug = 0;
         do
         {
             // Calculate base mod convertedStep
-            divide_unsigned(b.bytes(), N, (uint8_t*)&convertedStep, sizeof(convertedStep), q.bytes(), N, (uint8_t*)&start, sizeof(start));
+            divide_unsigned(b.bytes(), N, (const uint8_t*)&convertedStep, sizeof(convertedStep), q.bytes(), N, (uint8_t*)&start, sizeof(start));
 
             // Take each multiple of step out of sieve
             start = convertedStep - start;
@@ -124,6 +127,7 @@ public:
                 start += convertedStep;
             sieveSingle(searchLen, (start-1)/2, convertedStep);
 
+            ++debug;
             // Find next prime from small sieve
             step = s_smallSieve.sieveSearch(s_smallSieve.m_length, step+1);
             convertedStep = (step *2) + 1;
@@ -150,9 +154,9 @@ private:
     /**
      * Return a unit that masks the specified bit in its unit.
      */
-    static inline long bit(int bitIndex)
+    static inline int64_t bit(int bitIndex)
     {
-        return 1L << (bitIndex & ((1<<6) - 1));
+        return ((int64_t) 1) << (bitIndex & ((1<<6) - 1));
     }
 
     /**
@@ -218,7 +222,7 @@ public:
         int offset = 1;
         for (int i = 0; i < m_bits_cap; ++i)
         {
-            long nextLong = ~m_bits[i];
+            int64_t nextLong = ~m_bits[i];
             for (int j = 0; j < 64; ++j)
             {
                 if ((nextLong & 1) == 1)
@@ -227,7 +231,7 @@ public:
                     if (miller_rabin(candidate, certainty))
                         return candidate;
                 }
-                nextLong = (long)(((unsigned long) nextLong) >> 1);
+                nextLong = (int64_t)(((uint64_t) nextLong) >> 1);
                 nextLong >>= 1;
                 offset+=2;
             }

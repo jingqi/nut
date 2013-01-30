@@ -180,7 +180,7 @@ UnsignedInteger<N> nextProbablePrime(const UnsignedInteger<N>& n)
 
     const int SMALL_PRIME_THRESHOLD = 95;
     const int DEFAULT_PRIME_CERTAINTY = 2;
-    const UnsignedInteger<N> SMALL_PRIME_PRODUCT(3L * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41);
+    const UnsignedInteger<N> SMALL_PRIME_PRODUCT(((uint64_t) 3) * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41);
 
     UnsignedInteger<N> result = n + UnsignedInteger<N>(1);
 
@@ -196,7 +196,7 @@ UnsignedInteger<N> nextProbablePrime(const UnsignedInteger<N>& n)
         {
             // Do cheap "pre-test" if applicable
             if (bit_length(result.bytes(), N) > 6) {
-                long r = (result % SMALL_PRIME_PRODUCT).ulong_value();
+                int64_t r = (int64_t) (result % SMALL_PRIME_PRODUCT).u64_value();
                 if ((r%3==0)  || (r%5==0)  || (r%7==0)  || (r%11==0) || 
                     (r%13==0) || (r%17==0) || (r%19==0) || (r%23==0) || 
                     (r%29==0) || (r%31==0) || (r%37==0) || (r%41==0)) {
