@@ -89,6 +89,7 @@
     <ClInclude Include="..\..\..\nut\mem\scoped_gc.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\biginteger.hpp" />
     <ClInclude Include="..\..\..\nut\mem\sys_ma.hpp" />
+    <ClInclude Include="..\..\..\nut\numeric\bitsieve.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\byte_array_number.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\numeric_algo.hpp" />
     <ClInclude Include="..\..\..\nut\pconsole\cmdexit.hpp" />

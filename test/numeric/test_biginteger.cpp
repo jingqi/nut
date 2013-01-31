@@ -53,8 +53,8 @@ NUT_FIXTURE(TestBigInteger)
 		// %
 		NUT_TA(BigInteger(3) % BigInteger(4) == BigInteger(3%4));
         NUT_TA(BigInteger(4) % BigInteger(3) == BigInteger(4%3));
-        NUT_TA(BigInteger(7) % BigInteger(128) == BigInteger(7/128));
-        NUT_TA(BigInteger(128) % BigInteger(7) == BigInteger(128/7));
+        NUT_TA(BigInteger(7) % BigInteger(128) == BigInteger(7%128));
+        NUT_TA(BigInteger(128) % BigInteger(7) == BigInteger(128%7));
 	}
 
 	void testComparator()

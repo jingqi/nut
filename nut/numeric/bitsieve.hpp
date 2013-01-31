@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-01-29
- * @last-edit 
+ * @last-edit 2013-02-01 09:01:03 jingqi
  * @brief
  */
 
@@ -15,6 +15,7 @@ namespace nut
 {
 
 extern bool miller_rabin(const BigInteger& n, unsigned s);
+extern bool miller_rabin2(const BigInteger& n, unsigned s);
     
 /**
  * A simple bit sieve used for finding prime number candidates. Allows setting
@@ -158,7 +159,7 @@ private:
     /**
      * Get the value of the bit at the specified index.
      */
-    inline boolean get(int bitIndex)
+    inline bool get(int bitIndex)
     {
         int ui = unitIndex(bitIndex);
         return ((m_bits[ui] & bit(bitIndex)) != 0);
@@ -223,11 +224,11 @@ public:
                 if ((nextLong & 1) == 1)
                 {
                     BigInteger candidate = initValue + offset;
-                    if (miller_rabin(candidate, certainty))
+                    if (miller_rabin2(candidate, certainty))
                         return candidate;
                 }
                 nextLong >>= 1;
-                offset+=2;
+                offset += 2;
             }
         }
         return BigInteger(0);

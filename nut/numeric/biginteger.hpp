@@ -555,7 +555,7 @@ public:
     		m_bytes[i / 8] |= 1 << (i % 8);
     }
     
-    size_t bit_length()
+    size_t bit_length() const
     {
     	if (is_positive())
     		return nut::bit_length(m_bytes, m_significant_len);
