@@ -9,7 +9,7 @@
 #ifndef ___HEADFILE_B3D1D8B6_CD77_4FB3_A62E_A83D30BA0451_
 #define ___HEADFILE_B3D1D8B6_CD77_4FB3_A62E_A83D30BA0451_
 
-#include "unsignedinteger.hpp"
+#include "biginteger.hpp"
 #include "numeric_algo.hpp"
 
 namespace nut
@@ -93,8 +93,7 @@ public:
      * candidates. The new sieve begins at the specified base, which must
      * be even.
      */
-    template <size_t N>
-    _BitSieve(const UnsignedInteger<N>& base, int searchLen)
+    _BitSieve(const BigInteger& base, int searchLen)
     {
         /*
          * Candidates are indicated by clear bits in the sieve. As a candidates
@@ -113,13 +112,11 @@ public:
         int convertedStep = (step *2) + 1;
 
         // Construct the large sieve at an even offset specified by base
-        UnsignedInteger<N> b(base);
-        UnsignedInteger<N> q;
-        int debug = 0;
+        BigInteger b(base);
         do
         {
             // Calculate base mod convertedStep
-            divide_unsigned(b.bytes(), N, (const uint8_t*)&convertedStep, sizeof(convertedStep), q.bytes(), N, (uint8_t*)&start, sizeof(start));
+        	start = (int) (b % BigInteger(convertedStep)).llong_value();
 
             // Take each multiple of step out of sieve
             start = convertedStep - start;
@@ -127,7 +124,6 @@ public:
                 start += convertedStep;
             sieveSingle(searchLen, (start-1)/2, convertedStep);
 
-            ++debug;
             // Find next prime from small sieve
             step = s_smallSieve.sieveSearch(s_smallSieve.m_length, step+1);
             convertedStep = (step *2) + 1;
@@ -215,8 +211,7 @@ public:
     /**
      * Test probable primes in the sieve and return successful candidates.
      */
-    template <size_t N>
-    UnsignedInteger<N> retrieve(UnsignedInteger<N> initValue, int certainty)
+    BigInteger retrieve(BigInteger initValue, int certainty)
     {
         // Examine the sieve one long at a time to find possible primes
         int offset = 1;
@@ -227,7 +222,7 @@ public:
             {
                 if ((nextLong & 1) == 1)
                 {
-                    UnsignedInteger<N> candidate = initValue + UnsignedInteger<N>(offset);
+                    BigInteger candidate = initValue + BigInteger(offset);
                     if (miller_rabin(candidate, certainty))
                         return candidate;
                 }
@@ -236,7 +231,7 @@ public:
                 offset+=2;
             }
         }
-        return UnsignedInteger<N>(0);
+        return BigInteger(0);
     }
 };
 

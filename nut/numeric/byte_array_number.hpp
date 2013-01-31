@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2011-12-17
- * @last-edit 2013-01-29 11:33:10 jingqi
+ * @last-edit 2013-01-31 09:12:48 jingqi
  * @brief
  *
  * 关于函数命名后缀：
@@ -149,13 +149,14 @@ inline bool equal_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N)
             return false;
     return true;
 #else
+    const uint8_t fill = (positive1 ? 0 : 0xFF);
     const size_t word_count = (M < N ? M : N) / sizeof(word_type);
     for (register size_t i = 0; i < word_count; ++i)
         if (reinterpret_cast<const word_type*>(a)[i] != reinterpret_cast<const word_type*>(b)[i])
             return false;
     const size_t limit = (M > N ? M : N);
     for (register size_t i = word_count * sizeof(word_type); i < limit; ++i)
-        if ((i < M ? a[i] : 0) != (i < N ? b[i] : 0))
+        if ((i < M ? a[i] : fill) != (i < N ? b[i] : fill))
             return false;
     return true;
 #endif
@@ -166,7 +167,7 @@ inline bool equal_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N)
  *
  * @return a<N> < b<N>
  */
-inline bool less_then_unsigned(const uint8_t *a, const uint8_t *b, size_t N)
+inline bool less_than_unsigned(const uint8_t *a, const uint8_t *b, size_t N)
 {
     assert(NULL != a && NULL != b && N > 0);
 
@@ -192,7 +193,7 @@ inline bool less_then_unsigned(const uint8_t *a, const uint8_t *b, size_t N)
  *
  * @return a<M> < b<N>
  */
-inline bool less_then_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t N)
+inline bool less_than_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t N)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0);
 
@@ -207,8 +208,8 @@ inline bool less_then_unsigned(const uint8_t *a, size_t M, const uint8_t *b, siz
     return false; // 相等
 #else
     const size_t word_count = (M < N ? M : N) / sizeof(word_type);
-    for (register int i = (M > N ? M : N) - 1, bound = sizeof(word_type) * word_count;
-        i >= bound; --i)
+    for (register int i = (M > N ? M : N) - 1, limit = sizeof(word_type) * word_count;
+        i >= limit; --i)
     {
         const uint8_t op1 = (i < (int) M ? a[i] : 0);
         const uint8_t op2 = (i < (int) N ? b[i] : 0);
@@ -227,7 +228,7 @@ inline bool less_then_unsigned(const uint8_t *a, size_t M, const uint8_t *b, siz
  *
  * @return a<N> < b<N>
  */
-inline bool less_then_signed(const uint8_t *a, const uint8_t *b, size_t N)
+inline bool less_than_signed(const uint8_t *a, const uint8_t *b, size_t N)
 {
     assert(NULL != a && NULL != b && N > 0);
 
@@ -235,7 +236,7 @@ inline bool less_then_signed(const uint8_t *a, const uint8_t *b, size_t N)
     if (positive1 != positive2)
         return positive2;
 
-    return less_then_unsigned(a, b, N);
+    return less_than_unsigned(a, b, N);
 }
 
 /**
@@ -243,7 +244,7 @@ inline bool less_then_signed(const uint8_t *a, const uint8_t *b, size_t N)
  *
  * @return a<M> < b<N>
  */
-inline bool less_then_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N)
+inline bool less_than_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0);
 
@@ -547,7 +548,7 @@ inline uint8_t sub(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
     for (register size_t i = 0; i < N; ++i)
     {
         const uint16_t pluser1 = a[i];
-        uint16_t pluser2 = static_cast<uint8_t>(~(b[i]));
+        uint16_t pluser2 = static_cast<uint8_t>(~b[i]);
         pluser2 += pluser1 + carry;
         
         retx[i] = static_cast<uint8_t>(pluser2);
@@ -559,7 +560,7 @@ inline uint8_t sub(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
     for (register size_t i = 0; i < word_count; ++i)
     {
         const dword_type pluser1 = reinterpret_cast<const word_type*>(a)[i];
-        dword_type pluser2 = static_cast<word_type>(~(reinterpret_cast<const word_type*>(b)[i]));
+        dword_type pluser2 = static_cast<word_type>(~reinterpret_cast<const word_type*>(b)[i]);
         pluser2 += pluser1 + carry;
 
         reinterpret_cast<word_type*>(retx)[i] = static_cast<word_type>(pluser2);
@@ -568,7 +569,7 @@ inline uint8_t sub(const uint8_t *a, const uint8_t *b, uint8_t *x, size_t N)
     for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
     {
         const uint16_t pluser1 = a[i];
-        uint16_t pluser2 = static_cast<uint8_t>(~(b[i]));
+        uint16_t pluser2 = static_cast<uint8_t>(~b[i]);
         pluser2 += pluser1 + carry;
 
         retx[i] = static_cast<uint8_t>(pluser2);
@@ -618,7 +619,7 @@ inline uint8_t sub_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N
     for (register size_t i = 0; i < word_count; ++i)
     {
         const dword_type pluser1 = reinterpret_cast<const word_type*>(a)[i];
-        dword_type pluser2 = static_cast<word_type>(~(reinterpret_cast<const word_type*>(b)[i]));
+        dword_type pluser2 = static_cast<word_type>(~reinterpret_cast<const word_type*>(b)[i]);
         pluser2 += pluser1 + carry;
 
         reinterpret_cast<word_type*>(retx)[i] = static_cast<word_type>(pluser2);
@@ -677,7 +678,7 @@ inline uint8_t sub_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t
     for (register size_t i = 0; i < word_count; ++i)
     {
         const dword_type pluser1 = reinterpret_cast<const word_type*>(a)[i];
-        dword_type pluser2 = static_cast<word_type>(~(reinterpret_cast<const word_type*>(b)[i]));
+        dword_type pluser2 = static_cast<word_type>(~reinterpret_cast<const word_type*>(b)[i]);
         pluser2 += pluser1 + carry;
 
         reinterpret_cast<word_type*>(retx)[i] = static_cast<word_type>(pluser2);
@@ -766,7 +767,7 @@ inline uint8_t negate_signed(const uint8_t *a, uint8_t *x, size_t N)
     register uint8_t carry = 1;
     for (register size_t i = 0; i < N; ++i)
     {
-        uint16_t pluser = static_cast<uint8_t>(~(a[i]));
+        uint16_t pluser = static_cast<uint8_t>(~a[i]);
         pluser += carry;
 
         retx[i] = static_cast<uint8_t>(pluser);
@@ -777,7 +778,7 @@ inline uint8_t negate_signed(const uint8_t *a, uint8_t *x, size_t N)
     register uint8_t carry = 1;
     for (register size_t i = 0; i < word_count; ++i)
     {
-        dword_type pluser = static_cast<word_type>(~(reinterpret_cast<const word_type*>(a)[i]));
+        dword_type pluser = static_cast<word_type>(~reinterpret_cast<const word_type*>(a)[i]);
         pluser += carry;
 
         reinterpret_cast<word_type*>(retx)[i] = static_cast<word_type>(pluser);
@@ -785,7 +786,58 @@ inline uint8_t negate_signed(const uint8_t *a, uint8_t *x, size_t N)
     }
     for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
     {
-        uint16_t pluser = static_cast<uint8_t>(~(a[i]));
+        uint16_t pluser = static_cast<uint8_t>(~a[i]);
+        pluser += carry;
+
+        retx[i] = static_cast<uint8_t>(pluser);
+        carry = static_cast<uint8_t>(pluser >> (sizeof(uint8_t) * 8));
+    }
+#endif
+
+    // 回写数据
+    if (retx != x)
+    {
+        ::memcpy(x, retx, N);
+        ::free(retx);
+    }
+    return carry;
+}
+
+inline uint8_t negate_signed(const uint8_t *a, size_t M, uint8_t *x, size_t N)
+{
+	assert(NULL != a && M > 0 && NULL != x && N > 0);
+
+    // 避免区域交叉覆盖
+    uint8_t *retx = x;
+    if (a < x && x < a + M)
+        retx = (uint8_t*) ::malloc(sizeof(uint8_t) * N);
+
+#if !defined(OPTIMIZE)
+    register uint8_t carry = 1;
+    const uint8_t fill = (is_positive_signed(a, M) ? 0 : 0xFF);
+    for (register size_t i = 0; i < N; ++i)
+    {
+        uint16_t pluser = static_cast<uint8_t>(~(i < M ? a[i] : fill));
+        pluser += carry;
+
+        retx[i] = static_cast<uint8_t>(pluser);
+        carry = static_cast<uint8_t>(pluser >> (sizeof(uint8_t) * 8));
+    }
+#else
+    const size_t word_count = (M < N ? M : N) / sizeof(word_type);
+    register uint8_t carry = 1;
+    for (register size_t i = 0; i < word_count; ++i)
+    {
+        dword_type pluser = static_cast<word_type>(~reinterpret_cast<const word_type*>(a)[i]);
+        pluser += carry;
+
+        reinterpret_cast<word_type*>(retx)[i] = static_cast<word_type>(pluser);
+        carry = static_cast<uint8_t>(pluser >> (sizeof(word_type) * 8));
+    }
+    const uint8_t fill = (is_positive_signed(a, M) ? 0 : 0xFF);
+    for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
+    {
+        uint16_t pluser = static_cast<uint8_t>(~(i < M ? a[i] : fill));
         pluser += carry;
 
         retx[i] = static_cast<uint8_t>(pluser);
@@ -1719,26 +1771,26 @@ inline void bit_not(const uint8_t *a, uint8_t *x, size_t N)
     {
 #if !defined(OPTIMIZE)
         for (register size_t i = 0; i < N; ++i)
-            x[i] = ~(a[i]);
+            x[i] = ~a[i];
 #else
         const size_t word_count = N / sizeof(word_type);
         for (register size_t i = 0; i < word_count; ++i)
-            reinterpret_cast<word_type*>(x)[i] = ~(reinterpret_cast<const word_type*>(a)[i]);
+            reinterpret_cast<word_type*>(x)[i] = ~reinterpret_cast<const word_type*>(a)[i];
         for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
-            x[i] = ~(a[i]);
+            x[i] = ~a[i];
 #endif
     }
     else
     {
 #if !defined(OPTIMIZE)
         for (register int i = N - 1; i >= 0; --i)
-            x[i] = ~(a[i]);
+            x[i] = ~a[i];
 #else
         const size_t word_count = N / sizeof(word_type);
         for (register int i = N - 1, limit = word_count * sizeof(word_type); i >= limit; --i)
-            x[i] = ~(a[i]);
+            x[i] = ~a[i];
         for (register int i = word_count - 1; i >= 0; --i)
-            reinterpret_cast<word_type*>(x)[i] = ~(reinterpret_cast<const word_type*>(a)[i]);
+            reinterpret_cast<word_type*>(x)[i] = ~reinterpret_cast<const word_type*>(a)[i];
 #endif
     }
 }
@@ -1808,6 +1860,77 @@ inline size_t bit_length(const uint8_t *a,  size_t N)
             return i * 8 + _bit_length(a[i]);
     for (register int i = bits32_count - 1; i >= 0; --i)
         if (0 != reinterpret_cast<const uint32_t*>(a)[i])
+            return i * 32 + _bit_length(reinterpret_cast<const uint32_t*>(a)[i]);
+    return 0;
+#endif
+}
+
+
+inline size_t _bit0_length(uint32_t a)
+{
+    if (a == 0xFFFFFFFF)
+        return 0;
+
+    size_t ret = 31;
+    if (a >> 16 == 0xFFFF)
+    {
+        ret -= 16;
+        a <<= 16;
+    }
+    if (a >> 24 == 0xFF)
+    {
+        ret -= 8;
+        a <<= 8;
+    }
+    if (a >> 28 == 0x0F)
+    {
+        ret -= 4;
+        a <<= 4;
+    }
+    if (a >> 30 == 0x03)
+    {
+        ret -= 2;
+        a <<= 2;
+    }
+    ret += 1 - (a >> 31);
+    return ret;
+}
+
+inline size_t _bit0_length(uint8_t a)
+{
+    if (a == 0xFF)
+        return 0;
+
+    size_t ret = 7;
+    if (a >> 4 == 0x0F)
+    {
+        ret -= 4;
+        a <<= 4;
+    }
+    if (a >> 6 == 0x03)
+    {
+        ret -= 2;
+        a <<= 2;
+    }
+    ret += 1 - (a >> 7);
+    return ret;
+}
+
+inline size_t bit0_length(const uint8_t *a,  size_t N)
+{
+    assert(NULL != a && N > 0);
+#if !defined(OPTIMIZE)
+    for (register int i = N - 1; i >= 0; --i)
+        if (0xFF != a[i])
+            return i * 8 + _bit_length(a[i]);
+    return 0;
+#else
+    const size_t bits32_count = N / sizeof(uint32_t);
+    for (register int i = N - 1, limit = bits32_count * sizeof(uint32_t); i >= limit; --i)
+        if (0xFF != a[i])
+            return i * 8 + _bit_length(a[i]);
+    for (register int i = bits32_count - 1; i >= 0; --i)
+        if (0xFFFFFFFF != reinterpret_cast<const uint32_t*>(a)[i])
             return i * 32 + _bit_length(reinterpret_cast<const uint32_t*>(a)[i]);
     return 0;
 #endif

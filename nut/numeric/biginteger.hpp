@@ -126,7 +126,7 @@ public:
         }
         minimize_significant_len();
     }
-    
+
     BigInteger(const BigInteger& x)
         : m_bytes(NULL), m_bytes_cap(0), m_significant_len(0)
     {
@@ -203,9 +203,10 @@ public:
     
     BigInteger operator-() const
     {
-        BigInteger ret(*this);
-        ret.ensure_significant_len(m_significant_len + 1);
-        negate_signed(ret.m_bytes, ret.m_bytes, ret.m_significant_len);
+        BigInteger ret;
+        ret.ensure_cap(m_significant_len + 1);
+        negate_signed(m_bytes, m_significant_len, ret.m_bytes, m_significant_len + 1);
+        ret.m_significant_len = m_significant_len + 1;
         ret.minimize_significant_len();
         return ret;
     }
@@ -246,25 +247,37 @@ public:
     
     BigInteger& operator+=(const BigInteger& x)
     {
-        *this = *this + x;
+    	const size_t max_len = (m_significant_len > x.m_significant_len ? m_significant_len : x.m_significant_len);
+    	ensure_cap(max_len + 1);
+    	add_signed(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, m_bytes, max_len + 1);
+        m_significant_len = max_len + 1;
+    	minimize_significant_len();
         return *this;
     }
-    
+
     BigInteger& operator-=(const BigInteger& x)
     {
-        *this = *this - x;
+    	const size_t max_len = (m_significant_len > x.m_significant_len ? m_significant_len : x.m_significant_len);
+    	ensure_cap(max_len + 1);
+    	sub_signed(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, m_bytes, max_len + 1);
+        m_significant_len = max_len + 1;
+    	minimize_significant_len();
         return *this;
     }
 
     BigInteger& operator*=(const BigInteger& x)
     {
-        *this = *this * x;
+    	ensure_cap(m_significant_len + x.m_significant_len);
+    	multiply_signed(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, m_bytes, m_significant_len + x.m_significant_len);
+        m_significant_len = m_significant_len + x.m_significant_len;
+    	minimize_significant_len();
         return *this;
     }
 
     BigInteger& operator/=(const BigInteger& x)
     {
-        *this = *this / x;
+    	divide_signed(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, m_bytes, m_significant_len, NULL, 0);
+    	minimize_significant_len();
         return *this;
     }
 
@@ -278,6 +291,7 @@ public:
     {
         ensure_significant_len(m_significant_len + 1);
         increase(m_bytes, m_significant_len);
+        minimize_significant_len();
         return *this;
     }
 
@@ -292,6 +306,7 @@ public:
     {
         ensure_significant_len(m_significant_len + 1);
         decrease(m_bytes, m_significant_len);
+        minimize_significant_len();
         return *this;
     }
     
@@ -350,7 +365,7 @@ public:
     {
         return is_positive_signed(m_bytes, m_significant_len);
     }
-    
+
     const uint8_t* bytes() const
     {
         return m_bytes;
@@ -367,7 +382,7 @@ public:
         ensure_significant_len(n);
         m_significant_len = n;
     }
-    
+
     size_t significant_length() const
     {
         return m_significant_len;
@@ -378,11 +393,43 @@ public:
      *
      * @return 0 or 1
      */
-    int bit_at(size_t i)
+    int bit_at(size_t i) const
     {
         if (i / 8 >= m_significant_len)
             return is_positive_signed(m_bytes, m_significant_len) ? 0 : 1;
         return (m_bytes[i / 8] >> (i % 8)) & 0x01;
+    }
+
+    /**
+     * @param v 0 or 1
+     */
+    void set_bit(size_t i, int v)
+    {
+    	assert(v == 0 || v == 1);
+    	ensure_significant_len(i / 8 + 1); // 避免符号位被覆盖
+    	if (0 == v)
+    		m_bytes[i / 8] &= ~(1 << (i % 8));
+    	else
+    		m_bytes[i / 8] |= 1 << (i % 8);
+    }
+    
+    size_t bit_length()
+    {
+    	if (is_positive())
+    		return nut::bit_length(m_bytes, m_significant_len);
+    	else
+    		return bit0_length(m_bytes, m_significant_len);
+    }
+
+    /**
+     * 正数返回 bit 1 计数，负数则返回 bit 0 计数
+     */
+    size_t bit_count()
+    {
+    	const size_t bc = nut::bit_count(m_bytes, m_significant_len);
+    	if (is_positive())
+    		return bc;
+    	return 8 * m_significant_len - bc;
     }
 
     long long llong_value() const
@@ -390,6 +437,29 @@ public:
         long long ret = 0;
         expand_signed(m_bytes, m_significant_len, (uint8_t*)&ret, sizeof(ret));
         return ret;
+    }
+    
+    /**
+     * 取 [a, b) 范围内的随机数
+     */
+    static BigInteger rand_between(const BigInteger& a, const BigInteger& b)
+    {
+    	assert(a != b);
+
+    	const bool a_is_bigger = (a > b);
+    	BigInteger n = (a_is_bigger ? a - b : b - a);
+    	assert(n.is_positive());
+
+    	BigInteger ret;
+    	ret.ensure_cap(n.m_significant_len + 1);
+    	for (register size_t i = 0; i < n.m_significant_len; ++i)
+    		ret.m_bytes[i] = rand();
+    	ret.m_bytes[n.m_significant_len] = 0; // 保证是正数
+    	ret.m_significant_len = n.m_significant_len + 1;
+
+    	ret %= n;
+    	ret += (a_is_bigger ? b : a);
+    	return ret;
     }
 
 private:
