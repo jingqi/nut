@@ -227,7 +227,6 @@ public:
                         return candidate;
                 }
                 nextLong = (int64_t)(((uint64_t) nextLong) >> 1);
-                nextLong >>= 1;
                 offset+=2;
             }
         }
