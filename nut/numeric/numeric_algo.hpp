@@ -70,9 +70,9 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
         if (NULL != d)
             *d = a;
         if (NULL != x)
-            *x = BigInteger(1);
+            *x = 1;
         if (NULL != y)
-            *y = BigInteger(0);
+            *y = 0;
         return;
     }
     
@@ -89,15 +89,14 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
  */
 bool psedoprime(const BigInteger& n)
 {
-    const BigInteger ONE(1), TWO(2);
-    if (ONE != modular_exponentiation(TWO, n - ONE, n))
+    if (modular_exponentiation(BigInteger(2), n - 1, n) != 1)
         return false; // 一定是合数
     return true; // 可能是素数
 }
 
 bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n)
 {
-    BigInteger d(1), b(n - BigInteger(1));
+    BigInteger d(1), b(n - 1);
     for (register size_t i = b.significant_length() * 8; i > 0; --i)
     {
         BigInteger x = d;
@@ -119,7 +118,7 @@ bool miller_rabin(const BigInteger& n, unsigned s)
 {
     for (register size_t i = 0; i < s; ++i)
     {
-        BigInteger a = BigInteger::rand_between(BigInteger(1), n - BigInteger(1));
+        BigInteger a = BigInteger::rand_between(BigInteger(1), n - 1);
         if (_miller_rabin_witness(a, n))
             return false; // 一定是合数
     }
@@ -131,14 +130,14 @@ bool miller_rabin(const BigInteger& n, unsigned s)
  */
 BigInteger nextProbablePrime(const BigInteger& n)
 {
-    if (n <= BigInteger(1))
+    if (n <= 1)
         return BigInteger(2);
 
     const int SMALL_PRIME_THRESHOLD = 95;
     const int DEFAULT_PRIME_CERTAINTY = 1;
     const BigInteger SMALL_PRIME_PRODUCT(((uint64_t) 3) * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41);
 
-    BigInteger result = n + BigInteger(1);
+    BigInteger result = n + 1;
 
     // Fastpath for small numbers
     if (result.bit_length() < SMALL_PRIME_THRESHOLD)
@@ -155,7 +154,7 @@ BigInteger nextProbablePrime(const BigInteger& n)
                 if ((r%3==0)  || (r%5==0)  || (r%7==0)  || (r%11==0) || 
                     (r%13==0) || (r%17==0) || (r%19==0) || (r%23==0) || 
                     (r%29==0) || (r%31==0) || (r%37==0) || (r%41==0)) {
-                        result += BigInteger(2);
+                        result += 2;
                         continue; // Candidate is composite; try another
                 }
             }
@@ -168,7 +167,7 @@ BigInteger nextProbablePrime(const BigInteger& n)
             if (miller_rabin(result, DEFAULT_PRIME_CERTAINTY))
                 return result;
 
-            result += BigInteger(2);
+            result += 2;
         }
     }
 
@@ -185,7 +184,7 @@ BigInteger nextProbablePrime(const BigInteger& n)
             DEFAULT_PRIME_CERTAINTY);
         if (!candidate.is_zero())
             return candidate;
-        result += BigInteger(2 * searchLen);
+        result += 2 * searchLen;
     }
 }
 

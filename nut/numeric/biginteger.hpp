@@ -18,6 +18,10 @@
 namespace nut
 {
 
+class BigInteger;
+extern BigInteger nextProbablePrime(const BigInteger& n);
+
+
 /**
  * 无限大整数
  */
@@ -148,35 +152,75 @@ public:
 
         return *this;
     }
+
+    BigInteger& operator=(long long v)
+    {
+        ensure_cap(sizeof(v));
+        ::memcpy(m_bytes, &v, sizeof(v));
+        m_significant_len = sizeof(v);
+        minimize_significant_len();
+
+        return *this;
+    }
     
-    bool operator==(const BigInteger& x) const
+    inline bool operator==(const BigInteger& x) const
     {
         return equal_signed(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len);
     }
-    
-    bool operator!=(const BigInteger& x) const
+
+    inline bool operator==(long long v) const
+    {
+        return equal_signed(m_bytes, m_significant_len, (uint8_t*)&v, sizeof(v));
+    }
+
+    inline bool operator!=(const BigInteger& x) const
     {
         return !(*this == x);
     }
+
+    inline bool operator!=(long long v) const
+    {
+        return !(*this == v);
+    }
     
-    bool operator<(const BigInteger& x) const
+    inline bool operator<(const BigInteger& x) const
     {
         return less_than_signed(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len);
     }
+
+    inline bool operator<(long long v) const
+    {
+        return less_than_signed(m_bytes, m_significant_len, (uint8_t*)&v, sizeof(v));
+    }
     
-    bool operator>(const BigInteger& x) const
+    inline bool operator>(const BigInteger& x) const
     {
         return x < *this;
     }
+
+    inline bool operator>(long long v) const
+    {
+        return less_than_signed((uint8_t*)&v, sizeof(v), m_bytes, m_significant_len);
+    }
     
-    bool operator<=(const BigInteger& x) const
+    inline bool operator<=(const BigInteger& x) const
     {
         return !(x < *this);
     }
+
+    inline bool operator<=(long long v) const
+    {
+        return !(*this > v);
+    }
     
-    bool operator>=(const BigInteger& x) const
+    inline bool operator>=(const BigInteger& x) const
     {
         return !(*this < x);
+    }
+
+    inline bool operator>=(long long v) const
+    {
+        return !(*this < v);
     }
     
     BigInteger operator+(const BigInteger& x) const
@@ -189,6 +233,17 @@ public:
         ret.minimize_significant_len();
         return ret;
     }
+
+    BigInteger operator+(long long v) const
+    {
+        BigInteger ret;
+        const size_t max_len = (m_significant_len > sizeof(v) ? m_significant_len : sizeof(v));
+        ret.ensure_cap(max_len + 1);
+        add_signed(m_bytes, m_significant_len, (uint8_t*)&v, sizeof(v), ret.m_bytes, max_len + 1);
+        ret.m_significant_len = max_len + 1;
+        ret.minimize_significant_len();
+        return ret;
+    }
     
     BigInteger operator-(const BigInteger& x) const
     {
@@ -196,6 +251,17 @@ public:
         const size_t max_len = (m_significant_len > x.m_significant_len ? m_significant_len : x.m_significant_len);
         ret.ensure_cap(max_len + 1);
         sub_signed(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, ret.m_bytes, max_len + 1);
+        ret.m_significant_len = max_len + 1;
+        ret.minimize_significant_len();
+        return ret;
+    }
+
+    BigInteger operator-(long long v) const
+    {
+        BigInteger ret;
+        const size_t max_len = (m_significant_len > sizeof(v) ? m_significant_len : sizeof(v));
+        ret.ensure_cap(max_len + 1);
+        sub_signed(m_bytes, m_significant_len, (uint8_t*)&v, sizeof(v), ret.m_bytes, max_len + 1);
         ret.m_significant_len = max_len + 1;
         ret.minimize_significant_len();
         return ret;
@@ -220,6 +286,16 @@ public:
         ret.minimize_significant_len();
         return ret;
     }
+
+    BigInteger operator*(long long v) const
+    {
+        BigInteger ret;
+        ret.ensure_cap(m_significant_len + sizeof(v));
+        multiply_signed(m_bytes, m_significant_len, (uint8_t*)&v, sizeof(v), ret.m_bytes, m_significant_len + sizeof(v));
+        ret.m_significant_len = m_significant_len + sizeof(v);
+        ret.minimize_significant_len();
+        return ret;
+    }
     
     BigInteger operator/(const BigInteger& x) const
     {
@@ -228,6 +304,18 @@ public:
         BigInteger ret;
         ret.ensure_cap(m_significant_len);
         divide_signed(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, ret.m_bytes, m_significant_len, NULL, 0);
+        ret.m_significant_len = m_significant_len;
+        ret.minimize_significant_len();
+        return ret;
+    }
+
+    BigInteger operator/(long long v) const
+    {
+        assert(0 != v);
+
+        BigInteger ret;
+        ret.ensure_cap(m_significant_len);
+        divide_signed(m_bytes, m_significant_len, (uint8_t*)&v, sizeof(v), ret.m_bytes, m_significant_len, NULL, 0);
         ret.m_significant_len = m_significant_len;
         ret.minimize_significant_len();
         return ret;
@@ -244,6 +332,18 @@ public:
         ret.minimize_significant_len();
         return ret;
     }
+
+    BigInteger operator%(long long v) const
+    {
+        assert(0 != v);
+
+        BigInteger ret;
+        ret.ensure_cap(sizeof(v));
+        divide_signed(m_bytes, m_significant_len, (uint8_t*)&v, sizeof(v), NULL, 0, ret.m_bytes, sizeof(v));
+        ret.m_significant_len = sizeof(v);
+        ret.minimize_significant_len();
+        return ret;
+    }
     
     BigInteger& operator+=(const BigInteger& x)
     {
@@ -252,6 +352,16 @@ public:
     	add_signed(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, m_bytes, max_len + 1);
         m_significant_len = max_len + 1;
     	minimize_significant_len();
+        return *this;
+    }
+
+    BigInteger& operator+=(long long v)
+    {
+        const size_t max_len = (m_significant_len > sizeof(v) ? m_significant_len : sizeof(v));
+        ensure_cap(max_len + 1);
+        add_signed(m_bytes, m_significant_len, (uint8_t*)&v, sizeof(v), m_bytes, max_len + 1);
+        m_significant_len = max_len + 1;
+        minimize_significant_len();
         return *this;
     }
 
@@ -265,12 +375,31 @@ public:
         return *this;
     }
 
+    BigInteger& operator-=(long long v)
+    {
+        const size_t max_len = (m_significant_len > sizeof(v) ? m_significant_len : sizeof(v));
+        ensure_cap(max_len + 1);
+        sub_signed(m_bytes, m_significant_len, (uint8_t*)&v, sizeof(v), m_bytes, max_len + 1);
+        m_significant_len = max_len + 1;
+        minimize_significant_len();
+        return *this;
+    }
+
     BigInteger& operator*=(const BigInteger& x)
     {
     	ensure_cap(m_significant_len + x.m_significant_len);
     	multiply_signed(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, m_bytes, m_significant_len + x.m_significant_len);
-        m_significant_len = m_significant_len + x.m_significant_len;
+        m_significant_len += x.m_significant_len;
     	minimize_significant_len();
+        return *this;
+    }
+
+    BigInteger& operator*=(long long v)
+    {
+        ensure_cap(m_significant_len + sizeof(v));
+        multiply_signed(m_bytes, m_significant_len, (uint8_t*)&v, sizeof(v), m_bytes, m_significant_len + sizeof(v));
+        m_significant_len += sizeof(v);
+        minimize_significant_len();
         return *this;
     }
 
@@ -281,9 +410,22 @@ public:
         return *this;
     }
 
-    BigInteger& operator%=(const BigInteger& x)
+    BigInteger& operator/=(long long v)
+    {
+        divide_signed(m_bytes, m_significant_len, (uint8_t*)&v, sizeof(v), m_bytes, m_significant_len, NULL, 0);
+        minimize_significant_len();
+        return *this;
+    }
+
+    inline BigInteger& operator%=(const BigInteger& x)
     {
         *this = *this % x;
+        return *this;
+    }
+
+    inline BigInteger& operator%=(long long v)
+    {
+        *this = *this % v;
         return *this;
     }
     
@@ -295,7 +437,7 @@ public:
         return *this;
     }
 
-    BigInteger operator++(int)
+    inline BigInteger operator++(int)
     {
         BigInteger ret(*this);
         ++*this;
@@ -310,7 +452,7 @@ public:
         return *this;
     }
     
-    BigInteger operator--(int)
+    inline BigInteger operator--(int)
     {
         BigInteger ret(*this);
         --*this;
@@ -337,53 +479,53 @@ public:
         return ret;
     }
 
-    BigInteger& operator<<=(size_t count)
+    inline BigInteger& operator<<=(size_t count)
     {
         *this = *this << count;
         return *this;
     }
 
-    BigInteger& operator>>=(size_t count)
+    inline BigInteger& operator>>=(size_t count)
     {
         *this = *this >> count;
         return *this;
     }
 
 public:
-    void set_zero()
+    inline void set_zero()
     {
         m_bytes[0] = 0;
         m_significant_len = 1;
     }
 
-    bool is_zero() const
+    inline bool is_zero() const
     {
         return nut::is_zero(m_bytes, m_significant_len);
     }
     
-    bool is_positive() const
+    inline bool is_positive() const
     {
         return is_positive_signed(m_bytes, m_significant_len);
     }
 
-    const uint8_t* bytes() const
+    inline const uint8_t* bytes() const
     {
         return m_bytes;
     }
 
-    uint8_t* bytes()
+    inline uint8_t* bytes()
     {
         return const_cast<uint8_t*>(static_cast<const BigInteger&>(*this).bytes());
     }
 
-    void resize(size_t n)
+    inline void resize(size_t n)
     {
         assert(n > 0);
         ensure_significant_len(n);
         m_significant_len = n;
     }
 
-    size_t significant_length() const
+    inline size_t significant_length() const
     {
         return m_significant_len;
     }
@@ -393,7 +535,7 @@ public:
      *
      * @return 0 or 1
      */
-    int bit_at(size_t i) const
+    inline int bit_at(size_t i) const
     {
         if (i / 8 >= m_significant_len)
             return is_positive_signed(m_bytes, m_significant_len) ? 0 : 1;
@@ -437,6 +579,11 @@ public:
         long long ret = 0;
         expand_signed(m_bytes, m_significant_len, (uint8_t*)&ret, sizeof(ret));
         return ret;
+    }
+
+    BigInteger nextProbablePrime() const
+    {
+        return nut::nextProbablePrime(*this);
     }
     
     /**

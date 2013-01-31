@@ -10,10 +10,11 @@
 #define ___HEADFILE_B3D1D8B6_CD77_4FB3_A62E_A83D30BA0451_
 
 #include "biginteger.hpp"
-#include "numeric_algo.hpp"
 
 namespace nut
 {
+
+extern bool miller_rabin(const BigInteger& n, unsigned s);
     
 /**
  * A simple bit sieve used for finding prime number candidates. Allows setting
@@ -112,11 +113,10 @@ public:
         int convertedStep = (step *2) + 1;
 
         // Construct the large sieve at an even offset specified by base
-        BigInteger b(base);
         do
         {
             // Calculate base mod convertedStep
-        	start = (int) (b % BigInteger(convertedStep)).llong_value();
+        	start = (int) (base % convertedStep).llong_value();
 
             // Take each multiple of step out of sieve
             start = convertedStep - start;
@@ -222,7 +222,7 @@ public:
             {
                 if ((nextLong & 1) == 1)
                 {
-                    BigInteger candidate = initValue + BigInteger(offset);
+                    BigInteger candidate = initValue + offset;
                     if (miller_rabin(candidate, certainty))
                         return candidate;
                 }
