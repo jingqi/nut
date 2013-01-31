@@ -73,6 +73,7 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
             *x = BigInteger(1);
         if (NULL != y)
             *y = BigInteger(0);
+        return;
     }
     
     BigInteger xx, yy;
@@ -142,7 +143,6 @@ BigInteger nextProbablePrime(const BigInteger& n)
     // Fastpath for small numbers
     if (result.bit_length() < SMALL_PRIME_THRESHOLD)
     {
-
         // Ensure an odd number
         if (result.bit_at(0) == 0)
             ++result;
