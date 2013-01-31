@@ -117,7 +117,7 @@ bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n)
  */
 bool miller_rabin(const BigInteger& n, unsigned s)
 {
-    for (size_t i = 1; i < s; ++i)
+    for (register size_t i = 0; i < s; ++i)
     {
         BigInteger a = BigInteger::rand_between(BigInteger(1), n - BigInteger(1));
         if (_miller_rabin_witness(a, n))
@@ -135,7 +135,7 @@ BigInteger nextProbablePrime(const BigInteger& n)
         return BigInteger(2);
 
     const int SMALL_PRIME_THRESHOLD = 95;
-    const int DEFAULT_PRIME_CERTAINTY = 2;
+    const int DEFAULT_PRIME_CERTAINTY = 1;
     const BigInteger SMALL_PRIME_PRODUCT(((uint64_t) 3) * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41);
 
     BigInteger result = n + BigInteger(1);

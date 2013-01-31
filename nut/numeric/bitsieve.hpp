@@ -217,7 +217,7 @@ public:
         int offset = 1;
         for (int i = 0; i < m_bits_cap; ++i)
         {
-            int64_t nextLong = ~m_bits[i];
+            uint64_t nextLong = ~m_bits[i];
             for (int j = 0; j < 64; ++j)
             {
                 if ((nextLong & 1) == 1)
@@ -226,7 +226,7 @@ public:
                     if (miller_rabin(candidate, certainty))
                         return candidate;
                 }
-                nextLong = (int64_t)(((uint64_t) nextLong) >> 1);
+                nextLong >>= 1;
                 offset+=2;
             }
         }
