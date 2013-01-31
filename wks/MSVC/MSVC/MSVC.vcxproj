@@ -91,8 +91,6 @@
     <ClInclude Include="..\..\..\nut\mem\sys_ma.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\byte_array_number.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\numeric_algo.hpp" />
-    <ClInclude Include="..\..\..\nut\numeric\signedinteger.hpp" />
-    <ClInclude Include="..\..\..\nut\numeric\unsignedinteger.hpp" />
     <ClInclude Include="..\..\..\nut\pconsole\cmdexit.hpp" />
     <ClInclude Include="..\..\..\nut\pconsole\cmdhelp.hpp" />
     <ClInclude Include="..\..\..\nut\pconsole\icommand.hpp" />
@@ -154,8 +152,6 @@
     <ClCompile Include="..\..\..\test\numeric\test_biginteger.cpp" />
     <ClCompile Include="..\..\..\test\mem\test_lengthfixed_mp.cpp" />
     <ClCompile Include="..\..\..\test\mem\test_scoped_gc.cpp" />
-    <ClCompile Include="..\..\..\test\numeric\test_signedinteger.cpp" />
-    <ClCompile Include="..\..\..\test\numeric\test_unsignedinteger.cpp" />
     <ClCompile Include="..\..\..\test\pconsole\test_pconsole.cpp" />
     <ClCompile Include="..\..\..\test\platform\test_os.cpp" />
     <ClCompile Include="..\..\..\test\platform\test_path.cpp" />
