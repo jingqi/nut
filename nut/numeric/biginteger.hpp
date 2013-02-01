@@ -609,6 +609,23 @@ public:
     	return ret;
     }
 
+    /**
+     * 值交换
+     */
+    static void swap(BigInteger *a, BigInteger *b)
+    {
+        assert(NULL != a && NULL != b);
+        uint8_t *p = a->m_bytes;
+        size_t c = a->m_bytes_cap;
+        size_t s = a->m_significant_len;
+        a->m_bytes = b->m_bytes;
+        a->m_bytes_cap = b->m_bytes_cap;
+        a->m_significant_len = b->m_significant_len;
+        b->m_bytes = p;
+        b->m_bytes_cap = c;
+        b->m_significant_len = s;
+    }
+
 private:
     static inline bool is_valid_radix(size_t radix)
     {

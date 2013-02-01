@@ -15,7 +15,6 @@ namespace nut
 {
 
 extern bool miller_rabin(const BigInteger& n, unsigned s);
-extern bool miller_rabin2(const BigInteger& n, unsigned s);
     
 /**
  * A simple bit sieve used for finding prime number candidates. Allows setting
@@ -224,7 +223,7 @@ public:
                 if ((nextLong & 1) == 1)
                 {
                     BigInteger candidate = initValue + offset;
-                    if (miller_rabin2(candidate, certainty))
+                    if (miller_rabin(candidate, certainty))
                         return candidate;
                 }
                 nextLong >>= 1;

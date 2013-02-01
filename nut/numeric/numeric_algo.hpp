@@ -11,11 +11,15 @@
 #include "biginteger.hpp"
 #include "bitsieve.hpp"
 
+// 优化程度，>= 0
+#define OPTIMIZE_LEVEL 1000
+
 namespace nut
 {
 
 /**
  * 求(a**b)%n，即a的b次方(模n)
+ * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P576
  */
 inline BigInteger modular_exponentiation(const BigInteger& a, const BigInteger& b, const BigInteger& n)
 {
@@ -32,41 +36,85 @@ inline BigInteger modular_exponentiation(const BigInteger& a, const BigInteger& 
 }
 
 /**
- * 利用二进制特性的gcd算法
+ * 求最大公约数
  */
 inline BigInteger gcd(const BigInteger& a, const BigInteger& b)
 {
+#if (OPTIMIZE_LEVEL == 0)
+    /**
+     * 欧几里德(EUCLID)算法，求最大公约数
+     * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P563
+     */
     if (b.is_zero())
         return a;
-
+    return gcd(b, a % b);
+#elif (OPTIMIZE_LEVEL == 1)
+    /**
+     * 利用二进制特性的gcd算法
+     * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P590
+     */
+    if (b.is_zero())
+        return a;
     if (a.bit_at(0) == 0 && b.bit_at(0) == 0)
         return gcd(a >> 1, b >> 1) << 1;
     else if (a.bit_at(0) == 0)
-        return gcd(a >> 1, b);
+        return gcd(b, a >> 1);
     else if (b.bit_at(0) == 0)
         return gcd(a, b >> 1);
     else if (a > b)
-        return gcd((a - b) >> 1, b);
+        return gcd(b, (a - b) >> 1);
     else
         return gcd(a, (b - a) >> 1);
+#else
+    /**
+     * 进一步优化上一个实现
+     */
+    size_t left_shift = 0;
+    BigInteger aa(a), bb(b);
+    while (!bb.is_zero())
+    {
+        if (aa.bit_at(0) == 0 && bb.bit_at(0) == 0)
+        {
+            aa >>= 1;
+            bb >>= 1;
+            ++left_shift;
+        }
+        else if (aa.bit_at(0) == 0)
+        {
+            aa >>= 1;
+            BigInteger::swap(&aa, &bb); // 交换a b, 尽量使 b < a
+        }
+        else if (bb.bit_at(0) == 0)
+        {
+            bb >>= 1;
+        }
+        else if (aa > bb)
+        {
+            aa = (aa - bb) >> 1;
+            BigInteger::swap(&aa, &bb); // 交换a b, 尽量使 b < a
+        }
+        else
+        {
+            bb = (bb - aa) >> 1;
+        }
+    }
+    if (left_shift == 0)
+        return aa;
+    return aa << left_shift;
+#endif
 }
 
 /**
- * 欧几里德(EUCLID)算法，求最大公约数
- */
-inline BigInteger euclid_gcd(const BigInteger& a, const BigInteger& b)
-{
-    if (b.is_zero())
-        return a;
-    return euclid_gcd(b, a % b);
-}
-
-/**
- * 欧几里得(EUCLID)算法的推广形式
- * d = gcd(a, b) = ax + by
+ * 扩展欧几里得算法
  */
 inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, BigInteger *x, BigInteger *y)
 {
+#if (OPTIMIZE_LEVEL == 0)
+    /**
+     * 欧几里得(EUCLID)算法的推广形式
+     * d = gcd(a, b) = ax + by
+     * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P564
+     */
     if (b.is_zero())
     {
         if (NULL != d)
@@ -79,15 +127,137 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
     }
     
     BigInteger xx, yy;
-    extended_euclid(b, a % b, d, &xx, &yy);
+    extended_euclid(b, a % b, d, &yy, &xx);
     if (NULL != x)
-        *x = yy;
+        *x = xx;
     if (NULL != y)
-        *y = xx - a / b * yy;
+        *y = yy - a / b * xx;
+#else
+    /**
+     * 推广的 Euclidean 算法
+     * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P590
+     * 参见 《公开密钥密码算法及其快速实现》.周玉洁.冯国登.国防工业出版社.2002 P63
+     */
+    if (b.is_zero())
+    {
+        if (NULL != d)
+            *d = a;
+        if (NULL != x)
+            *x = 1;
+        if (NULL != y)
+            *y = 0;
+        return;
+    }
+
+    if (a.bit_at(0) == 0 && b.bit_at(0) == 0)
+    {
+        extended_euclid(a >> 1, b >> 1, d, x, y);
+        // d = dd * 2;
+        // x = xx; y = yy;
+        if (NULL != d)
+            *d <<= 1;
+        return;
+    }
+    else if (a.bit_at(0) == 0)
+    {
+        BigInteger xx;
+        extended_euclid(b, a >> 1, d, y, &xx);
+        if (xx.bit_at(0) == 0)
+        {
+            // d = dd;
+            // x = xx / 2; y = yy;
+            if (NULL != x)
+                *x = xx >> 1;
+        }
+        else
+        {
+            // d = dd;
+            // x = (xx + b) / 2; y = yy - a / 2;
+            if (NULL != x)
+                *x = (xx + b) >> 1;
+            if (NULL != y)
+                *y -= a >> 1;
+        }
+        return;
+    }
+    else if (b.bit_at(0) == 0)
+    {
+        BigInteger yy;
+        extended_euclid(a, b >> 1, d, x, &yy);
+        if (yy.bit_at(0) == 0)
+        {
+            // d = dd;
+            // x = xx; y = yy / 2;
+            if (NULL != y)
+                *y = yy >> 1;
+        }
+        else
+        {
+            // d = dd;
+            // x = xx - b / 2; y = (yy + a) / 2;
+            if (NULL != x)
+                *x -= b >> 1;
+            if (NULL != y)
+                *y = (yy + a) >> 1;
+        }
+        return;
+    }
+    else if (a > b)
+    {
+        BigInteger xx;
+        extended_euclid(b, (a - b) >> 1, d, y, &xx);
+        if (xx.bit_at(0) == 0)
+        {
+            // d = dd;
+            // x = xx / 2; y = yy - xx / 2;
+            if (NULL != x)
+                *x = xx >> 1;
+            if (NULL != y)
+                *y -= xx >> 1;
+        }
+        else
+        {
+            // d = dd;
+            // x = (xx + b) / 2; y = yy - (xx + a) / 2;
+            // 或者 x = (xx - b) / 2; y = yy - (xx - a) / 2;
+            if (NULL != x)
+                *x = (xx + b) >> 1;
+            if (NULL != y)
+                *y -= (xx + a) >> 1;
+        }
+        return;
+    }
+    else
+    {
+        BigInteger yy;
+        extended_euclid(a, (b - a) >> 1, d, x, &yy);
+        if (yy.bit_at(0) == 0)
+        {
+            // d = dd;
+            // x = xx - yy / 2; y = yy / 2;
+            if (NULL != x)
+                *x -= yy >> 1;
+            if (NULL != y)
+                *y = yy >> 1;
+        }
+        else
+        {
+            // d = dd;
+            // x = xx - (yy + b) / 2; y = (yy + a) / 2;
+            // 或者 x == xx - (yy - b) / 2; y = (yy - a) / 2;
+            if (NULL != x)
+                *x -= (yy + b) >> 1;
+            if (NULL != y)
+                *y = (yy + a) >> 1;
+        }
+        return;
+    }
+#endif
 }
 
 /**
  * 费马小定理素数测试法, 伪素数测试
+ * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P582
  */
 inline bool psedoprime(const BigInteger& n)
 {
@@ -120,6 +290,11 @@ inline bool miller_rabin(const BigInteger& n, unsigned s)
 {
     assert(s > 0);
 
+#if (OPTIMIZE_LEVEL == 0)
+    /**
+     * 米勒-拉宾(Miller-Rabin)素数测试
+     * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P584
+     */
     const BigInteger ONE(1);
     for (register size_t i = 0; i < s; ++i)
     {
@@ -128,15 +303,11 @@ inline bool miller_rabin(const BigInteger& n, unsigned s)
             return false; // 一定是合数
     }
     return true; // 几乎肯定是素数
-}
-
-/**
- * Miller-Rabin 素数测试，摘自java实现
- */
-inline bool miller_rabin2(const BigInteger& n, unsigned s)
-{
-    assert(s > 0);
-
+#else
+    /**
+     * Miller-Rabin 素数测试
+     * 参见java语言BigInteger.passesMillerRabin()实现
+     */
     const BigInteger ONE(1), TWO(2);
 
     // Find a and m such that m is odd and n == 1 + 2**a * m
@@ -161,10 +332,12 @@ inline bool miller_rabin2(const BigInteger& n, unsigned s)
         }
     }
     return true;
+#endif
 }
 
 /**
  * 取下一个可能的素数
+ * 参见java语言BigInteger.nextProbablePrime()实现
  */
 inline BigInteger nextProbablePrime(const BigInteger& n)
 {
@@ -227,6 +400,8 @@ inline BigInteger nextProbablePrime(const BigInteger& n)
 }
 
 }
+
+#undef OPTIMIZE_LEVEL
 
 #endif
 
