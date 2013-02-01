@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-11-25
- * @last-edit 2013-01-25 15:42:04 jingqi
+ * @last-edit 2013-02-01 09:02:12 jingqi
  */
 
 #ifndef ___HEADFILE_058D89EB_50A2_4934_AF92_FC4F82613999_
@@ -19,8 +19,10 @@ namespace nut
  */
 inline BigInteger modular_exponentiation(const BigInteger& a, const BigInteger& b, const BigInteger& n)
 {
+    assert(a.is_positive() && b.is_positive() && n.is_positive());
+
     BigInteger ret(1);
-    for (register size_t i = b.significant_length() * 8; i > 0; --i) // 从高位向低有效位取bit
+    for (register size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
     {
         ret = (ret * ret) % n;
         if (0 != b.bit_at(i - 1))
@@ -52,7 +54,7 @@ inline BigInteger gcd(const BigInteger& a, const BigInteger& b)
 /**
  * 欧几里德(EUCLID)算法，求最大公约数
  */
-BigInteger euclid_gcd(const BigInteger& a, const BigInteger& b)
+inline BigInteger euclid_gcd(const BigInteger& a, const BigInteger& b)
 {
     if (b.is_zero())
         return a;
@@ -63,7 +65,7 @@ BigInteger euclid_gcd(const BigInteger& a, const BigInteger& b)
  * 欧几里得(EUCLID)算法的推广形式
  * d = gcd(a, b) = ax + by
  */
-void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, BigInteger *x, BigInteger *y)
+inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, BigInteger *x, BigInteger *y)
 {
     if (b.is_zero())
     {
@@ -85,19 +87,19 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
 }
 
 /**
- * 伪素数测试法
+ * 费马小定理素数测试法, 伪素数测试
  */
-bool psedoprime(const BigInteger& n)
+inline bool psedoprime(const BigInteger& n)
 {
     if (modular_exponentiation(BigInteger(2), n - 1, n) != 1)
         return false; // 一定是合数
     return true; // 可能是素数
 }
 
-bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n)
+inline bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n)
 {
     BigInteger d(1), b(n - 1);
-    for (register size_t i = b.significant_length() * 8; i > 0; --i)
+    for (register size_t i = b.bit_length(); i > 0; --i)
     {
         BigInteger x = d;
         d = (d * d) % n;
@@ -112,13 +114,16 @@ bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n)
 }
 
 /**
- * Miller-Rabin 素数测试
+ * 米勒-拉宾(Miller-Rabin)素数测试
  */
-bool miller_rabin(const BigInteger& n, unsigned s)
+inline bool miller_rabin(const BigInteger& n, unsigned s)
 {
+    assert(s > 0);
+
+    const BigInteger ONE(1);
     for (register size_t i = 0; i < s; ++i)
     {
-        BigInteger a = BigInteger::rand_between(BigInteger(1), n - 1);
+        const BigInteger a = BigInteger::rand_between(ONE, n); // rand in [1, n)
         if (_miller_rabin_witness(a, n))
             return false; // 一定是合数
     }
@@ -126,15 +131,48 @@ bool miller_rabin(const BigInteger& n, unsigned s)
 }
 
 /**
+ * Miller-Rabin 素数测试，摘自java实现
+ */
+inline bool miller_rabin2(const BigInteger& n, unsigned s)
+{
+    assert(s > 0);
+
+    const BigInteger ONE(1), TWO(2);
+
+    // Find a and m such that m is odd and n == 1 + 2**a * m
+    const BigInteger thisMinusOne(n - ONE);
+    BigInteger m(thisMinusOne);
+    const int a = lowest_bit(m.bytes(), m.significant_length());
+    m >>= a;
+
+    // Do the tests
+    for (register size_t i = 0; i < s; ++i)
+    {
+        // Generate a uniform random in [1, n)
+        const BigInteger b(2);//  = BigInteger::rand_between(ONE, n); // _rand_1_n(n);
+
+        int j = 0;
+        BigInteger z = modular_exponentiation(b, m, n);
+        while(!((j == 0 && z == ONE) || z == thisMinusOne))
+        {
+            if ((j > 0 && z == ONE) || ++j == a)
+                return false;
+            z = modular_exponentiation(z, TWO, n);
+        }
+    }
+    return true;
+}
+
+/**
  * 取下一个可能的素数
  */
-BigInteger nextProbablePrime(const BigInteger& n)
+inline BigInteger nextProbablePrime(const BigInteger& n)
 {
     if (n <= 1)
         return BigInteger(2);
 
-    const int SMALL_PRIME_THRESHOLD = 95;
-    const int DEFAULT_PRIME_CERTAINTY = 1;
+    const size_t SMALL_PRIME_THRESHOLD = 95;
+    const size_t DEFAULT_PRIME_CERTAINTY = 2;
     const BigInteger SMALL_PRIME_PRODUCT(((uint64_t) 3) * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41);
 
     BigInteger result = n + 1;
