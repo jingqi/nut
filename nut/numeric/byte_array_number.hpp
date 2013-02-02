@@ -110,7 +110,7 @@ inline size_t significant_size_unsigned(const uint8_t *a, size_t N)
     return ret;
 }
 
-inline bool equal_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t N)
+inline bool equals_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t N)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0);
 
@@ -133,7 +133,7 @@ inline bool equal_unsigned(const uint8_t *a, size_t M, const uint8_t *b, size_t 
 #endif
 }
 
-inline bool equal_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N)
+inline bool equals_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0);
 

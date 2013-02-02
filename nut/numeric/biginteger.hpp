@@ -165,12 +165,12 @@ public:
     
     inline bool operator==(const BigInteger& x) const
     {
-        return equal_signed(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len);
+        return equals_signed(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len);
     }
 
     inline bool operator==(long long v) const
     {
-        return equal_signed(m_bytes, m_significant_len, (uint8_t*)&v, sizeof(v));
+        return equals_signed(m_bytes, m_significant_len, (uint8_t*)&v, sizeof(v));
     }
 
     inline bool operator!=(const BigInteger& x) const
