@@ -461,6 +461,9 @@ public:
     
     BigInteger operator<<(size_t count) const
     {
+        if (0 == count)
+            return *this;
+
         BigInteger ret(*this);
         ret.ensure_significant_len(m_significant_len + count / 8 + 1);
         shift_left(ret.m_bytes, ret.m_bytes, ret.m_significant_len, count);
@@ -473,6 +476,9 @@ public:
      */
     BigInteger operator>>(size_t count) const
     {
+        if (0 == count)
+            return *this;
+
         BigInteger ret(*this);
         shift_right_signed(ret.m_bytes, ret.m_bytes, ret.m_significant_len, count);
         ret.minimize_significant_len();
@@ -481,13 +487,22 @@ public:
 
     inline BigInteger& operator<<=(size_t count)
     {
-        *this = *this << count;
+        if (0 == count)
+            return *this;
+
+        ensure_significant_len(m_significant_len + count / 8 + 1);
+        shift_left(m_bytes, m_bytes, m_significant_len, count);
+        minimize_significant_len();
         return *this;
     }
 
     inline BigInteger& operator>>=(size_t count)
     {
-        *this = *this >> count;
+        if (0 == count)
+            return *this;
+
+        shift_right_signed(m_bytes, m_bytes, m_significant_len, count);
+        minimize_significant_len();
         return *this;
     }
 
@@ -572,6 +587,11 @@ public:
     	if (is_positive())
     		return bc;
     	return 8 * m_significant_len - bc;
+    }
+
+    int lowest_bit() const
+    {
+        return nut::lowest_bit(m_bytes, m_significant_len);
     }
 
     long long llong_value() const

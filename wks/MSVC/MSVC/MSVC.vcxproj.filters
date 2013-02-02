@@ -428,5 +428,8 @@
     <ClCompile Include="..\..\..\test\security\encrypt\test_rsa.cpp">
       <Filter>源文件\security\encrypt</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\test\numeric\test_numeric_algo.cpp">
+      <Filter>源文件\numeric</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

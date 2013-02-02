@@ -153,6 +153,7 @@
     <ClCompile Include="..\..\..\test\numeric\test_biginteger.cpp" />
     <ClCompile Include="..\..\..\test\mem\test_lengthfixed_mp.cpp" />
     <ClCompile Include="..\..\..\test\mem\test_scoped_gc.cpp" />
+    <ClCompile Include="..\..\..\test\numeric\test_numeric_algo.cpp" />
     <ClCompile Include="..\..\..\test\pconsole\test_pconsole.cpp" />
     <ClCompile Include="..\..\..\test\platform\test_os.cpp" />
     <ClCompile Include="..\..\..\test\platform\test_path.cpp" />
