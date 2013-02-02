@@ -1019,13 +1019,35 @@ inline void shift_left(const uint8_t *a, uint8_t *x, size_t N, size_t count)
     if (a - N < x && x < a - count / 8)
         retx = (uint8_t*) ::malloc(sizeof(uint8_t) * N);
 
+#if (OPTIMIZE_LEVEL == 0)
     const int bytes_off = count / 8, bits_off = count % 8;
     for (register int i = N - 1; i >= 0; --i)
     {
-        const uint8_t high = ((i - bytes_off >= 0 ? a[i - bytes_off] : 0) << bits_off);
-        const uint8_t low = ((i - bytes_off - 1 >= 0 ? a[i - bytes_off - 1] : 0) >> (8 - bits_off));
+        const uint8_t high = (i - bytes_off >= 0 ? a[i - bytes_off] : 0) << bits_off;
+        const uint8_t low = (i - bytes_off - 1 >= 0 ? a[i - bytes_off - 1] : 0) >> (8 - bits_off);
         retx[i] = high | low;
     }
+#else
+    const size_t word_count = N / sizeof(word_type);
+    const int bytes_off = count / 8, byte_bits_off = count % 8, byte_bits_off_esc = 8 - byte_bits_off;
+    for (register int i = N - 1, limit = word_count * sizeof(word_type); i >= limit; --i)
+    {
+        const int base_off = i - bytes_off;
+        const uint8_t high = (base_off >= 0 ? a[base_off] : 0) << byte_bits_off;
+        const uint8_t low = (base_off - 1 >= 0 ? a[base_off - 1] : 0) >> byte_bits_off_esc;
+        retx[i] = high | low;
+    }
+
+    const int words_off = count / (8 * sizeof(word_type)), word_bits_off = count % (8 * sizeof(word_type)),
+        word_bits_off_esc = 8 * sizeof(word_type) - word_bits_off;
+    for (register int i = word_count - 1; i >= 0; --i)
+    {
+        const int base_off = i - words_off;
+        const word_type high = (base_off >= 0 ? reinterpret_cast<const word_type*>(a)[base_off] : 0) << word_bits_off;
+        const word_type low = (base_off - 1 >= 0 ? reinterpret_cast<const word_type*>(a)[base_off - 1] : 0) >> word_bits_off_esc;
+        reinterpret_cast<word_type*>(retx)[i] = high | low;
+    }
+#endif
 
     // 回写数据
     if (retx != x)
@@ -1048,13 +1070,38 @@ inline void shift_right_unsigned(const uint8_t *a, uint8_t *x, size_t N, size_t 
     if (a + count / 8 < x && x < a + N)
         retx = (uint8_t*) ::malloc(sizeof(uint8_t) * N);
 
-    const int bytes_off = count / 8, bits_off = count % 8;
+#if (OPTIMIZE_LEVEL == 0)
+    const size_t bytes_off = count / 8, bits_off = count % 8;
     for (register size_t i = 0; i < N; ++i)
     {
-        const uint8_t high = ((i + bytes_off + 1 >= N ? 0 : a[i + bytes_off + 1]) << (8 - bits_off));
-        const uint8_t low = ((i + bytes_off >= N ? 0 : a[i + bytes_off]) >> bits_off);
+        const uint8_t high = (i + bytes_off + 1 >= N ? 0 : a[i + bytes_off + 1]) << (8 - bits_off);
+        const uint8_t low = (i + bytes_off >= N ? 0 : a[i + bytes_off]) >> bits_off;
         retx[i] = high | low;
     }
+#else
+    const size_t word_count = N / sizeof(word_type);
+    const size_t bytes_off = count / 8, byte_bits_off = count % 8, byte_bits_off_esc = 8 - byte_bits_off;
+    const size_t limit = N - word_count * sizeof(word_type);
+    for (register size_t i = 0; i < limit; ++i) // 为了避免出现某个word的一部分超出范围，必须先运算byte
+    {
+        const size_t base_off = i + bytes_off;
+        const uint8_t high = (base_off + 1 >= N ? 0 : a[base_off + 1]) << byte_bits_off_esc;
+        const uint8_t low = (base_off >= N ? 0 : a[base_off]) >> byte_bits_off;
+        retx[i] = high | low;
+    }
+
+    const size_t words_off = count / (8 * sizeof(word_type)), word_bits_off = count % (8 * sizeof(word_type)),
+        word_bits_off_esc = 8 * sizeof(word_type) - word_bits_off;
+    const word_type *pa = reinterpret_cast<const word_type*>(a + limit);
+    word_type *pretx = reinterpret_cast<word_type*>(retx + limit);
+    for (register size_t i = 0; i < word_count; ++i)
+    {
+        const size_t base_off = i + words_off;
+        const word_type high = (base_off + 1 >= word_count ? 0 : pa[base_off + 1]) << word_bits_off_esc;
+        const word_type low = (base_off >= word_count ? 0 : pa[base_off]) >> word_bits_off;
+        pretx[i] = high | low;
+    }
+#endif
 
     // 回写数据
     if (retx != x)
@@ -1077,14 +1124,41 @@ inline void shift_right_signed(const uint8_t *a, uint8_t *x, size_t N, size_t co
     if (a + count / 8 < x && x < a + N)
         retx = (uint8_t*) ::malloc(sizeof(uint8_t) * N);
 
-    const int bytes_off = count / 8, bits_off = count % 8;
+#if (OPTIMIZE_LEVEL == 0)
+    const size_t bytes_off = count / 8, bits_off = count % 8;
     const uint8_t fill = (is_positive_signed(a, N) ? 0 : 0xFF);
     for (register size_t i = 0; i < N; ++i)
     {
-        const uint8_t high = ((i + bytes_off + 1 >= N ? fill : a[i + bytes_off + 1]) << (8 - bits_off));
-        const uint8_t low = ((i + bytes_off >= N ? fill : a[i + bytes_off]) >> bits_off);
+        const uint8_t high = (i + bytes_off + 1 >= N ? fill : a[i + bytes_off + 1]) << (8 - bits_off);
+        const uint8_t low = (i + bytes_off >= N ? fill : a[i + bytes_off]) >> bits_off;
         retx[i] = high | low;
     }
+#else
+    const size_t word_count = N / sizeof(word_type);
+    const uint8_t byte_fill = (is_positive_signed(a, N) ? 0 : 0xFF);
+    const word_type word_fill = (is_positive_signed(a, N) ? 0 : ~(word_type)0); /// 先把变量算出来，避免操作数被破坏
+    const size_t bytes_off = count / 8, byte_bits_off = count % 8, byte_bits_off_esc = 8 - byte_bits_off;
+    const size_t limit = N - word_count * sizeof(word_type);
+    for (register size_t i = 0; i < limit; ++i) // 为了避免出现某个word的一部分超出范围，必须先运算byte
+    {
+        const size_t base = i + bytes_off;
+        const uint8_t high = (base + 1 >= N ? byte_fill : a[base + 1]) << byte_bits_off_esc;
+        const uint8_t low = (base >= N ? byte_fill : a[base]) >> byte_bits_off;
+        retx[i] = high | low;
+    }
+
+    const size_t words_off = count / (8 * sizeof(word_type)), word_bits_off = count % (8 * sizeof(word_type)),
+        word_bits_off_esc = 8 * sizeof(word_type) - word_bits_off;
+    const word_type *pa = reinterpret_cast<const word_type*>(a + limit);
+    word_type *pretx = reinterpret_cast<word_type*>(retx + limit);
+    for (register size_t i = 0; i < word_count; ++i)
+    {
+        const size_t base = i + words_off;
+        const word_type high = (base + 1 >= word_count ? word_fill : pa[base + 1]) << word_bits_off_esc;
+        const word_type low = (base >= word_count ? word_fill : pa[base]) >> word_bits_off;
+        pretx[i] = high | low;
+    }
+#endif
 
     // 回写数据
     if (retx != x)
