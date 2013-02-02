@@ -28,8 +28,8 @@ template <typename T>
 class _BigInteger
 {
 public:
-    typedef T word_type;
-    typedef typename DoubleSize<T>::double_type dword_type;
+    typedef typename StdInt<T>::unsigned_type word_type;
+    typedef typename StdInt<T>::double_unsigned_type dword_type;
 
 private:
     typedef _BigInteger<T> self;
@@ -120,6 +120,22 @@ public:
         minimize_significant_len();
     }
 
+    template <typename U>
+    _BigInteger(const U *buf, size_t len, bool withSign)
+        : m_buffer(NULL), m_buffer_cap(0), m_significant_len(0)
+    {
+        assert(NULL != buf && len > 0);
+
+        const uint8_t fill = (withSign ? (nut::is_positive(buf, len) ? 0 : 0xFF) : 0);
+        const size_t min_sig = sizeof(U) * len / sizeof(word_type) + 1; // 保证一个空闲字节放符号位
+        ensure_cap(min_sig);
+        ::memcpy(m_buffer, buf, sizeof(U) * len);
+        ::memset(((U*)m_buffer) + len, fill, min_sig * sizeof(word_type) - sizeof(U) * len);
+        m_significant_len = min_sig;
+        minimize_significant_len();
+    }
+
+    // 上述模板函数的一个特化
     _BigInteger(const word_type *buf, size_t len, bool withSign)
     {
         assert(NULL != buf && len > 0);
@@ -136,20 +152,6 @@ public:
             m_buffer[len] = 0;
             m_significant_len = len + 1;
         }
-        minimize_significant_len();
-    }
-
-    _BigInteger(const uint8_t *buf, size_t len, bool withSign)
-        : m_buffer(NULL), m_buffer_cap(0), m_significant_len(0)
-    {
-        assert(NULL != buf && len > 0);
-
-        const uint8_t fill = (withSign ? (0 == buf[len - 1] ? 0 : 0xFF) : 0);
-        const size_t min_sig = len / sizeof(word_type) + 1; // 保证一个空闲字节放符号位
-        ensure_cap(min_sig);
-        ::memcpy(m_buffer, buf, len);
-        ::memset(((uint8_t*)m_buffer) + len, fill, min_sig * sizeof(word_type) - len);
-        m_significant_len = min_sig;
         minimize_significant_len();
     }
 
@@ -927,7 +929,7 @@ public:
     }
 };
 
-typedef _BigInteger<unsigned> BigInteger;
+typedef _BigInteger<uint32_t> BigInteger;
 
 }
 

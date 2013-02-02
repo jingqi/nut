@@ -29,8 +29,8 @@ namespace nut
  *
  * @return a<N> == 0
  */
-template <typename word_type>
-bool is_zero(const word_type *a, size_t N)
+template <typename T>
+bool is_zero(const T *a, size_t N)
 {
     assert(NULL != a && N > 0);
 
@@ -46,10 +46,11 @@ bool is_zero(const word_type *a, size_t N)
  * @return true, 参数 >= 0
  *      false, 参数 < 0
  */
-template <typename word_type>
-bool is_positive(const word_type *a, size_t N)
+template <typename T>
+bool is_positive(const T *a, size_t N)
 {
     assert(NULL != a && N > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
 
     return 0 == (a[N - 1] & (((word_type) 1) << (8 * sizeof(word_type) - 1)));
 }
@@ -59,15 +60,16 @@ bool is_positive(const word_type *a, size_t N)
  *
  * @return 返回值>=1
  */
-template <typename word_type>
-size_t significant_size(const word_type *a, size_t N)
+template <typename T>
+size_t significant_size(const T *a, size_t N)
 {
     assert(NULL != a && N > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
 
     const bool positive = is_positive(a, N);
     const word_type skip_value = (positive ? 0 : ~(word_type)0);
     register size_t ret = N;
-    while (ret > 1 && a[ret - 1] == skip_value && is_positive(a, ret - 1) == positive)
+    while (ret > 1 && reinterpret_cast<const word_type*>(a)[ret - 1] == skip_value && is_positive(a, ret - 1) == positive)
         --ret;
     return ret;
 }
@@ -75,10 +77,11 @@ size_t significant_size(const word_type *a, size_t N)
 /**
  * 是否相等
  */
-template <typename word_type>
-bool equals(const word_type *a, size_t M, const word_type *b, size_t N)
+template <typename T>
+bool equals(const T *a, size_t M, const T *b, size_t N)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
 
     const bool positive1 = is_positive(a, M), positive2 = is_positive(b, N);
     if (positive1 != positive2)
@@ -87,7 +90,8 @@ bool equals(const word_type *a, size_t M, const word_type *b, size_t N)
     const word_type fill = (positive1 ? 0 : ~(word_type)0);
     const word_type limit = (M > N ? M : N);
     for (register size_t i = 0; i < limit; ++i)
-        if ((i < M ? a[i] : fill) != (i < N ? b[i] : fill))
+        if ((i < M ? reinterpret_cast<const word_type*>(a)[i] : fill) !=
+            (i < N ? reinterpret_cast<const word_type*>(b)[i] : fill))
             return false;
     return true;
 }
@@ -97,10 +101,11 @@ bool equals(const word_type *a, size_t M, const word_type *b, size_t N)
  *
  * @return a<M> < b<N>
  */
-template <typename word_type>
-bool less_than(const word_type *a, size_t M, const word_type *b, size_t N)
+template <typename T>
+bool less_than(const T *a, size_t M, const T *b, size_t N)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
 
     const bool positive1 = is_positive(a, M), positive2 = is_positive(b, N);
     if (positive1 != positive2)
@@ -110,8 +115,8 @@ bool less_than(const word_type *a, size_t M, const word_type *b, size_t N)
     const word_type fill = (positive1 ? 0 : ~(word_type)0);
     for (register int i = (M > N ? M : N) - 1; i >= 0; --i)
     {
-        const word_type op1 = (i < (int)M ? a[i] : fill);
-        const word_type op2 = (i < (int)N ? b[i] : fill);
+        const word_type op1 = (i < (int)M ? reinterpret_cast<const word_type*>(a)[i] : fill);
+        const word_type op2 = (i < (int)N ? reinterpret_cast<const word_type*>(b)[i] : fill);
         if (op1 != op2)
             return op1 < op2;
     }
@@ -122,10 +127,11 @@ bool less_than(const word_type *a, size_t M, const word_type *b, size_t N)
  * 带符号扩展(或者截断)
  * a<M> -> x<N>
  */
-template <typename word_type>
-void expand(const word_type *a, size_t M, word_type *x, size_t N)
+template <typename T>
+void expand(const T *a, size_t M, T *x, size_t N)
 {
     assert(NULL != a && M > 0 && NULL != x && N > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
 
     const uint8_t fill = (is_positive(a, M) ? 0 : 0xFF); /// 先把变量算出来，避免操作数被破坏
     if (x != a)
@@ -140,14 +146,15 @@ void expand(const word_type *a, size_t M, word_type *x, size_t N)
  *
  * @return 进位
  */
-template <typename word_type>
-uint8_t add(const word_type *a, size_t M, const word_type *b, size_t N, word_type *x, size_t P)
+template <typename T>
+uint8_t add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
-    typedef typename DoubleSize<word_type>::double_type dword_type;
+    typedef typename StdInt<T>::unsigned_type word_type;
+    typedef typename StdInt<T>::double_unsigned_type dword_type;
 
     // 避免区域交叉覆盖
-    word_type *retx = x;
+    word_type *retx = reinterpret_cast<word_type*>(x);
     if ((a < x && x < a + M) || (b < x && x < b + N))
         retx = (word_type*) ::malloc(sizeof(word_type) * P);
 
@@ -155,8 +162,8 @@ uint8_t add(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
     const word_type filla = (is_positive(a, M) ? 0 : ~(word_type)0), fillb = (is_positive(b, N) ? 0 : ~(word_type)0);
     for (register size_t i = 0; i < P; ++i)
     {
-        const dword_type pluser1 = (i < M ? a[i] : filla);
-        dword_type pluser2 = (i < N ? b[i] : fillb);
+        const dword_type pluser1 = (i < M ? reinterpret_cast<const word_type*>(a)[i] : filla);
+        dword_type pluser2 = (i < N ? reinterpret_cast<const word_type*>(b)[i] : fillb);
         pluser2 += pluser1 + carry;
 
         retx[i] = static_cast<word_type>(pluser2);
@@ -164,7 +171,7 @@ uint8_t add(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
     }
 
     // 回写数据
-    if (retx != x)
+    if (retx != reinterpret_cast<word_type*>(x))
     {
         ::memcpy(x, retx, sizeof(word_type) * P);
         ::free(retx);
@@ -178,19 +185,20 @@ uint8_t add(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
  *
  * @return 进位
  */
-template <typename word_type>
-uint8_t increase(word_type *x, size_t N)
+template <typename T>
+uint8_t increase(T *x, size_t N)
 {
     assert(NULL != x && N > 0);
-    typedef typename DoubleSize<word_type>::double_type dword_type;
+    typedef typename StdInt<T>::unsigned_type word_type;
+    typedef typename StdInt<T>::double_unsigned_type dword_type;
 
     register uint8_t carry = 1;
     for (register size_t i = 0; i < N && 0 != carry; ++i)
     {
-        dword_type pluser = x[i];
+        dword_type pluser = reinterpret_cast<const word_type*>(x)[i];
         pluser += carry;
         
-        x[i] = static_cast<word_type>(pluser);
+        x[i] = static_cast<T>(pluser);
         carry = static_cast<uint8_t>(pluser >> (8 * sizeof(word_type)));
     }
     return carry;
@@ -202,14 +210,15 @@ uint8_t increase(word_type *x, size_t N)
  *
  * @return 进位
  */
-template <typename word_type>
-uint8_t sub(const word_type *a, size_t M, const word_type *b, size_t N, word_type *x, size_t P)
+template <typename T>
+uint8_t sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
-    typedef typename DoubleSize<word_type>::double_type dword_type;
+    typedef typename StdInt<T>::unsigned_type word_type;
+    typedef typename StdInt<word_type>::double_unsigned_type dword_type;
 
     // 避免区域交叉覆盖
-    word_type *retx = x;
+    word_type *retx = reinterpret_cast<word_type*>(x);
     if ((a < x && x < a + M) || (b < x && x < b + N))
         retx = (word_type*) ::malloc(sizeof(word_type) * P);
 
@@ -217,8 +226,8 @@ uint8_t sub(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
     register uint8_t carry = 1;
     for (register size_t i = 0; i < P; ++i)
     {
-        const dword_type pluser1 = (i < M ? a[i] : filla);
-        dword_type pluser2 = static_cast<word_type>(~(i < N ? b[i] : fillb));
+        const dword_type pluser1 = (i < M ? reinterpret_cast<const word_type*>(a)[i] : filla);
+        dword_type pluser2 = static_cast<word_type>(~(i < N ? reinterpret_cast<const word_type*>(b)[i] : fillb));
         pluser2 += pluser1 + carry;
         
         retx[i] = static_cast<word_type>(pluser2);
@@ -226,7 +235,7 @@ uint8_t sub(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
     }
 
     // 回写数据
-    if (retx != x)
+    if (retx != reinterpret_cast<word_type*>(x))
     {
         ::memcpy(x, retx, sizeof(word_type) * P);
         ::free(retx);
@@ -240,20 +249,21 @@ uint8_t sub(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
  *
  * @return 进位
  */
-template <typename word_type>
-uint8_t decrease(word_type *x, size_t N)
+template <typename T>
+uint8_t decrease(T *x, size_t N)
 {
     assert(NULL != x && N > 0);
-    typedef typename DoubleSize<word_type>::double_type dword_type;
+    typedef typename StdInt<T>::unsigned_type word_type;
+    typedef typename StdInt<T>::double_unsigned_type dword_type;
 
     register uint8_t carry = 0;
     for (register size_t i = 0; i < N && 1 != carry; ++i)
     {
-        dword_type pluser = x[i];
+        dword_type pluser = reinterpret_cast<const word_type*>(x)[i];
         pluser += carry + (dword_type)(word_type)~(word_type)0;
 
-        x[i] = static_cast<uint8_t>(pluser);
-        carry = static_cast<uint8_t>(pluser >> (sizeof(uint8_t) * 8));
+        x[i] = static_cast<T>(pluser);
+        carry = static_cast<uint8_t>(pluser >> (8 * sizeof(word_type)));
     }
     return carry;
 }
@@ -264,14 +274,15 @@ uint8_t decrease(word_type *x, size_t N)
  *
  * @return 进位
  */
-template <typename word_type>
-uint8_t negate(const word_type *a, size_t M, word_type *x, size_t N)
+template <typename T>
+uint8_t negate(const T *a, size_t M, T *x, size_t N)
 {
     assert(NULL != a && M > 0 && NULL != x && N > 0);
-    typedef typename DoubleSize<word_type>::double_type dword_type;
+    typedef typename StdInt<T>::unsigned_type word_type;
+    typedef typename StdInt<T>::double_unsigned_type dword_type;
 
     // 避免区域交叉覆盖
-    word_type *retx = x;
+    word_type *retx = reinterpret_cast<word_type*>(x);
     if (a < x && x < a + M)
         retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
@@ -279,7 +290,7 @@ uint8_t negate(const word_type *a, size_t M, word_type *x, size_t N)
     const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
     for (register size_t i = 0; i < N; ++i)
     {
-        dword_type pluser = static_cast<word_type>(~(i < M ? a[i] : fill));
+        dword_type pluser = static_cast<word_type>(~(i < M ? reinterpret_cast<const word_type*>(a)[i] : fill));
         pluser += carry;
 
         retx[i] = static_cast<word_type>(pluser);
@@ -287,7 +298,7 @@ uint8_t negate(const word_type *a, size_t M, word_type *x, size_t N)
     }
 
     // 回写数据
-    if (retx != x)
+    if (retx != reinterpret_cast<word_type*>(x))
     {
         ::memcpy(x, retx, N);
         ::free(retx);
@@ -299,14 +310,15 @@ uint8_t negate(const word_type *a, size_t M, word_type *x, size_t N)
  * 相乘
  * x<P> = a<M> * b<N>
  */
-template <typename word_type>
-void multiply(const word_type *a, size_t M, const word_type *b, size_t N, word_type *x, size_t P)
+template <typename T>
+void multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
-    typedef typename DoubleSize<word_type>::double_type dword_type;
+    typedef typename StdInt<T>::unsigned_type word_type;
+    typedef typename StdInt<T>::double_unsigned_type dword_type;
 
     // 避免区域交叉覆盖
-    word_type *retx = x;
+    word_type *retx = reinterpret_cast<word_type*>(x);
     if ((a - P < x && x < a + M) || (b - P < x && x < b + N))
         retx = (word_type*) ::malloc(sizeof(word_type) * P);
 
@@ -316,7 +328,7 @@ void multiply(const word_type *a, size_t M, const word_type *b, size_t N, word_t
     for (register size_t i = 0; i < P; ++i)
     {
         word_type carry = 0; // 这个进位包括乘法的，故此会大于1
-        const dword_type mult1 = (i < M ? a[i] : filla);
+        const dword_type mult1 = (i < M ? reinterpret_cast<const word_type*>(a)[i] : filla);
         if (i >= M && 0 == filla)
             break;
         if (mult1 == 0)
@@ -324,7 +336,7 @@ void multiply(const word_type *a, size_t M, const word_type *b, size_t N, word_t
 
         for (register size_t j = 0; i + j < P; ++j)
         {
-            dword_type mult2 = (j < N ? b[j] : fillb);
+            dword_type mult2 = (j < N ? reinterpret_cast<const word_type*>(b)[j] : fillb);
             mult2 = mult1 * mult2 + retx[i + j] + carry;
 
             retx[i + j] = static_cast<word_type>(mult2);
@@ -333,7 +345,7 @@ void multiply(const word_type *a, size_t M, const word_type *b, size_t N, word_t
     }
 
     // 回写数据
-    if (retx != x)
+    if (retx != reinterpret_cast<word_type*>(x))
     {
         ::memcpy(x, retx, sizeof(word_type) * P);
         ::free(retx);
@@ -350,13 +362,15 @@ void multiply(const word_type *a, size_t M, const word_type *b, size_t N, word_t
  * @param y
  *      余数
  */
-template <typename word_type>
-void divide(const word_type *a, size_t M, const word_type *b, size_t N, word_type *x, size_t P, word_type *y, size_t Q)
+template <typename T>
+void divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, size_t Q)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0);
     assert((NULL != x && P > 0) || (NULL != y && Q > 0));
     assert(NULL == x || P <= 0 || NULL == y || Q <= 0 || y >= x + P || x >= y + Q); // 避免区域交叉覆盖
     assert(!is_zero(b, N)); // 被除数不能为0
+
+    typedef typename StdInt<T>::unsigned_type word_type;
 
     // 常量
     const size_t dividend_len = significant_size(a, M);
@@ -366,10 +380,10 @@ void divide(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
     const size_t quotient_len = (P < dividend_len ? P : dividend_len);
 
     // 避免数据在计算中途被破坏
-    word_type *quotient = x; // 商，可以为 NULL
+    word_type *quotient = reinterpret_cast<word_type*>(x); // 商，可以为 NULL
     if ((a - P < x && x < a) || (b - P < x && x < b + N)) // 兼容 x==a 的情况
         quotient = (word_type*) ::malloc(sizeof(word_type) * quotient_len);
-    word_type *remainder = y; // 余数，不能为 NULL
+    word_type *remainder = reinterpret_cast<word_type*>(y); // 余数，不能为 NULL
     if (NULL == y || Q < divisor_len || (a - Q < y && y < a + M) || (b - Q < y && y < b + N))
         remainder = (word_type*) ::malloc(sizeof(word_type) * divisor_len);
 
@@ -380,7 +394,7 @@ void divide(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
     for (register size_t i = 0; i < dividend_len; ++i)
     {
         const size_t dividend_word_pos = dividend_len - i - 1;
-        const word_type next_dividend_word = a[dividend_word_pos]; // 余数左移时的低位补位部分
+        const word_type next_dividend_word = reinterpret_cast<const word_type*>(a)[dividend_word_pos]; // 余数左移时的低位补位部分
         if (NULL != quotient && dividend_word_pos < P)
             quotient[dividend_word_pos] = 0; // 初始化商，注意，兼容 x==a 的情况
 
@@ -392,9 +406,9 @@ void divide(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
 
             // 加上/减去除数
             if (remainder_positive == divisor_positive)
-                sub(remainder, divisor_len, b, divisor_len, remainder, divisor_len);
+                sub(remainder, divisor_len, reinterpret_cast<const word_type*>(b), divisor_len, remainder, divisor_len);
             else
-                add(remainder, divisor_len, b, divisor_len, remainder, divisor_len);
+                add(remainder, divisor_len, reinterpret_cast<const word_type*>(b), divisor_len, remainder, divisor_len);
 
             // 试商结果
             remainder_positive = is_positive(remainder, divisor_len);
@@ -427,7 +441,7 @@ void divide(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
             if (!quotient_positive)
                 increase(quotient, quotient_len);
         }
-        expand(quotient, quotient_len, x, P);
+        expand(quotient, quotient_len, reinterpret_cast<word_type*>(x), P);
     }
 
     /**
@@ -439,17 +453,17 @@ void divide(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
         if (!remainder_is_zero && remainder_positive != dividend_positive)
         {
             if (divisor_positive == dividend_positive)
-                add(remainder, divisor_len, b, divisor_len, remainder, divisor_len);
+                add(remainder, divisor_len, reinterpret_cast<const word_type*>(b), divisor_len, remainder, divisor_len);
             else
-                sub(remainder, divisor_len, b, divisor_len, remainder, divisor_len);
+                sub(remainder, divisor_len, reinterpret_cast<const word_type*>(b), divisor_len, remainder, divisor_len);
         }
-        expand(remainder, divisor_len, y, Q);
+        expand(remainder, divisor_len, reinterpret_cast<word_type*>(y), Q);
     }
 
     // 释放空间
-    if (quotient != x)
+    if (quotient != reinterpret_cast<word_type*>(x))
         ::free(quotient);
-    if (remainder != y)
+    if (remainder != reinterpret_cast<word_type*>(y))
         ::free(remainder);
 }
 
@@ -457,26 +471,29 @@ void divide(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
  * 左移
  * x<N> = a<N> << count
  */
-template <typename word_type>
-void shift_left(const word_type *a, word_type *x, size_t N, size_t count)
+template <typename T>
+void shift_left(const T *a, T *x, size_t N, size_t count)
 {
     assert(NULL != a && NULL != x && N > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
 
     // 避免区域交叉覆盖
-    word_type *retx = x;
+    word_type *retx = reinterpret_cast<word_type*>(x);
     if (a - N < x && x < a - count / (8 * sizeof(word_type)))
         retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
     const int words_off = count / (8 * sizeof(word_type)), bits_off = count % (8 * sizeof(word_type));
     for (register int i = N - 1; i >= 0; --i)
     {
-        const word_type high = (i - words_off >= 0 ? a[i - words_off] : 0) << bits_off;
-        const word_type low = (i - words_off - 1 >= 0 ? a[i - words_off - 1] : 0) >> (8 * sizeof(word_type) - bits_off);
+        const word_type high = (i - words_off >= 0 ? reinterpret_cast<const word_type*>(a)[i - words_off] : 0)
+            << bits_off;
+        const word_type low = (i - words_off - 1 >= 0 ? reinterpret_cast<const word_type*>(a)[i - words_off - 1] : 0)
+            >> (8 * sizeof(word_type) - bits_off);
         retx[i] = high | low;
     }
 
     // 回写数据
-    if (retx != x)
+    if (retx != reinterpret_cast<word_type*>(x))
     {
         ::memcpy(x, retx, sizeof(word_type) * N);
         ::free(retx);
@@ -487,13 +504,14 @@ void shift_left(const word_type *a, word_type *x, size_t N, size_t count)
  * 右移
  * x<N> = a<N> >> count
  */
-template <typename word_type>
-void shift_right(const word_type *a, word_type *x, size_t N, size_t count)
+template <typename T>
+void shift_right(const T *a, T *x, size_t N, size_t count)
 {
     assert(NULL != a && NULL != x && N > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
 
     // 避免区域交叉覆盖
-    word_type *retx = x;
+    word_type *retx = reinterpret_cast<word_type*>(x);
     if (a + count / (8 * sizeof(word_type)) < x && x < a + N)
         retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
@@ -501,13 +519,15 @@ void shift_right(const word_type *a, word_type *x, size_t N, size_t count)
     const word_type fill = (is_positive(a, N) ? 0 : ~(word_type)0);
     for (register size_t i = 0; i < N; ++i)
     {
-        const word_type high = (i + bytes_off + 1 >= N ? fill : a[i + bytes_off + 1]) << (8 * sizeof(word_type) - bits_off);
-        const word_type low = (i + bytes_off >= N ? fill : a[i + bytes_off]) >> bits_off;
+        const word_type high = (i + bytes_off + 1 >= N ? fill : reinterpret_cast<const word_type*>(a)[i + bytes_off + 1])
+            << (8 * sizeof(word_type) - bits_off);
+        const word_type low = (i + bytes_off >= N ? fill : reinterpret_cast<const word_type*>(a)[i + bytes_off])
+            >> bits_off;
         retx[i] = high | low;
     }
 
     // 回写数据
-    if (retx != x)
+    if (retx != reinterpret_cast<word_type*>(x))
     {
         ::memcpy(x, retx, sizeof(word_type) * N);
         ::free(retx);
@@ -518,14 +538,15 @@ void shift_right(const word_type *a, word_type *x, size_t N, size_t count)
  * 按位与
  * x<N> = a<N> & b<N>
  */
-template <typename word_type>
-void bit_and(const word_type *a, const word_type *b, word_type *x, size_t N)
+template <typename T>
+void bit_and(const T *a, const T *b, T *x, size_t N)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
 
 #if (OPTIMIZE_LEVEL == 0)
     // 避免区域交叉覆盖
-    word_type *retx = x;
+    word_type *retx = reinterpret_cast<word_type*>(x);
     if ((a < x && x < a + N) || (b < x && x < b + N))
         retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
@@ -568,14 +589,15 @@ void bit_and(const word_type *a, const word_type *b, word_type *x, size_t N)
  * 按位或
  * x<N> = a<N> | b<N>
  */
-template <typename word_type>
-void bit_or(const word_type *a, const word_type *b, word_type *x, size_t N)
+template <typename T>
+void bit_or(const T *a, const T *b, T *x, size_t N)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
 
 #if (OPTIMIZE_LEVEL == 0)
     // 避免区域交叉覆盖
-    word_type *retx = x;
+    word_type *retx = reinterpret_cast<word_type*>(x);
     if ((a < x && x < a + N) || (b < x && x < b + N))
         retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
@@ -618,14 +640,15 @@ void bit_or(const word_type *a, const word_type *b, word_type *x, size_t N)
  * 按位异或
  * x<N> = a<N> ^ b<N>
  */
-template <typename word_type>
-void bit_xor(const word_type *a, const word_type *b, word_type *x, size_t N)
+template <typename T>
+void bit_xor(const T *a, const T *b, T *x, size_t N)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
 
 #if (OPTIMIZE_LEVEL == 0)
     // 避免区域交叉覆盖
-    word_type *retx = x;
+    word_type *retx = reinterpret_cast<word_type*>(x);
     if ((a < x && x < a + N) || (b < x && x < b + N))
         retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
@@ -668,14 +691,15 @@ void bit_xor(const word_type *a, const word_type *b, word_type *x, size_t N)
  * 按位同或
  * x<N> = ~(a<N> ^ b<N>)
  */
-template <typename word_type>
-void bit_nxor(const word_type *a, const word_type *b, word_type *x, size_t N)
+template <typename T>
+void bit_nxor(const T *a, const T *b, T *x, size_t N)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
 
 #if (OPTIMIZE_LEVEL == 0)
     // 避免区域交叉覆盖
-    word_type *retx = x;
+    word_type *retx = reinterpret_cast<word_type*>(x);
     if ((a < x && x < a + N) || (b < x && x < b + N))
         retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
@@ -718,14 +742,15 @@ void bit_nxor(const word_type *a, const word_type *b, word_type *x, size_t N)
  * 按位取反
  * x<N> = ~a<N>
  */
-template <typename word_type>
-void bit_not(const word_type *a, word_type *x, size_t N)
+template <typename T>
+void bit_not(const T *a, T *x, size_t N)
 {
     assert(NULL != a && NULL != x && N > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
 
 #if (OPTIMIZE_LEVEL == 0)
     // 避免区域交叉覆盖
-    word_type *retx = x;
+    word_type *retx = reinterpret_cast<word_type*>(x);
     if (a < x && x < a + N)
         retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
