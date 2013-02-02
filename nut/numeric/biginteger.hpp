@@ -324,6 +324,9 @@ public:
     BigInteger operator%(const BigInteger& x) const
     {
         assert(!x.is_zero());
+
+        if (is_positive() && x.is_positive() && *this < x) // 小幅度优化
+            return *this;
         
         BigInteger ret;
         ret.ensure_cap(x.m_significant_len);
@@ -405,6 +408,8 @@ public:
 
     BigInteger& operator/=(const BigInteger& x)
     {
+        assert(!x.is_zero());
+
     	divide_signed(m_bytes, m_significant_len, x.m_bytes, x.m_significant_len, m_bytes, m_significant_len, NULL, 0);
     	minimize_significant_len();
         return *this;
@@ -412,6 +417,8 @@ public:
 
     BigInteger& operator/=(long long v)
     {
+        assert(0 != v);
+
         divide_signed(m_bytes, m_significant_len, (uint8_t*)&v, sizeof(v), m_bytes, m_significant_len, NULL, 0);
         minimize_significant_len();
         return *this;
@@ -419,12 +426,19 @@ public:
 
     inline BigInteger& operator%=(const BigInteger& x)
     {
+        assert(!x.is_zero());
+
+        if (is_positive() && x.is_positive() && *this < x) // 小幅度优化
+            return *this;
+
         *this = *this % x;
         return *this;
     }
 
     inline BigInteger& operator%=(long long v)
     {
+        assert(0 != v);
+
         *this = *this % v;
         return *this;
     }

@@ -1,4 +1,4 @@
-
+ï»¿
 #include <iostream>
 #include <nut/unittest/unittest.hpp>
 #include <nut/numeric/numeric_algo.hpp>
@@ -24,8 +24,8 @@ NUT_FIXTURE(TestNumericAlgo)
 
 	void testBugs()
 	{
-        // bug ¸ù¾İ¶ş½øÖÆÌØĞÔ¶ÔÀ©Õ¹Å·¼¸ÀïµÃËã·¨µÄÓÅ»¯ÊµÏÖÓĞÎÊÌâ
-        // Êµ¼ÊÉÏÊÇ BigInteger µÄ -= ²Ù×÷ÓÉÓÚ¼ÆËã½á¹ûºÍ²Ù×÷Êı¹²ÏíÄÚ´æµ¼ÖÂµÄÎÊÌâ
+        // bug æ ¹æ®äºŒè¿›åˆ¶ç‰¹æ€§å¯¹æ‰©å±•æ¬§å‡ é‡Œå¾—ç®—æ³•çš„ä¼˜åŒ–å®ç°æœ‰é—®é¢˜
+        // å®é™…ä¸Šæ˜¯ BigInteger çš„ -= æ“ä½œç”±äºè®¡ç®—ç»“æœå’Œæ“ä½œæ•°å…±äº«å†…å­˜å¯¼è‡´çš„é—®é¢˜
         BigInteger a(65537), b = ::BigInteger::valueOf("50956903296"), d, x, y;
         extended_euclid(a, b, &d, &x, &y);
         // printf("\n%s\n%s\n%s\n%s\n%s\n", a.toString().c_str(),b.toString().c_str(), d.toString().c_str(), x.toString().c_str(), y.toString().c_str());
@@ -34,7 +34,7 @@ NUT_FIXTURE(TestNumericAlgo)
 
     void testGcd()
     {
-         // ²âĞÔÄÜ
+         // æµ‹æ€§èƒ½
         {
             BigInteger bound(1);
             bound <<= 1024;
@@ -55,7 +55,7 @@ NUT_FIXTURE(TestNumericAlgo)
 
     void testExtendEuclid() 
     {
-        // ²âĞÔÄÜ
+        // æµ‹æ€§èƒ½
         {
             BigInteger bound(1);
             bound <<= 1024;
