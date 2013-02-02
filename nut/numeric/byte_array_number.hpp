@@ -288,10 +288,11 @@ inline void expand_signed(const uint8_t *a, size_t M, uint8_t *x, size_t N)
 {
     assert(NULL != a && M > 0 && NULL != x && N > 0);
 
+    const uint8_t fill = (is_positive_signed(a, M) ? 0 : 0xFF); /// 先把变量算出来，避免操作数被破坏
     if (x != a)
         ::memmove(x, a, (M < N ? M : N));
     if (M < N)
-        ::memset(x + M, (is_positive_signed(a, M) ? 0 : 0xFF), N - M);
+        ::memset(x + M, fill, N - M);
 }
 
 /**
@@ -383,7 +384,7 @@ inline uint8_t add_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N
 
 #if (OPTIMIZE_LEVEL == 0)
     register uint8_t carry = 0;
-    const uint16_t filla = (is_positive_signed(a, M) ? 0 : 0x00FF), fillb = (is_positive_signed(b, N) ? 0 : 0x00FF);
+    const uint8_t filla = (is_positive_signed(a, M) ? 0 : 0x00FF), fillb = (is_positive_signed(b, N) ? 0 : 0x00FF);
     for (register size_t i = 0; i < P; ++i)
     {
         const uint16_t pluser1 = (i < M ? a[i] : filla);
@@ -395,6 +396,7 @@ inline uint8_t add_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N
     }
 #else
     register uint8_t carry = 0;
+    const uint8_t filla = (is_positive_signed(a, M) ? 0 : 0x00FF), fillb = (is_positive_signed(b, N) ? 0 : 0x00FF); /// 先把变量算出来，避免操作数被破坏
     const size_t word_count = (M < N ? (M < P ? M : P) : (N < P ? N : P)) / sizeof(word_type);
     for (register size_t i = 0; i < word_count; ++i)
     {
@@ -405,7 +407,6 @@ inline uint8_t add_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N
         reinterpret_cast<word_type*>(retx)[i] = static_cast<word_type>(pluser2);
         carry = static_cast<word_type>(pluser2 >> (sizeof(word_type) * 8));
     }
-    const uint16_t filla = (is_positive_signed(a, M) ? 0 : 0x00FF), fillb = (is_positive_signed(b, N) ? 0 : 0x00FF);
     for (register size_t i = sizeof(word_type) * word_count; i < P; ++i)
     {
         const uint16_t pluser1 = (i < M ? a[i] : filla);
@@ -602,7 +603,7 @@ inline uint8_t sub_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N
         retx = (uint8_t*) ::malloc(sizeof(uint8_t) * P);
 
 #if (OPTIMIZE_LEVEL == 0)
-    const uint16_t filla = (is_positive_signed(a, M) ? 0 : 0x00FF), fillb = (is_positive_signed(b, N) ? 0 : 0x00FF);
+    const uint8_t filla = (is_positive_signed(a, M) ? 0 : 0x00FF), fillb = (is_positive_signed(b, N) ? 0 : 0x00FF);
     register uint8_t carry = 1;
     for (register size_t i = 0; i < P; ++i)
     {
@@ -614,6 +615,7 @@ inline uint8_t sub_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N
         carry = static_cast<uint8_t>(pluser2 >> (sizeof(uint8_t) * 8));
     }
 #else
+    const uint8_t filla = (is_positive_signed(a, M) ? 0 : 0x00FF), fillb = (is_positive_signed(b, N) ? 0 : 0x00FF); /// 先把变量算出来，避免操作数被破坏
     const size_t word_count = (M < N ? (M < P ? M : P) : (N < P ? N : P)) / sizeof(word_type);
     register uint8_t carry = 1;
     for (register size_t i = 0; i < word_count; ++i)
@@ -625,7 +627,6 @@ inline uint8_t sub_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N
         reinterpret_cast<word_type*>(retx)[i] = static_cast<word_type>(pluser2);
         carry = static_cast<word_type>(pluser2 >> (sizeof(word_type) * 8));
     }
-    const uint16_t filla = (is_positive_signed(a, M) ? 0 : 0x00FF), fillb = (is_positive_signed(b, N) ? 0 : 0x00FF);
     for (register size_t i = word_count * sizeof(word_type); i < P; ++i)
     {
         const uint16_t pluser1 = (i < M ? a[i] : filla);
@@ -824,6 +825,7 @@ inline uint8_t negate_signed(const uint8_t *a, size_t M, uint8_t *x, size_t N)
         carry = static_cast<uint8_t>(pluser >> (sizeof(uint8_t) * 8));
     }
 #else
+    const uint8_t fill = (is_positive_signed(a, M) ? 0 : 0xFF); /// 先把变量算出来，避免操作数被破坏
     const size_t word_count = (M < N ? M : N) / sizeof(word_type);
     register uint8_t carry = 1;
     for (register size_t i = 0; i < word_count; ++i)
@@ -834,7 +836,6 @@ inline uint8_t negate_signed(const uint8_t *a, size_t M, uint8_t *x, size_t N)
         reinterpret_cast<word_type*>(retx)[i] = static_cast<word_type>(pluser);
         carry = static_cast<uint8_t>(pluser >> (sizeof(word_type) * 8));
     }
-    const uint8_t fill = (is_positive_signed(a, M) ? 0 : 0xFF);
     for (register size_t i = word_count * sizeof(word_type); i < N; ++i)
     {
         uint16_t pluser = static_cast<uint8_t>(~(i < M ? a[i] : fill));
@@ -936,8 +937,8 @@ inline void multiply_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t
         retx = (uint8_t*) ::malloc(sizeof(uint8_t) * P);
 
     // 乘法
+    const uint8_t filla = (is_positive_signed(a,M) ? 0 : 0xFF), fillb = (is_positive_signed(b,N) ? 0 : 0xFF); /// 先把变量算出来，避免操作数被破坏
     ::memset(retx, 0, P);
-    const uint8_t filla = (is_positive_signed(a,M) ? 0 : 0xFF), fillb = (is_positive_signed(b,N) ? 0 : 0xFF);
     for (register size_t i = 0; i < P; ++i)
     {
         uint8_t carry = 0;
@@ -1174,7 +1175,7 @@ inline void divide_signed(const uint8_t *a, const uint8_t *b, uint8_t *x, uint8_
     // 常量
     const size_t dividend_len = significant_size_signed(a, N);
     const size_t divisor_len = significant_size_signed(b, N);
-    const bool dividend_positive = is_positive_signed(a, N);
+    const bool dividend_positive = is_positive_signed(a, N); /// 先把变量算出来，避免操作数被破坏
     const bool divisor_positive = is_positive_signed(b, N);
 
     // 避免数据在计算中途被破坏
@@ -1279,7 +1280,7 @@ inline void divide_signed(const uint8_t *a, size_t M, const uint8_t *b, size_t N
     // 常量
     const size_t dividend_len = significant_size_signed(a, M);
     const size_t divisor_len = significant_size_signed(b, N);
-    const bool dividend_positive = is_positive_signed(a, M);
+    const bool dividend_positive = is_positive_signed(a, M); /// 先把变量算出来，避免操作数被破坏
     const bool divisor_positive = is_positive_signed(b, N);
     const size_t quotient_len = (P < dividend_len ? P : dividend_len);
 
