@@ -315,7 +315,7 @@ void multiply(const word_type *a, size_t M, const word_type *b, size_t N, word_t
     ::memset(retx, 0, sizeof(word_type) * P);
     for (register size_t i = 0; i < P; ++i)
     {
-        uint8_t carry = 0;
+        word_type carry = 0; // 这个进位包括乘法的，故此会大于1
         const dword_type mult1 = (i < M ? a[i] : filla);
         if (i >= M && 0 == filla)
             break;
@@ -328,7 +328,7 @@ void multiply(const word_type *a, size_t M, const word_type *b, size_t N, word_t
             mult2 = mult1 * mult2 + retx[i + j] + carry;
 
             retx[i + j] = static_cast<word_type>(mult2);
-            carry = static_cast<uint8_t>(mult2 >> (8 * sizeof(word_type)));
+            carry = static_cast<word_type>(mult2 >> (8 * sizeof(word_type)));
         }
     }
 

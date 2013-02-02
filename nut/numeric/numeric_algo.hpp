@@ -152,7 +152,8 @@ inline BigInteger gcd(const BigInteger& a, const BigInteger& b)
      * 综合两种算法，小规模时用一种，较大规模时用另一种
      */
     const size_t EMPIRICAL_BOUND = 10; /// 经验数据，根据性能测试结果得来
-    if (a.significant_length() < EMPIRICAL_BOUND || b.significant_length() < EMPIRICAL_BOUND)
+    if (sizeof(BigInteger::word_type) * a.significant_length() < EMPIRICAL_BOUND ||
+        sizeof(BigInteger::word_type) * b.significant_length() < EMPIRICAL_BOUND)
     {
         // 规模较小，直接运算比较高效
         BigInteger aa(a), bb(b);
@@ -503,7 +504,8 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
      * 综合优化，并去除递归调用(处理超大规模数时导致栈溢出)
      */
     const size_t EMPIRICAL_BOUND = 10; /// 经验数据，根据性能测试结果得来
-    if (a.significant_length() < EMPIRICAL_BOUND || b.significant_length() < EMPIRICAL_BOUND)
+    if (sizeof(BigInteger::word_type) * a.significant_length() < EMPIRICAL_BOUND ||
+        sizeof(BigInteger::word_type) * b.significant_length() < EMPIRICAL_BOUND)
     {
         BigInteger aa(a), bb(b);
         std::stack<BigInteger> as;

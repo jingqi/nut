@@ -35,7 +35,6 @@ class _BigInteger
 public:
     typedef T word_type;
     typedef typename DoubleSize<T>::double_type dword_type;
-    typedef typename DoubleSize<T>::double_signed_type dword_signed_type;
 
 private:
     typedef _BigInteger<T> self;
@@ -138,7 +137,7 @@ public:
         else
         {
             ensure_cap(len + 1);
-            ::memcpy(m_buffer, buf, len);
+            ::memcpy(m_buffer, buf, sizeof(word_type) * len);
             m_buffer[len] = 0;
             m_significant_len = len + 1;
         }
@@ -365,7 +364,7 @@ public:
 
         self ret;
         ret.ensure_cap(m_significant_len);
-        divide(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), ret.m_buffer, m_significant_len, NULL, 0);
+        divide(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), ret.m_buffer, m_significant_len, (word_type*)NULL, 0);
         ret.m_significant_len = m_significant_len;
         ret.minimize_significant_len();
         return ret;
@@ -477,7 +476,7 @@ public:
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
         assert(0 != v);
 
-        divide(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer, m_significant_len, NULL, 0);
+        divide(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer, m_significant_len, (word_type*)NULL, 0);
         minimize_significant_len();
         return *this;
     }
@@ -537,7 +536,7 @@ public:
             return *this;
 
         self ret(*this);
-        ret.ensure_significant_len(m_significant_len + count / (8 * sizeof(word_type)) + 1);
+        ret.ensure_significant_len(m_significant_len + (count - 1) / (8 * sizeof(word_type)) + 1);
         shift_left(ret.m_buffer, ret.m_buffer, ret.m_significant_len, count);
         ret.minimize_significant_len();
         return ret;
@@ -562,7 +561,7 @@ public:
         if (0 == count)
             return *this;
 
-        ensure_significant_len(m_significant_len + count / (8 * sizeof(word_type)) + 1);
+        ensure_significant_len(m_significant_len + (count - 1) / (8 * sizeof(word_type)) + 1);
         shift_left(m_buffer, m_buffer, m_significant_len, count);
         minimize_significant_len();
         return *this;
@@ -635,7 +634,7 @@ public:
     void set_bit(size_t i, int v)
     {
     	assert(v == 0 || v == 1);
-    	ensure_significant_len(i / (8 * sizeof(word_type)) + 1); // 避免符号位被覆盖
+    	ensure_significant_len((i + 1) / (8 * sizeof(word_type)) + 1); // 避免符号位被覆盖
     	if (0 == v)
     		m_buffer[i / (8 * sizeof(word_type))] &= ~(((word_type) 1) << (i % (8 * sizeof(word_type))));
     	else
