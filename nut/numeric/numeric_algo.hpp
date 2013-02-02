@@ -757,7 +757,7 @@ inline bool miller_rabin(const BigInteger& n, unsigned s)
     // Find a and m such that m is odd and n == 1 + 2**a * m
     const BigInteger thisMinusOne(n - ONE);
     BigInteger m(thisMinusOne);
-    const int a = lowest_bit(m.bytes(), m.significant_length());
+    const int a = m.lowest_bit();
     m >>= a;
 
     // Do the tests

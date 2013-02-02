@@ -140,10 +140,11 @@ void expand(const word_type *a, size_t M, word_type *x, size_t N)
  *
  * @return 进位
  */
-template <typename word_type, typename dword_type>
+template <typename word_type>
 uint8_t add(const word_type *a, size_t M, const word_type *b, size_t N, word_type *x, size_t P)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
+    typedef typename DoubleSize<word_type>::double_type dword_type;
 
     // 避免区域交叉覆盖
     word_type *retx = x;
@@ -177,10 +178,11 @@ uint8_t add(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
  *
  * @return 进位
  */
-template <typename word_type, typename dword_type>
+template <typename word_type>
 uint8_t increase(word_type *x, size_t N)
 {
     assert(NULL != x && N > 0);
+    typedef typename DoubleSize<word_type>::double_type dword_type;
 
     register uint8_t carry = 1;
     for (register size_t i = 0; i < N && 0 != carry; ++i)
@@ -200,10 +202,11 @@ uint8_t increase(word_type *x, size_t N)
  *
  * @return 进位
  */
-template <typename word_type, typename dword_type>
+template <typename word_type>
 uint8_t sub(const word_type *a, size_t M, const word_type *b, size_t N, word_type *x, size_t P)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
+    typedef typename DoubleSize<word_type>::double_type dword_type;
 
     // 避免区域交叉覆盖
     word_type *retx = x;
@@ -237,10 +240,11 @@ uint8_t sub(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
  *
  * @return 进位
  */
-template <typename word_type, typename dword_type>
+template <typename word_type>
 uint8_t decrease(word_type *x, size_t N)
 {
     assert(NULL != x && N > 0);
+    typedef typename DoubleSize<word_type>::double_type dword_type;
 
     register uint8_t carry = 0;
     for (register size_t i = 0; i < N && 1 != carry; ++i)
@@ -263,7 +267,8 @@ uint8_t decrease(word_type *x, size_t N)
 template <typename word_type>
 uint8_t negate(const word_type *a, size_t M, word_type *x, size_t N)
 {
-	assert(NULL != a && M > 0 && NULL != x && N > 0);
+    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    typedef typename DoubleSize<word_type>::double_type dword_type;
 
     // 避免区域交叉覆盖
     word_type *retx = x;
@@ -294,10 +299,11 @@ uint8_t negate(const word_type *a, size_t M, word_type *x, size_t N)
  * 相乘
  * x<P> = a<M> * b<N>
  */
-template <typename word_type, typename dword_type>
+template <typename word_type>
 void multiply(const word_type *a, size_t M, const word_type *b, size_t N, word_type *x, size_t P)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
+    typedef typename DoubleSize<word_type>::double_type dword_type;
 
     // 避免区域交叉覆盖
     word_type *retx = x;
@@ -386,9 +392,9 @@ void divide(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
 
             // 加上/减去除数
             if (remainder_positive == divisor_positive)
-                sub(remainder, b, remainder, divisor_len);
+                sub(remainder, divisor_len, b, divisor_len, remainder, divisor_len);
             else
-                add(remainder, b, remainder, divisor_len);
+                add(remainder, divisor_len, b, divisor_len, remainder, divisor_len);
 
             // 试商结果
             remainder_positive = is_positive(remainder, divisor_len);
@@ -433,9 +439,9 @@ void divide(const word_type *a, size_t M, const word_type *b, size_t N, word_typ
         if (!remainder_is_zero && remainder_positive != dividend_positive)
         {
             if (divisor_positive == dividend_positive)
-                add(remainder, b, remainder, divisor_len);
+                add(remainder, divisor_len, b, divisor_len, remainder, divisor_len);
             else
-                sub(remainder, b, remainder, divisor_len);
+                sub(remainder, divisor_len, b, divisor_len, remainder, divisor_len);
         }
         expand(remainder, divisor_len, y, Q);
     }
