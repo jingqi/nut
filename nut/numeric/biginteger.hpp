@@ -21,11 +21,6 @@
 namespace nut
 {
 
-template <typename T>
-class _BigInteger;
-template <typename T>
-extern _BigInteger<T> nextProbablePrime(const _BigInteger<T>& n);
-
 /**
  * 无限大整数
  */
