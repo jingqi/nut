@@ -90,8 +90,8 @@
     <ClInclude Include="..\..\..\nut\numeric\biginteger.hpp" />
     <ClInclude Include="..\..\..\nut\mem\sys_ma.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\bitsieve.hpp" />
-    <ClInclude Include="..\..\..\nut\numeric\byte_array_number.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\numeric_algo.hpp" />
+    <ClInclude Include="..\..\..\nut\numeric\word_array_signed_number.hpp" />
     <ClInclude Include="..\..\..\nut\pconsole\cmdexit.hpp" />
     <ClInclude Include="..\..\..\nut\pconsole\cmdhelp.hpp" />
     <ClInclude Include="..\..\..\nut\pconsole\icommand.hpp" />

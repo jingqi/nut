@@ -186,9 +186,6 @@
     <ClInclude Include="..\..\..\nut\gc\gcwrapper.hpp">
       <Filter>头文件\gc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\numeric\byte_array_number.hpp">
-      <Filter>头文件\numeric</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\logging\logpath.hpp">
       <Filter>头文件\logging</Filter>
     </ClInclude>
@@ -355,6 +352,9 @@
       <Filter>头文件\util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\nut\numeric\bitsieve.hpp">
+      <Filter>头文件\numeric</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\word_array_signed_number.hpp">
       <Filter>头文件\numeric</Filter>
     </ClInclude>
   </ItemGroup>
