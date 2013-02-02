@@ -143,27 +143,20 @@ public:
         }
         minimize_significant_len();
     }
-    /*
+
     _BigInteger(const uint8_t *buf, size_t len, bool withSign)
         : m_buffer(NULL), m_buffer_cap(0), m_significant_len(0)
     {
         assert(NULL != buf && len > 0);
-        if (withSign || is_positive(buf, len))
-        {
-            const size_t min_sig = (len + sizeof(word_type) - 1) / sizeof(word_type);
-            ensure_cap(len);
-            ::memcpy(m_buffer, buf, len);
-            m_significant_len = len;
-        }
-        else
-        {
-            ensure_cap(len + 1);
-            ::memcpy(m_buffer, buf, len);
-            m_buffer[len] = 0;
-            m_significant_len = len + 1;
-        }
+
+        const uint8_t fill = (withSign ? (0 == buf[len - 1] ? 0 : 0xFF) : 0);
+        const size_t min_sig = len / sizeof(word_type) + 1; // 保证一个空闲字节放符号位
+        ensure_cap(min_sig);
+        ::memcpy(m_buffer, buf, len);
+        ::memset(((uint8_t*)m_buffer) + len, fill, min_sig * sizeof(word_type) - len);
+        m_significant_len = min_sig;
         minimize_significant_len();
-    }*/
+    }
 
     _BigInteger(const self& x)
         : m_buffer(NULL), m_buffer_cap(0), m_significant_len(0)
@@ -611,9 +604,37 @@ public:
         m_significant_len = n;
     }
 
-    inline size_t significant_length() const
+    /**
+     * 以word_type为单位计算有效字长度
+     */
+    inline size_t significant_words_length() const
     {
         return m_significant_len;
+    }
+    
+    /**
+     * 以8比特字节为单位计算有效字节长度
+     *
+     * NOTE: 可能不是以 word_type 为单位有效长度的倍数
+     */
+    inline size_t significant_bytes_length() const
+    {
+        const bool positive = is_positive();
+        size_t ret = m_significant_len * sizeof(word_type);
+        word_type last_word = m_buffer[m_significant_len - 1];
+        for (int i = 1; i < sizeof(word_type); ++i)
+        {
+            const uint8_t high = (uint8_t) (last_word >> (8 * (sizeof(word_type) - i)));
+            if (high != (positive ? 0 : 0xFF))
+                break;
+
+            const uint8_t next_high = (uint8_t) (last_word >> (8 * (sizeof(word_type) - i - 1)));
+            if ((next_high & 0x80) != (positive ? 0 : 0x80))
+                break;
+
+            --ret;
+        }
+        return ret;
     }
 
     /**
