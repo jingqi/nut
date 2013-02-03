@@ -364,8 +364,14 @@ public:
     {
         assert(!x.is_zero());
 
-        if (is_positive() && x.is_positive() && *this < x) // 小幅度优化
-            return *this;
+        // 小幅度优化
+        if (is_positive() && x.is_positive())
+        {
+            if (*this < x)
+                return *this;
+            else if (*this < (x << 1))
+                return *this - x;
+        }
         
         self ret;
         ret.ensure_cap(x.m_significant_len);
@@ -475,8 +481,14 @@ public:
     {
         assert(!x.is_zero());
 
-        if (is_positive() && x.is_positive() && *this < x) // 小幅度优化
-            return *this;
+        // 小幅度优化
+        if (is_positive() && x.is_positive())
+        {
+            if (*this < x)
+                return *this;
+            else if (*this < (x << 1))
+                return *this -= x;
+        }
 
         *this = *this % x;
         return *this;
