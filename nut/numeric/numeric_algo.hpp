@@ -198,11 +198,13 @@ inline BigInteger gcd(const BigInteger& a, const BigInteger& b)
         }
         else if (aa > bb)
         {
-            aa = (aa - bb) >> 1;
+            aa -= bb;
+            aa >>= 1;
         }
         else
         {
-            bb = (bb - aa) >> 1;
+            bb -= aa;
+            bb >>= 1;
         }
     }
 #endif
@@ -581,13 +583,15 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
         {
             lb1s.push(-1);
             lb2s.push(-1);
-            aa = (aa - bb) >> 1;
+            aa -= bb;
+            aa >>= 1;
         }
         else
         {
             lb1s.push(-2);
             lb2s.push(-2);
-            bb = (bb - aa) >> 1;
+            bb -= aa;
+            bb >>= 1;
         }
     }
     if (NULL == x && NULL == y)
