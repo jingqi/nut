@@ -911,16 +911,16 @@ inline size_t bit0_length(const uint8_t *a,  size_t N)
 #if (OPTIMIZE_LEVEL == 0)
     for (register int i = N - 1; i >= 0; --i)
         if (0xFF != a[i])
-            return i * 8 + _bit_length(a[i]);
+            return i * 8 + _bit0_length(a[i]);
     return 0;
 #else
     const size_t bits32_count = N / sizeof(uint32_t);
     for (register int i = N - 1, limit = bits32_count * sizeof(uint32_t); i >= limit; --i)
         if (0xFF != a[i])
-            return i * 8 + _bit_length(a[i]);
+            return i * 8 + _bit0_length(a[i]);
     for (register int i = bits32_count - 1; i >= 0; --i)
         if (0xFFFFFFFF != reinterpret_cast<const uint32_t*>(a)[i])
-            return i * 32 + _bit_length(reinterpret_cast<const uint32_t*>(a)[i]);
+            return i * 32 + _bit0_length(reinterpret_cast<const uint32_t*>(a)[i]);
     return 0;
 #endif
 }
