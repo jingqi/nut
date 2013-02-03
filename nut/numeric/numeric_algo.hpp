@@ -356,7 +356,7 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
         }
         return;
     }
-#elif  (OPTIMIZE_LEVEL == 2)
+#elif (OPTIMIZE_LEVEL == 2)
     /**
      * 上一个算法的进一步优化
      */
@@ -618,7 +618,8 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
                 }
                 else if (lbx == 0)
                 {
-                    xx = (xx + bb) >> 1;
+                    xx += bb;
+                    xx >>= 1;
                     yy -= aa >> (lb1 - done);
                     ++done;
                 }
@@ -643,7 +644,8 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
                 }
                 else if (lby == 0)
                 {
-                    yy = (yy + aa) >> 1;
+                    yy += aa;
+                    yy >>= 1;
                     xx -= bb >> (lb2 - done);
                     ++done;
                 }
@@ -657,7 +659,8 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
         }
         else if (lb1 == -1)
         {
-            aa = (aa << 1) + bb;
+            aa <<= 1;
+            aa += bb;
             if (xx.bit_at(0) == 0)
             {
                 // d = dd;
@@ -671,12 +674,14 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
                 // x = (xx + b) / 2; y = yy - (xx + a) / 2;
                 // 或者 x = (xx - b) / 2; y = yy - (xx - a) / 2;
                 yy -= (xx + aa) >> 1; // 必须放在下一句前面
-                xx = (xx + bb) >> 1;
+                xx += bb;
+                xx >>= 1;
             }
         }
         else
         {
-            bb = (bb << 1) + aa;
+            bb <<= 1;
+            bb += aa;
             if (yy.bit_at(0) == 0)
             {
                 // d = dd;
@@ -690,7 +695,8 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
                 // x = xx - (yy + b) / 2; y = (yy + a) / 2;
                 // 或者 x == xx - (yy - b) / 2; y = (yy - a) / 2;
                 xx -= (yy + bb) >> 1; // 必须放在下一句前面
-                yy = (yy + aa) >> 1;
+                yy += aa;
+                yy >>= 1;
             }
         }
     }
