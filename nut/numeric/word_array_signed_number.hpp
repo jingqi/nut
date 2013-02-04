@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2011-12-17
- * @last-edit 2013-01-31 09:12:48 jingqi
+ * @last-edit 2013-02-04 19:20:17 jingqi
  * @brief
  *
  * 用于用word_type数组表示的有符号大数
@@ -351,6 +351,11 @@ void multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
         ::free(retx);
     }
 }
+
+template <typename T>
+void shift_left(const T *a, T *x, size_t N, size_t count);
+template <typename T>
+void shift_right(const T *a, T *x, size_t N, size_t count);
 
 /**
  * 相除

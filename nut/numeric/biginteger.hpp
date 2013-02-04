@@ -1,8 +1,8 @@
-﻿ /**
+﻿/**
  * @file -
  * @author jingqi
  * @date 2012-04-03
- * @last-edit 2013-01-31 10:00:22 jingqi
+ * @last-edit 2013-02-04 19:23:46 jingqi
  */
 
 #ifndef ___HEADFILE_0D8E9B0B_ACDC_4FD5_A0BE_71D75F7A5EFE_
@@ -20,6 +20,12 @@
 
 namespace nut
 {
+
+template <typename T>
+class _BigInteger;
+
+template <typename T>
+_BigInteger<T> nextProbablePrime(const _BigInteger<T>& n);
 
 /**
  * 无限大整数
