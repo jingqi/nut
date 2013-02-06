@@ -353,9 +353,7 @@ void multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 }
 
 template <typename T>
-void shift_left(const T *a, T *x, size_t N, size_t count);
-template <typename T>
-void shift_right(const T *a, T *x, size_t N, size_t count);
+void shift_left(const T *a, size_t M, T *x, size_t N, size_t count);
 
 /**
  * 相除
@@ -372,7 +370,7 @@ void divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, si
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0);
     assert((NULL != x && P > 0) || (NULL != y && Q > 0));
-    assert(NULL == x || P <= 0 || NULL == y || Q <= 0 || y >= x + P || x >= y + Q); // 避免区域交叉覆盖
+    assert(NULL == x || P == 0 || NULL == y || Q == 0 || y >= x + P || x >= y + Q); // 避免区域交叉覆盖
     assert(!is_zero(b, N)); // 被除数不能为0
 
     typedef typename StdInt<T>::unsigned_type word_type;
@@ -406,7 +404,7 @@ void divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, si
         for (register size_t j = 0; j < 8 * sizeof(word_type); ++j)
         {
             // 余数左移1位
-            shift_left(remainder, remainder, divisor_len, 1);
+            shift_left(remainder, divisor_len, remainder, divisor_len, 1);
             remainder[0] |= (next_dividend_word >> (8 * sizeof(word_type) - 1 - j)) & 0x01;
 
             // 加上/减去除数
@@ -472,36 +470,92 @@ void divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, si
         ::free(remainder);
 }
 
+template <typename T>
+void _shift_left_word(const T *a, size_t M, T *x, size_t N, size_t count)
+{
+    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
+
+    if (x + count == a)
+    {
+        return; // nothing need to do
+    }
+    else if (x + count < a)
+    {
+        const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
+        for (register size_t i = 0; i < N; ++i)
+            x[i] = (i < count ? 0 : (i - count >= M ? fill : a[i - count]));
+    }
+    else
+    {
+        const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
+        for (register int i = (int) N - 1; i >= 0; --i)
+            x[i] = (i < (int) count ? 0 : (i - count >= (int) M ? fill : a[i - count]));
+    }
+}
+
 /**
  * 左移
  * x<N> = a<N> << count
  */
 template <typename T>
-void shift_left(const T *a, T *x, size_t N, size_t count)
+void shift_left(const T *a, size_t M, T *x, size_t N, size_t count)
 {
-    assert(NULL != a && NULL != x && N > 0);
+    assert(NULL != a && M > 0 && NULL != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
-    // 避免区域交叉覆盖
-    word_type *retx = reinterpret_cast<word_type*>(x);
-    if (a - N < x && x < a - count / (8 * sizeof(word_type)))
-        retx = (word_type*) ::malloc(sizeof(word_type) * N);
-
     const int words_off = count / (8 * sizeof(word_type)), bits_off = count % (8 * sizeof(word_type));
-    for (register int i = N - 1; i >= 0; --i)
+    if (0 == bits_off)
     {
-        const word_type high = (i - words_off >= 0 ? reinterpret_cast<const word_type*>(a)[i - words_off] : 0)
-            << bits_off;
-        const word_type low = (i - words_off - 1 >= 0 ? reinterpret_cast<const word_type*>(a)[i - words_off - 1] : 0)
-            >> (8 * sizeof(word_type) - bits_off);
-        retx[i] = high | low;
+        _shift_left_word(a, M, x, N, words_off);
     }
-
-    // 回写数据
-    if (retx != reinterpret_cast<word_type*>(x))
+    else if (x + words_off < a)
     {
-        ::memcpy(x, retx, sizeof(word_type) * N);
-        ::free(retx);
+        const int fill = (is_positive(a, M) ? 0 : ~(word_type)0);
+        for (register size_t i = 0; i < N; ++i)
+        {
+            const word_type high = (i < (size_t)words_off ? 0 : (i - words_off >= M ? fill : reinterpret_cast<const word_type*>(a)[i - words_off]))
+                << bits_off;
+            const word_type low = (i < (size_t)words_off + 1 ? 0 : (i - words_off - 1 >= M ? fill : reinterpret_cast<const word_type*>(a)[i - words_off - 1]))
+                >> (8 * sizeof(word_type) - bits_off);
+            x[i] = high | low;
+        }
+    }
+    else
+    {
+        const int fill = (is_positive(a, M) ? 0 : ~(word_type)0);
+        for (register int i = N - 1; i >= 0; --i)
+        {
+            const word_type high = (i < (int) words_off ? 0 : (i - words_off >= (int)M ? fill : reinterpret_cast<const word_type*>(a)[i - words_off]))
+                << bits_off;
+            const word_type low = (i < (int) words_off + 1 ? 0 : (i - words_off - 1 >= (int)M ? fill : reinterpret_cast<const word_type*>(a)[i - words_off - 1]))
+                >> (8 * sizeof(word_type) - bits_off);
+            x[i] = high | low;
+        }
+    }
+}
+
+template <typename T>
+void _shift_right_word(const T *a, size_t M, T *x, size_t N, size_t count)
+{
+    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
+    
+    if (x == a + count)
+    {
+        return; // nothing need to do
+    }
+    else if (x < a + count)
+    {
+        const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
+        for (register size_t i = 0; i < N; ++i)
+            x[i] = (i + count >= M ? fill : a[i + count]);
+    }
+    else
+    {
+        const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
+        for (register int i = N - 1; i >= 0; --i)
+            x[i] = (i + count >= M ? fill : a[i + count]);
     }
 }
 
@@ -510,32 +564,39 @@ void shift_left(const T *a, T *x, size_t N, size_t count)
  * x<N> = a<N> >> count
  */
 template <typename T>
-void shift_right(const T *a, T *x, size_t N, size_t count)
+void shift_right(const T *a, size_t M, T *x, size_t N, size_t count)
 {
-    assert(NULL != a && NULL != x && N > 0);
+    assert(NULL != a && M > 0 && NULL != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
-    // 避免区域交叉覆盖
-    word_type *retx = reinterpret_cast<word_type*>(x);
-    if (a + count / (8 * sizeof(word_type)) < x && x < a + N)
-        retx = (word_type*) ::malloc(sizeof(word_type) * N);
-
-    const size_t bytes_off = count / (8 * sizeof(word_type)), bits_off = count % (8 * sizeof(word_type));
-    const word_type fill = (is_positive(a, N) ? 0 : ~(word_type)0);
-    for (register size_t i = 0; i < N; ++i)
+    const size_t words_off = count / (8 * sizeof(word_type)), bits_off = count % (8 * sizeof(word_type));
+    if (0 == bits_off)
     {
-        const word_type high = (i + bytes_off + 1 >= N ? fill : reinterpret_cast<const word_type*>(a)[i + bytes_off + 1])
-            << (8 * sizeof(word_type) - bits_off);
-        const word_type low = (i + bytes_off >= N ? fill : reinterpret_cast<const word_type*>(a)[i + bytes_off])
-            >> bits_off;
-        retx[i] = high | low;
+        _shift_right_word(a, M, x, N, words_off);
     }
-
-    // 回写数据
-    if (retx != reinterpret_cast<word_type*>(x))
+    else if (x <= a + words_off)
     {
-        ::memcpy(x, retx, sizeof(word_type) * N);
-        ::free(retx);
+        const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
+        for (register size_t i = 0; i < N; ++i)
+        {
+            const word_type high = (i + words_off + 1 >= M ? fill : reinterpret_cast<const word_type*>(a)[i + words_off + 1])
+                << (8 * sizeof(word_type) - bits_off);
+            const word_type low = (i + words_off >= M ? fill : reinterpret_cast<const word_type*>(a)[i + words_off])
+                >> bits_off;
+            x[i] = high | low;
+        }
+    }
+    else
+    {
+        const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
+        for (register int i = N - 1; i >= 0; --i)
+        {
+            const word_type high = (i + words_off + 1 >= M ? fill : reinterpret_cast<const word_type*>(a)[i + words_off + 1])
+                << (8 * sizeof(word_type) - bits_off);
+            const word_type low = (i + words_off >= M ? fill : reinterpret_cast<const word_type*>(a)[i + words_off])
+                >> bits_off;
+            x[i] = high | low;
+        }
     }
 }
 

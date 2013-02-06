@@ -74,7 +74,7 @@ private:
     /**
      * 释放缓冲区
      */
-    void free_mem()
+    inline void free_mem()
     {
         if (NULL != m_buffer)
             ::free(m_buffer);
@@ -543,9 +543,11 @@ public:
         if (0 == count)
             return *this;
 
-        self ret(*this);
-        ret.ensure_significant_len(m_significant_len + (count - 1) / (8 * sizeof(word_type)) + 1);
-        shift_left(ret.m_buffer, ret.m_buffer, ret.m_significant_len, count);
+        self ret;
+        const size_t min_sig = m_significant_len + (count - 1) / (8 * sizeof(word_type)) + 1;
+        ret.ensure_cap(min_sig);
+        shift_left(m_buffer, m_significant_len, ret.m_buffer, min_sig, count);
+        ret.m_significant_len = min_sig;
         ret.minimize_significant_len();
         return ret;
     }
@@ -558,8 +560,10 @@ public:
         if (0 == count)
             return *this;
 
-        self ret(*this);
-        shift_right(ret.m_buffer, ret.m_buffer, ret.m_significant_len, count);
+        self ret;
+        ret.ensure_cap(m_significant_len);
+        shift_right(m_buffer, m_significant_len, ret.m_buffer, m_significant_len, count);
+        ret.m_significant_len = m_significant_len;
         ret.minimize_significant_len();
         return ret;
     }
@@ -569,8 +573,10 @@ public:
         if (0 == count)
             return *this;
 
-        ensure_significant_len(m_significant_len + (count - 1) / (8 * sizeof(word_type)) + 1);
-        shift_left(m_buffer, m_buffer, m_significant_len, count);
+        const size_t min_sig = m_significant_len + (count - 1) / (8 * sizeof(word_type)) + 1;
+        ensure_cap(min_sig);
+        shift_left(m_buffer, m_significant_len, m_buffer, min_sig, count);
+        m_significant_len = min_sig;
         minimize_significant_len();
         return *this;
     }
@@ -580,12 +586,36 @@ public:
         if (0 == count)
             return *this;
 
-        shift_right(m_buffer, m_buffer, m_significant_len, count);
+        shift_right(m_buffer, m_significant_len, m_buffer, m_significant_len, count);
         minimize_significant_len();
         return *this;
     }
 
 public:
+    /**
+     * 除法并返回商和余数
+     */
+    void divide_remainder(const self& divider, self *result, self *remainder) const
+    {
+        if (NULL != result)
+            result->ensure_cap(m_significant_len);
+        if (NULL != remainder)
+            remainder->ensure_cap(divider->m_significant_len);
+
+        divide(m_buffer, m_significant_len, (NULL == result ? NULL : result->m_buffer), m_significant_len, (NULL == remainder ? NULL : remainder->m_buffer), divider->m_significant_len);
+
+        if (NULL != result)
+        {
+            result->m_significant_len = m_significant_len;
+            result->minimize_significant_len();
+        }
+        if (NULL != remainder)
+        {
+            remainder->m_significant_len = divider->m_significant_len;
+            remainder->minimize_significant_len();
+        }
+    }
+
     inline void set_zero()
     {
         m_buffer[0] = 0;
@@ -688,7 +718,7 @@ public:
     /**
      * 正数返回 bit 1 计数，负数则返回 bit 0 计数
      */
-    size_t bit_count()
+    size_t bit_count() const
     {
     	const size_t bc = nut::bit_count((uint8_t*)m_buffer, sizeof(word_type) * m_significant_len);
     	if (is_positive())
