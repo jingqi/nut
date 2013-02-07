@@ -639,7 +639,7 @@ public:
 
     inline word_type* buffer()
     {
-        return const_cast<word_type*>(static_cast<const self&>(*this).bytes());
+        return const_cast<word_type*>(static_cast<const self&>(*this).buffer());
     }
 
     inline void resize(size_t n)

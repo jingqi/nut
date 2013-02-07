@@ -90,6 +90,15 @@ NUT_FIXTURE(TestBigInteger)
 		// *
         NUT_TA(BigInteger(2) * BigInteger(3) == BigInteger(2 * 3));
 		NUT_TA(BigInteger(2) * BigInteger(-3) == BigInteger(2 * -3));
+
+        // 乘方
+        BigInteger a;
+        a.resize(4);
+        a.buffer()[0] = 45;
+        a.buffer()[1] = 0x10000;
+        a.buffer()[2] = 5;
+        a.buffer()[3] = 68;
+        NUT_TA(a * a == a * BigInteger(a));
 	}
 
 	// 测试除法

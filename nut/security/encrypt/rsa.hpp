@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2012-11-25
@@ -26,7 +26,7 @@ class RSA
 public:
     struct PublicKey
     {
-        unsigned e;
+        BigInteger e;
         BigInteger n;
     };
 
@@ -39,10 +39,10 @@ public:
     {
         assert(bit_count > 10);
 
-        // Ëæ»úÑ¡È¡Á½¸öËØÊı 
+        // éšæœºé€‰å–ä¸¤ä¸ªç´ æ•° 
         // NOTE:
-        //	ÎªÁË±ÜÃâÍÖÔ²ÇúÏßÒò×Ó·Ö½âËã·¨£¬p¡¢qÓ¦ÓĞ´óÖÂÏàÍ¬µÄ±ÈÌØ³¤¶È£¬ÇÒ×ã¹»´ó¡£
-        //  Í¬Ê±£¬ p,q ²»Ó¦Ì«½Ó½ü, ·ñÔò¾ÍÈİÒ×·Ö½â, ±£³Ö¼¸¸ö±ÈÌØ³¤¶È²îÊÇ¿ÉÒÔµÄ
+        //	ä¸ºäº†é¿å…æ¤­åœ†æ›²çº¿å› å­åˆ†è§£ç®—æ³•ï¼Œpã€qåº”æœ‰å¤§è‡´ç›¸åŒçš„æ¯”ç‰¹é•¿åº¦ï¼Œä¸”è¶³å¤Ÿå¤§ã€‚
+        //  åŒæ—¶ï¼Œ p,q ä¸åº”å¤ªæ¥è¿‘, å¦åˆ™å°±å®¹æ˜“åˆ†è§£, ä¿æŒå‡ ä¸ªæ¯”ç‰¹é•¿åº¦å·®æ˜¯å¯ä»¥çš„
         BigInteger bound(1);
         bound <<= ((bit_count + 1) / 2);
         BigInteger p = BigInteger::rand_between(bound, bound << 1);
@@ -51,26 +51,26 @@ public:
         BigInteger q = BigInteger::rand_between(bound, bound << 1);
         q = nextProbablePrime(q);
 
-        // Ñ¡È¡Ğ¡ÆæÊı e£¬Ê¹µÃ e Óë gamma_n »¥ÖÊ
+        // é€‰å–å°å¥‡æ•° eï¼Œä½¿å¾— e ä¸ gamma_n äº’è´¨
         const BigInteger n(p * q), gamma_n = (p - 1) * (q - 1);
         // NOTE:
-        // 	e ³£È¡ 3 ºÍ 65537£¬±ÈÌØÎ» bit1 ÉÙ£¬ÀûÓÚÌá¸ß¼ÆËãËÙ¶È
+        // 	e å¸¸å– 3 å’Œ 65537ï¼Œæ¯”ç‰¹ä½ bit1 å°‘ï¼Œåˆ©äºæé«˜è®¡ç®—é€Ÿåº¦
         unsigned e = 65537;
 
-        // d Îª e ¶ÔÄ£ gamma_n µÄ³Ë·¨ÄæÔª 
+        // d ä¸º e å¯¹æ¨¡ gamma_n çš„ä¹˜æ³•é€†å…ƒ 
         BigInteger d;
         extended_euclid(BigInteger(e), gamma_n, NULL, &d, NULL);
         if (d < 0)
-            d = gamma_n + (d % gamma_n); // % ÔËËã·ûºÅÓë±»³ıÊıÒ»ÖÂ
+            d = gamma_n + (d % gamma_n); // % è¿ç®—ç¬¦å·ä¸è¢«é™¤æ•°ä¸€è‡´
 
-        // ¹«Ô¿ (e, n)
+        // å…¬é’¥ (e, n)
         if (NULL != publicKey)
         {
             publicKey->e = e;
             publicKey->n = n;
         }
 
-        // Ë½Ô¿(d, n)
+        // ç§é’¥(d, n)
         if (NULL != privateKey)
         {
             privateKey->d = d;
@@ -80,12 +80,12 @@ public:
 
     static BigInteger encode(const BigInteger& m, const PublicKey& k)
     {
-        return modular_exponentiation(m, BigInteger(k.e), k.n);
+        return mod_pow(m, k.e, k.n);
     }
 
     static BigInteger decode(const BigInteger& c, const PrivateKey& k)
     {
-        return modular_exponentiation(c, k.d, k.n);
+        return mod_pow(c, k.d, k.n);
     }
 };
 

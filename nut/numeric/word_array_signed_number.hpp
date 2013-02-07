@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2011-12-17
- * @last-edit 2013-02-04 19:20:17 jingqi
+ * @last-edit 2013-02-07 14:36:40 jingqi
  * @brief
  *
  * 用于用word_type数组表示的有符号大数
@@ -23,6 +23,9 @@
 
 namespace nut
 {
+
+template <typename T>
+void shift_left(const T *a, size_t M, T *x, size_t N, size_t count);
 
 /**
  * 是否为0
@@ -307,6 +310,93 @@ uint8_t negate(const T *a, size_t M, T *x, size_t N)
 }
 
 /**
+ * 正数平方优化
+ *
+ *              a  b  c  d  e
+ *           *  a  b  c  d  e
+ *         -------------------
+ *             ae be ce de ee
+ *          ad bd cd dd de
+ *       ac bc cc cd ce
+ *    ab bb bc bd be
+ * aa ab ac ad ae
+ *
+ * 含有重复的
+ *             ae be ce de
+ *          ad bd cd
+ *       ac bc
+ *    ab
+ *           +
+ *                      de
+ *                cd ce
+ *          bc bd be
+ *    ab ac ad ae
+ */
+template <typename T>
+void _square(const T *a, size_t M, T *x, size_t N)
+{
+    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    assert(is_positive(a, M) && N >= M * 2);
+    typedef typename StdInt<T>::unsigned_type word_type;
+    typedef typename StdInt<T>::double_unsigned_type dword_type;
+
+    // 避免区域交叉覆盖
+    word_type *retx = reinterpret_cast<word_type*>(x);
+    if (a - M < x && x < a + M)
+        retx = (word_type*) ::malloc(sizeof(word_type) * N);
+
+    // 先计算一半
+    ::memset(retx, 0, sizeof(word_type) * N);
+    for (register size_t i = 0; i < M - 1; ++i)
+    {
+        const dword_type op1 = reinterpret_cast<const word_type*>(a)[i];
+        if (0 == op1)
+            continue;
+
+        word_type carry = 0;
+        for (register size_t j = i + 1; j < M; ++j)
+        {
+            dword_type op2 = reinterpret_cast<const word_type*>(a)[j];
+            op2 = op1 * op2 + retx[i + j] + carry;
+
+            retx[i + j] = static_cast<word_type>(op2);
+            carry = static_cast<word_type>(op2 >> (8 * sizeof(word_type)));
+        }
+        retx[i + M] = carry;
+    }
+
+    // 再加上另一半
+    shift_left(retx, M * 2, retx, M * 2, 1);
+
+    // 加上中间对称线
+    word_type carry = 0;
+    for (register size_t i = 0; i < M; ++i)
+    {
+        dword_type op1 = reinterpret_cast<const word_type*>(a)[i];
+        op1 = op1 * op1 + retx[i * 2] + carry;
+
+        retx[i * 2] = static_cast<word_type>(op1);
+        carry = static_cast<word_type>(op1 >> (8 * sizeof(word_type)));
+
+        if (0 != carry)
+        {
+            op1 = retx[i * 2 + 1];
+            op1 += carry;
+
+            retx[i * 2 + 1] = static_cast<word_type>(op1);
+            carry = static_cast<word_type>(op1 >> (8 * sizeof(word_type)));
+        }
+    }
+
+    // 回写结果
+    if (retx != x)
+    {
+        ::memcpy(x, retx, sizeof(word_type) * N);
+        ::free(retx);
+    }
+}
+
+/**
  * 相乘
  * x<P> = a<M> * b<N>
  */
@@ -316,6 +406,12 @@ void multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
+    
+    if (a == b && M == N && is_positive(a, M) && is_positive(b, N) && P >= M + N)
+    {
+        _square(a, M, x, P);
+        return;
+    }
 
     // 避免区域交叉覆盖
     word_type *retx = reinterpret_cast<word_type*>(x);
@@ -351,9 +447,6 @@ void multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
         ::free(retx);
     }
 }
-
-template <typename T>
-void shift_left(const T *a, size_t M, T *x, size_t N, size_t count);
 
 /**
  * 相除
@@ -490,7 +583,7 @@ void _shift_left_word(const T *a, size_t M, T *x, size_t N, size_t count)
     {
         const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
         for (register int i = (int) N - 1; i >= 0; --i)
-            x[i] = (i < (int) count ? 0 : (i - count >= (int) M ? fill : a[i - count]));
+            x[i] = (i < (int) count ? 0 : (i - (int) count >= (int) M ? fill : a[i - count]));
     }
 }
 
