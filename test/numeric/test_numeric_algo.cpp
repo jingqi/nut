@@ -153,9 +153,6 @@ NUT_FIXTURE(TestNumericAlgo)
             BigInteger b = BigInteger::rand_between(bound, bound << 1);
             BigInteger n = BigInteger::rand_between(bound, bound << 1);
             BigInteger x1, x2;
-            // a = 9;
-            //b = 28;
-            //n = 7;
 
             const int iteration = 1;
             clock_t s = clock();

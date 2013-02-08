@@ -197,9 +197,7 @@ inline BigInteger _montgomery(const BigInteger& t, size_t rlen, const BigInteger
 inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n)
 {
     assert(a.is_positive() && b.is_positive() && n.is_positive());
-    assert(n.bit_at(0) == 1);
-
-    const BigInteger aa(a % n);
+    assert(a < n && n.bit_at(0) == 1);
 
     // 预运算
     const size_t rlen = n.bit_length();
@@ -212,7 +210,7 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
         nn = (-nn) % r;
     assert((nn * n) % r == r - 1);
 
-    const BigInteger m = (aa << rlen) % n;
+    const BigInteger m = (a << rlen) % n;
     BigInteger ret(m);
     for (register size_t i = b.bit_length() - 1; i > 0; --i)
     {
@@ -221,6 +219,28 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
             ret = _montgomery(ret * m, rlen, n, nn);
     }
     return _montgomery(ret, rlen, n, nn);
+}
+
+/**
+ * 计算 (a ** b) mod (2 ** p)
+ */
+inline BigInteger _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p)
+{
+    assert(a.is_positive() && b.is_positive() && p > 0);
+
+    BigInteger ret(1);
+    for (register size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
+    {
+        ret *= ret;
+        ret.resize_bits_positive(p);
+
+        if (0 != b.bit_at(i - 1))
+        {
+            ret *= a;
+            ret.resize_bits_positive(p);
+        }
+    }
+    return ret;
 }
 
 /**
@@ -273,17 +293,29 @@ inline BigInteger mod_pow(const BigInteger& a, const BigInteger& b, const BigInt
         return ret;
     }
 #else
+    // 模是计数，应用蒙哥马利算法
+    const BigInteger aa(a % n);
     if (n.bit_at(0) == 1)
-        return _odd_mod_pow(a, b, n);
+        return _odd_mod_pow(aa, b, n);
 
-    BigInteger ret(1);
-    for (register size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
-    {
-        ret = (ret * ret) % n;
-        if (0 != b.bit_at(i - 1))
-            ret = (ret * a) % n;
-    }
-    return ret;
+    // 模是偶数，应用中国余数定理
+    const size_t p = n.lowest_bit();
+    BigInteger n1(n), n2(1);
+    n1 >>= p;
+    n2 <<= p;
+
+    BigInteger a1 = (n1 == 1 ? BigInteger(0) : _odd_mod_pow(a % n1, b, n1));
+    BigInteger a2 = _mod_pow_2(aa, b, p);
+
+    BigInteger y1, y2;
+    extended_euclid(n2, n1, NULL, &y1, NULL);
+    if (y1 < 0)
+        y1 = n1 + (y1 % n1);
+    extended_euclid(n1, n2, NULL, &y2, NULL);
+    if (y2 < 0)
+        y2 = n2 + (y2 % n2);
+
+    return (a1 * n2 * y1 + a2 * n1 * y2) % n;
 #endif
 }
 
