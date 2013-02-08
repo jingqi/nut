@@ -179,7 +179,6 @@ inline BigInteger _montgomery(const BigInteger& t, size_t rlen, const BigInteger
     // return (t + (((t % r) * nn) % r) * n) / r;
     BigInteger rs(t);
     rs.resize_bits_positive(rlen);
-    assert(rs == t % (BigInteger(1) << rlen));
     rs *= nn;
     rs.resize_bits_positive(rlen);
     rs *= n;
@@ -208,8 +207,8 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
         nn = r - (nn % r);
     else
         nn = (-nn) % r;
-    assert((nn * n) % r == r - 1);
 
+    // 循环计算
     const BigInteger m = (a << rlen) % n;
     BigInteger ret(m);
     for (register size_t i = b.bit_length() - 1; i > 0; --i)
@@ -218,6 +217,8 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
         if (0 != b.bit_at(i - 1))
             ret = _montgomery(ret * m, rlen, n, nn);
     }
+
+    // 处理返回值
     return _montgomery(ret, rlen, n, nn);
 }
 
