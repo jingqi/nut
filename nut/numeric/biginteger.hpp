@@ -649,6 +649,17 @@ public:
         m_significant_len = n;
     }
 
+    inline void resize_bits_positive(size_t bit_len)
+    {
+        assert(bit_len > 0);
+        const size_t new_sig = bit_len / (8 * sizeof(word_type)) + 1;
+        ensure_significant_len(new_sig);
+        const size_t bits_res = 8 * sizeof(word_type) - bit_len % (8 * sizeof(word_type));
+        m_buffer[new_sig - 1] <<= bits_res;
+        m_buffer[new_sig - 1] >>= bits_res;
+        m_significant_len = new_sig;
+    }
+
     /**
      * 以word_type为单位计算有效字长度
      */

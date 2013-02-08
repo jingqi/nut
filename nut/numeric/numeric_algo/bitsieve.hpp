@@ -9,7 +9,7 @@
 #ifndef ___HEADFILE_B3D1D8B6_CD77_4FB3_A62E_A83D30BA0451_
 #define ___HEADFILE_B3D1D8B6_CD77_4FB3_A62E_A83D30BA0451_
 
-#include "biginteger.hpp"
+#include "../biginteger.hpp"
 
 namespace nut
 {

@@ -115,6 +115,9 @@
     <Filter Include="源文件\pconsole">
       <UniqueIdentifier>{8a2d5239-dade-423d-8c09-019c8f7f570c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\numeric\numeric_algo">
+      <UniqueIdentifier>{2b813f75-fa5d-4775-94f7-ecd84fe0bfba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -327,9 +330,6 @@
     <ClInclude Include="..\..\..\nut\security\digest\adler32.hpp">
       <Filter>头文件\security\digest</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\numeric\numeric_algo.hpp">
-      <Filter>头文件\numeric</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\security\encrypt\rsa.hpp">
       <Filter>头文件\security\encrypt</Filter>
     </ClInclude>
@@ -351,11 +351,23 @@
     <ClInclude Include="..\..\..\nut\util\mrucache.hpp">
       <Filter>头文件\util</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\numeric\bitsieve.hpp">
-      <Filter>头文件\numeric</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\numeric\word_array_signed_number.hpp">
       <Filter>头文件\numeric</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\bigdecimal.hpp">
+      <Filter>头文件\numeric</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\numeric_algo\bitsieve.hpp">
+      <Filter>头文件\numeric\numeric_algo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\numeric_algo\gcd.hpp">
+      <Filter>头文件\numeric\numeric_algo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\numeric_algo\mod.hpp">
+      <Filter>头文件\numeric\numeric_algo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\numeric_algo\prime.hpp">
+      <Filter>头文件\numeric\numeric_algo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

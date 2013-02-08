@@ -1,5 +1,7 @@
 ﻿
 #include <iostream>
+#include <time.h>
+#include <stdio.h>
 #include <nut/unittest/unittest.hpp>
 #include <nut/numeric/biginteger.hpp>
 

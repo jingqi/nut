@@ -11,12 +11,8 @@
 #include <assert.h>
 
 #include <nut/numeric/biginteger.hpp>
-#include <nut/numeric/numeric_algo.hpp>
-
-#include <assert.h>
-
-#include <nut/numeric/biginteger.hpp>
-#include <nut/numeric/numeric_algo.hpp>
+#include <nut/numeric/numeric_algo/mod.hpp>
+#include <nut/numeric/numeric_algo/prime.hpp>
 
 namespace nut
 {
