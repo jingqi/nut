@@ -126,7 +126,7 @@ struct ModMultiplyPreBuildTable
                 table[base_off] = new BigInteger(at(i - 1, 0) + at(i - 1, width - 1));
             else
                 table[base_off + j] = new BigInteger(at(i, 0) + at(i, j - 1));
-            if (*table[base_off + j] >= mod)
+            if (*table[base_off + j] >= mod) // 模加
                 *table[base_off + j] -= mod;
         }
         return *table[base_off + j];
@@ -152,7 +152,7 @@ BigInteger mod_multiply(const BigInteger& b, const BigInteger& n, const ModMulti
         limit = table.hight;
     for (register size_t i = 0; i < limit; ++i)
     {
-        uint32_t j = 0; // window
+        uint32_t j = 0; // bits window
         for (register size_t k = 1; k <= C; ++k)
         {
             j <<= 1;

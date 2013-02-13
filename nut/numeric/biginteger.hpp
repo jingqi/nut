@@ -395,7 +395,7 @@ public:
         self ret;
         ret.ensure_cap(sizeof(v) / sizeof(word_type));
         divide(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), (word_type*)NULL, 0, ret.m_buffer, sizeof(v) / sizeof(word_type));
-        ret.m_significant_len = sizeof(v);
+        ret.m_significant_len = sizeof(v) / sizeof(word_type);
         ret.minimize_significant_len();
         return ret;
     }
@@ -459,7 +459,7 @@ public:
 
         ensure_cap(m_significant_len + sizeof(v) / sizeof(word_type));
         multiply(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer, m_significant_len + sizeof(v) / sizeof(word_type));
-        m_significant_len += sizeof(v);
+        m_significant_len += sizeof(v) / sizeof(word_type);
         minimize_significant_len();
         return *this;
     }
@@ -496,15 +496,22 @@ public:
                 return *this -= x;
         }
 
-        *this = *this % x;
+        ensure_cap(x.m_significant_len);
+        divide(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, (word_type*)NULL, 0, m_buffer, x.m_significant_len);
+        m_significant_len = x.m_significant_len;
+        minimize_significant_len();
         return *this;
     }
 
     inline self& operator%=(long long v)
     {
+        NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
         assert(0 != v);
 
-        *this = *this % v;
+        ensure_cap(sizeof(v) / sizeof(word_type));
+        divide(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), (word_type*)NULL, 0, m_buffer, sizeof(v) / sizeof(word_type));
+        m_significant_len = sizeof(v) / sizeof(word_type);
+        minimize_significant_len();
         return *this;
     }
     
@@ -649,6 +656,9 @@ public:
         m_significant_len = n;
     }
 
+    /**
+     * 将位置大于等于 bit_len 的比特位值0, 并保证结果为正数
+     */
     inline void resize_bits_positive(size_t bit_len)
     {
         assert(bit_len > 0);
