@@ -87,7 +87,6 @@
     <ClInclude Include="..\..\..\nut\memtool\singleton.hpp" />
     <ClInclude Include="..\..\..\nut\mem\lengthfixed_mp.hpp" />
     <ClInclude Include="..\..\..\nut\mem\scoped_gc.hpp" />
-    <ClInclude Include="..\..\..\nut\numeric\bigdecimal.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\biginteger.hpp" />
     <ClInclude Include="..\..\..\nut\mem\sys_ma.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\numeric_algo\bitsieve.hpp" />

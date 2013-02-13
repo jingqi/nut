@@ -354,9 +354,6 @@
     <ClInclude Include="..\..\..\nut\numeric\word_array_signed_number.hpp">
       <Filter>头文件\numeric</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\numeric\bigdecimal.hpp">
-      <Filter>头文件\numeric</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\numeric\numeric_algo\bitsieve.hpp">
       <Filter>头文件\numeric\numeric_algo</Filter>
     </ClInclude>
