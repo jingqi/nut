@@ -178,9 +178,8 @@ inline BigInteger _montgomery(const BigInteger& t, size_t rlen, const BigInteger
 
     // return (t + (((t % r) * nn) % r) * n) / r;
     BigInteger rs(t);
-    rs.resize_bits_positive(rlen);
-    rs *= nn;
-    rs.resize_bits_positive(rlen);
+    rs.limit_positive_bits_to(rlen);
+    rs.multiply_to_len(nn, rlen);
     rs *= n;
     rs += t;
     rs >>= rlen;
@@ -232,14 +231,10 @@ inline BigInteger _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p)
     BigInteger ret(1);
     for (register size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
     {
-        ret *= ret;
-        ret.resize_bits_positive(p);
+        ret.multiply_to_len(ret, p);
 
         if (0 != b.bit_at(i - 1))
-        {
-            ret *= a;
-            ret.resize_bits_positive(p);
-        }
+            ret.multiply_to_len(a, p);
     }
     return ret;
 }

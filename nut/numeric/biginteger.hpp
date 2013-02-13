@@ -657,9 +657,11 @@ public:
     }
 
     /**
-     * 将位置大于等于 bit_len 的比特位值0, 并保证结果为正数
+     * 使值恒为正数，且比特长度小于 bit_len
+     *
+     * @return 注意，返回为正数
      */
-    inline void resize_bits_positive(size_t bit_len)
+    inline void limit_positive_bits_to(size_t bit_len)
     {
         assert(bit_len > 0);
         const size_t new_sig = bit_len / (8 * sizeof(word_type)) + 1;
@@ -668,6 +670,21 @@ public:
         m_buffer[new_sig - 1] <<= bits_res;
         m_buffer[new_sig - 1] >>= bits_res;
         m_significant_len = new_sig;
+        minimize_significant_len();
+    }
+    
+    /**
+     * 乘以a, 然后将比特长限制为小于 bit_len 的正数
+     *
+     * @return 注意，返回为正数
+     */
+    inline void multiply_to_len(const self& a, size_t bit_len)
+    {
+        const size_t words_len = (bit_len + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
+        ensure_cap(words_len);
+        multiply(m_buffer, m_significant_len, a.m_buffer, a.m_significant_len, m_buffer, words_len);
+        m_significant_len = words_len;
+        limit_positive_bits_to(bit_len);
     }
 
     /**
