@@ -342,7 +342,7 @@ void _square(const T *a, size_t M, T *x, size_t N)
 
     // 避免区域交叉覆盖
     word_type *retx = reinterpret_cast<word_type*>(x);
-    if (a - M < x && x < a + M)
+    if (a - N < x && x < a + M)
         retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
     // 先计算一半
