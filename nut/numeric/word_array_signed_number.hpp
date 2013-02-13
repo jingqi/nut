@@ -33,7 +33,7 @@ void shift_left(const T *a, size_t M, T *x, size_t N, size_t count);
  * @return a<N> == 0
  */
 template <typename T>
-bool is_zero(const T *a, size_t N)
+inline bool is_zero(const T *a, size_t N)
 {
     assert(NULL != a && N > 0);
 
@@ -50,7 +50,7 @@ bool is_zero(const T *a, size_t N)
  *      false, 参数 < 0
  */
 template <typename T>
-bool is_positive(const T *a, size_t N)
+inline bool is_positive(const T *a, size_t N)
 {
     assert(NULL != a && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
@@ -326,7 +326,7 @@ uint8_t negate(const T *a, size_t M, T *x, size_t N)
  *          ad bd cd
  *       ac bc
  *    ab
- *           +
+ *             +
  *                      de
  *                cd ce
  *          bc bd be
@@ -336,7 +336,7 @@ template <typename T>
 void _square(const T *a, size_t M, T *x, size_t N)
 {
     assert(NULL != a && M > 0 && NULL != x && N > 0);
-    assert(is_positive(a, M) && N >= M * 2);
+    assert(is_positive(a, M));
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
 
@@ -349,12 +349,15 @@ void _square(const T *a, size_t M, T *x, size_t N)
     ::memset(retx, 0, sizeof(word_type) * N);
     for (register size_t i = 0; i < M - 1; ++i)
     {
+        if (i * 2 + 1 >= N)
+            break;
+
         const dword_type op1 = reinterpret_cast<const word_type*>(a)[i];
         if (0 == op1)
             continue;
 
         word_type carry = 0;
-        for (register size_t j = i + 1; j < M; ++j)
+        for (register size_t j = i + 1; j < M && i + j < N; ++j)
         {
             dword_type op2 = reinterpret_cast<const word_type*>(a)[j];
             op2 = op1 * op2 + retx[i + j] + carry;
@@ -362,23 +365,28 @@ void _square(const T *a, size_t M, T *x, size_t N)
             retx[i + j] = static_cast<word_type>(op2);
             carry = static_cast<word_type>(op2 >> (8 * sizeof(word_type)));
         }
-        retx[i + M] = carry;
+        if (i + M < N)
+            retx[i + M] = carry;
     }
 
     // 再加上另一半
-    shift_left(retx, M * 2, retx, M * 2, 1);
+    const size_t limit = (N < M * 2 ? N : M * 2);
+    shift_left(retx, limit, retx, limit, 1);
 
     // 加上中间对称线
     word_type carry = 0;
     for (register size_t i = 0; i < M; ++i)
     {
+        if (i * 2 >= N)
+            break;
+
         dword_type op1 = reinterpret_cast<const word_type*>(a)[i];
         op1 = op1 * op1 + retx[i * 2] + carry;
 
         retx[i * 2] = static_cast<word_type>(op1);
         carry = static_cast<word_type>(op1 >> (8 * sizeof(word_type)));
 
-        if (0 != carry)
+        if (0 != carry && i * 2 + 1 < N)
         {
             op1 = retx[i * 2 + 1];
             op1 += carry;
@@ -407,7 +415,7 @@ void multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
     
-    if (a == b && M == N && is_positive(a, M) && is_positive(b, N) && P >= M + N)
+    if (a == b && M == N && is_positive(a, M))
     {
         _square(a, M, x, P);
         return;
@@ -423,13 +431,14 @@ void multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
     ::memset(retx, 0, sizeof(word_type) * P);
     for (register size_t i = 0; i < P; ++i)
     {
-        word_type carry = 0; // 这个进位包括乘法的，故此会大于1
-        const dword_type mult1 = (i < M ? reinterpret_cast<const word_type*>(a)[i] : filla);
         if (i >= M && 0 == filla)
             break;
+
+        const dword_type mult1 = (i < M ? reinterpret_cast<const word_type*>(a)[i] : filla);
         if (mult1 == 0)
             continue;
 
+        word_type carry = 0; // 这个进位包括乘法的，故此会大于1
         for (register size_t j = 0; i + j < P; ++j)
         {
             dword_type mult2 = (j < N ? reinterpret_cast<const word_type*>(b)[j] : fillb);
