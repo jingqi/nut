@@ -26,19 +26,24 @@ int main()
     setlocale(LC_ALL, "zh_CN.UTF8");
 #endif
 
+    // srand(time(NULL));
+
     printf("\n%s\n", NUT_PLATFORM_STR);
 
     ConsoleTestLogger l;
     TestRunner trunner(l);
+
     // trunner.runAGroup("pconsole");
-    trunner.runAFixture("TestMRUCache");
+
+    // trunner.runAFixture("TestBigInteger");
+    //trunner.runAFixture("TestNumericAlgo");
+     trunner.runAFixture("TestRSA");
+
     // trunner.runACase("TestGC", "testSmoking");
 
     printf("press any key to continue...");
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     getch();
-#else
-    getchar();
 #endif
 
     return 0;

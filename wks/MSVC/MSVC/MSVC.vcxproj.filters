@@ -115,6 +115,9 @@
     <Filter Include="源文件\pconsole">
       <UniqueIdentifier>{8a2d5239-dade-423d-8c09-019c8f7f570c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\numeric\numeric_algo">
+      <UniqueIdentifier>{2b813f75-fa5d-4775-94f7-ecd84fe0bfba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -186,12 +189,6 @@
     <ClInclude Include="..\..\..\nut\gc\gcwrapper.hpp">
       <Filter>头文件\gc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\numeric\byte_array_number.hpp">
-      <Filter>头文件\numeric</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\numeric\unsignedinteger.hpp">
-      <Filter>头文件\numeric</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\logging\logpath.hpp">
       <Filter>头文件\logging</Filter>
     </ClInclude>
@@ -239,9 +236,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\nut\platform\stdint.hpp">
       <Filter>头文件\platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\numeric\signedinteger.hpp">
-      <Filter>头文件\numeric</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\nut\numeric\biginteger.hpp">
       <Filter>头文件\numeric</Filter>
@@ -336,9 +330,6 @@
     <ClInclude Include="..\..\..\nut\security\digest\adler32.hpp">
       <Filter>头文件\security\digest</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\numeric\numeric_algo.hpp">
-      <Filter>头文件\numeric</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\security\encrypt\rsa.hpp">
       <Filter>头文件\security\encrypt</Filter>
     </ClInclude>
@@ -360,6 +351,21 @@
     <ClInclude Include="..\..\..\nut\util\mrucache.hpp">
       <Filter>头文件\util</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\word_array_signed_number.hpp">
+      <Filter>头文件\numeric</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\numeric_algo\bitsieve.hpp">
+      <Filter>头文件\numeric\numeric_algo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\numeric_algo\gcd.hpp">
+      <Filter>头文件\numeric\numeric_algo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\numeric_algo\mod.hpp">
+      <Filter>头文件\numeric\numeric_algo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\numeric\numeric_algo\prime.hpp">
+      <Filter>头文件\numeric\numeric_algo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -371,9 +377,6 @@
     <ClCompile Include="..\..\..\test\logging\test_logging.cpp">
       <Filter>源文件\logging</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\test\numeric\test_signedinteger.cpp">
-      <Filter>源文件\numeric</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\test\util\test_propertyfile.cpp">
       <Filter>源文件\util</Filter>
     </ClCompile>
@@ -382,9 +385,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\tree\test_bst.cpp">
       <Filter>源文件\tree</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\test\numeric\test_unsignedinteger.cpp">
-      <Filter>源文件\numeric</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\test\numeric\test_biginteger.cpp">
       <Filter>源文件\numeric</Filter>
@@ -433,6 +433,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\util\test_mrucache.cpp">
       <Filter>源文件\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\security\encrypt\test_rsa.cpp">
+      <Filter>源文件\security\encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\numeric\test_numeric_algo.cpp">
+      <Filter>源文件\numeric</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
