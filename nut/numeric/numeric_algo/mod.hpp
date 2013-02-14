@@ -184,7 +184,7 @@ inline BigInteger _montgomery(const BigInteger& t, size_t rlen, const BigInteger
     BigInteger rs(t.buffer(), min_sig, true);
     rs.limit_positive_bits_to(rlen);
 
-    rs.multiply_to_len(nn, rlen);
+    rs.multiply_to_len(nn, rlen); // rs = (rs * nn) % r
     rs *= n;
     rs += t;
     rs >>= rlen;
@@ -192,6 +192,72 @@ inline BigInteger _montgomery(const BigInteger& t, size_t rlen, const BigInteger
     if (rs >= n)
         rs -= n;
     return rs;
+}
+
+inline BigInteger _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, BigInteger::word_type nn)
+{
+    typedef BigInteger::word_type word_type;
+    typedef BigInteger::dword_type dword_type;
+
+    BigInteger rs(t);
+    for (register size_t i = 0, limit = rs.significant_words_length(); i < limit; ++i)
+        rs.buffer()[i] = static_cast<word_type>(rs.buffer()[i] * nn);
+    rs *= n;
+    rs += t;
+    rs >>= rlen;
+    while (rs >= n)
+        rs -= n;
+    return rs;
+}
+
+/**
+ * 已知:
+ *      n为奇数, r=2**p，(n,r互质)
+ * 求 rr, nn 使得:
+ *      r * rr - n * nn = 1 (rr为r模n的逆元，nn为n模r的负逆元)
+ *
+ * 算法来源：
+ *      雷明，叶新，张焕国. Montgomery算法及其快速实现[J]. 计算机工程，2003，29(14)：46
+ *
+ * @return rr, nn 都为正数
+ */
+inline void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *_rr, BigInteger *_nn)
+{
+    BigInteger r(1);
+    r <<= rlen;
+
+    /**
+     * 构建恒等式并计算：
+     * (1) r * rr - n * nn = s
+     * (2) r * n - n * r = 0
+     * ->等式(1)用于变形，等式(2)用于加到等式(1)上以帮助其变形
+     * ->初始时 rr=n+1, nn=r, s=r
+     */
+    BigInteger rr(n), nn(r);
+    ++rr;
+    size_t slen = rlen;
+    while (slen > 0)
+    {
+        const int lb = rr.lowest_bit();
+        assert(lb >= 0);
+        if (lb > 0)
+        {
+            const int min_shift = (lb < (int) slen ? lb : (int) slen);
+            rr >>= min_shift;
+            nn >>= min_shift;
+            slen -= min_shift;
+        }
+        else
+        {
+            rr += n;
+            nn += r;
+        }
+    }
+
+    if (NULL != _rr)
+        *_rr = rr;
+    if (NULL != _nn)
+        *_nn = nn;
 }
 
 /**
@@ -204,6 +270,7 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
 
     // 预运算
     const size_t rlen = n.bit_length();
+#if (OPTIMIZE_LEVEL == 0)
     BigInteger r(1), nn;
     r <<= rlen;
     extended_euclid(r, n, NULL, NULL, &nn);
@@ -211,6 +278,11 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
         nn = r - (nn % r);
     else
         nn = (-nn) % r;
+#else
+    BigInteger nn;
+    _mont_extended_euclid(rlen, n, NULL, &nn);
+    nn.limit_positive_bits_to(rlen);
+#endif
 
     // 循环计算
     const BigInteger m = (a << rlen) % n;
@@ -294,10 +366,9 @@ inline BigInteger mod_pow(const BigInteger& a, const BigInteger& b, const BigInt
         return ret;
     }
 #else
-    // 模是计数，应用蒙哥马利算法
-    const BigInteger aa(a % n);
+    // 模是奇数，应用蒙哥马利算法
     if (n.bit_at(0) == 1)
-        return _odd_mod_pow(aa, b, n);
+        return _odd_mod_pow(a < n ? a : a % n, b, n);
 
     // 模是偶数，应用中国余数定理
     const size_t p = n.lowest_bit();
@@ -306,7 +377,7 @@ inline BigInteger mod_pow(const BigInteger& a, const BigInteger& b, const BigInt
     n2 <<= p;
 
     BigInteger a1 = (n1 == 1 ? BigInteger(0) : _odd_mod_pow(a % n1, b, n1));
-    BigInteger a2 = _mod_pow_2(aa, b, p);
+    BigInteger a2 = _mod_pow_2(a < n ? a : a % n, b, p);
 
     BigInteger y1, y2;
     extended_euclid(n2, n1, NULL, &y1, NULL);
