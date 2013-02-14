@@ -145,12 +145,13 @@ public:
 
     // 上述模板函数的一个特化
     _BigInteger(const word_type *buf, size_t len, bool withSign)
+        : m_buffer(NULL), m_buffer_cap(0), m_significant_len(0)
     {
         assert(NULL != buf && len > 0);
-        if (withSign || is_positive(buf, len))
+        if (withSign || nut::is_positive(buf, len))
         {
             ensure_cap(len);
-            ::memcpy(m_buffer, buf, len);
+            ::memcpy(m_buffer, buf, sizeof(word_type) * len);
             m_significant_len = len;
         }
         else
@@ -770,6 +771,16 @@ public:
 #endif
         }
         return (m_buffer[i / (8 * sizeof(word_type))] >> (i % (8 * sizeof(word_type)))) & 0x01;
+    }
+
+    /**
+     * 返回字值
+     */
+    inline word_type word_at(size_t i) const
+    {
+        if (i >= m_significant_len)
+            return is_positive() ? 0 : ~(word_type)0;
+        return m_buffer[i];
     }
 
     /**

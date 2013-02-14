@@ -171,14 +171,19 @@ BigInteger mod_multiply(const BigInteger& b, const BigInteger& n, const ModMulti
 
 /**
  * 蒙哥马利算法
+ * (t + (((t % r) * nn) % r) * n) / r
  */
 inline BigInteger _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, const BigInteger& nn)
 {
     NUT_STATIC_ASSERT(sizeof(BigInteger::word_type) == 4);
 
-    // return (t + (((t % r) * nn) % r) * n) / r;
-    BigInteger rs(t);
+    // 计算 t % r
+    size_t min_sig = (rlen + 8 * sizeof(BigInteger::word_type) - 1) / (8 * sizeof(BigInteger::word_type));
+    if (t.significant_words_length() < min_sig)
+        min_sig = t.significant_words_length();
+    BigInteger rs(t.buffer(), min_sig, true);
     rs.limit_positive_bits_to(rlen);
+
     rs.multiply_to_len(nn, rlen);
     rs *= n;
     rs += t;
