@@ -18,6 +18,8 @@
 
 #include "word_array_signed_number.hpp"
 
+#define OPTIMIZE_LEVEL 1000
+
 namespace nut
 {
 
@@ -664,13 +666,45 @@ public:
     inline void limit_positive_bits_to(size_t bit_len)
     {
         assert(bit_len > 0);
+
+#if (OPTIMIZE_LEVEL == 0)
         const size_t new_sig = bit_len / (8 * sizeof(word_type)) + 1;
         ensure_significant_len(new_sig);
-        const size_t bits_res = 8 * sizeof(word_type) - bit_len % (8 * sizeof(word_type));
-        m_buffer[new_sig - 1] <<= bits_res;
-        m_buffer[new_sig - 1] >>= bits_res;
+        const size_t bits_shift = 8 * sizeof(word_type) - bit_len % (8 * sizeof(word_type));
+        m_buffer[new_sig - 1] <<= bits_shift;
+        m_buffer[new_sig - 1] >>= bits_shift;
         m_significant_len = new_sig;
         minimize_significant_len();
+#else
+        // 正数且有效位数较小，无需做任何事情
+        const size_t min_sig = bit_len / (8 * sizeof(word_type));
+        if (m_significant_len <= min_sig && is_positive())
+            return;
+
+        // 需要扩展符号位，或者需要截断
+        const size_t bits_res = bit_len % (8 * sizeof(word_type));
+        if (0 != bits_res || 0 == bit_at(bit_len - 1))
+        {
+            // 无需附加符号位
+            const size_t new_sig = (bit_len + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
+            ensure_significant_len(new_sig);
+            if (0 != bits_res)
+            {
+                const size_t bits_shift = 8 * sizeof(word_type) - bits_res;
+                m_buffer[new_sig - 1] <<= bits_shift;
+                m_buffer[new_sig - 1] >>= bits_shift;
+            }
+            m_significant_len = new_sig;
+        }
+        else
+        {
+            // 需要附加符号位，以便保证结果是正数
+            ensure_significant_len(min_sig + 1);
+            m_buffer[min_sig] = 0;
+            m_significant_len = min_sig + 1;
+        }
+        minimize_significant_len();
+#endif
     }
     
     /**
@@ -728,7 +762,13 @@ public:
     inline int bit_at(size_t i) const
     {
         if (i / (8 * sizeof(word_type)) >= m_significant_len)
+        {
+#if (OPTIMIZE_LEVEL == 0)
             return is_positive() ? 0 : 1;
+#else
+            return m_buffer[m_significant_len - 1] >> (8 * sizeof(word_type) - 1);
+#endif
+        }
         return (m_buffer[i / (8 * sizeof(word_type))] >> (i % (8 * sizeof(word_type)))) & 0x01;
     }
 
@@ -1016,6 +1056,8 @@ public:
 };
 
 typedef _BigInteger<uint32_t> BigInteger;
+
+#undef OPTIMIZE_LEVEL
 
 }
 
