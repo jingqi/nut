@@ -479,11 +479,14 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
             ++squre_count;
             bool term = true;
             for (register size_t i = 1;
-                term && squre_count + i <= wnd_size && bits_left - i >= 0;
+                squre_count + i <= wnd_size && bits_left - i >= 0;
                 ++i)
             {
                 if (0 != b.bit_at(bits_left - i))
+                {
                     term = false;
+                    break;
+                }
             }
 
             if (term)

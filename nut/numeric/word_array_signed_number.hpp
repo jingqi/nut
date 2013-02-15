@@ -380,19 +380,19 @@ void _square(const T *a, size_t M, T *x, size_t N)
         if (i * 2 >= N)
             break;
 
-        dword_type op1 = reinterpret_cast<const word_type*>(a)[i];
-        op1 = op1 * op1 + retx[i * 2] + carry;
+        dword_type op = reinterpret_cast<const word_type*>(a)[i];
+        op = op * op + retx[i * 2] + carry;
 
-        retx[i * 2] = static_cast<word_type>(op1);
-        carry = static_cast<word_type>(op1 >> (8 * sizeof(word_type)));
+        retx[i * 2] = static_cast<word_type>(op);
+        carry = static_cast<word_type>(op >> (8 * sizeof(word_type)));
 
         if (0 != carry && i * 2 + 1 < N)
         {
-            op1 = retx[i * 2 + 1];
-            op1 += carry;
+            op = retx[i * 2 + 1];
+            op += carry;
 
-            retx[i * 2 + 1] = static_cast<word_type>(op1);
-            carry = static_cast<word_type>(op1 >> (8 * sizeof(word_type)));
+            retx[i * 2 + 1] = static_cast<word_type>(op);
+            carry = static_cast<word_type>(op >> (8 * sizeof(word_type)));
         }
     }
 

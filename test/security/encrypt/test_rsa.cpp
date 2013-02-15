@@ -27,7 +27,7 @@ NUT_FIXTURE(TestRSA)
             clock_t s = clock();
             RSA::PublicKey pk;
             RSA::PrivateKey vk;
-            RSA::genKey(1024, &pk, &vk);
+            RSA::genKey(1050, &pk, &vk);
             NUT_TA(RSA::decode(RSA::encode(BigInteger(1986), pk), vk) == 1986);
             NUT_TA(RSA::encode(RSA::decode(BigInteger(0x457a), vk), pk) == 0x457a);
             clock_t t = clock() - s;
