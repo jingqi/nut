@@ -22,10 +22,10 @@ namespace nut
  *
  * @return 返回的指针需要delete[] 掉
  */
-#if (OPTIMIZE_LEVEL == 0)
 template <size_t C>
 struct ModMultiplyPreBuildTable
 {
+#if (OPTIMIZE_LEVEL == 0)
     size_t hight, width;
     BigInteger *table;
 
@@ -76,14 +76,7 @@ struct ModMultiplyPreBuildTable
         assert(i < hight && j < width);
         return table[i * width + j];
     }
-
-private:
-    ModMultiplyPreBuildTable(const ModMultiplyPreBuildTable<C>& x);
-};
 #else
-template <size_t C>
-struct ModMultiplyPreBuildTable
-{
     size_t hight, width;
     BigInteger **table;
     BigInteger mod;
@@ -131,11 +124,11 @@ struct ModMultiplyPreBuildTable
         }
         return *table[base_off + j];
     }
+#endif
 
 private:
-    ModMultiplyPreBuildTable(const ModMultiplyPreBuildTable<C>& x);
+    ModMultiplyPreBuildTable(const ModMultiplyPreBuildTable<C>&);
 };
-#endif
 
 /**
 * 预算表法求乘模
@@ -296,6 +289,53 @@ inline void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *
 }
 
 /**
+ * 滑动窗口算法、蒙哥马利算法的预算表
+ */
+struct MontgomeryPreBuildTable
+{
+    BigInteger **table;
+    size_t size;
+
+    MontgomeryPreBuildTable(size_t wnd_sz, const BigInteger& m, size_t rlen, const BigInteger& n, const BigInteger& nn)
+        : table(NULL), size(0)
+    {
+        assert(0 < wnd_sz && wnd_sz < 16);
+
+        size = 1 << (wnd_sz - 1);
+        table = new BigInteger*[size];
+        assert(NULL != table);
+        ::memset(table, 0, sizeof(BigInteger*) * size);
+
+        table[0] = new BigInteger(m);
+        const BigInteger mm = _montgomery(m * m, rlen, n, nn);
+        for (register size_t i = 1; i < size; ++i)
+            table[i] = new BigInteger(_montgomery(*table[i - 1] * mm, rlen, n, nn));
+    }
+
+    ~MontgomeryPreBuildTable()
+    {
+        if (NULL != table)
+        {
+            for (register size_t i = 0; i < size; ++i)
+                if (NULL != table[i])
+                    delete table[i];
+            delete[] table;
+        }
+        table = NULL;
+        size = 0;
+    }
+
+    const BigInteger& at(size_t i) const
+    {
+        assert(i < size);
+        return *table[i];
+    }
+
+private:
+    MontgomeryPreBuildTable(const MontgomeryPreBuildTable&);
+};
+
+/**
  * 使用 Montgomery 算法优化
  */
 inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n)
@@ -354,11 +394,15 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
 
     // 处理返回值
     return _montgomery(ret, n, nnn);
-#else
+#elif (OPTIMIZE_LEVEL == 2)
+    /**
+     * 特殊的扩展欧几里得算法
+     */
+
     // 预运算
     const size_t rlen = n.bit_length();
     BigInteger nn;
-    _mont_extended_euclid(rlen, n, NULL, &nn);
+    _mont_extended_euclid(rlen, n, NULL, &nn); // 特殊的欧几里得算法
     nn.limit_positive_bits_to(rlen);
 
     // 循环计算
@@ -372,6 +416,74 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
         {
             ret *= m;
             ret = _montgomery(ret, rlen, n, nn);
+        }
+    }
+
+    // 处理返回值
+    return _montgomery(ret, rlen, n, nn);
+#else
+    /**
+     * 使用滑动窗口算法优化
+     */
+
+    // 准备蒙哥马利相关变量
+    const size_t rlen = n.bit_length();
+    BigInteger nn;
+    _mont_extended_euclid(rlen, n, NULL, &nn);
+    nn.limit_positive_bits_to(rlen);
+
+    // 准备预运算表
+    const int wnd_size = 5; // 滑动窗口大小
+    const uint32_t WND_MASK = ~(((uint32_t) 1) << wnd_size);
+    const BigInteger m = (a << rlen) % n;
+    MontgomeryPreBuildTable tbl(wnd_size, m, rlen, n, nn);
+
+    // 计算过程
+    BigInteger ret(m);
+    int bits_left = b.bit_length() - 1; // 剩余还未处理的比特数
+    assert(bits_left >= 0);
+    uint32_t wnd = 0; // 比特窗口
+    size_t squre_count = 0; // 需要平方的次数
+    while (bits_left > 0)
+    {
+        wnd <<= 1;
+        wnd &= WND_MASK;
+        if (0 != b.bit_at(--bits_left)) // b 的最后一个比特必定为1，因为 b 为奇数
+        {
+            wnd |= (uint32_t) 1;
+
+            ++squre_count;
+            bool term = true;
+            for (register size_t i = 1;
+                term && squre_count + i <= wnd_size && bits_left - i >= 0;
+                ++i)
+            {
+                if (0 != b.bit_at(bits_left - i))
+                    term = false;
+            }
+
+            if (term)
+            {
+                for (register size_t i = 0; i < squre_count; ++i)
+                {
+                    ret *= ret;
+                    ret = _montgomery(ret, rlen, n, nn);
+                }
+                squre_count = 0;
+
+                ret *= tbl.at(wnd >> 1);
+                ret = _montgomery(ret, rlen, n, nn);
+                wnd = 0;
+            }
+        }
+        else if (0 == squre_count) // 窗口之间的0
+        {
+            ret *= ret;
+            ret = _montgomery(ret, rlen, n, nn);
+        }
+        else // 窗口内部的0
+        {
+            ++squre_count;
         }
     }
 
@@ -473,11 +585,8 @@ inline BigInteger mod_pow(const BigInteger& a, const BigInteger& b, const BigInt
 #endif
 }
 
-
 }
 
 #undef OPTIMIZE_LEVEL
 
 #endif
-
-
