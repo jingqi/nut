@@ -786,7 +786,7 @@ public:
     /**
      * @param v 0 or 1
      */
-    void set_bit(size_t i, int v)
+    inline void set_bit(size_t i, int v)
     {
     	assert(v == 0 || v == 1);
     	ensure_significant_len((i + 1) / (8 * sizeof(word_type)) + 1); // 避免符号位被覆盖
@@ -795,8 +795,14 @@ public:
     	else
     		m_buffer[i / (8 * sizeof(word_type))] |= ((word_type)1) << (i % (8 * sizeof(word_type)));
     }
+
+    inline void set_word(size_t i, word_type v)
+    {
+        ensure_significant_len(i + 1 + 1); // 避免符号位被覆盖
+        m_buffer[i] = v;
+    }
     
-    size_t bit_length() const
+    inline size_t bit_length() const
     {
     	if (is_positive())
     		return nut::bit_length((uint8_t*)m_buffer, sizeof(word_type) * m_significant_len);
@@ -807,7 +813,7 @@ public:
     /**
      * 正数返回 bit 1 计数，负数则返回 bit 0 计数
      */
-    size_t bit_count() const
+    inline size_t bit_count() const
     {
     	const size_t bc = nut::bit_count((uint8_t*)m_buffer, sizeof(word_type) * m_significant_len);
     	if (is_positive())
@@ -815,12 +821,12 @@ public:
     	return 8 * sizeof(word_type) * m_significant_len - bc;
     }
 
-    int lowest_bit() const
+    inline int lowest_bit() const
     {
         return nut::lowest_bit((uint8_t*)m_buffer, sizeof(word_type) * m_significant_len);
     }
 
-    long long llong_value() const
+    inline long long llong_value() const
     {
         NUT_STATIC_ASSERT(sizeof(long long) % sizeof(word_type) == 0);
 
@@ -829,7 +835,7 @@ public:
         return ret;
     }
 
-    self nextProbablePrime() const
+    inline self nextProbablePrime() const
     {
         return nut::nextProbablePrime(*this);
     }
@@ -866,7 +872,7 @@ public:
     /**
      * 值交换
      */
-    static void swap(self *a, self *b)
+    inline static void swap(self *a, self *b)
     {
         assert(NULL != a && NULL != b);
         word_type *p = a->m_buffer;
