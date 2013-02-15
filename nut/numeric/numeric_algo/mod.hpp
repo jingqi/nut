@@ -336,6 +336,30 @@ private:
 };
 
 /**
+ * 计算滑动窗口算法的最佳窗口大小
+ */
+inline size_t _best_wnd(size_t bit_len)
+{
+    // 参考 java 的 BigInteger.bnExpModThreshTable
+    static const size_t TBL[] = {
+        7, 25, 81, 241, 673, 1793
+    };
+
+    int left = -1, right = sizeof(TBL) / sizeof(TBL[0]);
+    while (right - left > 1)
+    {
+        const int mid = (left + right) / 2;
+        if (TBL[mid] == bit_len)
+            return mid + 1;
+        else if (TBL[mid] < bit_len)
+            left = mid;
+        else
+            right = mid;
+    }
+    return left + 2;
+}
+
+/**
  * 使用 Montgomery 算法优化
  */
 inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n)
@@ -433,15 +457,15 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
     nn.limit_positive_bits_to(rlen);
 
     // 准备预运算表
-    const int wnd_size = 5; // 滑动窗口大小
+    int bits_left = b.bit_length() - 1; // 剩余还未处理的比特数
+    assert(bits_left >= 0);
+    const int wnd_size = _best_wnd(bits_left); // 滑动窗口大小
     const uint32_t WND_MASK = ~(((uint32_t) 1) << wnd_size);
     const BigInteger m = (a << rlen) % n;
-    MontgomeryPreBuildTable tbl(wnd_size, m, rlen, n, nn);
+    const MontgomeryPreBuildTable tbl(wnd_size, m, rlen, n, nn);
 
     // 计算过程
     BigInteger ret(m);
-    int bits_left = b.bit_length() - 1; // 剩余还未处理的比特数
-    assert(bits_left >= 0);
     uint32_t wnd = 0; // 比特窗口
     size_t squre_count = 0; // 需要平方的次数
     while (bits_left > 0)

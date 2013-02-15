@@ -167,7 +167,10 @@ public:
     _BigInteger(const self& x)
         : m_buffer(NULL), m_buffer_cap(0), m_significant_len(0)
     {
-        *this = x;
+        ensure_cap(x.m_significant_len);
+        if (x.m_significant_len > 0)
+            ::memcpy(m_buffer, x.m_buffer, sizeof(word_type) * x.m_significant_len);
+        m_significant_len = x.m_significant_len;
     }
 
     ~_BigInteger()
