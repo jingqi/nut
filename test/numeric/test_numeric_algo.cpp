@@ -22,6 +22,7 @@ NUT_FIXTURE(TestNumericAlgo)
     NUT_CASE(testExtendEuclid)
     NUT_CASE(testModMultiply)
     NUT_CASE(testModPow)
+    NUT_CASE(testPrime)
 	NUT_CASES_END()
 
 	void setUp() {}
@@ -169,6 +170,18 @@ NUT_FIXTURE(TestNumericAlgo)
             printf(" %ld ms < %ld ms ", t1 * 1000 / CLOCKS_PER_SEC, t2 * 1000 / CLOCKS_PER_SEC);
             NUT_TA(x1 == x2);
         }
+    }
+
+    void testPrime()
+    {
+        // 性能测试
+        BigInteger bound(1);
+        bound <<= 512;
+
+        clock_t s = clock();
+        BigInteger a = bound.next_prime();
+        clock_t t = clock() - s;
+        printf(" %ld ms ", t * 1000 / CLOCKS_PER_SEC);
     }
 };
 
