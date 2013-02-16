@@ -16,7 +16,7 @@
 #include <nut/platform/stdint.hpp>
 #include <nut/debugging/static_assert.hpp>
 
-#include "word_array_signed_number.hpp"
+#include "word_array_integer.hpp"
 
 #define OPTIMIZE_LEVEL 1000
 
@@ -838,7 +838,7 @@ public:
         return ret;
     }
 
-    inline self nextProbablePrime() const
+    inline self next_prime() const
     {
         return nut::nextProbablePrime(*this);
     }

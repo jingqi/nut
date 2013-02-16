@@ -93,7 +93,7 @@
     <ClInclude Include="..\..\..\nut\numeric\numeric_algo\gcd.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\numeric_algo\mod.hpp" />
     <ClInclude Include="..\..\..\nut\numeric\numeric_algo\prime.hpp" />
-    <ClInclude Include="..\..\..\nut\numeric\word_array_signed_number.hpp" />
+    <ClInclude Include="..\..\..\nut\numeric\word_array_integer.hpp" />
     <ClInclude Include="..\..\..\nut\pconsole\cmdexit.hpp" />
     <ClInclude Include="..\..\..\nut\pconsole\cmdhelp.hpp" />
     <ClInclude Include="..\..\..\nut\pconsole\icommand.hpp" />

@@ -459,7 +459,7 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
     // 准备预运算表
     int bits_left = b.bit_length() - 1; // 剩余还未处理的比特数
     assert(bits_left >= 0);
-    const int wnd_size = _best_wnd(bits_left); // 滑动窗口大小
+    const size_t wnd_size = _best_wnd(bits_left); // 滑动窗口大小
     const uint32_t WND_MASK = ~(((uint32_t) 1) << wnd_size);
     const BigInteger m = (a << rlen) % n;
     const MontgomeryPreBuildTable tbl(wnd_size, m, rlen, n, nn);
