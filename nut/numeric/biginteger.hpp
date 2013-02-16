@@ -732,31 +732,6 @@ public:
     {
         return m_significant_len;
     }
-    
-    /**
-     * 以8比特字节为单位计算有效字节长度
-     *
-     * NOTE: 可能不是以 word_type 为单位有效长度的倍数
-     */
-    inline size_t significant_bytes_length() const
-    {
-        const bool positive = is_positive();
-        size_t ret = m_significant_len * sizeof(word_type);
-        word_type last_word = m_buffer[m_significant_len - 1];
-        for (int i = 1; i < sizeof(word_type); ++i)
-        {
-            const uint8_t high = (uint8_t) (last_word >> (8 * (sizeof(word_type) - i)));
-            if (high != (positive ? 0 : 0xFF))
-                break;
-
-            const uint8_t next_high = (uint8_t) (last_word >> (8 * (sizeof(word_type) - i - 1)));
-            if ((next_high & 0x80) != (positive ? 0 : 0x80))
-                break;
-
-            --ret;
-        }
-        return ret;
-    }
 
     /**
      * 返回比特位
@@ -838,6 +813,9 @@ public:
         return ret;
     }
 
+    /**
+     * 取下一个极有可能为素数的数
+     */
     inline self next_prime() const
     {
         return nut::nextProbablePrime(*this);
