@@ -179,7 +179,7 @@ NUT_FIXTURE(TestNumericAlgo)
         bound <<= 512;
 
         clock_t s = clock();
-        BigInteger a = bound.next_prime();
+        BigInteger a = next_prime(bound);
         clock_t t = clock() - s;
         printf(" %ld ms ", t * 1000 / CLOCKS_PER_SEC);
     }

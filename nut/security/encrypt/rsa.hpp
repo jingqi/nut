@@ -42,10 +42,10 @@ public:
         BigInteger bound(1);
         bound <<= ((bit_count + 1) / 2);
         BigInteger p = BigInteger::rand_between(bound, bound << 1);
-        p = nextProbablePrime(p);
+        p = next_prime(p);
         bound <<= 3;
         BigInteger q = BigInteger::rand_between(bound, bound << 1);
-        q = nextProbablePrime(q);
+        q = next_prime(q);
 
         // 选取小奇数 e，使得 e 与 gamma_n 互质
         const BigInteger n(p * q), gamma_n = (p - 1) * (q - 1);

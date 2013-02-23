@@ -23,12 +23,6 @@
 namespace nut
 {
 
-template <typename T>
-class _BigInteger;
-
-template <typename T>
-_BigInteger<T> nextProbablePrime(const _BigInteger<T>& n);
-
 /**
  * 无限大整数
  */
@@ -811,14 +805,6 @@ public:
         long long ret = 0;
         expand(m_buffer, m_significant_len, (word_type*)&ret, sizeof(ret) / sizeof(word_type));
         return ret;
-    }
-
-    /**
-     * 取下一个极有可能为素数的数
-     */
-    inline self next_prime() const
-    {
-        return nut::nextProbablePrime(*this);
     }
     
     /**
