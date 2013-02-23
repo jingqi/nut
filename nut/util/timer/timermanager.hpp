@@ -2,6 +2,7 @@
 #ifndef ___HEADFILE_C26E9AEE_1281_403B_A44C_5CF82E61DD5C_
 #define ___HEADFILE_C26E9AEE_1281_403B_A44C_5CF82E61DD5C_
 
+#include <assert.h>
 #include <vector>
 #include <algorithm>
 #include <time.h>
@@ -23,12 +24,17 @@
 namespace nut
 {
 
+/**
+ * 不太精确的用户级定时器
+ */
 class TimerManager
 {
 public:
+    // 定时器回调函数类型
     typedef void (*timer_func_type)(int,void*);
 
 public:
+    // 定时器
     struct Timer
     {
         int id;
@@ -37,6 +43,7 @@ public:
         timer_func_type func;
     };
 
+    // 用于维护小头堆
     struct TimerPtrComparor
     {
         bool operator()(const Timer *t1, const Timer *t2)
@@ -46,12 +53,12 @@ public:
         }
     };
 
-    int volatile m_next_id;
-    std::vector<Timer*> m_timers;
+    int volatile m_next_id;  // 用于生成不重复的 timer id
+    std::vector<Timer*> m_timers; // 小头堆
     Condition m_cond;
     typedef Condition::condition_lock_type lock_type;
     lock_type m_lock;
-    bool volatile m_stopping;
+    bool volatile m_stopping; // 是否停止所有计时器
 
 public:
     TimerManager()
@@ -73,21 +80,23 @@ public:
      */
     int addTimer(const TimeVal& interval, timer_func_type func, void *arg = NULL)
     {
+        assert(NULL != func);
+
         Guard<lock_type> g(&m_lock);
         Timer *ti = new Timer();
         ti->func = func;
         ti->arg = arg;
         ti->id = m_next_id++;
         ti->time = TimeVal::now() + interval;
+
+        // 通知条件变量
         if (m_timers.size() == 0 || ti->time < m_timers[0]->time)
-            m_cond.signal(); // 通知条件变量
+            m_cond.signal();
 
         // 插入小头堆
         m_timers.push_back(ti);
         std::push_heap(m_timers.begin(), m_timers.end(), TimerPtrComparor());
 
-        // 通知条件变量
-        m_cond.signal();
         return ti->id;
     }
 
@@ -123,8 +132,14 @@ public:
         m_cond.signal();
     }
 
+    /**
+     * 主定时器线程，将阻塞线程，直到 interupt() 被调用
+     */
     void run()
     {
+        // 允许的定时误差，防止定时线程抖动厉害
+        const TimeVal min_interval(0, 10000);
+
         Guard<lock_type> g(&m_lock);
         m_stopping = false;
         while (!m_stopping)
@@ -134,7 +149,7 @@ public:
             {
                 m_cond.wait(&m_lock);
             }
-            else if (m_timers[0]->time > now)
+            else if (m_timers[0]->time > now + min_interval)
             {
                 const TimeVal wait = m_timers[0]->time - now;
                 m_cond.timedwait(&m_lock, wait.sec, wait.usec / 1000);

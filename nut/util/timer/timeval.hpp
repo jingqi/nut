@@ -21,6 +21,9 @@
 namespace nut
 {
 
+/**
+ * 秒、微妙
+ */
 class TimeVal
 {
     enum
