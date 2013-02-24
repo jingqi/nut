@@ -9,6 +9,7 @@
 #include <iostream>
 #include <nut/unittest/unittest.hpp>
 #include <nut/unittest/consoletestlogger.hpp>
+#include <nut/unittest/streamtestlogger.hpp>
 #include <nut/unittest/testrunner.hpp>
 #include <nut/logging/logmanager.hpp>
 
@@ -30,14 +31,16 @@ int main()
 
     printf("\n%s\n", NUT_PLATFORM_STR);
 
-    ConsoleTestLogger l;
+    // ConsoleTestLogger l;
+    StreamTestLogger l(std::cout);
+
     TestRunner trunner(l);
 
-    // trunner.runAGroup("pconsole");
+    trunner.runAGroup("security");
 
     // trunner.runAFixture("TestBigInteger");
     //trunner.runAFixture("TestNumericAlgo");
-     trunner.runAFixture("TestRSA");
+    // trunner.runAFixture("Testsecurity");
 
     // trunner.runACase("TestGC", "testSmoking");
 

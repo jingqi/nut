@@ -16,6 +16,8 @@ namespace nut
 class ITestLogger
 {
 public:
+	virtual ~ITestLogger() {}
+
     virtual void start(const char *groupName, const char *fixtureName, const char *caseName) = 0;
     virtual void finish() = 0;
 

@@ -12,4 +12,6 @@
 *~
 /wks/makefile/makefile
 /wks/makefile/output
+/wks/eclipse/Debug
+/wks/eclipse/Release
 

@@ -34,13 +34,13 @@ public:
     void update(const void *buf, size_t len)
     {
         assert(NULL != buf || len <= 0);
-        uint16_t& a = reinterpret_cast<uint16_t*>(&m_result)[0];
-        uint16_t& b = reinterpret_cast<uint16_t*>(&m_result)[1];
+        uint16_t *a = reinterpret_cast<uint16_t*>(&m_result);
+        uint16_t *b = reinterpret_cast<uint16_t*>(&m_result) + 1;
         for (register size_t i = 0; i < len; ++i)
         {
             const uint8_t d = static_cast<const uint8_t*>(buf)[i];
-            a = (((uint32_t) a) + d) % MOD_ADLER;
-            b = (((uint32_t) b) + a) % MOD_ADLER;
+            *a = (((uint32_t) *a) + d) % MOD_ADLER;
+            *b = (((uint32_t) *b) + *a) % MOD_ADLER;
         }
     }
 

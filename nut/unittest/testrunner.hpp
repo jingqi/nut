@@ -17,7 +17,7 @@ class TestRunner
 {
     ITestLogger &m_logger;
 
-public :
+public:
     TestRunner(ITestLogger& logger) : m_logger(logger) {}
 
     void runAGroup (const char *groupName)
