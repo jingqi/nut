@@ -16,9 +16,9 @@ NUT_FIXTURE(TestMD5)
     void checkMd5(const char *msg, const char *rs)
     {
         nut::MD5 digest;
-        digest.initialize();
+        digest.reset();
         digest.update(msg, strlen(msg));
-        digest.finalize();
+        digest.digest();
         NUT_TA(digest.getStringResult() == rs);
     }
 

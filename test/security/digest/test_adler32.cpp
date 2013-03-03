@@ -17,9 +17,9 @@ NUT_FIXTURE(TestAdler32)
     void checkAdler32(const char *msg, uint32_t expected)
     {
         nut::Adler32 ad;
-        ad.initialize();
+        ad.reset();
         ad.update(msg, strlen(msg));
-        NUT_TA(ad.getResult() == expected);
+        NUT_TA(ad.digest() == expected);
     }
 
     void testAdler32()

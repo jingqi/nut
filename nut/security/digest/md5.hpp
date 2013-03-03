@@ -73,10 +73,10 @@ class MD5
 public:
     MD5()
     {
-        initialize();
+        reset();
     }
 
-    void initialize()
+    void reset()
     {
         m_byteslen = 0;
 
@@ -124,7 +124,7 @@ public:
         ::memcpy(m_buffer + index, ((const uint8_t*)buf) + i, cb - i);
     }
 
-    void finalize()
+    void digest()
     {
         /* Save number of bits */
         const uint64_t bits = m_byteslen << 3;

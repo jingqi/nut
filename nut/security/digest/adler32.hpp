@@ -26,7 +26,7 @@ public:
         : m_result(1)
     {}
 
-    void initialize()
+    void reset()
     {
         m_result = 1;
     }
@@ -44,7 +44,7 @@ public:
         }
     }
 
-    uint32_t getResult() const
+    uint32_t digest() const
     {
         return m_result;
     }
