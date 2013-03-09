@@ -130,6 +130,7 @@
     <ClInclude Include="..\..\..\nut\unittest\testregister.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\testrunner.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\unittest.hpp" />
+    <ClInclude Include="..\..\..\nut\util\bundle.hpp" />
     <ClInclude Include="..\..\..\nut\util\configfile.hpp" />
     <ClInclude Include="..\..\..\nut\util\delegate.hpp" />
     <ClInclude Include="..\..\..\nut\util\mrucache.hpp" />
