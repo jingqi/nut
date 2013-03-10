@@ -13,6 +13,7 @@
 #include <stdlib.h>  /* for malloc() and free() */
 #include <stdio.h> /* for size_t */
 #include <stdint.h>
+#include <string>
 
 namespace nut
 {
@@ -250,6 +251,111 @@ public :
     inline size_t size() const { return m_datalen; }
 
     inline size_t capasity() const { return m_buflen; }
+
+    /**
+     * 将二进制 0x51 0x5e 0x30 转换为字符串 "515e30"
+     */
+    std::string toString(size_t from = 0, size_t to = ~(size_t)0) const
+    {
+        assert(from <= to);
+
+        std::string ret;
+        const size_t limit = (m_datalen < to ? m_datalen : to);
+        for (register size_t i = from; i < limit; ++i)
+        {
+            uint8_t b = m_buf[i];
+            int n = (b >> 4) & 0xF;
+            ret.push_back(n < 10 ? ('0' + n) : ('A' + (n - 10)));
+
+            n = b & 0xF;
+            ret.push_back(n < 10 ? ('0' + n) : ('A' + (n - 10)));
+        }
+        return ret;
+    }
+
+    std::wstring toWString(size_t from = 0, size_t to = ~(size_t)0) const
+    {
+        assert(from <= to);
+
+        std::wstring ret;
+        const size_t limit = (m_datalen < to ? m_datalen : to);
+        for (register size_t i = from; i < limit; ++i)
+        {
+            uint8_t b = m_buf[i];
+            int n = (b >> 4) & 0xF;
+            ret.push_back(n < 10 ? (L'0' + n) : (L'A' + (n - 10)));
+
+            n = b & 0xF;
+            ret.push_back(n < 10 ? (L'0' + n) : (L'A' + (n - 10)));
+        }
+        return ret;
+    }
+
+    /**
+     * 将类似于 "1234ab" 的字符串转为二进制 0x12 0x34 0xab
+     * NOTE:
+     *      如果限定范围的字符串长度不是偶数，最后一个字符被忽略
+     *      如果字符串中间出现非16进制字符，则转换过程立即停止
+     */
+    static ByteArray valueOf(const std::string& s, size_t from = 0, size_t to = ~(size_t)0)
+    {
+        assert(from <= to);
+
+        ByteArray ret;
+        const size_t limit = (s.length() < to ? s.length() : to);
+        for (register size_t i = 0; from + i * 2 + 1 < limit; ++i)
+        {
+            int p1, p2;
+            char c = s.at(from + i * 2);
+            if ('0' <= c && c <= '9')
+                p1 = c - '0';
+            else if (('a' <= c && c <= 'f') || ('A' <= c && c <= 'F'))
+                p1 = (c & 0x20) - 'a' + 10;
+            else
+                break;
+
+            c = s.at(from + i * 2 + 1);
+            if ('0' <= c && c <= '9')
+                p2 = c - '0';
+            else if (('a' <= c && c <= 'f') || ('A' <= c && c <= 'F'))
+                p2 = (c & 0x20) - 'a' + 10;
+            else
+                break;
+
+            ret.append(1, (uint8_t)(p1 * 16 + p2));
+        }
+        return ret;
+    }
+
+    static ByteArray valueOf(const std::wstring& s, size_t from = 0, size_t to = ~(size_t)0)
+    {
+        assert(from <= to);
+
+        ByteArray ret;
+        const size_t limit = (s.length() < to ? s.length() : to);
+        for (register size_t i = 0; from + i * 2 + 1 < limit; ++i)
+        {
+            int p1, p2;
+            wchar_t c = s.at(from + i * 2);
+            if (L'0' <= c && c <= L'9')
+                p1 = c - L'0';
+            else if ((L'a' <= c && c <= L'f') || (L'A' <= c && c <= L'F'))
+                p1 = (c & 0x20) - L'a' + 10;
+            else
+                break;
+
+            c = s.at(from + i * 2 + 1);
+            if (L'0' <= c && c <= L'9')
+                p2 = c - L'0';
+            else if ((L'a' <= c && c <= L'f') || (L'A' <= c && c <= L'F'))
+                p2 = (c & 0x20) - L'a' + 10;
+            else
+                break;
+
+            ret.append(1, (uint8_t)(p1 * 16 + p2));
+        }
+        return ret;
+    }
 };
 
 }
