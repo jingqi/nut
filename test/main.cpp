@@ -31,14 +31,14 @@ int main()
 
     printf("\n%s\n", NUT_PLATFORM_STR);
 
-    // ConsoleTestLogger l;
-    StreamTestLogger l(std::cout);
+    ConsoleTestLogger l;
+    // StreamTestLogger l(std::cout);
 
     TestRunner trunner(l);
 
-    trunner.runAGroup("security");
+    // trunner.runAGroup("security");
 
-    // trunner.runAFixture("TestBigInteger");
+    trunner.runAFixture("TestByteArray");
     //trunner.runAFixture("TestNumericAlgo");
     // trunner.runAFixture("Testsecurity");
 

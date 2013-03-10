@@ -310,7 +310,7 @@ public :
             if ('0' <= c && c <= '9')
                 p1 = c - '0';
             else if (('a' <= c && c <= 'f') || ('A' <= c && c <= 'F'))
-                p1 = (c & 0x20) - 'a' + 10;
+                p1 = (c | 0x20) - 'a' + 10;
             else
                 break;
 
@@ -318,7 +318,7 @@ public :
             if ('0' <= c && c <= '9')
                 p2 = c - '0';
             else if (('a' <= c && c <= 'f') || ('A' <= c && c <= 'F'))
-                p2 = (c & 0x20) - 'a' + 10;
+                p2 = (c | 0x20) - 'a' + 10;
             else
                 break;
 

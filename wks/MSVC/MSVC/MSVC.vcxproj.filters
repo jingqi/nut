@@ -443,5 +443,8 @@
     <ClCompile Include="..\..\..\test\numeric\test_numeric_algo.cpp">
       <Filter>源文件\numeric</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\test\util\test_bytearray.cpp">
+      <Filter>源文件\util</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
