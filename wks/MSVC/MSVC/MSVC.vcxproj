@@ -131,12 +131,12 @@
     <ClInclude Include="..\..\..\nut\unittest\testrunner.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\unittest.hpp" />
     <ClInclude Include="..\..\..\nut\util\bundle.hpp" />
+    <ClInclude Include="..\..\..\nut\util\bytearray.hpp" />
     <ClInclude Include="..\..\..\nut\util\configfile.hpp" />
     <ClInclude Include="..\..\..\nut\util\delegate.hpp" />
     <ClInclude Include="..\..\..\nut\util\mrucache.hpp" />
     <ClInclude Include="..\..\..\nut\util\propertyfile.hpp" />
     <ClInclude Include="..\..\..\nut\util\consoleutil.hpp" />
-    <ClInclude Include="..\..\..\nut\util\membuffer.hpp" />
     <ClInclude Include="..\..\..\nut\util\sqlite3helper\connection.hpp" />
     <ClInclude Include="..\..\..\nut\util\sqlite3helper\preparedstatement .hpp" />
     <ClInclude Include="..\..\..\nut\util\sqlite3helper\resultset.hpp" />

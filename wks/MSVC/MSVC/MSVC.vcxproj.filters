@@ -177,9 +177,6 @@
     <ClInclude Include="..\..\..\nut\logging\logrecord.hpp">
       <Filter>头文件\logging</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\util\membuffer.hpp">
-      <Filter>头文件\util</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\util\time.hpp">
       <Filter>头文件\util</Filter>
     </ClInclude>
@@ -367,6 +364,9 @@
       <Filter>头文件\numeric</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\nut\util\bundle.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\bytearray.hpp">
       <Filter>头文件\util</Filter>
     </ClInclude>
   </ItemGroup>

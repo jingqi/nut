@@ -17,7 +17,7 @@
 namespace nut
 {
 
-class MemBuffer
+class ByteArray
 {
     uint8_t *m_buf;
     size_t m_buflen;
@@ -51,13 +51,13 @@ private :
     }
 
 public :
-    MemBuffer() : m_buf(NULL), m_buflen(0), m_datalen(0) {}
+    ByteArray() : m_buf(NULL), m_buflen(0), m_datalen(0) {}
 
     /**
      * @param len initial data size
      * @param fillv initial data filling
      */
-    explicit MemBuffer(size_t len, uint8_t fillv = 0)
+    explicit ByteArray(size_t len, uint8_t fillv = 0)
         : m_buf(NULL), m_buflen(0), m_datalen(0)
     {
         _assure(len, false);
@@ -69,7 +69,7 @@ public :
      * @param buf initial data
      * @param len initial data size
      */
-    MemBuffer(const void *buf, size_t len)
+    ByteArray(const void *buf, size_t len)
         : m_buf(NULL), m_buflen(0), m_datalen(0)
     {
         assert(NULL != buf);
@@ -85,7 +85,7 @@ public :
      * @param termByte the initial data terminated with 'termByte'
      * @param includeTermByte if True, the 'termByte' is part of initial data
      */
-    MemBuffer(const void *buf, unsigned char termByte, bool includeTermByte)
+    ByteArray(const void *buf, unsigned char termByte, bool includeTermByte)
         : m_buf(NULL), m_buflen(0), m_datalen(0)
     {
         assert(NULL != buf);
@@ -103,7 +103,7 @@ public :
         m_datalen = len;
     }
 
-    MemBuffer(const void *buf, size_t index, size_t size)
+    ByteArray(const void *buf, size_t index, size_t size)
         : m_buf(NULL), m_buflen(0), m_datalen(0)
     {
         assert(NULL != buf);
@@ -115,7 +115,7 @@ public :
         m_datalen = size;
     }
 
-    MemBuffer(const MemBuffer& x)
+    ByteArray(const ByteArray& x)
         : m_buf(NULL), m_buflen(0), m_datalen(0)
     {
         if (0 == x.m_datalen)
@@ -126,7 +126,7 @@ public :
         m_datalen = x.m_datalen;
     }
 
-    ~MemBuffer()
+    ~ByteArray()
     {
         if (NULL != m_buf)
             ::free(m_buf);
@@ -140,7 +140,7 @@ public :
      */
     void clear() { m_datalen = 0; }
 
-    MemBuffer& operator=(const MemBuffer &x)
+    ByteArray& operator=(const ByteArray &x)
     {
         if (&x == this)
             return *this;
@@ -154,7 +154,7 @@ public :
     /**
      * works like memcmp()
      */
-    bool operator==(const MemBuffer &x) const
+    bool operator==(const ByteArray &x) const
     {
         if (m_datalen != x.m_datalen)
             return false;
@@ -164,7 +164,7 @@ public :
         return true;
     }
 
-    bool operator!=(const MemBuffer &x) const { return !(*this == x); }
+    bool operator!=(const ByteArray &x) const { return !(*this == x); }
 
     const uint8_t& operator[](size_t idx) const
     {
@@ -175,7 +175,7 @@ public :
     uint8_t& operator[](size_t idx)
     {
         assert(idx < m_datalen);
-        return const_cast<uint8_t&>(static_cast<const MemBuffer&>(*this)[idx]);
+        return const_cast<uint8_t&>(static_cast<const ByteArray&>(*this)[idx]);
     }
 
     /**
@@ -190,7 +190,7 @@ public :
         m_datalen = n;
     }
 
-    void append(const MemBuffer &x)
+    void append(const ByteArray &x)
     {
         _assure(m_datalen + x.m_datalen);
         ::memcpy(m_buf + m_datalen, x.m_buf, x.m_datalen);
@@ -243,7 +243,7 @@ public :
      */
     inline const uint8_t* buffer() const { return m_buf; }
 
-    inline uint8_t* buffer() { return const_cast<uint8_t*>(static_cast<const MemBuffer&>(*this).buffer()); }
+    inline uint8_t* buffer() { return const_cast<uint8_t*>(static_cast<const ByteArray&>(*this).buffer()); }
 
     inline size_t length() const { return size(); }
 
