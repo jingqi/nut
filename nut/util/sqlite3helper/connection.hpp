@@ -10,6 +10,7 @@
 
 #include <assert.h>
 #include <sqlite3.h>
+#include <vector>
 
 #include <nut/gc/ref.hpp>
 #include <nut/debugging/exception.hpp>
@@ -299,6 +300,50 @@ public:
         return true;
     }
 
+    bool executeUpdate(const char *sql, const std::vector<ParamWraper>& args)
+    {
+        assert(NULL != sql && isValid());
+
+        // 预编译
+        ref<PreparedStatement> stmt = gc_new<PreparedStatement>(m_sqlite, sql);
+        if (!stmt->isValid())
+        {
+            onError(SQLITE_ERROR);
+            return false;
+        }
+
+        // 绑定参数
+        bool rs = stmt->reset();
+        if (!rs)
+        {
+            onError(SQLITE_ERROR);
+            return false;
+        }
+        for (register size_t i = 0, size = args.size(); i < size; ++i)
+        {
+            rs = stmt->bind(i + 1, args.at(i));
+            if (!rs)
+            {
+                onError(SQLITE_ERROR);
+                return false;
+            }
+        }
+            // 执行
+        if (m_autoCommit)
+             start();
+        int irs = ::sqlite3_step(stmt->stmt()->raw());
+        if (SQLITE_DONE != irs)
+        {
+            if (m_autoCommit)
+                rollback();
+            onError(irs);
+            return false;
+        }
+        if (m_autoCommit)
+            commit();
+        return true;
+    }
+
     ref<ResultSet> executeQuery(const char *sql,
         const ParamWraper& arg1 = ParamWraper::none(),
         const ParamWraper& arg2 = ParamWraper::none(),
@@ -346,6 +391,38 @@ public:
         return gc_new<ResultSet>(stmt->stmt());
     }
 
+    ref<ResultSet> executeQuery(const char *sql, const std::vector<ParamWraper> args)
+    {
+        assert(NULL != sql && isValid());
+
+        // 预编译
+        ref<PreparedStatement> stmt = gc_new<PreparedStatement>(m_sqlite, sql);
+        if (!stmt->isValid())
+        {
+            onError(SQLITE_ERROR);
+            return gc_new<ResultSet>();
+        }
+
+        // 绑定参数
+        bool rs = stmt->reset();
+        if (!rs)
+        {
+            onError(SQLITE_ERROR);
+            return gc_new<ResultSet>();
+        }
+        for (register size_t i = 0, size = args.size(); i < size; ++i)
+        {
+            rs = stmt->bind(i + 1, args.at(i));
+            if (!rs)
+            {
+                onError(SQLITE_ERROR);
+                return gc_new<ResultSet>();
+            }
+        }
+
+        // 执行
+        return gc_new<ResultSet>(stmt->stmt());
+    }
 };
 
 }
