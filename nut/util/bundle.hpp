@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-03-09
- * @last-edit 2013-03-09 18:24:03 jingqi
+ * @last-edit 2013-03-12 10:35:19 jingqi
  * @brief
  */
 
@@ -94,7 +94,7 @@ public:
         return v->value;
     }
 
-    void setBool(const std::string& key, boolean value)
+    void setBool(const std::string& key, bool value)
     {
         m_values[key] = gc_new<_BoolValue>(value);
     }
