@@ -79,17 +79,19 @@ public:
         m_counter(c), m_destroyer(d)
     {}
 
-    virtual void add_ref()
+    virtual int add_ref()
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
-        ++m_counter;
+        return ++m_counter;
     }
 
-    virtual void rls_ref()
+    virtual int rls_ref()
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
-        if (--m_counter == 0)
+        const int ret = --m_counter;
+        if (0 == ret)
             m_destroyer(this);
+        return ret;
     }
 };
 
@@ -143,17 +145,19 @@ public:
         : enref<T>(arg1, arg2, arg3, arg4, arg5, arg6), m_counter(c), m_destroyer(d)
     {}
 
-    virtual void add_ref()
+    virtual int add_ref()
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
-        ++m_counter;
+        return ++m_counter;
     }
 
-    virtual void rls_ref()
+    virtual int rls_ref()
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
-        if (--m_counter == 0)
+        const int ret = --m_counter;
+        if (0 == ret)
             m_destroyer(this);
+        return ret;
     }
 };
 

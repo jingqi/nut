@@ -187,10 +187,12 @@ struct dynamic_ref_cast : public ref<typename RefTraits<T>::plain_type>
  *        C
  * 如果在A,B中使用了 DECLARE_GC_ENABLE 声明， 那么 C 中也要使用，
  * 否则会出现有歧义的调用
+ *
+ * @return 引用计数更改之后的值
  */
 #define NUT_GC_REFERABLE \
-    virtual void add_ref() = 0; \
-    virtual void rls_ref() = 0; \
+    virtual int add_ref() = 0; \
+    virtual int rls_ref() = 0; \
     template <typename ___T> friend class nut::ref;
 
 
