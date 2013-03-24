@@ -35,13 +35,17 @@ inline bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n)
     for (register size_t i = b.bit_length(); i > 0; --i)
     {
         BigInteger x = d;
-        d = (d * d) % n;
-        if (d == BigInteger(1) && x != BigInteger(1) && x != b)
+        d *= d;
+        d %= n;
+        if (d == 1 && x != 1 && x != b)
             return true;
         if (0 != b.bit_at(i - 1))
-            d = (d * a) % n;
+        {
+            d *= a;
+            d %= n;
+        }
     }
-    if (d != BigInteger(1))
+    if (d != 1)
         return true;
     return false;
 }

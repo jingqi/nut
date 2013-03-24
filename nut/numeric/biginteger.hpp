@@ -170,7 +170,7 @@ public:
     }
 
     _BigInteger(const self& x)
-        : m_buffer(x.m_buffer), m_significant_len(x.m_significant_len)
+        : m_buffer(x.m_buffer), m_significant_len(x.m_significant_len) // copy on write
     {}
 
     ~_BigInteger()
@@ -204,6 +204,11 @@ public:
     
     inline bool operator==(const self& x) const
     {
+        if (&x == this)
+            return true;
+        if (m_significant_len == x.m_significant_len && m_buffer == x.m_buffer)
+            return true;
+
         return equals(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len);
     }
 
