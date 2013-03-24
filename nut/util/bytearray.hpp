@@ -42,7 +42,7 @@ private :
         {
             assert(0 == m_datalen);
             if (new_size > 0)
-                m_buf = gc_new<FixedBuf<uint8_t> >(new_size);
+                m_buf = gc_new<FixedBuf<uint8_t>, RefCounterSync>(new_size);
             return;
         }
 
@@ -54,17 +54,17 @@ private :
             assert(rc >= 1);
             if (rc > 1)
             {
-                ref<FixedBuf<uint8_t> > new_buf = gc_new<FixedBuf<uint8_t> >(new_size);
+                ref<FixedBuf<uint8_t> > new_buf = gc_new<FixedBuf<uint8_t>, RefCounterSync>(new_size);
                 ::memcpy(new_buf->buf, m_buf->buf, m_datalen * sizeof(uint8_t));
                 m_buf = new_buf;
             }
             return;
         }
 
-        /* new size */
+        // new capacity
         size_t new_cap = (!extra_space ? new_size :
             (old_cap * 3 / 2 < new_size ? new_size : old_cap * 3 / 2));
-        ref<FixedBuf<uint8_t> > new_buf = gc_new<FixedBuf<uint8_t> >(new_cap);
+        ref<FixedBuf<uint8_t> > new_buf = gc_new<FixedBuf<uint8_t>, RefCounterSync>(new_cap);
         ::memcpy(new_buf->buf, m_buf->buf, m_datalen * sizeof(uint8_t));
         m_buf = new_buf;
     }
