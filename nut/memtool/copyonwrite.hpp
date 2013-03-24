@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2013-03-24
@@ -15,15 +15,15 @@ namespace nut
 {
 
 /**
- * ÓÃÓÚ copy-on-write
+ * ç”¨äºŽ copy-on-write
  */
 template <typename T>
 struct FixedBuf
 {
     NUT_GC_REFERABLE
 
-    T * const buf;
-    const size_t len;
+    T * buf;
+    size_t len;
 
     FixedBuf(size_t _len)
         : buf(0 == _len ? NULL : (T*) ::malloc(_len * sizeof(T))), len(_len)
@@ -33,6 +33,13 @@ struct FixedBuf
     {
         if (NULL != buf)
             ::free(buf);
+    }
+
+    void realloc(size_t _len)
+    {
+        assert(get_ref() == 1 && _len > 0);
+        buf = (T*) ::realloc(buf, _len * sizeof(T));
+        len = _len;
     }
 };
 

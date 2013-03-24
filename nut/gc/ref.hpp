@@ -45,13 +45,13 @@ public:
     inline bool operator==(const weak_ref<T>& r) const { return m_ptr == r.m_ptr; }
     inline bool operator!=(const weak_ref<T>& r) const { return m_ptr != r.m_ptr; }
 
-    T* operator->() const
+    inline T* operator->() const
     {
         assert(NULL != m_ptr);
         return m_ptr;
     }
 
-    T& operator*() const
+    inline T& operator*() const
     {
         assert(NULL != m_ptr);
         return *m_ptr;
@@ -93,18 +93,18 @@ public:
     ~ref() { clear(); }
 
 public:
-    ref<T>& operator=(const ref<T>& r)
+    inline ref<T>& operator=(const ref<T>& r)
     {
         assign(r.m_ptr);
         return *this;
     }
 	
-    bool operator==(const weak_ref<T>& r) const
+    inline bool operator==(const weak_ref<T>& r) const
 	{
 		return m_ptr == r.pointer();
 	}
 
-    bool operator!=(const weak_ref<T>& r) const
+    inline bool operator!=(const weak_ref<T>& r) const
 	{
 		return m_ptr != r.pointer();
 	}

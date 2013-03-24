@@ -47,11 +47,11 @@ private :
         }
 
         // 原本 buffer 足够长，则 copy-on-write
+        const int rc = m_buf->get_ref();
+        assert(rc >= 1);
         const size_t old_cap = m_buf->len;
         if (old_cap >= new_size)
         {
-            const int rc = m_buf->get_ref();
-            assert(rc >= 1);
             if (rc > 1)
             {
                 ref<FixedBuf<uint8_t> > new_buf = gc_new<FixedBuf<uint8_t>, RefCounterSync>(new_size);
@@ -62,11 +62,18 @@ private :
         }
 
         // new capacity
-        size_t new_cap = (!extra_space ? new_size :
+        const size_t new_cap = (!extra_space ? new_size :
             (old_cap * 3 / 2 < new_size ? new_size : old_cap * 3 / 2));
-        ref<FixedBuf<uint8_t> > new_buf = gc_new<FixedBuf<uint8_t>, RefCounterSync>(new_cap);
-        ::memcpy(new_buf->buf, m_buf->buf, m_datalen * sizeof(uint8_t));
-        m_buf = new_buf;
+        if (rc == 1)
+        {
+            m_buf->realloc(new_cap);
+        }
+        else
+        {
+            ref<FixedBuf<uint8_t> > new_buf = gc_new<FixedBuf<uint8_t>, RefCounterSync>(new_cap);
+            ::memcpy(new_buf->buf, m_buf->buf, m_datalen * sizeof(uint8_t));
+            m_buf = new_buf;
+        }
     }
 
 public :
