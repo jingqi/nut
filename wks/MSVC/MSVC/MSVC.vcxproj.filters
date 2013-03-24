@@ -369,6 +369,9 @@
     <ClInclude Include="..\..\..\nut\util\bytearray.hpp">
       <Filter>头文件\util</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\memtool\copyonwrite.hpp">
+      <Filter>头文件\memtool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">

@@ -93,6 +93,12 @@ public:
             m_destroyer(this);
         return ret;
     }
+
+    virtual int get_ref() const
+    {
+        NUT_DEBUGGING_ASSERT_ALIVE;
+        return m_counter;
+    }
 };
 
 template <typename T, typename COUNTER>
@@ -158,6 +164,12 @@ public:
         if (0 == ret)
             m_destroyer(this);
         return ret;
+    }
+
+    virtual int get_ref() const
+    {
+        NUT_DEBUGGING_ASSERT_ALIVE;
+        return m_counter;
     }
 };
 

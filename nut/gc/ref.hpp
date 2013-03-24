@@ -193,6 +193,7 @@ struct dynamic_ref_cast : public ref<typename RefTraits<T>::plain_type>
 #define NUT_GC_REFERABLE \
     virtual int add_ref() = 0; \
     virtual int rls_ref() = 0; \
+    virtual int get_ref() const = 0; \
     template <typename ___T> friend class nut::ref;
 
 
