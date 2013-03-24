@@ -83,6 +83,7 @@
     <ClInclude Include="..\..\..\nut\logging\macros.hpp" />
     <ClInclude Include="..\..\..\nut\logging\logmanager.hpp" />
     <ClInclude Include="..\..\..\nut\logging\logrecord.hpp" />
+    <ClInclude Include="..\..\..\nut\memtool\copyonwrite.hpp" />
     <ClInclude Include="..\..\..\nut\memtool\refarg.hpp" />
     <ClInclude Include="..\..\..\nut\memtool\singleton.hpp" />
     <ClInclude Include="..\..\..\nut\mem\lengthfixed_mp.hpp" />

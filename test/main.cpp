@@ -38,9 +38,10 @@ int main()
 
     // trunner.runAGroup("security");
 
-    trunner.runAFixture("TestByteArray");
-    //trunner.runAFixture("TestNumericAlgo");
-    // trunner.runAFixture("Testsecurity");
+    // trunner.runAFixture("TestByteArray");
+    // trunner.runAFixture("TestBigInteger");
+    // trunner.runAFixture("TestNumericAlgo");
+    trunner.runAFixture("TestRSA");
 
     // trunner.runACase("TestGC", "testSmoking");
 

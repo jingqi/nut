@@ -45,13 +45,13 @@ public:
     inline bool operator==(const weak_ref<T>& r) const { return m_ptr == r.m_ptr; }
     inline bool operator!=(const weak_ref<T>& r) const { return m_ptr != r.m_ptr; }
 
-    T* operator->() const
+    inline T* operator->() const
     {
         assert(NULL != m_ptr);
         return m_ptr;
     }
 
-    T& operator*() const
+    inline T& operator*() const
     {
         assert(NULL != m_ptr);
         return *m_ptr;
@@ -93,18 +93,18 @@ public:
     ~ref() { clear(); }
 
 public:
-    ref<T>& operator=(const ref<T>& r)
+    inline ref<T>& operator=(const ref<T>& r)
     {
         assign(r.m_ptr);
         return *this;
     }
 	
-    bool operator==(const weak_ref<T>& r) const
+    inline bool operator==(const weak_ref<T>& r) const
 	{
 		return m_ptr == r.pointer();
 	}
 
-    bool operator!=(const weak_ref<T>& r) const
+    inline bool operator!=(const weak_ref<T>& r) const
 	{
 		return m_ptr != r.pointer();
 	}
@@ -187,10 +187,13 @@ struct dynamic_ref_cast : public ref<typename RefTraits<T>::plain_type>
  *        C
  * 如果在A,B中使用了 DECLARE_GC_ENABLE 声明， 那么 C 中也要使用，
  * 否则会出现有歧义的调用
+ *
+ * @return 引用计数更改之后的值
  */
 #define NUT_GC_REFERABLE \
-    virtual void add_ref() = 0; \
-    virtual void rls_ref() = 0; \
+    virtual int add_ref() = 0; \
+    virtual int rls_ref() = 0; \
+    virtual int get_ref() const = 0; \
     template <typename ___T> friend class nut::ref;
 
 

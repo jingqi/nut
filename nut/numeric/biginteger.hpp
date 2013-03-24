@@ -15,6 +15,7 @@
 
 #include <nut/platform/stdint.hpp>
 #include <nut/debugging/static_assert.hpp>
+#include <nut/memtool/copyonwrite.hpp>
 
 #include "word_array_integer.hpp"
 
@@ -37,54 +38,64 @@ private:
     typedef _BigInteger<T> self;
 
     /** 缓冲区, little-endian, 带符号 */
-    word_type *m_buffer;
-    /** 缓冲区长度 */
-    size_t m_buffer_cap;
+    ref<FixedBuf<word_type> > m_buffer;
     /** 有效字长度 */
     size_t m_significant_len;
 
 private:
     /**
-     * 确保缓冲区有足够的空间
+     * copy-on-write，并确保缓冲区有足够的空间
      */
-    void ensure_cap(size_t size_needed)
+    void _copy_on_write(size_t size_needed = 0)
     {
-        // 分配内存足够了，无需调整
-        if (m_buffer_cap >= size_needed)
+        const size_t new_size = max(size_needed, m_significant_len);
+
+        // buffer 为 null，则需要new
+        if (m_buffer.isNull())
+        {
+            assert(0 == m_significant_len);
+            if (new_size > 0)
+                m_buffer = gc_new<FixedBuf<word_type>, RefCounterSync>(new_size);
             return;
+        }
 
-        // 计算新内存块的大小
-        size_t newcap = m_buffer_cap * 3 / 2;
-        if (newcap < size_needed)
-            newcap = size_needed;
+        // 原本 buffer 足够长，则 copy-on-write
+        const size_t old_cap = m_buffer->len;
+        if (old_cap >= new_size)
+        {
+            const int rc = m_buffer->get_ref();
+            assert(rc >= 1);
+            if (rc > 1)
+            {
+                ref<FixedBuf<word_type> > new_buf = gc_new<FixedBuf<word_type>, RefCounterSync>(new_size);
+                ::memcpy(new_buf->buf, m_buffer->buf, m_significant_len * sizeof(word_type));
+                m_buffer = new_buf;
+            }
+            return;
+        }
 
-        // 分配新内存块并拷贝数据
-        if (NULL == m_buffer)
-            m_buffer = (word_type*) ::malloc(sizeof(word_type) * newcap);
+        // new capacity
+        size_t new_cap = old_cap * 3 / 2;
+        if (new_cap < size_needed)
+            new_cap = size_needed;
+        if (m_buffer->get_ref() == 1)
+        {
+            m_buffer->realloc(new_cap);
+        }
         else
-            m_buffer = (word_type*) ::realloc(m_buffer, sizeof(word_type) * newcap);
-        assert(NULL != m_buffer);
-        m_buffer_cap = newcap;
+        {
+            ref<FixedBuf<word_type> > new_buf = gc_new<FixedBuf<word_type>, RefCounterSync>(new_cap);
+            ::memcpy(new_buf->buf, m_buffer->buf, m_significant_len * sizeof(word_type));
+            m_buffer = new_buf;
+        }
     }
 
-    /**
-     * 释放缓冲区
-     */
-    inline void free_mem()
-    {
-        if (NULL != m_buffer)
-            ::free(m_buffer);
-        m_buffer = NULL;
-        m_buffer_cap = 0;
-        m_significant_len = 0;
-    }
-    
     /**
      * 最小化有效字节长度
      */
     inline void minimize_significant_len()
     {
-        m_significant_len = significant_size(m_buffer, m_significant_len);
+        m_significant_len = significant_size(m_buffer->buf, m_significant_len);
     }
 
     /**
@@ -97,89 +108,85 @@ private:
         if (m_significant_len >= siglen)
             return;
 
-        ensure_cap(siglen);
-        expand(m_buffer, m_significant_len, m_buffer, siglen);
+        _copy_on_write(siglen);
+        expand(m_buffer->buf, m_significant_len, m_buffer->buf, siglen);
         m_significant_len = siglen;
     }
 
 public:
     _BigInteger()
-        : m_buffer(NULL), m_buffer_cap(0), m_significant_len(0)
+        : m_significant_len(0)
     {
-        ensure_cap(1);
-        m_buffer[0] = 0;
+        _copy_on_write(1);
+        m_buffer->buf[0] = 0;
         m_significant_len = 1;
     }
     
     explicit _BigInteger(long long v)
-        : m_buffer(NULL), m_buffer_cap(0), m_significant_len(0)
+        : m_significant_len(0)
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
 
-        ensure_cap(sizeof(v) / sizeof(word_type));
-        ::memcpy(m_buffer, &v, sizeof(v));
+        _copy_on_write(sizeof(v) / sizeof(word_type));
+        ::memcpy(m_buffer->buf, &v, sizeof(v));
         m_significant_len = sizeof(v) / sizeof(word_type);
         minimize_significant_len();
     }
 
     template <typename U>
     _BigInteger(const U *buf, size_t len, bool withSign)
-        : m_buffer(NULL), m_buffer_cap(0), m_significant_len(0)
+        : m_significant_len(0)
     {
         assert(NULL != buf && len > 0);
 
         const uint8_t fill = (withSign ? (nut::is_positive(buf, len) ? 0 : 0xFF) : 0);
         const size_t min_sig = sizeof(U) * len / sizeof(word_type) + 1; // 保证一个空闲字节放符号位
-        ensure_cap(min_sig);
-        ::memcpy(m_buffer, buf, sizeof(U) * len);
-        ::memset(((U*)m_buffer) + len, fill, min_sig * sizeof(word_type) - sizeof(U) * len);
+        _copy_on_write(min_sig);
+        ::memcpy(m_buffer->buf, buf, sizeof(U) * len);
+        ::memset(((U*) m_buffer->buf) + len, fill, min_sig * sizeof(word_type) - sizeof(U) * len);
         m_significant_len = min_sig;
         minimize_significant_len();
     }
 
     // 上述模板函数的一个特化
     _BigInteger(const word_type *buf, size_t len, bool withSign)
-        : m_buffer(NULL), m_buffer_cap(0), m_significant_len(0)
+        : m_significant_len(0)
     {
         assert(NULL != buf && len > 0);
         if (withSign || nut::is_positive(buf, len))
         {
-            ensure_cap(len);
-            ::memcpy(m_buffer, buf, sizeof(word_type) * len);
+            _copy_on_write(len);
+            ::memcpy(m_buffer->buf, buf, sizeof(word_type) * len);
             m_significant_len = len;
         }
         else
         {
-            ensure_cap(len + 1);
-            ::memcpy(m_buffer, buf, sizeof(word_type) * len);
-            m_buffer[len] = 0;
+            _copy_on_write(len + 1);
+            ::memcpy(m_buffer->buf, buf, sizeof(word_type) * len);
+            m_buffer->buf[len] = 0;
             m_significant_len = len + 1;
         }
         minimize_significant_len();
     }
 
     _BigInteger(const self& x)
-        : m_buffer(NULL), m_buffer_cap(0), m_significant_len(0)
-    {
-        ensure_cap(x.m_significant_len);
-        if (x.m_significant_len > 0)
-            ::memcpy(m_buffer, x.m_buffer, sizeof(word_type) * x.m_significant_len);
-        m_significant_len = x.m_significant_len;
-    }
+        : m_buffer(x.m_buffer), m_significant_len(x.m_significant_len) // copy on write
+    {}
 
     ~_BigInteger()
     {
-        free_mem();
+        m_significant_len = 0;
     }
     
 public:
     self& operator=(const self& x)
     {
-        ensure_cap(x.m_significant_len);
-        if (x.m_significant_len > 0)
-            ::memcpy(m_buffer, x.m_buffer, sizeof(word_type) * x.m_significant_len);
-        m_significant_len = x.m_significant_len;
+        if (&x == this)
+            return *this;
 
+        // copy on write
+        m_buffer = x.m_buffer;
+        m_significant_len = x.m_significant_len;
         return *this;
     }
 
@@ -187,8 +194,8 @@ public:
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
 
-        ensure_cap(sizeof(v) / sizeof(word_type));
-        ::memcpy(m_buffer, &v, sizeof(v));
+        _copy_on_write(sizeof(v) / sizeof(word_type));
+        ::memcpy(m_buffer->buf, &v, sizeof(v));
         m_significant_len = sizeof(v) / sizeof(word_type);
         minimize_significant_len();
 
@@ -197,14 +204,19 @@ public:
     
     inline bool operator==(const self& x) const
     {
-        return equals(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len);
+        if (&x == this)
+            return true;
+        if (m_significant_len == x.m_significant_len && m_buffer == x.m_buffer)
+            return true;
+
+        return equals(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len);
     }
 
     inline bool operator==(long long v) const
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
 
-        return equals(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
+        return equals(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
     }
 
     inline bool operator!=(const self& x) const
@@ -219,14 +231,14 @@ public:
     
     inline bool operator<(const self& x) const
     {
-        return less_than(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len);
+        return less_than(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len);
     }
 
     inline bool operator<(long long v) const
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
 
-        return less_than(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
+        return less_than(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
     }
     
     inline bool operator>(const self& x) const
@@ -238,7 +250,7 @@ public:
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
 
-        return less_than((word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer, m_significant_len);
+        return less_than((word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer->buf, m_significant_len);
     }
     
     inline bool operator<=(const self& x) const
@@ -265,8 +277,8 @@ public:
     {
         self ret;
         const size_t max_len = (m_significant_len > x.m_significant_len ? m_significant_len : x.m_significant_len);
-        ret.ensure_cap(max_len + 1);
-        add(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, ret.m_buffer, max_len + 1);
+        ret._copy_on_write(max_len + 1);
+        add(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len, ret.m_buffer->buf, max_len + 1);
         ret.m_significant_len = max_len + 1;
         ret.minimize_significant_len();
         return ret;
@@ -278,8 +290,8 @@ public:
 
         self ret;
         const size_t max_len = (m_significant_len > sizeof(v) / sizeof(word_type) ? m_significant_len : sizeof(v) / sizeof(word_type));
-        ret.ensure_cap(max_len + 1);
-        add(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), ret.m_buffer, max_len + 1);
+        ret._copy_on_write(max_len + 1);
+        add(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), ret.m_buffer->buf, max_len + 1);
         ret.m_significant_len = max_len + 1;
         ret.minimize_significant_len();
         return ret;
@@ -289,8 +301,8 @@ public:
     {
         self ret;
         const size_t max_len = (m_significant_len > x.m_significant_len ? m_significant_len : x.m_significant_len);
-        ret.ensure_cap(max_len + 1);
-        sub(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, ret.m_buffer, max_len + 1);
+        ret._copy_on_write(max_len + 1);
+        sub(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len, ret.m_buffer->buf, max_len + 1);
         ret.m_significant_len = max_len + 1;
         ret.minimize_significant_len();
         return ret;
@@ -302,8 +314,8 @@ public:
 
         self ret;
         const size_t max_len = (m_significant_len > sizeof(v) / sizeof(word_type) ? m_significant_len : sizeof(v) / sizeof(word_type));
-        ret.ensure_cap(max_len + 1);
-        sub(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), ret.m_buffer, max_len + 1);
+        ret._copy_on_write(max_len + 1);
+        sub(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), ret.m_buffer->buf, max_len + 1);
         ret.m_significant_len = max_len + 1;
         ret.minimize_significant_len();
         return ret;
@@ -312,8 +324,8 @@ public:
     self operator-() const
     {
         self ret;
-        ret.ensure_cap(m_significant_len + 1);
-        negate(m_buffer, m_significant_len, ret.m_buffer, m_significant_len + 1);
+        ret._copy_on_write(m_significant_len + 1);
+        negate(m_buffer->buf, m_significant_len, ret.m_buffer->buf, m_significant_len + 1);
         ret.m_significant_len = m_significant_len + 1;
         ret.minimize_significant_len();
         return ret;
@@ -322,8 +334,8 @@ public:
     self operator*(const self& x) const
     {
         self ret;
-        ret.ensure_cap(m_significant_len + x.m_significant_len);
-        multiply(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, ret.m_buffer, m_significant_len + x.m_significant_len);
+        ret._copy_on_write(m_significant_len + x.m_significant_len);
+        multiply(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len, ret.m_buffer->buf, m_significant_len + x.m_significant_len);
         ret.m_significant_len = m_significant_len + x.m_significant_len;
         ret.minimize_significant_len();
         return ret;
@@ -334,8 +346,8 @@ public:
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
 
         self ret;
-        ret.ensure_cap(m_significant_len + sizeof(v) / sizeof(word_type));
-        multiply(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), ret.m_buffer, m_significant_len + sizeof(v) / sizeof(word_type));
+        ret._copy_on_write(m_significant_len + sizeof(v) / sizeof(word_type));
+        multiply(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), ret.m_buffer->buf, m_significant_len + sizeof(v) / sizeof(word_type));
         ret.m_significant_len = m_significant_len + sizeof(v) / sizeof(word_type);
         ret.minimize_significant_len();
         return ret;
@@ -346,8 +358,8 @@ public:
         assert(!x.is_zero());
 
         self ret;
-        ret.ensure_cap(m_significant_len);
-        divide(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, ret.m_buffer, m_significant_len, (word_type*)NULL, 0);
+        ret._copy_on_write(m_significant_len);
+        divide(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len, ret.m_buffer->buf, m_significant_len, (word_type*)NULL, 0);
         ret.m_significant_len = m_significant_len;
         ret.minimize_significant_len();
         return ret;
@@ -359,8 +371,8 @@ public:
         assert(0 != v);
 
         self ret;
-        ret.ensure_cap(m_significant_len);
-        divide(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), ret.m_buffer, m_significant_len, (word_type*)NULL, 0);
+        ret._copy_on_write(m_significant_len);
+        divide(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), ret.m_buffer->buf, m_significant_len, (word_type*)NULL, 0);
         ret.m_significant_len = m_significant_len;
         ret.minimize_significant_len();
         return ret;
@@ -380,8 +392,8 @@ public:
         }
         
         self ret;
-        ret.ensure_cap(x.m_significant_len);
-        divide(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, (word_type*)NULL, 0, ret.m_buffer, x.m_significant_len);
+        ret._copy_on_write(x.m_significant_len);
+        divide(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len, (word_type*)NULL, 0, ret.m_buffer->buf, x.m_significant_len);
         ret.m_significant_len = x.m_significant_len;
         ret.minimize_significant_len();
         return ret;
@@ -393,8 +405,8 @@ public:
         assert(0 != v);
 
         self ret;
-        ret.ensure_cap(sizeof(v) / sizeof(word_type));
-        divide(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), (word_type*)NULL, 0, ret.m_buffer, sizeof(v) / sizeof(word_type));
+        ret._copy_on_write(sizeof(v) / sizeof(word_type));
+        divide(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), (word_type*)NULL, 0, ret.m_buffer->buf, sizeof(v) / sizeof(word_type));
         ret.m_significant_len = sizeof(v) / sizeof(word_type);
         ret.minimize_significant_len();
         return ret;
@@ -403,8 +415,8 @@ public:
     self& operator+=(const self& x)
     {
     	const size_t max_len = (m_significant_len > x.m_significant_len ? m_significant_len : x.m_significant_len);
-    	ensure_cap(max_len + 1);
-    	add(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, m_buffer, max_len + 1);
+    	_copy_on_write(max_len + 1);
+    	add(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len, m_buffer->buf, max_len + 1);
         m_significant_len = max_len + 1;
     	minimize_significant_len();
         return *this;
@@ -415,8 +427,8 @@ public:
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
 
         const size_t max_len = (m_significant_len > sizeof(v) / sizeof(word_type) ? m_significant_len : sizeof(v) / sizeof(word_type));
-        ensure_cap(max_len + 1);
-        add(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer, max_len + 1);
+        _copy_on_write(max_len + 1);
+        add(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer->buf, max_len + 1);
         m_significant_len = max_len + 1;
         minimize_significant_len();
         return *this;
@@ -425,8 +437,8 @@ public:
     self& operator-=(const self& x)
     {
     	const size_t max_len = (m_significant_len > x.m_significant_len ? m_significant_len : x.m_significant_len);
-    	ensure_cap(max_len + 1);
-    	sub(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, m_buffer, max_len + 1);
+    	_copy_on_write(max_len + 1);
+    	sub(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len, m_buffer->buf, max_len + 1);
         m_significant_len = max_len + 1;
     	minimize_significant_len();
         return *this;
@@ -437,8 +449,8 @@ public:
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
 
         const size_t max_len = (m_significant_len > sizeof(v) / sizeof(word_type) ? m_significant_len : sizeof(v) / sizeof(word_type));
-        ensure_cap(max_len + 1);
-        sub(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer, max_len + 1);
+        _copy_on_write(max_len + 1);
+        sub(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer->buf, max_len + 1);
         m_significant_len = max_len + 1;
         minimize_significant_len();
         return *this;
@@ -446,8 +458,8 @@ public:
 
     self& operator*=(const self& x)
     {
-    	ensure_cap(m_significant_len + x.m_significant_len);
-    	multiply(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, m_buffer, m_significant_len + x.m_significant_len);
+    	_copy_on_write(m_significant_len + x.m_significant_len);
+    	multiply(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len, m_buffer->buf, m_significant_len + x.m_significant_len);
         m_significant_len += x.m_significant_len;
     	minimize_significant_len();
         return *this;
@@ -457,8 +469,8 @@ public:
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
 
-        ensure_cap(m_significant_len + sizeof(v) / sizeof(word_type));
-        multiply(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer, m_significant_len + sizeof(v) / sizeof(word_type));
+        _copy_on_write(m_significant_len + sizeof(v) / sizeof(word_type));
+        multiply(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer->buf, m_significant_len + sizeof(v) / sizeof(word_type));
         m_significant_len += sizeof(v) / sizeof(word_type);
         minimize_significant_len();
         return *this;
@@ -468,7 +480,8 @@ public:
     {
         assert(!x.is_zero());
 
-    	divide(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, m_buffer, m_significant_len, (word_type*)NULL, 0);
+        _copy_on_write();
+    	divide(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len, m_buffer->buf, m_significant_len, (word_type*)NULL, 0);
     	minimize_significant_len();
         return *this;
     }
@@ -477,8 +490,9 @@ public:
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
         assert(0 != v);
-
-        divide(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer, m_significant_len, (word_type*)NULL, 0);
+    
+        _copy_on_write();
+        divide(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer->buf, m_significant_len, (word_type*)NULL, 0);
         minimize_significant_len();
         return *this;
     }
@@ -496,8 +510,8 @@ public:
                 return *this -= x;
         }
 
-        ensure_cap(x.m_significant_len);
-        divide(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len, (word_type*)NULL, 0, m_buffer, x.m_significant_len);
+        _copy_on_write(x.m_significant_len);
+        divide(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len, (word_type*)NULL, 0, m_buffer->buf, x.m_significant_len);
         m_significant_len = x.m_significant_len;
         minimize_significant_len();
         return *this;
@@ -508,8 +522,8 @@ public:
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
         assert(0 != v);
 
-        ensure_cap(sizeof(v) / sizeof(word_type));
-        divide(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), (word_type*)NULL, 0, m_buffer, sizeof(v) / sizeof(word_type));
+        _copy_on_write(sizeof(v) / sizeof(word_type));
+        divide(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), (word_type*)NULL, 0, m_buffer->buf, sizeof(v) / sizeof(word_type));
         m_significant_len = sizeof(v) / sizeof(word_type);
         minimize_significant_len();
         return *this;
@@ -518,7 +532,7 @@ public:
     self& operator++()
     {
         ensure_significant_len(m_significant_len + 1);
-        increase(m_buffer, m_significant_len);
+        increase(m_buffer->buf, m_significant_len);
         minimize_significant_len();
         return *this;
     }
@@ -533,7 +547,7 @@ public:
     self& operator--()
     {
         ensure_significant_len(m_significant_len + 1);
-        decrease(m_buffer, m_significant_len);
+        decrease(m_buffer->buf, m_significant_len);
         minimize_significant_len();
         return *this;
     }
@@ -552,8 +566,8 @@ public:
 
         self ret;
         const size_t min_sig = m_significant_len + (count - 1) / (8 * sizeof(word_type)) + 1;
-        ret.ensure_cap(min_sig);
-        shift_left(m_buffer, m_significant_len, ret.m_buffer, min_sig, count);
+        ret._copy_on_write(min_sig);
+        shift_left(m_buffer->buf, m_significant_len, ret.m_buffer->buf, min_sig, count);
         ret.m_significant_len = min_sig;
         ret.minimize_significant_len();
         return ret;
@@ -568,8 +582,8 @@ public:
             return *this;
 
         self ret;
-        ret.ensure_cap(m_significant_len);
-        shift_right(m_buffer, m_significant_len, ret.m_buffer, m_significant_len, count);
+        ret._copy_on_write(m_significant_len);
+        shift_right(m_buffer->buf, m_significant_len, ret.m_buffer->buf, m_significant_len, count);
         ret.m_significant_len = m_significant_len;
         ret.minimize_significant_len();
         return ret;
@@ -581,8 +595,8 @@ public:
             return *this;
 
         const size_t min_sig = m_significant_len + (count - 1) / (8 * sizeof(word_type)) + 1;
-        ensure_cap(min_sig);
-        shift_left(m_buffer, m_significant_len, m_buffer, min_sig, count);
+        _copy_on_write(min_sig);
+        shift_left(m_buffer->buf, m_significant_len, m_buffer->buf, min_sig, count);
         m_significant_len = min_sig;
         minimize_significant_len();
         return *this;
@@ -592,8 +606,9 @@ public:
     {
         if (0 == count)
             return *this;
-
-        shift_right(m_buffer, m_significant_len, m_buffer, m_significant_len, count);
+    
+        _copy_on_write();
+        shift_right(m_buffer->buf, m_significant_len, m_buffer->buf, m_significant_len, count);
         minimize_significant_len();
         return *this;
     }
@@ -605,11 +620,11 @@ public:
     void divide_remainder(const self& divider, self *result, self *remainder) const
     {
         if (NULL != result)
-            result->ensure_cap(m_significant_len);
+            result->_copy_on_write(m_significant_len);
         if (NULL != remainder)
-            remainder->ensure_cap(divider->m_significant_len);
+            remainder->_copy_on_write(divider->m_significant_len);
 
-        divide(m_buffer, m_significant_len, (NULL == result ? NULL : result->m_buffer), m_significant_len, (NULL == remainder ? NULL : remainder->m_buffer), divider->m_significant_len);
+        divide(m_buffer->buf, m_significant_len, (NULL == result ? NULL : result->m_buffer->buf), m_significant_len, (NULL == remainder ? NULL : remainder->m_buffer->buf), divider->m_significant_len);
 
         if (NULL != result)
         {
@@ -625,27 +640,29 @@ public:
 
     inline void set_zero()
     {
-        m_buffer[0] = 0;
+         _copy_on_write();
+        m_buffer->buf[0] = 0;
         m_significant_len = 1;
     }
 
     inline bool is_zero() const
     {
-        return nut::is_zero(m_buffer, m_significant_len);
+        return nut::is_zero(m_buffer->buf, m_significant_len);
     }
     
     inline bool is_positive() const
     {
-        return nut::is_positive(m_buffer, m_significant_len);
+        return nut::is_positive(m_buffer->buf, m_significant_len);
     }
 
     inline const word_type* buffer() const
     {
-        return m_buffer;
+        return m_buffer->buf;
     }
 
     inline word_type* buffer()
     {
+        _copy_on_write();
         return const_cast<word_type*>(static_cast<const self&>(*this).buffer());
     }
 
@@ -669,8 +686,8 @@ public:
         const size_t new_sig = bit_len / (8 * sizeof(word_type)) + 1;
         ensure_significant_len(new_sig);
         const size_t bits_shift = 8 * sizeof(word_type) - bit_len % (8 * sizeof(word_type));
-        m_buffer[new_sig - 1] <<= bits_shift;
-        m_buffer[new_sig - 1] >>= bits_shift;
+        m_buffer->buf[new_sig - 1] <<= bits_shift;
+        m_buffer->buf[new_sig - 1] >>= bits_shift;
         m_significant_len = new_sig;
         minimize_significant_len();
 #else
@@ -689,8 +706,8 @@ public:
             if (0 != bits_res)
             {
                 const size_t bits_shift = 8 * sizeof(word_type) - bits_res;
-                m_buffer[new_sig - 1] <<= bits_shift;
-                m_buffer[new_sig - 1] >>= bits_shift;
+                m_buffer->buf[new_sig - 1] <<= bits_shift;
+                m_buffer->buf[new_sig - 1] >>= bits_shift;
             }
             m_significant_len = new_sig;
         }
@@ -698,7 +715,7 @@ public:
         {
             // 需要附加符号位，以便保证结果是正数
             ensure_significant_len(min_sig + 1);
-            m_buffer[min_sig] = 0;
+            m_buffer->buf[min_sig] = 0;
             m_significant_len = min_sig + 1;
         }
         minimize_significant_len();
@@ -713,8 +730,8 @@ public:
     inline void multiply_to_len(const self& a, size_t bit_len)
     {
         const size_t words_len = (bit_len + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
-        ensure_cap(words_len);
-        multiply(m_buffer, m_significant_len, a.m_buffer, a.m_significant_len, m_buffer, words_len);
+        _copy_on_write(words_len);
+        multiply(m_buffer->buf, m_significant_len, a.m_buffer->buf, a.m_significant_len, m_buffer->buf, words_len);
         m_significant_len = words_len;
         limit_positive_bits_to(bit_len);
     }
@@ -739,10 +756,10 @@ public:
 #if (OPTIMIZE_LEVEL == 0)
             return is_positive() ? 0 : 1;
 #else
-            return m_buffer[m_significant_len - 1] >> (8 * sizeof(word_type) - 1);
+            return m_buffer->buf[m_significant_len - 1] >> (8 * sizeof(word_type) - 1);
 #endif
         }
-        return (m_buffer[i / (8 * sizeof(word_type))] >> (i % (8 * sizeof(word_type)))) & 0x01;
+        return (m_buffer->buf[i / (8 * sizeof(word_type))] >> (i % (8 * sizeof(word_type)))) & 0x01;
     }
 
     /**
@@ -752,7 +769,7 @@ public:
     {
         if (i >= m_significant_len)
             return is_positive() ? 0 : ~(word_type)0;
-        return m_buffer[i];
+        return m_buffer->buf[i];
     }
 
     /**
@@ -763,23 +780,23 @@ public:
     	assert(v == 0 || v == 1);
     	ensure_significant_len((i + 1) / (8 * sizeof(word_type)) + 1); // 避免符号位被覆盖
     	if (0 == v)
-    		m_buffer[i / (8 * sizeof(word_type))] &= ~(((word_type) 1) << (i % (8 * sizeof(word_type))));
+    		m_buffer->buf[i / (8 * sizeof(word_type))] &= ~(((word_type) 1) << (i % (8 * sizeof(word_type))));
     	else
-    		m_buffer[i / (8 * sizeof(word_type))] |= ((word_type)1) << (i % (8 * sizeof(word_type)));
+    		m_buffer->buf[i / (8 * sizeof(word_type))] |= ((word_type)1) << (i % (8 * sizeof(word_type)));
     }
 
     inline void set_word(size_t i, word_type v)
     {
         ensure_significant_len(i + 1 + 1); // 避免符号位被覆盖
-        m_buffer[i] = v;
+        m_buffer->buf[i] = v;
     }
     
     inline size_t bit_length() const
     {
     	if (is_positive())
-    		return nut::bit_length((uint8_t*)m_buffer, sizeof(word_type) * m_significant_len);
+    		return nut::bit_length((uint8_t*)m_buffer->buf, sizeof(word_type) * m_significant_len);
     	else
-    		return bit0_length((uint8_t*)m_buffer, sizeof(word_type) * m_significant_len);
+    		return bit0_length((uint8_t*)m_buffer->buf, sizeof(word_type) * m_significant_len);
     }
 
     /**
@@ -787,7 +804,7 @@ public:
      */
     inline size_t bit_count() const
     {
-    	const size_t bc = nut::bit_count((uint8_t*)m_buffer, sizeof(word_type) * m_significant_len);
+    	const size_t bc = nut::bit_count((uint8_t*)m_buffer->buf, sizeof(word_type) * m_significant_len);
     	if (is_positive())
     		return bc;
     	return 8 * sizeof(word_type) * m_significant_len - bc;
@@ -795,7 +812,7 @@ public:
 
     inline int lowest_bit() const
     {
-        return nut::lowest_bit((uint8_t*)m_buffer, sizeof(word_type) * m_significant_len);
+        return nut::lowest_bit((uint8_t*)m_buffer->buf, sizeof(word_type) * m_significant_len);
     }
 
     inline long long llong_value() const
@@ -803,7 +820,7 @@ public:
         NUT_STATIC_ASSERT(sizeof(long long) % sizeof(word_type) == 0);
 
         long long ret = 0;
-        expand(m_buffer, m_significant_len, (word_type*)&ret, sizeof(ret) / sizeof(word_type));
+        expand(m_buffer->buf, m_significant_len, (word_type*)&ret, sizeof(ret) / sizeof(word_type));
         return ret;
     }
     
@@ -819,16 +836,16 @@ public:
     	assert(n.is_positive());
 
     	self ret;
-    	ret.ensure_cap(n.m_significant_len + 1);
+    	ret._copy_on_write(n.m_significant_len + 1);
     	for (register size_t i = 0; i < n.m_significant_len; ++i)
         {
             for (register size_t j = 0; j < sizeof(word_type); ++j)
             {
-                ret.m_buffer[i] <<= 8;
-    		    ret.m_buffer[i] += rand() & 0xFF;
+                ret.m_buffer->buf[i] <<= 8;
+    		    ret.m_buffer->buf[i] += rand() & 0xFF;
             }
         }
-    	ret.m_buffer[n.m_significant_len] = 0; // 保证是正数
+    	ret.m_buffer->buf[n.m_significant_len] = 0; // 保证是正数
     	ret.m_significant_len = n.m_significant_len + 1;
 
     	ret %= n;
@@ -842,14 +859,11 @@ public:
     inline static void swap(self *a, self *b)
     {
         assert(NULL != a && NULL != b);
-        word_type *p = a->m_buffer;
-        size_t c = a->m_buffer_cap;
+        ref<FixedBuf<word_type> > p = a->m_buffer;
         size_t s = a->m_significant_len;
         a->m_buffer = b->m_buffer;
-        a->m_buffer_cap = b->m_buffer_cap;
         a->m_significant_len = b->m_significant_len;
         b->m_buffer = p;
-        b->m_buffer_cap = c;
         b->m_significant_len = s;
     }
 

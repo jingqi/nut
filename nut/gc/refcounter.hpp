@@ -24,6 +24,7 @@ struct RefCounter
     RefCounter(int v) : m_value(v) {}
     inline int operator++ () { return ++m_value; }
     inline int operator-- () { return --m_value; }
+    inline operator int() const { return m_value; }
 };
 
 /**
@@ -44,6 +45,8 @@ struct RefCounterSync
     {
         return atomic_add(&m_value, -1) - 1;
     }
+
+    inline operator int() const { return m_value; }
 };
 
 }
