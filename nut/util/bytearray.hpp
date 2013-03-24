@@ -35,7 +35,7 @@ private :
      */
     void _copy_on_write(size_t new_size = 0, bool extra_space = true)
     {
-        new_size = max(new_size, m_datalen);
+        new_size = (new_size > m_datalen ? new_size : m_datalen);
 
         // buffer 为 null, 则需要生成
         if (m_buf.isNull())

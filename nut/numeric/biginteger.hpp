@@ -48,7 +48,7 @@ private:
      */
     void _copy_on_write(size_t size_needed = 0)
     {
-        const size_t new_size = max(size_needed, m_significant_len);
+        const size_t new_size = (size_needed > m_significant_len ? size_needed : m_significant_len);
 
         // buffer 为 null，则需要new
         if (m_buffer.isNull())
@@ -60,11 +60,11 @@ private:
         }
 
         // 原本 buffer 足够长，则 copy-on-write
+        const int rc = m_buffer->get_ref();
+        assert(rc >= 1);
         const size_t old_cap = m_buffer->len;
         if (old_cap >= new_size)
         {
-            const int rc = m_buffer->get_ref();
-            assert(rc >= 1);
             if (rc > 1)
             {
                 ref<FixedBuf<word_type> > new_buf = gc_new<FixedBuf<word_type>, RefCounterSync>(new_size);
@@ -78,7 +78,7 @@ private:
         size_t new_cap = old_cap * 3 / 2;
         if (new_cap < size_needed)
             new_cap = size_needed;
-        if (m_buffer->get_ref() == 1)
+        if (rc == 1)
         {
             m_buffer->realloc(new_cap);
         }
