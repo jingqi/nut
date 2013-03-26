@@ -65,6 +65,17 @@ public:
     }
 
     /**
+     * 检查区域有效性
+     */
+    bool isValid() const
+    {
+        for (register int i = 0; i < DIMENSIONS; ++i)
+            if (left[i] > right[i])
+                return false;
+        return true;
+    }
+
+    /**
      * 所占的空间
      */
     RealNumT acreage() const
@@ -82,6 +93,18 @@ public:
     {
         for (register int i = 0; i < DIMENSIONS; ++i)
             if (!(left[i] <= x.left[i] && x.right[i] <= right[i]))
+                return false;
+        return true;
+    }
+
+    /**
+     * 查看是否与另一个区域有交集
+     */
+    bool intersects(const self& x) const
+    {
+        // 任意一个维度不想交，则区域不想交
+        for (register size_t i = 0; i < DIMENSIONS; ++i)
+            if (left[i] > x.right[i] || right[i] < x.left[i])
                 return false;
         return true;
     }

@@ -45,15 +45,18 @@ private:
     /**
      * 节点基类
      */
+    struct TreeNode;
     struct Node
     {
         Area rect;
-        Node *parent;
+        TreeNode *parent;
         bool treeNode; // 是树节点还是数据节点
 
         Node(bool tn) : parent(NULL), treeNode(treeNode) {}
         Node(const Area& rt, bool tn) : rect(rt), parent(NULL), treeNode(tn) {}
         virtual ~Node() {}
+
+        inline bool isTreeNode() const { return treeNode; }
     };
 
     /**
@@ -68,8 +71,14 @@ private:
         {
             ::memset(children, 0, sizeof(Node*) * MAX_ENTRY_COUNT);
         }
+
+        inline Node* childAt(size_t i)
+        {
+            assert(i < MAX_ENTRY_COUNT);
+            return children[i];
+        }
         
-        size_t childCount()
+        size_t childCount() const
         {
             // 二分查找
             int left = -1, right = MAX_ENTRY_COUNT;
@@ -201,17 +210,60 @@ public:
      */
     bool removeFirst(const Area& rect)
     {
+        // 找到数据节点并删除数据
         DataNode *dn = findFirstDataNode(rect);
         if (NULL == dn)
             return false;
         assert(NULL != dn->parent);
         TreeNode *l = dynamic_cast<TreeNode*>(dn->parent);
-        // TODO
+        assert(NULL != l);
+        bool rs = l->removeChild(dn);
+        if (!rs)
+            return false;
+
+        // 调整树
+        condenseTree(l);
+        if (m_root->childCount() == 1 && m_root->childAt(0)->isTreeNode())
+        {
+            TreeNode *tobedel = m_root;
+            m_root = dynamic_cast<TreeNode*>(m_root->childAt(0));
+            m_root->parent = NULL;
+            --m_height;
+
+            tobedel->~TreeNode();
+            m_treenodeAlloc.deallocate(tobedel, 1);
+        }
+        --m_size;
+        return true;
     }
 
     bool remove(const Area& rect, const DataT& data)
     {
-        // TODO
+        // 找到数据节点并删除数据
+        DataNode *dn = findDataNode(rect, data);
+        if (NULL == dn)
+            return false;
+        assert(NULL != dn->parent);
+        TreeNode *l = dynamic_cast<TreeNode*>(dn->parent);
+        assert(NULL != l);
+        bool rs = l->removeChild(dn);
+        if (!rs)
+            return false;
+
+        // 调整树
+        condenseTree(l);
+        if (m_root->childCount() == 1 && m_root->childAt(0)->isTreeNode())
+        {
+            TreeNode *tobedel = m_root;
+            m_root = dynamic_cast<TreeNode*>(m_root->childAt(0));
+            m_root->parent = NULL;
+            --m_height;
+
+            tobedel->~TreeNode();
+            m_treenodeAlloc.deallocate(tobedel, 1);
+        }
+        --m_size;
+        return true;
     }
 
     /**
@@ -219,15 +271,101 @@ public:
      */
     std::vector<DataT> searchIntersect(const Area& rect)
     {
-        // TODO
+        std::vector<DataT> ret;
+
+        std::stack<TreeNode*> s;
+        s.push(m_root);
+        while (!s.empty())
+        {
+            TreeNode *n = s.top();
+            s.pop();
+
+            for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+            {
+                Node *c = n->childAt(i);
+                if (!c->rect.intersects(rect))
+                    continue;
+
+                if (c->isTreeNode())
+                {
+                    TreeNode *tn = dynamic_cast<TreeNode*>(c);
+                    s.push(tn);
+                }
+                else
+                {
+                    DataNode *dn = dynamic_cast<DataNode*>(c);
+                    ret.push_back(dn->data);
+                }
+            }
+            return ret;
+        }
     }
 
     /**
-     * 查找包含在指定区域的数据
+     * 查找包含在指定区域内的数据
      */
     std::vector<DataT> searchContains(const Area& rect)
     {
-        // TODO
+        std::vector<DataT> ret;
+
+        std::stack<TreeNode*> s;
+        s.push(m_root);
+        while (!s.empty())
+        {
+            TreeNode *n = s.top();
+            s.pop();
+
+            for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+            {
+                Node *c = n->childAt(i);
+                if (!c->rect.intersects(rect))
+                    continue;
+
+                if (c->isTreeNode())
+                {
+                    TreeNode *tn = dynamic_cast<TreeNode*>(c);
+                    s.push(tn);
+                }
+                else if (rect.contains(c->rect))
+                {
+                    DataNode *dn = dynamic_cast<DataNode*>(c);
+                    ret.push_back(dn->data);
+                }
+            }
+            return ret;
+        }
+    }
+
+    /**
+     * 返回所有的数据
+     */
+    std::vector<DataT> getAll()
+    {
+        std::vector<DataT> ret;
+
+        std::stack<TreeNode*> s;
+        s.push(m_root);
+        while (!s.empty())
+        {
+            TreeNode *n = s.top();
+            s.pop();
+
+            for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+            {
+                Node *c = n->childAt(i);
+                if (c->isTreeNode())
+                {
+                    TreeNode *tn = dynamic_cast<TreeNode*>(c);
+                    s.push(tn);
+                }
+                else
+                {
+                    DataNode *dn = dynamic_cast<DataNode*>(c);
+                    ret.push_back(dn->data);
+                }
+            }
+            return ret;
+        }
     }
 
 private:
@@ -426,9 +564,12 @@ private:
         return ret;
     }
 
+    /**
+     * @param nn 可以为 NULL
+     */
     TreeNode* adjustTree(TreeNode *n, TreeNode *nn)
     {
-        assert(NULL != n && NULL != nn);
+        assert(NULL != n);
         while (true)
         {
             // adjust range of N
@@ -460,12 +601,121 @@ private:
                 {
                     if (child->treeNode)
                         st.push(dynamic_cast<TreeNode*>(child));
-                    else
+                    else if (child->rect == r)
                         return dynamic_cast<DataNode*>(child);
                 }
             }
         }
         return NULL;
+    }
+
+    DataNode* findDataNode(const Area& r, const DataT& d)
+    {
+        std::stack<TreeNode*> st;
+        st.push(m_root);
+        while (!st.empty())
+        {
+            TreeNode *n = st.pop();
+            assert(NULL != n);
+            for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != n->children[i]; ++i)
+            {
+                Node *child = n->children[i];
+                if (child->rect.contains(r))
+                {
+                    if (child->treeNode)
+                    {
+                        st.push(dynamic_cast<TreeNode*>(child));
+                    }
+                    else if (child->rect == r)
+                    {
+                        DataNode *dn = dynamic_cast<DataNode*>(child);
+                        if (dn->data == d)
+                            return dn;
+                    }
+                }
+            }
+        }
+        return NULL;
+    }
+
+    /**
+     * @param l The node whose child has been deleted
+     */
+    void condenseTree(TreeNode *l)
+    {
+        assert(NULL != dn);
+
+        std::stack<TreeNode*> q;
+        std::stack<size_t> qd;
+        TreeNode *n = l;
+        size_t depth = m_height;
+        while (depth > 1)
+        {
+            TreeNode* parent = n->parent;
+            if (n->childCount() < MIN_ENTRY_COUNT)
+            {
+                n->parent->remove(n);
+                q.push(n);
+                qd.push(depth);
+            }
+            else
+            {
+                n->fitRect();
+            }
+            n = parent;
+            --depth;
+        }
+        while (!q.empty())
+        {
+            n = q.top();
+            q.pop();
+
+            depth = dp.top();
+            dq.pop();
+
+            for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+                insert(e, depth);
+        }
+    }
+
+public:
+    /**
+     * 检查 rtree 结构是否错误
+     */
+    bool isValid(Node *e = NULL, size_t depth = 1)
+    {
+        if (NULL == e)
+        {
+            e = m_root;
+            depth = 1;
+        }
+        assert(NULL != e && 1 <= depth && depth <= m_height + 1);
+
+        if (depth == m_height + 1)
+        {
+            if (e->isTreeNode())
+                return false; // wrong type with depth
+            return;
+        }
+
+        if ((depth == m_height && e->isTreeNode()) ||
+            (depth != m_height && !e->isTreeNode()))
+                return false; // wrong type with depth
+
+        TreeNode *n = dynamic_cast<TreeNode*>(e);
+        const int cc = n->childCount();
+        if (depth != 1 && cc < MIN_ENTRY_COUNT)
+            return false; // under fill
+        for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+        {
+            Node *ee = n->childAt(i);
+            if (!n->rect.contains(ee->rect))
+                return false; // area error
+            if (!isValid(ee, depth + 1))
+                return false;
+        }
+
+        return true;
     }
 };
 
