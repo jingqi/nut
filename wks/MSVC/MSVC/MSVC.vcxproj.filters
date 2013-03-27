@@ -118,6 +118,12 @@
     <Filter Include="头文件\numeric\numeric_algo">
       <UniqueIdentifier>{2b813f75-fa5d-4775-94f7-ecd84fe0bfba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\tree\rtree">
+      <UniqueIdentifier>{cd96ff93-e7ed-4b8e-a51a-418bc1d5121d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\tree\rtree">
+      <UniqueIdentifier>{68c39e0e-6a42-4357-bbad-6352bd956e92}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -372,6 +378,12 @@
     <ClInclude Include="..\..\..\nut\memtool\copyonwrite.hpp">
       <Filter>头文件\memtool</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\tree\rtree\rtree.hpp">
+      <Filter>头文件\tree\rtree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\tree\rtree\mdarea.hpp">
+      <Filter>头文件\tree\rtree</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -448,6 +460,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\util\test_bytearray.cpp">
       <Filter>源文件\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\tree\rtree\test_rtree.cpp">
+      <Filter>源文件\tree\rtree</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
