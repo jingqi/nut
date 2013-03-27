@@ -6,7 +6,7 @@
 
 using namespace nut;
 
-typedef RTree<int, int>::Area Area;
+typedef RTree<int, int>::area_type Area;
 
 NUT_FIXTURE(TestRTree)
 {

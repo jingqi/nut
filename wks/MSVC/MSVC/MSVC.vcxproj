@@ -115,7 +115,6 @@
     <ClInclude Include="..\..\..\nut\tree\rbtree.hpp" />
     <ClInclude Include="..\..\..\nut\tree\rtree\mdarea.hpp" />
     <ClInclude Include="..\..\..\nut\tree\rtree\rtree.hpp" />
-    <ClInclude Include="..\..\..\nut\tree\rtree\rtree_iter.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\consoletestlogger.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\streamtestlogger.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\testcasefailureexception.hpp" />

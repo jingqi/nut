@@ -321,9 +321,6 @@
     <ClInclude Include="..\..\..\nut\tree\rtree\rtree.hpp">
       <Filter>头文件\tree\rtree</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\tree\rtree\rtree_iter.hpp">
-      <Filter>头文件\tree\rtree</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\tree\rtree\mdarea.hpp">
       <Filter>头文件\tree\rtree</Filter>
     </ClInclude>

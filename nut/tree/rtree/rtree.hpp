@@ -13,6 +13,7 @@
 #include <stack>
 #include <allocators>
 #include <xutility>
+#include <map> // for pair
 
 #include <nut/debugging/static_assert.hpp>
 #include <nut/util/tuple.hpp>
@@ -39,7 +40,8 @@ template <typename DataT, typename NumT, size_t DIMENSIONS = 2, typename RealNum
 class RTree
 {
 public:
-    typedef MDArea<NumT, DIMENSIONS, RealNumT> Area;
+    typedef MDArea<NumT, DIMENSIONS, RealNumT>  area_type;
+    typedef DataT                               data_type;
 
 private:
     /**
@@ -48,12 +50,12 @@ private:
     struct TreeNode;
     struct Node
     {
-        Area area;
+        area_type area;
         TreeNode *parent;
         bool treeNode; // 是树节点还是数据节点
 
         Node(bool tn) : parent(NULL), treeNode(treeNode) {}
-        Node(const Area& rt, bool tn) : area(rt), parent(NULL), treeNode(tn) {}
+        Node(const area_type& rt, bool tn) : area(rt), parent(NULL), treeNode(tn) {}
         virtual ~Node() {}
 
         inline bool isTreeNode() const { return treeNode; }
@@ -151,15 +153,17 @@ private:
      */
     struct DataNode : public Node
     {
-        DataT data;
+        data_type data;
 
-        DataNode(const DataT& v) : Node(false), data(v) {}
-        DataNode(const Area& rt, const DataT& v) : Node(rt, false), data(v) {}
+        DataNode(const data_type& v) : Node(false), data(v) {}
+        DataNode(const area_type& rt, const data_type& v) : Node(rt, false), data(v) {}
     };
 
-    typedef AllocT                                   data_allocator_type;
-    typedef typename AllocT::rebind<TreeNode>::other treenode_allocator_type;
-    typedef typename AllocT::rebind<DataNode>::other datanode_allocator_type;
+private:
+    typedef RTree<DataT, NumT, DIMENSIONS, RealNumT, MAX_ENTRY_COUNT, MIN_ENTRY_COUNT, AllocT>  self;
+    typedef AllocT                                                                              data_allocator_type;
+    typedef typename AllocT::rebind<TreeNode>::other                                            treenode_allocator_type;
+    typedef typename AllocT::rebind<DataNode>::other                                            datanode_allocator_type;
 
     treenode_allocator_type m_treenodeAlloc;
     datanode_allocator_type m_datanodeAlloc;
@@ -170,7 +174,7 @@ private:
     /**
      * 扩展到包容指定的区域所需要扩展的空间
      */
-    static RealNumT acreageNeeded(const Area& x, const Area& y)
+    static RealNumT acreageNeeded(const area_type& x, const area_type& y)
     {
         RealNumT new_acr = 1;
         for (register int i = 0; i < DIMENSIONS; ++i)
@@ -196,7 +200,7 @@ public:
     /**
      * 插入数据
      */
-    void insert(const Area& rect, const DataT& data)
+    void insert(const area_type& rect, const data_type& data)
     {
         DataNode *dataNode = m_datanodeAlloc.allocate(1);
         assert(NULL != dataNode);
@@ -208,7 +212,7 @@ public:
     /**
      * 移除第一个与给定区域相同的数据
      */
-    bool removeFirst(const Area& rect)
+    bool removeFirst(const area_type& rect)
     {
         // 找到数据节点并删除数据
         DataNode *dn = findFirstDataNode(rect);
@@ -237,7 +241,7 @@ public:
         return true;
     }
 
-    bool remove(const Area& rect, const DataT& data)
+    bool remove(const area_type& rect, const data_type& data)
     {
         // 找到数据节点并删除数据
         DataNode *dn = findDataNode(rect, data);
@@ -269,9 +273,9 @@ public:
     /**
      * 查找与指定区域相交的数据
      */
-    std::vector<DataT> searchIntersect(const Area& rect)
+    std::vector<std::pair<area_type,data_type> > searchIntersect(const area_type& rect)
     {
-        std::vector<DataT> ret;
+        std::vector<std::pair<area_type,data_type> > ret;
 
         std::stack<TreeNode*> s;
         s.push(m_root);
@@ -294,7 +298,7 @@ public:
                 else
                 {
                     DataNode *dn = dynamic_cast<DataNode*>(c);
-                    ret.push_back(dn->data);
+                    ret.push_back(std::pari<area_type,data_type>(dn->area, dn->data));
                 }
             }
             return ret;
@@ -304,9 +308,9 @@ public:
     /**
      * 查找包含在指定区域内的数据
      */
-    std::vector<DataT> searchContains(const Area& rect)
+    std::vector<std::pair<area_type, data_type> > searchContains(const area_type& rect)
     {
-        std::vector<DataT> ret;
+        std::vector<data_type> ret;
 
         std::stack<TreeNode*> s;
         s.push(m_root);
@@ -339,9 +343,9 @@ public:
     /**
      * 返回所有的数据
      */
-    std::vector<DataT> getAll()
+    std::vector<data_type> getAll()
     {
-        std::vector<DataT> ret;
+        std::vector<data_type> ret;
 
         std::stack<TreeNode*> s;
         s.push(m_root);
@@ -396,7 +400,7 @@ private:
     /**
      * 根据目标区域选区适合的节点
      */
-    TreeNode* chooseNode(const Area& rectToAdd, size_t depth)
+    TreeNode* chooseNode(const area_type& rectToAdd, size_t depth)
     {
         TreeNode *ret = m_root;
         while (depth > 1)
@@ -529,7 +533,7 @@ private:
             assert(NULL != *iter);
             for (register int i = 0; i < DIMENSIONS; ++i)
             {
-                const Area& area = (*iter)->area;
+                const area_type& area = (*iter)->area;
 
                 if (highestHighSide[i] == end || area.higher[i] > (*(highestHighSide[i]))->area.higher[i])
                     highestHighSide[i] = iter;
@@ -578,7 +582,7 @@ private:
     /**
      * 从剩余的零散节点中找到下一个适合添加到树上的节点
      */
-    Node* pickNext(std::list<Node*> *remained, const Area& r1, const Area& r2)
+    Node* pickNext(std::list<Node*> *remained, const area_type& r1, const area_type& r2)
     {
         assert(NULL != remained);
         std::list<Node*>::iterator maxDiffIndex = remained->begin();
@@ -629,7 +633,7 @@ private:
     /**
      * 找第一个与给定区域相等的数据节点
      */
-    DataNode* findFirstDataNode(const Area& r)
+    DataNode* findFirstDataNode(const area_type& r)
     {
         std::stack<TreeNode*> st;
         st.push(m_root);
@@ -657,7 +661,7 @@ private:
     /**
      * 找与给定区域相等且数据也相等的数据节点
      */
-    DataNode* findDataNode(const Area& r, const DataT& d)
+    DataNode* findDataNode(const area_type& r, const data_type& d)
     {
         std::stack<TreeNode*> st;
         st.push(m_root);
