@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2013-03-26
@@ -15,11 +15,11 @@ namespace nut
 {
 
 /**
- * ¶àÎ¬ÇøÓò
+ * å¤šç»´åŒºåŸŸ
  * 
- * @param NumT Êı×ÖÀàĞÍ; ¿ÉÒÔÊÇ int¡¢float µÈ
- * @param DIMENSIONS Î¬Êı£¬´óÓÚµÈÓÚ1
- * @param RealNumT ÊµÊı£¬±ÜÃâ³Ë·¨ÔËËãÒç³ö£¬³£ÓÃµÄÊÇfloat£¬doubleµÈ
+ * @param NumT æ•°å­—ç±»å‹; å¯ä»¥æ˜¯ intã€float ç­‰
+ * @param DIMENSIONS ç»´æ•°ï¼Œå¤§äºç­‰äº1
+ * @param RealNumT å®æ•°ï¼Œé¿å…ä¹˜æ³•è¿ç®—æº¢å‡ºï¼Œå¸¸ç”¨çš„æ˜¯floatï¼Œdoubleç­‰
  */
 template <typename NumT, size_t DIMENSIONS = 2, typename RealNumT = double>
 class MDArea
@@ -27,22 +27,22 @@ class MDArea
     typedef MDArea<NumT, DIMENSIONS, RealNumT> self;
 
 public:
-    NumT left[DIMENSIONS]; // ×ó±ß½ç
-    NumT right[DIMENSIONS]; // ÓÒ±ß½ç
+    NumT lower[DIMENSIONS]; // ä½è¾¹ç•Œ
+    NumT higher[DIMENSIONS]; // é«˜è¾¹ç•Œ
 
     MDArea()
     {
         for (register size_t i = 0; i < DIMENSIONS; ++i)
         {
-            left[i] = 0;
-            right[i] = 0;
+            lower[i] = 0;
+            higher[i] = 0;
         }
     }
 
     bool operator==(const self& x) const
     {
         for (register int i = 0; i < DIMENSIONS; ++i)
-            if (left[i] != x.left[i] || right[i] != x.right[i])
+            if (lower[i] != x.lower[i] || higher[i] != x.higher[i])
                 return false;
         return true;
     }
@@ -53,58 +53,58 @@ public:
     }
 
     /**
-     * À©Õ¹ÇøÓò£¬ÒÔ±ã°üº¬Ä¿±êÇøÓò
+     * æ‰©å±•åŒºåŸŸï¼Œä»¥ä¾¿åŒ…å«ç›®æ ‡åŒºåŸŸ
      */
     void expandToContain(const self& x)
     {
         for (register int i = 0; i < DIMENSIONS; ++i)
         {
-            left[i] = std::min(left[i], x.left[i]);
-            right[i] = std::max(right[i], x.right[i]);
+            lower[i] = std::min(lower[i], x.lower[i]);
+            higher[i] = std::max(higher[i], x.higher[i]);
         }
     }
 
     /**
-     * ¼ì²éÇøÓòÓĞĞ§ĞÔ
+     * æ£€æŸ¥åŒºåŸŸæœ‰æ•ˆæ€§
      */
     bool isValid() const
     {
         for (register int i = 0; i < DIMENSIONS; ++i)
-            if (left[i] > right[i])
+            if (lower[i] > higher[i])
                 return false;
         return true;
     }
 
     /**
-     * ËùÕ¼µÄ¿Õ¼ä
+     * æ‰€å çš„ç©ºé—´
      */
     RealNumT acreage() const
     {
         RealNumT acr = 1;
         for (register int i = 0; i < DIMENSIONS; ++i)
-            acr *= right[i] - left[i];
+            acr *= higher[i] - lower[i];
         return acr;
     }
 
     /**
-     * ²é¿´ÊÇ·ñÍêÈ«°üº¬ÁíÒ»¸öÇøÓò
+     * æŸ¥çœ‹æ˜¯å¦å®Œå…¨åŒ…å«å¦ä¸€ä¸ªåŒºåŸŸ
      */
     bool contains(const self& x) const
     {
         for (register int i = 0; i < DIMENSIONS; ++i)
-            if (!(left[i] <= x.left[i] && x.right[i] <= right[i]))
+            if (!(lower[i] <= x.lower[i] && x.higher[i] <= higher[i]))
                 return false;
         return true;
     }
 
     /**
-     * ²é¿´ÊÇ·ñÓëÁíÒ»¸öÇøÓòÓĞ½»¼¯
+     * æŸ¥çœ‹æ˜¯å¦ä¸å¦ä¸€ä¸ªåŒºåŸŸæœ‰äº¤é›†
      */
     bool intersects(const self& x) const
     {
-        // ÈÎÒâÒ»¸öÎ¬¶È²»Ïë½»£¬ÔòÇøÓò²»Ïë½»
+        // ä»»æ„ä¸€ä¸ªç»´åº¦ä¸æƒ³äº¤ï¼Œåˆ™åŒºåŸŸä¸æƒ³äº¤
         for (register size_t i = 0; i < DIMENSIONS; ++i)
-            if (left[i] > x.right[i] || right[i] < x.left[i])
+            if (lower[i] > x.higher[i] || higher[i] < x.lower[i])
                 return false;
         return true;
     }

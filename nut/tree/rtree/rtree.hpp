@@ -164,7 +164,7 @@ private:
     treenode_allocator_type m_treenodeAlloc;
     datanode_allocator_type m_datanodeAlloc;
     TreeNode *m_root; // 根节点
-    size_t m_height; // 高度
+    size_t m_height; // 高度，TreeNode的层数
     size_t m_size; // 容量
 
     /**
@@ -175,7 +175,7 @@ private:
         RealNumT new_acr = 1;
         for (register int i = 0; i < DIMENSIONS; ++i)
         {
-            new_acr *= std::max(x.right[i], y.right[i]) - std::min(x.left[i], y.left[i]);
+            new_acr *= std::max(x.higher[i], y.higher[i]) - std::min(x.lower[i], y.lower[i]);
         }
         return new_acr - x.acreage();
     }
@@ -492,38 +492,68 @@ private:
         return uncle;
     }
     
+    /**
+     * 从一堆子节点中选取两个合适的作为种子
+     */
     Tuple<Node*, Node*> linerPickSeeds(std::list<Node*> *children)
     {
-        assert(NULL != children);
+        assert(NULL != children && children->size() >= 2);
+
         typedef std::list<Node*> list_t;
-        typedef list_t::iterator iter_t;
-        iter_t highestLowSide[DIMENSIONS];
-        iter_t lowestHighSide[DIMENSIONS];
+        typedef list_t::const_iterator iter_t;
+
+        // 下面两组变量用来求各个维度中 children 占用的 range
         iter_t highestHighSide[DIMENSIONS];
         iter_t lowestLowSide[DIMENSIONS];
-        for (iter_t iter = children->begin(), end = children->end();
-            iter != end; ++iter)
+
+        // 下面两组变量用来求 children 在各个维度中分的最开的两个 child
+        iter_t highestLowSide[DIMENSIONS];
+        iter_t lowestHighSide[DIMENSIONS];
+
+        // 初始化
+        const iter_t end = children->end();
+        for (register size_t i = 0; i < DIMENSIONS; ++i)
+        {
+            highestHighSide[i] = end;
+            lowestLowSide[i] = end;
+            highestLowSide[i] = end;
+            lowestHighSide[i] = end;
+        }
+
+        // 给上述四组变量取值
+        for (iter_t iter = children->begin(); iter != end; ++iter)
         {
             assert(NULL != *iter);
-            for (register int j = 0; j < DIMENSIONS; ++j)
+            for (register int i = 0; i < DIMENSIONS; ++i)
             {
-                if (j == 0 || (*iter)->rect.left[j] < (*lowestLowSide[j])->rect.left[j])
-                    lowestLowSide[j] = iter;
-                if (j == 0 || (*iter)->rect.left[j] > (*highestLowSide[j])->rect.left[j])
-                    highestLowSide[j] = iter;
-                if (j == 0 || (*iter)->rect.right[j] < (*lowestHighSide[j])->rect.right[j])
-                    lowestHighSide[j] = iter;
-                if (j == 0 || (*iter)->rect.right[j] > (*highestHighSide[j])->rect.right[j])
-                    highestHighSide[j] = iter;
+                const Area& area = (*iter)->rect;
+
+                if (highestHighSide[i] == end || area.higher[i] > (*(highestHighSide[i]))->rect.higher[i])
+                    highestHighSide[i] = iter;
+
+                if (lowestLowSide[i] == end || area.lower[i] < (*(lowestLowSide[i]))->rect.lower[i])
+                    lowestLowSide[i] = iter;
+
+                // 这两组变量在各个维度中不能取相同的值
+                if (highestLowSide[i] == end)
+                    highestLowSide[i] = iter;
+                else if (lowestHighSide[i] == end)
+                    lowestHighSide[i] = iter;
+                else if (area.lower[i] > (*(highestLowSide[i]))->rect.lower[i])
+                    highestLowSide[i] = iter;
+                else if (area.higher[i] < (*(lowestHighSide[i]))->rect.higher[i])
+                    lowestHighSide[i] = iter;
             }
         }
 
+        // 对比各个维度的分离度，取分离度最大的维度对应的一组数据
         int greatest_separation_idx = 0;
         RealNumT greatest_separation = 0;
         for (register int i = 0; i < DIMENSIONS; ++i)
         {
-            RealNumT width = (*highestHighSide[i])->rect.right[i] - (*lowestLowSide[i])->rect.left[i];
-            RealNumT separation = (*highestLowSide[i])->rect.left[i] - (*lowestHighSide[i])->rect.right[i];
+            RealNumT width = (*(highestHighSide[i]))->rect.higher[i] - (*(lowestLowSide[i]))->rect.lower[i];
+            assert(width > 0);
+            RealNumT separation = (*(highestLowSide[i]))->rect.lower[i] - (*(lowestHighSide[i]))->rect.higher[i];
             if (separation < 0)
                 separation = -separation;
             RealNumT nomalize = separation / width;
@@ -533,9 +563,10 @@ private:
                 greatest_separation = nomalize;
             }
         }
-
         assert(highestLowSide[greatest_separation_idx] != lowestHighSide[greatest_separation_idx]);
-        Tuple<Node*, Node*> ret(*highestLowSide[greatest_separation_idx], *lowestHighSide[greatest_separation_idx]);
+
+        // 构造返回值，并从列表中删除选中的项
+        Tuple<Node*, Node*> ret(*(highestLowSide[greatest_separation_idx]), *(lowestHighSide[greatest_separation_idx]));
         children->erase(highestLowSide[greatest_separation_idx]);
         children->erase(lowestHighSide[greatest_separation_idx]); // 由于是list，上次删除操作后迭代器还未失效
         return ret;
@@ -592,8 +623,10 @@ private:
         st.push(m_root);
         while (!st.empty())
         {
-            TreeNode *n = st.pop();
+            TreeNode *n = st.top();
+            st.pop();
             assert(NULL != n);
+
             for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != n->children[i]; ++i)
             {
                 Node *child = n->children[i];
@@ -643,7 +676,7 @@ private:
      */
     void condenseTree(TreeNode *l)
     {
-        assert(NULL != dn);
+        assert(NULL != l);
 
         std::stack<TreeNode*> q;
         std::stack<size_t> qd;
@@ -654,7 +687,7 @@ private:
             TreeNode* parent = n->parent;
             if (n->childCount() < MIN_ENTRY_COUNT)
             {
-                n->parent->remove(n);
+                n->parent->removeChild(n);
                 q.push(n);
                 qd.push(depth);
             }
@@ -669,16 +702,22 @@ private:
         {
             n = q.top();
             q.pop();
+            assert(NULL != n);
 
-            depth = dp.top();
-            dq.pop();
+            depth = qd.top();
+            qd.pop();
 
             for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
-                insert(e, depth);
+                insert(n->children[i], depth);
         }
     }
 
 public:
+    inline size_t size() const
+    {
+        return m_size;
+    }
+
     /**
      * 检查 rtree 结构是否错误
      */
@@ -694,13 +733,12 @@ public:
         if (depth == m_height + 1)
         {
             if (e->isTreeNode())
-                return false; // wrong type with depth
-            return;
+                return false; // wrong node type with depth
+            return true;
         }
 
-        if ((depth == m_height && e->isTreeNode()) ||
-            (depth != m_height && !e->isTreeNode()))
-                return false; // wrong type with depth
+        if (!e->isTreeNode())
+            return false; // wrong node type with depth
 
         TreeNode *n = dynamic_cast<TreeNode*>(e);
         const int cc = n->childCount();
