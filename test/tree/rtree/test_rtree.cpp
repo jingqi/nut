@@ -13,6 +13,7 @@ NUT_FIXTURE(TestRTree)
     NUT_CASES_BEGIN()
     NUT_CASE(testSmoking)
     NUT_CASE(testRandom)
+    NUT_CASE(testSimple)
     NUT_CASES_END()
 
     void setUp()
@@ -59,6 +60,25 @@ NUT_FIXTURE(TestRTree)
 
             NUT_TA(t.isValid());
         }
+    }
+
+    void testSimple()
+    {
+        RTree<int,int> t;
+        for (int i = 0; i < 50; ++i)
+        {
+            Area a = mkrect(i, i + 2, 0, 3);
+            t.insert(a, i);
+            NUT_TA(t.isValid());
+        }
+        NUT_TA(t.size() == 50);
+        for (int i = 49; i >= 0; --i)
+        {
+            Area a = mkrect(i, i + 2, 0, 3);
+            NUT_TA(t.remove(a, i));
+            NUT_TA(t.isValid());
+        }
+        NUT_TA(t.size() == 0 && t.height() == 1);
     }
 };
 

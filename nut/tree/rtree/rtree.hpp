@@ -48,12 +48,12 @@ private:
     struct TreeNode;
     struct Node
     {
-        Area rect;
+        Area area;
         TreeNode *parent;
         bool treeNode; // 是树节点还是数据节点
 
         Node(bool tn) : parent(NULL), treeNode(treeNode) {}
-        Node(const Area& rt, bool tn) : rect(rt), parent(NULL), treeNode(tn) {}
+        Node(const Area& rt, bool tn) : area(rt), parent(NULL), treeNode(tn) {}
         virtual ~Node() {}
 
         inline bool isTreeNode() const { return treeNode; }
@@ -140,9 +140,9 @@ private:
         void fitRect()
         {
             assert(NULL != children[0]);
-            rect = children[0]->rect;
+            area = children[0]->area;
             for (register int i = 1; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
-                rect.expandToContain(children[i]->rect);
+                area.expandToContain(children[i]->area);
         }
     };
 
@@ -283,7 +283,7 @@ public:
             for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
             {
                 Node *c = n->childAt(i);
-                if (!c->rect.intersects(rect))
+                if (!c->area.intersects(rect))
                     continue;
 
                 if (c->isTreeNode())
@@ -318,7 +318,7 @@ public:
             for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
             {
                 Node *c = n->childAt(i);
-                if (!c->rect.intersects(rect))
+                if (!c->area.intersects(rect))
                     continue;
 
                 if (c->isTreeNode())
@@ -326,7 +326,7 @@ public:
                     TreeNode *tn = dynamic_cast<TreeNode*>(c);
                     s.push(tn);
                 }
-                else if (rect.contains(c->rect))
+                else if (rect.contains(c->area))
                 {
                     DataNode *dn = dynamic_cast<DataNode*>(c);
                     ret.push_back(dn->data);
@@ -376,7 +376,7 @@ private:
     {
         assert(NULL != node);
 
-        TreeNode *n = chooseNode(node->rect, depth);
+        TreeNode *n = chooseNode(node->area, depth);
         TreeNode *ll = n->appendChild(node) ? NULL : splitNode(n, node);
         TreeNode *r = adjustTree(n, ll);
         if (NULL != r)
@@ -407,7 +407,7 @@ private:
             RealNumT least = 0;
             for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != ret->children[i]; ++i)
             {
-                RealNumT el = acreageNeeded(ret->children[i]->rect, rectToAdd);
+                RealNumT el = acreageNeeded(ret->children[i]->area, rectToAdd);
                 if (0 == i || el < least)
                 {
                     nn = dynamic_cast<TreeNode*>(ret->children[i]); // 因为 depth > 1，这里应当是成功的
@@ -423,6 +423,9 @@ private:
     
     /**
      * 拆分节点
+     *
+     * @param parent The parent node to add a child, (it is full now)
+     * @param child The child to be added
      */
     TreeNode* splitNode(TreeNode *parent, Node *child)
     {
@@ -440,7 +443,7 @@ private:
         // 挑选两个种子，并分别作为 parent 和 uncle (parent的兄弟节点) 的一个子节点
         Tuple<Node*, Node*> seeds = linerPickSeeds(&remained);
         parent->clearChildren();
-        parent->rect = seeds.first->rect;
+        parent->area = seeds.first->area;
         parent->appendChild(seeds.first);
         TreeNode *uncle = m_treenodeAlloc.allocate(1);
         assert(NULL != uncle);
@@ -457,7 +460,7 @@ private:
                     iter != end; ++iter)
                 {
                     parent->appendChild(*iter);
-                    parent->rect.expandToContain((*iter)->rect);
+                    parent->area.expandToContain((*iter)->area);
                 }
                 break;
             }
@@ -467,24 +470,24 @@ private:
                     iter != end; ++iter)
                 {
                     uncle->appendChild(*iter);
-                    uncle->rect.expandToContain((*iter)->rect);
+                    uncle->area.expandToContain((*iter)->area);
                 }
                 break;
             }
 
-            Node *e = pickNext(&remained, parent->rect, uncle->rect);
+            Node *e = pickNext(&remained, parent->area, uncle->area);
             assert(NULL != e);
-            RealNumT el1 = acreageNeeded(parent->rect, e->rect), el2 = acreageNeeded(uncle->rect, e->rect);
+            RealNumT el1 = acreageNeeded(parent->area, e->area), el2 = acreageNeeded(uncle->area, e->area);
             if (el1 < el2 || (el1 == el2 && count1 < count2))
             {
                 parent->appendChild(e);
-                parent->rect.expandToContain(e->rect);
+                parent->area.expandToContain(e->area);
                 ++count1;
             }
             else
             {
                 uncle->appendChild(e);
-                uncle->rect.expandToContain(e->rect);
+                uncle->area.expandToContain(e->area);
                 ++count2;
             }
         }
@@ -526,12 +529,12 @@ private:
             assert(NULL != *iter);
             for (register int i = 0; i < DIMENSIONS; ++i)
             {
-                const Area& area = (*iter)->rect;
+                const Area& area = (*iter)->area;
 
-                if (highestHighSide[i] == end || area.higher[i] > (*(highestHighSide[i]))->rect.higher[i])
+                if (highestHighSide[i] == end || area.higher[i] > (*(highestHighSide[i]))->area.higher[i])
                     highestHighSide[i] = iter;
 
-                if (lowestLowSide[i] == end || area.lower[i] < (*(lowestLowSide[i]))->rect.lower[i])
+                if (lowestLowSide[i] == end || area.lower[i] < (*(lowestLowSide[i]))->area.lower[i])
                     lowestLowSide[i] = iter;
 
                 // 这两组变量在各个维度中不能取相同的值
@@ -539,9 +542,9 @@ private:
                     highestLowSide[i] = iter;
                 else if (lowestHighSide[i] == end)
                     lowestHighSide[i] = iter;
-                else if (area.lower[i] > (*(highestLowSide[i]))->rect.lower[i])
+                else if (area.lower[i] > (*(highestLowSide[i]))->area.lower[i])
                     highestLowSide[i] = iter;
-                else if (area.higher[i] < (*(lowestHighSide[i]))->rect.higher[i])
+                else if (area.higher[i] < (*(lowestHighSide[i]))->area.higher[i])
                     lowestHighSide[i] = iter;
             }
         }
@@ -551,9 +554,9 @@ private:
         RealNumT greatest_separation = 0;
         for (register int i = 0; i < DIMENSIONS; ++i)
         {
-            RealNumT width = (*(highestHighSide[i]))->rect.higher[i] - (*(lowestLowSide[i]))->rect.lower[i];
+            RealNumT width = (*(highestHighSide[i]))->area.higher[i] - (*(lowestLowSide[i]))->area.lower[i];
             assert(width > 0);
-            RealNumT separation = (*(highestLowSide[i]))->rect.lower[i] - (*(lowestHighSide[i]))->rect.higher[i];
+            RealNumT separation = (*(highestLowSide[i]))->area.lower[i] - (*(lowestHighSide[i]))->area.higher[i];
             if (separation < 0)
                 separation = -separation;
             RealNumT nomalize = separation / width;
@@ -572,6 +575,9 @@ private:
         return ret;
     }
 
+    /**
+     * 从剩余的零散节点中找到下一个适合添加到树上的节点
+     */
     Node* pickNext(std::list<Node*> *remained, const Area& r1, const Area& r2)
     {
         assert(NULL != remained);
@@ -580,7 +586,7 @@ private:
         for (std::list<Node*>::iterator iter = remained->begin(), end = remained->end();
             iter != end; ++iter)
         {
-            RealNumT diff = acreageNeeded(r1, (*iter)->rect) - acreageNeeded(r2, (*iter)->rect);
+            RealNumT diff = acreageNeeded(r1, (*iter)->area) - acreageNeeded(r2, (*iter)->area);
             if (diff < 0)
                 diff = -diff;
             if (diff > maxDiff)
@@ -596,6 +602,9 @@ private:
     }
 
     /**
+     * 添加节点后调整 rtree
+     *
+     * @param n The parent node which has appended a new child
      * @param nn 可以为 NULL
      */
     TreeNode* adjustTree(TreeNode *n, TreeNode *nn)
@@ -617,6 +626,9 @@ private:
         }
     }
 
+    /**
+     * 找第一个与给定区域相等的数据节点
+     */
     DataNode* findFirstDataNode(const Area& r)
     {
         std::stack<TreeNode*> st;
@@ -630,11 +642,11 @@ private:
             for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != n->children[i]; ++i)
             {
                 Node *child = n->children[i];
-                if (child->rect.contains(r))
+                if (child->area.contains(r))
                 {
                     if (child->treeNode)
                         st.push(dynamic_cast<TreeNode*>(child));
-                    else if (child->rect == r)
+                    else if (child->area == r)
                         return dynamic_cast<DataNode*>(child);
                 }
             }
@@ -642,24 +654,29 @@ private:
         return NULL;
     }
 
+    /**
+     * 找与给定区域相等且数据也相等的数据节点
+     */
     DataNode* findDataNode(const Area& r, const DataT& d)
     {
         std::stack<TreeNode*> st;
         st.push(m_root);
         while (!st.empty())
         {
-            TreeNode *n = st.pop();
+            TreeNode *n = st.top();
+            st.pop();
             assert(NULL != n);
+
             for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != n->children[i]; ++i)
             {
                 Node *child = n->children[i];
-                if (child->rect.contains(r))
+                if (child->area.contains(r))
                 {
                     if (child->treeNode)
                     {
                         st.push(dynamic_cast<TreeNode*>(child));
                     }
-                    else if (child->rect == r)
+                    else if (child->area == r)
                     {
                         DataNode *dn = dynamic_cast<DataNode*>(child);
                         if (dn->data == d)
@@ -672,6 +689,8 @@ private:
     }
 
     /**
+     * 删除节点后调整rtree
+     *
      * @param l The node whose child has been deleted
      */
     void condenseTree(TreeNode *l)
@@ -713,9 +732,20 @@ private:
     }
 
 public:
+    /**
+     * 元素个数
+     */
     inline size_t size() const
     {
         return m_size;
+    }
+
+    /**
+     * 树高，大于等于1
+     */
+    inline size_t height() const
+    {
+        return m_height;
     }
 
     /**
@@ -747,7 +777,7 @@ public:
         for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
         {
             Node *ee = n->childAt(i);
-            if (!n->rect.contains(ee->rect))
+            if (!n->area.contains(ee->area))
                 return false; // area error
             if (!isValid(ee, depth + 1))
                 return false;
