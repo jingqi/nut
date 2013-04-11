@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-03-10
- * @last-edit 2012-03-11 15:04:54 jingqi
+ * @last-edit 2013-03-28 09:11:34 jingqi
  */
 
 #ifndef ___HEADFILE_160547E9_5A30_4A78_A5FF_76E0C5EBE229_
@@ -11,9 +11,13 @@
 #include <list>
 #include <vector>
 #include <stack>
-#include <allocators>
-#include <xutility>
 #include <map> // for pair
+
+#include <nut/platform/platform.hpp>
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+#   include <allocators>
+#   include <xutility>
+#endif
 
 #include <nut/debugging/static_assert.hpp>
 #include <nut/util/tuple.hpp>

@@ -2,14 +2,18 @@
  * @file -
  * @author jingqi
  * @date 2013-03-26
- * @last-edit 2013-03-26 20:29:45 jingqi
+ * @last-edit 2013-03-28 09:12:22 jingqi
  * @brief
  */
 
 #ifndef ___HEADFILE_F8CA88A7_CD94_4F1D_AA24_A5E53F2E2E96_
 #define ___HEADFILE_F8CA88A7_CD94_4F1D_AA24_A5E53F2E2E96_
 
-#include <xutility>
+#include <nut/platform/platform.hpp>
+
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+#   include <xutility>
+#endif
 
 namespace nut
 {
