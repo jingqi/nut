@@ -96,16 +96,16 @@ public:
         if (escaper != to_be_del)
         {
             // replace x with escaper
-            escaper->setLeft(to_be_del->getLeftChild());
-            escaper->setRight(to_be_del->getRightChild());
+            escaper->setLeftChild(to_be_del->getLeftChild());
+            escaper->setRightChild(to_be_del->getRightChild());
             escaper->setParent(to_be_del->getParent());
-            escaper->setRed(x->isRed);
-            if (NULL == x->getParent())
+            escaper->setRed(to_be_del->isRed);
+            if (NULL == to_be_del->getParent())
                 root = escaper;
-            else if (x == x->getParent()->getLeftChild())
-                x->getParent()->setLeftChild(escaper);
+            else if (to_be_del == to_be_del->getParent()->getLeftChild())
+                to_be_del->getParent()->setLeftChild(escaper);
             else
-                x->getParent()->setRightChild(escaper);
+                to_be_del->getParent()->setRightChild(escaper);
         }
 
         if (!red_escaper)
@@ -312,7 +312,7 @@ private:
                     brother->setRed(false);
                     sublink_parent->setRed(true);
                     root = _left_rotate(root, sublink_parent);
-                    brother = sublink_parent->getRight();
+                    brother = sublink_parent->getRightChild();
                 }
 
                 if ((NULL == brother->getLeftChild() || !brother->getLeftChild()->isRed()) && (NULL == brother->getRightChild() || !brother->getRightChild()->isRed()))
