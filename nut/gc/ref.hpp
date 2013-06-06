@@ -59,6 +59,7 @@ public:
 
 public:
     inline bool isNull() const { return m_ptr == NULL; }
+    inline bool isNotNull() const { return m_ptr != NULL; }
     inline T* pointer() const { return m_ptr; }
     inline void assign(T *p) { m_ptr = p; }
     inline void clear() { m_ptr = NULL; }
