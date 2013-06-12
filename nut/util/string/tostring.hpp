@@ -37,25 +37,28 @@ inline std::string toString(char c)
     return std::string(1,c);
 }
 
-inline std::string toString(long i)
+inline std::string toString(long long i)
 {
-    const int BUF_SIZE = 30;
+    const int BUF_SIZE = 60;
     char buf[BUF_SIZE];
     ::memset(buf, 0, BUF_SIZE);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-    ::ltoa(i, buf, 10);
+    ::sprintf(buf, "%I64d", i);
+    // ::ltoa(i, buf, 10);
 #else
-    ::sprintf(buf, "%ld", i);
+    ::sprintf(buf, "%lld", i);
 #endif
     return buf;
 }
 
-inline std::string toString(unsigned char i) { return toString((long)i); }
-inline std::string toString(short i) { return toString((long)i); }
-inline std::string toString(unsigned short i) { return toString((long)i); }
-inline std::string toString(int i) { return toString((long)i); }
-inline std::string toString(unsigned int i) { return toString((long)i); }
-inline std::string toString(unsigned long i) { return toString((long)i); }
+inline std::string toString(unsigned char i) { return toString((long long)i); }
+inline std::string toString(short i) { return toString((long long)i); }
+inline std::string toString(unsigned short i) { return toString((long long)i); }
+inline std::string toString(int i) { return toString((long long)i); }
+inline std::string toString(unsigned int i) { return toString((long long) i); }
+inline std::string toString(long i) { return toString((long long) i); }
+inline std::string toString(unsigned long i) { return toString((long long) i); }
+inline std::string toString(unsigned long long i) { return toString((long long) i); }
 
 inline std::string toString(bool b)
 {
