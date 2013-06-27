@@ -234,7 +234,7 @@ public:
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        return 0 == ::CreateDirectoryA(path, NULL);
+        return FALSE != ::CreateDirectoryA(path, NULL);
 #else
         return 0 == ::mkdir(path, S_IWRITE);
 #endif
