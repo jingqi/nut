@@ -260,7 +260,12 @@ public :
     /**
      * get the naked pointer
      */
-    inline const uint8_t* buffer() const { return m_buf->buf; }
+    inline const uint8_t* buffer() const
+    {
+        if (m_buf.isNull())
+            return NULL;
+        return m_buf->buf;
+    }
 
     inline uint8_t* buffer()
     {

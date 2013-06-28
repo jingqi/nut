@@ -178,9 +178,9 @@ inline std::string toString(const std::vector<T> &v, const std::string &split = 
     return ret;
 }
 
-inline long long toInteger(const std::string& s)
+inline long toInteger(const std::string& s)
 {
-    long long ret = 0;
+    long ret = 0;
     sscanf(s.c_str(), "%ld", &ret);
     return ret;
 }
