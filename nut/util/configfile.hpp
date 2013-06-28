@@ -9,6 +9,7 @@
 #define ___HEADFILE_C9DB1FAD_B2DA_45F6_AE36_818B4BB68EC1_
 
 #include <nut/platform/platform.hpp>
+#include <nut/platform/path.hpp>
 
 #include <assert.h>
 #include <fstream>
@@ -136,6 +137,9 @@ public:
         : m_filePath(filePath), m_dirty(false)
     {
         assert(NULL != filePath);
+        if (!Path::exists(filePath))
+            return;
+
         std::ifstream ifs(filePath);
         std::string strLine;
 
@@ -159,6 +163,7 @@ public:
             assert(!line.isNull());
             currentLines->push_back(line);
         }
+        ifs.close();
     }
 
     ~ConfigFile()
@@ -192,6 +197,18 @@ public:
         m_dirty = dirty;
     }
 
+    const std::string& getFilePath() const
+    {
+        return m_filePath;
+    }
+
+    void clear()
+    {
+        m_global_lines.clear();
+        m_sectors.clear();
+        m_dirty = true;
+    }
+
     std::vector<std::string> listSectors() const
     {
         std::vector<std::string> ret;
@@ -217,7 +234,7 @@ public:
         return false;
     }
 
-    bool deleteSector(const char *sector)
+    bool removeSector(const char *sector)
     {
         if (NULL == sector)
             return false;
@@ -303,7 +320,7 @@ public:
         return false;
     }
 
-    bool deleteKey(const char *sector, const char *key)
+    bool removeKey(const char *sector, const char *key)
     {
         assert(NULL != key);
         std::vector<ref<Line> > *lines = NULL;
