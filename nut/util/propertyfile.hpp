@@ -222,7 +222,7 @@ public:
         return false;
     }
 
-    bool deleteKey(const char *key)
+    bool removeKey(const char *key)
     {
         for (std::vector<ref<Line> >::iterator iter = m_lines.begin(), end = m_lines.end();
             iter != end; ++iter)
