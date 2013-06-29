@@ -56,7 +56,8 @@ public :
     /**
      * 使用具体时刻初始化
      */
-    Time(uint32_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec){
+    Time(uint32_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec)
+    {
         timeInfo.tm_year = year - 1900;
         timeInfo.tm_mon = month - 1;
         timeInfo.tm_mday = day;
@@ -259,7 +260,7 @@ public :
      * format time string
      * for example : "%m-%d %H:%M" -> "2-28 8:57"
      */
-    std::string formatTime (const char *format) const
+    std::string formatTime(const char *format) const
     {
         assert(NULL != format);
         size_t newSize = strlen(format) * 3;
