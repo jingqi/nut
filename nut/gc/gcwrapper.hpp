@@ -78,6 +78,44 @@ public:
         RefargTraits<Arg4>::value(arg4), RefargTraits<Arg5>::value(arg5), RefargTraits<Arg6>::value(arg6)),
         m_counter(c), m_destroyer(d)
     {}
+    
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
+              typename Arg6, typename Arg7>
+    GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5,
+              Arg6 arg6, Arg7 arg7)
+        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg2>::value(arg2), RefargTraits<Arg3>::value(arg3),
+        RefargTraits<Arg4>::value(arg4), RefargTraits<Arg5>::value(arg5), RefargTraits<Arg6>::value(arg6),
+        RefargTraits<Arg7>::value(arg7)), m_counter(c), m_destroyer(d)
+    {}
+    
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
+              typename Arg6, typename Arg7, typename Arg8>
+    GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5,
+              Arg6 arg6, Arg7 arg7, Arg8 arg8)
+        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg2>::value(arg2), RefargTraits<Arg3>::value(arg3),
+        RefargTraits<Arg4>::value(arg4), RefargTraits<Arg5>::value(arg5), RefargTraits<Arg6>::value(arg6),
+        RefargTraits<Arg7>::value(arg7), RefargTraits<Arg8>::value(arg8)), m_counter(c), m_destroyer(d)
+    {}
+    
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
+              typename Arg6, typename Arg7, typename Arg8, typename Arg9>
+    GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5,
+              Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9)
+        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg2>::value(arg2), RefargTraits<Arg3>::value(arg3),
+        RefargTraits<Arg4>::value(arg4), RefargTraits<Arg5>::value(arg5), RefargTraits<Arg6>::value(arg6),
+        RefargTraits<Arg7>::value(arg7), RefargTraits<Arg8>::value(arg8), RefargTraits<Arg9>::value(arg9)),
+        m_counter(c), m_destroyer(d)
+    {}
+
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
+              typename Arg6, typename Arg7, typename Arg8, typename Arg9, typename Arg10>
+        GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5,
+                  Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10)
+        : T(RefargTraits<Arg1>::value(arg1), RefargTraits<Arg2>::value(arg2), RefargTraits<Arg3>::value(arg3),
+        RefargTraits<Arg4>::value(arg4), RefargTraits<Arg5>::value(arg5), RefargTraits<Arg6>::value(arg6),
+        RefargTraits<Arg7>::value(arg7), RefargTraits<Arg8>::value(arg8), RefargTraits<Arg9>::value(arg9),
+        RefargTraits<Arg10>::value(arg10)), m_counter(c), m_destroyer(d)
+    {}
 
     virtual int add_ref()
     {
@@ -145,10 +183,38 @@ public:
     {}
 
     template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
-        typename Arg6>
+              typename Arg6>
         GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5,
-        Arg6 arg6)
+                  Arg6 arg6)
         : enref<T>(arg1, arg2, arg3, arg4, arg5, arg6), m_counter(c), m_destroyer(d)
+    {}
+
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
+              typename Arg6, typename Arg7>
+        GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5,
+                  Arg6 arg6, Arg7 arg7)
+        : enref<T>(arg1, arg2, arg3, arg4, arg5, arg6, arg7), m_counter(c), m_destroyer(d)
+    {}
+
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
+              typename Arg6, typename Arg7, typename Arg8>
+        GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5,
+                  Arg6 arg6, Arg7 arg7, Arg8 arg8)
+        : enref<T>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), m_counter(c), m_destroyer(d)
+    {}
+
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
+        typename Arg6, typename Arg7, typename Arg8, typename Arg9>
+        GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5,
+        Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9)
+        : enref<T>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9), m_counter(c), m_destroyer(d)
+    {}
+
+    template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
+        typename Arg6, typename Arg7, typename Arg8, typename Arg9, typename Arg10>
+        GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5,
+        Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10)
+        : enref<T>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10), m_counter(c), m_destroyer(d)
     {}
 
     virtual int add_ref()
