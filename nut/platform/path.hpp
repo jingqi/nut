@@ -18,8 +18,9 @@
 #   include <windows.h>
 #   include<io.h> // for _access()
 #   include <sys/stat.h> // for stat()
+#   include <direct.h> // for getcwd()
 #else
-#   include <unistd.h> // for access()
+#   include <unistd.h> // for access(), getcwd()
 #   include <sys/stat.h> // for stat()
 #endif
 
@@ -69,7 +70,213 @@ public:
         return L'\\' == c || L'/' == c;
     }
 
-    // TODO static std::string abspath(const std::string& p) {}
+    static std::string getCwd()
+    {
+        char buf[MAX_PATH + 1];
+        buf[0] = 0;
+        getcwd(buf, MAX_PATH + 1);
+        return buf;
+    }
+
+    static std::wstring getWCwd()
+    {
+        return str2wstr(getCwd());
+    }
+
+    static std::string abspath(const std::string&  p)
+    {
+        if (p.empty())
+            return getCwd();
+
+        // 探测是否从根路径开始
+        bool from_root = false;
+        if (p.at(0) == '/') // linux root
+        {
+            from_root = true;
+        }
+        else
+        {
+            for (register size_t i = 0, len = p.length(); i < len; ++i)
+            {
+                const char c = p.at(i);
+                if (c == ':') // windows partion root
+                {
+                    from_root = true;
+                    break;
+                }
+                else if (isPathSeparator(c))
+                {
+                    break;
+                }
+            }
+        }
+        std::string ret;
+        if (!from_root)
+            ret = getCwd();
+
+        // 组装路径
+        std::string part;
+        for (register size_t i = 0, len = p.length(); i < len; ++i)
+        {
+            const char c = p.at(i);
+            if (!isPathSeparator(c))
+            {
+                part.push_back(c);
+                if (i != len - 1)
+                    continue;
+            }
+
+            // 处理根目录
+            if (ret.empty())
+            {
+                if (part.empty())
+                {
+                    // linux root
+                    ret.push_back('/');
+                    continue;
+                }
+                else if (part.at(part.length() - 1) == ':')
+                {
+                    // windows partition root
+                    ret += part;
+                    ret.push_back('\\');
+                    part.clear();
+                    continue;
+                }
+            }
+
+            // 组装
+            if (!part.empty())
+            {
+                if (part == "..")
+                {
+                    register int j = ret.size() - 1;
+                    if (isPathSeparator(ret.at(j)))
+                        --j;
+                    while (j >= 0)
+                    {
+                        if (isPathSeparator(ret.at(j)))
+                            break;
+                        --j;
+                    }
+                    if (j == 0 || (j > 0 && ret.at(j - 1) == ':'))
+                        ret.resize(j + 1);
+                    else if(j > 0)
+                        ret.resize(j);
+                    // else: parent directory out of range
+                }
+                else if (part != ".")
+                {
+                    if (!ret.empty() && !isPathSeparator(ret.at(ret.length() - 1)))
+                    {
+                        ret.push_back(seperator());
+                    }
+                    ret += part;
+                }
+                part.clear();
+            }
+        }
+
+        return ret;
+    }
+
+    static std::wstring abspath(const std::wstring&  p)
+    {
+        if (p.empty())
+            return getWCwd();
+
+        // 探测是否从根路径开始
+        bool from_root = false;
+        if (p.at(0) == L'/') // linux root
+        {
+            from_root = true;
+        }
+        else
+        {
+            for (register size_t i = 0, len = p.length(); i < len; ++i)
+            {
+                const wchar_t c = p.at(i);
+                if (c == L':') // windows partion root
+                {
+                    from_root = true;
+                    break;
+                }
+                else if (isPathSeparator(c))
+                {
+                    break;
+                }
+            }
+        }
+        std::wstring ret;
+        if (!from_root)
+            ret = getWCwd();
+
+        // 组装路径
+        std::wstring part;
+        for (register size_t i = 0, len = p.length(); i < len; ++i)
+        {
+            const wchar_t c = p.at(i);
+            if (!isPathSeparator(c))
+            {
+                part.push_back(c);
+                if (i != len - 1)
+                    continue;
+            }
+
+            // 处理根目录
+            if (ret.empty())
+            {
+                if (part.empty())
+                {
+                    // linux root
+                    ret.push_back(L'/');
+                    continue;
+                }
+                else if (part.at(part.length() - 1) == L':')
+                {
+                    // windows partition root
+                    ret += part;
+                    ret.push_back(L'\\');
+                    part.clear();
+                    continue;
+                }
+            }
+
+            // 组装
+            if (!part.empty())
+            {
+                if (part == L"..")
+                {
+                    register int j = ret.size() - 1;
+                    if (isPathSeparator(ret.at(j)))
+                        --j;
+                    while (j >= 0)
+                    {
+                        if (isPathSeparator(ret.at(j)))
+                            break;
+                        --j;
+                    }
+                    if (j == 0 || (j > 0 && ret.at(j - 1) == L':'))
+                        ret.resize(j + 1);
+                    else if(j > 0)
+                        ret.resize(j);
+                    // else: parent directory out of range
+                }
+                else if (part != L".")
+                {
+                    if (!ret.empty() && !isPathSeparator(ret.at(ret.length() - 1)))
+                    {
+                        ret.push_back(seperator());
+                    }
+                    ret += part;
+                }
+                part.clear();
+            }
+        }
+
+        return ret;
+    }
+
     // TODO static std::string realpath() {}
     // TODO static std::string relpath() {}
 

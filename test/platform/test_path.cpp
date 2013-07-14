@@ -3,6 +3,7 @@
 #include <nut/unittest/unittest.hpp>
 #include <nut/platform/path.hpp>
 
+using namespace std;
 using namespace nut;
 
 NUT_FIXTURE(TestPath)
@@ -16,6 +17,7 @@ NUT_FIXTURE(TestPath)
     NUT_CASE(testSplitExtW)
     NUT_CASE(testJoin)
     NUT_CASE(testJoinW)
+    NUT_CASE(testAbspath)
     NUT_CASES_END()
 
 	void setUp() {}
@@ -97,6 +99,26 @@ NUT_FIXTURE(TestPath)
 
         NUT_TA(Path::join(L"/", L"sd") == L"/sd");
         NUT_TA(Path::join(L"c:", L"\\tmp") == L"c:\\tmp");
+    }
+
+    void testAbspath()
+    {
+        // cout << Path::abspath("/a//c");
+
+        NUT_TA(Path::abspath("e:\\") == "e:\\");
+        NUT_TA(Path::abspath("e:") == "e:\\");
+        NUT_TA(Path::abspath("e:\\..\\..") == "e:\\");
+        NUT_TA(Path::abspath("e:\\..\\..\\a") == "e:\\a");
+        NUT_TA(Path::abspath("e:\\b\\..\\.\\a") == "e:\\a");
+        NUT_TA(Path::abspath("e:\\b\\\\a") == "e:\\b\\a");
+
+        NUT_TA(Path::abspath("/") == "/");
+        NUT_TA(Path::abspath("/.") == "/");
+        NUT_TA(Path::abspath("/../") == "/");
+        NUT_TA(Path::abspath("/../../a") == "/a");
+        NUT_TA(Path::abspath("/a//c") == "/a\\c");
+        NUT_TA(Path::abspath("/a/.././c") == "/c");
+
     }
 };
 
