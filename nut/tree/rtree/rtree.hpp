@@ -70,6 +70,7 @@ private:
      */
     struct TreeNode : public Node
     {
+        using Node::area;
         Node *children[MAX_ENTRY_COUNT];
 
         TreeNode()
@@ -112,7 +113,7 @@ private:
 
         bool removeChild(Node *child)
         {
-            for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
+            for (register size_t i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
             {
                 if (children[i] == child)
                 {
@@ -120,7 +121,7 @@ private:
                     children[i] = NULL;
 
                     // 保持紧凑
-                    for (register int j = i; j + 1 < MAX_ENTRY_COUNT && NULL != children[j + 1]; ++j)
+                    for (register size_t j = i; j + 1 < MAX_ENTRY_COUNT && NULL != children[j + 1]; ++j)
                     {
                         children[j] = children[j + 1];
                         children[j + 1] = NULL;
@@ -133,7 +134,7 @@ private:
 
         void clearChildren()
         {
-            for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
+            for (register size_t i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
             {
                 children[i]->parent = NULL; // 附带设置 parent
                 children[i] = NULL;
@@ -147,7 +148,7 @@ private:
         {
             assert(NULL != children[0]);
             area = children[0]->area;
-            for (register int i = 1; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
+            for (register size_t i = 1; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
                 area.expandToContain(children[i]->area);
         }
     };
@@ -166,8 +167,8 @@ private:
 private:
     typedef RTree<DataT, NumT, DIMENSIONS, RealNumT, MAX_ENTRY_COUNT, MIN_ENTRY_COUNT, AllocT>  self;
     typedef AllocT                                                                              data_allocator_type;
-    typedef typename AllocT::rebind<TreeNode>::other                                            treenode_allocator_type;
-    typedef typename AllocT::rebind<DataNode>::other                                            datanode_allocator_type;
+    typedef typename AllocT::template rebind<TreeNode>::other                                   treenode_allocator_type;
+    typedef typename AllocT::template rebind<DataNode>::other                                   datanode_allocator_type;
 
     treenode_allocator_type m_treenodeAlloc;
     datanode_allocator_type m_datanodeAlloc;
@@ -181,7 +182,7 @@ private:
     static RealNumT acreageNeeded(const area_type& x, const area_type& y)
     {
         RealNumT new_acr = 1;
-        for (register int i = 0; i < DIMENSIONS; ++i)
+        for (register size_t i = 0; i < DIMENSIONS; ++i)
         {
             new_acr *= std::max(x.higher[i], y.higher[i]) - std::min(x.lower[i], y.lower[i]);
         }
@@ -192,9 +193,9 @@ public:
     RTree()
         : m_root(NULL), m_height(1), m_size(0)
     {
-        NUT_STATIC_ASSERT(DIMENSIONS >= 2); // 空间维数
-        NUT_STATIC_ASSERT(MAX_ENTRY_COUNT >= 2); // 最大子节点数
-        NUT_STATIC_ASSERT(1 <= MIN_ENTRY_COUNT && MIN_ENTRY_COUNT <= (MAX_ENTRY_COUNT + 1) / 2); // 最小子节点数
+        NUT_STATIC_ASSERT(DIMENSIONS >= 2 && // 空间维数
+            MAX_ENTRY_COUNT >= 2 && // 最大子节点数
+            1 <= MIN_ENTRY_COUNT && MIN_ENTRY_COUNT <= (MAX_ENTRY_COUNT + 1) / 2); // 最小子节点数
 
         m_root = m_treenodeAlloc.allocate(1);
         assert(NULL != m_root);
@@ -302,7 +303,7 @@ public:
                 else
                 {
                     DataNode *dn = dynamic_cast<DataNode*>(c);
-                    ret.push_back(std::pari<area_type,data_type>(dn->area, dn->data));
+                    ret.push_back(std::pair<area_type,data_type>(dn->area, dn->data));
                 }
             }
             return ret;
@@ -413,7 +414,7 @@ private:
 
             // choose the least enlargement child
             RealNumT least = 0;
-            for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != ret->children[i]; ++i)
+            for (register size_t i = 0; i < MAX_ENTRY_COUNT && NULL != ret->children[i]; ++i)
             {
                 RealNumT el = acreageNeeded(ret->children[i]->area, rectToAdd);
                 if (0 == i || el < least)
@@ -439,10 +440,12 @@ private:
     {
         assert(NULL != parent && NULL != child);
 
+        typedef typename std::list<Node*>::const_iterator iter_t;
+
         // 手机所有的子节点
         std::list<Node*> remained;
         remained.push_back(child);
-        for (register int i = 0; i < MAX_ENTRY_COUNT; ++i)
+        for (register size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
         {
             assert(NULL != parent->children[i]);
             remained.push_back(parent->children[i]);
@@ -459,12 +462,12 @@ private:
         uncle->appendChild(seeds.second);
         uncle->fitRect();
 
-        int count1 = 1, count2 = 1;
+        size_t count1 = 1, count2 = 1;
         while (!remained.empty())
         {
             if (remained.size() == MIN_ENTRY_COUNT - count1)
             {
-                for (std::list<Node*>::iterator iter = remained.begin(), end = remained.end();
+                for (iter_t iter = remained.begin(), end = remained.end();
                     iter != end; ++iter)
                 {
                     parent->appendChild(*iter);
@@ -474,7 +477,7 @@ private:
             }
             else if (remained.size() == MIN_ENTRY_COUNT - count2)
             {
-                for (std::list<Node*>::iterator iter = remained.begin(), end = remained.end();
+                for (iter_t iter = remained.begin(), end = remained.end();
                     iter != end; ++iter)
                 {
                     uncle->appendChild(*iter);
@@ -511,7 +514,7 @@ private:
         assert(NULL != children && children->size() >= 2);
 
         typedef std::list<Node*> list_t;
-        typedef list_t::const_iterator iter_t;
+        typedef typename list_t::iterator iter_t;
 
         // 下面两组变量用来求各个维度中 children 占用的 range
         iter_t highestHighSide[DIMENSIONS];
@@ -535,7 +538,7 @@ private:
         for (iter_t iter = children->begin(); iter != end; ++iter)
         {
             assert(NULL != *iter);
-            for (register int i = 0; i < DIMENSIONS; ++i)
+            for (register size_t i = 0; i < DIMENSIONS; ++i)
             {
                 const area_type& area = (*iter)->area;
 
@@ -560,7 +563,7 @@ private:
         // 对比各个维度的分离度，取分离度最大的维度对应的一组数据
         int greatest_separation_idx = 0;
         RealNumT greatest_separation = 0;
-        for (register int i = 0; i < DIMENSIONS; ++i)
+        for (register size_t i = 0; i < DIMENSIONS; ++i)
         {
             RealNumT width = (*(highestHighSide[i]))->area.higher[i] - (*(lowestLowSide[i]))->area.lower[i];
             assert(width > 0);
@@ -589,9 +592,12 @@ private:
     Node* pickNext(std::list<Node*> *remained, const area_type& r1, const area_type& r2)
     {
         assert(NULL != remained);
-        std::list<Node*>::iterator maxDiffIndex = remained->begin();
+
+        typedef typename std::list<Node*>::iterator iter_t;
+
+        iter_t maxDiffIndex = remained->begin();
         RealNumT maxDiff = 0;
-        for (std::list<Node*>::iterator iter = remained->begin(), end = remained->end();
+        for (iter_t iter = remained->begin(), end = remained->end();
             iter != end; ++iter)
         {
             RealNumT diff = acreageNeeded(r1, (*iter)->area) - acreageNeeded(r2, (*iter)->area);
@@ -647,7 +653,7 @@ private:
             st.pop();
             assert(NULL != n);
 
-            for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != n->children[i]; ++i)
+            for (register size_t i = 0; i < MAX_ENTRY_COUNT && NULL != n->children[i]; ++i)
             {
                 Node *child = n->children[i];
                 if (child->area.contains(r))
@@ -675,7 +681,7 @@ private:
             st.pop();
             assert(NULL != n);
 
-            for (register int i = 0; i < MAX_ENTRY_COUNT && NULL != n->children[i]; ++i)
+            for (register size_t i = 0; i < MAX_ENTRY_COUNT && NULL != n->children[i]; ++i)
             {
                 Node *child = n->children[i];
                 if (child->area.contains(r))
@@ -780,7 +786,7 @@ public:
 
         TreeNode *n = dynamic_cast<TreeNode*>(e);
         const int cc = n->childCount();
-        if (depth != 1 && cc < MIN_ENTRY_COUNT)
+        if (depth != 1 && cc < (int) MIN_ENTRY_COUNT)
             return false; // under fill
         for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
         {

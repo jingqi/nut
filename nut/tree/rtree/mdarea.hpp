@@ -45,7 +45,7 @@ public:
 
     bool operator==(const self& x) const
     {
-        for (register int i = 0; i < DIMENSIONS; ++i)
+        for (register size_t i = 0; i < DIMENSIONS; ++i)
             if (lower[i] != x.lower[i] || higher[i] != x.higher[i])
                 return false;
         return true;
@@ -61,7 +61,7 @@ public:
      */
     void expandToContain(const self& x)
     {
-        for (register int i = 0; i < DIMENSIONS; ++i)
+        for (register size_t i = 0; i < DIMENSIONS; ++i)
         {
             lower[i] = std::min(lower[i], x.lower[i]);
             higher[i] = std::max(higher[i], x.higher[i]);
@@ -85,7 +85,7 @@ public:
     RealNumT acreage() const
     {
         RealNumT acr = 1;
-        for (register int i = 0; i < DIMENSIONS; ++i)
+        for (register size_t i = 0; i < DIMENSIONS; ++i)
             acr *= higher[i] - lower[i];
         return acr;
     }
@@ -95,7 +95,7 @@ public:
      */
     bool contains(const self& x) const
     {
-        for (register int i = 0; i < DIMENSIONS; ++i)
+        for (register size_t i = 0; i < DIMENSIONS; ++i)
             if (!(lower[i] <= x.lower[i] && x.higher[i] <= higher[i]))
                 return false;
         return true;

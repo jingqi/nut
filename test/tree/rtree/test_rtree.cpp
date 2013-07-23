@@ -1,5 +1,7 @@
 
 #include <iostream>
+#include <stdlib.h>
+
 #include <nut/unittest/unittest.hpp>
 
 #include <nut/tree/rtree/rtree.hpp>

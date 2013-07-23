@@ -22,6 +22,7 @@
 #else
 #   include <unistd.h> // for access(), getcwd()
 #   include <sys/stat.h> // for stat()
+#   include <limits.h> // for PATH_MAX
 #endif
 
 #include <nut/util/tuple.hpp>
@@ -72,9 +73,22 @@ public:
 
     static std::string getCwd()
     {
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+#   if defined(NUT_PLATFORM_CC_VC)
+#       pragma warning(push)
+#       pragma warning(disable: 4996)
+#   endif
         char buf[MAX_PATH + 1];
         buf[0] = 0;
         getcwd(buf, MAX_PATH + 1);
+#   if defined(NUT_PLATFORM_CC_VC)
+#       pragma warning(pop)
+#   endif
+#else
+        char buf[PATH_MAX + 1];
+        buf[0] = 0;
+        getcwd(buf, PATH_MAX + 1);
+#endif
         return buf;
     }
 

@@ -110,14 +110,22 @@ NUT_FIXTURE(TestPath)
         NUT_TA(Path::abspath("e:\\..\\..") == "e:\\");
         NUT_TA(Path::abspath("e:\\..\\..\\a") == "e:\\a");
         NUT_TA(Path::abspath("e:\\b\\..\\.\\a") == "e:\\a");
+#if defined(NUT_PLATFORM_OS_WINDOWS)
         NUT_TA(Path::abspath("e:\\b\\\\a") == "e:\\b\\a");
+#else
+        NUT_TA(Path::abspath("e:\\b\\\\a") == "e:\\b/a");
+#endif
 
         NUT_TA(Path::abspath("/") == "/");
         NUT_TA(Path::abspath("/.") == "/");
         NUT_TA(Path::abspath("/../") == "/");
         NUT_TA(Path::abspath("/../../a") == "/a");
-        NUT_TA(Path::abspath("/a//c") == "/a\\c");
         NUT_TA(Path::abspath("/a/.././c") == "/c");
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        NUT_TA(Path::abspath("/a//c") == "/a\\c");
+#else
+        NUT_TA(Path::abspath("/a//c") == "/a/c");
+#endif
 
     }
 };
