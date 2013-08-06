@@ -298,6 +298,29 @@ inline std::string wstr2str(const std::wstring& wstr)
 #endif
 }
 
+inline void wstr2str(const wchar_t* wstr, std::string* out)
+{
+    assert(NULL != wstr && NULL != out);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+    const int n = ::WideCharToMultiByte(CP_ACP /* code page */, 0 /* flags */,
+        wstr, -1 /* 字符串以\0结束 */, NULL, 0, NULL, NULL) + 1;
+    char *p = new char[n];
+    ::memset(p, 0, n * sizeof(char));
+    ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, p, n, NULL, NULL);
+    *out = p;
+    delete[] p;
+#else
+    const int n = ::wcstombs(NULL, wstr, 0) + 1; // '\0' is added
+    if (n <= 0)
+        return std::string();
+    char *p = new char[n];
+    ::memset(p, 0, n * sizeof(char));
+    ::wcstombs(p, wstr, n);
+    *out = p;
+    delete[] p;
+#endif
+}
+
 inline std::wstring str2wstr(const std::string& str)
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -318,6 +341,28 @@ inline std::wstring str2wstr(const std::string& str)
     std::wstring ret(p);
     delete[] p;
     return ret;
+#endif
+}
+
+inline void str2wstr(const char* str, std::wstring* out)
+{
+    assert(NULL != str && NULL != out);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+    const int n = ::MultiByteToWideChar(CP_ACP, 0, str, -1/* 字符串以\0结束 */, NULL, 0) + 1;
+    wchar_t *p = new wchar_t[n];
+    ::memset(p, 0, n * sizeof(wchar_t));
+    ::MultiByteToWideChar(CP_ACP, 0, str, -1, p, n);
+    *out = p;
+    delete[] p;
+#else
+    const int n = ::mbstowcs(NULL, str, 0) + 1;
+    if (n <= 0)
+        return std::wstring();
+    wchar_t *p = new wchar_t[n];
+    ::memset(p, 0, n * sizeof(wchar_t));
+    ::mbstowcs(p, str, n);
+    *out = p;
+    delete[] p;
 #endif
 }
 
