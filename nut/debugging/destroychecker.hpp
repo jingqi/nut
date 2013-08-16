@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2011-11-11 18:49
@@ -38,13 +38,13 @@ public:
 }
 
 #ifndef NDEBUG
-/** Îö¹¹¼ì²éÆ÷ */
-#   define NUT_DEBUGGING_DESTROY_CHECKER nut::DestroyChecker __destroy_checker_;
-/** ¼ì²éÎö¹¹ */
-#   define NUT_DEBUGGING_ASSERT_ALIVE __destroy_checker_.assertAlive()
+/** ææ„æ£€æŸ¥å™¨ */
+#   define NUT_DEBUGGING_DESTROY_CHECKER    nut::DestroyChecker __destroy_checker_;
+/** æ£€æŸ¥ææ„ */
+#   define NUT_DEBUGGING_ASSERT_ALIVE       __destroy_checker_.assertAlive()
 #else
-#   define NUT_DEBUGGING_DESTROY_CHECKER ((void)0);
-#   define NUT_DEBUGGING_ASSERT_ALIVE ((void)0)
+#   define NUT_DEBUGGING_DESTROY_CHECKER
+#   define NUT_DEBUGGING_ASSERT_ALIVE       ((void)0)
 #endif
 
 #endif /* head file guarder */
