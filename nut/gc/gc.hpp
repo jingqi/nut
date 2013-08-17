@@ -50,42 +50,42 @@ public:
     gc_new()
     {
         m_ptr = alloc_wrapper();
-        new (m_ptr) wrapper_type(1, destroy_wrapper);
+        new (m_ptr) wrapper_type(1, &destroy_wrapper);
     }
 
     template <typename Arg1>
     gc_new(Arg1 arg1)
     {
         m_ptr = alloc_wrapper();
-        new (m_ptr) wrapper_type(1, destroy_wrapper, arg1);
+        new (m_ptr) wrapper_type(1, &destroy_wrapper, arg1);
     }
 
     template <typename Arg1, typename Arg2>
     gc_new(Arg1 arg1, Arg2 arg2)
     {
         m_ptr = alloc_wrapper();
-        new (m_ptr) wrapper_type(1, destroy_wrapper, arg1, arg2);
+        new (m_ptr) wrapper_type(1, &destroy_wrapper, arg1, arg2);
     }
 
     template <typename Arg1, typename Arg2, typename Arg3>
     gc_new(Arg1 arg1, Arg2 arg2, Arg3 arg3)
     {
         m_ptr = alloc_wrapper();
-        new (m_ptr) wrapper_type(1, destroy_wrapper, arg1, arg2, arg3);
+        new (m_ptr) wrapper_type(1, &destroy_wrapper, arg1, arg2, arg3);
     }
 
     template <typename Arg1, typename Arg2, typename Arg3, typename Arg4>
     gc_new(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4)
     {
         m_ptr = alloc_wrapper();
-        new (m_ptr) wrapper_type(1, destroy_wrapper, arg1, arg2, arg3, arg4);
+        new (m_ptr) wrapper_type(1, &destroy_wrapper, arg1, arg2, arg3, arg4);
     }
 
     template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
     gc_new(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5)
     {
         m_ptr = alloc_wrapper();
-        new (m_ptr) wrapper_type(1, destroy_wrapper, arg1, arg2, arg3, arg4, arg5);
+        new (m_ptr) wrapper_type(1, &destroy_wrapper, arg1, arg2, arg3, arg4, arg5);
     }
 
     template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
@@ -94,7 +94,7 @@ public:
            Arg6 arg6)
     {
         m_ptr = alloc_wrapper();
-        new (m_ptr) wrapper_type(1, destroy_wrapper, arg1, arg2, arg3, arg4, arg5,
+        new (m_ptr) wrapper_type(1, &destroy_wrapper, arg1, arg2, arg3, arg4, arg5,
                                  arg6);
     }
 
@@ -104,7 +104,7 @@ public:
            Arg6 arg6, Arg7 arg7)
     {
         m_ptr = alloc_wrapper();
-        new (m_ptr) wrapper_type(1, destroy_wrapper, arg1, arg2, arg3, arg4, arg5,
+        new (m_ptr) wrapper_type(1, &destroy_wrapper, arg1, arg2, arg3, arg4, arg5,
                                  arg6, arg7);
     }
     
@@ -114,7 +114,7 @@ public:
            Arg6 arg6, Arg7 arg7, Arg8 arg8)
     {
         m_ptr = alloc_wrapper();
-        new (m_ptr) wrapper_type(1, destroy_wrapper, arg1, arg2, arg3, arg4, arg5,
+        new (m_ptr) wrapper_type(1, &destroy_wrapper, arg1, arg2, arg3, arg4, arg5,
                                  arg6, arg7, arg8);
     }
     
@@ -124,7 +124,7 @@ public:
            Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9)
     {
         m_ptr = alloc_wrapper();
-        new (m_ptr) wrapper_type(1, destroy_wrapper, arg1, arg2, arg3, arg4, arg5,
+        new (m_ptr) wrapper_type(1, &destroy_wrapper, arg1, arg2, arg3, arg4, arg5,
                                  arg6, arg7, arg8, arg9);
     }
 
@@ -134,7 +134,7 @@ public:
                Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10)
     {
         m_ptr = alloc_wrapper();
-        new (m_ptr) wrapper_type(1, destroy_wrapper, arg1, arg2, arg3, arg4, arg5,
+        new (m_ptr) wrapper_type(1, &destroy_wrapper, arg1, arg2, arg3, arg4, arg5,
                                  arg6, arg7, arg8, arg9, arg10);
     }
 };

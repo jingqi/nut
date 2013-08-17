@@ -312,7 +312,10 @@ inline void wstr2str(const wchar_t* wstr, std::string* out)
 #else
     const int n = ::wcstombs(NULL, wstr, 0) + 1; // '\0' is added
     if (n <= 0)
-        return std::string();
+    {
+        out->clear();
+        return;
+    }
     char *p = new char[n];
     ::memset(p, 0, n * sizeof(char));
     ::wcstombs(p, wstr, n);
@@ -357,7 +360,10 @@ inline void str2wstr(const char* str, std::wstring* out)
 #else
     const int n = ::mbstowcs(NULL, str, 0) + 1;
     if (n <= 0)
-        return std::wstring();
+    {
+        out->clear();
+        return;
+    }
     wchar_t *p = new wchar_t[n];
     ::memset(p, 0, n * sizeof(wchar_t));
     ::mbstowcs(p, str, n);
