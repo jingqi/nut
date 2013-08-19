@@ -71,7 +71,7 @@ public:
         return L'\\' == c || L'/' == c;
     }
 
-    static std::string getCwd()
+    static inline std::string getCwd()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   if defined(NUT_PLATFORM_CC_VC)
@@ -92,40 +92,55 @@ public:
         return buf;
     }
 
-    static std::wstring getWCwd()
+    static inline std::wstring getWCwd()
     {
         return str2wstr(getCwd());
     }
 
-    static std::string abspath(const std::string&  p)
+    static inline bool isabs(const std::string& p)
+    {
+        if (p.empty())
+            return false;
+
+        if (p.at(0) == '/') // linux root
+            return true;
+        for (register size_t i = 0, len = p.length(); i < len; ++i)
+        {
+            const char c = p.at(i);
+            if (c == ':') // windows partion root
+                return true;
+            else if (isPathSeparator(c))
+                return false;
+        }
+        return false;
+    }
+
+    static inline bool isabs(const std::wstring& p)
+    {
+        if (p.empty())
+            return false;
+
+        if (p.at(0) == L'/') // linux root
+            return true;
+        for (register size_t i = 0, len = p.length(); i < len; ++i)
+        {
+            const wchar_t c = p.at(i);
+            if (c == L':') // windows partion root
+                return true;
+            else if (isPathSeparator(c))
+                return false;
+        }
+        return false;
+    }
+
+    static inline std::string abspath(const std::string&  p)
     {
         if (p.empty())
             return getCwd();
 
         // 探测是否从根路径开始
-        bool from_root = false;
-        if (p.at(0) == '/') // linux root
-        {
-            from_root = true;
-        }
-        else
-        {
-            for (register size_t i = 0, len = p.length(); i < len; ++i)
-            {
-                const char c = p.at(i);
-                if (c == ':') // windows partion root
-                {
-                    from_root = true;
-                    break;
-                }
-                else if (isPathSeparator(c))
-                {
-                    break;
-                }
-            }
-        }
         std::string ret;
-        if (!from_root)
+        if (!isabs(p))
             ret = getCwd();
 
         // 组装路径
@@ -194,35 +209,14 @@ public:
         return ret;
     }
 
-    static std::wstring abspath(const std::wstring&  p)
+    static inline std::wstring abspath(const std::wstring&  p)
     {
         if (p.empty())
             return getWCwd();
 
         // 探测是否从根路径开始
-        bool from_root = false;
-        if (p.at(0) == L'/') // linux root
-        {
-            from_root = true;
-        }
-        else
-        {
-            for (register size_t i = 0, len = p.length(); i < len; ++i)
-            {
-                const wchar_t c = p.at(i);
-                if (c == L':') // windows partion root
-                {
-                    from_root = true;
-                    break;
-                }
-                else if (isPathSeparator(c))
-                {
-                    break;
-                }
-            }
-        }
         std::wstring ret;
-        if (!from_root)
+        if (!isabs(p))
             ret = getWCwd();
 
         // 组装路径
@@ -304,7 +298,7 @@ public:
      * "/ab.txt" -> "/" "ab.txt"
      * "c:\\tmp" -> "c:\\" "tmp"
      */
-    static Tuple<std::string,std::string> split(const std::string &path)
+    static inline Tuple<std::string,std::string> split(const std::string &path)
     {
         // 找到最后一个 '/'
         std::string::size_type p1 = path.find_last_of('\\'), p2 = path.find_last_of('/');
@@ -322,7 +316,7 @@ public:
             return Tuple<std::string, std::string>(path.substr(0, p1), path.substr(p1 + 1));
     }
 
-    static Tuple<std::wstring,std::wstring> split(const std::wstring& path)
+    static inline Tuple<std::wstring,std::wstring> split(const std::wstring& path)
     {
         // 找到最后一个 '/'
         std::wstring::size_type p1 = path.find_last_of(L'\\'), p2 = path.find_last_of(L'/');
@@ -347,7 +341,7 @@ public:
      * "c:\\mn\\p" -> "c:" "\\mn\\p"
      * "/mnt/sdcard" -> "" "/mnt/sdcard"
      */
-    static Tuple<std::string,std::string> splitdrive(const std::string& path)
+    static inline Tuple<std::string,std::string> splitdrive(const std::string& path)
     {
         int pos = -1;
         for (int i = 0; '\0' != path[i]; ++i)
@@ -365,7 +359,7 @@ public:
         return Tuple<std::string,std::string>(path.substr(0, pos + 1), path.substr(pos + 1));
     }
 
-    static Tuple<std::wstring,std::wstring> splitdrive(const std::wstring& path)
+    static inline Tuple<std::wstring,std::wstring> splitdrive(const std::wstring& path)
     {
         int pos = -1;
         for (int i = 0; L'\0' != path[i]; ++i)
@@ -389,7 +383,7 @@ public:
      * 例如：
      * "a.txt" -> "a" ".txt"
      */
-    static Tuple<std::string,std::string> splitext(const std::string& path)
+    static inline Tuple<std::string,std::string> splitext(const std::string& path)
     {
         int pos = -1;
         for (int i = path.length() - 1; i >= 0; --i)
@@ -409,7 +403,7 @@ public:
         return Tuple<std::string,std::string>(path.substr(0,pos),path.substr(pos));
     }
 
-    static Tuple<std::wstring,std::wstring> splitext(const std::wstring& path)
+    static inline Tuple<std::wstring,std::wstring> splitext(const std::wstring& path)
     {
         int pos = -1;
         for (int i = path.length() - 1; i >= 0; --i)
@@ -451,7 +445,10 @@ public:
 #endif
     }
 
-    static inline bool exists(const std::string& path) { return exists(path.c_str()); }
+    static inline bool exists(const std::string& path)
+    {
+        return exists(path.c_str());
+    }
 
     static inline bool exists(const wchar_t *path)
     {
@@ -469,7 +466,7 @@ public:
     /**
      * last access time
      */
-    static time_t getatime(const char *path)
+    static inline time_t getatime(const char *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -484,9 +481,12 @@ public:
 #endif
     }
 
-    static inline time_t getatime(const std::string& path) { return getatime(path.c_str()); }
+    static inline time_t getatime(const std::string& path)
+    {
+        return getatime(path.c_str());
+    }
 
-    static time_t getatime(const wchar_t *path)
+    static inline time_t getatime(const wchar_t *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -499,13 +499,16 @@ public:
 #endif
     }
 
-    static inline time_t getatime(const std::wstring& path) { return getatime(path.c_str()); }
+    static inline time_t getatime(const std::wstring& path)
+    {
+        return getatime(path.c_str());
+    }
 
 
     /**
      * last modified time
      */
-    static time_t getmtime(const char *path)
+    static inline time_t getmtime(const char *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -520,9 +523,12 @@ public:
 #endif
     }
 
-    static inline time_t getmtime(const std::string& path) { return getmtime(path.c_str()); }
+    static inline time_t getmtime(const std::string& path)
+    {
+        return getmtime(path.c_str());
+    }
 
-    static time_t getmtime(const wchar_t *path)
+    static inline time_t getmtime(const wchar_t *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -535,12 +541,15 @@ public:
 #endif
     }
 
-    static inline time_t getmtime(const std::wstring& path) { return getmtime(path.c_str()); }
+    static inline time_t getmtime(const std::wstring& path)
+    {
+        return getmtime(path.c_str());
+    }
 
     /**
      * created time
      */
-    static time_t getctime(const char *path)
+    static inline time_t getctime(const char *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -555,9 +564,12 @@ public:
 #endif
     }
 
-    static inline time_t getctime(const std::string& path) { return getctime(path.c_str()); }
+    static inline time_t getctime(const std::string& path)
+    {
+        return getctime(path.c_str());
+    }
 
-    static time_t getctime(const wchar_t *path)
+    static inline time_t getctime(const wchar_t *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -570,12 +582,15 @@ public:
 #endif
     }
 
-    static inline time_t getctime(const std::wstring& path) { return getctime(path.c_str()); }
+    static inline time_t getctime(const std::wstring& path)
+    {
+        return getctime(path.c_str());
+    }
 
     /**
      * 获取文件大小
      */
-    static long getsize(const char *path)
+    static inline long getsize(const char *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -590,9 +605,12 @@ public:
 #endif
     }
 
-    static inline long getsize(const std::string& path) { return getsize(path.c_str()); }
+    static inline long getsize(const std::string& path)
+    {
+        return getsize(path.c_str());
+    }
 
-    static long getsize(const wchar_t *path)
+    static inline long getsize(const wchar_t *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -605,11 +623,14 @@ public:
 #endif
     }
 
-    static inline long getsize(const std::wstring& path) { return getsize(path.c_str()); }
+    static inline long getsize(const std::wstring& path)
+    {
+        return getsize(path.c_str());
+    }
 
     // TODO static bool isabs() {}
 
-    static bool isdir(const char *path)
+    static inline bool isdir(const char *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -622,9 +643,12 @@ public:
 #endif
     }
 
-    static inline bool isdir(const std::string& path) { return isdir(path.c_str()); }
+    static inline bool isdir(const std::string& path)
+    {
+        return isdir(path.c_str());
+    }
 
-    static bool isdir(const wchar_t *path)
+    static inline bool isdir(const wchar_t *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -635,9 +659,12 @@ public:
 #endif
     }
 
-    static inline bool isdir(const std::wstring& path) { return isdir(path.c_str()); }
+    static inline bool isdir(const std::wstring& path)
+    {
+        return isdir(path.c_str());
+    }
 
-    static bool isfile(const char *path)
+    static inline bool isfile(const char *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -650,9 +677,12 @@ public:
 #endif
     }
 
-    static inline bool isfile(const std::string& path) { return isfile(path.c_str()); }
+    static inline bool isfile(const std::string& path)
+    {
+        return isfile(path.c_str());
+    }
 
-    static bool isfile(const wchar_t *path)
+    static inline bool isfile(const wchar_t *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -663,9 +693,12 @@ public:
 #endif
     }
 
-    static inline bool isfile(const std::wstring& path) { return isfile(path.c_str()); }
+    static inline bool isfile(const std::wstring& path)
+    {
+        return isfile(path.c_str());
+    }
 
-    static bool islink(const char *path)
+    static inline bool islink(const char *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -678,9 +711,12 @@ public:
 #endif
     }
 
-    static inline bool islink(const std::string& path) { return islink(path.c_str()); };
+    static inline bool islink(const std::string& path)
+    {
+        return islink(path.c_str()); 
+    }
 
-    static bool islink(const wchar_t *path)
+    static inline bool islink(const wchar_t *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -691,7 +727,10 @@ public:
 #endif
     }
 
-    static inline bool islink(const std::wstring& path) { return islink(path.c_str()); }
+    static inline bool islink(const std::wstring& path)
+    {
+        return islink(path.c_str());
+    }
 
     // TODO static bool ismount() {}
 
@@ -703,7 +742,7 @@ public:
      * "/" "sd" -> "/sd"
      * "c:" "\\tmp" -> "c:\\tmp"
      */
-    static std::string join(const std::string& a, const std::string& b)
+    static inline std::string join(const std::string& a, const std::string& b)
     {
         if ('\0' == a[0])
             return b;
@@ -725,7 +764,7 @@ public:
         return ret;
     }
 
-    static std::wstring join(const std::wstring& a, const std::wstring& b)
+    static inline std::wstring join(const std::wstring& a, const std::wstring& b)
     {
         if (L'\0' == a[0])
             return b;
