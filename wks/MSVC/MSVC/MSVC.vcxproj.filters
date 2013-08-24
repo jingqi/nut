@@ -384,6 +384,9 @@
     <ClInclude Include="..\..\..\nut\tree\rtree\mdarea.hpp">
       <Filter>头文件\tree\rtree</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\skiplistset.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">

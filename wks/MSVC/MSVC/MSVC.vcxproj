@@ -141,6 +141,7 @@
     <ClInclude Include="..\..\..\nut\util\mrucache.hpp" />
     <ClInclude Include="..\..\..\nut\util\propertyfile.hpp" />
     <ClInclude Include="..\..\..\nut\util\consoleutil.hpp" />
+    <ClInclude Include="..\..\..\nut\util\skiplistset.hpp" />
     <ClInclude Include="..\..\..\nut\util\sqlite3helper\connection.hpp" />
     <ClInclude Include="..\..\..\nut\util\sqlite3helper\preparedstatement .hpp" />
     <ClInclude Include="..\..\..\nut\util\sqlite3helper\resultset.hpp" />
