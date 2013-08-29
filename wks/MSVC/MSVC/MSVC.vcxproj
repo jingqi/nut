@@ -141,6 +141,8 @@
     <ClInclude Include="..\..\..\nut\util\mrucache.hpp" />
     <ClInclude Include="..\..\..\nut\util\propertyfile.hpp" />
     <ClInclude Include="..\..\..\nut\util\consoleutil.hpp" />
+    <ClInclude Include="..\..\..\nut\util\skiplist.hpp" />
+    <ClInclude Include="..\..\..\nut\util\skiplistmap.hpp" />
     <ClInclude Include="..\..\..\nut\util\skiplistset.hpp" />
     <ClInclude Include="..\..\..\nut\util\sqlite3helper\connection.hpp" />
     <ClInclude Include="..\..\..\nut\util\sqlite3helper\preparedstatement .hpp" />
@@ -181,6 +183,7 @@
     <ClCompile Include="..\..\..\test\util\test_delegate.cpp" />
     <ClCompile Include="..\..\..\test\util\test_mrucache.cpp" />
     <ClCompile Include="..\..\..\test\util\test_propertyfile.cpp" />
+    <ClCompile Include="..\..\..\test\util\test_skiplist.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

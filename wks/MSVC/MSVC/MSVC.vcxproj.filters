@@ -387,6 +387,12 @@
     <ClInclude Include="..\..\..\nut\util\skiplistset.hpp">
       <Filter>头文件\util</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\skiplist.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\skiplistmap.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -466,6 +472,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\tree\rtree\test_rtree.cpp">
       <Filter>源文件\tree\rtree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\util\test_skiplist.cpp">
+      <Filter>源文件\util</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
