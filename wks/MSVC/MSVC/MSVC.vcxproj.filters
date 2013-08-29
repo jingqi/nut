@@ -49,12 +49,6 @@
     <Filter Include="源文件\util">
       <UniqueIdentifier>{1a33d577-2005-458f-a87f-0912ca5b567a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\tree">
-      <UniqueIdentifier>{21610087-e93f-4c0f-a665-b9e0b03475be}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\tree">
-      <UniqueIdentifier>{5c5978fe-2f89-4d55-977f-65b48321c995}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\mem">
       <UniqueIdentifier>{41823d73-0684-4920-bcbd-24eeade40542}</UniqueIdentifier>
     </Filter>
@@ -118,11 +112,29 @@
     <Filter Include="头文件\numeric\numeric_algo">
       <UniqueIdentifier>{2b813f75-fa5d-4775-94f7-ecd84fe0bfba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\tree\rtree">
-      <UniqueIdentifier>{cd96ff93-e7ed-4b8e-a51a-418bc1d5121d}</UniqueIdentifier>
+    <Filter Include="头文件\container">
+      <UniqueIdentifier>{a680a30c-6896-4e43-9428-2ad75cb61d2a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\tree\rtree">
-      <UniqueIdentifier>{68c39e0e-6a42-4357-bbad-6352bd956e92}</UniqueIdentifier>
+    <Filter Include="头文件\container\skiplist">
+      <UniqueIdentifier>{2c0f605e-3cfd-4bb1-ac90-0413a429cb45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\container\tree">
+      <UniqueIdentifier>{6778fcf5-3263-4007-b696-3910ec4eea06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\container\tree\rtree">
+      <UniqueIdentifier>{4a8481a0-0951-4ba5-8eb9-2e0438e7199e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\container">
+      <UniqueIdentifier>{97d58f32-c3ab-4aa8-b78f-98b8d4372b01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\container\tree">
+      <UniqueIdentifier>{1c66cf2b-fafe-42b5-ab2b-0650ef054ff7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\container\tree\rtree">
+      <UniqueIdentifier>{486ce0e7-8bb5-41e6-a807-f0bec0a7e761}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\container\skiplist">
+      <UniqueIdentifier>{b34905cf-9982-49a1-9915-451af6401629}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -210,20 +222,8 @@
     <ClInclude Include="..\..\..\nut\util\configfile.hpp">
       <Filter>头文件\util</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\util\tuple.hpp">
-      <Filter>头文件\util</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\gc\enref.hpp">
       <Filter>头文件\gc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\tree\bstree.hpp">
-      <Filter>头文件\tree</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\tree\btree.hpp">
-      <Filter>头文件\tree</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\tree\rbtree.hpp">
-      <Filter>头文件\tree</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\nut\mem\scoped_gc.hpp">
       <Filter>头文件\mem</Filter>
@@ -300,9 +300,6 @@
     <ClInclude Include="..\..\..\nut\gc\ptr.hpp">
       <Filter>头文件\gc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\util\delegate.hpp">
-      <Filter>头文件\util</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\util\string\tostring.hpp">
       <Filter>头文件\util\string</Filter>
     </ClInclude>
@@ -351,9 +348,6 @@
     <ClInclude Include="..\..\..\nut\pconsole\pconsole.hpp">
       <Filter>头文件\pconsole</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\util\mrucache.hpp">
-      <Filter>头文件\util</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\numeric\numeric_algo\bitsieve.hpp">
       <Filter>头文件\numeric\numeric_algo</Filter>
     </ClInclude>
@@ -369,20 +363,47 @@
     <ClInclude Include="..\..\..\nut\numeric\word_array_integer.hpp">
       <Filter>头文件\numeric</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\util\bundle.hpp">
-      <Filter>头文件\util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\nut\util\bytearray.hpp">
-      <Filter>头文件\util</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\nut\memtool\copyonwrite.hpp">
       <Filter>头文件\memtool</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\tree\rtree\rtree.hpp">
-      <Filter>头文件\tree\rtree</Filter>
+    <ClInclude Include="..\..\..\nut\container\bundle.hpp">
+      <Filter>头文件\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\nut\tree\rtree\mdarea.hpp">
-      <Filter>头文件\tree\rtree</Filter>
+    <ClInclude Include="..\..\..\nut\container\bytearray.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\container\mrucache.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\container\tuple.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\container\skiplist\skiplist.hpp">
+      <Filter>头文件\container\skiplist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\container\skiplist\skiplistmap.hpp">
+      <Filter>头文件\container\skiplist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\container\skiplist\skiplistset.hpp">
+      <Filter>头文件\container\skiplist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\container\tree\rtree\mdarea.hpp">
+      <Filter>头文件\container\tree\rtree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\container\tree\rtree\rtree.hpp">
+      <Filter>头文件\container\tree\rtree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\container\tree\bstree.hpp">
+      <Filter>头文件\container\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\container\tree\btree.hpp">
+      <Filter>头文件\container\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\container\tree\rbtree.hpp">
+      <Filter>头文件\container\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\delegate.hpp">
+      <Filter>头文件\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -400,9 +421,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\util\test_configfile.cpp">
       <Filter>源文件\util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\test\tree\test_bst.cpp">
-      <Filter>源文件\tree</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\test\numeric\test_biginteger.cpp">
       <Filter>源文件\numeric</Filter>
@@ -428,9 +446,6 @@
     <ClCompile Include="..\..\..\test\security\encrypt\test_aes.cpp">
       <Filter>源文件\security\encrypt</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\test\util\test_delegate.cpp">
-      <Filter>源文件\util</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\test\util\string\test_stringutil.cpp">
       <Filter>源文件\util\string</Filter>
     </ClCompile>
@@ -449,20 +464,29 @@
     <ClCompile Include="..\..\..\test\pconsole\test_pconsole.cpp">
       <Filter>源文件\pconsole</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\test\util\test_mrucache.cpp">
-      <Filter>源文件\util</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\test\security\encrypt\test_rsa.cpp">
       <Filter>源文件\security\encrypt</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\test\numeric\test_numeric_algo.cpp">
       <Filter>源文件\numeric</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\test\util\test_bytearray.cpp">
-      <Filter>源文件\util</Filter>
+    <ClCompile Include="..\..\..\test\container\tree\rtree\test_rtree.cpp">
+      <Filter>源文件\container\tree\rtree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\test\tree\rtree\test_rtree.cpp">
-      <Filter>源文件\tree\rtree</Filter>
+    <ClCompile Include="..\..\..\test\container\tree\test_bst.cpp">
+      <Filter>源文件\container\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\container\skiplist\test_skiplist.cpp">
+      <Filter>源文件\container\skiplist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\container\test_bytearray.cpp">
+      <Filter>源文件\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\container\test_mrucache.cpp">
+      <Filter>源文件\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\util\test_delegate.cpp">
+      <Filter>源文件\util</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

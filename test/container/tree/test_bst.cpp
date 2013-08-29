@@ -2,8 +2,8 @@
 #include <iostream>
 #include <nut/unittest/unittest.hpp>
 
-#include <nut/tree/btree.hpp>
-#include <nut/tree/bstree.hpp>
+#include <nut/container/tree/btree.hpp>
+#include <nut/container/tree/bstree.hpp>
 
 using namespace nut;
 

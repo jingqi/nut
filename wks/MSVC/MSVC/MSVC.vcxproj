@@ -66,6 +66,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\nut\container\bundle.hpp" />
+    <ClInclude Include="..\..\..\nut\container\bytearray.hpp" />
+    <ClInclude Include="..\..\..\nut\container\mrucache.hpp" />
+    <ClInclude Include="..\..\..\nut\container\skiplist\skiplist.hpp" />
+    <ClInclude Include="..\..\..\nut\container\skiplist\skiplistmap.hpp" />
+    <ClInclude Include="..\..\..\nut\container\skiplist\skiplistset.hpp" />
+    <ClInclude Include="..\..\..\nut\container\tree\bstree.hpp" />
+    <ClInclude Include="..\..\..\nut\container\tree\btree.hpp" />
+    <ClInclude Include="..\..\..\nut\container\tree\rbtree.hpp" />
+    <ClInclude Include="..\..\..\nut\container\tree\rtree\mdarea.hpp" />
+    <ClInclude Include="..\..\..\nut\container\tree\rtree\rtree.hpp" />
+    <ClInclude Include="..\..\..\nut\container\tuple.hpp" />
     <ClInclude Include="..\..\..\nut\debugging\destroychecker.hpp" />
     <ClInclude Include="..\..\..\nut\debugging\exception.hpp" />
     <ClInclude Include="..\..\..\nut\debugging\sourcelocation.hpp" />
@@ -121,11 +133,6 @@
     <ClInclude Include="..\..\..\nut\threading\threadpool.hpp" />
     <ClInclude Include="..\..\..\nut\security\digest\md5.hpp" />
     <ClInclude Include="..\..\..\nut\security\encrypt\aes.hpp" />
-    <ClInclude Include="..\..\..\nut\tree\bstree.hpp" />
-    <ClInclude Include="..\..\..\nut\tree\btree.hpp" />
-    <ClInclude Include="..\..\..\nut\tree\rbtree.hpp" />
-    <ClInclude Include="..\..\..\nut\tree\rtree\mdarea.hpp" />
-    <ClInclude Include="..\..\..\nut\tree\rtree\rtree.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\consoletestlogger.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\streamtestlogger.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\testcasefailureexception.hpp" />
@@ -134,11 +141,8 @@
     <ClInclude Include="..\..\..\nut\unittest\testregister.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\testrunner.hpp" />
     <ClInclude Include="..\..\..\nut\unittest\unittest.hpp" />
-    <ClInclude Include="..\..\..\nut\util\bundle.hpp" />
-    <ClInclude Include="..\..\..\nut\util\bytearray.hpp" />
     <ClInclude Include="..\..\..\nut\util\configfile.hpp" />
     <ClInclude Include="..\..\..\nut\util\delegate.hpp" />
-    <ClInclude Include="..\..\..\nut\util\mrucache.hpp" />
     <ClInclude Include="..\..\..\nut\util\propertyfile.hpp" />
     <ClInclude Include="..\..\..\nut\util\consoleutil.hpp" />
     <ClInclude Include="..\..\..\nut\util\sqlite3helper\connection.hpp" />
@@ -151,9 +155,13 @@
     <ClInclude Include="..\..\..\nut\util\time.hpp" />
     <ClInclude Include="..\..\..\nut\util\timer\timermanager.hpp" />
     <ClInclude Include="..\..\..\nut\util\timer\timeval.hpp" />
-    <ClInclude Include="..\..\..\nut\util\tuple.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\test\container\skiplist\test_skiplist.cpp" />
+    <ClCompile Include="..\..\..\test\container\test_bytearray.cpp" />
+    <ClCompile Include="..\..\..\test\container\test_mrucache.cpp" />
+    <ClCompile Include="..\..\..\test\container\tree\rtree\test_rtree.cpp" />
+    <ClCompile Include="..\..\..\test\container\tree\test_bst.cpp" />
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp" />
     <ClCompile Include="..\..\..\test\logging\test_logging.cpp" />
     <ClCompile Include="..\..\..\test\main.cpp" />
@@ -171,14 +179,10 @@
     <ClCompile Include="..\..\..\test\threading\test_threadpool.cpp" />
     <ClCompile Include="..\..\..\test\security\digest\test_md5.cpp" />
     <ClCompile Include="..\..\..\test\security\encrypt\test_aes.cpp" />
-    <ClCompile Include="..\..\..\test\tree\rtree\test_rtree.cpp" />
-    <ClCompile Include="..\..\..\test\tree\test_bst.cpp" />
     <ClCompile Include="..\..\..\test\util\string\test_kmp.cpp" />
     <ClCompile Include="..\..\..\test\util\string\test_stringutil.cpp" />
-    <ClCompile Include="..\..\..\test\util\test_bytearray.cpp" />
     <ClCompile Include="..\..\..\test\util\test_configfile.cpp" />
     <ClCompile Include="..\..\..\test\util\test_delegate.cpp" />
-    <ClCompile Include="..\..\..\test\util\test_mrucache.cpp" />
     <ClCompile Include="..\..\..\test\util\test_propertyfile.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
