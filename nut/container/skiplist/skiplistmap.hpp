@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2013-08-29
@@ -20,7 +20,7 @@ namespace nut
 template <typename K, typename V>
 class SkipListMap
 {
-    // ×î´ó level Êý, >0
+    // æœ€å¤§ level æ•°, >0
     enum { MAX_LEVEL = 16 };
     
     class Node
@@ -334,6 +334,7 @@ public:
 
         // remove
         algo_t::removeNode(n, *this, pre_lv);
+        ::free(pre_lv);
         n->~Node();
         ::free(n);
         --m_size;

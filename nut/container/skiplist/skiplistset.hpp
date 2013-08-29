@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file -
  * @author jingqi
  * @date 2013-08-24
@@ -330,6 +330,7 @@ public:
 
         // remove
         algo_t::removeNode(n, *this, pre_lv);
+        ::free(pre_lv);
         n->~Node();
         ::free(n);
         --m_size;
