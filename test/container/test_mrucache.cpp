@@ -2,7 +2,7 @@
 #include <nut/unittest/unittest.hpp>
 
 #include <iostream>
-#include <nut/util/mrucache.hpp>
+#include <nut/container/mrucache.hpp>
 
 using namespace std;
 using namespace nut;

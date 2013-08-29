@@ -25,7 +25,7 @@
 #   include <limits.h> // for PATH_MAX
 #endif
 
-#include <nut/util/tuple.hpp>
+#include <nut/container/tuple.hpp>
 #include <nut/util/string/stringutil.hpp>
 
 namespace nut

@@ -1,7 +1,7 @@
 
 #include <nut/unittest/unittest.hpp>
 
-#include <nut/util/bytearray.hpp>
+#include <nut/container/bytearray.hpp>
 
 using namespace std;
 using namespace nut;
