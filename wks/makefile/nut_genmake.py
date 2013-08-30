@@ -7,7 +7,7 @@ class Cfg:
     CC = 'g++' # 编译器
     LD = 'gcc' # 动态连接工具
     AR = 'ar' # 静态连接工具
-    CC_FLAGS = '-Wall -g' # 编译选项
+    CC_FLAGS = '-Wall -g -rdynamic' # 编译选项
 
     SRC_DIRS = ['../../test'] # 源码路径
     INCLUDE_PATHS = ['../..'] # INCLUDE 路径
