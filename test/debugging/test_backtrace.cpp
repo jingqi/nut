@@ -20,7 +20,8 @@ NUT_FIXTURE(TestBacktrace)
 
     void testSmoking()
     {
-        string s = Backtrace::backtrace();
+        string s;
+        Backtrace::backtrace(&s);
         cout << endl << s << endl;
     }
 };
