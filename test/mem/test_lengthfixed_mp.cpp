@@ -32,6 +32,9 @@ NUT_FIXTURE(TestLengthFixedMP)
 		mp.free(p2);
 		void *p4 = mp.alloc();
 		NUT_TA(p4 == p2);
+
+        mp.free(p3);
+        mp.free(p4);
 	}
 };
 

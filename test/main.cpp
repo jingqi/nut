@@ -36,12 +36,9 @@ int main()
 
     TestRunner trunner(l);
 
-    // trunner.runAGroup("security");
+    // trunner.runAGroup("mem");
 
-    trunner.runAFixture("TestRTree");
-    // trunner.runAFixture("TestBigInteger");
-    // trunner.runAFixture("TestNumericAlgo");
-    // trunner.runAFixture("TestRSA");
+    trunner.runAFixture("TestLengthFixedMP");
 
     // trunner.runACase("TestGC", "testSmoking");
 
