@@ -36,9 +36,9 @@ int main()
 
     TestRunner trunner(l);
 
-    // trunner.runAGroup("mem");
+    trunner.runAGroup("util");
 
-    trunner.runAFixture("TestLengthFixedMP");
+    // trunner.runAFixture("TestLengthFixedMP");
 
     // trunner.runACase("TestGC", "testSmoking");
 
