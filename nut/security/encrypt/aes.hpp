@@ -308,7 +308,7 @@ public:
 
     /* AES 128-bit block decryption routine */
 
-    void decrypt(uint8_t input[16], uint8_t output[16] )
+    void decrypt(const uint8_t input[16], uint8_t output[16] )
     {
         uint32_t *RK, X0, X1, X2, X3, Y0, Y1, Y2, Y3;
 

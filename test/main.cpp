@@ -36,9 +36,9 @@ int main()
 
     TestRunner trunner(l);
 
-    trunner.runAGroup("util");
+    // trunner.runAGroup("util");
 
-    // trunner.runAFixture("TestLengthFixedMP");
+    trunner.runAFixture("TestAesCbcPkcs5");
 
     // trunner.runACase("TestGC", "testSmoking");
 

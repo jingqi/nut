@@ -120,6 +120,7 @@
     <ClInclude Include="..\..\..\nut\platform\platform.hpp" />
     <ClInclude Include="..\..\..\nut\platform\stdint.hpp" />
     <ClInclude Include="..\..\..\nut\security\digest\adler32.hpp" />
+    <ClInclude Include="..\..\..\nut\security\encrypt\aes_cbc_pkcs5.hpp" />
     <ClInclude Include="..\..\..\nut\security\encrypt\rsa.hpp" />
     <ClInclude Include="..\..\..\nut\threading\lockfree\atomic.hpp" />
     <ClInclude Include="..\..\..\nut\threading\lockfree\concurrentqueue.hpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="..\..\..\test\platform\test_os.cpp" />
     <ClCompile Include="..\..\..\test\platform\test_path.cpp" />
     <ClCompile Include="..\..\..\test\security\digest\test_adler32.cpp" />
+    <ClCompile Include="..\..\..\test\security\encrypt\test_aes_cbc_pkcs5.cpp" />
     <ClCompile Include="..\..\..\test\security\encrypt\test_rsa.cpp" />
     <ClCompile Include="..\..\..\test\threading\lockfree\test_atomic.cpp" />
     <ClCompile Include="..\..\..\test\threading\lockfree\test_queue.cpp" />

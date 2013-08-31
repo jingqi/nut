@@ -414,6 +414,9 @@
     <ClInclude Include="..\..\..\nut\debugging\backtrace.hpp">
       <Filter>头文件\debugging</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\security\encrypt\aes_cbc_pkcs5.hpp">
+      <Filter>头文件\security\encrypt</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -502,6 +505,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\threading\lockfree\test_atomic.cpp">
       <Filter>源文件\threading\lockfree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\security\encrypt\test_aes_cbc_pkcs5.cpp">
+      <Filter>源文件\security\encrypt</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
