@@ -46,4 +46,4 @@ NUT_FIXTURE(TestKMP)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestKMP, "util, quiet")
+NUT_REGISTER_FIXTURE(TestKMP, "util, string, quiet")

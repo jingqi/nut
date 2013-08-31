@@ -85,4 +85,4 @@ NUT_FIXTURE(TestStringUtil)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestStringUtil, "util, quiet")
+NUT_REGISTER_FIXTURE(TestStringUtil, "util, string, quiet")

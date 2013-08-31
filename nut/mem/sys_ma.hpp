@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file -
  * @author jingqi
  * @date 2012-04-05
@@ -15,7 +15,7 @@ namespace nut
 {
 
 /**
- * system memory allocator
+ * 系统内存分配器(system memory allocator)
  */
 class sys_ma
 {

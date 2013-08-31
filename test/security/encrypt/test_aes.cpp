@@ -115,4 +115,4 @@ NUT_FIXTURE(TestAES)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestAES, "security, quiet")
+NUT_REGISTER_FIXTURE(TestAES, "security, encrypt, quiet")

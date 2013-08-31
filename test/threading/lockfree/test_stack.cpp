@@ -38,4 +38,4 @@ NUT_FIXTURE(TestConcurrentStack)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestConcurrentStack, "lockfree, quiet")
+NUT_REGISTER_FIXTURE(TestConcurrentStack, "threading, lockfree, quiet")

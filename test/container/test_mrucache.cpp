@@ -39,4 +39,4 @@ NUT_FIXTURE(TestMRUCache)
 
 };
 
-NUT_REGISTER_FIXTURE(TestMRUCache, "util, quiet")
+NUT_REGISTER_FIXTURE(TestMRUCache, "container, quiet")

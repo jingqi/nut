@@ -38,4 +38,4 @@ NUT_FIXTURE(TestConcurrentQueue)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestConcurrentQueue, "lockfree, quiet")
+NUT_REGISTER_FIXTURE(TestConcurrentQueue, "threading, lockfree, quiet")

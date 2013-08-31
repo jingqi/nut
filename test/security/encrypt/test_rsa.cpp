@@ -48,4 +48,4 @@ NUT_FIXTURE(TestRSA)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestRSA, "security, quiet")
+NUT_REGISTER_FIXTURE(TestRSA, "security, encrypt, quiet")

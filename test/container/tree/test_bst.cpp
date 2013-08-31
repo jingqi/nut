@@ -140,4 +140,4 @@ NUT_FIXTURE(TestBSTree)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestBSTree, "tree,quiet")
+NUT_REGISTER_FIXTURE(TestBSTree, "container, tree, quiet")

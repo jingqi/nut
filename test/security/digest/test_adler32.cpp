@@ -39,4 +39,4 @@ NUT_FIXTURE(TestAdler32)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestAdler32, "security, quiet")
+NUT_REGISTER_FIXTURE(TestAdler32, "security, digest, quiet")

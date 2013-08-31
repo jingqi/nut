@@ -58,4 +58,4 @@ NUT_FIXTURE(TestSkipList)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestSkipList, "util, quiet")
+NUT_REGISTER_FIXTURE(TestSkipList, "container, skiplist, quiet")

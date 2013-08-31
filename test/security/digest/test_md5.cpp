@@ -34,4 +34,4 @@ NUT_FIXTURE(TestMD5)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestMD5, "security, quiet")
+NUT_REGISTER_FIXTURE(TestMD5, "security, digest, quiet")

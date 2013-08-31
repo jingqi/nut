@@ -51,4 +51,4 @@ NUT_FIXTURE(TestByteArray)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestByteArray, "util, quiet")
+NUT_REGISTER_FIXTURE(TestByteArray, "container, quiet")

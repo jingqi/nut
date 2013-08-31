@@ -84,4 +84,4 @@ NUT_FIXTURE(TestRTree)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestRTree, "tree")
+NUT_REGISTER_FIXTURE(TestRTree, "container, tree, rtree, quiet")
