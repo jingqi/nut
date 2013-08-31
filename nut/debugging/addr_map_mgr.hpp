@@ -31,15 +31,6 @@
 namespace nut
 {
 
-// 函数信息
-struct FuncInfo
-{
-    // 动态链接库模块路径
-    std::string m_module_path;
-    // 函数地址
-    unsigned int m_addr;
-};
-
 /**
  * 负责记录动态链接库在进程空间的加载地址
  */
