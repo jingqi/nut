@@ -88,7 +88,11 @@ inline std::string toString(const void *p)
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
     ::memset(buf, 0, BUF_SIZE);
-    ::sprintf(buf,"0x%p",p);    // windows: 0x002E459F, linux: 0x2e459f
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+    ::sprintf(buf,"0x%p",p);    // windows: 0x002E459F
+#else
+    ::sprintf(buf,"%p",p);      // linux: 0x2e459f
+#endif
 
     return buf;
 }

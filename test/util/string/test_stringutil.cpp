@@ -40,7 +40,8 @@ NUT_FIXTURE(TestStringUtil)
         NUT_TA(toString((double)12.34) == "12.340000");
         NUT_TA(toString((float)-45.67) == "-45.669998");
 
-        NUT_TA(toString((void*)0x122e) == "0x0000122E");
+        string s = toString((void*)0x122e);
+        NUT_TA(s == "0x0000122E" || s == "0x122e");
     }
 
     void testSplit()
