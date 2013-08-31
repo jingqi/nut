@@ -136,6 +136,9 @@
     <Filter Include="源文件\container\skiplist">
       <UniqueIdentifier>{b34905cf-9982-49a1-9915-451af6401629}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\debugging">
+      <UniqueIdentifier>{780a08c8-dcf8-4caf-b482-655781cefe50}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -405,6 +408,12 @@
     <ClInclude Include="..\..\..\nut\util\delegate.hpp">
       <Filter>头文件\util</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\debugging\addr_map_mgr.hpp">
+      <Filter>头文件\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\debugging\backtrace.hpp">
+      <Filter>头文件\debugging</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -487,6 +496,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\util\test_delegate.cpp">
       <Filter>源文件\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\debugging\test_backtrace.cpp">
+      <Filter>源文件\debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\threading\lockfree\test_atomic.cpp">
+      <Filter>源文件\threading\lockfree</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

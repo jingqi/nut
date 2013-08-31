@@ -78,6 +78,8 @@
     <ClInclude Include="..\..\..\nut\container\tree\rtree\mdarea.hpp" />
     <ClInclude Include="..\..\..\nut\container\tree\rtree\rtree.hpp" />
     <ClInclude Include="..\..\..\nut\container\tuple.hpp" />
+    <ClInclude Include="..\..\..\nut\debugging\addr_map_mgr.hpp" />
+    <ClInclude Include="..\..\..\nut\debugging\backtrace.hpp" />
     <ClInclude Include="..\..\..\nut\debugging\destroychecker.hpp" />
     <ClInclude Include="..\..\..\nut\debugging\exception.hpp" />
     <ClInclude Include="..\..\..\nut\debugging\sourcelocation.hpp" />
@@ -162,6 +164,7 @@
     <ClCompile Include="..\..\..\test\container\test_mrucache.cpp" />
     <ClCompile Include="..\..\..\test\container\tree\rtree\test_rtree.cpp" />
     <ClCompile Include="..\..\..\test\container\tree\test_bst.cpp" />
+    <ClCompile Include="..\..\..\test\debugging\test_backtrace.cpp" />
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp" />
     <ClCompile Include="..\..\..\test\logging\test_logging.cpp" />
     <ClCompile Include="..\..\..\test\main.cpp" />
@@ -174,6 +177,7 @@
     <ClCompile Include="..\..\..\test\platform\test_path.cpp" />
     <ClCompile Include="..\..\..\test\security\digest\test_adler32.cpp" />
     <ClCompile Include="..\..\..\test\security\encrypt\test_rsa.cpp" />
+    <ClCompile Include="..\..\..\test\threading\lockfree\test_atomic.cpp" />
     <ClCompile Include="..\..\..\test\threading\lockfree\test_queue.cpp" />
     <ClCompile Include="..\..\..\test\threading\lockfree\test_stack.cpp" />
     <ClCompile Include="..\..\..\test\threading\test_threadpool.cpp" />

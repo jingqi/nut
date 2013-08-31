@@ -31,7 +31,7 @@ namespace nut
 inline bool atomic_cas(void * volatile *dest, void *oldval, void *newval)
 {
 #if defined(NUT_PLATFORM_OS_LINUX)
-    return __sync_val_compare_and_swap(dest, oldval, newval);
+    return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
 #elif defined(NUT_PLATFORM_OS_WINDOWS)
     return InterlockedCompareExchangePointer(dest, newval, oldval) == oldval;
 #else
@@ -88,7 +88,7 @@ inline bool atomic_cas(uint128_t volatile *dest, uint128_t oldval, uint128_t new
 inline bool atomic_cas(int64_t volatile *dest, int64_t oldval, int64_t newval)
 {
 #if defined(NUT_PLATFORM_OS_LINUX)
-    return __sync_val_compare_and_swap(dest, oldval, newval);
+    return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
 #elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
     return InterlockedCompareExchange64(dest, newval, oldval) == oldval;
 #elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_GCC)
@@ -122,7 +122,7 @@ inline bool atomic_cas(uint64_t volatile *dest, uint64_t oldval, uint64_t newval
 inline bool atomic_cas(int32_t volatile *dest, int32_t oldval, int32_t newval)
 {
 #if defined(NUT_PLATFORM_OS_LINUX)
-    return __sync_val_compare_and_swap(dest, oldval, newval);
+    return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
 #elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
     return InterlockedCompareExchange(reinterpret_cast<uint32_t volatile*>(dest), static_cast<uint32_t>(newval), static_cast<uint32_t>(oldval)) == oldval;
 #elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_GCC)
@@ -151,7 +151,7 @@ inline bool atomic_cas(uint32_t volatile *dest, uint32_t oldval, uint32_t newval
 inline bool atomic_cas(int16_t volatile *dest, int16_t oldval, int16_t newval)
 {
 #if defined(NUT_PLATFORM_OS_LINUX)
-    return __sync_val_compare_and_swap(dest, oldval, newval);
+    return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
 #elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
     return InterlockedCompareExchange16(dest, newval, oldval) == oldval;
 #elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_GCC)
