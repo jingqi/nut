@@ -58,7 +58,7 @@ private:
         TreeNode *parent;
         bool treeNode; // 是树节点还是数据节点
 
-        Node(bool tn) : parent(NULL), treeNode(treeNode) {}
+        Node(bool tn) : parent(NULL), treeNode(tn) {}
         Node(const area_type& rt, bool tn) : area(rt), parent(NULL), treeNode(tn) {}
         virtual ~Node() {}
 
