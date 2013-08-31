@@ -55,6 +55,18 @@ public:
     {
         return !(*this == x);
     }
+    
+    /**
+     * 清除数据，回到初始状态
+     */
+    void clear()
+    {
+        for (register size_t i = 0; i < DIMENSIONS; ++i)
+        {
+            lower[i] = 0;
+            higher[i] = 0;
+        }
+    }
 
     /**
      * 扩展区域，以便包含目标区域

@@ -12,6 +12,7 @@
 #include <vector>
 #include <stack>
 #include <map> // for pair
+#include <assert.h>
 
 #include <nut/platform/platform.hpp>
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -29,6 +30,9 @@ namespace nut
 
 /**
  * 多维rtree
+ *
+ * 参考资料：
+ *      R-Trees - A Dynamic index structure for spatial searching. Antonin Guttman. University of California Berkeley
  * 
  * @param DataT 数据类型; 可以是 int、void*, obj* 等
  * @param NumT 数字类型; 可以是 int、float 等
@@ -56,7 +60,7 @@ private:
     {
         area_type area;
         TreeNode *parent;
-        bool treeNode; // 是树节点还是数据节点
+        const bool treeNode; // 是树节点还是数据节点
 
         Node(bool tn) : parent(NULL), treeNode(tn) {}
         Node(const area_type& rt, bool tn) : area(rt), parent(NULL), treeNode(tn) {}
@@ -100,24 +104,27 @@ private:
             return (size_t) right;
         }
         
-        bool appendChild(Node *child)
+        bool appendChild(Node *child, bool setChildParent = true)
         {
             assert(NULL != child);
 
             if (NULL != children[MAX_ENTRY_COUNT - 1])
                 return false;
             children[childCount()] = child;
-            child->parent = this; // 附带设置 parent
+            if (setChildParent)
+                child->parent = this; // 附带设置 parent
             return true;
         }
 
-        bool removeChild(Node *child)
+        bool removeChild(Node *child, bool setChildParent = true)
         {
+            assert(NULL != child);
             for (register size_t i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
             {
                 if (children[i] == child)
                 {
-                    children[i]->parent = NULL; // 附带设置 parent
+                    if (setChildParent)
+                        child->parent = NULL; // 附带设置 parent
                     children[i] = NULL;
 
                     // 保持紧凑
@@ -132,11 +139,12 @@ private:
             return false;
         }
 
-        void clearChildren()
+        void clearChildren(bool setChildParent = true)
         {
             for (register size_t i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
             {
-                children[i]->parent = NULL; // 附带设置 parent
+                if (setChildParent)
+                    children[i]->parent = NULL; // 附带设置 parent
                 children[i] = NULL;
             }
         }
@@ -201,6 +209,15 @@ public:
         assert(NULL != m_root);
         new (m_root) TreeNode();
     }
+    
+    ~RTree()
+    {
+        clear();
+        assert(NULL != m_root);
+        m_root->~TreeNode();
+        m_treenodeAlloc.deallocate(m_root, 1);
+        m_root = NULL;
+    }
 
     /**
      * 插入数据
@@ -229,6 +246,10 @@ public:
         bool rs = l->removeChild(dn);
         if (!rs)
             return false;
+            
+        // 释放内存
+        dn->~DataNode();
+        m_datanodeAlloc.deallocate(dn, 1);
 
         // 调整树
         condenseTree(l);
@@ -239,6 +260,7 @@ public:
             m_root->parent = NULL;
             --m_height;
 
+            // 释放内存
             tobedel->~TreeNode();
             m_treenodeAlloc.deallocate(tobedel, 1);
         }
@@ -246,6 +268,9 @@ public:
         return true;
     }
 
+    /**
+     * 移除指定的映射
+     */
     bool remove(const area_type& rect, const data_type& data)
     {
         // 找到数据节点并删除数据
@@ -258,6 +283,10 @@ public:
         bool rs = l->removeChild(dn);
         if (!rs)
             return false;
+            
+        // 释放内存
+        dn->~DataNode();
+        m_datanodeAlloc.deallocate(dn, 1);
 
         // 调整树
         condenseTree(l);
@@ -268,6 +297,7 @@ public:
             m_root->parent = NULL;
             --m_height;
 
+            // 释放内存
             tobedel->~TreeNode();
             m_treenodeAlloc.deallocate(tobedel, 1);
         }
@@ -275,6 +305,46 @@ public:
         return true;
     }
 
+    /**
+     * 清除所有数据
+     */
+    void clear()
+    {
+        // 清除所有
+        std::stack<TreeNode*> s;
+        s.push(m_root);
+        while (!s.empty())
+        {
+            TreeNode *n = s.top();
+            s.pop();
+            
+            for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+            {
+                Node *c = n->childAt(i);
+                if (c->isTreeNode())
+                {
+                    TreeNode *tn = dynamic_cast<TreeNode*>(c);
+                    s.push(tn);
+                }
+                else
+                {
+                    DataNode *dn = dynamic_cast<DataNode*>(c);
+                    dn->~DataNode();
+                    m_datanodeAlloc.deallocate(dn, 1);
+                }
+            }
+            if (n != m_root)
+            {
+                n->~TreeNode();
+                m_treenodeAlloc.deallocate(n, 1);
+            }
+        }
+        m_root->area.clear();
+        m_root->clearChildren(false);
+        m_height = 1;
+        m_size = 0;
+    }
+    
     /**
      * 查找与指定区域相交的数据
      */
@@ -442,7 +512,7 @@ private:
 
         typedef typename std::list<Node*>::const_iterator iter_t;
 
-        // 手机所有的子节点
+        // 收集所有的子节点
         std::list<Node*> remained;
         remained.push_back(child);
         for (register size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
@@ -742,7 +812,12 @@ private:
 
             for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
                 insert(n->children[i], depth);
+                
+            // 释放内存
+            n->~TreeNode();
+            m_treenodeAlloc.deallocate(n, 1);
         }
+        assert(qd.empty());
     }
 
 public:

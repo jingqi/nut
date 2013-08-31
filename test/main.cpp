@@ -38,7 +38,7 @@ int main()
 
     // trunner.runAGroup("security");
 
-    trunner.runAFixture("TestBacktrace");
+    trunner.runAFixture("TestRTree");
     // trunner.runAFixture("TestBigInteger");
     // trunner.runAFixture("TestNumericAlgo");
     // trunner.runAFixture("TestRSA");
