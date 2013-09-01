@@ -38,7 +38,7 @@ int main()
 
     // trunner.runAGroup("util");
 
-    trunner.runAFixture("TestAesCbcPkcs5");
+    trunner.runAFixture("TestByteArray");
 
     // trunner.runACase("TestGC", "testSmoking");
 

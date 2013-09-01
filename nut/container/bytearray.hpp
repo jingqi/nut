@@ -153,9 +153,12 @@ public :
     /**
      * clear data
      */
-    void clear() { m_datalen = 0; }
+    inline void clear()
+    {
+        m_datalen = 0;
+    }
 
-    ByteArray& operator=(const ByteArray &x)
+    inline ByteArray& operator=(const ByteArray &x)
     {
         if (&x == this)
             return *this;
@@ -181,18 +184,32 @@ public :
         return true;
     }
 
-    bool operator!=(const ByteArray &x) const { return !(*this == x); }
+    inline bool operator!=(const ByteArray &x) const
+    {
+        return !(*this == x);
+    }
 
-    const uint8_t& operator[](size_t idx) const
+    inline const uint8_t& operator[](size_t idx) const
+    {
+        return at(idx);
+    }
+
+    inline uint8_t& operator[](size_t idx)
+    {
+        return at(idx);
+    }
+
+    inline const uint8_t& at(size_t idx) const
     {
         assert(idx < m_datalen);
         return m_buf->buf[idx];
     }
 
-    uint8_t& operator[](size_t idx)
+    inline uint8_t& at(size_t idx)
     {
         assert(idx < m_datalen);
-        return const_cast<uint8_t&>(static_cast<const ByteArray&>(*this)[idx]);
+        _copy_on_write(m_datalen); // 可能在外部更改数据，故此 copy-on-write 一下
+        return const_cast<uint8_t&>(static_cast<const ByteArray&>(*this).at(idx));
     }
 
     /**
@@ -209,14 +226,14 @@ public :
         m_datalen = n;
     }
 
-    void append(const ByteArray &x)
+    inline void append(const ByteArray &x)
     {
         _copy_on_write(m_datalen + x.m_datalen);
         ::memcpy(m_buf->buf + m_datalen, x.m_buf->buf, x.m_datalen);
         m_datalen += x.m_datalen;
     }
 
-    void append(size_t len, uint8_t fillv = 0)
+    inline void append(size_t len, uint8_t fillv = 0)
     {
         _copy_on_write(m_datalen + len);
         ::memset(m_buf->buf + m_datalen, fillv, len);
@@ -248,7 +265,7 @@ public :
         append(buf, len);
     }
 
-    void append(const void *buf, size_t index, size_t size)
+    inline void append(const void *buf, size_t index, size_t size)
     {
         assert(NULL != buf);
         if (NULL == buf)
@@ -269,15 +286,24 @@ public :
 
     inline uint8_t* buffer()
     {
-        _copy_on_write();
+        _copy_on_write(); // 可能在外部更改数据，故此 copy-on-write 一下
         return const_cast<uint8_t*>(static_cast<const ByteArray&>(*this).buffer());
     }
 
-    inline size_t length() const { return size(); }
+    inline size_t length() const
+    {
+        return size();
+    }
 
-    inline size_t size() const { return m_datalen; }
+    inline size_t size() const
+    {
+        return m_datalen;
+    }
 
-    inline size_t capasity() const { return m_buf->len; }
+    inline size_t capasity() const
+    {
+        return m_buf->len;
+    }
 
     /**
      * 将二进制 0x51 0x5e 0x30 转换为字符串 "515e30"

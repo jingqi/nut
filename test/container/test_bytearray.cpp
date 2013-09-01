@@ -12,6 +12,7 @@ NUT_FIXTURE(TestByteArray)
     NUT_CASE(testToString)
     NUT_CASE(testValueOf)
     NUT_CASE(testCopyOnWrite)
+    NUT_CASE(testBug1)
     NUT_CASES_END()
 
     void setUp() {}
@@ -48,6 +49,20 @@ NUT_FIXTURE(TestByteArray)
         NUT_TA(static_cast<const ByteArray&>(b1).buffer() != static_cast<const ByteArray&>(b2).buffer());
         NUT_TA(static_cast<const ByteArray&>(ba).buffer() == static_cast<const ByteArray&>(b2).buffer());
         NUT_TA(b1.toString() == "1328EF5E" && b2.toString() == "1328EF");
+    }
+
+    /**
+     * []操作符的实现没有调用 copy-on-write，导致错误
+     */
+    void testBug1()
+    {
+        ByteArray b1 = ByteArray::valueOf("125e");
+        ByteArray b2(b1);
+
+        NUT_TA(static_cast<const ByteArray&>(b1).buffer() == static_cast<const ByteArray&>(b2).buffer());
+        b1[0] = 2;
+        NUT_TA(static_cast<const ByteArray&>(b1).buffer() != static_cast<const ByteArray&>(b2).buffer());
+        NUT_TA(b1.toString() == "025E" && b2.toString() == "125E");
     }
 };
 

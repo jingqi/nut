@@ -22,12 +22,14 @@ struct FixedBuf
 {
     NUT_GC_REFERABLE
 
-    T * buf;
+    T *buf;
     size_t len;
 
     FixedBuf(size_t _len)
         : buf(0 == _len ? NULL : (T*) ::malloc(_len * sizeof(T))), len(_len)
-    {}
+    {
+        assert(0 == len || NULL != buf);
+    }
 
     ~FixedBuf()
     {
@@ -38,7 +40,7 @@ struct FixedBuf
     void realloc(size_t _len)
     {
         assert(get_ref() == 1 && _len > 0);
-        buf = (T*) ::realloc(buf, _len * sizeof(T));
+        buf = (T*) ::realloc(buf, _len * sizeof(T)); // XXX realloc() 会处理 buf 为 NULL 的情况
         len = _len;
     }
 };
