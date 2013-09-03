@@ -513,6 +513,41 @@ void bit_not(const T *a, T *x, size_t N)
 #endif
 }
 
+inline size_t _bit_length(uint64_t a)
+{
+    if (a == 0)
+        return 0;
+
+    size_t ret = 63;
+    if (a >> 32 == 0)
+    {
+        ret -= 32;
+        a <<= 32;
+    }
+    if (a >> 48 == 0)
+    {
+        ret -= 16;
+        a <<= 16;
+    }
+    if (a >> 56 == 0)
+    {
+        ret -= 8;
+        a <<= 8;
+    }
+    if (a >> 60 == 0)
+    {
+        ret -= 4;
+        a <<= 4;
+    }
+    if (a >> 62 == 0)
+    {
+        ret -= 2;
+        a <<= 2;
+    }
+    ret += a >> 63;
+    return ret;
+}
+
 inline size_t _bit_length(uint32_t a)
 {
     if (a == 0)
@@ -540,6 +575,31 @@ inline size_t _bit_length(uint32_t a)
         a <<= 2;
     }
     ret += a >> 31;
+    return ret;
+}
+
+inline size_t _bit_length(uint16_t a)
+{
+    if (a == 0)
+        return 0;
+
+    size_t ret = 15;
+    if (a >> 8 == 0)
+    {
+        ret -= 8;
+        a <<= 8;
+    }
+    if (a >> 12 == 0)
+    {
+        ret -= 4;
+        a <<= 4;
+    }
+    if (a >> 14 == 0)
+    {
+        ret -= 2;
+        a <<= 2;
+    }
+    ret += a >> 15;
     return ret;
 }
 
@@ -587,56 +647,6 @@ inline size_t bit_length(const uint8_t *a,  size_t N)
 #endif
 }
 
-inline size_t _bit0_length(uint32_t a)
-{
-    if (a == 0xFFFFFFFF)
-        return 0;
-
-    size_t ret = 32;
-    if (a >> 16 == 0xFFFF)
-    {
-        ret -= 16;
-        a <<= 16;
-    }
-    if (a >> 24 == 0xFF)
-    {
-        ret -= 8;
-        a <<= 8;
-    }
-    if (a >> 28 == 0x0F)
-    {
-        ret -= 4;
-        a <<= 4;
-    }
-    if (a >> 30 == 0x03)
-    {
-        ret -= 2;
-        a <<= 2;
-    }
-    ret -= a >> 31;
-    return ret;
-}
-
-inline size_t _bit0_length(uint8_t a)
-{
-    if (a == 0xFF)
-        return 0;
-
-    size_t ret = 8;
-    if (a >> 4 == 0x0F)
-    {
-        ret -= 4;
-        a <<= 4;
-    }
-    if (a >> 6 == 0x03)
-    {
-        ret -= 2;
-        a <<= 2;
-    }
-    ret -= a >> 7;
-    return ret;
-}
-
 /**
  * 负数 bit length
  */
@@ -647,33 +657,53 @@ inline size_t bit0_length(const uint8_t *a,  size_t N)
 #if (OPTIMIZE_LEVEL == 0)
     for (register int i = N - 1; i >= 0; --i)
         if (0xFF != a[i])
-            return i * 8 + _bit0_length(a[i]);
+            return i * 8 + _bit_length((uint8_t)~a[i]);
     return 0;
 #else
     const size_t bits32_count = N / sizeof(uint32_t);
     for (register int i = N - 1, limit = bits32_count * sizeof(uint32_t); i >= limit; --i)
         if (0xFF != a[i])
-            return i * 8 + _bit0_length(a[i]);
+            return i * 8 + _bit_length((uint8_t)~a[i]);
     for (register int i = bits32_count - 1; i >= 0; --i)
         if (0xFFFFFFFF != reinterpret_cast<const uint32_t*>(a)[i])
-            return i * 32 + _bit0_length(reinterpret_cast<const uint32_t*>(a)[i]);
+            return i * 32 + _bit_length((uint32_t)~reinterpret_cast<const uint32_t*>(a)[i]);
     return 0;
 #endif
 }
 
+inline size_t _bit_count(uint64_t a)
+{
+    a -= (a >> 1) & 0x5555555555555555L;
+    a = (a & 0x3333333333333333L) + ((a >> 2) & 0x3333333333333333L);
+    a = (a + (a >> 4)) & 0x0f0f0f0f0f0f0f0fL;
+    a += a >> 8;
+    a += a >> 16;
+    a += a >> 32;
+    return a & 0x7f;
+}
+
 inline size_t _bit_count(uint32_t a)
 {
-	a = a - ((a >> 1) & 0x55555555);
+	a -= (a >> 1) & 0x55555555;
 	a = (a & 0x33333333) + ((a >> 2) & 0x33333333);
 	a = (a + (a >> 4)) & 0x0f0f0f0f;
-	a = a + (a >> 8);
-	a = a + (a >> 16);
+	a += a >> 8;
+	a += a >> 16;
 	return a & 0x3f;
+}
+
+inline size_t _bit_count(uint16_t a)
+{
+    a -= (a >> 1) & 0x5555;
+    a = (a & 0x3333) + ((a >> 2) & 0x3333);
+    a = (a + (a >> 4)) & 0x0f0f;
+    a += (a >> 8);
+    return a & 0x1f;
 }
 
 inline size_t _bit_count(uint8_t a)
 {
-    a = a - ((a >> 1) & 0x55);
+    a -= (a >> 1) & 0x55;
 	a = (a & 0x33) + ((a >> 2) & 0x33);
 	a = (a + (a >> 4)) & 0x0f;
     return a & 0x0f;
@@ -702,6 +732,50 @@ inline size_t bit_count(const uint8_t *a, size_t N)
 #endif
 }
 
+/**
+ * 统计 bit 0 数目
+ */
+inline size_t bit0_count(const uint8_t *a, size_t N)
+{
+    assert(NULL != a && N > 0);
+    return N * 8 - bit_count(a, N);
+}
+
+inline int _lowest_bit(uint64_t a)
+{
+    if (a == 0)
+        return -1;
+
+    size_t ret = 1;
+    if ((uint64_t)(a << 32) == 0)
+    {
+        ret += 32;
+        a >>= 32;
+    }
+    if ((uint64_t)(a << 48) == 0)
+    {
+        ret += 16;
+        a >>= 16;
+    }
+    if ((uint64_t)(a << 56) == 0)
+    {
+        ret += 8;
+        a >>= 8;
+    }
+    if ((uint64_t)(a << 60) == 0)
+    {
+        ret += 4;
+        a >>= 4;
+    }
+    if ((uint64_t)(a << 62) == 0)
+    {
+        ret += 2;
+        a >>= 2;
+    }
+    ret -= a & 1;
+    return ret;
+}
+
 inline int _lowest_bit(uint32_t a)
 {
     if (a == 0)
@@ -724,6 +798,31 @@ inline int _lowest_bit(uint32_t a)
         a >>= 4;
     }
     if ((uint32_t)(a << 30) == 0)
+    {
+        ret += 2;
+        a >>= 2;
+    }
+    ret -= a & 1;
+    return ret;
+}
+
+inline int _lowest_bit(uint16_t a)
+{
+    if (a == 0)
+        return -1;
+
+    size_t ret = 1;
+    if ((uint16_t)(a << 8) == 0)
+    {
+        ret += 8;
+        a >>= 8;
+    }
+    if ((uint16_t)(a << 12) == 0)
+    {
+        ret += 4;
+        a >>= 4;
+    }
+    if ((uint16_t)(a << 14) == 0)
     {
         ret += 2;
         a >>= 2;
@@ -775,6 +874,33 @@ inline int lowest_bit(const uint8_t *a, size_t N)
     for (register size_t i = bits32_count * sizeof(uint32_t); i < N; ++i)
         if (0 != a[i])
             return i * 8 + _lowest_bit(a[i]);
+    return -1;
+#endif
+}
+
+/**
+ * 返回从低位到高位第一个 bit 0 的位置
+ *
+ * @return -1 if not found
+ *      >0 if found
+ */
+inline int lowest_bit0(const uint8_t *a, size_t N)
+{
+    assert(NULL != a && N > 0);
+
+#if (OPTIMIZE_LEVEL == 0)
+    for (register size_t i = 0; i < N; ++i)
+        if (0xff != a[i])
+            return i * 8 + _lowest_bit((uint8_t)~a[i]);
+    return -1;
+#else
+    const size_t bits32_count = N / sizeof(uint32_t);
+    for (register size_t i = 0; i < bits32_count; ++i)
+        if (0xffffffff != reinterpret_cast<const uint32_t*>(a)[i])
+            return i * 32 + _lowest_bit((uint32_t)~reinterpret_cast<const uint32_t*>(a)[i]);
+    for (register size_t i = bits32_count * sizeof(uint32_t); i < N; ++i)
+        if (0xff != a[i])
+            return i * 8 + _lowest_bit((uint8_t)~a[i]);
     return -1;
 #endif
 }
