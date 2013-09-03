@@ -417,6 +417,9 @@
     <ClInclude Include="..\..\..\nut\security\encrypt\aes_cbc_pkcs5.hpp">
       <Filter>头文件\security\encrypt</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\container\bitstream.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -508,6 +511,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\security\encrypt\test_aes_cbc_pkcs5.cpp">
       <Filter>源文件\security\encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\container\test_bitstream.cpp">
+      <Filter>源文件\container</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

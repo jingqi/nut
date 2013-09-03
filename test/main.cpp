@@ -36,9 +36,9 @@ int main()
 
     TestRunner trunner(l);
 
-    trunner.runAGroup("numeric");
+    // trunner.runAGroup("numeric");
 
-    // trunner.runAFixture("TestByteArray");
+    trunner.runAFixture("TestBitStream");
 
     // trunner.runACase("TestGC", "testSmoking");
 
