@@ -168,6 +168,7 @@ public:
     inline BitStream& operator+=(const BitStream& x)
     {
         append(x);
+        return *this;
     }
 
     inline bool operator[](size_t i) const
