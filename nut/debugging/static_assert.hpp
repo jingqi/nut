@@ -15,7 +15,7 @@
 #       define NUT_STATIC_ASSERT(exp) static_assert((exp), #exp)
 #   else
         /** 利用除0错误来进行编译期错误提示(也可以用负数数组大小错误提示来作，不过部分编译器不起作用) */
-#       define NUT_STATIC_ASSERT(exp) typedef int __static_assert_error[((int)(exp)) / ((int)(exp))];
+#       define NUT_STATIC_ASSERT(exp) typedef int __static_assert_error[((int)(exp)) / ((int)(exp))]
 #   endif
 #endif
 
