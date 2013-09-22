@@ -33,6 +33,25 @@ public:
     }
 };
 
+template <typename T>
+class DeleteGuard
+{
+    T *m_ptr;
+public:
+    DeleteGuard(T *p)
+        : m_ptr(p)
+    {
+        assert(NULL != p);
+    }
+    
+    ~DeleteGuard()
+    {
+        assert(NULL != m_ptr);
+        delete m_ptr;
+        m_ptr = NULL;
+    }
+};
+
 };
 
 #endif
