@@ -36,6 +36,8 @@ NUT_FIXTURE(TestDelegate)
         g_t += 100;
     }
 
+    void tt() {}
+
     void testSmoking()
     {
         delegate<void()> d1;
@@ -62,6 +64,18 @@ NUT_FIXTURE(TestDelegate)
         NUT_TA(g_t == 121 && rs == 0);
     }
 
+    void testCopyAndConst()
+    {
+        delegate<void()> d1;
+        d1.connect(this, &TestDelegate::tt);
+        d1();
+
+        delegate<void()> d2(d1);
+        d2();
+
+        const delegate<void()> d3(d1);
+        d3();
+    }
 };
 
 NUT_REGISTER_FIXTURE(TestDelegate, "util, quiet")

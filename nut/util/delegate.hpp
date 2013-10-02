@@ -249,7 +249,7 @@ public: \
         return m_holders.size() > 0; \
     } \
  \
-    Ret operator()(FUNCTION_ARGS) \
+    Ret operator()(FUNCTION_ARGS) const \
     { \
         for (register size_t i = 0, size = m_holders.size(); i < size; ++i) \
         { \
