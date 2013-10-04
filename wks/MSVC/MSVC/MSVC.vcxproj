@@ -159,6 +159,8 @@
     <ClInclude Include="..\..\..\nut\util\time.hpp" />
     <ClInclude Include="..\..\..\nut\util\timer\timermanager.hpp" />
     <ClInclude Include="..\..\..\nut\util\timer\timeval.hpp" />
+    <ClInclude Include="..\..\..\nut\util\xml\xmldocument.hpp" />
+    <ClInclude Include="..\..\..\nut\util\xml\xmlelement.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\container\skiplist\test_skiplist.cpp" />
@@ -192,6 +194,7 @@
     <ClCompile Include="..\..\..\test\util\test_configfile.cpp" />
     <ClCompile Include="..\..\..\test\util\test_delegate.cpp" />
     <ClCompile Include="..\..\..\test\util\test_propertyfile.cpp" />
+    <ClCompile Include="..\..\..\test\util\xml\test_xml.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

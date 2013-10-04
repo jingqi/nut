@@ -188,6 +188,7 @@ public:
             {
                 (*iter)->writeBlock(ofs);
             }
+            ofs.close();
             m_dirty = false;
         }
     }

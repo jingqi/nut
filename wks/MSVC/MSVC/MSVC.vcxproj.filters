@@ -139,6 +139,12 @@
     <Filter Include="源文件\debugging">
       <UniqueIdentifier>{780a08c8-dcf8-4caf-b482-655781cefe50}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\util\xml">
+      <UniqueIdentifier>{d208ce4b-9d20-4ab4-9cec-10c64cd7dbd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\util\xml">
+      <UniqueIdentifier>{0aee3174-00f9-48ed-a5b7-b38981842f7f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\nut\gc\gc.hpp">
@@ -420,6 +426,12 @@
     <ClInclude Include="..\..\..\nut\container\bitstream.hpp">
       <Filter>头文件\container</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\xml\xmldocument.hpp">
+      <Filter>头文件\util\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\nut\util\xml\xmlelement.hpp">
+      <Filter>头文件\util\xml</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -514,6 +526,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\container\test_bitstream.cpp">
       <Filter>源文件\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\util\xml\test_xml.cpp">
+      <Filter>源文件\util\xml</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
