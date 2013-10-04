@@ -673,9 +673,9 @@ inline size_t bit0_length(const uint8_t *a,  size_t N)
 
 inline size_t _bit_count(uint64_t a)
 {
-    a -= (a >> 1) & 0x5555555555555555L;
-    a = (a & 0x3333333333333333L) + ((a >> 2) & 0x3333333333333333L);
-    a = (a + (a >> 4)) & 0x0f0f0f0f0f0f0f0fL;
+    a -= (a >> 1) & 0x5555555555555555LL;
+    a = (a & 0x3333333333333333LL) + ((a >> 2) & 0x3333333333333333LL);
+    a = (a + (a >> 4)) & 0x0f0f0f0f0f0f0f0fLL;
     a += a >> 8;
     a += a >> 16;
     a += a >> 32;
