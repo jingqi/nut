@@ -432,6 +432,9 @@
     <ClInclude Include="..\..\..\nut\util\xml\xmlelement.hpp">
       <Filter>头文件\util\xml</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\nut\container\bytearraystream.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
@@ -529,6 +532,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\util\xml\test_xml.cpp">
       <Filter>源文件\util\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\container\test_bytearraystream.cpp">
+      <Filter>源文件\container</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

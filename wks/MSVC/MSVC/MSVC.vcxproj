@@ -69,6 +69,7 @@
     <ClInclude Include="..\..\..\nut\container\bitstream.hpp" />
     <ClInclude Include="..\..\..\nut\container\bundle.hpp" />
     <ClInclude Include="..\..\..\nut\container\bytearray.hpp" />
+    <ClInclude Include="..\..\..\nut\container\bytearraystream.hpp" />
     <ClInclude Include="..\..\..\nut\container\mrucache.hpp" />
     <ClInclude Include="..\..\..\nut\container\skiplist\skiplist.hpp" />
     <ClInclude Include="..\..\..\nut\container\skiplist\skiplistmap.hpp" />
@@ -166,6 +167,7 @@
     <ClCompile Include="..\..\..\test\container\skiplist\test_skiplist.cpp" />
     <ClCompile Include="..\..\..\test\container\test_bitstream.cpp" />
     <ClCompile Include="..\..\..\test\container\test_bytearray.cpp" />
+    <ClCompile Include="..\..\..\test\container\test_bytearraystream.cpp" />
     <ClCompile Include="..\..\..\test\container\test_mrucache.cpp" />
     <ClCompile Include="..\..\..\test\container\tree\rtree\test_rtree.cpp" />
     <ClCompile Include="..\..\..\test\container\tree\test_bst.cpp" />

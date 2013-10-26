@@ -38,7 +38,7 @@ int main()
 
     // trunner.runAGroup("numeric");
 
-    trunner.runAFixture("TestXml");
+    trunner.runAFixture("TestByteArrayStream");
 
     // trunner.runACase("TestGC", "testSmoking");
 
