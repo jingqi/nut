@@ -15,10 +15,10 @@ namespace nut
 {
 
 /**
- * 构建KMP自动状态机
+ * 构建KMP自动状态机(特征码)
  *
- * @param target 长度为 len 的字符串
- * @param next 长度为 len 的缓冲区，存放KMP自动状态机(特征码)
+ * @param target 长度为 len 的字符串，即要搜索的字符串子串
+ * @param next 长度为 len 的缓冲区，用于存放生成的KMP自动状态机(特征码)
  */
 inline void kmp_build_next(const char *target, int *next, size_t len)
 {
@@ -58,6 +58,12 @@ inline void kmp_build_next(const wchar_t *target, int *next, size_t len)
 
 /**
  * 更新KMP状态
+ *
+ * @param c 输入的单个字符
+ * @param state 当前状态
+ * @param target 要搜索的字符串子串
+ * @param next KMP特征码
+ * @return 新的状态
  */
 inline int kmp_update(char c, int state, const char *target, const int *next)
 {
@@ -88,9 +94,12 @@ inline int kmp_update(wchar_t c, int state, const wchar_t *target, const int *ne
 }
 
 /**
- * KMP搜索字符串
+ * KMP字符串搜索
  *
+ * @param src 被搜索的字符串
  * @param start 开始搜索的位置
+ * @param target 要搜索的字符串子串
+ * @param next KMP特征码(长度与target相同)
  */
 inline int kmp_search(const char *src, size_t len_src, size_t start, const char *target, const int *next, size_t len_target)
 {
@@ -117,8 +126,14 @@ inline int kmp_search(const wchar_t *src, size_t len_src, size_t start, const wc
 }
 
 /**
- * KMP 搜索
- * 这里对于要搜索字符串的特征码只做局部缓存
+ * KMP字符串搜索
+ * 
+ *      这里对于要搜索字符串的KMP特征码只做局部缓存，如果有特殊需求，例如被搜索的字符串不连续的存放在不同位置，
+ * 则可使用其他函数组合使用(参见本函数的实现)
+ *
+ * @param src 被搜索的字符串
+ * @param start 搜索开始的位置
+ * @param target 要搜索的字符串子串
  */
 inline int kmp_search(const std::string& src, size_t start, const std::string& target)
 {
