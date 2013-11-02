@@ -3,7 +3,7 @@
  * @author jingqi
  * @date 2011-11-13
  * @brief
- *   see http://sourceforge.net/apps/mediawiki/predef/index.php?title=Main_Page
+ *   see http://sourceforge.net/p/predef/wiki/Home/
  *
  * @last-edit 2012-03-25 18:53:32 jingqi
  */
