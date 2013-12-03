@@ -1,8 +1,8 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2013-10-26
- * @last-edit 2013-10-26 16:05:16 jingqi
+ * @last-edit 2013-12-03 10:51:20 jingqi
  * @brief
  */
 
@@ -17,7 +17,7 @@ namespace nut
 {
 
 /**
- * ´¦Àí×Ö½ÚÊı×éÁ÷ÖĞµÄ´ó¶Ë(Big-Endian)ºÍĞ¡¶Ë(Little-Endian)×Ö½ÚĞò¶ÁĞ´
+ * å¤„ç†å­—èŠ‚æ•°ç»„æµä¸­çš„å¤§ç«¯(Big-Endian)å’Œå°ç«¯(Little-Endian)å­—èŠ‚åºè¯»å†™
  */
 class ByteArrayStream
 {
@@ -233,6 +233,13 @@ public:
         m_index += len;
     }
 
+    inline void writeBytes(const ByteArray& ba)
+    {
+        if (ba.size() == 0)
+            return;
+        writeBytes(ba.buffer(), ba.size());
+    }
+
     void writeFloat(float v)
     {
         for (register size_t i = 0; i < sizeof(float); ++i)
@@ -245,14 +252,9 @@ public:
             writeByte(reinterpret_cast<const uint8_t*>(&v)[m_little_endian ? i : (sizeof(double) - i - 1)]);
     }
 
-    const ByteArray& byteArray() const
+    inline const ByteArray& byteArray() const
     {
         return m_data;
-    }
-
-    ByteArray& byteArray()
-    {
-        return const_cast<ByteArray&>(static_cast<const ByteArrayStream&>(*this).byteArray());
     }
 };
 
