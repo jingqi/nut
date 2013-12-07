@@ -63,6 +63,8 @@ public:
     inline void resize(size_t new_size)
     {
         m_data.resize(new_size);
+        if (m_index > new_size)
+            m_index = new_size;
     }
 
     inline void skip(size_t cb)
