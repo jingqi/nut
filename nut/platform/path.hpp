@@ -668,7 +668,7 @@ public:
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        return 0 != (FILE_ATTRIBUTE_NORMAL & ::GetFileAttributesA(path));
+        return 0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesA(path));
 #else
         struct stat info;
         if (0 != ::stat(path, &info))
@@ -686,7 +686,7 @@ public:
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        return 0 != (FILE_ATTRIBUTE_NORMAL & ::GetFileAttributesW(path));
+        return 0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(path));
 #else
         const std::string p = wstr2str(path);
         return isfile(p.c_str());
