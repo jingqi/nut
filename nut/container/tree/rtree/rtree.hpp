@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-03-10
- * @last-edit 2013-03-28 09:11:34 jingqi
+ * @last-edit 2013-12-09 14:28:48 jingqi
  */
 
 #ifndef ___HEADFILE_160547E9_5A30_4A78_A5FF_76E0C5EBE229_
@@ -348,9 +348,9 @@ public:
     /**
      * 查找与指定区域相交的数据
      */
-    std::vector<std::pair<area_type,data_type> > searchIntersect(const area_type& rect)
+    void searchIntersect(const area_type& rect, std::vector<std::pair<area_type,data_type> > *out)
     {
-        std::vector<std::pair<area_type,data_type> > ret;
+        assert(NULL != out);
 
         std::stack<TreeNode*> s;
         s.push(m_root);
@@ -373,19 +373,18 @@ public:
                 else
                 {
                     DataNode *dn = dynamic_cast<DataNode*>(c);
-                    ret.push_back(std::pair<area_type,data_type>(dn->area, dn->data));
+                    out->push_back(std::pair<area_type,data_type>(dn->area, dn->data));
                 }
             }
-            return ret;
         }
     }
 
     /**
      * 查找包含在指定区域内的数据
      */
-    std::vector<std::pair<area_type, data_type> > searchContains(const area_type& rect)
+    void searchContains(const area_type& rect, std::vector<std::pair<area_type, data_type> > *out)
     {
-        std::vector<data_type> ret;
+        assert(NULL != out);
 
         std::stack<TreeNode*> s;
         s.push(m_root);
@@ -408,19 +407,18 @@ public:
                 else if (rect.contains(c->area))
                 {
                     DataNode *dn = dynamic_cast<DataNode*>(c);
-                    ret.push_back(dn->data);
+                    out->push_back(dn->data);
                 }
             }
-            return ret;
         }
     }
 
     /**
      * 返回所有的数据
      */
-    std::vector<data_type> getAll()
+    void getAll(std::vector<data_type> *out)
     {
-        std::vector<data_type> ret;
+        assert(NULL != out);
 
         std::stack<TreeNode*> s;
         s.push(m_root);
@@ -440,10 +438,9 @@ public:
                 else
                 {
                     DataNode *dn = dynamic_cast<DataNode*>(c);
-                    ret.push_back(dn->data);
+                    out->push_back(dn->data);
                 }
             }
-            return ret;
         }
     }
 
