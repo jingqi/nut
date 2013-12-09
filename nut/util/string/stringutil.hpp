@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2010-8-18
- * @last-edit 2012-11-13 15:32:42 jingqi
+ * @last-edit 2013-12-09 13:11:25 jingqi
  */
 
 #ifndef ___HEADFILE___8BC3081E_4374_470D_9E66_CC7F414ED9B7_
@@ -37,39 +37,49 @@ namespace nut
 /**
  * 用整个字符串来分割字符串
  */
-inline std::vector<std::string> str_split(const std::string &str, const std::string &sstr, bool ignoreEmpty = false)
+inline void str_split(const std::string &str, const std::string &sstr, std::vector<std::string> *out, bool ignoreEmpty = false)
 {
-    assert(sstr.length() > 0);
+    assert(sstr.length() > 0 && NULL != out);
 
-    std::vector<std::string> ret;
     std::string::size_type begin = 0, end = str.find(sstr);
     while (std::string::npos != end)
     {
         if (!ignoreEmpty || begin != end)
-            ret.push_back(str.substr(begin, end - begin));
+            out->push_back(str.substr(begin, end - begin));
         begin = end + sstr.length();
         end = str.find(sstr, begin);
     }
     if (!ignoreEmpty || begin < str.length())
-        ret.push_back(str.substr(begin));
+        out->push_back(str.substr(begin));
+}
+
+inline void str_split(const std::wstring &str, const std::wstring &sstr, std::vector<std::wstring> *out, bool ignoreEmpty = false)
+{
+    assert(sstr.length() > 0 && NULL != out);
+
+    std::wstring::size_type begin = 0, end = str.find(sstr);
+    while (std::wstring::npos != end)
+    {
+        if (!ignoreEmpty || begin != end)
+            out->push_back(str.substr(begin, end - begin));
+        begin = end + sstr.length();
+        end = str.find(sstr, begin);
+    }
+    if (!ignoreEmpty || begin < str.length())
+        out->push_back(str.substr(begin));
+}
+
+inline std::vector<std::string> str_split(const std::string &str, const std::string &sstr, bool ignoreEmpty = false)
+{
+    std::vector<std::string> ret;
+    str_split(str, sstr, &ret, ignoreEmpty);
     return ret;
 }
 
 inline std::vector<std::wstring> str_split(const std::wstring &str, const std::wstring &sstr, bool ignoreEmpty = false)
 {
-    assert(sstr.length() > 0);
-
     std::vector<std::wstring> ret;
-    std::wstring::size_type begin = 0, end = str.find(sstr);
-    while (std::wstring::npos != end)
-    {
-        if (!ignoreEmpty || begin != end)
-            ret.push_back(str.substr(begin, end - begin));
-        begin = end + sstr.length();
-        end = str.find(sstr, begin);
-    }
-    if (!ignoreEmpty || begin < str.length())
-        ret.push_back(str.substr(begin));
+    str_split(str, sstr, &ret, ignoreEmpty);
     return ret;
 }
 
@@ -77,65 +87,91 @@ inline std::vector<std::wstring> str_split(const std::wstring &str, const std::w
  * @param sstr
  *      该字符串中的每一个字符都是分割字符
  */
-inline std::vector<std::string> chr_split(const std::string &str, const std::string &sstr, bool ignoreEmpty = false)
+inline void chr_split(const std::string &str, const std::string &sstr, std::vector<std::string> *out, bool ignoreEmpty = false)
 {
-    assert(sstr.length() > 0);
+    assert(sstr.length() > 0 && NULL != out);
 
-    std::vector<std::string> ret;
     std::string::size_type begin = 0, end = str.find_first_of(sstr);
     while (std::string::npos != end)
     {
         if (!ignoreEmpty || begin != end)
-            ret.push_back(str.substr(begin, end - begin));
+            out->push_back(str.substr(begin, end - begin));
         begin = end + 1;
         end = str.find_first_of(sstr, begin);
     }
     if (!ignoreEmpty || begin < str.length())
-        ret.push_back(str.substr(begin));
+        out->push_back(str.substr(begin));
+}
+
+inline void chr_split(const std::wstring &str, const std::wstring &sstr, std::vector<std::wstring> *out, bool ignoreEmpty = false)
+{
+    assert(sstr.length() > 0 && NULL != out);
+
+    std::wstring::size_type begin = 0, end = str.find_first_of(sstr);
+    while (std::wstring::npos != end)
+    {
+        if (!ignoreEmpty || begin != end)
+            out->push_back(str.substr(begin, end - begin));
+        begin = end + 1;
+        end = str.find_first_of(sstr, begin);
+    }
+    if (!ignoreEmpty || begin < str.length())
+        out->push_back(str.substr(begin));
+}
+
+inline std::vector<std::string> chr_split(const std::string &str, const std::string &sstr, bool ignoreEmpty = false)
+{
+    std::vector<std::string> ret;
+    chr_split(str, sstr, &ret, ignoreEmpty);
     return ret;
 }
 
 inline std::vector<std::wstring> chr_split(const std::wstring &str, const std::wstring &sstr, bool ignoreEmpty = false)
 {
-    assert(sstr.length() > 0);
-
     std::vector<std::wstring> ret;
-    std::wstring::size_type begin = 0, end = str.find_first_of(sstr);
-    while (std::wstring::npos != end)
-    {
-        if (!ignoreEmpty || begin != end)
-            ret.push_back(str.substr(begin, end - begin));
-        begin = end + 1;
-        end = str.find_first_of(sstr, begin);
-    }
-    if (!ignoreEmpty || begin < str.length())
-        ret.push_back(str.substr(begin));
+    chr_split(str, sstr, &ret, ignoreEmpty);
     return ret;
 }
 
 /** split the string */
+inline void chr_split(const std::string &str, char c, std::vector<std::string> *out, bool ignoreEmpty = false)
+{
+    assert(NULL != out);
+    chr_split(str, std::string(1, c), out, ignoreEmpty);
+}
+
+inline void chr_split(const std::wstring &str, wchar_t c, std::vector<std::wstring> *out, bool ignoreEmpty = false)
+{
+    assert(NULL != out);
+    chr_split(str, std::wstring(1, c), out, ignoreEmpty);
+}
+
 inline std::vector<std::string> chr_split(const std::string &str, char c, bool ignoreEmpty = false)
 {
-    return chr_split(str, std::string(1, c), ignoreEmpty);
+    std::vector<std::string> ret;
+    chr_split(str, std::string(1, c), &ret, ignoreEmpty);
+    return ret;
 }
 
 inline std::vector<std::wstring> chr_split(const std::wstring &str, wchar_t c, bool ignoreEmpty = false)
 {
-    return chr_split(str, std::wstring(1, c), ignoreEmpty);
+    std::vector<std::wstring> ret;
+    chr_split(str, std::wstring(1, c), &ret, ignoreEmpty);
+    return ret;
 }
 
-inline std::string format(const char *fmt, ...)
+inline void format(const char *fmt, std::string *out, ...)
 {
-    assert(NULL != fmt);
+    assert(NULL != fmt && NULL != out);
     size_t size = 100;
-    char *buf = (char*)malloc(size);
+    char *buf = (char*) ::malloc(size);
     assert(NULL != buf);
 
     va_list ap;
     while (NULL != buf)
     {
         va_start(ap, fmt);
-        int n = vsnprintf(buf, size, fmt, ap);
+        int n = ::vsnprintf(buf, size, fmt, ap);
         va_end(ap);
         if (n > -1 && n < (int)size)
             break;
@@ -145,66 +181,153 @@ inline std::string format(const char *fmt, ...)
         else
             size *= 2;  /* glib 2.0 */
 
-        char *np = (char*)realloc(buf, size);
+        char *np = (char*) ::realloc(buf, size);
+        assert(NULL != np);
+        if (NULL != np)
+            buf = np;
+    }
+    if (NULL == buf)
+    {
+        out->clear();
+    }
+    else
+    {
+        *out = buf;
+        ::free(buf); /* include the case of success of realloc() and failure of realloc() */
+    }
+}
+
+inline std::string format(const char *fmt, ...)
+{
+    assert(NULL != fmt);
+    size_t size = 100;
+    char *buf = (char*) ::malloc(size);
+    assert(NULL != buf);
+
+    va_list ap;
+    while (NULL != buf)
+    {
+        va_start(ap, fmt);
+        int n = ::vsnprintf(buf, size, fmt, ap);
+        va_end(ap);
+        if (n > -1 && n < (int)size)
+            break;
+
+        if (n > -1)
+            size = n + 1; /* glibc 2.1 */
+        else
+            size *= 2;  /* glib 2.0 */
+
+        char *np = (char*) ::realloc(buf, size);
         assert(NULL != np);
         if (NULL != np)
             buf = np;
     }
     std::string ret = (NULL == buf ? "" : buf);
     if (NULL != buf)
-        free(buf); /* include the case of success of realloc() and failure of realloc() */
+        ::free(buf); /* include the case of success of realloc() and failure of realloc() */
     return ret;
 }
 
 /* 去除首尾空白 */
-inline std::string trim(const std::string& str, const std::string& blanks = " \t\r\n")
+inline void trim(const std::string& str, std::string *out, const std::string& blanks = " \t\r\n")
 {
+    assert(NULL != out);
     const std::string::size_type begin = str.find_first_not_of(blanks),
         end = str.find_last_not_of(blanks);
     if (std::string::npos == begin || std::string::npos == end)
-        return std::string();
+        out->clear();
     else
-        return str.substr(begin, end - begin + 1);
+        *out = str.substr(begin, end - begin + 1);
+}
+
+inline void trim(const std::wstring& str, std::wstring *out, const std::wstring& blanks = L" \t\r\n")
+{
+    assert(NULL != out);
+    const std::wstring::size_type begin = str.find_first_not_of(blanks),
+        end = str.find_last_not_of(blanks);
+    if (std::wstring::npos == begin || std::wstring::npos == end)
+        out->clear();
+    else
+        *out = str.substr(begin, end - begin + 1);
+}
+
+inline std::string trim(const std::string& str, const std::string& blanks = " \t\r\n")
+{
+    std::string ret;
+    trim(str, &ret, blanks);
+    return ret;
 }
 
 inline std::wstring trim(const std::wstring& str, const std::wstring& blanks = L" \t\r\n")
 {
-    const std::wstring::size_type begin = str.find_first_not_of(blanks),
-        end = str.find_last_not_of(blanks);
-    if (std::wstring::npos == begin || std::wstring::npos == end)
-        return std::wstring();
-    else
-        return str.substr(begin, end - begin + 1);
+    std::wstring ret;
+    trim(str, &ret, blanks);
+    return ret;
 }
 
 /** 去除左边空白 */
+inline void ltrim(const std::string& str, std::string *out, const std::string& blanks = " \t\r\n")
+{
+    assert(NULL != out);
+    const std::string::size_type begin = str.find_first_not_of(blanks);
+    *out = str.substr(begin);
+}
+
+inline void ltrim(const std::wstring& str, std::wstring *out, const std::wstring& blanks = L" \t\r\n")
+{
+    assert(NULL != out);
+    const std::wstring::size_type begin = str.find_first_not_of(blanks);
+    *out = str.substr(begin);
+}
+
 inline std::string ltrim(const std::string& str, const std::string& blanks = " \t\r\n")
 {
-    const std::string::size_type begin = str.find_first_not_of(blanks);
-    return str.substr(begin);
+    std::string ret;
+    ltrim(str, &ret, blanks);
+    return ret;
 }
 
 inline std::wstring ltrim(const std::wstring& str, const std::wstring& blanks = L" \t\r\n")
 {
-    const std::wstring::size_type begin = str.find_first_not_of(blanks);
-    return str.substr(begin);
+    std::wstring ret;
+    ltrim(str, &ret, blanks);
+    return ret;
 }
 
 /** 去除右边空白 */
-inline std::string rtrim(const std::string& str, const std::string& blanks = " \t\r\n")
+inline void rtrim(const std::string& str, std::string *out, const std::string& blanks = " \t\r\n")
 {
+    assert(NULL != out);
     const std::string::size_type end = str.find_last_not_of(blanks);
     if (std::string::npos == end)
-        return std::string();
-    return str.substr(0, end + 1);
+        out->clear();
+    else
+        *out = str.substr(0, end + 1);
+}
+
+inline void rtrim(const std::wstring& str, std::wstring *out, const std::wstring& blanks = L" \t\r\n")
+{
+    assert(NULL != out);
+    const std::wstring::size_type end = str.find_last_not_of(blanks);
+    if (std::wstring::npos == end)
+        out->clear();
+    else
+        *out = str.substr(0, end + 1);
+}
+
+inline std::string rtrim(const std::string& str, const std::string& blanks = " \t\r\n")
+{
+    std::string ret;
+    rtrim(str, &ret, blanks);
+    return ret;
 }
 
 inline std::wstring rtrim(const std::wstring& str, const std::wstring& blanks = L" \t\r\n")
 {
-    const std::wstring::size_type end = str.find_last_not_of(blanks);
-    if (std::wstring::npos == end)
-        return std::wstring();
-    return str.substr(0, end + 1);
+    std::wstring ret;
+    rtrim(str, &ret, blanks);
+    return ret;
 }
 
 /** 忽略大小写的字符串比较 */
@@ -274,33 +397,10 @@ inline bool ends_with(const std::wstring& s, const std::wstring& tail)
     return true;
 }
 
-inline std::string wstr2str(const std::wstring& wstr)
-{
-#if defined(NUT_PLATFORM_OS_WINDOWS)
-    const int n = ::WideCharToMultiByte(CP_ACP /* code page */, 0 /* flags */,
-        wstr.c_str(), wstr.length() + 1, NULL, 0, NULL, NULL);
-    char *p = new char[n];
-    ::memset(p, 0, n * sizeof(char));
-    ::WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), wstr.length() + 1, p, n, NULL, NULL);
-    std::string ret(p);
-    delete[] p;
-    return ret;
-#else
-    const int n = ::wcstombs(NULL, wstr.c_str(), 0) + 1; // '\0' is added
-    if (n <= 0)
-        return std::string();
-    char *p = new char[n];
-    ::memset(p, 0, n * sizeof(char));
-    ::wcstombs(p, wstr.c_str(), n);
-    std::string ret(p);
-    delete[] p;
-    return ret;
-#endif
-}
-
 inline void wstr2str(const wchar_t* wstr, std::string* out)
 {
     assert(NULL != wstr && NULL != out);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     const int n = ::WideCharToMultiByte(CP_ACP /* code page */, 0 /* flags */,
         wstr, -1 /* 字符串以\0结束 */, NULL, 0, NULL, NULL) + 1;
@@ -324,32 +424,17 @@ inline void wstr2str(const wchar_t* wstr, std::string* out)
 #endif
 }
 
-inline std::wstring str2wstr(const std::string& str)
+inline std::string wstr2str(const wchar_t* wstr)
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
-    const int n = ::MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.length() + 1, NULL, 0);
-    wchar_t *p = new wchar_t[n];
-    ::memset(p, 0, n * sizeof(wchar_t));
-    ::MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.length() + 1, p, n);
-    std::wstring ret(p);
-    delete[] p;
+    std::string ret;
+    wstr2str(wstr, &ret);
     return ret;
-#else
-    const int n = ::mbstowcs(NULL, str.c_str(), 0) + 1;
-    if (n <= 0)
-        return std::wstring();
-    wchar_t *p = new wchar_t[n];
-    ::memset(p, 0, n * sizeof(wchar_t));
-    ::mbstowcs(p, str.c_str(), n);
-    std::wstring ret(p);
-    delete[] p;
-    return ret;
-#endif
 }
 
 inline void str2wstr(const char* str, std::wstring* out)
 {
     assert(NULL != str && NULL != out);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     const int n = ::MultiByteToWideChar(CP_ACP, 0, str, -1/* 字符串以\0结束 */, NULL, 0) + 1;
     wchar_t *p = new wchar_t[n];
@@ -370,6 +455,13 @@ inline void str2wstr(const char* str, std::wstring* out)
     *out = p;
     delete[] p;
 #endif
+}
+
+inline std::wstring str2wstr(const char* str)
+{
+    std::wstring ret;
+    str2wstr(str, &ret);
+    return ret;
 }
 
 }

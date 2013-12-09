@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-06-23
- * @last-edit 2012-11-13 21:30:25 jingqi
+ * @last-edit 2013-12-09 11:10:41 jingqi
  */
 
 #ifndef ___HEADFILE_E6D40B10_E5D6_4092_A38B_4E69E5B8E123_
@@ -71,8 +71,10 @@ public:
         return L'\\' == c || L'/' == c;
     }
 
-    static inline std::string getCwd()
+    static inline void getCwd(std::string *out)
     {
+        assert(NULL != out);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   if defined(NUT_PLATFORM_CC_VC)
 #       pragma warning(push)
@@ -89,12 +91,46 @@ public:
         buf[0] = 0;
         getcwd(buf, PATH_MAX + 1);
 #endif
-        return buf;
+
+        *out = buf;
+    }
+
+    static inline void getCwd(std::wstring *out)
+    {
+        assert(NULL != out);
+
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+#   if defined(NUT_PLATFORM_CC_VC)
+#       pragma warning(push)
+#       pragma warning(disable: 4996)
+#   endif
+        char buf[MAX_PATH + 1];
+        buf[0] = 0;
+        getcwd(buf, MAX_PATH + 1);
+#   if defined(NUT_PLATFORM_CC_VC)
+#       pragma warning(pop)
+#   endif
+#else
+        char buf[PATH_MAX + 1];
+        buf[0] = 0;
+        getcwd(buf, PATH_MAX + 1);
+#endif
+
+        str2wstr(buf, out);
+    }
+
+    static inline std::string getCwd()
+    {
+        std::string ret;
+        getCwd(&ret);
+        return ret;
     }
 
     static inline std::wstring getWCwd()
     {
-        return str2wstr(getCwd());
+        std::wstring ret;
+        getCwd(&ret);
+        return ret;
     }
 
     static inline bool isabs(const std::string& p)
@@ -133,15 +169,19 @@ public:
         return false;
     }
 
-    static inline std::string abspath(const std::string&  p)
+    static inline void abspath(const std::string& p, std::string *out)
     {
+        assert(NULL != out);
         if (p.empty())
-            return getCwd();
+        {
+            getCwd(out);
+            return;
+        }
 
         // 探测是否从根路径开始
-        std::string ret;
+        out->clear();
         if (!isabs(p))
-            ret = getCwd();
+            getCwd(out);
 
         // 组装路径
         std::string part;
@@ -156,19 +196,19 @@ public:
             }
 
             // 处理根目录
-            if (ret.empty())
+            if (out->empty())
             {
                 if (part.empty())
                 {
                     // linux root
-                    ret.push_back('/');
+                    out->push_back('/');
                     continue;
                 }
                 else if (part.at(part.length() - 1) == ':')
                 {
                     // windows partition root
-                    ret += part;
-                    ret.push_back('\\');
+                    *out += part;
+                    out->push_back('\\');
                     part.clear();
                     continue;
                 }
@@ -179,45 +219,47 @@ public:
             {
                 if (part == "..")
                 {
-                    register int j = ret.size() - 1;
-                    if (isPathSeparator(ret.at(j)))
+                    register int j = out->size() - 1;
+                    if (isPathSeparator(out->at(j)))
                         --j;
                     while (j >= 0)
                     {
-                        if (isPathSeparator(ret.at(j)))
+                        if (isPathSeparator(out->at(j)))
                             break;
                         --j;
                     }
-                    if (j == 0 || (j > 0 && ret.at(j - 1) == ':'))
-                        ret.resize(j + 1);
+                    if (j == 0 || (j > 0 && out->at(j - 1) == ':'))
+                        out->resize(j + 1);
                     else if(j > 0)
-                        ret.resize(j);
+                        out->resize(j);
                     // else: parent directory out of range
                 }
                 else if (part != ".")
                 {
-                    if (!ret.empty() && !isPathSeparator(ret.at(ret.length() - 1)))
+                    if (!out->empty() && !isPathSeparator(out->at(out->length() - 1)))
                     {
-                        ret.push_back(seperator());
+                        out->push_back(seperator());
                     }
-                    ret += part;
+                    *out += part;
                 }
                 part.clear();
             }
         }
-
-        return ret;
     }
 
-    static inline std::wstring abspath(const std::wstring&  p)
+    static inline void abspath(const std::wstring& p, std::wstring *out)
     {
+        assert(NULL != out);
         if (p.empty())
-            return getWCwd();
+        {
+            getCwd(out);
+            return;
+        }
 
         // 探测是否从根路径开始
-        std::wstring ret;
+        out->clear();
         if (!isabs(p))
-            ret = getWCwd();
+            getCwd(out);
 
         // 组装路径
         std::wstring part;
@@ -232,19 +274,19 @@ public:
             }
 
             // 处理根目录
-            if (ret.empty())
+            if (out->empty())
             {
                 if (part.empty())
                 {
                     // linux root
-                    ret.push_back(L'/');
+                    out->push_back(L'/');
                     continue;
                 }
                 else if (part.at(part.length() - 1) == L':')
                 {
                     // windows partition root
-                    ret += part;
-                    ret.push_back(L'\\');
+                    *out += part;
+                    out->push_back(L'\\');
                     part.clear();
                     continue;
                 }
@@ -255,33 +297,45 @@ public:
             {
                 if (part == L"..")
                 {
-                    register int j = ret.size() - 1;
-                    if (isPathSeparator(ret.at(j)))
+                    register int j = out->size() - 1;
+                    if (isPathSeparator(out->at(j)))
                         --j;
                     while (j >= 0)
                     {
-                        if (isPathSeparator(ret.at(j)))
+                        if (isPathSeparator(out->at(j)))
                             break;
                         --j;
                     }
-                    if (j == 0 || (j > 0 && ret.at(j - 1) == L':'))
-                        ret.resize(j + 1);
+                    if (j == 0 || (j > 0 && out->at(j - 1) == L':'))
+                        out->resize(j + 1);
                     else if(j > 0)
-                        ret.resize(j);
+                        out->resize(j);
                     // else: parent directory out of range
                 }
                 else if (part != L".")
                 {
-                    if (!ret.empty() && !isPathSeparator(ret.at(ret.length() - 1)))
+                    if (!out->empty() && !isPathSeparator(out->at(out->length() - 1)))
                     {
-                        ret.push_back(seperator());
+                        out->push_back(seperator());
                     }
-                    ret += part;
+                    *out += part;
                 }
                 part.clear();
             }
         }
+    }
 
+    static inline std::string abspath(const std::string& p)
+    {
+        std::string ret;
+        abspath(p, &ret);
+        return ret;
+    }
+
+    static inline std::wstring abspath(const std::wstring& p)
+    {
+        std::wstring ret;
+        abspath(p, &ret);
         return ret;
     }
 
@@ -298,40 +352,98 @@ public:
      * "/ab.txt" -> "/" "ab.txt"
      * "c:\\tmp" -> "c:\\" "tmp"
      */
-    static inline Tuple<std::string,std::string> split(const std::string &path)
+    static inline void split(const std::string &path, std::string *parent, std::string *child)
     {
+        assert(NULL != parent || NULL != child);
+
         // 找到最后一个 '/'
         std::string::size_type p1 = path.find_last_of('\\'), p2 = path.find_last_of('/');
         if (std::string::npos == p1 && std::string::npos == p2)
-            return Tuple<std::string, std::string>("", path);
+        {
+            if (NULL != parent)
+                parent->clear();
+            if (NULL != child)
+                *child = path;
+            return;
+        }
         else if (std::string::npos != p1 && std::string::npos != p2)
+        {
             p1 = (p1 > p2 ? p1 : p2);
+        }
         else if (std::string::npos == p1)
+        {
             p1 = p2;
+        }
 
         assert(std::string::npos != p1);
         if (0 == p1 || ':' == path[p1 - 1]) // 磁盘号 + 根目录
-            return Tuple<std::string, std::string>(path.substr(0, p1 + 1), path.substr(p1 + 1));
+        {
+            if (NULL != parent)
+                *parent = path.substr(0, p1 + 1);
+            if (NULL != child)
+                *child = path.substr(p1 + 1);
+        }
         else
-            return Tuple<std::string, std::string>(path.substr(0, p1), path.substr(p1 + 1));
+        {
+            if (NULL != parent)
+                *parent = path.substr(0, p1);
+            if (NULL != child)
+                *child = path.substr(p1 + 1);
+        }
+    }
+
+    static inline void split(const std::wstring& path, std::wstring *parent, std::wstring *child)
+    {
+        assert(NULL != parent || NULL != child);
+
+        // 找到最后一个 '/'
+        std::wstring::size_type p1 = path.find_last_of(L'\\'), p2 = path.find_last_of(L'/');
+        if (std::wstring::npos == p1 && std::wstring::npos == p2)
+        {
+            if (NULL != parent)
+                parent->clear();
+            if (NULL != child)
+                *child = path;
+            return;
+        }
+        else if (std::wstring::npos != p1 && std::wstring::npos != p2)
+        {
+            p1 = (p1 > p2 ? p1 : p2);
+        }
+        else if (std::wstring::npos == p1)
+        {
+            p1 = p2;
+        }
+
+        assert(std::wstring::npos != p1);
+        if (0 == p1 || L':' == path[p1 - 1]) // 磁盘号 + 根目录
+        {
+            if (NULL != parent)
+                *parent = path.substr(0, p1 + 1);
+            if (NULL != child)
+                *child = path.substr(p1 + 1);
+        }
+        else
+        {
+            if (NULL != parent)
+                *parent = path.substr(0, p1);
+            if (NULL != child)
+                *child = path.substr(p1 + 1);
+        }
+    }
+
+    static inline Tuple<std::string,std::string> split(const std::string& path)
+    {
+        Tuple<std::string,std::string> ret;
+        split(path, &ret.first, &ret.second);
+        return ret;
     }
 
     static inline Tuple<std::wstring,std::wstring> split(const std::wstring& path)
     {
-        // 找到最后一个 '/'
-        std::wstring::size_type p1 = path.find_last_of(L'\\'), p2 = path.find_last_of(L'/');
-        if (std::wstring::npos == p1 && std::wstring::npos == p2)
-            return Tuple<std::wstring, std::wstring>(L"", path);
-        else if (std::wstring::npos != p1 && std::wstring::npos != p2)
-            p1 = (p1 > p2 ? p1 : p2);
-        else if (std::wstring::npos == p1)
-            p1 = p2;
-
-        assert(std::wstring::npos != p1);
-        if (0 == p1 || L':' == path[p1 - 1]) // 磁盘号 + 根目录
-            return Tuple<std::wstring, std::wstring>(path.substr(0, p1 + 1), path.substr(p1 + 1));
-        else
-            return Tuple<std::wstring, std::wstring>(path.substr(0, p1), path.substr(p1 + 1));
+        Tuple<std::wstring,std::wstring> ret;
+        split(path, &ret.first, &ret.second);
+        return ret;
     }
 
     /**
@@ -341,8 +453,10 @@ public:
      * "c:\\mn\\p" -> "c:" "\\mn\\p"
      * "/mnt/sdcard" -> "" "/mnt/sdcard"
      */
-    static inline Tuple<std::string,std::string> splitdrive(const std::string& path)
+    static inline void splitdrive(const std::string& path, std::string *drive, std::string *rest)
     {
+        assert(NULL != drive || NULL != rest);
+
         int pos = -1;
         for (int i = 0; '\0' != path[i]; ++i)
         {
@@ -355,12 +469,23 @@ public:
             }
         }
         if (pos < 0)
-            return Tuple<std::string,std::string>("", path);
-        return Tuple<std::string,std::string>(path.substr(0, pos + 1), path.substr(pos + 1));
+        {
+            if (NULL != drive)
+                drive->clear();
+            if (NULL != rest)
+                *rest = path;
+            return;
+        }
+        if (NULL != drive)
+            *drive = path.substr(0, pos + 1);
+        if (NULL != rest)
+            *rest = path.substr(pos + 1);
     }
 
-    static inline Tuple<std::wstring,std::wstring> splitdrive(const std::wstring& path)
+    static inline void splitdrive(const std::wstring& path, std::wstring *drive, std::wstring *rest)
     {
+        assert(NULL != drive || NULL != rest);
+
         int pos = -1;
         for (int i = 0; L'\0' != path[i]; ++i)
         {
@@ -373,8 +498,31 @@ public:
             }
         }
         if (pos < 0)
-            return Tuple<std::wstring,std::wstring>(L"", path);
-        return Tuple<std::wstring,std::wstring>(path.substr(0, pos + 1), path.substr(pos + 1));
+        {
+            if (NULL != drive)
+                drive->clear();
+            if (NULL != rest)
+                *rest = path;
+            return;
+        }
+        if (NULL != drive)
+            *drive = path.substr(0, pos + 1);
+        if (NULL != rest)
+            *rest = path.substr(pos + 1);
+    }
+
+    static inline Tuple<std::string,std::string> splitdrive(const std::string& path)
+    {
+        Tuple<std::string,std::string> ret;
+        splitdrive(path, &ret.first, &ret.second);
+        return ret;
+    }
+
+    static inline Tuple<std::wstring,std::wstring> splitdrive(const std::wstring& path)
+    {
+        Tuple<std::wstring,std::wstring> ret;
+        splitdrive(path, &ret.first, &ret.second);
+        return ret;
     }
 
     /**
@@ -383,8 +531,10 @@ public:
      * 例如：
      * "a.txt" -> "a" ".txt"
      */
-    static inline Tuple<std::string,std::string> splitext(const std::string& path)
+    static inline void splitext(const std::string& path, std::string *prefix, std::string *ext)
     {
+        assert(NULL != prefix || NULL != ext);
+
         int pos = -1;
         for (int i = path.length() - 1; i >= 0; --i)
         {
@@ -399,12 +549,23 @@ public:
             }
         }
         if (pos < 0)
-            return Tuple<std::string,std::string>(path,"");
-        return Tuple<std::string,std::string>(path.substr(0,pos),path.substr(pos));
+        {
+            if (NULL != prefix)
+                *prefix = path;
+            if (NULL != ext)
+                ext->clear();
+            return;
+        }
+        if (NULL != prefix)
+            *prefix = path.substr(0, pos);
+        if (NULL != ext)
+            *ext = path.substr(pos);
     }
 
-    static inline Tuple<std::wstring,std::wstring> splitext(const std::wstring& path)
+    static inline void splitext(const std::wstring& path, std::wstring *prefix, std::wstring *ext)
     {
+        assert(NULL != prefix || NULL != ext);
+
         int pos = -1;
         for (int i = path.length() - 1; i >= 0; --i)
         {
@@ -419,8 +580,31 @@ public:
             }
         }
         if (pos < 0)
-            return Tuple<std::wstring,std::wstring>(path, L"");
-        return Tuple<std::wstring,std::wstring>(path.substr(0, pos),path.substr(pos));
+        {
+            if (NULL != prefix)
+                *prefix = path;
+            if (NULL != ext)
+                ext->clear();
+            return;
+        }
+        if (NULL != prefix)
+            *prefix = path.substr(0, pos);
+        if (NULL != ext)
+            *ext = path.substr(pos);
+    }
+
+    static inline Tuple<std::string,std::string> splitext(const std::string& path)
+    {
+        Tuple<std::string,std::string> ret;
+        splitext(path, &ret.first, &ret.second);
+        return ret;
+    }
+
+    static inline Tuple<std::wstring,std::wstring> splitext(const std::wstring& path)
+    {
+        Tuple<std::wstring,std::wstring> ret;
+        splitext(path, &ret.first, &ret.second);
+        return ret;
     }
 
     // TODO static void splitunc() {}
@@ -628,8 +812,6 @@ public:
         return getsize(path.c_str());
     }
 
-    // TODO static bool isabs() {}
-
     static inline bool isdir(const char *path)
     {
         assert(NULL != path);
@@ -742,47 +924,79 @@ public:
      * "/" "sd" -> "/sd"
      * "c:" "\\tmp" -> "c:\\tmp"
      */
-    static inline std::string join(const std::string& a, const std::string& b)
+    static inline void join(const std::string& a, const std::string& b, std::string *out)
     {
-        if ('\0' == a[0])
-            return b;
-            
+        assert(NULL != out);
+
+        if (a.length() == 0)
+        {
+            *out = b;
+            return;
+        }
+
         // 处理磁盘号
         if (':' == *a.rbegin())
-            return a + b;
+        {
+            *out = a + b;
+            return;
+        }
 
         // 处理根目录 '/', 'c:\\'
-        if ('\\' == b[0] || '/' == b[0] || std::string::npos != b.find_first_of(':'))
-            return b;
+        if (b.length() > 0 && (isPathSeparator(*b.begin()) || std::string::npos != b.find_first_of(':')))
+        {
+            *out = b;
+            return;
+        }
 
         // 连接
-        std::string ret(a);
-        if ('\\' != *a.rbegin() && '/' != *a.rbegin())
-            ret += seperator();
-        if ('\0' != b[0])
-            ret.append(b);
+        if (isPathSeparator(*a.rbegin()))
+            *out = a + b;
+        else
+            *out = a + seperator() + b;
+    }
+
+    static inline void join(const std::wstring& a, const std::wstring& b, std::wstring *out)
+    {
+        assert(NULL != out);
+
+        if (a.length() == 0)
+        {
+            *out = b;
+            return;
+        }
+
+        // 处理磁盘号
+        if (L':' == *a.rbegin())
+        {
+            *out = a + b;
+            return;
+        }
+
+        // 处理根目录 '/', 'c:\\'
+        if (b.length() > 0 && (isPathSeparator(*b.begin()) || std::wstring::npos != b.find_first_of(L':')))
+        {
+            *out = b;
+            return;
+        }
+
+        // 连接
+        if (isPathSeparator(*a.rbegin()))
+            *out = a + b;
+        else
+            *out = a + wseperator() + b;
+    }
+
+    static inline std::string join(const std::string& a, const std::string& b)
+    {
+        std::string ret;
+        join(a, b, &ret);
         return ret;
     }
 
     static inline std::wstring join(const std::wstring& a, const std::wstring& b)
     {
-        if (L'\0' == a[0])
-            return b;
-
-        // 处理磁盘号
-        if (L':' == *a.rbegin())
-            return a + b;
-
-        // 处理根目录 '/', 'c:\\'
-        if (L'\\' == b[0] || L'/' == b[0] || std::wstring::npos != b.find_first_of(L':'))
-            return b;
-
-        // 连接
-        std::wstring ret(a);
-        if (L'\\' != *a.rbegin() && L'/' != *a.rbegin())
-            ret += wseperator();
-        if (L'\0' != b[0])
-            ret.append(b);
+        std::wstring ret;
+        join(a, b, &ret);
         return ret;
     }
 

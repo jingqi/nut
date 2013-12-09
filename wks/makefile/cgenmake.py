@@ -63,7 +63,7 @@ def genmake(cfg):
         ret += 'gdb: $(TARGET)\n' '\t(cd "' + cfg.TARGET_RUN_DIR + '"; export LD_LIBRARY_PATH="' + ld_path + '"; gdb "' + run + '" ' + cfg.TARGET_RUN_ARGS + ')\n\n'
         ret += 'cgdb: $(TARGET)\n' '\t(cd "' + cfg.TARGET_RUN_DIR + '"; export LD_LIBRARY_PATH="' + ld_path + '"; cgdb "' + run + '" ' + cfg.TARGET_RUN_ARGS + ')\n\n'
         ret += 'nemiver: $(TARGET)\n' '\t(cd "' + cfg.TARGET_RUN_DIR + '"; export LD_LIBRARY_PATH="' + ld_path + '"; nemiver "' + run + '" ' + cfg.TARGET_RUN_ARGS + ')\n\n'
-        ret += 'valgrind: $(TARGET)\n' '\t(cd "' + cfg.TARGET_RUN_DIR + '"; export LD_LIBRARY_PATH="' + ld_path + '"; valgrind "' + run + '" ' + cfg.TARGET_RUN_ARGS + ')\n\n'
+        ret += 'valgrind: $(TARGET)\n' '\t(cd "' + cfg.TARGET_RUN_DIR + '"; export LD_LIBRARY_PATH="' + ld_path + '"; valgrind -v --leak-check=full "' + run + '" ' + cfg.TARGET_RUN_ARGS + ')\n\n'
 
     # 所有的依赖关系
     all_srcs = []
