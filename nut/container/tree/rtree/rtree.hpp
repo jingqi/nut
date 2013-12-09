@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-03-10
- * @last-edit 2013-12-09 14:28:48 jingqi
+ * @last-edit 2013-12-09 14:36:59 jingqi
  */
 
 #ifndef ___HEADFILE_160547E9_5A30_4A78_A5FF_76E0C5EBE229_
@@ -519,14 +519,16 @@ private:
         }
         
         // 挑选两个种子，并分别作为 parent 和 uncle (parent的兄弟节点) 的一个子节点
-        Tuple<Node*, Node*> seeds = linerPickSeeds(&remained);
+        Node *seed1 = NULL, *seed2 = NULL;
+        linerPickSeeds(&remained, &seed1, &seed2);
+        assert(NULL != seed1 && NULL != seed2);
         parent->clearChildren();
-        parent->area = seeds.first->area;
-        parent->appendChild(seeds.first);
+        parent->area = seed1->area;
+        parent->appendChild(seed1);
         TreeNode *uncle = m_treenodeAlloc.allocate(1);
         assert(NULL != uncle);
         new (uncle) TreeNode();
-        uncle->appendChild(seeds.second);
+        uncle->appendChild(seed2);
         uncle->fitRect();
 
         size_t count1 = 1, count2 = 1;
@@ -576,9 +578,9 @@ private:
     /**
      * 从一堆子节点中选取两个合适的作为种子
      */
-    Tuple<Node*, Node*> linerPickSeeds(std::list<Node*> *children)
+    void linerPickSeeds(std::list<Node*> *children, Node **pseed1, Node **pseed2)
     {
-        assert(NULL != children && children->size() >= 2);
+        assert(NULL != children && children->size() >= 2 && NULL != pseed1 && NULL != pseed2);
 
         typedef std::list<Node*> list_t;
         typedef typename list_t::iterator iter_t;
@@ -647,10 +649,10 @@ private:
         assert(highestLowSide[greatest_separation_idx] != lowestHighSide[greatest_separation_idx]);
 
         // 构造返回值，并从列表中删除选中的项
-        Tuple<Node*, Node*> ret(*(highestLowSide[greatest_separation_idx]), *(lowestHighSide[greatest_separation_idx]));
+        *pseed1 = *(highestLowSide[greatest_separation_idx]);
+        *pseed2 = *(lowestHighSide[greatest_separation_idx]);
         children->erase(highestLowSide[greatest_separation_idx]);
         children->erase(lowestHighSide[greatest_separation_idx]); // 由于是list，上次删除操作后迭代器还未失效
-        return ret;
     }
 
     /**
