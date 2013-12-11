@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2010-8-18
- * @last-edit 2013-12-09 13:11:25 jingqi
+ * @last-edit 2013-12-11 17:34:22 jingqi
  */
 
 #ifndef ___HEADFILE___8BC3081E_4374_470D_9E66_CC7F414ED9B7_
@@ -431,6 +431,13 @@ inline std::string wstr2str(const wchar_t* wstr)
     return ret;
 }
 
+inline std::string wstr2str(const std::wstring& wstr)
+{
+    std::string ret;
+    wstr2str(wstr.c_str(), &ret);
+    return ret;
+}
+
 inline void str2wstr(const char* str, std::wstring* out)
 {
     assert(NULL != str && NULL != out);
@@ -461,6 +468,13 @@ inline std::wstring str2wstr(const char* str)
 {
     std::wstring ret;
     str2wstr(str, &ret);
+    return ret;
+}
+
+inline std::wstring str2wstr(const std::string& str)
+{
+    std::wstring ret;
+    str2wstr(str.c_str(), &ret);
     return ret;
 }
 

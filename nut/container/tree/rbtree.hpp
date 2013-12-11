@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-02-13
- * @last-edit 2012-03-02 21:19:53 jingqi
+ * @last-edit 2013-12-11 17:45:09 jingqi
  */
 
 #ifndef ___HEADFILE_16D8579F_C3D1_4CE7_ACA2_3C4B4B82E45D_
@@ -73,7 +73,7 @@ public:
         if (NULL == to_be_del->getLeftChild() || NULL == to_be_del->getRightChild())
             escaper = to_be_del;
         else
-            escaper = BSTree<T,NODE>::successor(to_be_del);
+            escaper = BSTree<K,NODE>::successor(to_be_del);
 
         NODE *sublink = NULL;
         if (NULL != escaper->getLeftChild())
@@ -120,13 +120,14 @@ private:
      */
     static NODE* _left_rotate(NODE *root, NODE *x)
     {
-        //
-        //       |                           |
-        //       X                           Y
-        //      / \     left-rotate(X)      / \
-        //         Y         ->            X
-        //        / \                     / \
-        //
+        /*
+         *
+         *       |                           |
+         *       X                           Y
+         *      / \     left-rotate(X)      / \
+         *         Y         ->            X
+         *        / \                     / \
+         */
         assert(NULL != x);
         NODE *y = x->getRightChild();
         x->setRightChild(y->getLeftChild());
@@ -150,13 +151,13 @@ private:
      */
     static NODE* _right_rotate(NODE *root, NODE *x)
     {
-        //
-        //        |                           |
-        //        X                           Y
-        //       / \     right-rotate(X)     / \
-        //      Y             ->                X
-        //     / \                             / \
-        //
+        /*
+         *        |                           |
+         *        X                           Y
+         *       / \     right-rotate(X)     / \
+         *      Y             ->                X
+         *     / \                             / \
+         */
         assert(NULL != x);
         NODE *y = x->getLeftChild();
         x->setLeftChild(y->getRightChild());
@@ -187,15 +188,15 @@ private:
                 NODE *uncle = parent->getParent()->getRightChild();
                 if (NULL != uncle && uncle->isRed())
                 {
-                    // case 1:
-                    //
-                    //       |                   |
-                    //       B                  [R]
-                    //      / \      color      / \
-                    //     R   R      ->       B   B
-                    //      \                   \
-                    //      [R]                  R
-                    //
+                    /* case 1:
+                     *
+                     *       |                   |
+                     *       B                  [R]
+                     *      / \      color      / \
+                     *     R   R      ->       B   B
+                     *      \                   \
+                     *      [R]                  R
+                     */
                     parent->setRed(false);
                     uncle->setRed(false);
                     parent->getParent()->setRed(true);
@@ -205,28 +206,28 @@ private:
                 {
                     if (x == parent->getRightChild())
                     {
-                        // case 2:
-                        //
-                        //      |                  |
-                        //      B                  B
-                        //     / \     rotate     / \
-                        //    R   B      ->      R   B
-                        //     \                /
-                        //     [R]            [R]
-                        //
+                        /* case 2:
+                         *
+                         *      |                  |
+                         *      B                  B
+                         *     / \     rotate     / \
+                         *    R   B      ->      R   B
+                         *     \                /
+                         *     [R]            [R]
+                         */
                         x = parent;
                         root = _left_rotate(root, x);
                     }
 
-                    // case 3:
-                    //
-                    //         |                         |
-                    //         B                         B
-                    //        / \     color & rotate    / \
-                    //       R   B          ->        [R]  R
-                    //      /                               \
-                    //     [R]                               B
-                    //
+                    /* case 3:
+                     *
+                     *         |                         |
+                     *         B                         B
+                     *        / \     color & rotate    / \
+                     *       R   B          ->        [R]  R
+                     *      /                               \
+                     *     [R]                               B
+                     */
                     parent->setRed(false);
                     parent->getParent()->setRed(true);
                     root = _right_rotate(root, parent->getParent());
@@ -237,15 +238,15 @@ private:
                 NODE *uncle = parent->getParent()->getLeftChild();
                 if (NULL != uncle && uncle->isRed())
                 {
-                    // case 1:
-                    //
-                    //       |                   |
-                    //       B                  [R]
-                    //      / \      color      / \
-                    //     R   R      ->       B   B
-                    //        /                   /
-                    //      [R]                  R
-                    //
+                    /* case 1:
+                     *
+                     *       |                   |
+                     *       B                  [R]
+                     *      / \      color      / \
+                     *     R   R      ->       B   B
+                     *        /                   /
+                     *      [R]                  R
+                     */
                     parent->setRed(false);
                     uncle->setRed(false);
                     parent->getParent()->setRed(true);
@@ -255,28 +256,28 @@ private:
                 {
                     if (x == parent->getLeftChild())
                     {
-                        // case 2:
-                        //
-                        //      |                  |
-                        //      B                  B
-                        //     / \     rotate     / \
-                        //    B   R      ->      B   R
-                        //       /                    \
-                        //     [R]                    [R]
-                        //
+                        /* case 2:
+                         *
+                         *      |                  |
+                         *      B                  B
+                         *     / \     rotate     / \
+                         *    B   R      ->      B   R
+                         *       /                    \
+                         *     [R]                    [R]
+                         */
                         x = parent;
                         root = _right_rotate(root, x);
                     }
 
-                    // case 3:
-                    //
-                    //         |                         |
-                    //         B                         B
-                    //        / \     color & rotate    / \
-                    //       B   R          ->         R  [R]
-                    //            \                   /
-                    //            [R]                B
-                    //
+                    /* case 3:
+                     *
+                     *         |                         |
+                     *         B                         B
+                     *        / \     color & rotate    / \
+                     *       B   R          ->         R  [R]
+                     *            \                   /
+                     *            [R]                B
+                     */
                     parent->setRed(false);
                     parent->getParent()->setRed(true);
                     root = _left_rotate(root, parent->getParent());
@@ -300,15 +301,15 @@ private:
 
                 if (brother->isRed())
                 {
-                    // case 1:
-                    //
-                    //     |                                 |
-                    //     B                                 B
-                    //    / \        color & rotate         / \
-                    //  [B]  R            ->               R   B
-                    //      / \                           / \
-                    //     B   B                        [B]  B
-                    //
+                    /* case 1:
+                     *
+                     *     |                                 |
+                     *     B                                 B
+                     *    / \        color & rotate         / \
+                     *  [B]  R            ->               R   B
+                     *      / \                           / \
+                     *     B   B                        [B]  B
+                     */
                     brother->setRed(false);
                     sublink_parent->setRed(true);
                     root = _left_rotate(root, sublink_parent);
@@ -317,15 +318,15 @@ private:
 
                 if ((NULL == brother->getLeftChild() || !brother->getLeftChild()->isRed()) && (NULL == brother->getRightChild() || !brother->getRightChild()->isRed()))
                 {
-                    // case 2:
-                    //
-                    //    |                      |
-                    //    ?                     [?]
-                    //   / \         color      / \
-                    // [B]  B         ->       B   R
-                    //     / \                    / \
-                    //    B   B                  B   B
-                    //
+                    /* case 2:
+                     *
+                     *    |                      |
+                     *    ?                     [?]
+                     *   / \         color      / \
+                     * [B]  B         ->       B   R
+                     *     / \                    / \
+                     *    B   B                  B   B
+                     */
                     brother->setRed(true);
                     sublink = sublink_parent;
                     sublink_parent = sublink->getParent();
@@ -334,32 +335,32 @@ private:
                 {
                     if (NULL == brother->getRightChild() || !brother->getRightChild()->isRed())
                     {
-                        // case 3:
-                        //
-                        //       |                             |
-                        //       ?                             ?
-                        //      / \       color & rotate      / \
-                        //    [B]  B            ->          [B]  B
-                        //        / \                             \
-                        //       R   B                             R
-                        //                                          \
-                        //                                           B
-                        //
+                        /* case 3:
+                         *
+                         *       |                             |
+                         *       ?                             ?
+                         *      / \       color & rotate      / \
+                         *    [B]  B            ->          [B]  B
+                         *        / \                             \
+                         *       R   B                             R
+                         *                                          \
+                         *                                           B
+                         */
                         brother->getLeftChild()->setRed(false);
                         brother->setRed(true);
                         root = _right_rotate(root, brother);
                         brother = sublink_parent->getRightChild();
                     }
 
-                    // case 4:
-                    //
-                    //     |                                     |
-                    //     ?                                     ?
-                    //    / \            color & rotate         / \
-                    //  [B]  B                ->               B   B
-                    //      / \                               / \
-                    //     ?   R                             B   ?
-                    //
+                    /* case 4:
+                     *
+                     *     |                                     |
+                     *     ?                                     ?
+                     *    / \            color & rotate         / \
+                     *  [B]  B                ->               B   B
+                     *      / \                               / \
+                     *     ?   R                             B   ?
+                     */
                     brother->setRed(sublink_parent->isRed());
                     sublink_parent->setRed(false);
                     brother->getRightChild()->setRed(false);
@@ -376,15 +377,15 @@ private:
 
                 if (brother->isRed())
                 {
-                    // case 1:
-                    //
-                    //     |                                 |
-                    //     B                                 B
-                    //    / \        color & rotate         / \
-                    //   R  [B]            ->              B   R
-                    //  / \                                   / \
-                    // B   B                                 B  [B]
-                    //
+                    /* case 1:
+                     *
+                     *     |                                 |
+                     *     B                                 B
+                     *    / \        color & rotate         / \
+                     *   R  [B]            ->              B   R
+                     *  / \                                   / \
+                     * B   B                                 B  [B]
+                     */
                     brother->setRed(false);
                     sublink_parent->setRed(true);
                     root = _right_rotate(root, sublink_parent);
@@ -393,15 +394,15 @@ private:
 
                 if ((NULL == brother->getLeftChild() || !brother->getLeftChild()->isRed()) && (NULL == brother->getRightChild() || !brother->getRightChild()->isRed()))
                 {
-                    // case 2:
-                    //
-                    //     |                      |
-                    //     ?                     [?]
-                    //    / \         color      / \
-                    //   B  [B]        ->       R   B
-                    //  / \                    / \
-                    // B   B                  B   B
-                    //
+                    /* case 2:
+                     *
+                     *     |                      |
+                     *     ?                     [?]
+                     *    / \         color      / \
+                     *   B  [B]        ->       R   B
+                     *  / \                    / \
+                     * B   B                  B   B
+                     */
                     brother->setRed(true);
                     sublink = sublink_parent;
                     sublink_parent = sublink->getParent();
@@ -410,32 +411,32 @@ private:
                 {
                     if (NULL == brother->getLeftChild() || !brother->getLeftChild()->isRed())
                     {
-                        // case 3:
-                        //
-                        //       |                             |
-                        //       ?                             ?
-                        //      / \       color & rotate      / \
-                        //     B  [B]            ->          B  [B]
-                        //    / \                           /
-                        //   B   R                         R
-                        //                                /
-                        //                               B
-                        //
+                        /* case 3:
+                         *
+                         *       |                             |
+                         *       ?                             ?
+                         *      / \       color & rotate      / \
+                         *     B  [B]            ->          B  [B]
+                         *    / \                           /
+                         *   B   R                         R
+                         *                                /
+                         *                               B
+                         */
                         brother->getRightChild()->setRed(false);
                         brother->setRed(true);
                         root = _left_rotate(root, brother);
                         brother = sublink_parent->getLeftChild();
                     }
 
-                    // case 4:
-                    //
-                    //     |                                     |
-                    //     ?                                     ?
-                    //    / \            color & rotate         / \
-                    //   B  [B]               ->               B   B
-                    //  / \                                       / \
-                    // R   ?                                     ?   B
-                    //
+                    /* case 4:
+                     *
+                     *     |                                     |
+                     *     ?                                     ?
+                     *    / \            color & rotate         / \
+                     *   B  [B]               ->               B   B
+                     *  / \                                       / \
+                     * R   ?                                     ?   B
+                     */
                     brother->setRed(sublink_parent->isRed());
                     sublink_parent->setRed(false);
                     brother->getLeftChild()->setRed(false);
