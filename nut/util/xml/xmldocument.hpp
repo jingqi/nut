@@ -79,7 +79,6 @@ public:
 
     inline void write(const std::string& filePath, bool format = true) const
     {
-        const char *encoding = "GB2312";
         std::ofstream ofs(filePath.c_str());
         std::string all;
         serielize(&all, format);
