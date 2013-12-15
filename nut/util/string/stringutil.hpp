@@ -160,9 +160,9 @@ inline std::vector<std::wstring> chr_split(const std::wstring &str, wchar_t c, b
     return ret;
 }
 
-inline void format(const char *fmt, std::string *out, ...)
+inline void format(std::string *out, const char *fmt, ...)
 {
-    assert(NULL != fmt && NULL != out);
+    assert(NULL != out && NULL != fmt);
     size_t size = 100;
     char *buf = (char*) ::malloc(size);
     assert(NULL != buf);
