@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2013-10-03
@@ -47,7 +47,7 @@ public:
         bool first_line = true;
         while (getline(ifs, line))
         {
-            // ¼æÈİ½«windowsÏÂµÄ»»ĞĞÄÃµ½linuxÏÂÊ¹ÓÃµ¼ÖÂµÄÎÊÌâ
+            // å…¼å®¹å°†windowsä¸‹çš„æ¢è¡Œæ‹¿åˆ°linuxä¸‹ä½¿ç”¨å¯¼è‡´çš„é—®é¢˜
             if (line.length() > 0 && '\r' == *line.rbegin())
                 line.erase(line.length() - 1);
 
@@ -62,7 +62,7 @@ public:
     }
 
     /**
-     * @param ignore_text_blank ºöÂÔÎÄ±¾Ê×Î²µÄ¿Õ°×ºÍ»»ĞĞ
+     * @param ignore_text_blank å¿½ç•¥æ–‡æœ¬é¦–å°¾çš„ç©ºç™½å’Œæ¢è¡Œ
      */
     void parse(const std::string& s, bool ignore_text_blank = true)
     {
@@ -88,7 +88,7 @@ public:
     }
 
     /**
-     * @param format ¸ñÊ½»¯Êä³ö£¬ÒÔ±ãÓÚÔÄ¶Á
+     * @param format æ ¼å¼åŒ–è¾“å‡ºï¼Œä»¥ä¾¿äºé˜…è¯»
      */
     void serielize(std::string *out, bool format = true) const
     {
