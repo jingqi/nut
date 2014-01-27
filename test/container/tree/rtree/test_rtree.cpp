@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <algorithm>
 
 #include <nut/unittest/unittest.hpp>
 

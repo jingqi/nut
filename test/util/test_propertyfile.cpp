@@ -14,7 +14,7 @@ NUT_FIXTURE(TestPropertyFile)
     NUT_CASE(testReadList)
     NUT_CASES_END()
 
-    ref<PropertyFile> pf;
+    nut::ref<PropertyFile> pf;
 
     void setUp()
     {

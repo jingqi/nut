@@ -15,7 +15,7 @@ NUT_FIXTURE(TestConfigFile)
         NUT_CASE(testSetString)
     NUT_CASES_END()
 
-    ref<ConfigFile> pf;
+    nut::ref<ConfigFile> pf;
 
     void setUp()
     {

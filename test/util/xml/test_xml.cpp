@@ -21,12 +21,12 @@ NUT_FIXTURE(TestXml)
 
     void testWrite()
     {
-        ref<XmlElement> r = gc_new<XmlElement>("root");
+        nut::ref<XmlElement> r = gc_new<XmlElement>("root");
         r->addAttribute("attr1", "size");
         r->addAttribute("attr2", "<good>");
         r->setText(" nice <> \"one\" ");
 
-        ref<XmlElement> e = gc_new<XmlElement>("e");
+        nut::ref<XmlElement> e = gc_new<XmlElement>("e");
         e->setText("element");
 
         r->appendChild(e);
@@ -65,7 +65,7 @@ NUT_FIXTURE(TestXml)
 
     void testWriteSingle()
     {
-        ref<XmlElement> r = gc_new<XmlElement>("root");
+        nut::ref<XmlElement> r = gc_new<XmlElement>("root");
         r->addAttribute("attr1", "size");
         r->addAttribute("attr2", "<good>");
 
@@ -87,7 +87,7 @@ NUT_FIXTURE(TestXml)
             "\t</e>\n"
             "\t<e2 at=\"s\" />\n"
             "</root>";
-        ref<XmlElement> r = gc_new<XmlElement>();
+        nut::ref<XmlElement> r = gc_new<XmlElement>();
         r->parse(s);
 
         std::string out;
