@@ -1,8 +1,8 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2012-03-06
- * @last-edit 2012-03-06 12:51:37 jingqi
+ * @last-edit 2014-02-10 23:18:21 jingqi
  */
 
 #ifndef ___HEADFILE_409C4713_58BB_467B_A1CB_A8BC6EDA6CFE_
@@ -22,7 +22,7 @@ namespace nut
 class RwLock
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-    /** windowsÏÂµÄ¹²ÏíËøÊÇÔÚWindows Vista/Server 2008¼«ÆäÒÔºóµÄ°æ±¾ÖĞÌá¹©µÄ */
+    /** windowsä¸‹çš„å…±äº«é”æ˜¯åœ¨Windows Vista/Server 2008æå…¶ä»¥åçš„ç‰ˆæœ¬ä¸­æä¾›çš„ */
     SRWLOCK m_rwlock;
 #else
     pthread_rwlock_t m_rwlock;
@@ -42,7 +42,7 @@ public:
     ~RwLock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        /** SRWLock ÎŞĞèÉ¾³ı»òÏú»Ù£¬ÏµÍ³×Ô¶¯Ö´ĞĞÇåÀí¹¤×÷ */
+        /** SRWLock æ— éœ€åˆ é™¤æˆ–é”€æ¯ï¼Œç³»ç»Ÿè‡ªåŠ¨æ‰§è¡Œæ¸…ç†å·¥ä½œ */
 #else
         int rs = pthread_rwlock_destroy(&m_rwlock);
 #endif
@@ -58,7 +58,7 @@ public:
 #endif
     }
 
-    inline bool trylockRead()
+    inline bool tryLockRead()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return FALSE != TryAcquireSRWLockShared(&m_rwlock);
@@ -77,7 +77,7 @@ public:
 #endif
     }
 
-    inline bool trylockWrite()
+    inline bool tryLockWrite()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return FALSE != ::TryAcquireSRWLockExclusive(&m_rwlock);
@@ -110,5 +110,3 @@ public:
 }
 
 #endif /* head file guarder */
-
-
