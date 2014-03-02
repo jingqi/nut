@@ -25,10 +25,10 @@ NUT_FIXTURE(TestByteArrayStream)
 
         bas.setLittleEndian(true);
         NUT_TA(bas.size() == 0 && bas.tell() == 0);
-        bas.writeByte(0x12);
-        bas.writeWord(0x1234);
-        bas.writeDWord(0x12345678);
-        bas.writeQWord(0x1234567890123456L);
+        bas.writeUInt8(0x12);
+        bas.writeUInt16(0x1234);
+        bas.writeUInt32(0x12345678);
+        bas.writeUInt64(0x1234567890123456L);
         bas.writeFloat((float) 1.234);
         bas.writeDouble(7.8912);
         bas.writeBytes(arr, 3);
@@ -37,10 +37,10 @@ NUT_FIXTURE(TestByteArrayStream)
 
         bas.seek(0);
         NUT_TA(bas.tell() == 0);
-        NUT_TA(0x12 == bas.readByte());
-        NUT_TA(0x1234 == bas.readWord());
-        NUT_TA(0x12345678 == bas.readDWord());
-        NUT_TA(0x1234567890123456L == bas.readQWord());
+        NUT_TA(0x12 == bas.readUInt8());
+        NUT_TA(0x1234 == bas.readUInt16());
+        NUT_TA(0x12345678 == bas.readUInt32());
+        NUT_TA(0x1234567890123456L == bas.readUInt64());
         NUT_TA((float)1.234 == bas.readFloat());
         NUT_TA(7.8912 == bas.readDouble());
         bas.readBytes(arr_check, 3);
@@ -55,10 +55,10 @@ NUT_FIXTURE(TestByteArrayStream)
 
         bas.setLittleEndian(false);
         NUT_TA(bas.size() == 0 && bas.tell() == 0);
-        bas.writeByte(0x12);
-        bas.writeWord(0x1234);
-        bas.writeDWord(0x12345678);
-        bas.writeQWord(0x1234567890123456L);
+        bas.writeUInt8(0x12);
+        bas.writeUInt16(0x1234);
+        bas.writeUInt32(0x12345678);
+        bas.writeUInt64(0x1234567890123456L);
         bas.writeFloat((float) 1.234);
         bas.writeDouble(7.8912);
         bas.writeBytes(arr, 3);
@@ -67,10 +67,10 @@ NUT_FIXTURE(TestByteArrayStream)
 
         bas.seek(0);
         NUT_TA(bas.tell() == 0);
-        NUT_TA(0x12 == bas.readByte());
-        NUT_TA(0x1234 == bas.readWord());
-        NUT_TA(0x12345678 == bas.readDWord());
-        NUT_TA(0x1234567890123456L == bas.readQWord());
+        NUT_TA(0x12 == bas.readUInt8());
+        NUT_TA(0x1234 == bas.readUInt16());
+        NUT_TA(0x12345678 == bas.readUInt32());
+        NUT_TA(0x1234567890123456L == bas.readUInt64());
         NUT_TA((float)1.234 == bas.readFloat());
         NUT_TA(7.8912 == bas.readDouble());
         bas.readBytes(arr_check, 3);

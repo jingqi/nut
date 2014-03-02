@@ -73,14 +73,14 @@ public:
         m_index += cb;
     }
 
-    inline uint8_t readByte()
+    inline uint8_t readUInt8()
     {
         assert(m_index + 1 <= m_data.size());
         const ByteArray& data = m_data;
         return data.at(m_index++);
     }
 
-    uint16_t readWord()
+    uint16_t readUInt16()
     {
         assert(m_index + 2 <= m_data.size());
         const ByteArray& data = m_data;
@@ -98,7 +98,7 @@ public:
         return ret;
     }
 
-    uint32_t readDWord()
+    uint32_t readUInt32()
     {
         assert(m_index + 4 <= m_data.size());
         const ByteArray& data = m_data;
@@ -120,7 +120,7 @@ public:
         return ret;
     }
 
-    uint64_t readQWord()
+    uint64_t readUInt64()
     {
         assert(m_index + 8 <= m_data.size());
         const ByteArray& data = m_data;
@@ -155,7 +155,7 @@ public:
         assert(m_index + sizeof(float) <= m_data.size());
         float ret = 0;
         for (register size_t i = 0; i < sizeof(float); ++i)
-            reinterpret_cast<uint8_t*>(&ret)[m_little_endian ? i : (sizeof(float) - i - 1)] = readByte();
+            reinterpret_cast<uint8_t*>(&ret)[m_little_endian ? i : (sizeof(float) - i - 1)] = readUInt8();
         return ret;
     }
 
@@ -164,7 +164,7 @@ public:
         assert(m_index + sizeof(double) <= m_data.size());
         double ret = 0;
         for (register size_t i = 0; i < sizeof(double); ++i)
-            reinterpret_cast<uint8_t*>(&ret)[m_little_endian ? i : (sizeof(double) - i - 1)] = readByte();
+            reinterpret_cast<uint8_t*>(&ret)[m_little_endian ? i : (sizeof(double)-i - 1)] = readUInt8();
         return ret;
     }
 
@@ -178,7 +178,7 @@ public:
         return ret;
     }
 
-    void writeByte(uint8_t v)
+    void writeUInt8(uint8_t v)
     {
         if (m_index < m_data.size())
             m_data.at(m_index) = v;
@@ -187,7 +187,7 @@ public:
         ++m_index;
     }
 
-    void writeWord(uint16_t v)
+    void writeUInt16(uint16_t v)
     {
         for (register size_t i = 0; i < 2; ++i)
         {
@@ -200,7 +200,7 @@ public:
         }
     }
 
-    void writeDWord(uint32_t v)
+    void writeUInt32(uint32_t v)
     {
         for (register size_t i = 0; i < 4; ++i)
         {
@@ -213,7 +213,7 @@ public:
         }
     }
 
-    void writeQWord(uint64_t v)
+    void writeUInt64(uint64_t v)
     {
         for (register size_t i = 0; i < 8; ++i)
         {
@@ -245,13 +245,13 @@ public:
     void writeFloat(float v)
     {
         for (register size_t i = 0; i < sizeof(float); ++i)
-            writeByte(reinterpret_cast<const uint8_t*>(&v)[m_little_endian ? i : (sizeof(float) - i - 1)]);
+            writeUInt8(reinterpret_cast<const uint8_t*>(&v)[m_little_endian ? i : (sizeof(float) - i - 1)]);
     }
 
     void writeDouble(double v)
     {
         for (register size_t i = 0; i < sizeof(double); ++i)
-            writeByte(reinterpret_cast<const uint8_t*>(&v)[m_little_endian ? i : (sizeof(double) - i - 1)]);
+            writeUInt8(reinterpret_cast<const uint8_t*>(&v)[m_little_endian ? i : (sizeof(double)-i - 1)]);
     }
 
     inline const ByteArray& byteArray() const
