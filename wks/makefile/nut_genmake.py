@@ -19,7 +19,7 @@ class Cfg:
     TARGET = os.path.join(OBJ_DIR, 'test') # 目标文件路径
 
     TARGET_RUN = TARGET
-    TARGET_RUN_DIR = "../MSVC/MSVC/" # 目标文件运行目录
+    TARGET_RUN_DIR = "../vs2013/Debug/" # 目标文件运行目录
     TARGET_RUN_ARGS = '' # 目标文件运行参数
 
 if __name__ == '__main__':

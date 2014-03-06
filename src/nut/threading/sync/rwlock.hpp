@@ -34,7 +34,7 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         ::InitializeSRWLock(&m_rwlock);
 #else
-        int rs = pthread_rwlock_init(&m_rwlock, NULL);
+        const int rs = pthread_rwlock_init(&m_rwlock, NULL);
         assert(0 == rs);
 #endif
     }
@@ -44,7 +44,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         /** SRWLock 无需删除或销毁，系统自动执行清理工作 */
 #else
-        int rs = pthread_rwlock_destroy(&m_rwlock);
+        const int rs = pthread_rwlock_destroy(&m_rwlock);
+        assert(0 == rs);
 #endif
     }
 
