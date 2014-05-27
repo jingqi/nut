@@ -246,6 +246,9 @@
     <ClCompile Include="..\..\..\test\container\test_bytearraystream.cpp">
       <Filter>源文件\container</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\test\container\test_bundle.cpp">
+      <Filter>源文件\container</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist.hpp">

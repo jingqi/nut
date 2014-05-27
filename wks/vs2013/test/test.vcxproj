@@ -71,6 +71,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\test\container\skiplist\test_skiplist.cpp" />
     <ClCompile Include="..\..\..\test\container\test_bitstream.cpp" />
+    <ClCompile Include="..\..\..\test\container\test_bundle.cpp" />
     <ClCompile Include="..\..\..\test\container\test_bytearray.cpp" />
     <ClCompile Include="..\..\..\test\container\test_bytearraystream.cpp" />
     <ClCompile Include="..\..\..\test\container\test_mrucache.cpp" />
