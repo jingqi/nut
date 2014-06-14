@@ -189,7 +189,7 @@ public:
     template <typename T, typename A1>
     T* gc_new(A1 a1)
     {
-		T *ret = (T*) alloc(sizeof(T), &T::~T);
+		T *ret = (T*) alloc(sizeof(T), destructSingle<T>);
 		assert(NULL != ret);
 		new (ret) T(RefargTraits<A1>::value(a1));
 		return ret;
@@ -198,7 +198,7 @@ public:
     template <typename T, typename A1, typename A2>
     T* gc_new(A1 a1, A2 a2)
     {
-		T *ret = (T*) alloc(sizeof(T), &T::~T);
+		T *ret = (T*) alloc(sizeof(T), destructSingle<T>);
 		assert(NULL != ret);
 		new (ret) T(RefargTraits<A1>::value(a1), RefargTraits<A2>::value(a2));
 		return ret;
