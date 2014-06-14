@@ -12,6 +12,11 @@
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
 #   include <windows.h>
 #   include "spinlock.hpp"
+#elif defined(NUT_PLATFORM_OS_MAC)
+#   include <time.h>
+#   include <sys/time.h>
+#   include <mach/clock.h>
+#   include <mach/mach.h>
 #else
 #   include <pthread.h>
 #endif
@@ -96,6 +101,7 @@ public:
     bool timedwait(condition_lock_type *mutex, unsigned s, unsigned ms = 0)
     {
         assert(NULL != mutex);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         DWORD dwMilliseconds = s * 1000 + ms;
         return TRUE == ::SleepConditionVariableCS(&m_cond, mutex->innerMutex(), dwMilliseconds);
@@ -103,9 +109,19 @@ public:
         struct timespec abstime;
 #   if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
         Mutex::clock_getrealtime(&abstime);
+#   elif defined(NUT_PLATFORM_OS_MAC)
+        // OS X does not have clock_gettime(), use clock_get_time()
+        clock_serv_t cclock;
+        mach_timespec_t mts;
+        host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+        clock_get_time(cclock, &mts);
+        mach_port_deallocate(mach_task_self(), cclock);
+        abstime.tv_sec = mts.tv_sec;
+        abstime.tv_nsec = mts.tv_nsec;
 #   else
         clock_gettime(CLOCK_REALTIME, &abstime);
 #   endif
+
         abstime.tv_sec += s;
         abstime.tv_nsec += ((long)ms) * 1000 * 1000;
         return 0 == pthread_cond_timedwait(&m_cond, mutex->innerMutex(), &abstime);
@@ -116,4 +132,3 @@ public:
 }
 
 #endif /* head file guarder */
-

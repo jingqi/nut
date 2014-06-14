@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-03-05
- * @last-edit 2012-03-25 22:33:29 jingqi
+ * @last-edit 2014-06-14 20:53:52 jingqi
  * @brief
  *      基本上大部分的无锁并发数据结构都是依靠处理器提供的CAS(compare and swap)操作来
  * 实现的; 包括原子加、原子减、自旋锁等也是依靠这个来实现的。
@@ -33,7 +33,7 @@ namespace nut
 inline bool atomic_cas(void * volatile *dest, void *oldval, void *newval)
 {
     assert(NULL != dest);
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
     return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
 #elif defined(NUT_PLATFORM_OS_WINDOWS)
     return InterlockedCompareExchangePointer(dest, newval, oldval) == oldval;
@@ -53,7 +53,7 @@ inline bool atomic_cas(void * volatile *dest, void *oldval, void *newval)
 inline bool atomic_cas(int128_t volatile *dest, int128_t oldval, int128_t newval)
 {
     assert(NULL != dest);
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
     /** __sync_val_compare_and_swap() does not support 128 bits, so we get it by ourself */
     uint64_t old_low = (uint64_t)oldval, old_high = (uint64_t)(oldval >> 64);
     uint64_t new_low = (uint64_t)newval, new_high = (uint64_t)(newval >> 64);
@@ -92,7 +92,7 @@ inline bool atomic_cas(uint128_t volatile *dest, uint128_t oldval, uint128_t new
 inline bool atomic_cas(int64_t volatile *dest, int64_t oldval, int64_t newval)
 {
     assert(NULL != dest);
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
     return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
 #elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
     return InterlockedCompareExchange64(dest, newval, oldval) == oldval;
@@ -128,7 +128,7 @@ inline bool atomic_cas(uint64_t volatile *dest, uint64_t oldval, uint64_t newval
 inline bool atomic_cas(int32_t volatile *dest, int32_t oldval, int32_t newval)
 {
     assert(NULL != dest);
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
     return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
 #elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
     return InterlockedCompareExchange(reinterpret_cast<uint32_t volatile*>(dest), static_cast<uint32_t>(newval), static_cast<uint32_t>(oldval)) == oldval;
@@ -159,7 +159,7 @@ inline bool atomic_cas(uint32_t volatile *dest, uint32_t oldval, uint32_t newval
 inline bool atomic_cas(int16_t volatile *dest, int16_t oldval, int16_t newval)
 {
     assert(NULL != dest);
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
     return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
 #elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
     return InterlockedCompareExchange16(dest, newval, oldval) == oldval;
@@ -363,4 +363,3 @@ NUT_STATIC_ASSERT(sizeof(TagedPtr<void>) == sizeof(TagedPtr<void>::cas_type));
 }
 
 #endif /* head file guarder */
-

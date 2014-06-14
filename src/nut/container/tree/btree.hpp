@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-03-02
- * @last-edit 2012-03-25 21:26:58 jingqi
+ * @last-edit 2014-06-14 21:42:13 jingqi
  */
 
 #ifndef ___HEADFILE_BDA2D5F4_E926_4BBB_A415_DE4463C47D1A_
@@ -31,7 +31,7 @@ private:
      */
     class InorderTraversalIterator
     {
-        const NODE * const m_parent_of_sub_root;
+        const NODE *m_parent_of_sub_root;
         NODE *m_current;
         bool m_eof;
 
@@ -192,7 +192,7 @@ private:
      */
     class PreorderTraversalIterator
     {
-        const NODE * const m_parent_of_sub_root;
+        const NODE *m_parent_of_sub_root;
         NODE *m_current;
         bool m_eof;
 
@@ -218,8 +218,8 @@ private:
             return *m_current;
         }
 
-        NODE* operator->() const 
-        { 
+        NODE* operator->() const
+        {
             assert(!m_eof && NULL != m_current);
             return m_current;
         }
@@ -357,7 +357,7 @@ private:
      */
     class PostorderTraversalIterator
     {
-        const NODE * const m_parent_of_sub_root;
+        const NODE *m_parent_of_sub_root;
         NODE *m_current;
         bool m_eof;
 
@@ -515,4 +515,3 @@ public:
 }
 
 #endif /* head file guarder */
-

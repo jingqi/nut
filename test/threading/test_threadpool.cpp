@@ -1,7 +1,7 @@
 ﻿
 #include <nut/platform/platform.hpp>
 
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
 #   include <unistd.h>
 #endif
 
@@ -38,6 +38,7 @@ NUT_FIXTURE(TestThreading)
 #else
         sleep(1);
 #endif
+
         printf("a");
         tp->add_task(custom, (void*)'A');
         printf("b");

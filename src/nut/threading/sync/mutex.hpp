@@ -34,6 +34,12 @@ public :
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         m_hmutex = ::CreateMutex(NULL, FALSE, NULL);
+#elif defined(NUT_PLATFORM_OS_MAC)
+        ::pthread_mutexattr_t attr;
+        ::pthread_mutexattr_init(&attr);
+        ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE); /* make the mutex recursive */
+        int rs = ::pthread_mutex_init(&m_mutex, &attr);
+        assert(0 == rs);
 #else
         ::pthread_mutexattr_t attr;
         ::pthread_mutexattr_init(&attr);
@@ -142,6 +148,9 @@ public :
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         DWORD dwMilliseconds = s * 1000 + ms;
         return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, dwMilliseconds);
+#elif defined(NUT_PLATFORM_OS_MAC)
+#   warning "MAC 不支持pthread_mutex_timedlock()"
+        return 0 == ::pthread_mutex_trylock(&m_mutex); // TODO MAC 不支持 pthread_mutex_timedlock()
 #else
         struct timespec abstime;
 #   if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
@@ -167,4 +176,3 @@ public :
 }
 
 #endif /* head file guarder */
-

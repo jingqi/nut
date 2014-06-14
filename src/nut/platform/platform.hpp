@@ -5,7 +5,7 @@
  * @brief
  *   see http://sourceforge.net/p/predef/wiki/Home/
  *
- * @last-edit 2012-03-25 18:53:32 jingqi
+ * @last-edit 2014-06-14 20:50:13 jingqi
  */
 
 #ifndef ___HEADFILE___6689E00A_B262_4C15_A826_19665AF8EC32_
@@ -21,6 +21,9 @@
     defined(_LINUX)
 #   define NUT_PLATFORM_OS_NAME "Linux"
 #   define NUT_PLATFORM_OS_LINUX
+#elif defined(__APPLE__) || defined(__apple__) || defined(__MACOSX)
+#   define NUT_PLATFORM_OS_NAME "Mac"
+#   define NUT_PLATFORM_OS_MAC
 #else
 #   define NUT_PLATFORM_OS_NAME "Unknown"
 #   error unknown os
