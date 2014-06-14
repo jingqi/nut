@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file -
  * @author jingqi
  * @date 2012-03-11
@@ -19,22 +19,22 @@ namespace nut
 {
 
 /**
- * �ɸ÷��������ɵĶ���ͳһ�ɸ÷�������clear()������������
+ * 由该分配器生成的对象将统一由该分配器的clear()函数进行清理
  */
 template <typename MemAlloc = sys_ma>
 class scoped_gc
 {
     enum
 	{
-		/** Ĭ���ڴ���С���ɸ�����Ҫ���� */
+		/** 默认内存块大小，可根据需要调整 */
 		DEFAULT_BLOCK_LEN = 2048,
-		/** �ڴ��ͷ����С */
+		/** 内存块头部大小 */
 		BLOCK_HEADER_SIZE = sizeof(void*) + sizeof(size_t),
-		/** �ڴ�����ݲ��ִ�С */
+		/** 内存块数据部分大小 */
 		DEFAULT_BLOCK_BODY_SIZE = DEFAULT_BLOCK_LEN - BLOCK_HEADER_SIZE,
 	};
 
-	/** �ڴ�� */
+	/** 内存块 */
     struct Block
     {
         Block *prev;
@@ -43,10 +43,10 @@ class scoped_gc
     };
 	NUT_STATIC_ASSERT(sizeof(Block) == DEFAULT_BLOCK_LEN);
     
-	/** �������� */
+	/** 析构函数 */
     typedef void (*destruct_func_type)(void*);
     
-	/** ������������ */
+	/** 析构函数链表 */
     struct DestructorNode
     {
         DestructorNode *prev;

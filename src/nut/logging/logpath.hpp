@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2011-12-24
@@ -16,21 +16,21 @@ namespace nut
 class LogPath
 {
 public:
-    /** »ñÈ¡ÈÕÖ¾Â·¾¶Ãû³Æ, "a.b.c" -> "c" */
+    /** èŽ·å–æ—¥å¿—è·¯å¾„åç§°, "a.b.c" -> "c" */
     static std::string getName(const std::string& logPath)
     {
         const std::string::size_type i = logPath.find_last_of('.');
         return logPath.substr(std::string::npos == i ? 0 : i + 1);
     }
 
-    /** »ñÈ¡µÚÒ»¸ö¸¸Ãû, "a.b.c" -> "a" */
+    /** èŽ·å–ç¬¬ä¸€ä¸ªçˆ¶å, "a.b.c" -> "a" */
     static std::string getFirstParent(const std::string& logPath)
     {
         const std::string::size_type i = logPath.find_first_of('.');
         return logPath.substr(0, i);
     }
 
-    /** »ñÈ¡×ÓÂ·¾¶, "a.b.c" -> "b.c" */
+    /** èŽ·å–å­è·¯å¾„, "a.b.c" -> "b.c" */
     static std::string subLogPath(const std::string& logPath)
     {
         const std::string::size_type i = logPath.find_first_of('.');

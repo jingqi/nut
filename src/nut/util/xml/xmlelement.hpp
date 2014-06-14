@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2013-10-03
@@ -199,10 +199,10 @@ public:
     }
 
     /**
-     * »ñÈ¡ÊôĞÔ
+     * è·å–å±æ€§
      *
-     * @param out ÓÃÀ´´æ´¢·µ»ØµÄÊôĞÔÖµ£¬¿ÉÒÔÎª NULL
-     * @param ¸ÄÊôĞÔÊÇ·ñ´æÔÚ
+     * @param out ç”¨æ¥å­˜å‚¨è¿”å›çš„å±æ€§å€¼ï¼Œå¯ä»¥ä¸º NULL
+     * @param æ”¹å±æ€§æ˜¯å¦å­˜åœ¨
      */
     bool getAttribute(const std::string& name, std::string *out)
     {
@@ -215,9 +215,9 @@ public:
     }
 
     /**
-     * Ìí¼ÓÊôĞÔ
+     * æ·»åŠ å±æ€§
      *
-     * @return ÊÇ·ñ³É¹¦£¬Èç¹ûÊôĞÔÒÑ¾­´æÔÚ£¬ÔòÌí¼ÓÊ§°Ü
+     * @return æ˜¯å¦æˆåŠŸï¼Œå¦‚æœå±æ€§å·²ç»å­˜åœ¨ï¼Œåˆ™æ·»åŠ å¤±è´¥
      */
     bool addAttribute(const std::string& name, const std::string& value)
     {
@@ -228,7 +228,7 @@ public:
     }
 
     /**
-     * ´æÔÚÊôĞÔÔòÉèÖÃÊôĞÔÖµ£¬·ñÔòÌí¼ÓĞÂÊôĞÔ
+     * å­˜åœ¨å±æ€§åˆ™è®¾ç½®å±æ€§å€¼ï¼Œå¦åˆ™æ·»åŠ æ–°å±æ€§
      */
     inline void setAttribute(const std::string& name, const std::string& value)
     {

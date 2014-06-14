@@ -1,4 +1,4 @@
-/**
+ï»¿/**
  * @file -
  * @author jingqi
  * @date 2013-08-31
@@ -22,9 +22,9 @@ namespace nut
 /**
  * AES/CBC/PKCS5
  *
- * ¼Ó½âÃÜ·½Ê½£ºAES
- * ·Ö×é·½Ê½£ºCBC
- * Ìî³ä·½Ê½£ºPKCS5
+ * åŠ è§£å¯†æ–¹å¼ï¼šAES
+ * åˆ†ç»„æ–¹å¼ï¼šCBC
+ * å¡«å……æ–¹å¼ï¼šPKCS5
  */
 class AES_CBC_PKCS5
 {
@@ -49,11 +49,11 @@ private:
 
 public:
     /**
-     * ¿ªÊ¼¼ÓÃÜ
+     * å¼€å§‹åŠ å¯†
      *
-     * @param key       ÃÜÔ¿
-     * @param key_bits  ÃÜÔ¿µÄ±ÈÌØ³¤¶È£¬Ö»ÄÜÈ¡128, 192, 256
-     * @param iv        ³õÊ¼»¯ÏòÁ¿£¬¼ÓÃÜÊ±¿ÉËæ»ú¸ø³ö
+     * @param key       å¯†é’¥
+     * @param key_bits  å¯†é’¥çš„æ¯”ç‰¹é•¿åº¦ï¼Œåªèƒ½å–128, 192, 256
+     * @param iv        åˆå§‹åŒ–å‘é‡ï¼ŒåŠ å¯†æ—¶å¯éšæœºç»™å‡º
      */
     void start_encrypt(const uint8_t* key, int key_bits, const uint8_t iv[16])
     {
@@ -67,7 +67,7 @@ public:
     }
     
     /**
-     * ¸üÐÂÒª¼ÓÃÜµÄÊý¾Ý
+     * æ›´æ–°è¦åŠ å¯†çš„æ•°æ®
      */
     void update_encrypt(const uint8_t *data, size_t data_len)
     {
@@ -100,12 +100,12 @@ public:
     }
     
     /**
-     * ½áÊø¼ÓÃÜ¹ý³Ì
+     * ç»“æŸåŠ å¯†è¿‡ç¨‹
      */
     void finish_encrypt()
     {
         assert(IN_ENCRYPT == m_state && m_data_buf_size >= 0 && m_data_buf_size < 16);
-        /* PKCS5 Ìî³ä */
+        /* PKCS5 å¡«å…… */
         for (register size_t i = m_data_buf_size; i < 16; ++i)
             m_data_buf[i] = 16 - m_data_buf_size;
         xor_buf(m_iv, m_data_buf, 16);
@@ -118,9 +118,9 @@ public:
 
 public:
     /**
-    * @param key       ÃÜÔ¿
-    * @param key_bits  ÃÜÔ¿µÄ±ÈÌØ³¤¶È£¬Ö»ÄÜÈ¡128, 192, 256
-    * @param iv        ³õÊ¼»¯ÏòÁ¿£¬±ØÐëÓë¼ÓÃÜÊ±Ê¹ÓÃµÄÊÇÏàÍ¬µÄ
+    * @param key       å¯†é’¥
+    * @param key_bits  å¯†é’¥çš„æ¯”ç‰¹é•¿åº¦ï¼Œåªèƒ½å–128, 192, 256
+    * @param iv        åˆå§‹åŒ–å‘é‡ï¼Œå¿…é¡»ä¸ŽåŠ å¯†æ—¶ä½¿ç”¨çš„æ˜¯ç›¸åŒçš„
      */
     void start_decrypt(const uint8_t *key, int key_bits, const uint8_t iv[16])
     {
@@ -134,7 +134,7 @@ public:
     }
     
     /**
-     * ¸üÐÂÒª½âÃÜµÄÊý¾Ý
+     * æ›´æ–°è¦è§£å¯†çš„æ•°æ®
      */
     void update_decrypt(const uint8_t *data, size_t data_len)
     {
@@ -170,9 +170,9 @@ public:
     }
 
     /**
-     * ½áÊø½âÃÜ¹ý³Ì
+     * ç»“æŸè§£å¯†è¿‡ç¨‹
      *
-     * @param ½âÃÜÊ§°ÜÔò·µ»Ø false
+     * @param è§£å¯†å¤±è´¥åˆ™è¿”å›ž false
      */
     bool finish_decrypt()
     {
@@ -192,7 +192,7 @@ public:
 
 public:
     /**
-     * »ñÈ¡¼ÓÃÜ»òÕß½âÃÜ½á¹û
+     * èŽ·å–åŠ å¯†æˆ–è€…è§£å¯†ç»“æžœ
      */
     const ByteArray& getResult() const
     {
