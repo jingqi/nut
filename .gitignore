@@ -2,11 +2,11 @@
 *.user
 *.opensdf
 *.sdf
-/wks/MSVC/Debug
-/wks/MSVC/Release
-/wks/MSVC/ipch
-/wks/MSVC/MSVC/Debug
-/wks/MSVC/MSVC/Release
+/wks/vs20*/Debug
+/wks/vs20*/Release
+/wks/vs20*/ipch
+/wks/vs20*/MSVC/Debug
+/wks/vs20*/MSVC/Release
 /tmp
 *.pyc
 *~
