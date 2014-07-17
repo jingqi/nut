@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-12-15
- * @last-edit 2012-12-15 13:58:50 jingqi
+ * @last-edit 2014-07-17 21:14:18 jingqi
  * @brief
  */
 
@@ -23,7 +23,7 @@ namespace nut
  * most-recently-used cache
  */
 template <typename K, typename V>
-class MRUCache
+class LRUCache
 {
     struct Node
     {
@@ -37,10 +37,11 @@ class MRUCache
     };
 
     enum { DEFAULT_CAPACITY = 50 };
+    typedef std::map<K,Node*> map_t;
 
     const size_t m_capacity;
-    std::map<K,Node*> m_map;
-    Node *m_listHead, *m_listEnd;
+    map_t m_map;
+    Node *m_list_head, *m_list_end;
     SpinLock m_lock; // 注意，linux下自旋锁不可重入
 
     static inline Node* alloc_node()
@@ -69,81 +70,91 @@ class MRUCache
         dealloc_node(p);
     }
 
-    inline void removeListNode(Node *p)
+    inline void removeFromList(Node *p)
     {
         assert(NULL != p);
         if (NULL != p->pre)
             p->pre->next = p->next;
         else
-            m_listHead = p->next;
+            m_list_head = p->next;
 
         if (NULL != p->next)
             p->next->pre = p->pre;
         else
-            m_listEnd = p->pre;
+            m_list_end = p->pre;
     }
 
     inline void pushListHead(Node *p)
     {
         assert(NULL != p);
-        p->next = m_listHead;
+        p->next = m_list_head;
         p->pre = NULL;
-        if (NULL != m_listHead)
-            m_listHead->pre = p;
+        if (NULL != m_list_head)
+            m_list_head->pre = p;
         else
-            m_listEnd = p;
-        m_listHead = p;
+            m_list_end = p;
+        m_list_head = p;
     }
+
+    LRUCache(const LRUCache<K,V>&);
+    LRUCache<K,V>& operator=(const LRUCache<K,V>&);
 
 public:
-    MRUCache()
-        : m_capacity(DEFAULT_CAPACITY), m_listHead(NULL), m_listEnd(NULL)
+    LRUCache()
+        : m_capacity(DEFAULT_CAPACITY), m_list_head(NULL), m_list_end(NULL)
     {}
 
-    MRUCache(size_t cap)
-        : m_capacity(cap), m_listHead(NULL), m_listEnd(NULL)
+    LRUCache(size_t capacity)
+        : m_capacity(capacity), m_list_head(NULL), m_list_end(NULL)
     {
-        assert(cap > 0);
+        assert(capacity > 0);
     }
-    
+
+    ~LRUCache()
+    {
+        clear();
+    }
+
     void put(const K& k, const V& v)
     {
         Guard<SpinLock> g(&m_lock);
 
-        typename std::map<K,Node*>::const_iterator const n = m_map.find(k);
+        typename map_t::const_iterator const n = m_map.find(k);
         if (n == m_map.end())
         {
-            Node* const p = new_node(k,v);
+            Node *const p = new_node(k,v);
             m_map.insert(std::pair<K,Node*>(k,p));
+            pushListHead(p);
+
             while (m_map.size() > m_capacity)
             {
-                assert(NULL != m_listEnd);
-                typename std::map<K,Node*>::iterator const nn = m_map.find(m_listEnd->key);
+                assert(NULL != m_list_end);
+                typename map_t::iterator const nn = m_map.find(m_list_end->key);
                 assert(nn != m_map.end());
-                Node* const pp = nn->second;
+                Node *const pp = nn->second;
                 m_map.erase(nn);
-                removeListNode(pp);
+                removeFromList(pp);
                 delete_node(pp);
             }
-            pushListHead(p);
             return;
         }
 
-        n->second->value = v;
-        removeListNode(n->second);
-        pushListHead(n->second);
+        Node *const p = n->second;
+        p->value = v;
+        removeFromList(p);
+        pushListHead(p);
     }
 
     void remove(const K& k)
     {
         Guard<SpinLock> g(&m_lock);
 
-        typename std::map<K,Node*>::iterator const n = m_map.find(k);
+        typename map_t::iterator const n = m_map.find(k);
         if (n == m_map.end())
             return;
-        Node* const p = n->second;
+        Node *const p = n->second;
         m_map.erase(n);
-        removeListNode(p);
+        removeFromList(p);
         delete_node(p);
     }
 
@@ -152,7 +163,7 @@ public:
         assert(NULL != out);
         Guard<SpinLock> g(&m_lock);
 
-        typename std::map<K,Node*>::const_iterator const n = m_map.find(k);
+        typename map_t::const_iterator const n = m_map.find(k);
         if (n == m_map.end())
             return false;
         *out = n->second->value;
@@ -163,15 +174,15 @@ public:
     {
         Guard<SpinLock> g(&m_lock);
 
-        Node *p = m_listHead;
+        Node *p = m_list_head;
         while (NULL != p)
         {
             Node *n = p->next;
             delete_node(p);
             p = n;
         }
-        m_listHead = NULL;
-        m_listEnd = NULL;
+        m_list_head = NULL;
+        m_list_end = NULL;
         m_map.clear();
     }
 };
@@ -179,5 +190,3 @@ public:
 }
 
 #endif
-
-

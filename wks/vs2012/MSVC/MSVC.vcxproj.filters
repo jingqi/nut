@@ -381,9 +381,6 @@
     <ClInclude Include="..\..\..\src\nut\container\bytearray.hpp">
       <Filter>头文件\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\container\mrucache.hpp">
-      <Filter>头文件\container</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\tuple.hpp">
       <Filter>头文件\container</Filter>
     </ClInclude>
@@ -433,6 +430,9 @@
       <Filter>头文件\util\xml</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\bytearraystream.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\lru_cache.hpp">
       <Filter>头文件\container</Filter>
     </ClInclude>
   </ItemGroup>
@@ -512,9 +512,6 @@
     <ClCompile Include="..\..\..\test\container\test_bytearray.cpp">
       <Filter>源文件\container</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\test\container\test_mrucache.cpp">
-      <Filter>源文件\container</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\test\util\test_delegate.cpp">
       <Filter>源文件\util</Filter>
     </ClCompile>
@@ -537,6 +534,9 @@
       <Filter>源文件\container</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\test\container\test_bundle.cpp">
+      <Filter>源文件\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\container\test_lru_cache.cpp">
       <Filter>源文件\container</Filter>
     </ClCompile>
   </ItemGroup>

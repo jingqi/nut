@@ -2,12 +2,12 @@
 #include <nut/unittest/unittest.hpp>
 
 #include <iostream>
-#include <nut/container/mrucache.hpp>
+#include <nut/container/lru_cache.hpp>
 
 using namespace std;
 using namespace nut;
 
-NUT_FIXTURE(TestMRUCache)
+NUT_FIXTURE(TestLRUCache)
 {
     NUT_CASES_BEGIN()
     NUT_CASE(testSmoking)
@@ -18,7 +18,7 @@ NUT_FIXTURE(TestMRUCache)
 
     void testSmoking()
     {
-        MRUCache<int,int> c(2);
+        LRUCache<int,int> c(2);
         int v = -1;
         NUT_TA(!c.get(1,&v) && -1 == v);
         c.put(1,11);
@@ -39,4 +39,4 @@ NUT_FIXTURE(TestMRUCache)
 
 };
 
-NUT_REGISTER_FIXTURE(TestMRUCache, "container, quiet")
+NUT_REGISTER_FIXTURE(TestLRUCache, "container, quiet")

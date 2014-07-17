@@ -72,7 +72,7 @@
     <ClInclude Include="..\..\..\src\nut\container\bundle.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\bytearray.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\bytearraystream.hpp" />
-    <ClInclude Include="..\..\..\src\nut\container\mrucache.hpp" />
+    <ClInclude Include="..\..\..\src\nut\container\lru_cache.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplistmap.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplistset.hpp" />
@@ -171,7 +171,7 @@
     <ClCompile Include="..\..\..\test\container\test_bundle.cpp" />
     <ClCompile Include="..\..\..\test\container\test_bytearray.cpp" />
     <ClCompile Include="..\..\..\test\container\test_bytearraystream.cpp" />
-    <ClCompile Include="..\..\..\test\container\test_mrucache.cpp" />
+    <ClCompile Include="..\..\..\test\container\test_lru_cache.cpp" />
     <ClCompile Include="..\..\..\test\container\tree\rtree\test_rtree.cpp" />
     <ClCompile Include="..\..\..\test\container\tree\test_bst.cpp" />
     <ClCompile Include="..\..\..\test\debugging\test_backtrace.cpp" />
