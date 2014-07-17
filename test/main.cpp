@@ -38,7 +38,7 @@ int main()
 
     // trunner.runAGroup("numeric");
 
-    trunner.runAFixture("TestLRUCache");
+    trunner.runAFixture("TestOS");
 
     // trunner.runACase("TestGC", "testSmoking");
 

@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-06-23
- * @last-edit 2013-12-09 13:25:26 jingqi
+ * @last-edit 2014-07-17 21:27:14 jingqi
  */
 
 #ifndef ___HEADFILE_291DFB4C_7D29_4D61_A691_EF83FB86CD36_
@@ -52,7 +52,11 @@ public:
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         char search_path[MAX_PATH];
+#   if defined(NUT_PLATFORM_CC_VC)
+        ::sprintf_s(search_path, MAX_PATH, "%s\\*", path);
+#   else
         ::sprintf(search_path, "%s\\*", path); /* 加上通配符 */
+#   endif
 
         WIN32_FIND_DATAA wfd;
         const HANDLE hFind = ::FindFirstFileA(search_path, &wfd);
@@ -134,7 +138,11 @@ public:
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         wchar_t search_path[MAX_PATH];
+#   if defined(NUT_PLATFORM_CC_VC)
+        ::swprintf_s(search_path, MAX_PATH, L"%s\\*", path);
+#   else
         ::swprintf(search_path, L"%s\\*", path); /* 加上通配符 */
+#   endif
 
         WIN32_FIND_DATAW wfd;
         const HANDLE hFind = ::FindFirstFileW(search_path, &wfd);
@@ -201,14 +209,14 @@ public:
         FILE *inFile = ::fopen(src, "rb");
         if (NULL == inFile)
             return false;
-            
+
         FILE *outFile = ::fopen(dest, "wb+");
         if (NULL == outFile)
         {
             ::fclose(inFile);
             return false;
         }
-        
+
         const int BUF_LEN = 4096;
         char buf[BUF_LEN];
         int readed = -1;
@@ -350,7 +358,11 @@ public:
 
         // 遍历文件夹
         char full_path[MAX_PATH];
+#   if defined(NUT_PLATFORM_CC_VC)
+        ::sprintf_s(full_path, MAX_PATH, "%s\\*", path);
+#   else
         ::sprintf(full_path, "%s\\*", path); /* 加上通配符 */
+#   endif
 
         WIN32_FIND_DATAA wfd;
         const HANDLE hFind = ::FindFirstFileA(full_path, &wfd);
@@ -365,7 +377,11 @@ public:
                 ('.' == wfd.cFileName[0] && '.' == wfd.cFileName[1] && '\0' == wfd.cFileName[2]))
                 continue;
 
+#   if defined(NUT_PLATFORM_CC_VC)
+            ::sprintf_s(full_path, MAX_PATH, "%s\\%s", path, wfd.cFileName);
+#   else
             ::sprintf(full_path, "%s\\%s", path, wfd.cFileName);
+#   endif
             ret = removetree(full_path);
         } while (ret && ::FindNextFileA(hFind, &wfd));
 
@@ -429,7 +445,11 @@ public:
 
         // 遍历文件夹
         wchar_t full_path[MAX_PATH];
+#   if defined(NUT_PLATFORM_CC_VC)
+        ::swprintf_s(full_path, MAX_PATH, L"%s\\*", path);
+#   else
         ::swprintf(full_path, L"%s\\*", path); /* 加上通配符 */
+#   endif
 
         WIN32_FIND_DATAW wfd;
         const HANDLE hFind = ::FindFirstFileW(full_path, &wfd);
@@ -444,7 +464,11 @@ public:
                 (L'.' == wfd.cFileName[0] && L'.' == wfd.cFileName[1] && L'\0' == wfd.cFileName[2]))
                 continue;
 
+#   if defined(NUT_PLATFORM_CC_VC)
+            ::swprintf_s(full_path, MAX_PATH, L"%s\\%s", path, wfd.cFileName);
+#   else
             ::swprintf(full_path, L"%s\\%s", path, wfd.cFileName);
+#   endif
             ret = removetree(full_path);
         } while (ret && ::FindNextFileW(hFind, &wfd));
 
@@ -470,4 +494,3 @@ public:
 }
 
 #endif
-
