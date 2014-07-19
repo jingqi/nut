@@ -164,7 +164,7 @@ inline void format(std::string *out, const char *fmt, ...)
 {
     assert(NULL != out && NULL != fmt);
     size_t size = 100;
-    char *buf = (char*) ::malloc(size);
+    char *buf = (char*) ::malloc(size * sizeof(char));
     assert(NULL != buf);
 
     va_list ap;
@@ -197,11 +197,52 @@ inline void format(std::string *out, const char *fmt, ...)
     }
 }
 
+inline void format(std::wstring *out, const wchar_t *fmt, ...)
+{
+    assert(NULL != out && NULL != fmt);
+    size_t size = 100;
+    wchar_t *buf = (wchar_t*) ::malloc(size * sizeof(wchar_t));
+    assert(NULL != buf);
+
+    va_list ap;
+    while (NULL != buf)
+    {
+        va_start(ap, fmt);
+#if defined(NUT_PLATFORM_CC_VC)
+        int n = ::_vsnwprintf(buf, size, fmt, ap);
+#else
+		int n = ::vsnwprintf(buf, size, fmt, ap);
+#endif
+        va_end(ap);
+        if (n > -1 && n < (int)size)
+            break;
+
+        if (n > -1)
+            size = n + 1; /* glibc 2.1 */
+        else
+            size *= 2;  /* glib 2.0 */
+
+        wchar_t *np = (wchar_t*) ::realloc(buf, size);
+        assert(NULL != np);
+        if (NULL != np)
+            buf = np;
+    }
+    if (NULL == buf)
+    {
+        out->clear();
+    }
+    else
+    {
+        *out = buf;
+        ::free(buf); /* include the case of success of realloc() and failure of realloc() */
+    }
+}
+
 inline std::string format(const char *fmt, ...)
 {
     assert(NULL != fmt);
     size_t size = 100;
-    char *buf = (char*) ::malloc(size);
+    char *buf = (char*) ::malloc(size * sizeof(char));
     assert(NULL != buf);
 
     va_list ap;
@@ -224,6 +265,42 @@ inline std::string format(const char *fmt, ...)
             buf = np;
     }
     std::string ret = (NULL == buf ? "" : buf);
+    if (NULL != buf)
+        ::free(buf); /* include the case of success of realloc() and failure of realloc() */
+    return ret;
+}
+
+inline std::wstring format(const wchar_t *fmt, ...)
+{
+    assert(NULL != fmt);
+    size_t size = 100;
+    wchar_t *buf = (wchar_t*) ::malloc(size * sizeof(wchar_t));
+    assert(NULL != buf);
+
+    va_list ap;
+    while (NULL != buf)
+    {
+        va_start(ap, fmt);
+#if defined(NUT_PLATFORM_CC_VC)
+        int n = ::_vsnwprintf(buf, size, fmt, ap);
+#else
+		int n = ::vsnwprintf(buf, size, fmt, ap);
+#endif
+        va_end(ap);
+        if (n > -1 && n < (int)size)
+            break;
+
+        if (n > -1)
+            size = n + 1; /* glibc 2.1 */
+        else
+            size *= 2;  /* glib 2.0 */
+
+        wchar_t *np = (wchar_t*) ::realloc(buf, size);
+        assert(NULL != np);
+        if (NULL != np)
+            buf = np;
+    }
+    std::wstring ret = (NULL == buf ? L"" : buf);
     if (NULL != buf)
         ::free(buf); /* include the case of success of realloc() and failure of realloc() */
     return ret;

@@ -62,6 +62,7 @@ NUT_FIXTURE(TestStringUtil)
     void testFormat()
     {
         NUT_TA(format("%d,%s,%c,%f", 1, "am", 's', 1.23) == "1,am,s,1.230000");
+		NUT_TA(format(L"%d,%s,%c,%f", 1, L"am", L's', 1.23) == L"1,am,s,1.230000");
     }
 
     void testTrim()
