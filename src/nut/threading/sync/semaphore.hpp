@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-07-10
- * @last-edit 2012-07-10 21:23:00 jingqi
+ * @last-edit 2014-07-20 16:54:52 jingqi
  */
 
 #ifndef ___HEADFILE_49083D01_04DA_4385_A1BD_6D1F2902FA7A_
@@ -91,6 +91,9 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         DWORD dwMilliseconds = s * 1000 + ms;
         return WAIT_OBJECT_0 == ::WaitForSingleObject(m_sema, dwMilliseconds);
+#elif defined(NUT_PLATFORM_OS_MAC)
+#   warning "MAC 不支持sem_timedwait()"
+        return 0 == ::sem_trywait(&m_sem);
 #else
         struct timespec abstime;
         clock_gettime(CLOCK_REALTIME, &abstime);
@@ -104,4 +107,3 @@ public:
 }
 
 #endif
-
