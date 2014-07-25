@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2010-8-18
- * @last-edit 2013-12-11 17:34:22 jingqi
+ * @last-edit 2014-07-25 20:49:29 jingqi
  */
 
 #ifndef ___HEADFILE___8BC3081E_4374_470D_9E66_CC7F414ED9B7_
@@ -197,6 +197,7 @@ inline void format(std::string *out, const char *fmt, ...)
     }
 }
 
+#if !defined(NUT_PLATFORM_OS_MAC)
 inline void format(std::wstring *out, const wchar_t *fmt, ...)
 {
     assert(NULL != out && NULL != fmt);
@@ -237,6 +238,7 @@ inline void format(std::wstring *out, const wchar_t *fmt, ...)
         ::free(buf); /* include the case of success of realloc() and failure of realloc() */
     }
 }
+#endif
 
 inline std::string format(const char *fmt, ...)
 {
@@ -270,6 +272,7 @@ inline std::string format(const char *fmt, ...)
     return ret;
 }
 
+#if !defined(NUT_PLATFORM_OS_MAC)
 inline std::wstring format(const wchar_t *fmt, ...)
 {
     assert(NULL != fmt);
@@ -305,6 +308,7 @@ inline std::wstring format(const wchar_t *fmt, ...)
         ::free(buf); /* include the case of success of realloc() and failure of realloc() */
     return ret;
 }
+#endif
 
 /* 去除首尾空白 */
 inline void trim(const std::string& str, std::string *out, const std::string& blanks = " \t\r\n")
@@ -563,4 +567,3 @@ inline std::wstring str2wstr(const std::string& str)
 #endif
 
 #endif /* head file guarder */
-
