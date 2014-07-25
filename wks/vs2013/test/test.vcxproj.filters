@@ -222,9 +222,6 @@
     <ClCompile Include="..\..\..\test\container\test_bytearray.cpp">
       <Filter>源文件\container</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\test\container\test_mrucache.cpp">
-      <Filter>源文件\container</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\test\util\test_delegate.cpp">
       <Filter>源文件\util</Filter>
     </ClCompile>
@@ -247,6 +244,12 @@
       <Filter>源文件\container</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\test\container\test_bundle.cpp">
+      <Filter>源文件\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\container\test_lru_cache.cpp">
+      <Filter>源文件\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\container\test_lru_data_cache.cpp">
       <Filter>源文件\container</Filter>
     </ClCompile>
   </ItemGroup>

@@ -36,9 +36,9 @@ int main()
 
     TestRunner trunner(l);
 
-    // trunner.runAGroup("numeric");
+    trunner.runAGroup("container");
 
-    trunner.runAFixture("TestStringUtil");
+    //trunner.runAFixture("TestContainer");
 
     // trunner.runACase("TestGC", "testSmoking");
 
@@ -52,4 +52,3 @@ int main()
 
 NUT_LOGGING_IMPL
 NUT_UNITTEST_IMPL
-

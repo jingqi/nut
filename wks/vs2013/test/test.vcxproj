@@ -74,7 +74,8 @@
     <ClCompile Include="..\..\..\test\container\test_bundle.cpp" />
     <ClCompile Include="..\..\..\test\container\test_bytearray.cpp" />
     <ClCompile Include="..\..\..\test\container\test_bytearraystream.cpp" />
-    <ClCompile Include="..\..\..\test\container\test_mrucache.cpp" />
+    <ClCompile Include="..\..\..\test\container\test_lru_cache.cpp" />
+    <ClCompile Include="..\..\..\test\container\test_lru_data_cache.cpp" />
     <ClCompile Include="..\..\..\test\container\tree\rtree\test_rtree.cpp" />
     <ClCompile Include="..\..\..\test\container\tree\test_bst.cpp" />
     <ClCompile Include="..\..\..\test\debugging\test_backtrace.cpp" />

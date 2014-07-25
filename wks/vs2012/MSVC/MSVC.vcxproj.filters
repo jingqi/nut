@@ -539,5 +539,8 @@
     <ClCompile Include="..\..\..\test\container\test_lru_cache.cpp">
       <Filter>源文件\container</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\test\container\test_lru_data_cache.cpp">
+      <Filter>源文件\container</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
