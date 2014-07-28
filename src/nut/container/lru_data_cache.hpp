@@ -272,6 +272,8 @@ public:
         assert(NULL != p);
         *pdata = p->data;
         *psize = p->size;
+        remove_from_list(p);
+        push_list_head(p);
 
 #ifndef NDEBUG
         ++m_hit_count;
@@ -287,7 +289,7 @@ public:
         Node *p = m_list_head;
         while (NULL != p)
         {
-            Node *n = p->next;
+            Node *const n = p->next;
             delete_node(p);
             p = n;
         }

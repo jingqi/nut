@@ -20,7 +20,7 @@ namespace nut
 {
 
 /**
- * most-recently-used cache
+ * least-recently-used cache
  */
 template <typename K, typename V>
 class LRUCache
@@ -209,8 +209,11 @@ public:
             return false;
         }
 
-        assert(NULL != n->second);
-        *out = n->second->value;
+        Node *const p = n->second;
+        assert(NULL != p);
+        *out = p->value;
+        remove_from_list(p);
+        push_list_head(p);
 
 #ifndef NDEBUG
         ++m_hit_count;
@@ -225,7 +228,7 @@ public:
         Node *p = m_list_head;
         while (NULL != p)
         {
-            Node *n = p->next;
+            Node *const n = p->next;
             delete_node(p);
             p = n;
         }
