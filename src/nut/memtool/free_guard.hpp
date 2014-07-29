@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-09-15
- * @last-edit 2013-09-15 22:24:44 jingqi
+ * @last-edit 2014-07-30 01:18:03 jingqi
  * @brief
  */
 
@@ -19,16 +19,24 @@ class FreeGuard
 {
     void *m_ptr;
 public:
-    FreeGuard(void *p)
+    FreeGuard(void *p = NULL)
         : m_ptr(p)
+    {}
+
+    void set(void *p)
     {
-        assert(NULL != p);
+        m_ptr = p;
+    }
+
+    void clear()
+    {
+        m_ptr = NULL;
     }
 
     ~FreeGuard()
     {
-        assert(NULL != m_ptr);
-        ::free(m_ptr);
+        if (NULL != m_ptr)
+            ::free(m_ptr);
         m_ptr = NULL;
     }
 };
@@ -38,16 +46,24 @@ class DeleteGuard
 {
     T *m_ptr;
 public:
-    DeleteGuard(T *p)
+    DeleteGuard(T *p = NULL)
         : m_ptr(p)
+    {}
+
+    void set(T *p)
     {
-        assert(NULL != p);
+        m_ptr = p;
     }
-    
+
+    void clear()
+    {
+        m_ptr = NULL;
+    }
+
     ~DeleteGuard()
     {
-        assert(NULL != m_ptr);
-        delete m_ptr;
+        if (NULL != m_ptr)
+            delete m_ptr;
         m_ptr = NULL;
     }
 };
