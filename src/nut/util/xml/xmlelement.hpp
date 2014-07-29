@@ -1,8 +1,8 @@
-﻿/**
+/**
  * @file -
  * @author jingqi
  * @date 2013-10-03
- * @last-edit 2013-10-03 22:24:37 jingqi
+ * @last-edit 2014-07-30 01:46:04 jingqi
  * @brief
  */
 
@@ -125,7 +125,7 @@ public:
 public:
     XmlElement()
     {}
-    
+
     XmlElement(const std::string& name)
         : m_name(name)
     {}
@@ -157,7 +157,7 @@ public:
 
     inline ref<XmlElement> getChild(size_t i) const
     {
-        if (i > m_children.size())
+        if (i >= m_children.size())
             return ref<XmlElement>();
         return m_children.at(i);
     }
@@ -183,7 +183,7 @@ public:
 
     inline void insertChild(size_t pos, ref<XmlElement> child)
     {
-        assert(pos < m_children.size() && child.isNotNull());
+        assert(pos <= m_children.size() && child.isNotNull());
         m_children.insert(m_children.begin() + pos, child);
     }
 
@@ -193,7 +193,7 @@ public:
         m_children.erase(m_children.begin() + pos);
     }
 
-    inline void clearChild()
+    inline void clearChildren()
     {
         m_children.clear();
     }
@@ -268,6 +268,9 @@ public:
         parse(s, 0, ignore_text_blank);
     }
 
+    /**
+     * @return 已经分析完成的位置
+     */
     size_t parse(const std::string& s, size_t from, bool ignore_text_blank = true)
     {
         // clear
@@ -299,17 +302,17 @@ public:
             m_name.push_back(c);
             ++i;
         }
-        
+
         // parse attribute
         enum State
         {
-            INIT,               // initial
+            INIT,               // initial, expect attributes or ">" or "/>"
 
-            EXPECT_NAME,        // expect name
+            EXPECT_NAME,        // expect attribute name
             EXPECT_EQ,          // expect =
             EXPECT_FIRST_QUOT,  // expect first "
             EXPECT_VALUE,       // expect value
-            EXPECT_GT,          // expect > and then eof
+            EXPECT_GT,          // expect > and then eof(in case of "\>")
 
             FINISH_HEAD,        // finish header
             FINISH,             // finish
@@ -484,7 +487,6 @@ public:
     }
 
 private:
-
     void serielize(std::string *out, int tab) const
     {
         assert(NULL != out);

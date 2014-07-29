@@ -1,8 +1,8 @@
-﻿/**
+/**
  * @file -
  * @author jingqi
  * @date 2013-10-03
- * @last-edit 2013-10-03 22:13:31 jingqi
+ * @last-edit 2014-07-30 01:48:13 jingqi
  * @brief
  */
 
@@ -93,7 +93,7 @@ public:
     void serielize(std::string *out, bool format = true) const
     {
         assert(NULL != out);
-        const char *encoding = "GB2312";
+        const char *encoding = "UTF-8";
         *out += "<?xml version=\"1.0\" encoding=\"";
         *out += encoding;
         *out += "\"?>";
