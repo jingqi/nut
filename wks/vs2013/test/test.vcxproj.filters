@@ -255,7 +255,7 @@
     <ClCompile Include="..\..\..\test\util\txtcfg\test_propertyfile.cpp">
       <Filter>源文件\util\txtcfg</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\test\util\txtcfg\xml\test_xml.cpp">
+    <ClCompile Include="..\..\..\test\util\txtcfg\xml\test_xml_element.cpp">
       <Filter>源文件\util\txtcfg\xml</Filter>
     </ClCompile>
   </ItemGroup>
@@ -539,17 +539,20 @@
     <ClInclude Include="..\..\..\src\nut\util\time.hpp">
       <Filter>头文件\util</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xmldocument.hpp">
-      <Filter>头文件\util\txtcfg\xml</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xmlelement.hpp">
-      <Filter>头文件\util\txtcfg\xml</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\configfile.hpp">
       <Filter>头文件\util\txtcfg</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\propertyfile.hpp">
       <Filter>头文件\util\txtcfg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\txt_file.hpp">
+      <Filter>头文件\util\txtcfg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_dom.hpp">
+      <Filter>头文件\util\txtcfg\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_element.hpp">
+      <Filter>头文件\util\txtcfg\xml</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

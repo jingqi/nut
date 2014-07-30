@@ -1,14 +1,14 @@
 
 #include <nut/unittest/unittest.hpp>
 
-#include <nut/util/txtcfg/xml/xmldocument.hpp>
+#include <nut/util/txtcfg/xml/xml_element.hpp>
 
 #include <iostream>
 
 using namespace std;
 using namespace nut;
 
-NUT_FIXTURE(TestXml)
+NUT_FIXTURE(TestXmlElement)
 {
     NUT_CASES_BEGIN()
     NUT_CASE(testWrite)
@@ -105,4 +105,4 @@ NUT_FIXTURE(TestXml)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestXml, "util, txtcfg, quiet")
+NUT_REGISTER_FIXTURE(TestXmlElement, "util, txtcfg, quiet")

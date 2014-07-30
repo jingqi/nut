@@ -29,8 +29,6 @@ class XmlElement
     typedef std::map<std::string, std::string> attr_map_t;
     attr_map_t m_attrs;
 
-    friend class XmlDocument;
-
 private:
     static void encode(const std::string& in, std::string *out)
     {
@@ -269,7 +267,9 @@ public:
     }
 
     /**
-     * @return 已经分析完成的位置
+     * @param from 开始分析的位置
+     * @param ignore_text_blank 忽略文本首尾的空白和换行
+     * @return 已经分析完成位置的下一个位置
      */
     size_t parse(const std::string& s, size_t from, bool ignore_text_blank = true)
     {
@@ -480,6 +480,9 @@ public:
 #undef IS_BLANK
     }
 
+    /*
+     * @param format 格式化输出，以便于阅读
+     */
     inline void serielize(std::string *out, bool format = true) const
     {
         assert(NULL != out);

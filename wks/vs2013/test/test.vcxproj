@@ -103,7 +103,7 @@
     <ClCompile Include="..\..\..\test\util\test_delegate.cpp" />
     <ClCompile Include="..\..\..\test\util\txtcfg\test_configfile.cpp" />
     <ClCompile Include="..\..\..\test\util\txtcfg\test_propertyfile.cpp" />
-    <ClCompile Include="..\..\..\test\util\txtcfg\xml\test_xml.cpp" />
+    <ClCompile Include="..\..\..\test\util\txtcfg\xml\test_xml_element.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\nut\container\bitstream.hpp" />
@@ -201,8 +201,9 @@
     <ClInclude Include="..\..\..\src\nut\util\timer\timeval.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\configfile.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\propertyfile.hpp" />
-    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xmldocument.hpp" />
-    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xmlelement.hpp" />
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\txt_file.hpp" />
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_dom.hpp" />
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_element.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
