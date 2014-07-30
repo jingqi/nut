@@ -287,7 +287,7 @@ public:
 
         // parse name
         const size_t slen = s.length();
-        size_t i = s.find_first_of('<', from);
+        size_t i = s.find('<', from);
         if (std::string::npos == i)
             return slen;
         ++i;
@@ -450,7 +450,7 @@ public:
         while (true)
         {
             // parse text
-            size_t j = s.find_first_of('<', i);
+            size_t j = s.find('<', i);
             if (std::string::npos == j)
                 return slen;
             std::string text = s.substr(i, j - i);
@@ -465,7 +465,7 @@ public:
                 return slen;
             if ('/' == s.at(j))
             {
-                i = s.find_first_of('>', j);
+                i = s.find('>', j);
                 return i + 1;
             }
 

@@ -77,49 +77,49 @@ public:
         m_encoding.clear();
         m_root.clear();
 
-        size_t i = s.find_first_of("<?");
+        size_t i = s.find("<?");
         if (std::string::npos == i)
             return;
         i += 2; // length of "<?"
-        i = s.find_first_of("xml", i);
+        i = s.find("xml", i);
         if (std::string::npos == i)
             return;
         i += 4; // length of "xml" and a space
-        i = s.find_first_of("version", i);
+        i = s.find("version", i);
         if (std::string::npos == i)
             return;
         i += 8; // length of "version" and a space or '='
-        i = s.find_first_of('\"', i);
+        i = s.find('\"', i);
         if (std::string::npos == i)
             return;
         ++i;
         size_t start = i;
-        i = s.find_first_of('\"', i);
+        i = s.find('\"', i);
         if (std::string::npos == i)
             return;
-        m_version = s.substr(start, i);
+        m_version = s.substr(start, i - start);
         i += 2; // length of '\"' and a space
 
-        i = s.find_first_of("encoding", i);
+        i = s.find("encoding", i);
         if (std::string::npos == i)
             return;
         i += 9; // length of "encoding" and a space or '='
-        i = s.find_first_of('\"', i);
+        i = s.find('\"', i);
         if (std::string::npos == i)
             return;
         ++i;
         start = i;
-        i = s.find_first_of('\"', i);
+        i = s.find('\"', i);
         if (std::string::npos == i)
             return;
-        m_encoding = s.substr(start, i);
+        m_encoding = s.substr(start, i - start);
         ++i;
-        i = s.find_first_of("?>", i);
+        i = s.find("?>", i);
         if (std::string::npos == i)
             return;
         i += 2;
 
-        i = s.find_first_of('<', i);
+        i = s.find('<', i);
         if (std::string::npos == i)
             return; // no element found
         m_root = gc_new<XmlElement>();
