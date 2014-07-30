@@ -10,7 +10,7 @@
 #define ___HEADFILE___6FFFC04E_FFB6_47F6_80AA_8FD1AF3B201F_
 
 #include <nut/platform/platform.hpp>
-#include <nut/util/propertyfile.hpp>
+#include <nut/util/txtcfg/propertyfile.hpp>
 #include <nut/threading/sync/mutex.hpp>
 #include <nut/threading/sync/guard.hpp>
 

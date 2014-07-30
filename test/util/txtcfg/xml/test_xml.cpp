@@ -1,7 +1,7 @@
 
 #include <nut/unittest/unittest.hpp>
 
-#include <nut/util/xml/xmldocument.hpp>
+#include <nut/util/txtcfg/xml/xmldocument.hpp>
 
 #include <iostream>
 
@@ -105,4 +105,4 @@ NUT_FIXTURE(TestXml)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestXml, "util, quiet")
+NUT_REGISTER_FIXTURE(TestXml, "util, txtcfg, quiet")

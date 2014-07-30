@@ -1,7 +1,7 @@
 
 #include <nut/unittest/unittest.hpp>
 
-#include <nut/util/propertyfile.hpp>
+#include <nut/util/txtcfg/propertyfile.hpp>
 
 using namespace std;
 using namespace nut;
@@ -46,5 +46,5 @@ NUT_FIXTURE(TestPropertyFile)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestPropertyFile, "util, quiet")
+NUT_REGISTER_FIXTURE(TestPropertyFile, "util, txtcfg, quiet")
 
