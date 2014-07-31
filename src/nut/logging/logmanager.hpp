@@ -10,7 +10,8 @@
 #define ___HEADFILE___6FFFC04E_FFB6_47F6_80AA_8FD1AF3B201F_
 
 #include <nut/platform/platform.hpp>
-#include <nut/util/propertyfile.hpp>
+#include <nut/util/txtcfg/property_dom.hpp>
+#include <nut/util/txtcfg/txt_file.hpp>
 #include <nut/threading/sync/mutex.hpp>
 #include <nut/threading/sync/guard.hpp>
 
@@ -57,15 +58,17 @@ public :
         return nut_get_root_logger()->getLogger(path);
     }
 
-    static void loadConfig(ref<PropertyFile> config)
+    static void loadConfig(ref<PropertyDom> config)
     {
         assert(!config.isNull());
-        std::vector<std::string> handlers = config->getList("LogHandlers",',');
+		std::vector<std::string> handlers;
+		config->getList("LogHandlers", &handlers, ',');
         for (std::vector<std::string>::const_iterator it = handlers.begin(), ite = handlers.end();
             it != ite; ++it)
         {
             std::string strtype = config->getString((*it + "_type").c_str());
-            std::vector<std::string> strpos = config->getList((*it + "_pos").c_str(), ':');
+			std::vector<std::string> strpos;
+			config->getList((*it + "_pos").c_str(), &strpos, ':');
             std::string strfilter = config->getString((*it + "_filter").c_str());
 
             ref<LogHandler> handler = LogHandlerFactory::createLogHandler(strtype);
@@ -81,7 +84,12 @@ public :
 
     static void loadConfig(const char *configfile)
     {
-        loadConfig(gc_new<PropertyFile>(configfile));
+		assert(NULL != configfile);
+		ref<PropertyDom> pd = gc_new<PropertyDom>();
+		std::string all;
+		TxtFile::read_file(configfile, &all);
+		pd->parse(all);
+        loadConfig(pd);
     }
 };
 

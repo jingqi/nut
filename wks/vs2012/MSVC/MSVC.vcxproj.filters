@@ -139,11 +139,17 @@
     <Filter Include="源文件\debugging">
       <UniqueIdentifier>{780a08c8-dcf8-4caf-b482-655781cefe50}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\util\xml">
-      <UniqueIdentifier>{d208ce4b-9d20-4ab4-9cec-10c64cd7dbd8}</UniqueIdentifier>
+    <Filter Include="头文件\util\txtcfg">
+      <UniqueIdentifier>{79e964aa-56a7-48f0-95d0-995a255ef72f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\util\xml">
-      <UniqueIdentifier>{0aee3174-00f9-48ed-a5b7-b38981842f7f}</UniqueIdentifier>
+    <Filter Include="头文件\util\txtcfg\xml">
+      <UniqueIdentifier>{4f87ff7a-4879-4d78-9553-6680e94df034}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\util\txtcfg">
+      <UniqueIdentifier>{1c681d73-5d03-48c9-bfd9-4f1426bf0150}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\util\txtcfg\xml">
+      <UniqueIdentifier>{9095884a-1f2c-494c-9a3f-c4a0c4387754}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -224,12 +230,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\unittest\consoletestlogger.hpp">
       <Filter>头文件\unittest</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\propertyfile.hpp">
-      <Filter>头文件\util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\configfile.hpp">
-      <Filter>头文件\util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\gc\enref.hpp">
       <Filter>头文件\gc</Filter>
@@ -423,17 +423,26 @@
     <ClInclude Include="..\..\..\src\nut\container\bitstream.hpp">
       <Filter>头文件\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\xml\xmldocument.hpp">
-      <Filter>头文件\util\xml</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\xml\xmlelement.hpp">
-      <Filter>头文件\util\xml</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\bytearraystream.hpp">
       <Filter>头文件\container</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\lru_cache.hpp">
       <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\ini_dom.hpp">
+      <Filter>头文件\util\txtcfg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\property_dom.hpp">
+      <Filter>头文件\util\txtcfg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\txt_file.hpp">
+      <Filter>头文件\util\txtcfg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_dom.hpp">
+      <Filter>头文件\util\txtcfg\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_element.hpp">
+      <Filter>头文件\util\txtcfg\xml</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -445,12 +454,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\logging\test_logging.cpp">
       <Filter>源文件\logging</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\test\util\test_propertyfile.cpp">
-      <Filter>源文件\util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\test\util\test_configfile.cpp">
-      <Filter>源文件\util</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\test\numeric\test_biginteger.cpp">
       <Filter>源文件\numeric</Filter>
@@ -527,9 +530,6 @@
     <ClCompile Include="..\..\..\test\container\test_bitstream.cpp">
       <Filter>源文件\container</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\test\util\xml\test_xml.cpp">
-      <Filter>源文件\util\xml</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\test\container\test_bytearraystream.cpp">
       <Filter>源文件\container</Filter>
     </ClCompile>
@@ -541,6 +541,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\container\test_lru_data_cache.cpp">
       <Filter>源文件\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\util\txtcfg\test_ini_dom.cpp">
+      <Filter>源文件\util\txtcfg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\util\txtcfg\test_property_dom.cpp">
+      <Filter>源文件\util\txtcfg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\util\txtcfg\xml\test_xml_element.cpp">
+      <Filter>源文件\util\txtcfg\xml</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

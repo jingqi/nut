@@ -100,17 +100,18 @@
     <ClCompile Include="..\..\..\test\security\encrypt\test_aes.cpp" />
     <ClCompile Include="..\..\..\test\util\string\test_kmp.cpp" />
     <ClCompile Include="..\..\..\test\util\string\test_stringutil.cpp" />
-    <ClCompile Include="..\..\..\test\util\test_configfile.cpp" />
     <ClCompile Include="..\..\..\test\util\test_delegate.cpp" />
-    <ClCompile Include="..\..\..\test\util\test_propertyfile.cpp" />
-    <ClCompile Include="..\..\..\test\util\xml\test_xml.cpp" />
+    <ClCompile Include="..\..\..\test\util\txtcfg\test_ini_dom.cpp" />
+    <ClCompile Include="..\..\..\test\util\txtcfg\test_property_dom.cpp" />
+    <ClCompile Include="..\..\..\test\util\txtcfg\xml\test_xml_element.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\nut\container\bitstream.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\bundle.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\bytearray.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\bytearraystream.hpp" />
-    <ClInclude Include="..\..\..\src\nut\container\mrucache.hpp" />
+    <ClInclude Include="..\..\..\src\nut\container\lru_cache.hpp" />
+    <ClInclude Include="..\..\..\src\nut\container\lru_data_cache.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplistmap.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplistset.hpp" />
@@ -187,10 +188,8 @@
     <ClInclude Include="..\..\..\src\nut\unittest\testregister.hpp" />
     <ClInclude Include="..\..\..\src\nut\unittest\testrunner.hpp" />
     <ClInclude Include="..\..\..\src\nut\unittest\unittest.hpp" />
-    <ClInclude Include="..\..\..\src\nut\util\configfile.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\consoleutil.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\delegate.hpp" />
-    <ClInclude Include="..\..\..\src\nut\util\propertyfile.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\connection.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\preparedstatement .hpp" />
     <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\resultset.hpp" />
@@ -201,8 +200,11 @@
     <ClInclude Include="..\..\..\src\nut\util\time.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\timer\timermanager.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\timer\timeval.hpp" />
-    <ClInclude Include="..\..\..\src\nut\util\xml\xmldocument.hpp" />
-    <ClInclude Include="..\..\..\src\nut\util\xml\xmlelement.hpp" />
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\ini_dom.hpp" />
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\property_dom.hpp" />
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\txt_file.hpp" />
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_dom.hpp" />
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_element.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

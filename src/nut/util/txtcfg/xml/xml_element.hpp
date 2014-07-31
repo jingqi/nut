@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file -
  * @author jingqi
  * @date 2013-10-03
@@ -28,8 +28,6 @@ class XmlElement
     std::vector<ref<XmlElement> > m_children;
     typedef std::map<std::string, std::string> attr_map_t;
     attr_map_t m_attrs;
-
-    friend class XmlDocument;
 
 private:
     static void encode(const std::string& in, std::string *out)
@@ -269,7 +267,9 @@ public:
     }
 
     /**
-     * @return 已经分析完成的位置
+     * @param from 开始分析的位置
+     * @param ignore_text_blank 忽略文本首尾的空白和换行
+     * @return 已经分析完成位置的下一个位置
      */
     size_t parse(const std::string& s, size_t from, bool ignore_text_blank = true)
     {
@@ -287,7 +287,7 @@ public:
 
         // parse name
         const size_t slen = s.length();
-        size_t i = s.find_first_of('<', from);
+        size_t i = s.find('<', from);
         if (std::string::npos == i)
             return slen;
         ++i;
@@ -450,7 +450,7 @@ public:
         while (true)
         {
             // parse text
-            size_t j = s.find_first_of('<', i);
+            size_t j = s.find('<', i);
             if (std::string::npos == j)
                 return slen;
             std::string text = s.substr(i, j - i);
@@ -465,7 +465,7 @@ public:
                 return slen;
             if ('/' == s.at(j))
             {
-                i = s.find_first_of('>', j);
+                i = s.find('>', j);
                 return i + 1;
             }
 
@@ -480,6 +480,9 @@ public:
 #undef IS_BLANK
     }
 
+    /*
+     * @param format 格式化输出，以便于阅读
+     */
     inline void serielize(std::string *out, bool format = true) const
     {
         assert(NULL != out);

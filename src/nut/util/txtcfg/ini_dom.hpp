@@ -18,7 +18,7 @@
 
 #include <nut/gc/gc.hpp>
 
-#include "propertyfile.hpp"
+#include "property_dom.hpp"
 
 
 #if defined(NUT_PLATFORM_CC_VC)
@@ -29,11 +29,14 @@
 namespace nut
 {
 
-class ConfigFile
+/**
+ * .ini 文件 DOM 结构
+ */
+class IniDom
 {
     NUT_GC_REFERABLE
 
-    typedef PropertyFile::Line Line;
+    typedef PropertyDom::Line Line;
 
     /**
      * 每个块的行是这样构成的
@@ -51,32 +54,42 @@ class ConfigFile
         std::string m_comment;
         std::vector<ref<Line> > m_lines;
 
-        static ref<Sector> parseSectorName(const std::string& line)
+		static inline bool contains(const char *s, char c)
+		{
+			assert(NULL != s);
+			for (size_t i = 0; '\0' != s[i]; ++i)
+			{
+				if (s[i] == c)
+					return true;
+			}
+			return false;
+		}
+
+		/**
+		 * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
+		 * @param space_chars 空白字符，其中出现的字符将被视为空白
+		 */
+		static ref<Sector> parse_sector_name(const std::string& line, const char *line_comment_chars = ";#", const char *space_chars = " \t")
         {
             const std::string::size_type index1 = line.find_first_of('[');
             const std::string::size_type index2 = line.find_first_of(']');
             if (std::string::npos == index1 || std::string::npos == index2 || index1 > index2)
                 return ref<Sector>(NULL);
-            const std::string::size_type index3 = line.find_first_of("#;", index2);
+			const std::string::size_type index3 = line.find_first_of(line_comment_chars, index2);
 
             for (register size_t i = 0; i < index1; ++i)
             {
-                const char c = line.at(i);
-                if (c != ' ' && c != '\t')
-                    return ref<Sector>(NULL);
+				if (!contains(space_chars, line.at(i)))
+					return ref<Sector>(NULL);
             }
 
-            const size_t linelen = line.length();
-            for (register size_t i = index2 + 1; i < linelen; ++i)
+            for (register size_t i = index2 + 1, len = line.length(); i < len && i != index3; ++i)
             {
-                const char c = line.at(i);
-                if (c == '#' || c == ';')
-                    break;
-                else if (c != ' ' && c != '\t')
-                    return ref<Sector>(NULL);
+				if (!contains(space_chars, line.at(i)))
+					return ref<Sector>(NULL);
             }
 
-            ref<Sector> ret = gc_new<Sector>();
+			ref<Sector> ret = gc_new<Sector>();
             ret->m_space0 = line.substr(0, index1 - 0);
 
             if (std::string::npos != index3)
@@ -91,12 +104,12 @@ class ConfigFile
 
             ret->m_name = line.substr(index1 + 1, index2 - index1 - 1);
 
-            std::string::size_type index = ret->m_name.find_first_not_of(" \t");
+			std::string::size_type index = ret->m_name.find_first_not_of(space_chars);
             if (std::string::npos != index)
             {
                 ret->m_space1 = ret->m_name.substr(0, index - 0);
                 ret->m_name.erase(0, index - 0);
-                index = ret->m_name.find_last_not_of(" \t");
+				index = ret->m_name.find_last_not_of(space_chars);
                 if (std::string::npos != index)
                 {
                     ret->m_space2 = ret->m_name.substr(index + 1);
@@ -116,91 +129,115 @@ class ConfigFile
             return ret;
         }
 
-        void writeBlock(std::ostream& os)
+		/**
+		 * @param le 换行符
+		 */
+		void serielize(std::string *out, const char *le = "\n")
         {
-            os << m_space0 << '[' << m_space1 << m_name << m_space2 << ']' << m_space3 << m_comment << std::endl;
-            for (std::vector<ref<Line> >::const_iterator iter = m_lines.begin(), end = m_lines.end();
-                iter != end; ++iter)
-            {
-                (*iter)->writeLine(os);
-            }
+			assert(NULL != out);
+			*out += m_space0;
+			out->push_back('[');
+			*out += m_space1;
+			*out += m_name;
+			*out += m_space2;
+			out->push_back(']');
+			*out += m_space3;
+			*out += m_comment;
+			for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
+			{
+				*out += le;
+				m_lines.at(i)->serielize(out);
+			}
         }
     };
 
-    std::string m_filePath;
     std::vector<ref<Line> > m_global_lines;
     std::vector<ref<Sector> > m_sectors;
     bool m_dirty;
 
 public:
-    ConfigFile(const char *filePath)
-        : m_filePath(filePath), m_dirty(false)
+	IniDom()
+		: m_dirty(false)
+	{}
+
+	/**
+	 * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
+	 * @param space_chars 空白字符，其中出现的字符将被视为空白
+	 */
+	void parse(const std::string& s, const char *line_comment_chars = ";#", const char *space_chars = " \t")
+	{
+		assert(NULL != line_comment_chars && NULL != space_chars);
+
+		m_global_lines.clear();
+		m_sectors.clear();
+		m_dirty = false;
+		if (s.empty())
+			return;
+
+		std::vector<ref<Line> > *current_lines = &m_global_lines;
+		size_t start = 0;
+		while (std::string::npos != start)
+		{
+			size_t i = s.find_first_of("\r\n", start);
+			std::string ln;
+			if (std::string::npos == i)
+			{
+				ln = s.substr(start);
+			}
+			else
+			{
+				ln = s.substr(start, i - start);
+				++i;
+				if (i < s.length() && s.at(i - 1) != s.at(i) &&
+					('\r' == s.at(i) || '\n' == s.at(i)))
+					++i; // 兼容跨平台换行符不同的问题
+			}
+			start = i;
+
+			ref<Sector> sector = Sector::parse_sector_name(ln, line_comment_chars, space_chars);
+			if (sector.isNotNull())
+			{
+				current_lines = &(sector->m_lines);
+				m_sectors.push_back(sector);
+				continue;
+			}
+
+			ref<Line> line = gc_new<Line>();
+			line->parse(ln, line_comment_chars, space_chars);
+			current_lines->push_back(line);
+		}
+	}
+
+	/**
+	 * @param le 换行符
+	 */
+	void serielize(std::string *out, const char *le = "\n") const
     {
-        assert(NULL != filePath);
-        if (!Path::exists(filePath))
-            return;
+        // 全局数据
+		for (size_t i = 0, sz = m_global_lines.size(); i < sz; ++i)
+		{
+			if (0 != i)
+				*out += le;
+			m_global_lines.at(i)->serielize(out);
+		}
 
-        std::ifstream ifs(filePath);
-        std::string strLine;
-
-        std::vector<ref<Line> > *currentLines = &m_global_lines;
-
-        while (getline(ifs, strLine))
+        // 各个块
+		for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
         {
-            // 兼容将windows下的换行拿到linux下使用导致的问题
-            if (strLine.length() > 0 && '\r' == *strLine.rbegin())
-                strLine.erase(strLine.length() - 1);
-
-            ref<Sector> sector = Sector::parseSectorName(strLine);
-            if (!sector.isNull())
-            {
-                currentLines = &(sector->m_lines);
-                m_sectors.push_back(sector);
-                continue;
-            }
-
-            ref<Line> line = PropertyFile::Line::parsePropertyLine(strLine);
-            assert(!line.isNull());
-            currentLines->push_back(line);
-        }
-        ifs.close();
-    }
-
-    ~ConfigFile()
-    {
-        flush();
-    }
-
-    void flush()
-    {
-        if (m_dirty)
-        {
-            std::ofstream ofs(m_filePath.c_str());
-            // 全局数据
-            for (std::vector<ref<Line> >::const_iterator iter = m_global_lines.begin(), end = m_global_lines.end();
-                iter != end; ++iter)
-            {
-                (*iter)->writeLine(ofs);
-            }
-            // 各个块
-            for (std::vector<ref<Sector> >::const_iterator iter = m_sectors.begin(), end = m_sectors.end();
-                iter != end; ++iter)
-            {
-                (*iter)->writeBlock(ofs);
-            }
-            ofs.close();
-            m_dirty = false;
+			if (0 != i || !m_global_lines.empty())
+				*out += le;
+			m_sectors.at(i)->serielize(out, le);
         }
     }
 
-    void setDirty(bool dirty = true)
+	inline bool isDirty() const
+	{
+		return m_dirty;
+	}
+
+    inline void setDirty(bool dirty = true)
     {
         m_dirty = dirty;
-    }
-
-    const std::string& getFilePath() const
-    {
-        return m_filePath;
     }
 
     void clear()
@@ -210,15 +247,11 @@ public:
         m_dirty = true;
     }
 
-    std::vector<std::string> listSectors() const
+    void listSectors(std::vector<std::string> *out) const
     {
-        std::vector<std::string> ret;
-        for (std::vector<ref<Sector> >::const_iterator iter = m_sectors.begin(), end = m_sectors.end();
-            iter != end; ++iter)
-        {
-            ret.push_back((*iter)->m_name);
-        }
-        return ret;
+		assert(NULL != out);
+		for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
+			out->push_back(m_sectors.at(i)->m_name);
     }
 
     bool hasSector(const char *sector) const
@@ -226,10 +259,9 @@ public:
         if (NULL == sector)
             return true;
 
-        for (std::vector<ref<Sector> >::const_iterator iter = m_sectors.begin(), end = m_sectors.end();
-            iter != end; ++iter)
+		for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
         {
-            if ((*iter)->m_name == sector)
+            if (m_sectors.at(i)->m_name == sector)
                 return true;
         }
         return false;
@@ -240,12 +272,11 @@ public:
         if (NULL == sector)
             return false;
 
-        for (std::vector<ref<Sector> >::iterator iter = m_sectors.begin(), end = m_sectors.end();
-            iter != end; ++iter)
+		for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
         {
-            if ((*iter)->m_name == sector)
+            if (m_sectors.at(i)->m_name == sector)
             {
-                m_sectors.erase(iter);
+                m_sectors.erase(m_sectors.begin() + i);
                 m_dirty = true;
                 return true;
             }
@@ -253,38 +284,36 @@ public:
         return false;
     }
 
-    std::vector<std::string> listKeys(const char *sector) const
+    void listKeys(const char *sector, std::vector<std::string> *out) const
     {
-        std::vector<std::string> ret;
+		assert(NULL != out);
         if (NULL == sector)
         {
-            for (std::vector<ref<Line> >::const_iterator iter = m_global_lines.begin(), end = m_global_lines.end();
-                iter != end; ++iter)
+			for (size_t i = 0, sz = m_global_lines.size(); i < sz; ++i)
             {
-                if (!(*iter)->m_equalSign)
+				const ref<Line>& line = m_global_lines.at(i);
+                if (!line->m_equal_sign)
                     continue;
-                ret.push_back((*iter)->m_key);
+                out->push_back(line->m_key);
             }
-            return ret;
+            return;
         }
 
-        for (std::vector<ref<Sector> >::const_iterator iter = m_sectors.begin(), end = m_sectors.end();
-            iter != end; ++iter)
+		for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
         {
-            if ((*iter)->m_name == sector)
+            if (m_sectors.at(i)->m_name == sector)
             {
-                const std::vector<ref<Line> > lines = (*iter)->m_lines;
-                for (std::vector<ref<Line> >::const_iterator iter2 = lines.begin(), end2 = lines.end();
-                    iter2 != end2; ++iter2)
+                const std::vector<ref<Line> >& lines = m_sectors.at(i)->m_lines;
+				for (size_t j = 0, lsz = lines.size(); j < lsz; ++j)
                 {
-                    if (!(*iter2)->m_equalSign)
+					const ref<Line>& line = lines.at(j);
+                    if (!line->m_equal_sign)
                         continue;
-                    ret.push_back((*iter2)->m_key);
+                    out->push_back(line->m_key);
                 }
-                return ret;
+                return;
             }
         }
-        return ret;
     }
 
     bool hasKey(const char *sector, const char *key) const
@@ -297,12 +326,11 @@ public:
         }
         else
         {
-            for (std::vector<ref<Sector> >::const_iterator iter = m_sectors.begin(), end = m_sectors.end();
-                iter != end; ++iter)
+			for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
             {
-                if ((*iter)->m_name == sector)
+                if (m_sectors.at(i)->m_name == sector)
                 {
-                    lines = &((*iter)->m_lines);
+                    lines = &(m_sectors.at(i)->m_lines);
                     break;
                 }
             }
@@ -310,12 +338,11 @@ public:
         if (NULL == lines)
             return false;
 
-        for (std::vector<ref<Line> >::const_iterator iter = lines->begin(), end = lines->end();
-            iter != end; ++iter)
+		for (size_t i = 0, sz = lines->size(); i < sz; ++i)
         {
-            if (!(*iter)->m_equalSign)
+            if (!lines->at(i)->m_equal_sign)
                 continue;
-            if ((*iter)->m_key == key)
+            if (lines->at(i)->m_key == key)
                 return true;
         }
         return false;
@@ -331,12 +358,11 @@ public:
         }
         else
         {
-            for (std::vector<ref<Sector> >::const_iterator iter = m_sectors.begin(), end = m_sectors.end();
-                iter != end; ++iter)
+			for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
             {
-                if ((*iter)->m_name == sector)
+                if (m_sectors.at(i)->m_name == sector)
                 {
-                    lines = &((*iter)->m_lines);
+                    lines = &(m_sectors.at(i)->m_lines);
                     break;
                 }
             }
@@ -344,12 +370,11 @@ public:
         if (NULL == lines)
             return false;
 
-        for (std::vector<ref<Line> >::iterator iter = lines->begin(), end = lines->end();
-            iter != end; ++iter)
+		for (size_t i = 0, sz = lines->size(); i < sz; ++i)
         {
-            if ((*iter)->m_key == key)
+            if (lines->at(i)->m_key == key)
             {
-                lines->erase(iter);
+                lines->erase(lines->begin() + i);
                 m_dirty = true;
                 return true;
             }
@@ -357,9 +382,9 @@ public:
         return false;
     }
 
-    std::string getString(const char *sector, const char *key, const char *defaultValue = "") const
+    const char* getString(const char *sector, const char *key, const char *defaultValue = "") const
     {
-        assert(NULL != key && NULL != defaultValue);
+        assert(NULL != key);
         const std::vector<ref<Line> > *lines = NULL;
         if (NULL == sector)
         {
@@ -367,12 +392,11 @@ public:
         }
         else
         {
-            for (std::vector<ref<Sector> >::const_iterator iter = m_sectors.begin(), end = m_sectors.end();
-                iter != end; ++iter)
+			for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
             {
-                if ((*iter)->m_name == sector)
+                if (m_sectors.at(i)->m_name == sector)
                 {
-                    lines = &((*iter)->m_lines);
+                    lines = &(m_sectors.at(i)->m_lines);
                     break;
                 }
             }
@@ -380,11 +404,10 @@ public:
         if (NULL == lines)
             return defaultValue;
 
-        for (std::vector<ref<Line> >::const_iterator iter = lines->begin(), end = lines->end();
-            iter != end; ++iter)
+		for (size_t i = 0, sz = lines->size(); i < sz; ++i)
         {
-            if ((*iter)->m_key == key)
-                return (*iter)->m_value;
+            if (lines->at(i)->m_key == key)
+                return lines->at(i)->m_value.data();
         }
         return defaultValue;
     }
@@ -403,42 +426,38 @@ public:
     long getNum(const char *sector, const char *key, long defaultValue = 0) const
     {
         assert(NULL != key);
-        std::string s = getString(sector, key);
-        if (s.length() == 0)
+        const char *s = getString(sector, key);
+        if (NULL == s || '\0' == s[0])
             return defaultValue;
 
-        long ret = atol(s.c_str());
-        return ret;
+        return atol(s);
     }
 
     double getDecimal(const char *sector, const char *key, double defaultValue = 0.0) const
     {
         assert(NULL != key);
-        std::string s = getString(sector, key);
-        if (s.length() == 0)
+        const char *s = getString(sector, key);
+        if (NULL == s || '\0' == s[0])
             return defaultValue;
 
-        double ret = atof(s.c_str());
-        return ret;
+        return atof(s);
     }
 
-    std::vector<std::string> getList(const char *sector, const char *key, char splitChar = ',') const
+    void getList(const char *sector, const char *key, std::vector<std::string> *out, char splitChar = ',') const
     {
-        assert(NULL != key);
-        std::vector<std::string> ret;
+        assert(NULL != key && NULL != out);
         std::string s = getString(sector, key);
         if (s.length() == 0)
-            return ret;
+            return;
 
         std::string::size_type begin = 0, end = s.find_first_of(splitChar);
         while (end != std::string::npos)
         {
-            ret.push_back(s.substr(begin, end - begin));
+            out->push_back(s.substr(begin, end - begin));
             begin = end + 1;
             end = s.find_first_of(splitChar, begin);
         }
-        ret.push_back(s.substr(begin));
-        return ret;
+        out->push_back(s.substr(begin));
     }
 
     void setString(const char *sector, const char *key, const char *value)
@@ -451,12 +470,11 @@ public:
         }
         else
         {
-            for (std::vector<ref<Sector> >::const_iterator iter = m_sectors.begin(), end = m_sectors.end();
-                iter != end; ++iter)
+			for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
             {
-                if ((*iter)->m_name == sector)
+                if (m_sectors.at(i)->m_name == sector)
                 {
-                    lines = &((*iter)->m_lines);
+                    lines = &(m_sectors.at(i)->m_lines);
                     break;
                 }
             }
@@ -469,19 +487,18 @@ public:
             m_sectors.push_back(sec);
         }
 
-        for (std::vector<ref<Line> >::iterator iter = lines->begin(), end = lines->end();
-            iter != end; ++iter)
+		for (size_t i = 0, sz = lines->size(); i < sz; ++i)
         {
-            if ((*iter)->m_key == key)
+            if (lines->at(i)->m_key == key)
             {
-                (*iter)->m_value = value;
+                lines->at(i)->m_value = value;
                 m_dirty = true;
                 return;
             }
         }
         ref<Line> line = gc_new<Line>();
         line->m_key = key;
-        line->m_equalSign = true;
+        line->m_equal_sign = true;
         line->m_value = value;
         lines->push_back(line);
         m_dirty = true;
@@ -517,16 +534,15 @@ public:
         setString(sector, key, buf);
     }
 
-    void setList(const char *sector, const char *key, const std::vector<std::string>& value, char splitChar = ',')
+    void setList(const char *sector, const char *key, const std::vector<std::string>& values, char splitChar = ',')
     {
         assert(NULL != key);
         std::string s;
-        if (value.size() > 0)
-            s = value[0];
-        const size_t list_count = value.size();
-        for (register size_t i = 1; i < list_count; ++i)
-            s += std::string() + splitChar + value.at(i);
-        setString(sector, key, s.c_str());
+        if (values.size() > 0)
+            s = values.at(0);
+        for (register size_t i = 1, sz = values.size(); i < sz; ++i)
+            s += std::string() + splitChar + values.at(i);
+        setString(sector, key, s.data());
     }
 };
 
