@@ -1,17 +1,5 @@
-*.suo
-*.user
-*.opensdf
-*.sdf
-/wks/vs20*/Debug
-/wks/vs20*/Release
-/wks/vs20*/ipch
-/wks/vs20*/MSVC/Debug
-/wks/vs20*/MSVC/Release
-/tmp
-*.pyc
 *~
-/wks/makefile/makefile
-/wks/makefile/output
-/wks/eclipse/Debug
-/wks/eclipse/Release
+.tmp
+
+/tmp
 

@@ -110,7 +110,8 @@
     <ClInclude Include="..\..\..\src\nut\container\bundle.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\bytearray.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\bytearraystream.hpp" />
-    <ClInclude Include="..\..\..\src\nut\container\mrucache.hpp" />
+    <ClInclude Include="..\..\..\src\nut\container\lru_cache.hpp" />
+    <ClInclude Include="..\..\..\src\nut\container\lru_data_cache.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplistmap.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplistset.hpp" />

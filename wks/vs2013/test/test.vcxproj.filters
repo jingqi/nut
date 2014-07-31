@@ -296,9 +296,6 @@
     <ClInclude Include="..\..\..\src\nut\container\bytearraystream.hpp">
       <Filter>头文件\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\container\mrucache.hpp">
-      <Filter>头文件\container</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\tuple.hpp">
       <Filter>头文件\container</Filter>
     </ClInclude>
@@ -553,6 +550,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\property_dom.hpp">
       <Filter>头文件\util\txtcfg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\lru_cache.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\lru_data_cache.hpp">
+      <Filter>头文件\container</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
