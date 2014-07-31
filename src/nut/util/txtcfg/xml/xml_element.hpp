@@ -25,9 +25,10 @@ class XmlElement
     NUT_GC_REFERABLE
 
     std::string m_name, m_text;
-    std::vector<ref<XmlElement> > m_children;
     typedef std::map<std::string, std::string> attr_map_t;
-    attr_map_t m_attrs;
+	attr_map_t m_attrs;
+	std::vector<ref<XmlElement> > m_children;
+	bool m_dirty;
 
 private:
     static void encode(const std::string& in, std::string *out)
@@ -121,12 +122,38 @@ public:
     typedef attr_map_t::const_iterator const_attr_iter_t;
 
 public:
-    XmlElement()
+	XmlElement()
+		: m_dirty(false)
     {}
 
     XmlElement(const std::string& name)
-        : m_name(name)
+		: m_name(name), m_dirty(false)
     {}
+
+	bool isDirty() const
+	{
+		if (m_dirty)
+			return true;
+		for (size_t i = 0, sz = m_children.size(); i < sz; ++i)
+		{
+			if (m_children.at(i)->isDirty())
+				return true;
+		}
+		return false;
+	}
+
+	void setDirty(bool dirty)
+	{
+		if (dirty)
+		{
+			m_dirty = true;
+			return;
+		}
+
+		m_dirty = false;
+		for (size_t i = 0, sz = m_children.size(); i < sz; ++i)
+			m_children.at(i)->setDirty(false);
+	}
 
     inline const std::string& getName() const
     {
@@ -135,7 +162,11 @@ public:
 
     inline void setName(const std::string& name)
     {
-        m_name = name;
+		if (name != m_name)
+		{
+			m_name = name;
+			m_dirty = true;
+		}
     }
 
     inline const std::string& getText() const
@@ -145,7 +176,11 @@ public:
 
     inline void setText(const std::string& text)
     {
-        m_text = text;
+		if (text != m_text)
+		{
+			m_text = text;
+			m_dirty = true;
+		}
     }
 
     inline size_t getChildrenCount() const
@@ -177,23 +212,27 @@ public:
     {
         assert(child.isNotNull());
         m_children.push_back(child);
+		m_dirty = true;
     }
 
     inline void insertChild(size_t pos, ref<XmlElement> child)
     {
         assert(pos <= m_children.size() && child.isNotNull());
         m_children.insert(m_children.begin() + pos, child);
+		m_dirty = true;
     }
 
     inline void removeChild(size_t pos)
     {
         assert(pos < m_children.size());
         m_children.erase(m_children.begin() + pos);
+		m_dirty = true;
     }
 
     inline void clearChildren()
     {
         m_children.clear();
+		m_dirty = true;
     }
 
     /**
@@ -202,7 +241,7 @@ public:
      * @param out 用来存储返回的属性值，可以为 NULL
      * @param 改属性是否存在
      */
-    bool getAttribute(const std::string& name, std::string *out)
+    bool getAttribute(const std::string& name, std::string *out) const
     {
         const_attr_iter_t iter = m_attrs.find(name);
         if (iter == m_attrs.end())
@@ -222,6 +261,7 @@ public:
         if (m_attrs.find(name) != m_attrs.end())
             return false;
         m_attrs.insert(std::pair<std::string,std::string>(name, value));
+		m_dirty = true;
         return true;
     }
 
@@ -231,6 +271,7 @@ public:
     inline void setAttribute(const std::string& name, const std::string& value)
     {
         m_attrs[name] = value;
+		m_dirty = true;
     }
 
     void clear()
@@ -239,25 +280,28 @@ public:
         m_text.clear();
         m_attrs.clear();
         m_children.clear();
+		m_dirty = true;
     }
 
-    inline const_attr_iter_t attrBegin() const
+    inline const_attr_iter_t attrConstBegin() const
     {
         return m_attrs.begin();
     }
+
+	inline const_attr_iter_t attrConstEnd() const
+	{
+		return m_attrs.end();
+	}
 
     inline attr_iter_t attrBegin()
     {
+		m_dirty = true; // in case of modification
         return m_attrs.begin();
-    }
-
-    inline const_attr_iter_t attrEnd() const
-    {
-        return m_attrs.end();
     }
 
     inline attr_iter_t attrEnd()
     {
+		m_dirty = true; // in case of modification
         return m_attrs.end();
     }
 
@@ -275,6 +319,7 @@ public:
     {
         // clear
         clear();
+		m_dirty = false;
 
         // define blanks
         const char *blanks = " \t\r\n";

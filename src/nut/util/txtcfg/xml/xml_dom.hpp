@@ -30,11 +30,34 @@ class XmlDom
     std::string m_version;
     std::string m_encoding;
     ref<XmlElement> m_root;
+	bool m_dirty;
 
 public:
     XmlDom()
-        : m_version("1.0"), m_encoding("UTF-8")
+		: m_version("1.0"), m_encoding("UTF-8"), m_dirty(false)
     {}
+
+	bool isDirty() const
+	{
+		if (m_dirty)
+			return true;
+		if (m_root.isNull())
+			return false;
+		return m_root->isDirty();
+	}
+
+	void setDirty(bool dirty)
+	{
+		if (dirty)
+		{
+			m_dirty = true;
+			return;
+		}
+
+		m_dirty = false;
+		if (m_root.isNotNull())
+			m_root->setDirty(false);
+	}
 
     inline const std::string& getVersion() const
     {
@@ -43,7 +66,11 @@ public:
 
     inline void setVersion(const std::string& version)
     {
-        m_version = version;
+		if (version != m_version)
+		{
+			m_version = version;
+			m_dirty = true;
+		}
     }
 
     inline const std::string& getEncoding() const
@@ -53,7 +80,11 @@ public:
 
     inline void setEncoding(const std::string& encoding)
     {
-        m_encoding = encoding;
+		if (encoding != m_encoding)
+		{
+			m_encoding = encoding;
+			m_dirty = true;
+		}
     }
 
     inline ref<XmlElement> getRoot() const
@@ -63,7 +94,11 @@ public:
 
     inline void setRoot(ref<XmlElement> root)
     {
-        m_root = root;
+		if (root != m_root)
+		{
+			m_root = root;
+			m_dirty = true;
+		}
     }
 
     /**
@@ -76,6 +111,7 @@ public:
         m_version.clear();
         m_encoding.clear();
         m_root.clear();
+		m_dirty = false;
 
         size_t i = s.find("<?");
         if (std::string::npos == i)
