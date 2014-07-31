@@ -21,8 +21,17 @@ NUT_FIXTURE(TestIniDom)
     void setUp()
     {
 		pf = gc_new<IniDom>();
-		std::string all;
-		TxtFile::read_file("testPropertyFile.prop", &all);
+        const char *all =
+            "readString1=abc\n"
+            "readString2=abc # comment\r"
+            "read String3  = ab c # comment\r\n"
+            "\n\r"
+            "readNum1 = 123\n"
+            "readNum2 = 123 # com\n"
+            "\n"
+            "readList1 = a,b,cd\n"
+            "[a]\n"
+            "b=value\n";
 		pf->parse(all);
     }
 
@@ -59,4 +68,3 @@ NUT_FIXTURE(TestIniDom)
 };
 
 NUT_REGISTER_FIXTURE(TestIniDom, "util, txtcfg, quiet")
-
