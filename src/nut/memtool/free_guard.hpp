@@ -79,7 +79,7 @@ public:
 	{
 		if (NULL != m_ptr)
 			delete m_ptr;
-		m_ptr = NULL:
+		m_ptr = NULL;
 	}
 
     ~DeleteGuard()
