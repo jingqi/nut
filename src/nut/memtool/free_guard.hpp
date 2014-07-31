@@ -23,21 +23,31 @@ public:
         : m_ptr(p)
     {}
 
-    void set(void *p)
+	inline void* get() const
+	{
+		return m_ptr;
+	}
+
+    inline void set(void *p)
     {
         m_ptr = p;
     }
 
-    void clear()
+    inline void clear()
     {
         m_ptr = NULL;
     }
 
+	inline void release()
+	{
+		if (NULL != m_ptr)
+			::free(m_ptr);
+		m_ptr = NULL;
+	}
+
     ~FreeGuard()
     {
-        if (NULL != m_ptr)
-            ::free(m_ptr);
-        m_ptr = NULL;
+		release();
     }
 };
 
@@ -50,21 +60,31 @@ public:
         : m_ptr(p)
     {}
 
-    void set(T *p)
+	inline T* get() const
+	{
+		return m_ptr;
+	}
+
+    inline void set(T *p)
     {
         m_ptr = p;
     }
 
-    void clear()
+    inline void clear()
     {
         m_ptr = NULL;
     }
 
+	inline void release()
+	{
+		if (NULL != m_ptr)
+			delete m_ptr;
+		m_ptr = NULL:
+	}
+
     ~DeleteGuard()
     {
-        if (NULL != m_ptr)
-            delete m_ptr;
-        m_ptr = NULL;
+		release();
     }
 };
 
