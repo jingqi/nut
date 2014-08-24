@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-08-10
- * @last-edit 2012-08-10 22:54:30 jingqi
+ * @last-edit 2014-08-25 00:52:05 jingqi
  */
 
 #ifndef ___HEADFILE_A7E2D32B_B83E_44AB_A6C6_98E03E0EDDBD_
@@ -15,7 +15,7 @@
 #include <nut/gc/ref.hpp>
 #include <nut/debugging/exception.hpp>
 
-#include "preparedstatement .hpp"
+#include "preparedstatement.hpp"
 #include "resultset.hpp"
 
 namespace nut
@@ -149,7 +149,7 @@ public:
     {
         m_autoCommit = b;
     }
-    
+
     inline bool isThrowExceptions() const
     {
         return m_throwExceptions;
@@ -428,4 +428,3 @@ public:
 }
 
 #endif
-
