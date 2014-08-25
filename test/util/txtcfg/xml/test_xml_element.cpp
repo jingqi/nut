@@ -25,6 +25,8 @@ NUT_FIXTURE(TestXmlElement)
         r->addAttribute("attr1", "size");
         r->addAttribute("attr2", "<good>");
         r->setText(" nice <> \"one\" ");
+        r->addComment(1, "comment");
+        r->addComment(10, "comment2");
 
         nut::ref<XmlElement> e = gc_new<XmlElement>("e");
         e->setText("element");
@@ -41,9 +43,11 @@ NUT_FIXTURE(TestXmlElement)
                 "\t<e>\n"
                     "\t\telement\n"
                 "\t</e>\n"
+                "\t<!--comment-->\n"
                 "\t<e>\n"
                     "\t\telement\n"
                 "\t</e>\n"
+                "\t<!--comment2-->\n"
             "</root>";
         NUT_TA(s == expect);
 
@@ -56,9 +60,11 @@ NUT_FIXTURE(TestXmlElement)
             "<e>"
             "element"
             "</e>"
+            "<!--comment-->"
             "<e>"
             "element"
             "</e>"
+            "<!--comment2-->"
             "</root>";
         NUT_TA(s == expect);
     }
@@ -84,6 +90,8 @@ NUT_FIXTURE(TestXmlElement)
             "\tnice &lt;&gt; &quot;one&quot;\n"
             "\t<e>\n"
             "\t\telement\n"
+            "\t\t<!--comment-->\n"
+            "\t\t<!--comment2-->\n"
             "\t</e>\n"
             "\t<e2 at=\"s\" />\n"
             "</root>";
@@ -98,6 +106,8 @@ NUT_FIXTURE(TestXmlElement)
                 "nice &lt;&gt; &quot;one&quot;"
                 "<e>"
                     "element"
+                    "<!--comment-->"
+                    "<!--comment2-->"
                 "</e>"
                 "<e2 at=\"s\" />"
             "</root>";

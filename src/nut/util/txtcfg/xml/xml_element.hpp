@@ -1,8 +1,8 @@
-﻿/**
+/**
  * @file -
  * @author jingqi
  * @date 2013-10-03
- * @last-edit 2014-07-30 01:46:04 jingqi
+ * @last-edit 2014-08-04 01:01:53 jingqi
  * @brief
  */
 
@@ -23,11 +23,54 @@ namespace nut
 class XmlElement
 {
     NUT_GC_REFERABLE
+    
+    class Comment
+    {
+    public:
+        size_t pos;
+        std::string text;
+        
+        Comment()
+            : pos(0)
+        {}
+
+        Comment(size_t _pos, const std::string& _text)
+            : pos(_pos), text(_text)
+        {}
+    };
+    
+    class LazyDecoder
+    {
+        std::string *m_src;
+        std::string *m_dst;
+        bool m_trim;
+
+    public:
+        LazyDecoder(std::string *src, std::string *dst, bool trim = false)
+            : m_src(src), m_dst(dst), m_trim(trim)
+        {
+            assert(NULL != src && NULL != dst);
+        }
+        
+        ~LazyDecoder()
+        {
+            if (m_trim)
+            {
+                std::string s = trim(*m_src);
+                decode(s, m_dst);
+            }
+            else
+            {
+                decode(*m_src, m_dst);
+            }
+        }
+    };
 
     std::string m_name, m_text;
     typedef std::map<std::string, std::string> attr_map_t;
 	attr_map_t m_attrs;
 	std::vector<ref<XmlElement> > m_children;
+    std::vector<Comment> m_comments; // sorted ascending
 	bool m_dirty;
 
 private:
@@ -273,6 +316,52 @@ public:
         m_attrs[name] = value;
 		m_dirty = true;
     }
+    
+    void addComment(size_t pos, const std::string& text)
+    {
+        // binary search
+        int left = -1, right = (int) m_comments.size();
+        while (left + 1 < right)
+        {
+            const int mid = (left + right) / 2;
+            if (m_comments.at(mid).pos <= pos)
+                left = mid;
+            else
+                right = mid;
+        }
+        m_comments.insert(m_comments.begin() + right, Comment(pos, text));
+    }
+    
+    void removeComment(size_t pos)
+    {
+        // binary search
+        const int size = (int) m_comments.size();
+        int left = -1, right = size;
+        while (left + 1 < right)
+        {
+            const int mid = (left + right) / 2;
+            if (m_comments.at(mid).pos < pos)
+            {
+                left = mid;
+            }
+            else if (m_comments.at(mid).pos > pos)
+            {
+                right = mid;
+            }
+            else
+            {
+                // found
+                left = mid;
+                while (left > 0 && m_comments.at(left - 1).pos == pos)
+                    --left;
+                right = mid + 1;
+                while (right < size && m_comments.at(right).pos == pos)
+                    ++right;
+                m_comments.erase(m_comments.begin() + left, m_comments.begin() + right);
+                return;
+            }
+        }
+    }
 
     void clear()
     {
@@ -280,6 +369,7 @@ public:
         m_text.clear();
         m_attrs.clear();
         m_children.clear();
+        m_comments.clear();
 		m_dirty = true;
     }
 
@@ -492,20 +582,32 @@ public:
         if (FINISH == state || FINISH_ERROR == state || i >= slen)
             return slen;
 
+        std::string text;
+        LazyDecoder _ld(&text, &m_text, ignore_text_blank);
         while (true)
         {
-            // parse text
-            size_t j = s.find('<', i);
-            if (std::string::npos == j)
-                return slen;
-            std::string text = s.substr(i, j - i);
-            if (ignore_text_blank)
-                text = trim(text);
-            decode(text, &m_text);
-            i = j;
+            // parse text and comment
+            while (true)
+            {
+                const size_t j = s.find('<', i);
+                if (std::string::npos == j)
+                    return slen;
+                text += s.substr(i, j - i);
+                if (j + 3 < slen && '!' == s.at(j + 1) && '-' == s.at(j + 2) && '-' == s.at(j + 3))
+                {
+                    std::string comment;
+                    i = collect_comment(s, j + 4, &comment);
+                    m_comments.push_back(Comment(m_children.size(), comment));
+                }
+                else
+                {
+                    i = j;
+                    break;
+                }
+            }
 
             // parse element end
-            j = s.find_first_not_of(blanks, i + 1);
+            const size_t j = s.find_first_not_of(blanks, i + 1);
             if (std::string::npos == j)
                 return slen;
             if ('/' == s.at(j))
@@ -521,6 +623,7 @@ public:
             if (i >= slen)
                 return slen;
         }
+
 #undef BLANK_CASE
 #undef IS_BLANK
     }
@@ -535,6 +638,19 @@ public:
     }
 
 private:
+    size_t collect_comment(const std::string& s, size_t start, std::string *out)
+    {
+        assert(NULL != out);
+        for (size_t i = start, len = s.length(); i < len; ++i)
+        {
+            const char c = s.at(i);
+            if ('-' == c && i + 2 < len && '-' == s.at(i + 1) && '>' == s.at(i + 2))
+                return i + 3;
+            out->push_back(c);
+        }
+        return s.length();
+    }
+    
     void serielize(std::string *out, int tab) const
     {
         assert(NULL != out);
@@ -581,14 +697,44 @@ private:
         }
 
         // children element
+        size_t comment_pos = 0;
         for (register size_t i = 0; i < csize; ++i)
         {
+            // serialize comment
+            while (comment_pos < m_comments.size() && m_comments.at(comment_pos).pos <= i)
+            {
+                if (tab >= 0)
+                {
+                    out->push_back('\n');
+                    for (register int j = 0; j < tab + 1; ++j)
+                        out->push_back('\t');
+                }
+                *out += "<!--";
+                *out += m_comments.at(comment_pos).text;
+                *out += "-->";
+                ++comment_pos;
+            }
+            
+            // element
             ref<XmlElement> c = m_children.at(i);
             if (c.isNull())
                 continue;
             if (tab >= 0)
                 out->push_back('\n');
             c->serielize(out, tab >= 0 ? tab + 1 : tab);
+        }
+        while (comment_pos < m_comments.size())
+        {
+            if (tab >= 0)
+            {
+                out->push_back('\n');
+                for (register int j = 0; j < tab + 1; ++j)
+                    out->push_back('\t');
+            }
+            *out += "<!--";
+            *out += m_comments.at(comment_pos).text;
+            *out += "-->";
+            ++comment_pos;
         }
 
         // end
