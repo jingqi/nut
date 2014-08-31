@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file -
  * @author jingqi
  * @date 2010-8-18
@@ -197,7 +197,6 @@ inline void format(std::string *out, const char *fmt, ...)
     }
 }
 
-#if !defined(NUT_PLATFORM_OS_MAC)
 inline void format(std::wstring *out, const wchar_t *fmt, ...)
 {
     assert(NULL != out && NULL != fmt);
@@ -211,8 +210,10 @@ inline void format(std::wstring *out, const wchar_t *fmt, ...)
         va_start(ap, fmt);
 #if defined(NUT_PLATFORM_CC_VC)
         int n = ::_vsnwprintf(buf, size, fmt, ap);
+#elif defined(NUT_PLATFORM_OS_MAC)
+        int n = ::vswprintf(buf, size, fmt, ap);
 #else
-		int n = ::vsnwprintf(buf, size, fmt, ap);
+        int n = ::vsnwprintf(buf, size, fmt, ap);
 #endif
         va_end(ap);
         if (n > -1 && n < (int)size)
@@ -238,7 +239,6 @@ inline void format(std::wstring *out, const wchar_t *fmt, ...)
         ::free(buf); /* include the case of success of realloc() and failure of realloc() */
     }
 }
-#endif
 
 inline std::string format(const char *fmt, ...)
 {
@@ -272,7 +272,6 @@ inline std::string format(const char *fmt, ...)
     return ret;
 }
 
-#if !defined(NUT_PLATFORM_OS_MAC)
 inline std::wstring format(const wchar_t *fmt, ...)
 {
     assert(NULL != fmt);
@@ -286,8 +285,10 @@ inline std::wstring format(const wchar_t *fmt, ...)
         va_start(ap, fmt);
 #if defined(NUT_PLATFORM_CC_VC)
         int n = ::_vsnwprintf(buf, size, fmt, ap);
+#elif defined(NUT_PLATFORM_OS_MAC)
+        int n = ::vswprintf(buf, size, fmt, ap);
 #else
-		int n = ::vsnwprintf(buf, size, fmt, ap);
+        int n = ::vsnwprintf(buf, size, fmt, ap);
 #endif
         va_end(ap);
         if (n > -1 && n < (int)size)
@@ -308,7 +309,6 @@ inline std::wstring format(const wchar_t *fmt, ...)
         ::free(buf); /* include the case of success of realloc() and failure of realloc() */
     return ret;
 }
-#endif
 
 /* 去除首尾空白 */
 inline void trim(const std::string& str, std::string *out, const std::string& blanks = " \t\r\n")
