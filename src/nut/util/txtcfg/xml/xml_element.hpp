@@ -17,6 +17,8 @@
 #include <nut/gc/gc.hpp>
 #include <nut/util/string/stringutil.hpp>
 
+#include "xml_writer.hpp"
+
 namespace nut
 {
 
@@ -74,36 +76,6 @@ class XmlElement
 	bool m_dirty;
 
 private:
-    static void encode(const std::string& in, std::string *out)
-    {
-        assert(NULL != out);
-        for (register size_t i = 0, len = in.length(); i < len; ++i)
-        {
-            char c = in.at(i);
-            switch (c)
-            {
-            case '&':
-                *out += "&amp;";
-                break;
-
-            case '"':
-                *out += "&quot;";
-                break;
-
-            case '<':
-                *out += "&lt;";
-                break;
-
-            case '>':
-                *out += "&gt;";
-                break;
-
-            default:
-                out->push_back(c);
-            }
-        }
-    }
-
     static void decode(const std::string& in, std::string *out)
     {
         assert(NULL != out);
@@ -634,7 +606,9 @@ public:
     inline void serielize(std::string *out, bool format = true) const
     {
         assert(NULL != out);
-        serielize(out, format ? 0 : -1);
+		StdStringWriter sw(out);
+		XmlWriter w(&sw);
+		serielize(w, format ? 0 : -1);
     }
 
 private:
@@ -650,102 +624,97 @@ private:
         }
         return s.length();
     }
-    
-    void serielize(std::string *out, int tab) const
-    {
-        assert(NULL != out);
+	
+	void serielize(XmlWriter &writer, int tab) const
+	{
 
-        // name and attributes
-        for (register int i = 0; i < tab; ++i)
-            out->push_back('\t');
-        out->push_back('<');
-        *out += m_name;
-        for (const_attr_iter_t iter = m_attrs.begin(), end = m_attrs.end();
-            iter != end; ++iter)
-        {
-            out->push_back(' ');
-            *out += iter->first;
-            *out += "=\"";
-            encode(iter->second, out);
-            out->push_back('\"');
-        }
+		// name
+		for (int i = 0; i < tab; ++i)
+			writer.write_text("\t");
+		writer.start_element(m_name.data());
 
-        const size_t csize = m_children.size();
-        if (0 == m_text.length() && 0 == csize)
-        {
-            *out += " />";
-            return;
-        }
-        out->push_back('>');
+		// attributes
+		for (const_attr_iter_t iter = m_attrs.begin(), end = m_attrs.end();
+			iter != end; ++iter)
+		{
+			writer.write_attribute(iter->first.data(), iter->second.data());
+		}
 
-        // text
-        if (tab < 0)
-        {
-            encode(m_text, out);
-        }
-        else
-        {
-            // need format
-            const std::string text = trim(m_text, " \t\r\n");
-            if (text.length() > 0)
-            {
-                out->push_back('\n');
-                for (register int i = 0; i < tab + 1; ++i)
-                    out->push_back('\t');
-                encode(text, out);
-            }
-        }
-
-        // children element
+		// text
+		bool has_child = false;
+		if (!m_text.empty())
+		{
+			if (tab >= 0)
+			{
+				const std::string text = trim(m_text);
+				if (!text.empty())
+				{
+					writer.write_text("\n");
+					for (int i = 0; i < tab + 1; ++i)
+						writer.write_text("\t");
+					writer.write_text(text.data());
+					has_child = true;
+				}
+			}
+			else
+			{
+				writer.write_text(m_text.data());
+				has_child = true;
+			}
+		}
+		
+		// children and comments
+		const size_t comments_size = m_comments.size();
         size_t comment_pos = 0;
-        for (register size_t i = 0; i < csize; ++i)
+        for (size_t i = 0, csize = m_children.size(); i < csize; ++i)
         {
             // serialize comment
-            while (comment_pos < m_comments.size() && m_comments.at(comment_pos).pos <= i)
+            while (comment_pos < comments_size && m_comments.at(comment_pos).pos <= i)
             {
                 if (tab >= 0)
                 {
-                    out->push_back('\n');
-                    for (register int j = 0; j < tab + 1; ++j)
-                        out->push_back('\t');
+					writer.write_text("\n");
+                    for (int j = 0; j < tab + 1; ++j)
+						writer.write_text("\t");
                 }
-                *out += "<!--";
-                *out += m_comments.at(comment_pos).text;
-                *out += "-->";
+				writer.write_comment(m_comments.at(comment_pos).text.data());
                 ++comment_pos;
+				has_child = true;
             }
             
-            // element
+            // children element
             ref<XmlElement> c = m_children.at(i);
             if (c.isNull())
                 continue;
             if (tab >= 0)
-                out->push_back('\n');
-            c->serielize(out, tab >= 0 ? tab + 1 : tab);
+				writer.write_text("\n");
+			c->serielize(writer, tab >= 0 ? tab + 1 : tab);
+			has_child = true;
         }
-        while (comment_pos < m_comments.size())
+		
+		// tail comments
+        while (comment_pos < comments_size)
         {
             if (tab >= 0)
             {
-                out->push_back('\n');
-                for (register int j = 0; j < tab + 1; ++j)
-                    out->push_back('\t');
+				writer.write_text("\n");
+                for (int j = 0; j < tab + 1; ++j)
+					writer.write_text("\t");
             }
-            *out += "<!--";
-            *out += m_comments.at(comment_pos).text;
-            *out += "-->";
+			writer.write_comment(m_comments.at(comment_pos).text.data());
             ++comment_pos;
+			has_child = true;
         }
-
-        // end
-        if (tab >= 0)
-            out->push_back('\n');
-        for (register int i = 0; i < tab; ++i)
-            out->push_back('\t');
-        *out += "</";
-        *out += m_name;
-        out->push_back('>');
-    }
+		
+		// finish
+        if (has_child && tab >= 0)
+		{
+            writer.write_text("\n");
+        	for (int i = 0; i < tab; ++i)
+				writer.write_text("\t");
+		}
+		writer.end_element();
+	}
 };
 
 }

@@ -170,6 +170,8 @@ public:
     void serielize(std::string *out, bool format = true) const
     {
         assert(NULL != out);
+
+		// xml header
         *out += "<?xml version=\"";
         *out += m_version;
         *out += "\" encoding=\"";
@@ -179,7 +181,11 @@ public:
             return;
         if (format)
             out->push_back('\n');
-        m_root->serielize(out, format);
+
+		// xml elements
+		StdStringWriter sw(out);
+		XmlWriter w(&sw);
+        m_root->serielize(sw, format);
     }
 };
 

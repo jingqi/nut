@@ -30,9 +30,10 @@ NUT_FIXTURE(TestXmlElement)
 
         nut::ref<XmlElement> e = gc_new<XmlElement>("e");
         e->setText("element");
+        r->appendChild(e);
 
-        r->appendChild(e);
-        r->appendChild(e);
+        nut::ref<XmlElement> e2 = gc_new<XmlElement>("e2");
+        r->appendChild(e2);
 
         string s;
         r->serielize(&s);
@@ -44,11 +45,18 @@ NUT_FIXTURE(TestXmlElement)
                     "\t\telement\n"
                 "\t</e>\n"
                 "\t<!--comment-->\n"
-                "\t<e>\n"
-                    "\t\telement\n"
-                "\t</e>\n"
+                "\t<e2 />\n"
                 "\t<!--comment2-->\n"
             "</root>";
+		/*printf("%s\n%s\n", s.data(), expect);
+		for (int i = 0; i < s.length(); ++i)
+		{
+			if (s[i] != expect[i])
+			 {
+				printf("d: %s", expect + i);
+				break;
+			}
+		}*/
         NUT_TA(s == expect);
 
         s.clear();
@@ -61,11 +69,10 @@ NUT_FIXTURE(TestXmlElement)
             "element"
             "</e>"
             "<!--comment-->"
-            "<e>"
-            "element"
-            "</e>"
+            "<e2 />"
             "<!--comment2-->"
             "</root>";
+		//printf("%s\n", s.data());
         NUT_TA(s == expect);
     }
 
