@@ -104,6 +104,7 @@ NUT_FIXTURE(TestXmlElement)
             "</root>";
         nut::ref<XmlElement> r = gc_new<XmlElement>();
         r->parse(s);
+		r = r->getChild(0);
 
         std::string out;
         r->serielize(&out, false);

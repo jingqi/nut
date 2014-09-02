@@ -734,7 +734,10 @@ public:
     bool finish()
     {
         if (ERROR == m_state)
+		{
+			force_finish();
             return false;
+		}
 
         if (0 == m_elem_path.size())
         {
@@ -748,6 +751,7 @@ public:
             m_tmp_value += m_elem_path.at(m_elem_path.size() - 1).name;
             m_tmp_value += "\" is not closed";
             m_state = ERROR;
+			force_finish();
             return false;
         }
         return true;

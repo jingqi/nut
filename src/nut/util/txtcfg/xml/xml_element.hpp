@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-10-03
- * @last-edit 2014-08-04 01:01:53 jingqi
+ * @last-edit 2014-09-03 02:24:30 jingqi
  * @brief
  */
 
@@ -17,6 +17,7 @@
 #include <nut/gc/gc.hpp>
 #include <nut/util/string/stringutil.hpp>
 
+#include "xml_parser.hpp"
 #include "xml_writer.hpp"
 
 namespace nut
@@ -25,13 +26,13 @@ namespace nut
 class XmlElement
 {
     NUT_GC_REFERABLE
-    
+
     class Comment
     {
     public:
         size_t pos;
         std::string text;
-        
+
         Comment()
             : pos(0)
         {}
@@ -40,33 +41,6 @@ class XmlElement
             : pos(_pos), text(_text)
         {}
     };
-    
-    class LazyDecoder
-    {
-        std::string *m_src;
-        std::string *m_dst;
-        bool m_trim;
-
-    public:
-        LazyDecoder(std::string *src, std::string *dst, bool trim = false)
-            : m_src(src), m_dst(dst), m_trim(trim)
-        {
-            assert(NULL != src && NULL != dst);
-        }
-        
-        ~LazyDecoder()
-        {
-            if (m_trim)
-            {
-                std::string s = trim(*m_src);
-                decode(s, m_dst);
-            }
-            else
-            {
-                decode(*m_src, m_dst);
-            }
-        }
-    };
 
     std::string m_name, m_text;
     typedef std::map<std::string, std::string> attr_map_t;
@@ -74,63 +48,6 @@ class XmlElement
 	std::vector<ref<XmlElement> > m_children;
     std::vector<Comment> m_comments; // sorted ascending
 	bool m_dirty;
-
-private:
-    static void decode(const std::string& in, std::string *out)
-    {
-        assert(NULL != out);
-        for (register size_t i = 0, len = in.length(); i < len; ++i) // loop
-        {
-            char c = in.at(i);
-            if (c == '&' && i + 3 < len)
-            {
-                c = in.at(i + 1);
-                switch (c) // switch
-                {
-                case 'l':
-                    if ('t' == in.at(i + 2) && ';' == in.at(i + 3))
-                    {
-                        out->push_back('<');
-                        i += 3;
-                        continue; // loop
-                    }
-                    break; // switch
-
-                case 'g':
-                    if ('t' == in.at(i + 2) && ';' == in.at(i + 3))
-                    {
-                        out->push_back('>');
-                        i += 3;
-                        continue; // loop
-                    }
-                    break; // switch
-
-                case 'a':
-                    if (i + 4 < len && 'm' == in.at(i + 2) && 'p' == in.at(i + 3) && ';' == in.at(i + 4))
-                    {
-                        out->push_back('&');
-                        i += 4;
-                        continue; // loop
-                    }
-                    break; // switch
-
-                case 'q':
-                    if (i + 5 < len && 'u' == in.at(i + 2) && 'o' == in.at(i + 3) && 't' == in.at(i + 4) && ';' == in.at(i + 5))
-                    {
-                        out->push_back('\"');
-                        i += 5;
-                        continue; // loop
-                    }
-                    break; // switch
-                }
-
-                out->push_back('&');
-                continue; // loop
-            }
-
-            out->push_back(c);
-        }
-    }
 
 public:
     typedef attr_map_t::iterator attr_iter_t;
@@ -288,7 +205,7 @@ public:
         m_attrs[name] = value;
 		m_dirty = true;
     }
-    
+
     void addComment(size_t pos, const std::string& text)
     {
         // binary search
@@ -303,7 +220,7 @@ public:
         }
         m_comments.insert(m_comments.begin() + right, Comment(pos, text));
     }
-    
+
     void removeComment(size_t pos)
     {
         // binary search
@@ -367,238 +284,56 @@ public:
         return m_attrs.end();
     }
 
-    inline void parse(const std::string& s, bool ignore_text_blank = true)
-    {
-        parse(s, 0, ignore_text_blank);
-    }
-
-    /**
-     * @param from 开始分析的位置
-     * @param ignore_text_blank 忽略文本首尾的空白和换行
-     * @return 已经分析完成位置的下一个位置
-     */
-    size_t parse(const std::string& s, size_t from, bool ignore_text_blank = true)
-    {
-        // clear
-        clear();
-		m_dirty = false;
-
-        // define blanks
-        const char *blanks = " \t\r\n";
-#define BLANK_CASE \
-    case ' ': \
-    case '\t': \
-    case '\r': \
-    case '\n'
-#define IS_BLANK(c) (' ' == (c) || '\t' == (c) || '\r' == (c) || '\n' == (c))
-
-        // parse name
-        const size_t slen = s.length();
-        size_t i = s.find('<', from);
-        if (std::string::npos == i)
-            return slen;
-        ++i;
-        i = s.find_first_not_of(blanks, i);
-        if (std::string::npos == i)
-            return slen;
-        while (i < slen)
+    void parse(const std::string& s, bool ignore_text_blank = true)
+	{
+		class Handler : public XmlElementHandler
         {
-            const char c = s.at(i);
-            if (IS_BLANK(c) || '/' == c || '>' == c)
-                break;
-            m_name.push_back(c);
-            ++i;
-        }
+			XmlElement *m_elem;
+			bool m_ignore_text_blank;
+        public:
+			Handler(XmlElement *e, bool ignore_text_blank)
+				: m_elem(e), m_ignore_text_blank(ignore_text_blank)
+			{}
 
-        // parse attribute
-        enum State
-        {
-            INIT,               // initial, expect attributes or ">" or "/>"
+            virtual void handle_attribute(const std::string &name, const std::string &value)
+            {
+				m_elem->addAttribute(name, value);
+            }
 
-            EXPECT_NAME,        // expect attribute name
-            EXPECT_EQ,          // expect =
-            EXPECT_FIRST_QUOT,  // expect first "
-            EXPECT_VALUE,       // expect value
-            EXPECT_GT,          // expect > and then eof(in case of "\>")
+            virtual void handle_text(const std::string& text)
+            {
+				m_elem->m_text += text;
+            }
 
-            FINISH_HEAD,        // finish header
-            FINISH,             // finish
-            FINISH_ERROR        // finish on error
+            virtual void handle_comment(const std::string& comment)
+            {
+				m_elem->addComment(m_elem->m_children.size(), comment);
+            }
+
+            virtual XmlElementHandler* handle_child(const std::string &name)
+            {
+				ref<XmlElement> c = gc_new<XmlElement>(name);
+				m_elem->appendChild(c);
+				return new Handler(c.pointer(), m_ignore_text_blank);
+            }
+
+            virtual void handle_child_finish(XmlElementHandler *child)
+            {
+				delete child;
+            }
+
+            virtual void handle_finish()
+            {
+				if (m_ignore_text_blank)
+					m_elem->m_text = trim(m_elem->m_text);
+            }
         };
-        std::string attr, value;
-        State state = INIT;
-        while (FINISH_HEAD != state && FINISH != state && FINISH_ERROR != state)
-        {
-            if (i >= slen)
-                return slen;
-            const char c = s.at(i++);
-            switch (state)
-            {
-            case INIT:
-                switch (c)
-                {
-                BLANK_CASE:
-                    continue;
-
-                case '/':
-                    state = EXPECT_GT;
-                    continue;
-
-                case '>':
-                    state = FINISH_HEAD;
-                    continue;
-
-                case '<':
-                case '=':
-                case '\"':
-                    state = FINISH_ERROR;
-                    continue;
-
-                default:
-                    state = EXPECT_NAME;
-                    attr.push_back(c);
-                    continue;
-                }
-
-            case EXPECT_NAME:
-                switch (c)
-                {
-                BLANK_CASE:
-                    state = EXPECT_EQ;
-                    continue;
-
-                case '=':
-                    state = EXPECT_FIRST_QUOT;
-                    continue;
-
-                case '<':
-                case '>':
-                case '/':
-                case '\"':
-                    state = FINISH_ERROR;
-                    continue;
-
-                default:
-                    attr.push_back(c);
-                    continue;
-                }
-
-            case EXPECT_EQ:
-                switch (c)
-                {
-                BLANK_CASE:
-                    continue;
-
-                case '=':
-                    state = EXPECT_FIRST_QUOT;
-                    continue;
-
-                default:
-                    state = FINISH_ERROR;
-                    continue;
-                }
-
-            case EXPECT_FIRST_QUOT:
-                switch (c)
-                {
-                BLANK_CASE:
-                    continue;
-
-                case '\"':
-                    state = EXPECT_VALUE;
-                    continue;
-
-                default:
-                    state = FINISH_ERROR;
-                    continue;
-                }
-
-            case EXPECT_VALUE:
-                switch (c)
-                {
-                case '\"':
-                    state = INIT;
-                    {
-                        std::string v;
-                        decode(value, &v);
-                        m_attrs[attr] = v;
-                    }
-                    attr.clear();
-                    value.clear();
-                    continue;
-
-                default:
-                    value.push_back(c);
-                    continue;
-                }
-
-            case EXPECT_GT:
-                switch (c)
-                {
-                BLANK_CASE:
-                    continue;
-
-                case '>':
-                    state = FINISH;
-                    continue;
-
-                default:
-                    state = FINISH_ERROR;
-                    continue;
-                }
-
-            default:
-                assert(false);
-            }
-        }
-        if (FINISH == state || FINISH_ERROR == state || i >= slen)
-            return slen;
-
-        std::string text;
-        LazyDecoder _ld(&text, &m_text, ignore_text_blank);
-        while (true)
-        {
-            // parse text and comment
-            while (true)
-            {
-                const size_t j = s.find('<', i);
-                if (std::string::npos == j)
-                    return slen;
-                text += s.substr(i, j - i);
-                if (j + 3 < slen && '!' == s.at(j + 1) && '-' == s.at(j + 2) && '-' == s.at(j + 3))
-                {
-                    std::string comment;
-                    i = collect_comment(s, j + 4, &comment);
-                    m_comments.push_back(Comment(m_children.size(), comment));
-                }
-                else
-                {
-                    i = j;
-                    break;
-                }
-            }
-
-            // parse element end
-            const size_t j = s.find_first_not_of(blanks, i + 1);
-            if (std::string::npos == j)
-                return slen;
-            if ('/' == s.at(j))
-            {
-                i = s.find('>', j);
-                return i + 1;
-            }
-
-            // parse child element
-            ref<XmlElement> child = gc_new<XmlElement>();
-            i = child->parse(s, i, ignore_text_blank);
-            m_children.push_back(child);
-            if (i >= slen)
-                return slen;
-        }
-
-#undef BLANK_CASE
-#undef IS_BLANK
-    }
+		clear();
+		Handler h(this, ignore_text_blank);
+		XmlParser p(&h);
+		p.input(s.data(), s.length());
+		p.finish();
+	}
 
     /*
      * @param format 格式化输出，以便于阅读
@@ -612,19 +347,6 @@ public:
     }
 
 private:
-    size_t collect_comment(const std::string& s, size_t start, std::string *out)
-    {
-        assert(NULL != out);
-        for (size_t i = start, len = s.length(); i < len; ++i)
-        {
-            const char c = s.at(i);
-            if ('-' == c && i + 2 < len && '-' == s.at(i + 1) && '>' == s.at(i + 2))
-                return i + 3;
-            out->push_back(c);
-        }
-        return s.length();
-    }
-	
 	void serielize(XmlWriter &writer, int tab) const
 	{
 
@@ -662,7 +384,7 @@ private:
 				has_child = true;
 			}
 		}
-		
+
 		// children and comments
 		const size_t comments_size = m_comments.size();
         size_t comment_pos = 0;
@@ -681,7 +403,7 @@ private:
                 ++comment_pos;
 				has_child = true;
             }
-            
+
             // children element
             ref<XmlElement> c = m_children.at(i);
             if (c.isNull())
@@ -691,7 +413,7 @@ private:
 			c->serielize(writer, tab >= 0 ? tab + 1 : tab);
 			has_child = true;
         }
-		
+
 		// tail comments
         while (comment_pos < comments_size)
         {
@@ -705,7 +427,7 @@ private:
             ++comment_pos;
 			has_child = true;
         }
-		
+
 		// finish
         if (has_child && tab >= 0)
 		{

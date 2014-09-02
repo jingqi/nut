@@ -160,6 +160,10 @@ public:
             return; // no element found
         m_root = gc_new<XmlElement>();
         m_root->parse(s, i, ignore_text_blank);
+		if (m_root->getChildrenCount() > 0)
+			m_root = m_root->getChild(0);
+		else
+			m_root.clear();
     }
 
     /**
