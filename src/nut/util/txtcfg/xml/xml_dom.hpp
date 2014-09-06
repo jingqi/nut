@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-10-03
- * @last-edit 2014-07-30 01:48:13 jingqi
+ * @last-edit 2014-09-06 12:41:45 jingqi
  * @brief
  */
 
@@ -186,10 +186,10 @@ public:
         if (format)
             out->push_back('\n');
 
-		// xml elements
-		StdStringWriter sw(out);
-		XmlWriter w(&sw);
-        m_root->serielize(sw, format);
+        // xml elements
+        StdStringWriter sw(out);
+        XmlWriter w(&sw);
+        m_root->serielize(w, format);
     }
 };
 

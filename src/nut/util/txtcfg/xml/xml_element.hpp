@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-10-03
- * @last-edit 2014-09-03 02:24:30 jingqi
+ * @last-edit 2014-09-06 12:50:16 jingqi
  * @brief
  */
 
@@ -44,48 +44,48 @@ class XmlElement
 
     std::string m_name, m_text;
     typedef std::map<std::string, std::string> attr_map_t;
-	attr_map_t m_attrs;
-	std::vector<ref<XmlElement> > m_children;
+    attr_map_t m_attrs;
+    std::vector<ref<XmlElement> > m_children;
     std::vector<Comment> m_comments; // sorted ascending
-	bool m_dirty;
+    bool m_dirty;
 
 public:
     typedef attr_map_t::iterator attr_iter_t;
     typedef attr_map_t::const_iterator const_attr_iter_t;
 
 public:
-	XmlElement()
-		: m_dirty(false)
+    XmlElement()
+        : m_dirty(false)
     {}
 
     XmlElement(const std::string& name)
-		: m_name(name), m_dirty(false)
+        : m_name(name), m_dirty(false)
     {}
 
-	bool isDirty() const
-	{
-		if (m_dirty)
-			return true;
-		for (size_t i = 0, sz = m_children.size(); i < sz; ++i)
-		{
-			if (m_children.at(i)->isDirty())
-				return true;
-		}
-		return false;
-	}
+    bool isDirty() const
+    {
+        if (m_dirty)
+            return true;
+        for (size_t i = 0, sz = m_children.size(); i < sz; ++i)
+        {
+            if (m_children.at(i)->isDirty())
+                return true;
+        }
+        return false;
+    }
 
-	void setDirty(bool dirty)
-	{
-		if (dirty)
-		{
-			m_dirty = true;
-			return;
-		}
+    void setDirty(bool dirty)
+    {
+        if (dirty)
+        {
+            m_dirty = true;
+            return;
+        }
 
-		m_dirty = false;
-		for (size_t i = 0, sz = m_children.size(); i < sz; ++i)
-			m_children.at(i)->setDirty(false);
-	}
+        m_dirty = false;
+        for (size_t i = 0, sz = m_children.size(); i < sz; ++i)
+            m_children.at(i)->setDirty(false);
+    }
 
     inline const std::string& getName() const
     {
@@ -94,11 +94,11 @@ public:
 
     inline void setName(const std::string& name)
     {
-		if (name != m_name)
-		{
-			m_name = name;
-			m_dirty = true;
-		}
+        if (name != m_name)
+        {
+            m_name = name;
+            m_dirty = true;
+        }
     }
 
     inline const std::string& getText() const
@@ -108,11 +108,11 @@ public:
 
     inline void setText(const std::string& text)
     {
-		if (text != m_text)
-		{
-			m_text = text;
-			m_dirty = true;
-		}
+        if (text != m_text)
+        {
+            m_text = text;
+            m_dirty = true;
+        }
     }
 
     inline size_t getChildrenCount() const
@@ -144,27 +144,27 @@ public:
     {
         assert(child.isNotNull());
         m_children.push_back(child);
-		m_dirty = true;
+        m_dirty = true;
     }
 
     inline void insertChild(size_t pos, ref<XmlElement> child)
     {
         assert(pos <= m_children.size() && child.isNotNull());
         m_children.insert(m_children.begin() + pos, child);
-		m_dirty = true;
+        m_dirty = true;
     }
 
     inline void removeChild(size_t pos)
     {
         assert(pos < m_children.size());
         m_children.erase(m_children.begin() + pos);
-		m_dirty = true;
+        m_dirty = true;
     }
 
     inline void clearChildren()
     {
         m_children.clear();
-		m_dirty = true;
+        m_dirty = true;
     }
 
     /**
@@ -193,7 +193,7 @@ public:
         if (m_attrs.find(name) != m_attrs.end())
             return false;
         m_attrs.insert(std::pair<std::string,std::string>(name, value));
-		m_dirty = true;
+        m_dirty = true;
         return true;
     }
 
@@ -203,7 +203,7 @@ public:
     inline void setAttribute(const std::string& name, const std::string& value)
     {
         m_attrs[name] = value;
-		m_dirty = true;
+        m_dirty = true;
     }
 
     void addComment(size_t pos, const std::string& text)
@@ -259,7 +259,7 @@ public:
         m_attrs.clear();
         m_children.clear();
         m_comments.clear();
-		m_dirty = true;
+        m_dirty = true;
     }
 
     inline const_attr_iter_t attrConstBegin() const
@@ -267,73 +267,76 @@ public:
         return m_attrs.begin();
     }
 
-	inline const_attr_iter_t attrConstEnd() const
-	{
-		return m_attrs.end();
-	}
+    inline const_attr_iter_t attrConstEnd() const
+    {
+        return m_attrs.end();
+    }
 
     inline attr_iter_t attrBegin()
     {
-		m_dirty = true; // in case of modification
+        m_dirty = true; // in case of modification
         return m_attrs.begin();
     }
 
     inline attr_iter_t attrEnd()
     {
-		m_dirty = true; // in case of modification
+        m_dirty = true; // in case of modification
         return m_attrs.end();
     }
 
-    void parse(const std::string& s, bool ignore_text_blank = true)
-	{
-		class Handler : public XmlElementHandler
+    void parse(const std::string& s, size_t start_index = 0, bool ignore_text_blank = true)
+    {
+        assert(start_index <= s.length());
+
+        class Handler : public XmlElementHandler
         {
-			XmlElement *m_elem;
-			bool m_ignore_text_blank;
+            XmlElement *m_elem;
+            bool m_ignore_text_blank;
         public:
-			Handler(XmlElement *e, bool ignore_text_blank)
-				: m_elem(e), m_ignore_text_blank(ignore_text_blank)
-			{}
+            Handler(XmlElement *e, bool ignore_text_blank)
+                : m_elem(e), m_ignore_text_blank(ignore_text_blank)
+            {}
 
             virtual void handle_attribute(const std::string &name, const std::string &value)
             {
-				m_elem->addAttribute(name, value);
+                m_elem->addAttribute(name, value);
             }
 
             virtual void handle_text(const std::string& text)
             {
-				m_elem->m_text += text;
+                m_elem->m_text += text;
             }
 
             virtual void handle_comment(const std::string& comment)
             {
-				m_elem->addComment(m_elem->m_children.size(), comment);
+                m_elem->addComment(m_elem->m_children.size(), comment);
             }
 
             virtual XmlElementHandler* handle_child(const std::string &name)
             {
-				ref<XmlElement> c = gc_new<XmlElement>(name);
-				m_elem->appendChild(c);
-				return new Handler(c.pointer(), m_ignore_text_blank);
+                ref<XmlElement> c = gc_new<XmlElement>(name);
+                m_elem->appendChild(c);
+                return new Handler(c.pointer(), m_ignore_text_blank);
             }
 
             virtual void handle_child_finish(XmlElementHandler *child)
             {
-				delete child;
+                delete child;
             }
 
             virtual void handle_finish()
             {
-				if (m_ignore_text_blank)
-					m_elem->m_text = trim(m_elem->m_text);
+                if (m_ignore_text_blank)
+                    m_elem->m_text = trim(m_elem->m_text);
             }
         };
-		clear();
-		Handler h(this, ignore_text_blank);
-		XmlParser p(&h);
-		p.input(s.data(), s.length());
-		p.finish();
-	}
+
+        clear();
+        Handler h(this, ignore_text_blank);
+        XmlParser p(&h);
+        p.input(s.data() + start_index, s.length() - start_index);
+        p.finish();
+    }
 
     /*
      * @param format 格式化输出，以便于阅读
@@ -341,52 +344,51 @@ public:
     inline void serielize(std::string *out, bool format = true) const
     {
         assert(NULL != out);
-		StdStringWriter sw(out);
-		XmlWriter w(&sw);
-		serielize(w, format ? 0 : -1);
+        StdStringWriter sw(out);
+        XmlWriter w(&sw);
+        serielize(w, format ? 0 : -1);
     }
 
-private:
-	void serielize(XmlWriter &writer, int tab) const
-	{
+    void serielize(XmlWriter &writer, int tab) const
+    {
 
-		// name
-		for (int i = 0; i < tab; ++i)
-			writer.write_text("\t");
-		writer.start_element(m_name.data());
+        // name
+        for (int i = 0; i < tab; ++i)
+            writer.write_text("\t");
+        writer.start_element(m_name.data());
 
-		// attributes
-		for (const_attr_iter_t iter = m_attrs.begin(), end = m_attrs.end();
-			iter != end; ++iter)
-		{
-			writer.write_attribute(iter->first.data(), iter->second.data());
-		}
+        // attributes
+        for (const_attr_iter_t iter = m_attrs.begin(), end = m_attrs.end();
+            iter != end; ++iter)
+        {
+            writer.write_attribute(iter->first.data(), iter->second.data());
+        }
 
-		// text
-		bool has_child = false;
-		if (!m_text.empty())
-		{
-			if (tab >= 0)
-			{
-				const std::string text = trim(m_text);
-				if (!text.empty())
-				{
-					writer.write_text("\n");
-					for (int i = 0; i < tab + 1; ++i)
-						writer.write_text("\t");
-					writer.write_text(text.data());
-					has_child = true;
-				}
-			}
-			else
-			{
-				writer.write_text(m_text.data());
-				has_child = true;
-			}
-		}
+        // text
+        bool has_child = false;
+        if (!m_text.empty())
+        {
+            if (tab >= 0)
+            {
+                const std::string text = trim(m_text);
+                if (!text.empty())
+                {
+                    writer.write_text("\n");
+                    for (int i = 0; i < tab + 1; ++i)
+                        writer.write_text("\t");
+                    writer.write_text(text.data());
+                    has_child = true;
+                }
+            }
+            else
+            {
+                writer.write_text(m_text.data());
+                has_child = true;
+            }
+        }
 
-		// children and comments
-		const size_t comments_size = m_comments.size();
+        // children and comments
+        const size_t comments_size = m_comments.size();
         size_t comment_pos = 0;
         for (size_t i = 0, csize = m_children.size(); i < csize; ++i)
         {
@@ -395,13 +397,13 @@ private:
             {
                 if (tab >= 0)
                 {
-					writer.write_text("\n");
+                    writer.write_text("\n");
                     for (int j = 0; j < tab + 1; ++j)
-						writer.write_text("\t");
+                        writer.write_text("\t");
                 }
-				writer.write_comment(m_comments.at(comment_pos).text.data());
+                writer.write_comment(m_comments.at(comment_pos).text.data());
                 ++comment_pos;
-				has_child = true;
+                has_child = true;
             }
 
             // children element
@@ -409,34 +411,34 @@ private:
             if (c.isNull())
                 continue;
             if (tab >= 0)
-				writer.write_text("\n");
-			c->serielize(writer, tab >= 0 ? tab + 1 : tab);
-			has_child = true;
+                writer.write_text("\n");
+            c->serielize(writer, tab >= 0 ? tab + 1 : tab);
+            has_child = true;
         }
 
-		// tail comments
+        // tail comments
         while (comment_pos < comments_size)
         {
             if (tab >= 0)
             {
-				writer.write_text("\n");
+                writer.write_text("\n");
                 for (int j = 0; j < tab + 1; ++j)
-					writer.write_text("\t");
+                    writer.write_text("\t");
             }
-			writer.write_comment(m_comments.at(comment_pos).text.data());
+            writer.write_comment(m_comments.at(comment_pos).text.data());
             ++comment_pos;
-			has_child = true;
+            has_child = true;
         }
 
-		// finish
+        // finish
         if (has_child && tab >= 0)
-		{
+        {
             writer.write_text("\n");
-        	for (int i = 0; i < tab; ++i)
-				writer.write_text("\t");
-		}
-		writer.end_element();
-	}
+            for (int i = 0; i < tab; ++i)
+                writer.write_text("\t");
+        }
+        writer.end_element();
+    }
 };
 
 }
