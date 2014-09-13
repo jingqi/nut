@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-08-10
- * @last-edit 2014-08-25 00:52:05 jingqi
+ * @last-edit 2014-09-14 00:08:07 jingqi
  */
 
 #ifndef ___HEADFILE_A7E2D32B_B83E_44AB_A6C6_98E03E0EDDBD_
@@ -48,19 +48,12 @@ class Connection
     {
         m_lastError = err;
 
-        if (NULL != msg)
-        {
-            m_lastErrorMsg = msg;
-        }
-        else
+        if (NULL == msg)
         {
             assert(NULL != m_sqlite);
-            msg = ::sqlite3_errmsg(m_sqlite);
-            Sqlite3Freer _f((void*) msg);
-            if (NULL == msg)
-                msg = "no error";
-            m_lastErrorMsg = msg;
+            msg = ::sqlite3_errmsg(m_sqlite); // XXX memory of "msg" is managed internally by sqlite3
         }
+        m_lastErrorMsg = (NULL == msg ? "no error detected" : msg);
 
         if (m_throwExceptions)
             throw ExceptionA(m_lastError, m_lastErrorMsg, __FILE__, __LINE__, __FUNCTION__);
