@@ -2,6 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2010-7-22
+ * @last-edit 2014-09-14 00:52:56 jingqi
  */
 
 #ifndef ___HEADFILE___5FC80ECA_3FD3_11E0_A703_485B391122F8_
@@ -77,7 +78,9 @@ private :
     }
 
 public :
-    ByteArray() : m_datalen(0) {}
+    ByteArray()
+        : m_datalen(0)
+    {}
 
     /**
      * @param len initial data size
@@ -87,7 +90,8 @@ public :
         : m_datalen(0)
     {
         _copy_on_write(len, false);
-        ::memset(m_buf->buf, fillv, len * sizeof(uint8_t));
+        if (len > 0)
+            ::memset(m_buf->buf, fillv, len * sizeof(uint8_t));
         m_datalen = len;
     }
 
@@ -103,7 +107,8 @@ public :
             return;
 
         _copy_on_write(len, false);
-        ::memcpy(m_buf->buf, buf, len * sizeof(uint8_t));
+        if (len > 0)
+            ::memcpy(m_buf->buf, buf, len * sizeof(uint8_t));
         m_datalen = len;
     }
 
@@ -125,7 +130,8 @@ public :
             ++len;
 
         _copy_on_write(len, false);
-        ::memcpy(m_buf->buf, buf, len * sizeof(uint8_t));
+        if (len > 0)
+            ::memcpy(m_buf->buf, buf, len * sizeof(uint8_t));
         m_datalen = len;
     }
 
@@ -137,7 +143,8 @@ public :
             return;
 
         _copy_on_write(size, false);
-        ::memcpy(m_buf->buf, ((const uint8_t*)buf) + index, size * sizeof(uint8_t));
+        if (size > 0)
+            ::memcpy(m_buf->buf, ((const uint8_t*)buf) + index, size * sizeof(uint8_t));
         m_datalen = size;
     }
 
@@ -229,14 +236,16 @@ public :
     inline void append(const ByteArray &x)
     {
         _copy_on_write(m_datalen + x.m_datalen);
-        ::memcpy(m_buf->buf + m_datalen, x.m_buf->buf, x.m_datalen);
+        if (x.m_datalen > 0)
+            ::memcpy(m_buf->buf + m_datalen, x.m_buf->buf, x.m_datalen);
         m_datalen += x.m_datalen;
     }
 
     inline void append(size_t len, uint8_t fillv = 0)
     {
         _copy_on_write(m_datalen + len);
-        ::memset(m_buf->buf + m_datalen, fillv, len);
+        if (len > 0)
+            ::memset(m_buf->buf + m_datalen, fillv, len);
         m_datalen += len;
     }
 
@@ -247,7 +256,8 @@ public :
             return;
 
         _copy_on_write(m_datalen + len);
-        ::memcpy(m_buf->buf + m_datalen, buf, len);
+        if (len > 0)
+            ::memcpy(m_buf->buf + m_datalen, buf, len);
         m_datalen += len;
     }
 
@@ -414,4 +424,3 @@ public :
 }
 
 #endif /* head file guarder */
-
