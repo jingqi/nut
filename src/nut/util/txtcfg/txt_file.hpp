@@ -1,8 +1,8 @@
-﻿/**
+/**
  * @file -
  * @author jingqi
  * @date 2014-07-30
- * @last-edit 2014-07-30 22:28:25 jingqi
+ * @last-edit 2014-09-13 19:37:39 jingqi
  * @brief
  */
 
@@ -58,6 +58,7 @@ public:
         ofs << content;
         ofs.flush();
         ofs.close();
+        return true;
     }
 };
 
