@@ -1,8 +1,8 @@
-﻿/**
+/**
  * @file -
  * @author jingqi
  * @date 2012-08-10
- * @last-edit 2014-09-14 00:08:07 jingqi
+ * @last-edit 2014-10-06 03:22:51 jingqi
  */
 
 #ifndef ___HEADFILE_A7E2D32B_B83E_44AB_A6C6_98E03E0EDDBD_
@@ -240,7 +240,10 @@ public:
         const ParamWraper& arg3 = ParamWraper::none(),
         const ParamWraper& arg4 = ParamWraper::none(),
         const ParamWraper& arg5 = ParamWraper::none(),
-        const ParamWraper& arg6 = ParamWraper::none())
+        const ParamWraper& arg6 = ParamWraper::none(),
+        const ParamWraper& arg7 = ParamWraper::none(),
+        const ParamWraper& arg8 = ParamWraper::none(),
+        const ParamWraper& arg9 = ParamWraper::none())
     {
         assert(NULL != sql && isValid());
 
@@ -274,6 +277,9 @@ public:
         __BIND(4)
         __BIND(5)
         __BIND(6)
+        __BIND(7)
+        __BIND(8)
+        __BIND(9)
 
 #undef __BIND
 
@@ -343,7 +349,10 @@ public:
         const ParamWraper& arg3 = ParamWraper::none(),
         const ParamWraper& arg4 = ParamWraper::none(),
         const ParamWraper& arg5 = ParamWraper::none(),
-        const ParamWraper& arg6 = ParamWraper::none())
+        const ParamWraper& arg6 = ParamWraper::none(),
+        const ParamWraper& arg7 = ParamWraper::none(),
+        const ParamWraper& arg8 = ParamWraper::none(),
+        const ParamWraper& arg9 = ParamWraper::none())
     {
         assert(NULL != sql && isValid());
 
@@ -377,6 +386,9 @@ public:
         __BIND(4)
         __BIND(5)
         __BIND(6)
+        __BIND(7)
+        __BIND(8)
+        __BIND(9)
 
 #undef __BIND
 
