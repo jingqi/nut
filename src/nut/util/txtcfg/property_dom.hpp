@@ -192,7 +192,7 @@ public:
 		assert(NULL != line_comment_chars && NULL != space_chars);
 
 		m_lines.clear();
-		m_dirty = false;
+		m_dirty = true;
 		if (s.empty())
 			return;
 

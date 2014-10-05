@@ -170,7 +170,7 @@ public:
 
 		m_global_lines.clear();
 		m_sectors.clear();
-		m_dirty = false;
+		m_dirty = true;
 		if (s.empty())
 			return;
 

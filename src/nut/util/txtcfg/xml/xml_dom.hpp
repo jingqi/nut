@@ -111,7 +111,7 @@ public:
         m_version.clear();
         m_encoding.clear();
         m_root.clear();
-		m_dirty = false;
+		m_dirty = true;
 
         size_t i = s.find("<?");
         if (std::string::npos == i)
