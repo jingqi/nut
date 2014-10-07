@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-10-03
- * @last-edit 2014-09-06 12:41:45 jingqi
+ * @last-edit 2014-10-07 19:09:48 jingqi
  * @brief
  */
 
@@ -108,8 +108,8 @@ public:
      */
     void parse(const std::string& s, bool ignore_text_blank = true)
     {
-        m_version.clear();
-        m_encoding.clear();
+        m_version = "1.0";
+        m_encoding = "UTF-8";
         m_root.clear();
 		m_dirty = true;
 
@@ -189,7 +189,7 @@ public:
         // xml elements
         StdStringWriter sw(out);
         XmlWriter w(&sw);
-        m_root->serielize(w, format);
+        m_root->serielize(w, format ? 0 : -1);
     }
 };
 

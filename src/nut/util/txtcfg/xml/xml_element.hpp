@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-10-03
- * @last-edit 2014-10-07 17:21:21 jingqi
+ * @last-edit 2014-10-07 19:02:01 jingqi
  * @brief
  */
 
@@ -367,7 +367,6 @@ public:
 
     void serielize(XmlWriter &writer, int tab) const
     {
-
         // name
         for (int i = 0; i < tab; ++i)
             writer.write_text("\t");
