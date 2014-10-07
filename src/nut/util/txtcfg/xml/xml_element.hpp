@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-10-03
- * @last-edit 2014-09-06 12:50:16 jingqi
+ * @last-edit 2014-10-07 17:21:21 jingqi
  * @brief
  */
 
@@ -203,6 +203,22 @@ public:
     inline void setAttribute(const std::string& name, const std::string& value)
     {
         m_attrs[name] = value;
+        m_dirty = true;
+    }
+
+    bool removeAttribute(const std::string& name)
+    {
+        attr_iter_t iter = m_attrs.find(name);
+        if (iter == m_attrs.end())
+            return false;
+        m_attrs.erase(iter);
+        m_dirty = true;
+        return true;
+    }
+
+    inline void clearAttributes()
+    {
+        m_attrs.clear();
         m_dirty = true;
     }
 
