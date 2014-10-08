@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2014-09-02
- * @last-edit 2014-09-03 00:00:33 jingqi
+ * @last-edit 2014-10-08 22:04:02 jingqi
  * @brief
  */
 
@@ -61,7 +61,7 @@ class XmlParser
         EXPECT_ELEM_NAME_FIRST_CHAR_AND_FINISH_ELEM, // 预期第一个字符，然后结束 element
         IN_ELEM_NAME_AND_FINISH_ELEM, // 在 element 名称中，然后结束 element
         EXPECT_GREATER_SIGN_AND_FINISH_ELEM, // 预期 '>' 然后 element 结束
-        ERROR // 出错
+        IN_ERROR // 出错
     } m_state;
 
     bool input(char c)
@@ -150,7 +150,7 @@ class XmlParser
                     m_state = IN_ELEM_NAME;
                     break;
                 }
-                m_state = ERROR;
+                m_state = IN_ERROR;
                 m_tmp_value = "invalid charactor \'";
                 m_tmp_value.push_back(c);
                 m_tmp_value += "\' for start of element name";
@@ -168,7 +168,7 @@ class XmlParser
                 m_state = IN_ELEM_NAME;
                 break;
             }
-            m_state = ERROR;
+            m_state = IN_ERROR;
             m_tmp_value = "invalid charactor \'";
             m_tmp_value.push_back(c);
             m_tmp_value += "\' for start of element name";
@@ -200,7 +200,7 @@ class XmlParser
                         m_tmp_name.push_back(c);
                     break;
                 }
-                m_state = ERROR;
+                m_state = IN_ERROR;
                 m_tmp_value = "invalid charactor \'";
                 m_tmp_value.push_back(c);
                 m_tmp_value += "\' in element name";
@@ -225,7 +225,7 @@ class XmlParser
                     m_state = EXPECT_ATTR_NAME_FIRST_CHAR;
                     break;
                 }
-                m_state = ERROR;
+                m_state = IN_ERROR;
                 m_tmp_value = "expect SPACE but got a \'";
                 m_tmp_value.push_back(c);
                 m_tmp_value += "\'";
@@ -254,7 +254,7 @@ class XmlParser
                     m_state = IN_ATTR_NAME;
                     break;
                 }
-                m_state = ERROR;
+                m_state = IN_ERROR;
                 m_tmp_value = "invalid charactor \'";
                 m_tmp_value.push_back(c);
                 m_tmp_value += "\'";
@@ -279,7 +279,7 @@ class XmlParser
                     m_tmp_name.push_back(c);
                 break;
             }
-            m_state = ERROR;
+            m_state = IN_ERROR;
             m_tmp_value = "invalid charactor \'";
             m_tmp_value.push_back(c);
             m_tmp_value += "\' in attribute name";
@@ -293,7 +293,7 @@ class XmlParser
             }
             if (is_space(c))
                 break;
-            m_state = ERROR;
+            m_state = IN_ERROR;
             m_tmp_value = "expect \'=\' but got a \'";
             m_tmp_value.push_back(c);
             m_tmp_value += "\'";
@@ -307,7 +307,7 @@ class XmlParser
             }
             if (is_space(c))
                 break;
-            m_state = ERROR;
+            m_state = IN_ERROR;
             m_tmp_value = "expect '\"' but got a \'";
             m_tmp_value.push_back(c);
             m_tmp_value += "\'";
@@ -375,7 +375,7 @@ class XmlParser
                 m_state = IN_TEXT;
                 break;
             }
-            m_state = ERROR;
+            m_state = IN_ERROR;
             m_tmp_value = "expect \'>\' but got a \'";
             m_tmp_value.push_back(c);
             m_tmp_value += "\'";
@@ -387,7 +387,7 @@ class XmlParser
                 m_state = EXPECT_SECOND_BAR;
                 break;
             }
-            m_state = ERROR;
+            m_state = IN_ERROR;
             m_tmp_value = "expect '-' but got a \'";
             m_tmp_value.push_back(c);
             m_tmp_value += "\'";
@@ -399,7 +399,7 @@ class XmlParser
                 m_state = IN_COMMENT;
                 break;
             }
-            m_state = ERROR;
+            m_state = IN_ERROR;
             m_tmp_value = "expect '-' but got a \'";
             m_tmp_value.push_back(c);
             m_tmp_value += "\'";
@@ -463,7 +463,7 @@ class XmlParser
                 m_state = IN_ELEM_NAME_AND_FINISH_ELEM;
                 break;
             }
-            m_state = ERROR;
+            m_state = IN_ERROR;
             m_tmp_value = "invalid character \'";
             m_tmp_value.push_back(c);
             m_tmp_value += "\' for start of element name";
@@ -474,7 +474,7 @@ class XmlParser
             {
                 if (!check_finish())
                 {
-                    m_state = ERROR;
+                    m_state = IN_ERROR;
                     m_tmp_value = "finish of element \"";
                     m_tmp_value += m_tmp_name;
                     m_tmp_value += "\" unmatched";
@@ -488,7 +488,7 @@ class XmlParser
             {
                 if (!check_finish())
                 {
-                    m_state = ERROR;
+                    m_state = IN_ERROR;
                     m_tmp_value = "finish of element \"";
                     m_tmp_value += m_tmp_name;
                     m_tmp_value += "\" unmatched";
@@ -502,7 +502,7 @@ class XmlParser
                 m_tmp_name.push_back(c);
                 break;
             }
-            m_state = ERROR;
+            m_state = IN_ERROR;
             m_tmp_value = "invalid character \'";
             m_tmp_value.push_back(c);
             m_tmp_value += "\' in element name";
@@ -517,13 +517,13 @@ class XmlParser
             }
             if (is_space(c))
                 break;
-            m_state = ERROR;
+            m_state = IN_ERROR;
             m_tmp_value = "expect \'>\' but got a \'";
             m_tmp_value.push_back(c);
             m_tmp_value += "\'";
             return false; // invalid state
 
-        case ERROR:
+        case IN_ERROR:
             return false;
 
         default:
@@ -733,7 +733,7 @@ public:
 
     bool finish()
     {
-        if (ERROR == m_state)
+        if (IN_ERROR == m_state)
 		{
 			force_finish();
             return false;
@@ -742,7 +742,7 @@ public:
         if (0 == m_elem_path.size())
         {
             m_tmp_value = "there are more context after root element";
-            m_state = ERROR;
+            m_state = IN_ERROR;
             return false;
         }
         else if (m_elem_path.size() > 1)
@@ -750,7 +750,7 @@ public:
             m_tmp_value = "element \"";
             m_tmp_value += m_elem_path.at(m_elem_path.size() - 1).name;
             m_tmp_value += "\" is not closed";
-            m_state = ERROR;
+            m_state = IN_ERROR;
 			force_finish();
             return false;
         }
@@ -769,7 +769,7 @@ public:
 
     inline bool has_error() const
     {
-        return ERROR == m_state;
+        return IN_ERROR == m_state;
     }
 
     std::string error_message() const
