@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-07-10
- * @last-edit 2012-07-10 19:34:28 jingqi
+ * @last-edit 2014-10-18 23:35:40 jingqi
  */
 
 #ifndef ___HEADFILE_143AFA59_BBAB_4738_ADED_C980E5313152_
@@ -35,7 +35,10 @@ public:
     {
         thread_process_type process;
         void *arg;
-        Task(thread_process_type p = NULL, void *a = NULL) : process(p), arg(a) {}
+
+        Task(thread_process_type p = NULL, void *a = NULL)
+            : process(p), arg(a)
+        {}
     };
 
     size_t m_thread_count;
@@ -126,4 +129,3 @@ private:
 }
 
 #endif
-

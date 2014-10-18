@@ -2,6 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2010-07-09
+ * @last-edit 2014-10-19 00:43:45 jingqi
  */
 
 #ifndef ___HEADFILE___B926495D_967A_45A2_8F56_4FFB10F2E34B_
@@ -47,7 +48,7 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         ::InitializeConditionVariable(&m_cond);
 #else
-        int rs = pthread_cond_init(&m_cond, NULL);
+        const int rs = ::pthread_cond_init(&m_cond, NULL);
         assert(0 == rs);
 #endif
     }
@@ -57,7 +58,7 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         /* no need to destroy in windows */
 #else
-        int rs = pthread_cond_destroy(&m_cond);
+        const int rs = ::pthread_cond_destroy(&m_cond);
         assert(0 == rs);
 #endif
     }
@@ -68,7 +69,7 @@ public:
         ::WakeConditionVariable(&m_cond);
         return true;
 #else
-        return 0 == pthread_cond_signal(&m_cond);
+        return 0 == ::pthread_cond_signal(&m_cond);
 #endif
     }
 
@@ -78,7 +79,7 @@ public:
         ::WakeAllConditionVariable(&m_cond);
         return true;
 #else
-        return 0 == pthread_cond_broadcast(&m_cond);
+        return 0 == ::pthread_cond_broadcast(&m_cond);
 #endif
     }
 
@@ -88,10 +89,11 @@ public:
     bool wait(condition_lock_type *mutex)
     {
         assert(NULL != mutex);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-        return TRUE == ::SleepConditionVariableCS(&m_cond, mutex->innerMutex(), INFINITE);
+        return FALSE != ::SleepConditionVariableCS(&m_cond, mutex->innerMutex(), INFINITE);
 #else
-        return 0 == pthread_cond_wait(&m_cond, mutex->innerMutex());
+        return 0 == ::pthread_cond_wait(&m_cond, mutex->innerMutex());
 #endif
     }
 
@@ -103,8 +105,8 @@ public:
         assert(NULL != mutex);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-        DWORD dwMilliseconds = s * 1000 + ms;
-        return TRUE == ::SleepConditionVariableCS(&m_cond, mutex->innerMutex(), dwMilliseconds);
+        const DWORD dwMilliseconds = s * 1000 + ms;
+        return FALSE != ::SleepConditionVariableCS(&m_cond, mutex->innerMutex(), dwMilliseconds);
 #else
         struct timespec abstime;
 #   if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
@@ -113,18 +115,18 @@ public:
         // OS X does not have clock_gettime(), use clock_get_time()
         clock_serv_t cclock;
         mach_timespec_t mts;
-        host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
-        clock_get_time(cclock, &mts);
-        mach_port_deallocate(mach_task_self(), cclock);
+        ::host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+        ::clock_get_time(cclock, &mts);
+        ::mach_port_deallocate(mach_task_self(), cclock);
         abstime.tv_sec = mts.tv_sec;
         abstime.tv_nsec = mts.tv_nsec;
 #   else
-        clock_gettime(CLOCK_REALTIME, &abstime);
+        ::clock_gettime(CLOCK_REALTIME, &abstime);
 #   endif
 
         abstime.tv_sec += s;
         abstime.tv_nsec += ((long)ms) * 1000 * 1000;
-        return 0 == pthread_cond_timedwait(&m_cond, mutex->innerMutex(), &abstime);
+        return 0 == ::pthread_cond_timedwait(&m_cond, mutex->innerMutex(), &abstime);
 #endif
     }
 };

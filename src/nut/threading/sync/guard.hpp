@@ -2,6 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2010-7-9
+ * @last-edit 2014-10-19 00:37:13 jingqi
  */
 
 #ifndef ___HEADFILE___37C18F74_55B3_430D_B169_1B0AA23A8A08_
@@ -14,7 +15,7 @@ template <typename T>
 class Guard
 {
     T *m_lock;
-    bool m_needUnlock;
+    bool m_need_unlock;
 
 public :
     /**
@@ -26,15 +27,15 @@ public :
      *      whether need to unlock it
      */
     Guard(T *lock, bool need_lock = true, bool need_unlock = true)
-        : m_lock(lock), m_needUnlock(need_unlock)
+        : m_lock(lock), m_need_unlock(need_unlock)
     {
-        if (m_lock != NULL && need_lock)
+        if (NULL != m_lock && need_lock)
             m_lock->lock();
     }
 
     ~Guard()
     {
-        if (m_lock != NULL && m_needUnlock)
+        if (NULL != m_lock && m_need_unlock)
             m_lock->unlock();
     }
 };
@@ -42,4 +43,3 @@ public :
 }
 
 #endif /* head file guarder */
-

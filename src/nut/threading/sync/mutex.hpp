@@ -2,6 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2010-7-9
+ * @last-edit 2014-10-19 00:48:56 jingqi
  */
 
 #ifndef ___HEADFILE___814FCD2E_2F65_4787_93E5_ECDE19588938_
@@ -34,17 +35,18 @@ public :
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         m_hmutex = ::CreateMutex(NULL, FALSE, NULL);
+        assert(NULL != m_hmutex);
 #elif defined(NUT_PLATFORM_OS_MAC)
         ::pthread_mutexattr_t attr;
         ::pthread_mutexattr_init(&attr);
         ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE); /* make the mutex recursive */
-        int rs = ::pthread_mutex_init(&m_mutex, &attr);
+        const int rs = ::pthread_mutex_init(&m_mutex, &attr);
         assert(0 == rs);
 #else
         ::pthread_mutexattr_t attr;
         ::pthread_mutexattr_init(&attr);
         ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP); /* make the mutex recursive */
-        int rs = ::pthread_mutex_init(&m_mutex, &attr);
+        const int rs = ::pthread_mutex_init(&m_mutex, &attr);
         assert(0 == rs);
 #endif
     }
@@ -52,8 +54,8 @@ public :
     ~Mutex ()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-        BOOL rs = ::CloseHandle(m_hmutex);
-        assert(rs);
+        const BOOL rs = ::CloseHandle(m_hmutex);
+        assert(FALSE != rs);
 #else
         int rs = ::pthread_mutex_destroy(&m_mutex);
         assert(0 == rs);
@@ -61,9 +63,15 @@ public :
     }
 
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-    inline HANDLE innerMutex() { return m_hmutex; }
+    inline HANDLE innerMutex()
+    {
+        return m_hmutex;
+    }
 #else
-    inline pthread_mutex_t* innerMutex() { return &m_mutex; }
+    inline pthread_mutex_t* innerMutex()
+    {
+        return &m_mutex;
+    }
 #endif
 
     /**
@@ -72,10 +80,10 @@ public :
     inline void lock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-        DWORD rs = ::WaitForSingleObject(m_hmutex, INFINITE);
+        const DWORD rs = ::WaitForSingleObject(m_hmutex, INFINITE);
         assert(WAIT_OBJECT_0 == rs);
 #else
-        int rs = ::pthread_mutex_lock(&m_mutex);
+        const int rs = ::pthread_mutex_lock(&m_mutex);
         assert(0 == rs);
 #endif
     }
@@ -86,10 +94,10 @@ public :
     inline void unlock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-        BOOL rs = ::ReleaseMutex(m_hmutex);
-        assert(rs);
+        const BOOL rs = ::ReleaseMutex(m_hmutex);
+        assert(FALSE != rs);
 #else
-        int rs = ::pthread_mutex_unlock(&m_mutex);
+        const int rs = ::pthread_mutex_unlock(&m_mutex);
         assert(0 == rs);
 #endif
     }
@@ -104,7 +112,7 @@ public :
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, 0);
 #else
-        int lock_result = ::pthread_mutex_trylock(&m_mutex);
+        const int lock_result = ::pthread_mutex_trylock(&m_mutex);
         /** returned values :
          *  0, lock ok
          *  EBUSY, The mutex is already locked.
@@ -124,6 +132,7 @@ public :
     static void clock_getrealtime(struct timespec *ts)
     {
         assert(NULL != ts);
+
         SYSTEMTIME st;
         ::GetSystemTime(&st);
         FILETIME ft;
@@ -146,7 +155,7 @@ public :
     inline bool timedlock(unsigned s, unsigned ms = 0)
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-        DWORD dwMilliseconds = s * 1000 + ms;
+        const DWORD dwMilliseconds = s * 1000 + ms;
         return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, dwMilliseconds);
 #elif defined(NUT_PLATFORM_OS_MAC)
 #   warning "MAC 不支持pthread_mutex_timedlock()"
@@ -156,11 +165,11 @@ public :
 #   if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
         clock_getrealtime(&abstime);
 #   else
-        clock_gettime(CLOCK_REALTIME, &abstime);
+        ::clock_gettime(CLOCK_REALTIME, &abstime);
 #   endif
         abstime.tv_sec += s;
         abstime.tv_nsec += ((long)ms) * 1000 * 1000;
-        int lock_result = ::pthread_mutex_timedlock(&m_mutex, &abstime);
+        const int lock_result = ::pthread_mutex_timedlock(&m_mutex, &abstime);
         /** returned values :
          *  0, lock ok
          *  EAGAIN, The mutex couldn't be acquired because the maximum number of recursive locks for the mutex has been exceeded.
