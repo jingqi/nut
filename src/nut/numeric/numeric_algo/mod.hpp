@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-11-25
- * @last-edit 2013-02-08 16:28:16 jingqi
+ * @last-edit 2014-11-15 22:01:22 jingqi
  */
 
 #ifndef ___HEADFILE_058D89EB_50A2_4934_AF92_FC4F82613999_
@@ -479,7 +479,7 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
             ++squre_count;
             bool term = true;
             for (register size_t i = 1;
-                squre_count + i <= wnd_size && bits_left - i >= 0;
+                 squre_count + i <= wnd_size && bits_left >= i;
                 ++i)
             {
                 if (0 != b.bit_at(bits_left - i))

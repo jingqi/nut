@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2011-12-17
- * @last-edit 2013-02-07 14:36:40 jingqi
+ * @last-edit 2014-11-15 22:00:15 jingqi
  * @brief
  *
  * 有符号不定长大整数：由word_type的数组来表示，字节序为little-endian，最高位为符号位
@@ -210,7 +210,7 @@ void _shift_right_word(const T *a, size_t M, T *x, size_t N, size_t count)
 {
     assert(NULL != a && M > 0 && NULL != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
-    
+
     if (x == a + count)
     {
         return; // nothing need to do
@@ -303,7 +303,7 @@ void bit_and(const T *a, const T *b, T *x, size_t N)
     }
     else if ((x <= a - N || x >= a) && (x <= b - N || x >= b))
     {
-        for (register size_t i = N - 1; i >= 0; --i)
+        for (register int i = (int) N - 1; i >= 0; --i)
             x[i] = a[i] & b[i];
     }
     else
@@ -962,7 +962,7 @@ uint8_t increase(T *x, size_t N)
     {
         dword_type pluser = reinterpret_cast<const word_type*>(x)[i];
         pluser += carry;
-        
+
         x[i] = static_cast<T>(pluser);
         carry = static_cast<uint8_t>(pluser >> (8 * sizeof(word_type)));
     }
@@ -994,7 +994,7 @@ uint8_t sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
         const dword_type pluser1 = (i < M ? reinterpret_cast<const word_type*>(a)[i] : filla);
         dword_type pluser2 = static_cast<word_type>(~(i < N ? reinterpret_cast<const word_type*>(b)[i] : fillb));
         pluser2 += pluser1 + carry;
-        
+
         retx[i] = static_cast<word_type>(pluser2);
         carry = static_cast<uint8_t>(pluser2 >> (8 * sizeof(word_type)));
     }
@@ -1176,7 +1176,7 @@ void multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
-    
+
     if (a == b && M == N && is_positive(a, M))
     {
         _square(a, M, x, P);
@@ -1339,4 +1339,3 @@ void divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, si
 #undef OPTIMIZE_LEVEL
 
 #endif /* head file guarder */
-
