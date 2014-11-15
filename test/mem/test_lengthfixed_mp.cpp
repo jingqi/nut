@@ -11,7 +11,10 @@ NUT_FIXTURE(TestLengthFixedMP)
 	NUT_CASE(testSmoking)
 	NUT_CASES_END()
 
-	class A { int a; };
+	struct A
+    {
+        int a;
+    };
 
 	void setUp() {}
 	void tearDown() {}
