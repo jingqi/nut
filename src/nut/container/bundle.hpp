@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-03-09
- * @last-edit 2014-05-28 00:09:37 jingqi
+ * @last-edit 2014-11-15 22:20:48 jingqi
  * @brief
  */
 
@@ -42,7 +42,7 @@ class Bundle
     map_t m_values;
 
 public:
-    bool hasKey(const std::string& key) const
+    bool has_key(const std::string& key) const
     {
         map_t::const_iterator iter = m_values.find(key);
         if (iter == m_values.end())
@@ -57,7 +57,7 @@ public:
      * 这个函数要想正常工作，需要开启RTTI特性
      */
     template <typename T>
-    bool hasKeyT(const std::string& key) const
+    bool has_key_value_rtti(const std::string& key) const
     {
         map_t::const_iterator iter = m_values.find(key);
         if (iter == m_values.end())
@@ -72,7 +72,7 @@ public:
     }
 
     template <typename T>
-    const T& get(const std::string& key) const
+    const T& get_value(const std::string& key) const
     {
         map_t::const_iterator iter = m_values.find(key);
         assert(iter != m_values.end());
@@ -84,7 +84,7 @@ public:
     }
 
     template <typename T>
-    void set(const std::string& key, const T& value)
+    void set_value(const std::string& key, const T& value)
     {
         m_values[key] = gc_new<_BundleElement<T> >(value);
     }
