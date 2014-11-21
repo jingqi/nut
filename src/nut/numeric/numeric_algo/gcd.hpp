@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-02-08
- * @last-edit 2013-02-08 16:28:36 jingqi
+ * @last-edit 2014-11-21 22:51:50 jingqi
  * @brief
  */
 
@@ -213,7 +213,7 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
             *y = 0;
         return;
     }
-    
+
     BigInteger xx, yy;
     extended_euclid(b, a % b, d, &yy, &xx);
     if (NULL != x)
@@ -377,7 +377,7 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
     {
         BigInteger xx;
         extended_euclid(a >> lb1, b, d, &xx, y);
-        register int done = 0;
+        int done = 0;
         while (done < lb1)
         {
             const int lbx = xx.lowest_bit();
@@ -407,7 +407,7 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
     {
         BigInteger yy;
         extended_euclid(a, b >> lb2, d, x, &yy);
-        register int done = 0;
+        int done = 0;
         while (done < lb2)
         {
             const int lby = yy.lowest_bit();
@@ -594,7 +594,7 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
         else if (lb1 > 0)
         {
             aa <<= lb1;
-            register int done = 0;
+            int done = 0;
             while (done < lb1)
             {
                 const int lbx = xx.lowest_bit();
@@ -620,7 +620,7 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
         else if (lb2 > 0)
         {
             bb <<= lb2;
-            register int done = 0;
+            int done = 0;
             while (done < lb2)
             {
                 const int lby = yy.lowest_bit();

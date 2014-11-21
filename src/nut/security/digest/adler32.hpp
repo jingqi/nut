@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-11-19
- * @last-edit 2012-11-19 10:53:01 jingqi
+ * @last-edit 2014-11-21 22:53:39 jingqi
  */
 
 #ifndef ___HEADFILE_A87EC76B_E2C1_4BCD_AF64_A177A623A874_
@@ -36,7 +36,7 @@ public:
         assert(NULL != buf || len <= 0);
         uint16_t *a = reinterpret_cast<uint16_t*>(&m_result);
         uint16_t *b = reinterpret_cast<uint16_t*>(&m_result) + 1;
-        for (register size_t i = 0; i < len; ++i)
+        for (size_t i = 0; i < len; ++i)
         {
             const uint8_t d = static_cast<const uint8_t*>(buf)[i];
             *a = (((uint32_t) *a) + d) % MOD_ADLER;
@@ -87,7 +87,7 @@ public:
         assert(NULL != buf || len <= 0);
         uint16_t& a = reinterpret_cast<uint16_t*>(&m_result)[0];
         uint16_t& b = reinterpret_cast<uint16_t*>(&m_result)[1];
-        for (register size_t i = 0; i < len; ++i)
+        for (size_t i = 0; i < len; ++i)
         {
             if (m_count >= m_window)
             {
@@ -114,4 +114,3 @@ public:
 }
 
 #endif
-

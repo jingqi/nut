@@ -416,7 +416,7 @@ inline bool strieq(const std::string& str1, const std::string& str2)
 {
     if (str1.length() != str2.length())
         return false;
-    for (register size_t i = 0, len = str1.length(); i < len; ++i)
+    for (size_t i = 0, len = str1.length(); i < len; ++i)
         if ((str1.at(i) | 0x20) != (str2.at(i) | 0x20))
             return false;
     return true;
@@ -426,7 +426,7 @@ inline bool strieq(const std::wstring& str1, const std::wstring& str2)
 {
     if (str1.length() != str2.length())
         return false;
-    for (register size_t i = 0, len = str1.length(); i < len; ++i)
+    for (size_t i = 0, len = str1.length(); i < len; ++i)
         if ((str1.at(i) | 0x20) != (str2.at(i) | 0x20))
             return false;
     return true;
@@ -439,7 +439,7 @@ inline bool starts_with(const std::string& s, const std::string& head)
 {
     if (s.length() < head.length())
         return false;
-    for (register size_t i = 0, len = head.length(); i < len; ++i)
+    for (size_t i = 0, len = head.length(); i < len; ++i)
         if (s.at(i) != head.at(i))
             return false;
     return true;
@@ -449,7 +449,7 @@ inline bool starts_with(const std::wstring& s, const std::wstring& head)
 {
     if (s.length() < head.length())
         return false;
-    for (register size_t i = 0, len = head.length(); i < len; ++i)
+    for (size_t i = 0, len = head.length(); i < len; ++i)
         if (s.at(i) != head.at(i))
             return false;
     return true;
@@ -462,7 +462,7 @@ inline bool ends_with(const std::string& s, const std::string& tail)
 {
     if (s.length() < tail.length())
         return false;
-    for (register size_t i = 1, len = tail.length(); i <= len; ++i)
+    for (size_t i = 1, len = tail.length(); i <= len; ++i)
         if (s.at(s.length() - i) != tail.at(tail.length() - i))
             return false;
     return true;
@@ -472,7 +472,7 @@ inline bool ends_with(const std::wstring& s, const std::wstring& tail)
 {
     if (s.length() < tail.length())
         return false;
-    for (register size_t i = 1, len = tail.length(); i <= len; ++i)
+    for (size_t i = 1, len = tail.length(); i <= len; ++i)
         if (s.at(s.length() - i) != tail.at(tail.length() - i))
             return false;
     return true;
@@ -491,7 +491,7 @@ inline void wstr2str(const wchar_t* wstr, std::string* out)
     *out = p;
     delete[] p;
 #else
-    const int n = ::wcstombs(NULL, wstr, 0) + 1; // '\0' is added
+    const int n = (int) ::wcstombs(NULL, wstr, 0) + 1; // '\0' is added
     if (n <= 0)
     {
         out->clear();
@@ -531,7 +531,7 @@ inline void str2wstr(const char* str, std::wstring* out)
     *out = p;
     delete[] p;
 #else
-    const int n = ::mbstowcs(NULL, str, 0) + 1;
+    const int n = (int) ::mbstowcs(NULL, str, 0) + 1;
     if (n <= 0)
     {
         out->clear();

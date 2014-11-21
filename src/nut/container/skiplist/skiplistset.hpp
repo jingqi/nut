@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-08-24
- * @last-edit 2013-08-24 14:07:07 jingqi
+ * @last-edit 2014-11-21 22:46:27 jingqi
  * @brief
  */
 
@@ -30,7 +30,7 @@ class SkipListSet
         Node(const T& k)
             : m_key(k), m_next(NULL), m_level(-1)
         {}
-        
+
         ~Node()
         {
             if (NULL != m_next)
@@ -67,7 +67,7 @@ class SkipListSet
             }
             m_level = lv;
         }
-        
+
         inline Node* getNext(int lv) const
         {
             assert(NULL != m_next && 0 <= lv && lv <= m_level);
@@ -112,13 +112,13 @@ private:
         }
         m_level = lv;
     }
-    
+
     inline Node* getHead(int lv) const
     {
         assert(NULL != m_head && 0 <= lv && lv <= m_level);
         return m_head[lv];
     }
-    
+
     inline void setHead(int lv, Node *n)
     {
         assert(NULL != m_head && 0 <= lv && lv <= m_level);
@@ -153,7 +153,7 @@ public:
             c->m_level = n->m_level;
             c->m_next = (Node**) ::malloc(sizeof(Node*) * (c->m_level + 1));
             algo_t::insertNode(c, *this, pre_lv);
-            for (register size_t i = 0; i <= c->m_level; ++i)
+            for (size_t i = 0; i <= c->m_level; ++i)
                 pre_lv[i] = c;
 
             n = n->m_next[0];
@@ -207,7 +207,7 @@ public:
             c->m_level = n->m_level;
             c->m_next = (Node**) ::malloc(sizeof(Node*) * (c->m_level + 1));
             algo_t::insertNode(c, *this, pre_lv);
-            for (register size_t i = 0; i <= c->m_level; ++i)
+            for (size_t i = 0; i <= c->m_level; ++i)
                 pre_lv[i] = c;
 
             n = n->m_next[0];

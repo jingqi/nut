@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2011-12-17
- * @last-edit 2014-11-15 22:00:15 jingqi
+ * @last-edit 2014-11-21 22:53:19 jingqi
  * @brief
  *
  * 有符号不定长大整数：由word_type的数组来表示，字节序为little-endian，最高位为符号位
@@ -34,7 +34,7 @@ inline bool is_zero(const T *a, size_t N)
 {
     assert(NULL != a && N > 0);
 
-    for (register size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < N; ++i)
         if (0 != a[i])
             return false;
     return true;
@@ -68,7 +68,7 @@ size_t significant_size(const T *a, size_t N)
 
     const bool positive = is_positive(a, N);
     const word_type skip_value = (positive ? 0 : ~(word_type)0);
-    register size_t ret = N;
+    size_t ret = N;
     while (ret > 1 && reinterpret_cast<const word_type*>(a)[ret - 1] == skip_value && is_positive(a, ret - 1) == positive)
         --ret;
     return ret;
@@ -89,7 +89,7 @@ bool equals(const T *a, size_t M, const T *b, size_t N)
 
     const word_type fill = (positive1 ? 0 : ~(word_type)0);
     const word_type limit = (M > N ? M : N);
-    for (register size_t i = 0; i < limit; ++i)
+    for (size_t i = 0; i < limit; ++i)
         if ((i < M ? reinterpret_cast<const word_type*>(a)[i] : fill) !=
             (i < N ? reinterpret_cast<const word_type*>(b)[i] : fill))
             return false;
@@ -113,7 +113,7 @@ bool less_than(const T *a, size_t M, const T *b, size_t N)
 
     // 同号比较
     const word_type fill = (positive1 ? 0 : ~(word_type)0);
-    for (register int i = (M > N ? M : N) - 1; i >= 0; --i)
+    for (int i = (M > N ? M : N) - 1; i >= 0; --i)
     {
         const word_type op1 = (i < (int)M ? reinterpret_cast<const word_type*>(a)[i] : fill);
         const word_type op2 = (i < (int)N ? reinterpret_cast<const word_type*>(b)[i] : fill);
@@ -153,13 +153,13 @@ void _shift_left_word(const T *a, size_t M, T *x, size_t N, size_t count)
     else if (x + count < a)
     {
         const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
-        for (register size_t i = 0; i < N; ++i)
+        for (size_t i = 0; i < N; ++i)
             x[i] = (i < count ? 0 : (i - count >= M ? fill : a[i - count]));
     }
     else
     {
         const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
-        for (register int i = (int) N - 1; i >= 0; --i)
+        for (int i = (int) N - 1; i >= 0; --i)
             x[i] = (i < (int) count ? 0 : (i - (int) count >= (int) M ? fill : a[i - count]));
     }
 }
@@ -182,7 +182,7 @@ void shift_left(const T *a, size_t M, T *x, size_t N, size_t count)
     else if (x + words_off < a)
     {
         const int fill = (is_positive(a, M) ? 0 : ~(word_type)0);
-        for (register size_t i = 0; i < N; ++i)
+        for (size_t i = 0; i < N; ++i)
         {
             const word_type high = (i < (size_t)words_off ? 0 : (i - words_off >= M ? fill : reinterpret_cast<const word_type*>(a)[i - words_off]))
                 << bits_off;
@@ -194,7 +194,7 @@ void shift_left(const T *a, size_t M, T *x, size_t N, size_t count)
     else
     {
         const int fill = (is_positive(a, M) ? 0 : ~(word_type)0);
-        for (register int i = N - 1; i >= 0; --i)
+        for (int i = N - 1; i >= 0; --i)
         {
             const word_type high = (i < (int) words_off ? 0 : (i - words_off >= (int)M ? fill : reinterpret_cast<const word_type*>(a)[i - words_off]))
                 << bits_off;
@@ -218,13 +218,13 @@ void _shift_right_word(const T *a, size_t M, T *x, size_t N, size_t count)
     else if (x < a + count)
     {
         const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
-        for (register size_t i = 0; i < N; ++i)
+        for (size_t i = 0; i < N; ++i)
             x[i] = (i + count >= M ? fill : a[i + count]);
     }
     else
     {
         const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
-        for (register int i = N - 1; i >= 0; --i)
+        for (int i = N - 1; i >= 0; --i)
             x[i] = (i + count >= M ? fill : a[i + count]);
     }
 }
@@ -247,7 +247,7 @@ void shift_right(const T *a, size_t M, T *x, size_t N, size_t count)
     else if (x <= a + words_off)
     {
         const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
-        for (register size_t i = 0; i < N; ++i)
+        for (size_t i = 0; i < N; ++i)
         {
             const word_type high = (i + words_off + 1 >= M ? fill : reinterpret_cast<const word_type*>(a)[i + words_off + 1])
                 << (8 * sizeof(word_type) - bits_off);
@@ -259,7 +259,7 @@ void shift_right(const T *a, size_t M, T *x, size_t N, size_t count)
     else
     {
         const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
-        for (register int i = N - 1; i >= 0; --i)
+        for (int i = N - 1; i >= 0; --i)
         {
             const word_type high = (i + words_off + 1 >= M ? fill : reinterpret_cast<const word_type*>(a)[i + words_off + 1])
                 << (8 * sizeof(word_type) - bits_off);
@@ -286,7 +286,7 @@ void bit_and(const T *a, const T *b, T *x, size_t N)
     if ((a < x && x < a + N) || (b < x && x < b + N))
         retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
-    for (register size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < N; ++i)
         retx[i] = a[i] & b[i];
 
     // 回写数据
@@ -298,12 +298,12 @@ void bit_and(const T *a, const T *b, T *x, size_t N)
 #else
     if ((x <= a || x >= a + N) && (x <= b || x >= b + N))
     {
-        for (register size_t i = 0; i < N; ++i)
+        for (size_t i = 0; i < N; ++i)
             x[i] = a[i] & b[i];
     }
     else if ((x <= a - N || x >= a) && (x <= b - N || x >= b))
     {
-        for (register int i = (int) N - 1; i >= 0; --i)
+        for (int i = (int) N - 1; i >= 0; --i)
             x[i] = a[i] & b[i];
     }
     else
@@ -311,7 +311,7 @@ void bit_and(const T *a, const T *b, T *x, size_t N)
         // 避免区域交叉覆盖
         word_type *retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
-        for (register size_t i = 0; i < N; ++i)
+        for (size_t i = 0; i < N; ++i)
             retx[i] = a[i] & b[i];
 
         // 回写数据
@@ -337,7 +337,7 @@ void bit_or(const T *a, const T *b, T *x, size_t N)
     if ((a < x && x < a + N) || (b < x && x < b + N))
         retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
-    for (register size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < N; ++i)
         retx[i] = a[i] | b[i];
 
     // 回写数据
@@ -349,12 +349,12 @@ void bit_or(const T *a, const T *b, T *x, size_t N)
 #else
     if ((x <= a || x >= a + N) && (x <= b || x >= b + N))
     {
-        for (register size_t i = 0; i < N; ++i)
+        for (size_t i = 0; i < N; ++i)
             x[i] = a[i] | b[i];
     }
     else if ((x <= a - N || x >= a) && (x <= b - N || x >= b))
     {
-        for (register int i = N - 1; i >= 0; --i)
+        for (int i = N - 1; i >= 0; --i)
             x[i] = a[i] | b[i];
     }
     else
@@ -362,7 +362,7 @@ void bit_or(const T *a, const T *b, T *x, size_t N)
         // 避免区域交叉覆盖
         word_type *retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
-        for (register size_t i = 0; i < N; ++i)
+        for (size_t i = 0; i < N; ++i)
             retx[i] = a[i] | b[i];
 
         // 回写数据
@@ -388,7 +388,7 @@ void bit_xor(const T *a, const T *b, T *x, size_t N)
     if ((a < x && x < a + N) || (b < x && x < b + N))
         retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
-    for (register size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < N; ++i)
         retx[i] = a[i] ^ b[i];
 
     // 回写数据
@@ -400,12 +400,12 @@ void bit_xor(const T *a, const T *b, T *x, size_t N)
 #else
     if ((x <= a || x >= a + N) && (x <= b || x >= b + N))
     {
-        for (register size_t i = 0; i < N; ++i)
+        for (size_t i = 0; i < N; ++i)
             x[i] = a[i] ^ b[i];
     }
     else if ((x <= a - N || x >= a) && (x <= b - N || x >= b))
     {
-        for (register int i = N - 1; i >= 0; --i)
+        for (int i = N - 1; i >= 0; --i)
             x[i] = a[i] ^ b[i];
     }
     else
@@ -413,7 +413,7 @@ void bit_xor(const T *a, const T *b, T *x, size_t N)
         // 避免区域交叉覆盖
         word_type *retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
-        for (register size_t i = 0; i < N; ++i)
+        for (size_t i = 0; i < N; ++i)
             retx[i] = a[i] ^ b[i];
 
         // 回写数据
@@ -439,7 +439,7 @@ void bit_nxor(const T *a, const T *b, T *x, size_t N)
     if ((a < x && x < a + N) || (b < x && x < b + N))
         retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
-    for (register size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < N; ++i)
         retx[i] = ~(a[i] ^ b[i]);
 
     // 回写数据
@@ -451,12 +451,12 @@ void bit_nxor(const T *a, const T *b, T *x, size_t N)
 #else
     if ((x <= a || x >= a + N) && (x <= b || x >= b + N))
     {
-        for (register size_t i = 0; i < N; ++i)
+        for (size_t i = 0; i < N; ++i)
             x[i] = ~(a[i] ^ b[i]);
     }
     else if ((x <= a - N || x >= a) && (x <= b - N || x >= b))
     {
-        for (register int i = N - 1; i >= 0; --i)
+        for (int i = N - 1; i >= 0; --i)
             x[i] = ~(a[i] ^ b[i]);
     }
     else
@@ -464,7 +464,7 @@ void bit_nxor(const T *a, const T *b, T *x, size_t N)
         // 避免区域交叉覆盖
         word_type *retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
-        for (register size_t i = 0; i < N; ++i)
+        for (size_t i = 0; i < N; ++i)
             retx[i] = ~(a[i] ^ b[i]);
 
         // 回写数据
@@ -490,7 +490,7 @@ void bit_not(const T *a, T *x, size_t N)
     if (a < x && x < a + N)
         retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
-    for(register size_t i = 0; i < N; ++i)
+    for(size_t i = 0; i < N; ++i)
         retx[i] = ~a[i];
 
     // 回写数据
@@ -502,12 +502,12 @@ void bit_not(const T *a, T *x, size_t N)
 #else
     if (x < a)
     {
-        for (register size_t i = 0; i < N; ++i)
+        for (size_t i = 0; i < N; ++i)
             x[i] = ~a[i];
     }
     else
     {
-        for (register int i = N - 1; i >= 0; --i)
+        for (int i = N - 1; i >= 0; --i)
             x[i] = ~a[i];
     }
 #endif
@@ -631,16 +631,16 @@ inline size_t bit_length(const uint8_t *a,  size_t N)
     assert(NULL != a && N > 0);
 
 #if (OPTIMIZE_LEVEL == 0)
-    for (register int i = N - 1; i >= 0; --i)
+    for (int i = N - 1; i >= 0; --i)
         if (0 != a[i])
             return i * 8 + _bit_length(a[i]);
     return 0;
 #else
     const size_t bits32_count = N / sizeof(uint32_t);
-    for (register int i = N - 1, limit = bits32_count * sizeof(uint32_t); i >= limit; --i)
+    for (int i = N - 1, limit = bits32_count * sizeof(uint32_t); i >= limit; --i)
         if (0 != a[i])
             return i * 8 + _bit_length(a[i]);
-    for (register int i = bits32_count - 1; i >= 0; --i)
+    for (int i = bits32_count - 1; i >= 0; --i)
         if (0 != reinterpret_cast<const uint32_t*>(a)[i])
             return i * 32 + _bit_length(reinterpret_cast<const uint32_t*>(a)[i]);
     return 0;
@@ -655,16 +655,16 @@ inline size_t bit0_length(const uint8_t *a,  size_t N)
     assert(NULL != a && N > 0);
 
 #if (OPTIMIZE_LEVEL == 0)
-    for (register int i = N - 1; i >= 0; --i)
+    for (int i = N - 1; i >= 0; --i)
         if (0xFF != a[i])
             return i * 8 + _bit_length((uint8_t)~a[i]);
     return 0;
 #else
     const size_t bits32_count = N / sizeof(uint32_t);
-    for (register int i = N - 1, limit = bits32_count * sizeof(uint32_t); i >= limit; --i)
+    for (int i = N - 1, limit = bits32_count * sizeof(uint32_t); i >= limit; --i)
         if (0xFF != a[i])
             return i * 8 + _bit_length((uint8_t)~a[i]);
-    for (register int i = bits32_count - 1; i >= 0; --i)
+    for (int i = bits32_count - 1; i >= 0; --i)
         if (0xFFFFFFFF != reinterpret_cast<const uint32_t*>(a)[i])
             return i * 32 + _bit_length((uint32_t)~reinterpret_cast<const uint32_t*>(a)[i]);
     return 0;
@@ -718,15 +718,15 @@ inline size_t bit_count(const uint8_t *a, size_t N)
 
 #if (OPTIMIZE_LEVEL == 0)
     size_t ret = 0;
-    for (register size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < N; ++i)
         ret += _bit_count(a[i]);
     return ret;
 #else
     const size_t bits32_count = N / sizeof(uint32_t);
     size_t ret = 0;
-    for (register size_t i = 0; i < bits32_count; ++i)
+    for (size_t i = 0; i < bits32_count; ++i)
         ret += _bit_count(reinterpret_cast<const uint32_t*>(a)[i]);
-    for (register size_t i = bits32_count * sizeof(uint32_t); i < N; ++i)
+    for (size_t i = bits32_count * sizeof(uint32_t); i < N; ++i)
         ret += _bit_count(a[i]);
     return ret;
 #endif
@@ -862,16 +862,16 @@ inline int lowest_bit(const uint8_t *a, size_t N)
     assert(NULL != a && N > 0);
 
 #if (OPTIMIZE_LEVEL == 0)
-    for (register size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < N; ++i)
         if (0 != a[i])
             return i * 8 + _lowest_bit(a[i]);
     return -1;
 #else
     const size_t bits32_count = N / sizeof(uint32_t);
-    for (register size_t i = 0; i < bits32_count; ++i)
+    for (size_t i = 0; i < bits32_count; ++i)
         if (0 != reinterpret_cast<const uint32_t*>(a)[i])
             return i * 32 + _lowest_bit(reinterpret_cast<const uint32_t*>(a)[i]);
-    for (register size_t i = bits32_count * sizeof(uint32_t); i < N; ++i)
+    for (size_t i = bits32_count * sizeof(uint32_t); i < N; ++i)
         if (0 != a[i])
             return i * 8 + _lowest_bit(a[i]);
     return -1;
@@ -889,16 +889,16 @@ inline int lowest_bit0(const uint8_t *a, size_t N)
     assert(NULL != a && N > 0);
 
 #if (OPTIMIZE_LEVEL == 0)
-    for (register size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < N; ++i)
         if (0xff != a[i])
             return i * 8 + _lowest_bit((uint8_t)~a[i]);
     return -1;
 #else
     const size_t bits32_count = N / sizeof(uint32_t);
-    for (register size_t i = 0; i < bits32_count; ++i)
+    for (size_t i = 0; i < bits32_count; ++i)
         if (0xffffffff != reinterpret_cast<const uint32_t*>(a)[i])
             return i * 32 + _lowest_bit((uint32_t)~reinterpret_cast<const uint32_t*>(a)[i]);
-    for (register size_t i = bits32_count * sizeof(uint32_t); i < N; ++i)
+    for (size_t i = bits32_count * sizeof(uint32_t); i < N; ++i)
         if (0xff != a[i])
             return i * 8 + _lowest_bit((uint8_t)~a[i]);
     return -1;
@@ -923,9 +923,9 @@ uint8_t add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
     if ((a < x && x < a + M) || (b < x && x < b + N))
         retx = (word_type*) ::malloc(sizeof(word_type) * P);
 
-    register uint8_t carry = 0;
+    uint8_t carry = 0;
     const word_type filla = (is_positive(a, M) ? 0 : ~(word_type)0), fillb = (is_positive(b, N) ? 0 : ~(word_type)0);
-    for (register size_t i = 0; i < P; ++i)
+    for (size_t i = 0; i < P; ++i)
     {
         const dword_type pluser1 = (i < M ? reinterpret_cast<const word_type*>(a)[i] : filla);
         dword_type pluser2 = (i < N ? reinterpret_cast<const word_type*>(b)[i] : fillb);
@@ -957,8 +957,8 @@ uint8_t increase(T *x, size_t N)
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
 
-    register uint8_t carry = 1;
-    for (register size_t i = 0; i < N && 0 != carry; ++i)
+    uint8_t carry = 1;
+    for (size_t i = 0; i < N && 0 != carry; ++i)
     {
         dword_type pluser = reinterpret_cast<const word_type*>(x)[i];
         pluser += carry;
@@ -988,8 +988,8 @@ uint8_t sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
         retx = (word_type*) ::malloc(sizeof(word_type) * P);
 
     const word_type filla = (is_positive(a, M) ? 0 : ~(word_type)0), fillb = (is_positive(b, N) ? 0 : ~(word_type)0);
-    register uint8_t carry = 1;
-    for (register size_t i = 0; i < P; ++i)
+    uint8_t carry = 1;
+    for (size_t i = 0; i < P; ++i)
     {
         const dword_type pluser1 = (i < M ? reinterpret_cast<const word_type*>(a)[i] : filla);
         dword_type pluser2 = static_cast<word_type>(~(i < N ? reinterpret_cast<const word_type*>(b)[i] : fillb));
@@ -1021,8 +1021,8 @@ uint8_t decrease(T *x, size_t N)
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
 
-    register uint8_t carry = 0;
-    for (register size_t i = 0; i < N && 1 != carry; ++i)
+    uint8_t carry = 0;
+    for (size_t i = 0; i < N && 1 != carry; ++i)
     {
         dword_type pluser = reinterpret_cast<const word_type*>(x)[i];
         pluser += carry + (dword_type)(word_type)~(word_type)0;
@@ -1051,9 +1051,9 @@ uint8_t negate(const T *a, size_t M, T *x, size_t N)
     if (a < x && x < a + M)
         retx = (word_type*) ::malloc(sizeof(word_type) * N);
 
-    register uint8_t carry = 1;
+    uint8_t carry = 1;
     const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
-    for (register size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < N; ++i)
     {
         dword_type pluser = static_cast<word_type>(~(i < M ? reinterpret_cast<const word_type*>(a)[i] : fill));
         pluser += carry;
@@ -1109,7 +1109,7 @@ void _square(const T *a, size_t M, T *x, size_t N)
 
     // 先计算一半
     ::memset(retx, 0, sizeof(word_type) * N);
-    for (register size_t i = 0; i < M - 1; ++i)
+    for (size_t i = 0; i < M - 1; ++i)
     {
         if (i * 2 + 1 >= N)
             break;
@@ -1119,7 +1119,7 @@ void _square(const T *a, size_t M, T *x, size_t N)
             continue;
 
         word_type carry = 0;
-        for (register size_t j = i + 1; j < M && i + j < N; ++j)
+        for (size_t j = i + 1; j < M && i + j < N; ++j)
         {
             dword_type op2 = reinterpret_cast<const word_type*>(a)[j];
             op2 = op1 * op2 + retx[i + j] + carry;
@@ -1137,7 +1137,7 @@ void _square(const T *a, size_t M, T *x, size_t N)
 
     // 加上中间对称线
     word_type carry = 0;
-    for (register size_t i = 0; i < M; ++i)
+    for (size_t i = 0; i < M; ++i)
     {
         if (i * 2 >= N)
             break;
@@ -1191,7 +1191,7 @@ void multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
     // 乘法
     const word_type filla = (is_positive(a,M) ? 0 : ~(word_type)0), fillb = (is_positive(b,N) ? 0 : ~(word_type)0); /// 先把变量算出来，避免操作数被破坏
     ::memset(retx, 0, sizeof(word_type) * P);
-    for (register size_t i = 0; i < P; ++i)
+    for (size_t i = 0; i < P; ++i)
     {
         if (i >= M && 0 == filla)
             break;
@@ -1201,7 +1201,7 @@ void multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
             continue;
 
         word_type carry = 0; // 这个进位包括乘法的，故此会大于1
-        for (register size_t j = 0; i + j < P; ++j)
+        for (size_t j = 0; i + j < P; ++j)
         {
             dword_type mult2 = (j < N ? reinterpret_cast<const word_type*>(b)[j] : fillb);
             mult2 = mult1 * mult2 + retx[i + j] + carry;
@@ -1258,14 +1258,14 @@ void divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, si
     ::memset(remainder, (dividend_positive ? 0 : 0xFF), sizeof(word_type) * divisor_len); // 初始化余数
     bool remainder_positive = dividend_positive; // 余数的符号
     bool quotient_positive = true; // 商的符号
-    for (register size_t i = 0; i < dividend_len; ++i)
+    for (size_t i = 0; i < dividend_len; ++i)
     {
         const size_t dividend_word_pos = dividend_len - i - 1;
         const word_type next_dividend_word = reinterpret_cast<const word_type*>(a)[dividend_word_pos]; // 余数左移时的低位补位部分
         if (NULL != quotient && dividend_word_pos < P)
             quotient[dividend_word_pos] = 0; // 初始化商，注意，兼容 x==a 的情况
 
-        for (register size_t j = 0; j < 8 * sizeof(word_type); ++j)
+        for (size_t j = 0; j < 8 * sizeof(word_type); ++j)
         {
             // 余数左移1位
             shift_left(remainder, divisor_len, remainder, divisor_len, 1);

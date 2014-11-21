@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-08-31
- * @last-edit 2013-08-31 20:03:18 jingqi
+ * @last-edit 2014-11-21 22:54:18 jingqi
  * @brief
  */
 
@@ -43,7 +43,7 @@ private:
     static inline void xor_buf(uint8_t *buf1, const uint8_t *buf2, size_t len = 16)
     {
         assert(NULL != buf1 && NULL != buf2);
-        for (register size_t i = 0; i < len; ++i)
+        for (size_t i = 0; i < len; ++i)
             buf1[i] ^= buf2[i];
     }
 
@@ -65,7 +65,7 @@ public:
         assert(rs);
         ::memcpy(m_iv, iv, 16);
     }
-    
+
     /**
      * 更新要加密的数据
      */
@@ -86,7 +86,7 @@ public:
             m_data_buf_size = 0;
         }
 
-        register size_t i = 0;
+        size_t i = 0;
         for (; i < data_len / 16; ++i)
         {
             xor_buf(m_iv, data + i * 16, 16);
@@ -98,7 +98,7 @@ public:
         m_data_buf_size += data_len - i * 16;
         assert(m_data_buf_size >= 0 && m_data_buf_size < 16);
     }
-    
+
     /**
      * 结束加密过程
      */
@@ -106,7 +106,7 @@ public:
     {
         assert(IN_ENCRYPT == m_state && m_data_buf_size >= 0 && m_data_buf_size < 16);
         /* PKCS5 填充 */
-        for (register size_t i = m_data_buf_size; i < 16; ++i)
+        for (size_t i = m_data_buf_size; i < 16; ++i)
             m_data_buf[i] = 16 - m_data_buf_size;
         xor_buf(m_iv, m_data_buf, 16);
         m_aes.encrypt(m_iv, m_iv);
@@ -132,7 +132,7 @@ public:
         assert(rs);
         ::memcpy(m_iv, iv, 16);
     }
-    
+
     /**
      * 更新要解密的数据
      */
@@ -155,7 +155,7 @@ public:
             m_data_buf_size = 0;
         }
 
-        register size_t i = 0;
+        size_t i = 0;
         for (; i < data_len / 16; ++i)
         {
             m_aes.decrypt(data + i * 16, buf);
@@ -181,7 +181,7 @@ public:
             return false;
 
         uint8_t last_byte = m_result[m_result.size() - 1];
-        for (register size_t i = 0; i < last_byte; ++i)
+        for (size_t i = 0; i < last_byte; ++i)
             if (m_result[m_result.size() - i - 1] != last_byte)
                 return false;
         m_result.resize(m_result.size() - last_byte);

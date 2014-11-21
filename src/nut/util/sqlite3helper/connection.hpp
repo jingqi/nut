@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-08-10
- * @last-edit 2014-10-06 03:22:51 jingqi
+ * @last-edit 2014-11-21 22:55:38 jingqi
  */
 
 #ifndef ___HEADFILE_A7E2D32B_B83E_44AB_A6C6_98E03E0EDDBD_
@@ -318,7 +318,7 @@ public:
             onError(SQLITE_ERROR);
             return false;
         }
-        for (register size_t i = 0, size = args.size(); i < size; ++i)
+        for (size_t i = 0, size = args.size(); i < size; ++i)
         {
             rs = stmt->bind(i + 1, args.at(i));
             if (!rs)
@@ -415,7 +415,7 @@ public:
             onError(SQLITE_ERROR);
             return gc_new<ResultSet>();
         }
-        for (register size_t i = 0, size = args.size(); i < size; ++i)
+        for (size_t i = 0, size = args.size(); i < size; ++i)
         {
             rs = stmt->bind(i + 1, args.at(i));
             if (!rs)

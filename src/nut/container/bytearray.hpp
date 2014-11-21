@@ -185,7 +185,7 @@ public :
             return false;
         if (m_buf == x.m_buf)
             return true;
-        for (register size_t i = 0; i < m_datalen; ++i)
+        for (size_t i = 0; i < m_datalen; ++i)
             if (m_buf->buf[i] != x.m_buf->buf[i])
                 return false;
         return true;
@@ -324,7 +324,7 @@ public :
 
         std::string ret;
         const size_t limit = (m_datalen < to ? m_datalen : to);
-        for (register size_t i = from; i < limit; ++i)
+        for (size_t i = from; i < limit; ++i)
         {
             const uint8_t b = m_buf->buf[i];
             int n = (b >> 4) & 0xF;
@@ -342,7 +342,7 @@ public :
 
         std::wstring ret;
         const size_t limit = (m_datalen < to ? m_datalen : to);
-        for (register size_t i = from; i < limit; ++i)
+        for (size_t i = from; i < limit; ++i)
         {
             const uint8_t b = m_buf->buf[i];
             int n = (b >> 4) & 0xF;
@@ -366,7 +366,7 @@ public :
 
         ByteArray ret;
         const size_t limit = (s.length() < to ? s.length() : to);
-        for (register size_t i = 0; from + i * 2 + 1 < limit; ++i)
+        for (size_t i = 0; from + i * 2 + 1 < limit; ++i)
         {
             int p1, p2;
             char c = s.at(from + i * 2);
@@ -396,7 +396,7 @@ public :
 
         ByteArray ret;
         const size_t limit = (s.length() < to ? s.length() : to);
-        for (register size_t i = 0; from + i * 2 + 1 < limit; ++i)
+        for (size_t i = 0; from + i * 2 + 1 < limit; ++i)
         {
             int p1, p2;
             wchar_t c = s.at(from + i * 2);

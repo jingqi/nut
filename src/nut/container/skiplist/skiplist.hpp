@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-08-29
- * @last-edit 2013-08-29 14:39:44 jingqi
+ * @last-edit 2014-11-21 22:45:58 jingqi
  * @brief
  */
 
@@ -64,8 +64,8 @@ public:
     static NODE* searchNode(const K& key, const SL& sl, NODE **pre_lv)
     {
         NODE *ret = NULL;
-        register NODE *pre = NULL;
-        register int lv = sl.getLevel();
+        NODE *pre = NULL;
+        int lv = sl.getLevel();
         assert(lv >= 0);
         do
         {
@@ -126,7 +126,7 @@ public:
         // adjust low-half level
         const int sl_level = sl.getLevel(), n_level = n->getLevel();
         assert(sl_level >= 0 && n_level >= 0);
-        for (register int i = 0; i <= sl_level && i <= n_level; ++i)
+        for (int i = 0; i <= sl_level && i <= n_level; ++i)
         {
             if (NULL == pre_lv[i])
             {
@@ -144,14 +144,14 @@ public:
         if (n_level > sl_level)
         {
             sl.setLevel(n_level);
-            for (register int i = sl_level + 1; i <= n_level; ++i)
+            for (int i = sl_level + 1; i <= n_level; ++i)
             {
                 sl.setHead(i, n);
                 n->setNext(i, NULL);
             }
         }
     }
-    
+
     /**
      * 移除节点
      *
@@ -164,7 +164,7 @@ public:
         assert(NULL != n && NULL != pre_lv);
         const int sl_level = sl.getLevel(), n_level = n->getLevel();
         assert(sl_level >= 0 && n_level >= 0);
-        for (register int i = 0; i <= sl_level && i <= n_level; ++i)
+        for (int i = 0; i <= sl_level && i <= n_level; ++i)
         {
             if (NULL == pre_lv[i])
                 sl.setHead(i, n->getNext(i));

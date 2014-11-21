@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-07-07
- * @last-edit 2012-07-07 00:24:22 jingqi
+ * @last-edit 2014-11-21 22:53:48 jingqi
  */
 
 #ifndef ___HEADFILE_C230DE33_6F0F_45E8_A829_39F88DDC1A13_
@@ -146,9 +146,9 @@ public:
     std::string getStringResult() const
     {
         std::string ret;
-        for (register int i = 0; i < 4; ++i)
+        for (int i = 0; i < 4; ++i)
         {
-            for (register int j = 0; j < 4; ++j)
+            for (int j = 0; j < 4; ++j)
             {
                 const uint8_t b = ((uint8_t*)(m_state + i))[j];
                 int n = (0xF0 & b) >> 4;
@@ -292,4 +292,3 @@ private:
 #undef __II__
 
 #endif
-

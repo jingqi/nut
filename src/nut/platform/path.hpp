@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-06-23
- * @last-edit 2013-12-09 11:10:41 jingqi
+ * @last-edit 2014-11-21 23:05:39 jingqi
  */
 
 #ifndef ___HEADFILE_E6D40B10_E5D6_4092_A38B_4E69E5B8E123_
@@ -140,7 +140,7 @@ public:
 
         if (p.at(0) == '/') // linux root
             return true;
-        for (register size_t i = 0, len = p.length(); i < len; ++i)
+        for (size_t i = 0, len = p.length(); i < len; ++i)
         {
             const char c = p.at(i);
             if (c == ':') // windows partion root
@@ -158,7 +158,7 @@ public:
 
         if (p.at(0) == L'/') // linux root
             return true;
-        for (register size_t i = 0, len = p.length(); i < len; ++i)
+        for (size_t i = 0, len = p.length(); i < len; ++i)
         {
             const wchar_t c = p.at(i);
             if (c == L':') // windows partion root
@@ -185,7 +185,7 @@ public:
 
         // 组装路径
         std::string part;
-        for (register size_t i = 0, len = p.length(); i < len; ++i)
+        for (size_t i = 0, len = p.length(); i < len; ++i)
         {
             const char c = p.at(i);
             if (!isPathSeparator(c))
@@ -219,7 +219,7 @@ public:
             {
                 if (part == "..")
                 {
-                    register int j = out->size() - 1;
+                    int j = (int) out->size() - 1;
                     if (isPathSeparator(out->at(j)))
                         --j;
                     while (j >= 0)
@@ -263,7 +263,7 @@ public:
 
         // 组装路径
         std::wstring part;
-        for (register size_t i = 0, len = p.length(); i < len; ++i)
+        for (size_t i = 0, len = p.length(); i < len; ++i)
         {
             const wchar_t c = p.at(i);
             if (!isPathSeparator(c))
@@ -297,7 +297,7 @@ public:
             {
                 if (part == L"..")
                 {
-                    register int j = out->size() - 1;
+                    int j = (int) out->size() - 1;
                     if (isPathSeparator(out->at(j)))
                         --j;
                     while (j >= 0)
@@ -536,7 +536,7 @@ public:
         assert(NULL != prefix || NULL != ext);
 
         int pos = -1;
-        for (int i = path.length() - 1; i >= 0; --i)
+        for (int i = (int) path.length() - 1; i >= 0; --i)
         {
             if ('\\' == path[i] || '/' == path[i])
                 break;
@@ -567,7 +567,7 @@ public:
         assert(NULL != prefix || NULL != ext);
 
         int pos = -1;
-        for (int i = path.length() - 1; i >= 0; --i)
+        for (int i = (int) path.length() - 1; i >= 0; --i)
         {
             if (L'\\' == path[i] || L'/' == path[i])
                 break;
@@ -895,7 +895,7 @@ public:
 
     static inline bool islink(const std::string& path)
     {
-        return islink(path.c_str()); 
+        return islink(path.c_str());
     }
 
     static inline bool islink(const wchar_t *path)
@@ -1024,4 +1024,3 @@ public:
 }
 
 #endif
-

@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2011-12-25
- * @last-edit 2012-03-25 21:28:52 jingqi
+ * @last-edit 2014-11-21 22:55:58 jingqi
  */
 
 #ifndef ___HEADFILE_C9DB1FAD_B2DA_45F6_AE36_818B4BB68EC1_
@@ -77,13 +77,13 @@ class IniDom
                 return ref<Sector>(NULL);
 			const std::string::size_type index3 = line.find_first_of(line_comment_chars, index2);
 
-            for (register size_t i = 0; i < index1; ++i)
+            for (size_t i = 0; i < index1; ++i)
             {
 				if (!contains(space_chars, line.at(i)))
 					return ref<Sector>(NULL);
             }
 
-            for (register size_t i = index2 + 1, len = line.length(); i < len && i != index3; ++i)
+            for (size_t i = index2 + 1, len = line.length(); i < len && i != index3; ++i)
             {
 				if (!contains(space_chars, line.at(i)))
 					return ref<Sector>(NULL);
@@ -540,7 +540,7 @@ public:
         std::string s;
         if (values.size() > 0)
             s = values.at(0);
-        for (register size_t i = 1, sz = values.size(); i < sz; ++i)
+        for (size_t i = 1, sz = values.size(); i < sz; ++i)
             s += std::string() + splitChar + values.at(i);
         setString(sector, key, s.data());
     }
@@ -554,4 +554,3 @@ public:
 #endif
 
 #endif
-

@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-10-03
- * @last-edit 2014-10-07 19:02:01 jingqi
+ * @last-edit 2014-11-21 22:56:19 jingqi
  * @brief
  */
 
@@ -129,7 +129,7 @@ public:
 
     ref<XmlElement> getChild(const std::string& name) const
     {
-        for (register size_t i = 0, s = m_children.size(); i < s; ++i)
+        for (size_t i = 0, s = m_children.size(); i < s; ++i)
         {
             ref<XmlElement> c = m_children.at(i);
             if (c.isNull())

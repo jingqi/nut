@@ -172,7 +172,7 @@ public:
         std::vector<std::string> dirs;
         listdir(p.c_str(), &dirs, except_file, except_dir, except_initial_dot);
         std::wstring s;
-        for (register size_t i = 0, size = dirs.size(); i < size; ++i)
+        for (size_t i = 0, size = dirs.size(); i < size; ++i)
         {
             str2wstr(dirs[i].c_str(), &s);
             out->push_back(s);
@@ -220,7 +220,7 @@ public:
         const int BUF_LEN = 4096;
         char buf[BUF_LEN];
         int readed = -1;
-        while ((readed = ::fread(buf, 1, BUF_LEN, inFile)) > 0)
+        while ((readed = (int) ::fread(buf, 1, BUF_LEN, inFile)) > 0)
         {
             ::fwrite(buf, 1, readed, outFile);
         }

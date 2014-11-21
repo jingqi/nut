@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-02-08
- * @last-edit 2013-02-08 16:28:39 jingqi
+ * @last-edit 2014-11-21 22:52:37 jingqi
  * @brief
  */
 
@@ -32,7 +32,7 @@ inline bool psedoprime(const BigInteger& n)
 inline bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n)
 {
     BigInteger d(1), b(n - 1);
-    for (register size_t i = b.bit_length(); i > 0; --i)
+    for (size_t i = b.bit_length(); i > 0; --i)
     {
         BigInteger x = d;
         d *= d;
@@ -63,7 +63,7 @@ inline bool miller_rabin(const BigInteger& n, unsigned s)
      * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P584
      */
     const BigInteger ONE(1);
-    for (register size_t i = 0; i < s; ++i)
+    for (size_t i = 0; i < s; ++i)
     {
         const BigInteger a = BigInteger::rand_between(ONE, n); // rand in [1, n)
         if (_miller_rabin_witness(a, n))
@@ -84,7 +84,7 @@ inline bool miller_rabin(const BigInteger& n, unsigned s)
     m >>= a;
 
     // Do the tests
-    for (register size_t i = 0; i < s; ++i)
+    for (size_t i = 0; i < s; ++i)
     {
         // Generate a uniform random in [1, n)
         const BigInteger b = BigInteger::rand_between(ONE, n); // _rand_1_n(n);
@@ -129,8 +129,8 @@ inline BigInteger next_prime(const BigInteger& n)
             // Do cheap "pre-test" if applicable
             if (result.bit_length() > 6) {
                 int64_t r = (int64_t) (result % SMALL_PRIME_PRODUCT).llong_value();
-                if ((r%3==0)  || (r%5==0)  || (r%7==0)  || (r%11==0) || 
-                    (r%13==0) || (r%17==0) || (r%19==0) || (r%23==0) || 
+                if ((r%3==0)  || (r%5==0)  || (r%7==0)  || (r%11==0) ||
+                    (r%13==0) || (r%17==0) || (r%19==0) || (r%23==0) ||
                     (r%29==0) || (r%31==0) || (r%37==0) || (r%41==0)) {
                         result += 2;
                         continue; // Candidate is composite; try another

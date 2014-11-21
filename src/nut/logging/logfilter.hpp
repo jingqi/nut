@@ -47,7 +47,7 @@ public :
     DefaultLogFilter (LogLevel minLevel, const std::vector<std::string> &denyPaths = std::vector<std::string>())
         : m_denyPaths(denyPaths)
     {
-        for (register int i = 0; i < COUNT_OF_LOG_LEVEL; ++i)
+        for (int i = 0; i < COUNT_OF_LOG_LEVEL; ++i)
             m_levelMask[i] = (i < minLevel ? true : false);
     }
 
@@ -91,7 +91,7 @@ public:
     static ref<LogFilter> createLogFilter(const std::string &arg)
     {
         bool mask[5] = {true, true, true, true, true};
-        for (register size_t i = 0; i < arg.length() && i < 5; ++i)
+        for (size_t i = 0; i < arg.length() && i < 5; ++i)
             if (arg[i] == '0')
                 mask[i] = false;
         std::vector<std::string> denyPaths;
@@ -117,4 +117,3 @@ public:
 
 
 #endif // head file guarder
-

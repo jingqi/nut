@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-08-09
- * @last-edit 2012-08-09 20:01:39 jingqi
+ * @last-edit 2014-11-21 22:55:25 jingqi
  */
 
 #ifndef ___HEADFILE_FD589E58_04A2_4A16_AF82_9F6AE78BCEAE_
@@ -109,7 +109,7 @@ public: \
  \
     delegate(const self& x) \
     { \
-        for (register size_t i = 0, size = x.m_holders.size(); i < size; ++i) \
+        for (size_t i = 0, size = x.m_holders.size(); i < size; ++i) \
         { \
             assert(NULL != x.m_holders[i]); \
             m_holders.push_back(x.m_holders[i]->clone()); \
@@ -126,7 +126,7 @@ public: \
         if (&x != this)\
         { \
             disconnectAll(); \
-            for (register size_t i = 0, size = x.m_holders.size(); i < size; ++i) \
+            for (size_t i = 0, size = x.m_holders.size(); i < size; ++i) \
             { \
                 assert(NULL != x.m_holders[i]); \
                 m_holders.push_back(x.m_holders[i]->clone()); \
@@ -139,7 +139,7 @@ public: \
     { \
         if (m_holders.size() != x.m_holders.size()) \
             return false; \
-        for (register size_t i = m_holders.size(); i > 0; --i) \
+        for (size_t i = m_holders.size(); i > 0; --i) \
         { \
             assert(NULL != m_holders[i - 1] && NULL != x.m_holders[i - 1]); \
             if (m_holders[i - 1]->holderType() != x.m_holders[i - 1]->holderType()) \
@@ -194,7 +194,7 @@ public: \
     bool disconnect(FunctorPtr func) \
     { \
         bool found = false; \
-        for (register size_t i = 0; i < m_holders.size(); ++i) \
+        for (size_t i = 0; i < m_holders.size(); ++i) \
         { \
             if (m_holders[i]->holderType() == FUNCTOR) \
             { \
@@ -216,7 +216,7 @@ public: \
     bool disconnect(U obj, MemFun mfunc) \
     { \
         bool found = false; \
-        for (register size_t i = 0; i < m_holders.size(); ++i) \
+        for (size_t i = 0; i < m_holders.size(); ++i) \
         { \
             if (m_holders[i]->holderType() == MEMBER_FUNCTION) \
             { \
@@ -236,7 +236,7 @@ public: \
  \
     void disconnectAll() \
     { \
-        for (register size_t i = 0, size = m_holders.size(); i < size; ++i) \
+        for (size_t i = 0, size = m_holders.size(); i < size; ++i) \
         { \
             assert(NULL != m_holders[i]); \
             delete m_holders[i]; \
@@ -251,7 +251,7 @@ public: \
  \
     Ret operator()(FUNCTION_ARGS) const \
     { \
-        for (register size_t i = 0, size = m_holders.size(); i < size; ++i) \
+        for (size_t i = 0, size = m_holders.size(); i < size; ++i) \
         { \
             assert(NULL != m_holders[i]); \
             if (i == size - 1) \
@@ -368,4 +368,3 @@ __DELEGATE(__TEMPLATE_ARGS_10, __FUNCTION_ARGS_10, __FUNCTION_PARA_10)
 }
 
 #endif
-

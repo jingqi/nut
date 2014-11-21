@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-11-25
- * @last-edit 2014-11-15 22:01:22 jingqi
+ * @last-edit 2014-11-21 22:52:14 jingqi
  */
 
 #ifndef ___HEADFILE_058D89EB_50A2_4934_AF92_FC4F82613999_
@@ -41,21 +41,21 @@ struct ModMultiplyPreBuildTable
 
         // 填充第一行
         table[0] = a;
-        for (register size_t i = 1; i < width; ++i)
+        for (size_t i = 1; i < width; ++i)
         {
             table[i] = table[0] + table[i - 1];
             if (table[i] >= n)
                 table[i] -= n;
         }
         // 填充其他行
-        for (register size_t i = 1; i < hight; ++i)
+        for (size_t i = 1; i < hight; ++i)
         {
             const size_t base_off = i * width;
             table[base_off] = table[base_off - width] + table[base_off - 1];
             if (table[base_off] >= n)
                 table[base_off] -= n;
 
-            for (register size_t j = 1; j < width; ++j)
+            for (size_t j = 1; j < width; ++j)
             {
                 table[base_off + j] = table[base_off] + table[base_off + j - 1];
                 if (table[base_off + j] >= n)
@@ -99,8 +99,8 @@ struct ModMultiplyPreBuildTable
     {
         if (NULL != table)
         {
-            for (register size_t i = 0; i < hight; ++i)
-                for (register size_t j = 0; j < width; ++j)
+            for (size_t i = 0; i < hight; ++i)
+                for (size_t j = 0; j < width; ++j)
                     if (NULL != table[i * width + j])
                         delete table[i * width + j];
             delete[] table;
@@ -143,10 +143,10 @@ BigInteger mod_multiply(const BigInteger& b, const BigInteger& n, const ModMulti
     size_t limit = (b.bit_length() + C - 1) / C;
     if (table.hight < limit)
         limit = table.hight;
-    for (register size_t i = 0; i < limit; ++i)
+    for (size_t i = 0; i < limit; ++i)
     {
         uint32_t j = 0; // bits window
-        for (register size_t k = 1; k <= C; ++k)
+        for (size_t k = 1; k <= C; ++k)
         {
             j <<= 1;
             j |= b.bit_at(i * C + (C - k));
@@ -200,14 +200,14 @@ inline BigInteger _montgomery(const BigInteger& t, const BigInteger& n, BigInteg
     const size_t r_word_count = n.significant_words_length();
     BigInteger rs(t);
     rs.resize(r_word_count * 2 + 1);
-    for (register size_t i = 0; i < r_word_count; ++i)
+    for (size_t i = 0; i < r_word_count; ++i)
     {
         const BigInteger::word_type op1 = static_cast<BigInteger::word_type>(rs.word_at(i) * nn);
         if (0 == op1)
             continue;
 
         BigInteger::word_type carry = 0;
-        for (register size_t j = 0; j < r_word_count; ++j)
+        for (size_t j = 0; j < r_word_count; ++j)
         {
             BigInteger::dword_type op2 = n.word_at(j);
             op2 *= op1;
@@ -218,7 +218,7 @@ inline BigInteger _montgomery(const BigInteger& t, const BigInteger& n, BigInteg
             carry = static_cast<BigInteger::word_type>(op2 >> (8 * sizeof(BigInteger::word_type)));
         }
 
-        for (register size_t j = i; j < r_word_count; ++j)
+        for (size_t j = i; j < r_word_count; ++j)
         {
             if (0 == carry)
                 break;
@@ -308,7 +308,7 @@ struct MontgomeryPreBuildTable
 
         table[0] = new BigInteger(m);
         const BigInteger mm = _montgomery(m * m, rlen, n, nn);
-        for (register size_t i = 1; i < size; ++i)
+        for (size_t i = 1; i < size; ++i)
             table[i] = new BigInteger(_montgomery(*table[i - 1] * mm, rlen, n, nn));
     }
 
@@ -316,7 +316,7 @@ struct MontgomeryPreBuildTable
     {
         if (NULL != table)
         {
-            for (register size_t i = 0; i < size; ++i)
+            for (size_t i = 0; i < size; ++i)
                 if (NULL != table[i])
                     delete table[i];
             delete[] table;
@@ -381,7 +381,7 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
     // 循环计算
     const BigInteger m = (a << rlen) % n;
     BigInteger ret(m);
-    for (register size_t i = b.bit_length() - 1; i > 0; --i)
+    for (size_t i = b.bit_length() - 1; i > 0; --i)
     {
         ret = _montgomery(ret * ret, rlen, n, nn);
         if (0 != b.bit_at(i - 1))
@@ -405,7 +405,7 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
     // 循环计算
     const BigInteger m = (a << (8 * sizeof(BigInteger::word_type) * r_word_count)) % n;
     BigInteger ret(m);
-    for (register int i = ((int) b.bit_length()) - 2; i >= 0; --i)
+    for (int i = ((int) b.bit_length()) - 2; i >= 0; --i)
     {
         ret *= ret;
         ret = _montgomery(ret, n, nnn);
@@ -432,7 +432,7 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
     // 循环计算
     const BigInteger m = (a << rlen) % n;
     BigInteger ret(m);
-    for (register int i = ((int) b.bit_length()) - 2; i >= 0; --i)
+    for (int i = ((int) b.bit_length()) - 2; i >= 0; --i)
     {
         ret *= ret;
         ret = _montgomery(ret, rlen, n, nn);
@@ -478,7 +478,7 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
 
             ++squre_count;
             bool term = true;
-            for (register size_t i = 1;
+            for (size_t i = 1;
                  squre_count + i <= wnd_size && bits_left >= i;
                 ++i)
             {
@@ -491,7 +491,7 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
 
             if (term)
             {
-                for (register size_t i = 0; i < squre_count; ++i)
+                for (size_t i = 0; i < squre_count; ++i)
                 {
                     ret *= ret;
                     ret = _montgomery(ret, rlen, n, nn);
@@ -527,7 +527,7 @@ inline BigInteger _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p)
     assert(a.is_positive() && b.is_positive() && p > 0);
 
     BigInteger ret(1);
-    for (register size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
+    for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
     {
         ret.multiply_to_len(ret, p);
 
@@ -554,7 +554,7 @@ inline BigInteger mod_pow(const BigInteger& a, const BigInteger& b, const BigInt
 
 #if (OPTIMIZE_LEVEL == 0)
     BigInteger ret(1);
-    for (register size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
+    for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
     {
         ret = (ret * ret) % n;
         if (0 != b.bit_at(i - 1))
@@ -567,7 +567,7 @@ inline BigInteger mod_pow(const BigInteger& a, const BigInteger& b, const BigInt
     {
         ModMultiplyPreBuildTable<4> table(a % n, n); /// 经测试，预算表模板参数取4比较合适
         BigInteger ret(1);
-        for (register size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
+        for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
         {
             ret = (ret * ret) % n;
             if (0 != b.bit_at(i - 1))
@@ -578,7 +578,7 @@ inline BigInteger mod_pow(const BigInteger& a, const BigInteger& b, const BigInt
     else
     {
         BigInteger ret(1);
-        for (register size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
+        for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
         {
             ret = (ret * ret) % n;
             if (0 != b.bit_at(i - 1))

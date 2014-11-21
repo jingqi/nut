@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-08-29
- * @last-edit 2013-08-29 14:34:59 jingqi
+ * @last-edit 2014-11-21 22:46:15 jingqi
  * @brief
  */
 
@@ -22,19 +22,19 @@ class SkipListMap
 {
     // 最大 level 数, >0
     enum { MAX_LEVEL = 16 };
-    
+
     class Node
     {
         K m_key;
         V m_value;
         Node **m_next;
         int m_level; // 0-based
-        
+
     public:
         Node(const K& k, const V& v)
             : m_key(k), m_value(v), m_next(NULL), m_level(-1)
         {}
-        
+
         ~Node()
         {
             if (NULL != m_next)
@@ -71,7 +71,7 @@ class SkipListMap
             }
             m_level = lv;
         }
-        
+
         inline Node* getNext(int lv) const
         {
             assert(NULL != m_next && 0 <= lv && lv <= m_level);
@@ -84,11 +84,11 @@ class SkipListMap
             m_next[lv] = n;
         }
     };
-    
+
     int m_level; // 0-based
     Node **m_head;
     size_t m_size;
-    
+
 private:
     typedef SkipList<K,Node,SkipListMap<K,V> > algo_t;
     friend class SkipList<K,Node,SkipListMap<K,V> >;
@@ -116,13 +116,13 @@ private:
         }
         m_level = lv;
     }
-    
+
     inline Node* getHead(int lv) const
     {
         assert(NULL != m_head && 0 <= lv && lv <= m_level);
         return m_head[lv];
     }
-    
+
     inline void setHead(int lv, Node *n)
     {
         assert(NULL != m_head && 0 <= lv && lv <= m_level);
@@ -157,7 +157,7 @@ public:
             c->m_level = n->m_level;
             c->m_next = (Node**) ::malloc(sizeof(Node*) * (c->m_level + 1));
             algo_t::insertNode(c, *this, pre_lv);
-            for (register size_t i = 0; i <= c->m_level; ++i)
+            for (size_t i = 0; i <= c->m_level; ++i)
                 pre_lv[i] = c;
 
             n = n->m_next[0];
@@ -211,7 +211,7 @@ public:
             c->m_level = n->m_level;
             c->m_next = (Node**) ::malloc(sizeof(Node*) * (c->m_level + 1));
             algo_t::insertNode(c, *this, pre_lv);
-            for (register size_t i = 0; i <= c->m_level; ++i)
+            for (size_t i = 0; i <= c->m_level; ++i)
                 pre_lv[i] = c;
 
             n = n->m_next[0];

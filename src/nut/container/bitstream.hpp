@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-09-01
- * @last-edit 2013-09-01 19:41:50 jingqi
+ * @last-edit 2014-11-21 22:44:32 jingqi
  * @brief
  */
 
@@ -71,7 +71,7 @@ public:
         : m_buf(NULL), m_word_cap(0), m_bit_size(0)
     {
         ensure_cap(s.length());
-        for (register size_t i = 0, len = s.length(); i < len; ++i)
+        for (size_t i = 0, len = s.length(); i < len; ++i)
         {
             const char c = s.at(i);
             if ('1' == c)
@@ -89,7 +89,7 @@ public:
         : m_buf(NULL), m_word_cap(0), m_bit_size(0)
     {
         ensure_cap(s.length());
-        for (register size_t i = 0, len = s.length(); i < len; ++i)
+        for (size_t i = 0, len = s.length(); i < len; ++i)
         {
             const wchar_t c = s.at(i);
             if (L'1' == c)
@@ -222,11 +222,11 @@ public:
         const size_t fw = (i + sizeof(word_type) * 8 - 1) / (sizeof(word_type) * 8),
             le = end / (sizeof(word_type) * 8);
         const word_type fill = (setb ? ~(word_type)0 : 0);
-        for (register size_t wi = fw; wi < le; ++wi)
+        for (size_t wi = fw; wi < le; ++wi)
             m_buf[wi] = fill;
-        for (register size_t k = (fw + 1) * sizeof(word_type) * 8 - 1; k >= i; --k)
+        for (size_t k = (fw + 1) * sizeof(word_type) * 8 - 1; k >= i; --k)
             set_bit(k, setb);
-        for (register size_t k = le * sizeof(word_type) * 8; k < end; ++k)
+        for (size_t k = le * sizeof(word_type) * 8; k < end; ++k)
             set_bit(k, setb);
     }
 
@@ -247,7 +247,7 @@ public:
         ensure_cap(m_bit_size + x.m_bit_size);
         const size_t old_bit_size = m_bit_size; // XXX 这里需要保证及时是 this==&x 也是正确的
         m_bit_size += x.m_bit_size;
-        for (register size_t i = old_bit_size; i < m_bit_size; ++i)
+        for (size_t i = old_bit_size; i < m_bit_size; ++i)
             set_bit(i, x.bit_at(i - old_bit_size));
     }
 
@@ -257,7 +257,7 @@ public:
         BitStream ret;
         ret.ensure_cap(nbit);
         ret.m_bit_size = nbit;
-        for (register size_t k = 0; k < nbit; ++k)
+        for (size_t k = 0; k < nbit; ++k)
             ret.set_bit(k, bit_at(k + nbit));
         return ret;
     }
@@ -267,9 +267,9 @@ public:
     {
         const size_t word_count = m_bit_size / (sizeof(word_type) * 8);
         size_t ret = 0;
-        for (register size_t i = 0; i < word_count; ++i)
+        for (size_t i = 0; i < word_count; ++i)
             ret += _bit_count(m_buf[i]);
-        for (register size_t i = word_count * (sizeof(word_type) * 8); i < m_bit_size; ++i)
+        for (size_t i = word_count * (sizeof(word_type) * 8); i < m_bit_size; ++i)
             ret += (bit_at(i) ? 1 : 0);
         return ret;
     }
@@ -282,7 +282,7 @@ public:
     std::string toString()
     {
         std::string ret;
-        for (register size_t i = 0; i < m_bit_size; ++i)
+        for (size_t i = 0; i < m_bit_size; ++i)
             ret += (bit_at(i) ? '1' : '0');
         return ret;
     }
@@ -290,7 +290,7 @@ public:
     std::wstring toWString()
     {
         std::wstring ret;
-        for (register size_t i = 0; i < m_bit_size; ++i)
+        for (size_t i = 0; i < m_bit_size; ++i)
             ret += (bit_at(i) ? L'1' : '0');
         return ret;
     }
@@ -299,5 +299,3 @@ public:
 }
 
 #endif
-
-

@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-03-26
- * @last-edit 2013-03-28 09:12:22 jingqi
+ * @last-edit 2014-11-21 22:49:41 jingqi
  * @brief
  */
 
@@ -20,7 +20,7 @@ namespace nut
 
 /**
  * 多维区域
- * 
+ *
  * @param NumT 数字类型; 可以是 int、float 等
  * @param DIMENSIONS 维数，大于等于1
  * @param RealNumT 实数，避免乘法运算溢出，常用的是float，double等
@@ -36,7 +36,7 @@ public:
 
     MDArea()
     {
-        for (register size_t i = 0; i < DIMENSIONS; ++i)
+        for (size_t i = 0; i < DIMENSIONS; ++i)
         {
             lower[i] = 0;
             higher[i] = 0;
@@ -45,7 +45,7 @@ public:
 
     bool operator==(const self& x) const
     {
-        for (register size_t i = 0; i < DIMENSIONS; ++i)
+        for (size_t i = 0; i < DIMENSIONS; ++i)
             if (lower[i] != x.lower[i] || higher[i] != x.higher[i])
                 return false;
         return true;
@@ -55,13 +55,13 @@ public:
     {
         return !(*this == x);
     }
-    
+
     /**
      * 清除数据，回到初始状态
      */
     void clear()
     {
-        for (register size_t i = 0; i < DIMENSIONS; ++i)
+        for (size_t i = 0; i < DIMENSIONS; ++i)
         {
             lower[i] = 0;
             higher[i] = 0;
@@ -73,7 +73,7 @@ public:
      */
     void expandToContain(const self& x)
     {
-        for (register size_t i = 0; i < DIMENSIONS; ++i)
+        for (size_t i = 0; i < DIMENSIONS; ++i)
         {
             lower[i] = std::min(lower[i], x.lower[i]);
             higher[i] = std::max(higher[i], x.higher[i]);
@@ -85,7 +85,7 @@ public:
      */
     bool isValid() const
     {
-        for (register int i = 0; i < DIMENSIONS; ++i)
+        for (int i = 0; i < DIMENSIONS; ++i)
             if (lower[i] > higher[i])
                 return false;
         return true;
@@ -97,7 +97,7 @@ public:
     RealNumT acreage() const
     {
         RealNumT acr = 1;
-        for (register size_t i = 0; i < DIMENSIONS; ++i)
+        for (size_t i = 0; i < DIMENSIONS; ++i)
             acr *= higher[i] - lower[i];
         return acr;
     }
@@ -107,7 +107,7 @@ public:
      */
     bool contains(const self& x) const
     {
-        for (register size_t i = 0; i < DIMENSIONS; ++i)
+        for (size_t i = 0; i < DIMENSIONS; ++i)
             if (!(lower[i] <= x.lower[i] && x.higher[i] <= higher[i]))
                 return false;
         return true;
@@ -119,7 +119,7 @@ public:
     bool intersects(const self& x) const
     {
         // 任意一个维度不想交，则区域不想交
-        for (register size_t i = 0; i < DIMENSIONS; ++i)
+        for (size_t i = 0; i < DIMENSIONS; ++i)
             if (lower[i] > x.higher[i] || higher[i] < x.lower[i])
                 return false;
         return true;

@@ -1,8 +1,8 @@
 ﻿/**
  * @file -
  * @author jingqi
- * @date 
- * @last-edit 2012-07-07 03:04:58 jingqi
+ * @date
+ * @last-edit 2014-11-21 22:54:08 jingqi
  */
 
 #ifndef ___HEADFILE_A752E201_5C0D_4C54_A685_A9FF3296ED3C_
@@ -22,10 +22,10 @@ class _AES
 {
     /* forward S-box & tables */
     static uint32_t FSb[256];
-    static uint32_t FT0[256]; 
-    static uint32_t FT1[256]; 
-    static uint32_t FT2[256]; 
-    static uint32_t FT3[256]; 
+    static uint32_t FT0[256];
+    static uint32_t FT1[256];
+    static uint32_t FT2[256];
+    static uint32_t FT3[256];
 
     /* reverse S-box & tables */
     static uint32_t RSb[256];
@@ -497,7 +497,7 @@ public:
             return;
         initialized = true;
 
-        for (register int i = 0; i < 256; ++i)
+        for (int i = 0; i < 256; ++i)
         {
             KT0[i] = RT0[ FSb[i] ];
             KT1[i] = RT1[ FSb[i] ];
@@ -515,10 +515,10 @@ template <typename T> uint32_t _AES<T>::KT3[256];
 #if FIXED_TABLES
 
 template<typename T> uint32_t _AES<T>::FSb[256];
-template<typename T> uint32_t _AES<T>::FT0[256]; 
-template<typename T> uint32_t _AES<T>::FT1[256]; 
-template<typename T> uint32_t _AES<T>::FT2[256]; 
-template<typename T> uint32_t _AES<T>::FT3[256]; 
+template<typename T> uint32_t _AES<T>::FT0[256];
+template<typename T> uint32_t _AES<T>::FT1[256];
+template<typename T> uint32_t _AES<T>::FT2[256];
+template<typename T> uint32_t _AES<T>::FT3[256];
 
 template<typename T> uint32_t _AES<T>::RSb[256];
 template<typename T> uint32_t _AES<T>::RT0[256];
@@ -794,5 +794,3 @@ typedef _AES<void> AES;
 }
 
 #endif
-
-

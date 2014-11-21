@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-03-10
- * @last-edit 2013-12-09 14:36:59 jingqi
+ * @last-edit 2014-11-21 22:50:12 jingqi
  */
 
 #ifndef ___HEADFILE_160547E9_5A30_4A78_A5FF_76E0C5EBE229_
@@ -33,7 +33,7 @@ namespace nut
  *
  * 参考资料：
  *      R-Trees - A Dynamic index structure for spatial searching. Antonin Guttman. University of California Berkeley
- * 
+ *
  * @param DataT 数据类型; 可以是 int、void*, obj* 等
  * @param NumT 数字类型; 可以是 int、float 等
  * @param DIMENSIONS 区域维数; 大于等于2
@@ -88,7 +88,7 @@ private:
             assert(i < MAX_ENTRY_COUNT);
             return children[i];
         }
-        
+
         size_t childCount() const
         {
             // 二分查找
@@ -103,7 +103,7 @@ private:
             }
             return (size_t) right;
         }
-        
+
         bool appendChild(Node *child, bool setChildParent = true)
         {
             assert(NULL != child);
@@ -119,7 +119,7 @@ private:
         bool removeChild(Node *child, bool setChildParent = true)
         {
             assert(NULL != child);
-            for (register size_t i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
             {
                 if (children[i] == child)
                 {
@@ -128,7 +128,7 @@ private:
                     children[i] = NULL;
 
                     // 保持紧凑
-                    for (register size_t j = i; j + 1 < MAX_ENTRY_COUNT && NULL != children[j + 1]; ++j)
+                    for (size_t j = i; j + 1 < MAX_ENTRY_COUNT && NULL != children[j + 1]; ++j)
                     {
                         children[j] = children[j + 1];
                         children[j + 1] = NULL;
@@ -141,7 +141,7 @@ private:
 
         void clearChildren(bool setChildParent = true)
         {
-            for (register size_t i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
             {
                 if (setChildParent)
                     children[i]->parent = NULL; // 附带设置 parent
@@ -156,7 +156,7 @@ private:
         {
             assert(NULL != children[0]);
             area = children[0]->area;
-            for (register size_t i = 1; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
+            for (size_t i = 1; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
                 area.expandToContain(children[i]->area);
         }
     };
@@ -190,7 +190,7 @@ private:
     static RealNumT acreageNeeded(const area_type& x, const area_type& y)
     {
         RealNumT new_acr = 1;
-        for (register size_t i = 0; i < DIMENSIONS; ++i)
+        for (size_t i = 0; i < DIMENSIONS; ++i)
         {
             new_acr *= std::max(x.higher[i], y.higher[i]) - std::min(x.lower[i], y.lower[i]);
         }
@@ -209,7 +209,7 @@ public:
         assert(NULL != m_root);
         new (m_root) TreeNode();
     }
-    
+
     ~RTree()
     {
         clear();
@@ -246,7 +246,7 @@ public:
         bool rs = l->removeChild(dn);
         if (!rs)
             return false;
-            
+
         // 释放内存
         dn->~DataNode();
         m_datanodeAlloc.deallocate(dn, 1);
@@ -283,7 +283,7 @@ public:
         bool rs = l->removeChild(dn);
         if (!rs)
             return false;
-            
+
         // 释放内存
         dn->~DataNode();
         m_datanodeAlloc.deallocate(dn, 1);
@@ -317,8 +317,8 @@ public:
         {
             TreeNode *n = s.top();
             s.pop();
-            
-            for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
             {
                 Node *c = n->childAt(i);
                 if (c->isTreeNode())
@@ -344,7 +344,7 @@ public:
         m_height = 1;
         m_size = 0;
     }
-    
+
     /**
      * 查找与指定区域相交的数据
      */
@@ -359,7 +359,7 @@ public:
             TreeNode *n = s.top();
             s.pop();
 
-            for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
             {
                 Node *c = n->childAt(i);
                 if (!c->area.intersects(rect))
@@ -393,7 +393,7 @@ public:
             TreeNode *n = s.top();
             s.pop();
 
-            for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
             {
                 Node *c = n->childAt(i);
                 if (!c->area.intersects(rect))
@@ -427,7 +427,7 @@ public:
             TreeNode *n = s.top();
             s.pop();
 
-            for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
             {
                 Node *c = n->childAt(i);
                 if (c->isTreeNode())
@@ -481,7 +481,7 @@ private:
 
             // choose the least enlargement child
             RealNumT least = 0;
-            for (register size_t i = 0; i < MAX_ENTRY_COUNT && NULL != ret->children[i]; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && NULL != ret->children[i]; ++i)
             {
                 RealNumT el = acreageNeeded(ret->children[i]->area, rectToAdd);
                 if (0 == i || el < least)
@@ -496,7 +496,7 @@ private:
         }
         return ret;
     }
-    
+
     /**
      * 拆分节点
      *
@@ -512,12 +512,12 @@ private:
         // 收集所有的子节点
         std::list<Node*> remained;
         remained.push_back(child);
-        for (register size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
+        for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
         {
             assert(NULL != parent->children[i]);
             remained.push_back(parent->children[i]);
         }
-        
+
         // 挑选两个种子，并分别作为 parent 和 uncle (parent的兄弟节点) 的一个子节点
         Node *seed1 = NULL, *seed2 = NULL;
         linerPickSeeds(&remained, &seed1, &seed2);
@@ -574,7 +574,7 @@ private:
 
         return uncle;
     }
-    
+
     /**
      * 从一堆子节点中选取两个合适的作为种子
      */
@@ -595,7 +595,7 @@ private:
 
         // 初始化
         const iter_t end = children->end();
-        for (register size_t i = 0; i < DIMENSIONS; ++i)
+        for (size_t i = 0; i < DIMENSIONS; ++i)
         {
             highestHighSide[i] = end;
             lowestLowSide[i] = end;
@@ -607,7 +607,7 @@ private:
         for (iter_t iter = children->begin(); iter != end; ++iter)
         {
             assert(NULL != *iter);
-            for (register size_t i = 0; i < DIMENSIONS; ++i)
+            for (size_t i = 0; i < DIMENSIONS; ++i)
             {
                 const area_type& area = (*iter)->area;
 
@@ -632,7 +632,7 @@ private:
         // 对比各个维度的分离度，取分离度最大的维度对应的一组数据
         int greatest_separation_idx = 0;
         RealNumT greatest_separation = 0;
-        for (register size_t i = 0; i < DIMENSIONS; ++i)
+        for (size_t i = 0; i < DIMENSIONS; ++i)
         {
             RealNumT width = (*(highestHighSide[i]))->area.higher[i] - (*(lowestLowSide[i]))->area.lower[i];
             assert(width > 0);
@@ -722,7 +722,7 @@ private:
             st.pop();
             assert(NULL != n);
 
-            for (register size_t i = 0; i < MAX_ENTRY_COUNT && NULL != n->children[i]; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && NULL != n->children[i]; ++i)
             {
                 Node *child = n->children[i];
                 if (child->area.contains(r))
@@ -750,7 +750,7 @@ private:
             st.pop();
             assert(NULL != n);
 
-            for (register size_t i = 0; i < MAX_ENTRY_COUNT && NULL != n->children[i]; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && NULL != n->children[i]; ++i)
             {
                 Node *child = n->children[i];
                 if (child->area.contains(r))
@@ -809,9 +809,9 @@ private:
             depth = qd.top();
             qd.pop();
 
-            for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
                 insert(n->children[i], depth);
-                
+
             // 释放内存
             n->~TreeNode();
             m_treenodeAlloc.deallocate(n, 1);
@@ -862,7 +862,7 @@ public:
         const int cc = n->childCount();
         if (depth != 1 && cc < (int) MIN_ENTRY_COUNT)
             return false; // under fill
-        for (register size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+        for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
         {
             Node *ee = n->childAt(i);
             if (!n->area.contains(ee->area))
@@ -878,5 +878,3 @@ public:
 }
 
 #endif /* head file guarder */
-
-

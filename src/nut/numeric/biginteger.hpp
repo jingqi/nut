@@ -1,8 +1,8 @@
-﻿/**
+/**
  * @file -
  * @author jingqi
  * @date 2012-04-03
- * @last-edit 2013-02-04 19:23:46 jingqi
+ * @last-edit 2014-11-21 22:51:37 jingqi
  */
 
 #ifndef ___HEADFILE_0D8E9B0B_ACDC_4FD5_A0BE_71D75F7A5EFE_
@@ -121,7 +121,7 @@ public:
         m_buffer->buf[0] = 0;
         m_significant_len = 1;
     }
-    
+
     explicit _BigInteger(long long v)
         : m_significant_len(0)
     {
@@ -177,7 +177,7 @@ public:
     {
         m_significant_len = 0;
     }
-    
+
 public:
     self& operator=(const self& x)
     {
@@ -201,7 +201,7 @@ public:
 
         return *this;
     }
-    
+
     inline bool operator==(const self& x) const
     {
         if (&x == this)
@@ -228,7 +228,7 @@ public:
     {
         return !(*this == v);
     }
-    
+
     inline bool operator<(const self& x) const
     {
         return less_than(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len);
@@ -240,7 +240,7 @@ public:
 
         return less_than(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
     }
-    
+
     inline bool operator>(const self& x) const
     {
         return x < *this;
@@ -252,7 +252,7 @@ public:
 
         return less_than((word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer->buf, m_significant_len);
     }
-    
+
     inline bool operator<=(const self& x) const
     {
         return !(x < *this);
@@ -262,7 +262,7 @@ public:
     {
         return !(*this > v);
     }
-    
+
     inline bool operator>=(const self& x) const
     {
         return !(*this < x);
@@ -272,7 +272,7 @@ public:
     {
         return !(*this < v);
     }
-    
+
     self operator+(const self& x) const
     {
         self ret;
@@ -296,7 +296,7 @@ public:
         ret.minimize_significant_len();
         return ret;
     }
-    
+
     self operator-(const self& x) const
     {
         self ret;
@@ -320,7 +320,7 @@ public:
         ret.minimize_significant_len();
         return ret;
     }
-    
+
     self operator-() const
     {
         self ret;
@@ -330,7 +330,7 @@ public:
         ret.minimize_significant_len();
         return ret;
     }
-    
+
     self operator*(const self& x) const
     {
         self ret;
@@ -352,7 +352,7 @@ public:
         ret.minimize_significant_len();
         return ret;
     }
-    
+
     self operator/(const self& x) const
     {
         assert(!x.is_zero());
@@ -377,7 +377,7 @@ public:
         ret.minimize_significant_len();
         return ret;
     }
-    
+
     self operator%(const self& x) const
     {
         assert(!x.is_zero());
@@ -390,7 +390,7 @@ public:
             else if (*this < (x << 1))
                 return *this - x;
         }
-        
+
         self ret;
         ret._copy_on_write(x.m_significant_len);
         divide(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len, (word_type*)NULL, 0, ret.m_buffer->buf, x.m_significant_len);
@@ -411,7 +411,7 @@ public:
         ret.minimize_significant_len();
         return ret;
     }
-    
+
     self& operator+=(const self& x)
     {
     	const size_t max_len = (m_significant_len > x.m_significant_len ? m_significant_len : x.m_significant_len);
@@ -490,7 +490,7 @@ public:
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
         assert(0 != v);
-    
+
         _copy_on_write();
         divide(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer->buf, m_significant_len, (word_type*)NULL, 0);
         minimize_significant_len();
@@ -528,7 +528,7 @@ public:
         minimize_significant_len();
         return *this;
     }
-    
+
     self& operator++()
     {
         ensure_significant_len(m_significant_len + 1);
@@ -543,7 +543,7 @@ public:
         ++*this;
         return ret;
     }
-    
+
     self& operator--()
     {
         ensure_significant_len(m_significant_len + 1);
@@ -551,14 +551,14 @@ public:
         minimize_significant_len();
         return *this;
     }
-    
+
     inline self operator--(int)
     {
         self ret(*this);
         --*this;
         return ret;
     }
-    
+
     self operator<<(size_t count) const
     {
         if (0 == count)
@@ -572,7 +572,7 @@ public:
         ret.minimize_significant_len();
         return ret;
     }
-    
+
     /**
      * 符号扩展的右移
      */
@@ -606,7 +606,7 @@ public:
     {
         if (0 == count)
             return *this;
-    
+
         _copy_on_write();
         shift_right(m_buffer->buf, m_significant_len, m_buffer->buf, m_significant_len, count);
         minimize_significant_len();
@@ -649,7 +649,7 @@ public:
     {
         return nut::is_zero(m_buffer->buf, m_significant_len);
     }
-    
+
     inline bool is_positive() const
     {
         return nut::is_positive(m_buffer->buf, m_significant_len);
@@ -721,7 +721,7 @@ public:
         minimize_significant_len();
 #endif
     }
-    
+
     /**
      * 乘以a, 然后将比特长限制为小于 bit_len 的正数
      *
@@ -790,7 +790,7 @@ public:
         ensure_significant_len(i + 1 + 1); // 避免符号位被覆盖
         m_buffer->buf[i] = v;
     }
-    
+
     inline size_t bit_length() const
     {
     	if (is_positive())
@@ -823,7 +823,7 @@ public:
         expand(m_buffer->buf, m_significant_len, (word_type*)&ret, sizeof(ret) / sizeof(word_type));
         return ret;
     }
-    
+
     /**
      * 取 [a, b) 范围内的随机数
      */
@@ -837,9 +837,9 @@ public:
 
     	self ret;
     	ret._copy_on_write(n.m_significant_len + 1);
-    	for (register size_t i = 0; i < n.m_significant_len; ++i)
+    	for (size_t i = 0; i < n.m_significant_len; ++i)
         {
-            for (register size_t j = 0; j < sizeof(word_type); ++j)
+            for (size_t j = 0; j < sizeof(word_type); ++j)
             {
                 ret.m_buffer->buf[i] <<= 8;
     		    ret.m_buffer->buf[i] += rand() & 0xFF;
@@ -1060,4 +1060,3 @@ typedef _BigInteger<uint32_t> BigInteger;
 }
 
 #endif /* head file guarder */
-

@@ -154,7 +154,7 @@ public:
     {
         assert(m_index + sizeof(float) <= m_data.size());
         float ret = 0;
-        for (register size_t i = 0; i < sizeof(float); ++i)
+        for (size_t i = 0; i < sizeof(float); ++i)
             reinterpret_cast<uint8_t*>(&ret)[m_little_endian ? i : (sizeof(float) - i - 1)] = readUInt8();
         return ret;
     }
@@ -163,7 +163,7 @@ public:
     {
         assert(m_index + sizeof(double) <= m_data.size());
         double ret = 0;
-        for (register size_t i = 0; i < sizeof(double); ++i)
+        for (size_t i = 0; i < sizeof(double); ++i)
             reinterpret_cast<uint8_t*>(&ret)[m_little_endian ? i : (sizeof(double)-i - 1)] = readUInt8();
         return ret;
     }
@@ -189,7 +189,7 @@ public:
 
     void writeUInt16(uint16_t v)
     {
-        for (register size_t i = 0; i < 2; ++i)
+        for (size_t i = 0; i < 2; ++i)
         {
             const uint8_t b = (uint8_t) (m_little_endian ? (v >> (8 * i)) : (v >> (8 * (2 - i - 1))));
             if (m_index < m_data.size())
@@ -202,7 +202,7 @@ public:
 
     void writeUInt32(uint32_t v)
     {
-        for (register size_t i = 0; i < 4; ++i)
+        for (size_t i = 0; i < 4; ++i)
         {
             const uint8_t b = (uint8_t) (m_little_endian ? (v >> (8 * i)) : (v >> (8 * (4 - i - 1))));
             if (m_index < m_data.size())
@@ -215,7 +215,7 @@ public:
 
     void writeUInt64(uint64_t v)
     {
-        for (register size_t i = 0; i < 8; ++i)
+        for (size_t i = 0; i < 8; ++i)
         {
             const uint8_t b = (uint8_t) (m_little_endian ? (v >> (8 * i)) : (v >> (8 * (8 - i - 1))));
             if (m_index < m_data.size())
@@ -244,13 +244,13 @@ public:
 
     void writeFloat(float v)
     {
-        for (register size_t i = 0; i < sizeof(float); ++i)
+        for (size_t i = 0; i < sizeof(float); ++i)
             writeUInt8(reinterpret_cast<const uint8_t*>(&v)[m_little_endian ? i : (sizeof(float) - i - 1)]);
     }
 
     void writeDouble(double v)
     {
-        for (register size_t i = 0; i < sizeof(double); ++i)
+        for (size_t i = 0; i < sizeof(double); ++i)
             writeUInt8(reinterpret_cast<const uint8_t*>(&v)[m_little_endian ? i : (sizeof(double)-i - 1)]);
     }
 

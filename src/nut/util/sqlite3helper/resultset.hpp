@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-08-10
- * @last-edit 2012-10-20 17:18:19 jingqi
+ * @last-edit 2014-11-21 22:55:43 jingqi
  */
 
 #ifndef ___HEADFILE_B51CBEE3_B5FB_4481_AE29_559B709E3B26_
@@ -31,7 +31,7 @@ class ResultSet
     {
         assert(NULL != columnName && !m_stmt.isNull());
         int c = ::sqlite3_column_count(m_stmt->raw());
-        for (register int i = 0; i < c; ++i)
+        for (int i = 0; i < c; ++i)
         {
             const char *n = ::sqlite3_column_name(m_stmt->raw(), i);
             assert(NULL != n);
@@ -98,4 +98,3 @@ public:
 }
 
 #endif
-

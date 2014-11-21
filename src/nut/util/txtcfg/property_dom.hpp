@@ -409,7 +409,7 @@ public:
         std::string s;
         if (values.size() > 0)
             s = values.at(0);
-		for (register size_t i = 1, sz = values.size(); i < sz; ++i)
+		for (size_t i = 1, sz = values.size(); i < sz; ++i)
 		{
 			s.push_back(splitChar);
 			s += values.at(i);
@@ -426,4 +426,3 @@ public:
 #endif
 
 #endif /* head file guarder */
-

@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-03-11
- * @last-edit 2012-03-11 17:36:58 jingqi
+ * @last-edit 2014-11-21 22:50:56 jingqi
  */
 
 #ifndef ___HEADFILE_38E24C42_E36D_453F_A61D_4FE033FF649D_
@@ -42,10 +42,10 @@ class scoped_gc
         uint8_t body[DEFAULT_BLOCK_BODY_SIZE];
     };
 	NUT_STATIC_ASSERT(sizeof(Block) == DEFAULT_BLOCK_LEN);
-    
+
 	/** 析构函数 */
     typedef void (*destruct_func_type)(void*);
-    
+
 	/** 析构函数链表 */
     struct DestructorNode
     {
@@ -75,7 +75,7 @@ private:
 		assert(NULL != p);
 		size_t count = *(size_t*)p;
 		T *pd = (T*)(((size_t*) p) + 1);
-		for (register int i = 0; i < (int) count; ++i)
+		for (int i = 0; i < (int) count; ++i)
 		{
 			pd->~T();
 			++pd;
@@ -129,7 +129,7 @@ private:
 		m_end -= cb;
 		return m_end;
 	}
-	
+
 	void* alloc(size_t cb, destruct_func_type func)
 	{
 		DestructorNode *dn = (DestructorNode*) raw_alloc(sizeof(DestructorNode) + cb);
@@ -139,7 +139,7 @@ private:
 		m_destructChain = dn;
 		return dn + 1;
 	}
-	
+
 	void* alloc(size_t cb, size_t count, destruct_func_type func)
 	{
 		DestructorNode *dn = (DestructorNode*) raw_alloc(sizeof(DestructorNode) + sizeof(size_t) + cb * count);
@@ -160,7 +160,7 @@ public:
             m_destructChain->destruct_func(m_destructChain + 1);
             m_destructChain = m_destructChain->prev;
         }
-        
+
         while (NULL != m_currentBlock)
         {
 			Block *prev = m_currentBlock->prev;
@@ -209,7 +209,7 @@ public:
 	{
 		T *ret = (T*) alloc(sizeof(T), count, destructArray<T>);
 		assert(NULL != ret);
-		for (register int i = 0; i < (int) count; ++i)
+		for (int i = 0; i < (int) count; ++i)
 		{
 			new (ret + i) T;
 		}
@@ -220,4 +220,3 @@ public:
 }
 
 #endif /* head file guarder */
-
