@@ -24,7 +24,7 @@ public:
     {
         m_logger.start(groupName, NULL, NULL);
         
-        TestRegister *pRegister = nut_get_register_header();
+        TestRegister *pRegister = *(TestRegister**)nut_get_register_header();
         while (NULL != pRegister)
         {
             if (pRegister->matchGroup(groupName))
@@ -57,7 +57,7 @@ public:
     {
         m_logger.start(NULL, fixtureName, NULL);
         
-        TestRegister *pRegister = nut_get_register_header();
+        TestRegister *pRegister = *(TestRegister**)nut_get_register_header();
         while (NULL != pRegister)
         {
             if (0 == ::strcmp(fixtureName, pRegister->getFixtureName()))
@@ -91,7 +91,7 @@ public:
     {
         m_logger.start(NULL, fixtureName, caseName);
         
-        TestRegister *pRegister = nut_get_register_header();
+        TestRegister *pRegister = *(TestRegister**)nut_get_register_header();
         while (NULL != pRegister)
         {
             if (0 == ::strcmp(fixtureName, pRegister->getFixtureName()))

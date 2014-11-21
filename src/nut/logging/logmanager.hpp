@@ -22,10 +22,10 @@
 #   pragma warning(disable:4190)
 #endif
 
-DLL_API nut::ref<nut::Logger> nut_get_root_logger();
+DLL_API void* nut_get_root_logger();
 
 #define NUT_LOGGING_IMPL \
-DLL_API nut::ref<nut::Logger> nut_get_root_logger() \
+DLL_API void* nut_get_root_logger() \
 { \
     static nut::ref<nut::Logger> root; \
     static nut::Mutex root_mutex; \
@@ -36,7 +36,7 @@ DLL_API nut::ref<nut::Logger> nut_get_root_logger() \
         if (root.isNull()) \
             root = nut::gc_new<nut::Logger>((nut::Logger*)NULL, ""); \
     } \
-    return root; \
+    return root.pointer(); \
 }
 
 #if defined(NUT_PLATFORM_CC_VC)
@@ -55,7 +55,7 @@ class LogManager
 public :
     static weak_ref<Logger> getLogger(const std::string &path)
     {
-        return nut_get_root_logger()->getLogger(path);
+        return ((Logger*)nut_get_root_logger())->getLogger(path);
     }
 
     static void loadConfig(ref<PropertyDom> config)
@@ -75,7 +75,7 @@ public :
             ref<LogFilter> filter = LogFilterFactory::createLogFilter(strfilter);
             handler->addFilter(filter);
             if (strpos.size() == 0)
-                nut_get_root_logger()->addHandler(handler);
+                ((Logger*)nut_get_root_logger())->addHandler(handler);
             else
                 for (std::vector<std::string>::const_iterator it = strpos.begin(), ite = strpos.end(); it != ite; ++it)
                     getLogger(*it)->addHandler(handler);

@@ -15,13 +15,13 @@
 
 namespace nut { class TestRegister; }
 
-DLL_API nut::TestRegister*& nut_get_register_header();
+DLL_API void** nut_get_register_header();
 
 #define NUT_UNITTEST_IMPL \
-DLL_API nut::TestRegister*& nut_get_register_header() \
+DLL_API void** nut_get_register_header() \
 { \
     static nut::TestRegister* header = NULL; \
-    return header; \
+    return (void**) &header; \
 }
 
 
@@ -52,8 +52,8 @@ public:
         m_groups = splitGroups(groups);
 
         // 将实例添加到链表中
-        m_pnext = nut_get_register_header();
-        nut_get_register_header() = this;
+        m_pnext = *(TestRegister**)nut_get_register_header();
+        *(TestRegister**)nut_get_register_header() = this;
     }
 
     bool matchGroup(const char *groupName) const
