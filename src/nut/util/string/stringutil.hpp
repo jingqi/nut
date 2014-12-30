@@ -478,85 +478,111 @@ inline bool ends_with(const std::wstring& s, const std::wstring& tail)
     return true;
 }
 
-inline void wstr2str(const wchar_t* wstr, std::string* out)
+inline bool ascii_to_wstr(const char *str, std::wstring *out)
 {
-    assert(NULL != wstr && NULL != out);
-
+	assert(NULL != str && NULL != out);
+	out->clear();
+	
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-    const int n = ::WideCharToMultiByte(CP_ACP /* code page */, 0 /* flags */,
-        wstr, -1 /* 字符串以\0结束 */, NULL, 0, NULL, NULL) + 1;
-    char *p = new char[n];
-    ::memset(p, 0, n * sizeof(char));
-    ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, p, n, NULL, NULL);
-    *out = p;
-    delete[] p;
+	const int n = ::MultiByteToWideChar(CP_ACP, 0 /* flags */, str, -1 /* 字符串以'\0'结束 */, NULL, 0); // 返回值包含了 '\0'
+	if (n <= 0)
+		return false;
+	wchar_t *p = (wchar_t*) ::malloc(sizeof(wchar_t) * n);
+	assert(NULL != p);
+	const int rs = ::MultiByteToWideChar(CP_ACP, 0, str, -1, p, n) > 0;
+	p[n - 1] = 0;
+	if (rs > 0)
+		*out = p;
+	::free(p);
+	return rs > 0;
 #else
-    const int n = (int) ::wcstombs(NULL, wstr, 0) + 1; // '\0' is added
-    if (n <= 0)
-    {
-        out->clear();
-        return;
-    }
-    char *p = new char[n];
-    ::memset(p, 0, n * sizeof(char));
-    ::wcstombs(p, wstr, n);
-    *out = p;
-    delete[] p;
+	const int n = (int) ::mbstowcs(NULL, str, 0); // 返回值未包含 '\0'
+	if (n <= 0)
+		return 0 == n;
+	wchar_t *p = (wchar_t*) ::malloc(sizeof(wchar_t) * (n + 1));
+	assert(NULL != p);
+	const int rs = ::mbstowcs(p, str, n); // 未包含 '\0'
+	p[n] = 0;
+	if (rs > 0)
+		*out = p;
+	::free(p);
+	return rs > 0;
 #endif
 }
 
-inline std::string wstr2str(const wchar_t* wstr)
+inline bool wstr_to_ascii(const wchar_t *wstr, std::string *out)
 {
-    std::string ret;
-    wstr2str(wstr, &ret);
-    return ret;
-}
-
-inline std::string wstr2str(const std::wstring& wstr)
-{
-    std::string ret;
-    wstr2str(wstr.c_str(), &ret);
-    return ret;
-}
-
-inline void str2wstr(const char* str, std::wstring* out)
-{
-    assert(NULL != str && NULL != out);
-
+	assert(NULL != wstr && NULL != out);
+	out->clear();
+	
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-    const int n = ::MultiByteToWideChar(CP_ACP, 0, str, -1/* 字符串以\0结束 */, NULL, 0) + 1;
-    wchar_t *p = new wchar_t[n];
-    ::memset(p, 0, n * sizeof(wchar_t));
-    ::MultiByteToWideChar(CP_ACP, 0, str, -1, p, n);
-    *out = p;
-    delete[] p;
+	const int n = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
+	if (n <= 0)
+		return false;
+	char *p = (char*) ::malloc(sizeof(char) * n);
+	assert(NULL != p);
+	const int rs = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, p, n, NULL, NULL);
+	p[n - 1] = 0;
+	if (rs > 0)
+		*out = p;
+	::free(p);
+	return rs > 0;
 #else
-    const int n = (int) ::mbstowcs(NULL, str, 0) + 1;
-    if (n <= 0)
-    {
-        out->clear();
-        return;
-    }
-    wchar_t *p = new wchar_t[n];
-    ::memset(p, 0, n * sizeof(wchar_t));
-    ::mbstowcs(p, str, n);
-    *out = p;
-    delete[] p;
+	const int n = (int) ::wcstombs(NULL, wstr, 0);
+	if (n <= 0)
+		return 0 == n;
+	char *p = (char*) ::malloc(sizeof(char) * (n + 1));
+	const int rs = ::wcstombs(p, wstr, n);
+	p[n] = 0;
+	if (rs > 0)
+		*out = p;
+	::free(p);
+	return rs > 0;
 #endif
 }
 
-inline std::wstring str2wstr(const char* str)
+inline bool utf8_to_wstr(const char *str, std::wstring *out)
 {
-    std::wstring ret;
-    str2wstr(str, &ret);
-    return ret;
+	assert(NULL != str && NULL != out);
+
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+	out->clear();
+	const int n = ::MultiByteToWideChar(CP_UTF8, 0 /* flags */, str, -1 /* 字符串以'\0'结束 */, NULL, 0);
+	if (n <= 0)
+		return false;
+	wchar_t *p = (wchar_t*) ::malloc(sizeof(wchar_t) * n);
+	assert(NULL != p);
+	const int rs = ::MultiByteToWideChar(CP_UTF8, 0, str, -1, p, n);
+	p[n - 1] = 0;
+	if (rs > 0)
+		*out = p;
+	::free(p);
+	return rs > 0;
+#else
+	return ascii_to_wstr(str, out);
+#endif
 }
 
-inline std::wstring str2wstr(const std::string& str)
+inline bool wstr_to_utf8(const wchar_t *wstr, std::string *out)
 {
-    std::wstring ret;
-    str2wstr(str.c_str(), &ret);
-    return ret;
+	assert(NULL != wstr && NULL != out);
+
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+	out->clear();
+	const int n = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
+	if (n <= 0)
+		return false;
+	char *p = (char*) ::malloc(sizeof(char) * n);
+	assert(NULL != p);
+	const int rs = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, p, n, NULL, NULL);
+	p[n - 1] = 0;
+	if (rs > 0)
+		*out = p;
+	::free(p);
+	return rs > 0;
+#else
+	return wstr_to_utf8(wstr, out);
+#endif
 }
 
 }

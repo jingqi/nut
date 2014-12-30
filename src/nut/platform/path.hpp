@@ -116,7 +116,7 @@ public:
         getcwd(buf, PATH_MAX + 1);
 #endif
 
-        str2wstr(buf, out);
+        ascii_to_wstr(buf, out);
     }
 
     static inline std::string getCwd()

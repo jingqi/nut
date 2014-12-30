@@ -84,8 +84,19 @@ NUT_FIXTURE(TestStringUtil)
 
     void testwstr()
     {
-        NUT_TA(wstr2str(L"c5&汉") == "c5&汉");
-        NUT_TA(str2wstr("c5&汉") == L"c5&汉");
+		std::string a;
+		std::wstring b;
+
+		wstr_to_ascii(L"c5&汉", &a);
+		//printf("\n%d %d %s\n", a.length(), strlen(a.data()), a.data());
+        NUT_TA(a == "c5&汉");
+
+		ascii_to_wstr("c5&汉", &b);
+        NUT_TA(b == L"c5&汉");
+
+		wstr_to_utf8(L"c5&汉", &a);
+		utf8_to_wstr(a.data(), &b);
+        NUT_TA(b == L"c5&汉");
     }
 };
 

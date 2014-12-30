@@ -36,7 +36,7 @@ int main()
 
     TestRunner trunner(l);
 
-    trunner.runAGroup("txtcfg");
+    trunner.runAGroup("string");
 
     //trunner.runAFixture("TestContainer");
 
