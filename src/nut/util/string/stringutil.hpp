@@ -510,6 +510,25 @@ inline bool ascii_to_wstr(const char *str, std::wstring *out)
 #endif
 }
 
+inline bool ascii_to_wstr(const std::string& str, std::wstring *out)
+{
+	assert(NULL != out);
+	return ascii_to_wstr(str.c_str(), out);
+}
+
+inline std::wstring ascii_to_wstr(const char *str)
+{
+	assert(NULL != str);
+	std::wstring ret;
+	ascii_to_wstr(str, &ret);
+	return ret;
+}
+
+inline std::wstring ascii_to_wstr(const std::string& str)
+{
+	return ascii_to_wstr(str.c_str());
+}
+
 inline bool wstr_to_ascii(const wchar_t *wstr, std::string *out)
 {
 	assert(NULL != wstr && NULL != out);
@@ -541,6 +560,25 @@ inline bool wstr_to_ascii(const wchar_t *wstr, std::string *out)
 #endif
 }
 
+inline bool wstr_to_ascii(const std::wstring& wstr, std::string *out)
+{
+	assert(NULL != out);
+	return wstr_to_ascii(wstr.c_str(), out);
+}
+
+inline std::string wstr_to_ascii(const wchar_t *wstr)
+{
+	assert(NULL != wstr);
+	std::string ret;
+	wstr_to_ascii(wstr, &ret);
+	return ret;
+}
+
+inline std::string wstr_to_ascii(const std::wstring& wstr)
+{
+	return wstr_to_ascii(wstr.c_str());
+}
+
 inline bool utf8_to_wstr(const char *str, std::wstring *out)
 {
 	assert(NULL != str && NULL != out);
@@ -563,6 +601,25 @@ inline bool utf8_to_wstr(const char *str, std::wstring *out)
 #endif
 }
 
+inline bool utf8_to_wstr(const std::string& str, std::wstring *out)
+{
+	assert(NULL != out);
+	return utf8_to_wstr(str.c_str(), out);
+}
+
+inline std::wstring utf8_to_wstr(const char *str)
+{
+	assert(NULL != str);
+	std::wstring ret;
+	utf8_to_wstr(str, &ret);
+	return ret;
+}
+
+inline std::wstring utf8_to_wstr(const std::string& str)
+{
+	return utf8_to_wstr(str.c_str());
+}
+
 inline bool wstr_to_utf8(const wchar_t *wstr, std::string *out)
 {
 	assert(NULL != wstr && NULL != out);
@@ -583,6 +640,25 @@ inline bool wstr_to_utf8(const wchar_t *wstr, std::string *out)
 #else
 	return wstr_to_utf8(wstr, out);
 #endif
+}
+
+inline bool wstr_to_utf8(const std::wstring& wstr, std::string *out)
+{
+	assert(NULL != out);
+	return wstr_to_utf8(wstr.c_str(), out);
+}
+
+inline std::string wstr_to_utf8(const wchar_t *wstr)
+{
+	assert(NULL != wstr);
+	std::string ret;
+	wstr_to_utf8(wstr, &ret);
+	return ret;
+}
+
+inline std::string wstr_to_utf8(const std::wstring& wstr)
+{
+	return wstr_to_utf8(wstr.c_str());
 }
 
 }
