@@ -26,7 +26,7 @@
 #   include <unistd.h> // for rmdir()
 #endif
 
-#include <nut/util/string/stringutil.hpp>
+#include <nut/util/string/string_util.hpp>
 
 namespace nut
 {

@@ -2,7 +2,7 @@
 #include <nut/unittest/unittest.hpp>
 
 #include <iostream>
-#include <nut/util/string/stringutil.hpp>
+#include <nut/util/string/string_util.hpp>
 
 using namespace std;
 using namespace nut;
@@ -87,7 +87,7 @@ NUT_FIXTURE(TestStringUtil)
 		std::string a;
 		std::wstring b;
 
-		wstr_to_ascii(L"c5&汉", &a);
+		wstr_to_ascii(L"c5&汉", &a); 
 		//printf("\n%d %d %s\n", a.length(), strlen(a.data()), a.data());
         NUT_TA(a == "c5&汉");
 

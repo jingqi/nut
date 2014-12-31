@@ -23,7 +23,7 @@
 #   include <windows.h>
 #endif
 
-#include "tostring.hpp"
+#include "to_string.hpp"
 
 
 #if defined(NUT_PLATFORM_CC_VC)
@@ -487,25 +487,17 @@ inline bool ascii_to_wstr(const char *str, std::wstring *out)
 	const int n = ::MultiByteToWideChar(CP_ACP, 0 /* flags */, str, -1 /* 字符串以'\0'结束 */, NULL, 0); // 返回值包含了 '\0'
 	if (n <= 0)
 		return false;
-	wchar_t *p = (wchar_t*) ::malloc(sizeof(wchar_t) * n);
-	assert(NULL != p);
-	const int rs = ::MultiByteToWideChar(CP_ACP, 0, str, -1, p, n) > 0;
-	p[n - 1] = 0;
-	if (rs > 0)
-		*out = p;
-	::free(p);
+	out->resize(n - 1);
+	const int rs = ::MultiByteToWideChar(CP_ACP, 0, str, -1, &(*out)[0], n - 1);
+	assert(out->length() == n - 1);
 	return rs > 0;
 #else
 	const int n = (int) ::mbstowcs(NULL, str, 0); // 返回值未包含 '\0'
 	if (n <= 0)
 		return 0 == n;
-	wchar_t *p = (wchar_t*) ::malloc(sizeof(wchar_t) * (n + 1));
-	assert(NULL != p);
-	const int rs = ::mbstowcs(p, str, n); // 未包含 '\0'
-	p[n] = 0;
-	if (rs > 0)
-		*out = p;
-	::free(p);
+	out->resize(n);
+	const int rs = ::mbstowcs(&(*out)[0], str, n); // 未包含 '\0'
+	assert(out->length() == n);
 	return rs > 0;
 #endif
 }
@@ -538,24 +530,17 @@ inline bool wstr_to_ascii(const wchar_t *wstr, std::string *out)
 	const int n = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
 	if (n <= 0)
 		return false;
-	char *p = (char*) ::malloc(sizeof(char) * n);
-	assert(NULL != p);
-	const int rs = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, p, n, NULL, NULL);
-	p[n - 1] = 0;
-	if (rs > 0)
-		*out = p;
-	::free(p);
+	out->resize(n - 1);
+	const int rs = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, &(*out)[0], n - 1, NULL, NULL);
+	assert(out->length() == n - 1);
 	return rs > 0;
 #else
 	const int n = (int) ::wcstombs(NULL, wstr, 0);
 	if (n <= 0)
 		return 0 == n;
-	char *p = (char*) ::malloc(sizeof(char) * (n + 1));
-	const int rs = ::wcstombs(p, wstr, n);
-	p[n] = 0;
-	if (rs > 0)
-		*out = p;
-	::free(p);
+	out->resize(n);
+	const int rs = ::wcstombs(&(*out)[0], wstr, n);
+	assert(out->length() == n);
 	return rs > 0;
 #endif
 }
@@ -588,13 +573,9 @@ inline bool utf8_to_wstr(const char *str, std::wstring *out)
 	const int n = ::MultiByteToWideChar(CP_UTF8, 0 /* flags */, str, -1 /* 字符串以'\0'结束 */, NULL, 0);
 	if (n <= 0)
 		return false;
-	wchar_t *p = (wchar_t*) ::malloc(sizeof(wchar_t) * n);
-	assert(NULL != p);
-	const int rs = ::MultiByteToWideChar(CP_UTF8, 0, str, -1, p, n);
-	p[n - 1] = 0;
-	if (rs > 0)
-		*out = p;
-	::free(p);
+	out->resize(n - 1);
+	const int rs = ::MultiByteToWideChar(CP_UTF8, 0, str, -1, &(*out)[0], n - 1);
+	assert(out->length() == n - 1);
 	return rs > 0;
 #else
 	return ascii_to_wstr(str, out);
@@ -629,13 +610,9 @@ inline bool wstr_to_utf8(const wchar_t *wstr, std::string *out)
 	const int n = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
 	if (n <= 0)
 		return false;
-	char *p = (char*) ::malloc(sizeof(char) * n);
-	assert(NULL != p);
-	const int rs = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, p, n, NULL, NULL);
-	p[n - 1] = 0;
-	if (rs > 0)
-		*out = p;
-	::free(p);
+	out->resize(n - 1);
+	const int rs = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, &(*out)[0], n - 1, NULL, NULL);
+	assert(out->length() == n - 1);
 	return rs > 0;
 #else
 	return wstr_to_utf8(wstr, out);

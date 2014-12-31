@@ -26,7 +26,7 @@
 #include <fstream>
 #include <stdint.h>
 
-#include <nut/util/string/stringutil.hpp>
+#include <nut/util/string/string_util.hpp>
 
 namespace nut
 {

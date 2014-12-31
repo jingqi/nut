@@ -15,7 +15,7 @@
 #include <map>
 
 #include <nut/gc/gc.hpp>
-#include <nut/util/string/stringutil.hpp>
+#include <nut/util/string/string_util.hpp>
 
 #include "xml_parser.hpp"
 #include "xml_writer.hpp"

@@ -17,7 +17,7 @@
 #include <stdio.h>      // for sprintf()
 
 #include <nut/gc/gc.hpp>
-#include "../string/stringutil.hpp"
+#include "../string/string_util.hpp"
 
 
 #if defined(NUT_PLATFORM_CC_VC)

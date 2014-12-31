@@ -309,12 +309,6 @@
     <ClInclude Include="..\..\..\src\nut\gc\ptr.hpp">
       <Filter>头文件\gc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\string\tostring.hpp">
-      <Filter>头文件\util\string</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\string\stringutil.hpp">
-      <Filter>头文件\util\string</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\connection.hpp">
       <Filter>头文件\util\sqlite3helper</Filter>
     </ClInclude>
@@ -443,6 +437,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_element.hpp">
       <Filter>头文件\util\txtcfg\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\string\string_util.hpp">
+      <Filter>头文件\util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\string\to_string.hpp">
+      <Filter>头文件\util\string</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

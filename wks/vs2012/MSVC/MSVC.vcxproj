@@ -155,8 +155,8 @@
     <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\resultset.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\wrapers.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\string\kmp.hpp" />
-    <ClInclude Include="..\..\..\src\nut\util\string\stringutil.hpp" />
-    <ClInclude Include="..\..\..\src\nut\util\string\tostring.hpp" />
+    <ClInclude Include="..\..\..\src\nut\util\string\string_util.hpp" />
+    <ClInclude Include="..\..\..\src\nut\util\string\to_string.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\time.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\timer\timermanager.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\timer\timeval.hpp" />

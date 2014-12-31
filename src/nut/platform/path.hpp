@@ -26,7 +26,7 @@
 #endif
 
 #include <nut/container/tuple.hpp>
-#include <nut/util/string/stringutil.hpp>
+#include <nut/util/string/string_util.hpp>
 
 namespace nut
 {

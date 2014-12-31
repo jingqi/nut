@@ -14,7 +14,7 @@
 #include <vector>
 
 #include <nut/gc/gc.hpp>
-#include <nut/util/string/stringutil.hpp>
+#include <nut/util/string/string_util.hpp>
 
 #include "icommand.hpp"
 #include "iconsole.hpp"

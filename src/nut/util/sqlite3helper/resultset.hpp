@@ -14,7 +14,7 @@
 #include <sqlite3.h>
 
 #include <nut/gc/gc.hpp>
-#include <nut/util/string/stringutil.hpp>
+#include <nut/util/string/string_util.hpp>
 
 #include "wrapers.hpp"
 
