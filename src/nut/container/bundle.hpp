@@ -53,24 +53,6 @@ public:
         return true;
     }
 
-    /**
-     * 这个函数要想正常工作，需要开启RTTI特性
-     */
-    template <typename T>
-    bool has_key_value_rtti(const std::string& key) const
-    {
-        map_t::const_iterator iter = m_values.find(key);
-        if (iter == m_values.end())
-            return false;
-        ref<_BundleElementBase> v = iter->second;
-        if (v.isNull())
-            return false;
-        _BundleElement<T> *p = dynamic_cast<_BundleElement<T>*>(v.pointer()); // RTTI
-        if (NULL == p)
-            return false;
-        return true;
-    }
-
     template <typename T>
     const T& get_value(const std::string& key) const
     {
