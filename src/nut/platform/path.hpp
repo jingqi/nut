@@ -640,7 +640,7 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return -1 != ::_waccess(path, 0);
 #else
-        const std::string p = wstr2str(path);
+        const std::string p = wstr_to_ascii(path);
         return exists(p.c_str());
 #endif
     }
@@ -678,7 +678,7 @@ public:
         ::_wstat(path, &info);
         return info.st_atime;
 #else
-        const std::string p = wstr2str(path);
+        const std::string p = wstr_to_ascii(path);
         return getatime(p.c_str());
 #endif
     }
@@ -720,7 +720,7 @@ public:
         ::_wstat(path, &info);
         return info.st_mtime;
 #else
-        const std::string p = wstr2str(path);
+        const std::string p = wstr_to_ascii(path);
         return getmtime(p.c_str());
 #endif
     }
@@ -761,7 +761,7 @@ public:
         ::_wstat(path, &info);
         return info.st_ctime;
 #else
-        const std::string p = wstr2str(path);
+        const std::string p = wstr_to_ascii(path);
         return getctime(p.c_str());
 #endif
     }
@@ -802,7 +802,7 @@ public:
         ::_wstat(path, &info);
         return info.st_size;
 #else
-        const std::string p = wstr2str(path);
+        const std::string p = wstr_to_ascii(path);
         return getsize(p.c_str());
 #endif
     }
@@ -836,7 +836,7 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return 0 != (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(path));
 #else
-        const std::string p = wstr2str(path);
+        const std::string p = wstr_to_ascii(path);
         return isdir(p.c_str());
 #endif
     }
@@ -870,7 +870,7 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return 0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(path));
 #else
-        const std::string p = wstr2str(path);
+        const std::string p = wstr_to_ascii(path);
         return isfile(p.c_str());
 #endif
     }
@@ -904,7 +904,7 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return false;
 #else
-        const std::string p = wstr2str(path);
+        const std::string p = wstr_to_ascii(path);
         return isfile(p.c_str());
 #endif
     }

@@ -168,13 +168,13 @@ public:
         ::FindClose(hFind);
 #else
         std::string p;
-        wstr2str(path, &p);
+        wstr_to_ascii(path, &p);
         std::vector<std::string> dirs;
         listdir(p.c_str(), &dirs, except_file, except_dir, except_initial_dot);
         std::wstring s;
         for (size_t i = 0, size = dirs.size(); i < size; ++i)
         {
-            str2wstr(dirs[i].c_str(), &s);
+            ascii_to_wstr(dirs[i].c_str(), &s);
             out->push_back(s);
         }
 #endif
@@ -242,7 +242,7 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return FALSE != ::CopyFileW(src, dest, TRUE);
 #else
-        const std::string s = wstr2str(src), d = wstr2str(dest);
+        const std::string s = wstr_to_ascii(src), d = wstr_to_ascii(dest);
         return copyfile(s.c_str(), d.c_str());
 #endif
     }
@@ -269,7 +269,7 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return FALSE != ::DeleteFileW(path);
 #else
-        const std::string p = wstr2str(path);
+        const std::string p = wstr_to_ascii(path);
         return removefile(p.c_str());
 #endif
     }
@@ -300,7 +300,7 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return FALSE != ::CreateDirectoryW(path, NULL);
 #else
-        const std::string p = wstr2str(path);
+        const std::string p = wstr_to_ascii(path);
         return OS::mkdir(p.c_str());
 #endif
     }
@@ -334,7 +334,7 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return FALSE != ::RemoveDirectoryW(path);
 #else
-        const std::string p = wstr2str(path);
+        const std::string p = wstr_to_ascii(path);
         return removedir(p.c_str());
 #endif
     }
@@ -480,7 +480,7 @@ public:
             ret = (FALSE != ::RemoveDirectoryW(path));
         return ret;
 #else
-        const std::string p = wstr2str(path);
+        const std::string p = wstr_to_ascii(path);
         return removetree(p.c_str());
 #endif
     }
