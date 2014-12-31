@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2010-8-18
- * @last-edit 2014-07-25 20:49:29 jingqi
+ * @last-edit 2014-12-31 23:59:44 jingqi
  */
 
 #ifndef ___HEADFILE___8BC3081E_4374_470D_9E66_CC7F414ED9B7_
@@ -482,7 +482,7 @@ inline bool ascii_to_wstr(const char *str, std::wstring *out)
 {
 	assert(NULL != str && NULL != out);
 	out->clear();
-	
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 	const int n = ::MultiByteToWideChar(CP_ACP, 0 /* flags */, str, -1 /* 字符串以'\0'结束 */, NULL, 0); // 返回值包含了 '\0'
 	if (n <= 0)
@@ -525,7 +525,7 @@ inline bool wstr_to_ascii(const wchar_t *wstr, std::string *out)
 {
 	assert(NULL != wstr && NULL != out);
 	out->clear();
-	
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 	const int n = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
 	if (n <= 0)
@@ -615,7 +615,7 @@ inline bool wstr_to_utf8(const wchar_t *wstr, std::string *out)
 	assert(out->length() == n - 1);
 	return rs > 0;
 #else
-	return wstr_to_utf8(wstr, out);
+	return wstr_to_ascii(wstr, out);
 #endif
 }
 
