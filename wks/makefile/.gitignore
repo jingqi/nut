@@ -1,5 +1,4 @@
 *.pyc
 *.prop
 
-/output
-/makefile
+/test
