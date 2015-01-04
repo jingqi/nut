@@ -198,9 +198,7 @@ inline bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newval
 inline int128_t atomic_add(int128_t volatile *addend, int128_t value)
 {
     assert(NULL != addend);
-#if defined(NUT_PLATFORM_OS_LINUX)
-    return __sync_fetch_and_add(addend, value);
-#elif defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
     return InterlockedExchangeAdd128(addend, value);
 #else
     int128_t old;

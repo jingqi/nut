@@ -9,6 +9,7 @@
 #ifndef ___HEADFILE_543264C6_1906_4757_AFBF_6B9D023B2EA6_
 #define ___HEADFILE_543264C6_1906_4757_AFBF_6B9D023B2EA6_
 
+#include <stdint.h>
 #include <string>
 
 namespace nut

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file -
  * @author jingqi
  * @date 2010-8-18
@@ -210,7 +210,7 @@ inline void format(std::wstring *out, const wchar_t *fmt, ...)
         va_start(ap, fmt);
 #if defined(NUT_PLATFORM_CC_VC)
         int n = ::_vsnwprintf(buf, size, fmt, ap);
-#elif defined(NUT_PLATFORM_OS_MAC)
+#elif defined(NUT_PLATFORM_OS_MAC) || defined(NUT_PLATFORM_OS_LINUX)
         int n = ::vswprintf(buf, size, fmt, ap);
 #else
         int n = ::vsnwprintf(buf, size, fmt, ap);
@@ -285,7 +285,7 @@ inline std::wstring format(const wchar_t *fmt, ...)
         va_start(ap, fmt);
 #if defined(NUT_PLATFORM_CC_VC)
         int n = ::_vsnwprintf(buf, size, fmt, ap);
-#elif defined(NUT_PLATFORM_OS_MAC)
+#elif defined(NUT_PLATFORM_OS_MAC) || defined(NUT_PLATFORM_OS_LINUX)
         int n = ::vswprintf(buf, size, fmt, ap);
 #else
         int n = ::vsnwprintf(buf, size, fmt, ap);

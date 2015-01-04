@@ -3,6 +3,7 @@
 
 #include <nut/util/txtcfg/xml/xml_parser.hpp>
 
+#include <stdio.h>
 #include <iostream>
 
 using namespace std;
