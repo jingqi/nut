@@ -13,7 +13,7 @@
 #include <assert.h>
 #include <stdlib.h> // for rand()
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_CC_VS)
 #   include <allocators>
 #endif
 

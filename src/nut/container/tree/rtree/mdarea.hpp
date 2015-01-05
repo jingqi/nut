@@ -11,7 +11,7 @@
 
 #include <nut/platform/platform.hpp>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_CC_VS)
 #   include <xutility>
 #endif
 

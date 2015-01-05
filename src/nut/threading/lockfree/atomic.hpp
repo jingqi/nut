@@ -97,6 +97,11 @@ inline bool atomic_cas(int64_t volatile *dest, int64_t oldval, int64_t newval)
 #elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
     return InterlockedCompareExchange64(dest, newval, oldval) == oldval;
 #elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_GCC)
+
+    // 以下这个宏逻辑摘自 mingw 下 InterlockedCompareExchange64() 的头文件声明位置
+#   if defined(__MINGW_INTRIN_INLINE) && (defined(__GNUC__) && (__MINGW_GNUC_PREREQ(4, 9) || (__MINGW_GNUC_PREREQ(4, 8) && __GNUC_PATCHLEVEL__ >= 2)))
+    return InterlockedCompareExchange64(dest, newval, oldval) == oldval;
+#   else
     int64_t prev;
     __asm__ __volatile__(
         "lock ; cmpxchgq %1,%2"
@@ -104,6 +109,8 @@ inline bool atomic_cas(int64_t volatile *dest, int64_t oldval, int64_t newval)
         : "q" (newval), "m" (*dest), "0" (oldval)
         : "memory");
     return prev == oldval;
+#   endif
+
 #else
 #   error platform not supported!
 #endif
