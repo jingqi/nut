@@ -10,14 +10,14 @@ using namespace nut;
 NUT_FIXTURE(TestPConsole)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testSmoking)
+    NUT_CASE(test_smoking)
     NUT_CASES_END()
 
 
-    void setUp() {}
-    void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
-    void testSmoking()
+    void test_smoking()
     {
         nut::ref<PConsole> con = gc_new<PConsole>();
         printf("\n");

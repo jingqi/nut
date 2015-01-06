@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-12-10
- * @last-edit 2012-12-10 21:12:21 jingqi
+ * @last-edit 2015-01-06 22:59:58 jingqi
  * @brief
  */
 
@@ -26,26 +26,27 @@ public:
     CmdExit(weak_ref<IConsole> c)
         : m_console(c)
     {
-        assert(!c.isNull());
+        assert(!c.is_null());
     }
 
-    virtual const char* getCommandName() const
+    virtual const char* get_command_name() const
     {
         return "exit";
     }
 
-    virtual const char* getGeneralInfo() const
+    virtual const char* get_general_info() const
     {
         return "exit current pconsole";
     }
 
-    virtual const char* getDetailInfo() const
+    virtual const char* get_detail_info() const
     {
         return "exit\neg.:\n\texit";
     }
 
-    virtual void execute(const char* commandLine)
+    virtual void execute(const char* command_line)
     {
+        (void) command_line; // unused
         printf("exit\n");
         m_console->exit(0);
     }
@@ -54,4 +55,3 @@ public:
 }
 
 #endif
-

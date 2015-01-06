@@ -159,12 +159,6 @@
     <ClInclude Include="..\..\..\src\nut\gc\ref.hpp">
       <Filter>头文件\gc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\gc\refcounter.hpp">
-      <Filter>头文件\gc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\unittest\testcasefailureexception.hpp">
-      <Filter>头文件\unittest</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\unittest\testfixture.hpp">
       <Filter>头文件\unittest</Filter>
     </ClInclude>
@@ -180,23 +174,8 @@
     <ClInclude Include="..\..\..\src\nut\unittest\unittest.hpp">
       <Filter>头文件\unittest</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\debugging\destroychecker.hpp">
-      <Filter>头文件\debugging</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\debugging\exception.hpp">
       <Filter>头文件\debugging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\debugging\sourcelocation.hpp">
-      <Filter>头文件\debugging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\logfilter.hpp">
-      <Filter>头文件\logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\loghandler.hpp">
-      <Filter>头文件\logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\loglevel.hpp">
-      <Filter>头文件\logging</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\logging\logger.hpp">
       <Filter>头文件\logging</Filter>
@@ -204,32 +183,11 @@
     <ClInclude Include="..\..\..\src\nut\logging\macros.hpp">
       <Filter>头文件\logging</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\logmanager.hpp">
-      <Filter>头文件\logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\logrecord.hpp">
-      <Filter>头文件\logging</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\time.hpp">
       <Filter>头文件\util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\memtool\refarg.hpp">
       <Filter>头文件\memtool</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\gc\gcwrapper.hpp">
-      <Filter>头文件\gc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\logpath.hpp">
-      <Filter>头文件\logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\consoleutil.hpp">
-      <Filter>头文件\util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\unittest\streamtestlogger.hpp">
-      <Filter>头文件\unittest</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\unittest\consoletestlogger.hpp">
-      <Filter>头文件\unittest</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\gc\enref.hpp">
       <Filter>头文件\gc</Filter>
@@ -248,9 +206,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\platform\stdint.hpp">
       <Filter>头文件\platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\numeric\biginteger.hpp">
-      <Filter>头文件\numeric</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\mem\sys_ma.hpp">
       <Filter>头文件\mem</Filter>
@@ -294,15 +249,6 @@
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\atomic.hpp">
       <Filter>头文件\threading\lockfree</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrentqueue.hpp">
-      <Filter>头文件\threading\lockfree</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrentstack.hpp">
-      <Filter>头文件\threading\lockfree</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\threading\threadpool.hpp">
-      <Filter>头文件\threading</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\threading\sync\semaphore.hpp">
       <Filter>头文件\threading\sync</Filter>
     </ClInclude>
@@ -310,9 +256,6 @@
       <Filter>头文件\gc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\connection.hpp">
-      <Filter>头文件\util\sqlite3helper</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\preparedstatement .hpp">
       <Filter>头文件\util\sqlite3helper</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\resultset.hpp">
@@ -324,9 +267,6 @@
     <ClInclude Include="..\..\..\src\nut\util\string\kmp.hpp">
       <Filter>头文件\util\string</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\timer\timermanager.hpp">
-      <Filter>头文件\util\timer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\timer\timeval.hpp">
       <Filter>头文件\util\timer</Filter>
     </ClInclude>
@@ -336,12 +276,6 @@
     <ClInclude Include="..\..\..\src\nut\security\encrypt\rsa.hpp">
       <Filter>头文件\security\encrypt</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\pconsole\cmdexit.hpp">
-      <Filter>头文件\pconsole</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\pconsole\cmdhelp.hpp">
-      <Filter>头文件\pconsole</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\pconsole\icommand.hpp">
       <Filter>头文件\pconsole</Filter>
     </ClInclude>
@@ -350,9 +284,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\pconsole\pconsole.hpp">
       <Filter>头文件\pconsole</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\bitsieve.hpp">
-      <Filter>头文件\numeric\numeric_algo</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\gcd.hpp">
       <Filter>头文件\numeric\numeric_algo</Filter>
@@ -366,25 +297,13 @@
     <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer.hpp">
       <Filter>头文件\numeric</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\memtool\copyonwrite.hpp">
-      <Filter>头文件\memtool</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\bundle.hpp">
-      <Filter>头文件\container</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\container\bytearray.hpp">
       <Filter>头文件\container</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\tuple.hpp">
       <Filter>头文件\container</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist.hpp">
-      <Filter>头文件\container\skiplist</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplistmap.hpp">
-      <Filter>头文件\container\skiplist</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplistset.hpp">
       <Filter>头文件\container\skiplist</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\tree\rtree\mdarea.hpp">
@@ -414,12 +333,6 @@
     <ClInclude Include="..\..\..\src\nut\security\encrypt\aes_cbc_pkcs5.hpp">
       <Filter>头文件\security\encrypt</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\container\bitstream.hpp">
-      <Filter>头文件\container</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\container\bytearraystream.hpp">
-      <Filter>头文件\container</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\lru_cache.hpp">
       <Filter>头文件\container</Filter>
     </ClInclude>
@@ -443,6 +356,102 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\string\to_string.hpp">
       <Filter>头文件\util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist_map.hpp">
+      <Filter>头文件\container\skiplist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist_set.hpp">
+      <Filter>头文件\container\skiplist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\bit_stream.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\byte_array.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\byte_array_stream.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\lru_data_cache.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\debugging\destroy_checker.hpp">
+      <Filter>头文件\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\debugging\source_location.hpp">
+      <Filter>头文件\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\gc\gc_wrapper.hpp">
+      <Filter>头文件\gc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\gc\ref_counter.hpp">
+      <Filter>头文件\gc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_filter.hpp">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_handler.hpp">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_level.hpp">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_manager.hpp">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_path.hpp">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_record.hpp">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\memtool\copy_on_write.hpp">
+      <Filter>头文件\memtool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\memtool\free_guard.hpp">
+      <Filter>头文件\memtool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\memtool\ptr.hpp">
+      <Filter>头文件\memtool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\bit_sieve.hpp">
+      <Filter>头文件\numeric\numeric_algo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\big_integer.hpp">
+      <Filter>头文件\numeric</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\pconsole\cmd_exit.hpp">
+      <Filter>头文件\pconsole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\pconsole\cmd_help.hpp">
+      <Filter>头文件\pconsole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_queue.hpp">
+      <Filter>头文件\threading\lockfree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_stack.hpp">
+      <Filter>头文件\threading\lockfree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\thread_pool.hpp">
+      <Filter>头文件\threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\console_test_logger.hpp">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\stream_test_logger.hpp">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\testcase_failure_exception.hpp">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\prepared_statement.hpp">
+      <Filter>头文件\util\sqlite3helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\timer\timer_manager.hpp">
+      <Filter>头文件\util\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\console_util.hpp">
+      <Filter>头文件\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

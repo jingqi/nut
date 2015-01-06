@@ -8,8 +8,8 @@
 #define ___HEADFILE_4AB18864_614E_4752_A996_3CC927369C09_
 
 #include <nut/memtool/refarg.hpp>
-#include <nut/debugging/destroychecker.hpp>
-#include "refcounter.hpp"
+#include <nut/debugging/destroy_checker.hpp>
+#include "ref_counter.hpp"
 #include "enref.hpp"
 
 namespace nut
@@ -40,7 +40,9 @@ protected:
     NUT_DEBUGGING_DESTROY_CHECKER
 
 public:
-    GCWrapper(int c, destroyer d) : T(), m_counter(c), m_destroyer(d) {}
+    GCWrapper(int c, destroyer d)
+        : T(), m_counter(c), m_destroyer(d)
+    {}
 
     template <typename Arg1>
     GCWrapper(int c, destroyer d, Arg1 arg1)
@@ -78,7 +80,7 @@ public:
         RefargTraits<Arg4>::value(arg4), RefargTraits<Arg5>::value(arg5), RefargTraits<Arg6>::value(arg6)),
         m_counter(c), m_destroyer(d)
     {}
-    
+
     template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
               typename Arg6, typename Arg7>
     GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5,
@@ -87,7 +89,7 @@ public:
         RefargTraits<Arg4>::value(arg4), RefargTraits<Arg5>::value(arg5), RefargTraits<Arg6>::value(arg6),
         RefargTraits<Arg7>::value(arg7)), m_counter(c), m_destroyer(d)
     {}
-    
+
     template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
               typename Arg6, typename Arg7, typename Arg8>
     GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5,
@@ -96,7 +98,7 @@ public:
         RefargTraits<Arg4>::value(arg4), RefargTraits<Arg5>::value(arg5), RefargTraits<Arg6>::value(arg6),
         RefargTraits<Arg7>::value(arg7), RefargTraits<Arg8>::value(arg8)), m_counter(c), m_destroyer(d)
     {}
-    
+
     template <typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
               typename Arg6, typename Arg7, typename Arg8, typename Arg9>
     GCWrapper(int c, destroyer d, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5,
@@ -155,7 +157,9 @@ protected:
     NUT_DEBUGGING_DESTROY_CHECKER
 
 public:
-    GCWrapper(int c, destroyer d) : enref<T>(), m_counter(c), m_destroyer(d) {}
+    GCWrapper(int c, destroyer d)
+        : enref<T>(), m_counter(c), m_destroyer(d)
+    {}
 
     template <typename Arg1>
     GCWrapper(int c, destroyer d, Arg1 arg1)

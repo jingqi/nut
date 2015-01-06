@@ -9,14 +9,14 @@ using namespace nut;
 NUT_FIXTURE(TestBundle)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testSmoking)
+    NUT_CASE(test_smoking)
     NUT_CASES_END()
 
-    void setUp() {}
+    void set_up() {}
 
-    void tearDown() {}
+    void tear_down() {}
 
-	void testSmoking()
+    void test_smoking()
     {
 		nut::ref<Bundle> b = gc_new<Bundle>();
 		b->set_value<int>("int", 23);

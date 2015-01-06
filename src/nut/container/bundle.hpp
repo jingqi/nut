@@ -48,7 +48,7 @@ public:
         if (iter == m_values.end())
             return false;
         ref<_BundleElementBase> v = iter->second;
-        if (v.isNull())
+        if (v.is_null())
             return false;
         return true;
     }
@@ -59,7 +59,7 @@ public:
         map_t::const_iterator iter = m_values.find(key);
         assert(iter != m_values.end());
         ref<_BundleElementBase> v = iter->second;
-        assert(v.isNotNull());
+        assert(v.is_not_null());
         _BundleElement<T> *p = dynamic_cast<_BundleElement<T>*>(v.pointer());
         assert(NULL != p);
         return p->value;

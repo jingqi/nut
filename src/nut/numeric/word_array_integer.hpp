@@ -482,9 +482,9 @@ template <typename T>
 void bit_not(const T *a, T *x, size_t N)
 {
     assert(NULL != a && NULL != x && N > 0);
-    typedef typename StdInt<T>::unsigned_type word_type;
 
 #if (OPTIMIZE_LEVEL == 0)
+    typedef typename StdInt<T>::unsigned_type word_type;
     // 避免区域交叉覆盖
     word_type *retx = reinterpret_cast<word_type*>(x);
     if (a < x && x < a + N)

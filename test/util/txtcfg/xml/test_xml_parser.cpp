@@ -66,17 +66,17 @@ public:
 NUT_FIXTURE(TestXmlParser)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testSmoke)
+    NUT_CASE(test_smoke)
     NUT_CASES_END()
 
-    void setUp()
+    void set_up()
     {
         tag.clear();
     }
 
-    void tearDown() {}
+    void tear_down() {}
 
-    void testSmoke()
+    void test_smoke()
     {
         Handle h;
         XmlParser p(&h);

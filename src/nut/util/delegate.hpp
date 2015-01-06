@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-08-09
- * @last-edit 2014-11-21 22:55:25 jingqi
+ * @last-edit 2015-01-06 23:35:14 jingqi
  */
 
 #ifndef ___HEADFILE_FD589E58_04A2_4A16_AF82_9F6AE78BCEAE_
@@ -39,7 +39,7 @@ class delegate<Ret (FUNCTION_ARGS)> \
     struct IHolder \
     { \
         virtual ~IHolder() {}; \
-        virtual HolderType holderType() const = 0; \
+        virtual HolderType type() const = 0; \
         virtual Ret operator() (FUNCTION_ARGS) = 0; \
         virtual IHolder* clone() const = 0; \
     }; \
@@ -55,7 +55,7 @@ class delegate<Ret (FUNCTION_ARGS)> \
         { \
             assert(NULL != pfunc); \
         } \
-        virtual HolderType holderType() const  { return FUNCTOR; } \
+        virtual HolderType type() const  { return FUNCTOR; } \
         virtual Ret operator()(FUNCTION_ARGS) \
         { \
             assert(NULL != func); \
@@ -71,18 +71,18 @@ class delegate<Ret (FUNCTION_ARGS)> \
     struct MemHolder : public IHolder \
     { \
         U obj; \
-        MemFun memFunc; \
+        MemFun mem_func; \
  \
         MemHolder(U o, MemFun f) \
-            : obj(o), memFunc(f) \
+            : obj(o), mem_func(f) \
         { \
             assert(NULL != o && NULL != f); \
         } \
-        virtual HolderType holderType() const { return MEMBER_FUNCTION; } \
+        virtual HolderType type() const { return MEMBER_FUNCTION; } \
         virtual Ret operator()(FUNCTION_ARGS) \
         { \
-            assert(NULL != obj && NULL != memFunc); \
-            return ((*obj).*memFunc)(FUNCTION_PARA); \
+            assert(NULL != obj && NULL != mem_func); \
+            return ((*obj).*mem_func)(FUNCTION_PARA); \
         } \
         virtual IHolder* clone() const \
         { \
@@ -118,14 +118,14 @@ public: \
  \
     ~delegate() \
     { \
-        disconnectAll();  \
+        disconnect_all();  \
     } \
  \
     delegate& operator=(const self& x)\
     { \
         if (&x != this)\
         { \
-            disconnectAll(); \
+            disconnect_all(); \
             for (size_t i = 0, size = x.m_holders.size(); i < size; ++i) \
             { \
                 assert(NULL != x.m_holders[i]); \
@@ -142,9 +142,9 @@ public: \
         for (size_t i = m_holders.size(); i > 0; --i) \
         { \
             assert(NULL != m_holders[i - 1] && NULL != x.m_holders[i - 1]); \
-            if (m_holders[i - 1]->holderType() != x.m_holders[i - 1]->holderType()) \
+            if (m_holders[i - 1]->type() != x.m_holders[i - 1]->type()) \
                 return false; \
-            switch (m_holders[i - 1]->holderType()) \
+            switch (m_holders[i - 1]->type()) \
             { \
             case FUNCTOR: { \
                 typedef FunctorHolder<Ret(*)(FUNCTION_ARGS)> *holder_type; \
@@ -161,7 +161,7 @@ public: \
                 holder_type mh1 = (holder_type)(m_holders[i - 1]); \
                 holder_type mh2 = (holder_type)(x.m_holders[i - 1]); \
                 assert(NULL != mh1 && NULL != mh2); \
-                if (mh1->obj != mh2->obj || mh1->memFunc != mh2->memFunc) \
+                if (mh1->obj != mh2->obj || mh1->mem_func != mh2->mem_func) \
                     return false; \
                 break; \
             } \
@@ -196,7 +196,7 @@ public: \
         bool found = false; \
         for (size_t i = 0; i < m_holders.size(); ++i) \
         { \
-            if (m_holders[i]->holderType() == FUNCTOR) \
+            if (m_holders[i]->type() == FUNCTOR) \
             { \
                 FunctorHolder<FunctorPtr> *h = dynamic_cast<FunctorHolder<FunctorPtr>*>(m_holders[i]); \
                 assert(NULL != h); \
@@ -218,11 +218,11 @@ public: \
         bool found = false; \
         for (size_t i = 0; i < m_holders.size(); ++i) \
         { \
-            if (m_holders[i]->holderType() == MEMBER_FUNCTION) \
+            if (m_holders[i]->type() == MEMBER_FUNCTION) \
             { \
                 MemHolder<U,MemFun> *h = dynamic_cast<MemHolder<U,MemFun>*>(m_holders[i]); \
                 assert(NULL != h); \
-                if (h->obj == obj && h->memFunc == mfunc) \
+                if (h->obj == obj && h->mem_func == mfunc) \
                 { \
                     found = true; \
                     delete h; \
@@ -234,7 +234,7 @@ public: \
         return found; \
     } \
  \
-    void disconnectAll() \
+    void disconnect_all() \
     { \
         for (size_t i = 0, size = m_holders.size(); i < size; ++i) \
         { \

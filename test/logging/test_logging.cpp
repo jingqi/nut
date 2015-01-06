@@ -9,15 +9,16 @@ using namespace nut;
 NUT_FIXTURE(TestLogging)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testSmoking)
+    NUT_CASE(test_smoking)
     NUT_CASES_END()
 
-    void setUp() {}
-    void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
-    void testSmoking() {
-        weak_ref<Logger> l = LogManager::getLogger("");
-        l->addHandler(gc_new<ConsoleLogHandler>());
+    void test_smoking()
+    {
+        weak_ref<Logger> l = LogManager::get_logger("");
+        l->add_handler(gc_new<ConsoleLogHandler>());
         NUT_LOGGING_DEBUG(l, "debug msg");
         NUT_LOGGING_INFO(l, "info msg");
         NUT_LOGGING_WARN(l, "warn msg");

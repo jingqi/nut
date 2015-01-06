@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2010-4-15
- * @last-edit 2012-08-19 19:11:15 jingqi
+ * @last-edit 2015-01-06 23:31:35 jingqi
  */
 
 #ifndef ___HEADFILE___77946953_2090_4060_9651_10D87F3FB5B6_
@@ -45,7 +45,7 @@ public :
         WHITE       = 8,     /* 白 = 红 + 绿 + 蓝*/
     };
 
-    static void setTextColor(ConsoleColor forecolor = DEFAULT, ConsoleColor backcolor = DEFAULT)
+    static void set_text_color(ConsoleColor forecolor = DEFAULT, ConsoleColor backcolor = DEFAULT)
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         const unsigned fgtable[9] =
@@ -103,7 +103,7 @@ public :
 #endif
     }
 
-    static void setBackGroundColor(ConsoleColor forecolor = DEFAULT, ConsoleColor bkcolor = DEFAULT)
+    static void set_back_ground_color(ConsoleColor forecolor = DEFAULT, ConsoleColor bkcolor = DEFAULT)
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         const char fgtable[9] =
@@ -136,7 +136,7 @@ public :
 #endif
     }
 
-    static std::string getPassword ()
+    static std::string get_password ()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         std::string ret;
@@ -177,4 +177,3 @@ public :
 #endif
 
 #endif /* head file guarder */
-

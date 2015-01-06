@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2010-8-17
- * @last-edit 2012-08-19 19:10:08 jingqi
+ * @last-edit 2015-01-06 22:23:30 jingqi
  */
 
 #ifndef ___HEADFILE___4CDF318F_AF06_4CEF_BAC8_DE26853A73AB_
@@ -20,14 +20,14 @@
 #   include <syslog.h>
 #endif
 
-#include <nut/util/consoleutil.hpp>
+#include <nut/util/console_util.hpp>
 #include <nut/util/time.hpp>
 #include <nut/threading/sync/mutex.hpp>
 #include <nut/threading/sync/guard.hpp>
 #include <nut/gc/gc.hpp>
 
-#include "logrecord.hpp"
-#include "logfilter.hpp"
+#include "log_record.hpp"
+#include "log_filter.hpp"
 
 
 #if defined(NUT_PLATFORM_CC_VC)
@@ -48,25 +48,25 @@ class LogHandler
 public:
     virtual ~LogHandler() {}
 
-    virtual void handleLog(const std::string &logPath, const LogRecord &rec) = 0;
+    virtual void handle_log(const std::string &log_path, const LogRecord &rec) = 0;
 
-    void addFilter(ref<LogFilter> filter)
+    void add_filter(ref<LogFilter> filter)
     {
         Guard<Mutex> g(&m_mutex);
         m_filters.push_back(filter);
     }
-    
+
     /**
      * @return
      *      true, 通过筛选
      *      false, 在筛选过程中被剔除
      */
-    void handleLog(const std::string logPath, const LogRecord& rec, bool applyFilter)
+    void handle_log(const std::string log_path, const LogRecord& rec, bool apply_filter)
     {
         Guard<Mutex> g(&m_mutex);
-        if (applyFilter && !LogFilter::isLogable(logPath, rec, m_filters))
+        if (apply_filter && !LogFilter::is_logable(log_path, rec, m_filters))
             return;
-        handleLog(logPath, rec);
+        handle_log(log_path, rec);
     }
 };
 
@@ -75,13 +75,15 @@ class StreamLogHandler : public LogHandler
     std::ostream &m_os;
 
 public:
-    StreamLogHandler (std::ostream &os) : m_os(os) {}
+    StreamLogHandler (std::ostream &os)
+        : m_os(os)
+    {}
 
-    virtual void handleLog(const std::string &logPath, const LogRecord &rec)
+    virtual void handle_log(const std::string &log_path, const LogRecord &rec)
     {
-        (void) logPath; // unused
+        (void) log_path; // unused
 
-        m_os << rec.toString() << std::endl;
+        m_os << rec.to_string() << std::endl;
         m_os.flush();
     }
 };
@@ -89,45 +91,52 @@ public:
 class ConsoleLogHandler : public LogHandler
 {
     bool m_colored;
-    
+
 public :
-    ConsoleLogHandler(bool colored = true) : m_colored(colored) {}
+    ConsoleLogHandler(bool colored = true)
+        : m_colored(colored)
+    {}
 
-    virtual void handleLog(const std::string &loggerpath, const LogRecord &l)
+    virtual void handle_log(const std::string &logger_path, const LogRecord &l)
     {
-        (void) loggerpath; // unused
+        (void) logger_path; // unused
 
-        std::cout << "[" << l.getTime().toString() << "] ";
+        std::cout << "[" << l.get_time().to_string() << "] ";
         if (m_colored)
         {
-            switch(l.getLevel())
+            switch(l.get_level())
             {
             case LL_DEBUG:
-                ConsoleUtil::setTextColor(ConsoleUtil::WHITE, ConsoleUtil::BLUE);
+                ConsoleUtil::set_text_color(ConsoleUtil::WHITE, ConsoleUtil::BLUE);
                 break;
+
             case LL_INFO:
-                ConsoleUtil::setTextColor(ConsoleUtil::WHITE, ConsoleUtil::GREEN);
+                ConsoleUtil::set_text_color(ConsoleUtil::WHITE, ConsoleUtil::GREEN);
                 break;
+
             case LL_WARN:
-                ConsoleUtil::setTextColor(ConsoleUtil::WHITE, ConsoleUtil::YELLOW);
+                ConsoleUtil::set_text_color(ConsoleUtil::WHITE, ConsoleUtil::YELLOW);
                 break;
+
             case LL_ERROR:
-                ConsoleUtil::setTextColor(ConsoleUtil::WHITE, ConsoleUtil::PINK);
+                ConsoleUtil::set_text_color(ConsoleUtil::WHITE, ConsoleUtil::PINK);
                 break;
+
             case LL_FATAL:
-                ConsoleUtil::setTextColor(ConsoleUtil::WHITE, ConsoleUtil::RED);
+                ConsoleUtil::set_text_color(ConsoleUtil::WHITE, ConsoleUtil::RED);
                 break;
+
             default:
                 break;
             }
         }
 
-        std::cout << logLevelToStr(l.getLevel());
+        std::cout << log_level_to_str(l.get_level());
 
         if (m_colored)
-            ConsoleUtil::setTextColor();
+            ConsoleUtil::set_text_color();
 
-        std::cout << " " << l.getSourceLocation().toString() << "  " << l.getMessage() << "\n";
+        std::cout << " " << l.get_source_location().to_string() << "  " << l.get_message() << "\n";
         std::cout.flush();
     }
 };
@@ -147,11 +156,11 @@ public :
         }
     }
 
-    virtual void handleLog(const std::string &logPath, const LogRecord & rec)
+    virtual void handle_log(const std::string &log_path, const LogRecord & rec)
     {
-        (void) logPath; // unused
+        (void) log_path; // unused
 
-        m_ofs << rec.toString() << std::endl;
+        m_ofs << rec.to_string() << std::endl;
         m_ofs.flush();
     }
 };
@@ -159,45 +168,51 @@ public :
 #if defined(NUT_PLATFORM_OS_LINUX)
 class SyslogLogHandler : public LogHandler
 {
-    bool m_closesyslog;
+    bool m_close_syslog_on_exit;
 
 public :
-    SyslogLogHandler(bool closesyslog = false)
-        : m_closesyslog(closesyslog)
+    SyslogLogHandler(bool close_syslog_on_exit = false)
+        : m_close_syslog_on_exit(close_syslog_on_exit)
     {}
 
     ~SyslogLogHandler()
     {
-        if (m_closesyslog)
+        if (m_close_syslog_on_exit)
             closelog();  // the oposite way is openlog()
     }
 
-    virtual void handleLog(const std::string &logPath, const LogRecord &rec)
+    virtual void handle_log(const std::string &log_path, const LogRecord &rec)
     {
-        (void) logPath; // unused
+        (void) log_path; // unused
 
         int level = 0;
-        switch (rec.getLevel())
+        switch (rec.get_level())
         {
         case LL_DEBUG:
             level = LOG_DEBUG;
             break;
+
         case LL_INFO:
             level = LOG_INFO;
             break;
+
         case LL_WARN:
             level = LOG_WARNING;
             break;
+
         case LL_ERROR:
             level = LOG_ERR;
             break;
+
         case LL_FATAL:
             level = LOG_CRIT;
             break;
+
         default:
             level = LOG_ERR;
         }
-        syslog(level, (rec.getSourceLocation().toString() + "  " + rec.getMessage()).c_str());
+        std::string msg = rec.get_source_location().to_string() + "  " + rec.get_message();
+        syslog(level, msg.c_str());
     }
 };
 #endif
@@ -219,7 +234,7 @@ public:
      * file|./dir/logfile.log
      * syslog
      */
-    static ref<LogHandler> createLogHandler(const std::string &type)
+    static ref<LogHandler> create_log_handler(const std::string &type)
     {
         if (type == "stdout")
         {
@@ -253,7 +268,7 @@ public:
                 pid_t pid = getpid();
 #endif
                 sprintf(buf, "%ld", (long)pid);
-                last += Time().formatTime("%Y-%m-%d %H-%M-%S ");
+                last += Time().format_time("%Y-%m-%d %H-%M-%S ");
                 last += buf;
                 last += ".log";
                 return gc_new<FileLogHandler>(last.c_str(), false);
@@ -283,4 +298,3 @@ public:
 #endif
 
 #endif  // head file guarder
-

@@ -8,20 +8,20 @@
 
 #include <nut/unittest/unittest.hpp>
 
-#include <nut/threading/lockfree/concurrentqueue.hpp>
+#include <nut/threading/lockfree/concurrent_queue.hpp>
 
 using namespace nut;
 
 NUT_FIXTURE(TestConcurrentQueue)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testSmoking)
+    NUT_CASE(test_smoking)
     NUT_CASES_END()
 
-    void setUp() {}
-    void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
-    void testSmoking()
+    void test_smoking()
     {
         ConcurrentQueue<int> q;
         q.optimistic_enqueue(1);
@@ -34,7 +34,7 @@ NUT_FIXTURE(TestConcurrentQueue)
         rs = q.optimistic_dequeue(&v);
         NUT_TA(rs && v == 2);
 
-        NUT_TA(q.isEmpty());
+        NUT_TA(q.is_empty());
     }
 };
 

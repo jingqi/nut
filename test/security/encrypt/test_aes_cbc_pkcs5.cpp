@@ -12,13 +12,13 @@ using namespace nut;
 NUT_FIXTURE(TestAesCbcPkcs5)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testSmoking)
+    NUT_CASE(test_smoking)
     NUT_CASES_END()
 
-    void setUp() {}
-    void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
-    void testSmoking()
+    void test_smoking()
     {
         const uint8_t data[] = {
             1,2,3,4,5,6,7,8,9,0,'a','b','c','d','e','f',
@@ -39,12 +39,12 @@ NUT_FIXTURE(TestAesCbcPkcs5)
             acp.start_encrypt(key, sizeof(key) * 8, iv);
             acp.update_encrypt(data, 7);
             acp.finish_encrypt();
-            ByteArray ba = acp.getResult();
+            ByteArray ba = acp.get_result();
 
             acp.start_decrypt(key, sizeof(key) * 8, iv);
             acp.update_decrypt(ba.buffer(), ba.size());
             acp.finish_decrypt();
-            ba = acp.getResult();
+            ba = acp.get_result();
             NUT_TA(7 == ba.size());
             NUT_TA(0 == ::memcmp(ba.buffer(), data, 7));
         }
@@ -53,12 +53,12 @@ NUT_FIXTURE(TestAesCbcPkcs5)
             acp.start_encrypt(key, sizeof(key) * 8, iv);
             acp.update_encrypt(data, 16);
             acp.finish_encrypt();
-            ByteArray ba = acp.getResult();
+            ByteArray ba = acp.get_result();
 
             acp.start_decrypt(key, sizeof(key) * 8, iv);
             acp.update_decrypt(ba.buffer(), ba.size());
             acp.finish_decrypt();
-            ba = acp.getResult();
+            ba = acp.get_result();
             NUT_TA(16 == ba.size());
             NUT_TA(0 == ::memcmp(ba.buffer(), data, 16));
         }
@@ -68,12 +68,12 @@ NUT_FIXTURE(TestAesCbcPkcs5)
             acp.update_encrypt(data, 7);
             acp.update_encrypt(data + 7, 19);
             acp.finish_encrypt();
-            ByteArray ba = acp.getResult();
+            ByteArray ba = acp.get_result();
 
             acp.start_decrypt(key, sizeof(key) * 8, iv);
             acp.update_decrypt(ba.buffer(), ba.size());
             acp.finish_decrypt();
-            ba = acp.getResult();
+            ba = acp.get_result();
             NUT_TA(26 == ba.size());
             NUT_TA(0 == ::memcmp(ba.buffer(), data, 26));
         }

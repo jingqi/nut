@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-02-08
- * @last-edit 2014-11-21 22:51:50 jingqi
+ * @last-edit 2015-01-06 22:42:23 jingqi
  * @brief
  */
 
@@ -11,7 +11,7 @@
 
 #include <stack>
 
-#include "../biginteger.hpp"
+#include "../big_integer.hpp"
 
 // 优化程度，>= 0
 #define OPTIMIZE_LEVEL 1000

@@ -1,4 +1,4 @@
-
+ï»¿
 #include <nut/unittest/unittest.hpp>
 
 #include <stdio.h>
@@ -9,20 +9,20 @@ using namespace nut;
 NUT_FIXTURE(TestAtomic)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testBug1)
+    NUT_CASE(test_bug1)
     NUT_CASES_END()
 
-    void setUp() {}
-    void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
     /**
      * bug:
-     * ´¦Àí
+     * å¤„ç†
      *  __sync_val_compare_and_swap()
      *  InterlockedCompareExchange128()
-     * µÈº¯ÊıµÄ·µ»ØÖµ³ö´í
+     * ç­‰å‡½æ•°çš„è¿”å›å€¼å‡ºé”™
      */
-    void testBug1()
+    void test_bug1()
     {
         {
             void* volatile p = NULL;

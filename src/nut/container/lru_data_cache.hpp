@@ -96,18 +96,18 @@ class LRUDataCache
     size_t m_hit_count, m_hit_size, m_miss_count;
 #endif
 
-    static inline Node* alloc_node()
+    static Node* alloc_node()
     {
         return (Node*)::malloc(sizeof(Node));
     }
 
-    static inline void dealloc_node(Node *p)
+    static void dealloc_node(Node *p)
     {
         assert(NULL != p);
         ::free(p);
     }
 
-    static inline Node* new_node(const K& k, const void *buf, size_t cb)
+    static Node* new_node(const K& k, const void *buf, size_t cb)
     {
         Node *p = alloc_node();
         assert(NULL != p);
@@ -115,14 +115,14 @@ class LRUDataCache
         return p;
     }
 
-    static inline void delete_node(Node *p)
+    static void delete_node(Node *p)
     {
         assert(NULL != p);
         p->~Node();
         dealloc_node(p);
     }
 
-    inline void remove_from_list(Node *p)
+    void remove_from_list(Node *p)
     {
         assert(NULL != p);
         if (NULL != p->pre)
@@ -136,7 +136,7 @@ class LRUDataCache
             m_list_end = p->pre;
     }
 
-    inline void push_list_head(Node *p)
+    void push_list_head(Node *p)
     {
         assert(NULL != p);
         p->next = m_list_head;
@@ -175,22 +175,22 @@ public:
         clear();
     }
 
-    inline size_t size() const
+    size_t size() const
     {
         return m_map.size();
     }
 
-    inline size_t bytes_size() const
+    size_t bytes_size() const
     {
         return m_bytes_size;
     }
 
-    inline size_t bytes_capacity() const
+    size_t bytes_capacity() const
     {
         return m_bytes_capacity;
     }
 
-    inline void set_bytes_capacity(size_t bytes_capacity)
+    void set_bytes_capacity(size_t bytes_capacity)
     {
         assert(bytes_capacity > 0);
         m_bytes_capacity = bytes_capacity;
@@ -249,7 +249,7 @@ public:
         delete_node(p);
     }
 
-    inline bool has_key(const K& k)
+    bool has_key(const K& k)
     {
         return m_map.find(k) != m_map.end();
     }

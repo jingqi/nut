@@ -14,14 +14,18 @@ template <typename T>
 struct ref_arg
 {
     T& ref;
-    ref_arg(T& arg) : ref(arg) {}
+    ref_arg(T& arg)
+        : ref(arg)
+    {}
 };
 
 template <typename T>
 struct const_ref_arg
 {
     const T& ref;
-    const_ref_arg(const T& arg) : ref(arg) {}
+    const_ref_arg(const T& arg)
+        : ref(arg)
+    {}
 };
 
 template <typename T>

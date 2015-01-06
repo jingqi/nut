@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-12-15
- * @last-edit 2014-07-25 21:30:42 jingqi
+ * @last-edit 2015-01-06 20:00:06 jingqi
  * @brief
  */
 
@@ -48,18 +48,18 @@ class LRUCache
     size_t m_hit_count, m_miss_count;
 #endif
 
-    static inline Node* alloc_node()
+    static Node* alloc_node()
     {
         return (Node*)::malloc(sizeof(Node));
     }
 
-    static inline void dealloc_node(Node *p)
+    static void dealloc_node(Node *p)
     {
         assert(NULL != p);
         ::free(p);
     }
 
-    static inline Node* new_node(const K& k, const V& v)
+    static Node* new_node(const K& k, const V& v)
     {
         Node *p = alloc_node();
         assert(NULL != p);
@@ -67,14 +67,14 @@ class LRUCache
         return p;
     }
 
-    static inline void delete_node(Node *p)
+    static void delete_node(Node *p)
     {
         assert(NULL != p);
         p->~Node();
         dealloc_node(p);
     }
 
-    inline void remove_from_list(Node *p)
+    void remove_from_list(Node *p)
     {
         assert(NULL != p);
         if (NULL != p->pre)
@@ -88,7 +88,7 @@ class LRUCache
             m_list_end = p->pre;
     }
 
-    inline void push_list_head(Node *p)
+    void push_list_head(Node *p)
     {
         assert(NULL != p);
         p->next = m_list_head;
@@ -127,17 +127,17 @@ public:
         clear();
     }
 
-    inline size_t size() const
+    size_t size() const
     {
         return m_map.size();
     }
 
-    inline size_t capacity() const
+    size_t capacity() const
     {
         return m_capacity;
     }
 
-    inline void set_capacity(size_t capacity)
+    void set_capacity(size_t capacity)
     {
         assert(capacity > 0);
         m_capacity = capacity;
@@ -190,7 +190,7 @@ public:
         delete_node(p);
     }
 
-    inline bool has_key(const K& k)
+    bool has_key(const K& k)
     {
         return m_map.find(k) != m_map.end();
     }

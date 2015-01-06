@@ -16,14 +16,14 @@
 NUT_FIXTURE(TestTestUnit)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(smokingTest)
+    NUT_CASE(smoking_test)
     NUT_CASES_END()
 
-    void setUp() {}
+    void set_up() {}
 
-    void tearDown() {}
+    void tear_down() {}
 
-    void smokingTest () {
+    void smoking_test () {
         NUT_TA(5 > 4);
     }
 };
@@ -35,9 +35,9 @@ NUT_REGISTER_FIXTURE(TestTestUnit, "test,quiet")
 int main()
 {
     nut::TestRunner runner(std::cout);
-    runner.runAGroup("quiet");
-    runner.runAFixture("TestTestUnit");
-    runner.runACase("TestTestUnit","smokingTest");
+    runner.run_a_group("quiet");
+    runner.run_a_fixture("TestTestUnit");
+    runner.run_a_case("TestTestUnit","smokingTest");
 
     return 0;
 }
@@ -46,37 +46,37 @@ int main()
 
 /* *************************************************************************/
 
-#include "testcasefailureexception.hpp"
+#include "testcase_failure_exception.hpp"
 #include "testlogger.hpp"
 #include "testfixture.hpp"
 #include "testregister.hpp"
 #include "testrunner.hpp"
 
 /** fixture */
-#define NUT_FIXTURE(fixtureName) \
-class fixtureName : public nut::TestFixture
+#define NUT_FIXTURE(fixture_name) \
+class fixture_name : public nut::TestFixture
 
 /** cases begin */
 #define NUT_CASES_BEGIN() \
-    virtual int ___runACase(nut::ITestLogger& logger, const int op, const char *caseName) { \
+    virtual int ___run_a_case(nut::ITestLogger& logger, const int op, const char *case_name) { \
         int index = -1;
 
 /** case */
-#define NUT_CASE(caseFunc) \
+#define NUT_CASE(case_func) \
         ++index; \
-        if (op == index || ((-1 == op) && (0 == ::strcmp(#caseFunc, caseName)))) { \
-            logger.enterCase(#caseFunc); \
+        if (op == index || ((-1 == op) && (0 == ::strcmp(#case_func, case_name)))) { \
+            logger.enter_case(#case_func); \
             try { \
-                setUp(); \
-                caseFunc(); \
-                tearDown(); \
+                set_up(); \
+                case_func(); \
+                tear_down(); \
             } catch (nut::TestCaseFailureException e) { \
-                logger.failedCase(e); \
+                logger.failed_case(e); \
             } catch (...) { \
                 nut::TestCaseFailureException e("Unhandled exception", __FILE__, __LINE__); \
-                logger.failedCase(e); \
+                logger.failed_case(e); \
             } \
-            logger.leaveCase(); \
+            logger.leave_case(); \
         }
 
 /** cases end */

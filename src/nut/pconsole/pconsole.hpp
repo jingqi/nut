@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-12-10
- * @last-edit 2012-12-15 13:34:27 jingqi
+ * @last-edit 2015-01-06 22:54:13 jingqi
  * @brief
  */
 
@@ -18,8 +18,8 @@
 
 #include "icommand.hpp"
 #include "iconsole.hpp"
-#include "cmdexit.hpp"
-#include "cmdhelp.hpp"
+#include "cmd_exit.hpp"
+#include "cmd_help.hpp"
 
 namespace nut
 {
@@ -29,40 +29,55 @@ namespace nut
  */
 class PConsole : public IConsole
 {
-    char m_promptChar;
-    std::string m_promptString;
-    std::string m_consoleName;
+    char m_prompt_char;
+    std::string m_prompt_string;
+    std::string m_console_name;
     std::vector<ref<ICommand> > m_commands;
     bool m_exit;
     int m_exit_value;
 
 public:
     PConsole(const std::string& name = "PConsole")
-        : m_promptChar('>'), m_promptString("PConsole"), m_consoleName(name),
+        : m_prompt_char('>'), m_prompt_string("PConsole"), m_console_name(name),
           m_exit(false), m_exit_value(0)
     {
         // 内建命令
-        addACommand(gc_new<CmdExit>(this));
-        addACommand(gc_new<CmdHelp>(this));
+        add_a_command(gc_new<CmdExit>(this));
+        add_a_command(gc_new<CmdHelp>(this));
     }
 
-    char getPromptChar() const { return m_promptChar; }
-    void setPromptChar(char c) { m_promptChar = c; }
-    const std::string& getPromptString() const { return m_promptString; }
-    void setPromptString(const std::string& s) { m_promptString = s; }
-    
+    char get_prompt_char() const
+	{
+		return m_prompt_char;
+	}
+
+    void set_prompt_char(char c)
+	{
+		m_prompt_char = c;
+	}
+
+    const std::string& get_prompt_string() const
+	{
+		return m_prompt_string;
+	}
+
+    void set_prompt_string(const std::string& s)
+	{
+		m_prompt_string = s;
+	}
+
 
     /** 添加一个命令 */
-    void addACommand(ref<ICommand> cmd)
+    void add_a_command(ref<ICommand> cmd)
     {
         m_commands.push_back(cmd);
     }
 
     /** 读取并执行一次 */
-    void readAndExecute()
+    void read_and_execute()
     {
         // 打印命令提示符
-        printf("%s%c ", m_promptString.c_str(), m_promptChar);
+        printf("%s%c ", m_prompt_string.c_str(), m_prompt_char);
 
         // 从命令行读取命令并执行
         std::string l;
@@ -74,7 +89,7 @@ public:
             else
                 l += c;
         }
-        executeLine(l.c_str());
+        execute_line(l.c_str());
     }
 
     /** 执行直到用户输入exit命令 */
@@ -83,26 +98,26 @@ public:
         m_exit = false;
         m_exit_value = 0;
         while (!m_exit)
-            readAndExecute();
+            read_and_execute();
         return m_exit_value;
     }
 
     /** 打印一般信息 */
-    virtual void printGeneralInfo() const
+    virtual void print_general_info() const
     {
-        printf("%s\n", m_consoleName.c_str());
+        printf("%s\n", m_console_name.c_str());
         for (size_t i = 0, size = m_commands.size(); i < size; ++i)
         {
             ref<ICommand> cmd = m_commands.at(i);
-            assert(!cmd.isNull());
-            const char* cmd_name = cmd->getCommandName();
-            const char* cmd_info = cmd->getGeneralInfo();
+            assert(!cmd.is_null());
+            const char* cmd_name = cmd->get_command_name();
+            const char* cmd_info = cmd->get_general_info();
             printf("\t%s %s\n", (NULL == cmd_name ? "(null)" : cmd_name), (NULL == cmd_info ? "" : cmd_info));
         }
     }
 
     /** 获取命令列表 */
-    virtual const std::vector<ref<ICommand> >& getCommands() const
+    virtual const std::vector<ref<ICommand> >& get_commands() const
     {
         return m_commands;
     }
@@ -115,7 +130,7 @@ public:
     }
 
 private:
-    void executeLine(const char* l)
+    void execute_line(const char* l)
     {
         assert(NULL != l);
         // 首先取出命令名
@@ -130,7 +145,7 @@ private:
         const std::string cmd_name(l + start, l + end);
 
         // 匹配命令
-        std::vector<ref<ICommand> > matched_cmds = matchCommands(m_commands, cmd_name);
+        std::vector<ref<ICommand> > matched_cmds = match_commands(m_commands, cmd_name);
 
         // 无匹配
         if (matched_cmds.size() == 0)
@@ -145,7 +160,7 @@ private:
             printf("\nMore than one command matched:\n\t");
             for (size_t i = 0, size = matched_cmds.size(); i < size; ++i)
             {
-                const char *n = matched_cmds.at(i)->getCommandName();
+                const char *n = matched_cmds.at(i)->get_command_name();
                 printf(" %s", (NULL == n ? "(null)" : n));
             }
             return;

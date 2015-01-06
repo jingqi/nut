@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-08-30
- * @last-edit 2013-08-30 22:29:53 jingqi
+ * @last-edit 2015-01-06 21:48:11 jingqi
  * @brief
  */
 
@@ -43,7 +43,7 @@ class Backtrace
 private:
     typedef AddrMapManager::addr_t addr_t;
 
-    static AddrMapManager& getAddrMapMgr()
+    static AddrMapManager& get_addr_map_mgr()
     {
         static AddrMapManager ret;
         return ret;
@@ -60,8 +60,8 @@ public:
         out->clear();
 
         // XXX 有可能该方法在静态域中被调用，而此时 AddrMapManager 已经被析构
-        AddrMapManager& addrMap = getAddrMapMgr();
-        if (!addrMap.isValid())
+        AddrMapManager& addr_map = get_addr_map_mgr();
+        if (!addr_map.is_valid())
             return -1;
 
         void *trace[MAX_BACKTRACE + 1];
@@ -75,37 +75,37 @@ public:
         {
             std::string func_module_path;
             addr_t func_addr;
-            parseBacktraceSymbol(messages[i], &func_module_path, &func_addr);
+            parse_backtrace_symbol(messages[i], &func_module_path, &func_addr);
 
             std::string cmd;
             addr_t addr = 0;
-            bool bExists = addrMap.find(func_module_path, &addr);
-            if (!bExists)
+            bool found = addr_map.find(func_module_path, &addr);
+            if (!found)
             {
                 // 处理软链接和相对路径的情况，因为在文件/proc/XXX/maps中存的是实际文件地址。
-                getRealPath(&func_module_path);
+                get_real_path(&func_module_path);
 
                 // 指定装载
-                addrMap.load(func_module_path);
+                addr_map.load(func_module_path);
                 // 再次查询
-                bExists = addrMap.find(func_module_path, &addr);
+                found = addr_map.find(func_module_path, &addr);
                 // 没办法了，只能当做当前程序来处理，不管它是不是共享库了
-                if (!bExists)
+                if (!found)
                 {
-                    cmd = makeAddr2LineCmd(func_addr, addrMap.getExecPath());
+                    cmd = make_addr2line_cmd(func_addr, addr_map.getExecPath());
                 }
                 else // 装载成功
                 {
-                    cmd = makeAddr2LineCmd(func_addr - addr, func_module_path);
+                    cmd = make_addr2line_cmd(func_addr - addr, func_module_path);
                 }
             }
             else // iter != gAddrMap.end()
             {
-                cmd = makeAddr2LineCmd(func_addr - addr, func_module_path);
+                cmd = make_addr2line_cmd(func_addr - addr, func_module_path);
             }
 
             // 调用addr2line
-            callAddr2Line(cmd, out);
+            call_addr2line(cmd, out);
 
         }
 
@@ -118,21 +118,21 @@ private:
     /*
      * 构造用于调用addr2line的命令。
      */
-    static std::string makeAddr2LineCmd(addr_t addr, const std::string& strPath)
+    static std::string make_addr2line_cmd(addr_t addr, const std::string& str_path)
     {
         char buf[50] = {0};
         sprintf(buf, "0x%X", addr);
         std::string cmd = "addr2line ";
         cmd += buf;
         cmd += " -C -f -e ";
-        cmd += strPath;
+        cmd += str_path;
         return cmd;
     }
 
     /*
-     * 调用addr2line，查询地址，获得源文件、行号和函数名
+     * 调用 addr2line，查询地址，获得源文件、行号和函数名
      */
-    static void callAddr2Line(const std::string& cmd, std::string *out_result)
+    static void call_addr2line(const std::string& cmd, std::string *out_result)
     {
         FILE* fp = popen(cmd.c_str(), "r");
         if (!fp)
@@ -163,50 +163,56 @@ private:
                 sourceLine.push_back(buf);
             }
             pclose(fp);
-            
+
             if (out_result->empty())
                 *out_result += sourceLine + std::string(":  ") + funName;
             else
                 *out_result += std::string("\n") + sourceLine + std::string(":  ") + funName;
         }
     }
-    
-    /*
-     * 将路径strPath转化成绝对路径，这会处理软链接和相对路径
-     */
-    static void getRealPath(std::string *in_out_strPath)
-    {
-        assert(NULL != in_out_strPath);
-        char resolved_path[PATH_MAX + 1] = {0};
-        if (realpath(in_out_strPath->c_str(), resolved_path))
-            *in_out_strPath = resolved_path;
-    }
-    
-    /**
-     * 本函数用于分析从backtrace_symbols获取到的信息, 形如: 
-     * /usr/local/lib/libbtshare.so(_Z16LogBacktraceInfov+0x38) [0x5fa269]
-     */
-    static void parseBacktraceSymbol(const char* backtraceSymbol, std::string *out_module_path, addr_t *out_addr)
-    {
-        assert(NULL != backtraceSymbol && NULL != out_module_path && NULL != out_addr);
-        out_module_path->clear();
-        *out_addr = 0;
 
-        std::string str(backtraceSymbol);
+    /*
+     * 将路径 str_path 转化成绝对路径，这会处理软链接和相对路径
+     *
+     * @param str_path [in][out]
+     */
+    static void get_real_path(std::string *str_path)
+    {
+        assert(NULL != str_path);
+        char resolved_path[PATH_MAX + 1] = {0};
+        if (realpath(str_path->c_str(), resolved_path))
+            *str_path = resolved_path;
+    }
+
+    /**
+     * 本函数用于分析从backtrace_symbols获取到的信息, 形如:
+     * /usr/local/lib/libbtshare.so(_Z16LogBacktraceInfov+0x38) [0x5fa269]
+     *
+     * @param backtrace_symbols [in]
+     * @param module_path [out]
+     * @param addr [out]
+     */
+    static void parse_backtrace_symbol(const char* backtrace_symbol, std::string *module_path, addr_t *addr)
+    {
+        assert(NULL != backtrace_symbol && NULL != module_path && NULL != addr);
+        module_path->clear();
+        *addr = 0;
+
+        std::string str(backtrace_symbol);
 
         // parse path of shared library
         const size_t pos = str.find('(');
         if (pos != std::string::npos)
-            out_module_path->assign(str.begin(), str.begin() + pos);
+            module_path->assign(str.begin(), str.begin() + pos);
 
         // parse address
-        const size_t posBegin = str.find('['), posEnd = str.find(']');
-        if (posBegin != std::string::npos && posBegin < posEnd)
+        const size_t pos_begin = str.find('['), pos_end = str.find(']');
+        if (pos_begin != std::string::npos && pos_begin < pos_end)
         {
-            std::string strAddr;
-            strAddr.assign(str.begin() + posBegin + 1, str.begin() + posEnd);
-            char* pchEnd = NULL;
-            *out_addr = ::strtoul(strAddr.c_str(), &pchEnd, 16);
+            std::string str_addr;
+            str_addr.assign(str.begin() + pos_begin + 1, str.begin() + pos_end);
+            char* pch_end = NULL;
+            *addr = ::strtoul(str_addr.c_str(), &pch_end, 16);
         }
     }
 #else

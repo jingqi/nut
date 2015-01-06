@@ -11,8 +11,8 @@
 #include <stdlib.h>
 #include <new>
 
-#include "gcwrapper.hpp"
-#include "refcounter.hpp"
+#include "gc_wrapper.hpp"
+#include "ref_counter.hpp"
 #include "ref.hpp"
 
 namespace nut

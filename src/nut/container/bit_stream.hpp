@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-09-01
- * @last-edit 2014-11-21 22:44:32 jingqi
+ * @last-edit 2015-01-06 20:27:33 jingqi
  * @brief
  */
 
@@ -27,7 +27,7 @@ class BitStream
     size_t m_bit_size; // bit 长度
 
 private:
-    void ensure_cap(size_t new_bit_size)
+    void _ensure_cap(size_t new_bit_size)
     {
         // XXX 常量运算留给编译器来优化
         const size_t new_word_size = (new_bit_size + sizeof(word_type) * 8 - 1) / (sizeof(word_type) * 8);
@@ -52,7 +52,7 @@ public:
     {
         if (0 == nbits)
             return;
-        ensure_cap(nbits);
+        _ensure_cap(nbits);
         ::memset(m_buf, (setb ? 0xff : 0), (nbits + 7) >> 3);
         m_bit_size = nbits;
     }
@@ -62,7 +62,7 @@ public:
     {
         if (0 == nbits)
             return;
-        ensure_cap(nbits);
+        _ensure_cap(nbits);
         ::memcpy(m_buf, buf, (nbits + 7) >> 3);
         m_bit_size = nbits;
     }
@@ -70,7 +70,7 @@ public:
     explicit BitStream(const std::string& s)
         : m_buf(NULL), m_word_cap(0), m_bit_size(0)
     {
-        ensure_cap(s.length());
+        _ensure_cap(s.length());
         for (size_t i = 0, len = s.length(); i < len; ++i)
         {
             const char c = s.at(i);
@@ -88,7 +88,7 @@ public:
     explicit BitStream(const std::wstring& s)
         : m_buf(NULL), m_word_cap(0), m_bit_size(0)
     {
-        ensure_cap(s.length());
+        _ensure_cap(s.length());
         for (size_t i = 0, len = s.length(); i < len; ++i)
         {
             const wchar_t c = s.at(i);
@@ -108,7 +108,7 @@ public:
     {
         if (0 == x.m_bit_size)
             return;
-        ensure_cap(x.m_bit_size);
+        _ensure_cap(x.m_bit_size);
         ::memcpy(m_buf, x.m_buf, (x.m_bit_size + 7) >> 3);
         m_bit_size = x.m_bit_size;
     }
@@ -127,7 +127,7 @@ public:
         if (this == &x)
             return *this;
 
-        ensure_cap(x.m_bit_size);
+        _ensure_cap(x.m_bit_size);
         ::memcpy(m_buf, x.m_buf, (x.m_bit_size + 7) >> 3);
         m_bit_size = x.m_bit_size;
         return *this;
@@ -151,32 +151,32 @@ public:
         return true;
     }
 
-    inline bool operator!=(const BitStream& x) const
+    bool operator!=(const BitStream& x) const
     {
         return !(*this == x);
     }
 
-    inline BitStream operator+(const BitStream& x) const
+    BitStream operator+(const BitStream& x) const
     {
         BitStream ret;
-        ret.ensure_cap(m_bit_size + x.m_bit_size);
+        ret._ensure_cap(m_bit_size + x.m_bit_size);
         ret.append(*this);
         ret.append(x);
         return ret;
     }
 
-    inline BitStream& operator+=(const BitStream& x)
+    BitStream& operator+=(const BitStream& x)
     {
         append(x);
         return *this;
     }
 
-    inline bool operator[](size_t i) const
+    bool operator[](size_t i) const
     {
         return bit_at(i);
     }
 
-    inline size_t size() const
+    size_t size() const
     {
         return m_bit_size;
     }
@@ -189,24 +189,24 @@ public:
             return;
         }
 
-        ensure_cap(new_bit_size);
+        _ensure_cap(new_bit_size);
         const size_t old_bit_size = m_bit_size;
         m_bit_size = new_bit_size;
         fill_bits(old_bit_size, new_bit_size - old_bit_size, fill_setb);
     }
 
-    inline void clear()
+    void clear()
     {
         m_bit_size = 0;
     }
 
-    inline bool bit_at(size_t i) const
+    bool bit_at(size_t i) const
     {
         assert(i < m_bit_size);
         return 0 != ((m_buf[i / (sizeof(word_type) * 8)] >> (i % (sizeof(word_type) * 8))) & 0x01);
     }
 
-    inline void set_bit(size_t i, bool setb = true)
+    void set_bit(size_t i, bool setb = true)
     {
         assert(i < m_bit_size);
         if (setb)
@@ -235,16 +235,16 @@ public:
      *
      * @param b  true, 添加一个1; false, 添加一个0.
      */
-    inline void append(bool b)
+    void append(bool b)
     {
-        ensure_cap(m_bit_size + 1);
+        _ensure_cap(m_bit_size + 1);
         ++m_bit_size;
         set_bit(m_bit_size - 1, b);
     }
 
     void append(const BitStream& x)
     {
-        ensure_cap(m_bit_size + x.m_bit_size);
+        _ensure_cap(m_bit_size + x.m_bit_size);
         const size_t old_bit_size = m_bit_size; // XXX 这里需要保证及时是 this==&x 也是正确的
         m_bit_size += x.m_bit_size;
         for (size_t i = old_bit_size; i < m_bit_size; ++i)
@@ -255,7 +255,7 @@ public:
     {
         assert(i + nbit < m_bit_size);
         BitStream ret;
-        ret.ensure_cap(nbit);
+        ret._ensure_cap(nbit);
         ret.m_bit_size = nbit;
         for (size_t k = 0; k < nbit; ++k)
             ret.set_bit(k, bit_at(k + nbit));
@@ -279,7 +279,7 @@ public:
         return m_bit_size - bit1_count();
     }
 
-    std::string toString()
+    std::string to_string()
     {
         std::string ret;
         for (size_t i = 0; i < m_bit_size; ++i)
@@ -287,7 +287,7 @@ public:
         return ret;
     }
 
-    std::wstring toWString()
+    std::wstring to_wstring()
     {
         std::wstring ret;
         for (size_t i = 0; i < m_bit_size; ++i)

@@ -17,23 +17,23 @@ using namespace nut;
 NUT_FIXTURE(TestNumericAlgo)
 {
 	NUT_CASES_BEGIN()
-	NUT_CASE(testBugs)
-    NUT_CASE(testGcd)
-    NUT_CASE(testExtendEuclid)
-    NUT_CASE(testModMultiply)
-    NUT_CASE(testModPow)
-    NUT_CASE(testPrime)
+    NUT_CASE(test_bugs)
+    NUT_CASE(test_gcd)
+    NUT_CASE(test_extend_euclid)
+    NUT_CASE(test_mod_multiply)
+    NUT_CASE(test_mod_pow)
+    NUT_CASE(test_prime)
 	NUT_CASES_END()
 
-	void setUp() {}
-	void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
-	void testBugs()
+    void test_bugs()
 	{
         {
             // bug 根据二进制特性对扩展欧几里得算法的优化实现有问题
             // 实际上是 BigInteger 的 -= 操作由于计算结果和操作数共享内存导致的问题
-            BigInteger a(65537), b = ::BigInteger::valueOf("50956903296"), d, x, y;
+            BigInteger a(65537), b = ::BigInteger::value_of("50956903296"), d, x, y;
             extended_euclid(a, b, &d, &x, &y);
             // printf("\n%s\n%s\n%s\n%s\n%s\n", a.toString().c_str(),b.toString().c_str(), d.toString().c_str(), x.toString().c_str(), y.toString().c_str());
             NUT_TA(d == a * x + b * y);
@@ -41,7 +41,7 @@ NUT_FIXTURE(TestNumericAlgo)
 
         {
             // BUG 预算表优化的 _mod_multiply() 实现有问题
-            BigInteger a(1), b = BigInteger::valueOf("400000000", 16), n = BigInteger::valueOf("c00000000", 16);
+            BigInteger a(1), b = BigInteger::value_of("400000000", 16), n = BigInteger::value_of("c00000000", 16);
             ModMultiplyPreBuildTable<2> table(a, n);
             BigInteger x1 = mod_multiply(b, n, table);
             BigInteger x2 = (a * b) % n;
@@ -50,7 +50,7 @@ NUT_FIXTURE(TestNumericAlgo)
         }
 	}
 
-    void testGcd()
+    void test_gcd()
     {
          // 测性能
         {
@@ -71,7 +71,7 @@ NUT_FIXTURE(TestNumericAlgo)
         }
     }
 
-    void testExtendEuclid() 
+    void test_extend_euclid()
     {
         // 测性能
         {
@@ -92,7 +92,7 @@ NUT_FIXTURE(TestNumericAlgo)
         }
     }
 
-    void testModMultiply()
+    void test_mod_multiply()
     {
         {
             BigInteger bound(1);
@@ -144,7 +144,7 @@ NUT_FIXTURE(TestNumericAlgo)
         return ret;
     }
 
-    void testModPow()
+    void test_mod_pow()
     {
         // 测性能
         {
@@ -172,7 +172,7 @@ NUT_FIXTURE(TestNumericAlgo)
         }
     }
 
-    void testPrime()
+    void test_prime()
     {
         // 性能测试
         BigInteger bound(1);

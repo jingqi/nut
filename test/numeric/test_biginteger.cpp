@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <nut/unittest/unittest.hpp>
-#include <nut/numeric/biginteger.hpp>
+#include <nut/numeric/big_integer.hpp>
 
 using namespace nut;
 
@@ -14,21 +14,21 @@ using namespace nut;
 NUT_FIXTURE(TestBigInteger)
 {
 	NUT_CASES_BEGIN()
-	NUT_CASE(testSmoking)
-    NUT_CASE(testBugs)
-	NUT_CASE(testComparator)
-	NUT_CASE(testMathOperator)
-	NUT_CASE(testDivide)
-	NUT_CASE(testMod)
-    NUT_CASE(testBitOperator)
-    NUT_CASE(testToString)
-    NUT_CASE(testValueOf)
+    NUT_CASE(test_smoking)
+    NUT_CASE(test_bugs)
+    NUT_CASE(test_comparator)
+    NUT_CASE(test_math_operator)
+    NUT_CASE(test_divide)
+    NUT_CASE(test_mod)
+    NUT_CASE(test_bit_operator)
+    NUT_CASE(test_to_string)
+    NUT_CASE(test_value_of)
 	NUT_CASES_END()
 
-	void setUp() {}
-	void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
-	void testSmoking()
+    void test_smoking()
 	{
 		// +
 		NUT_TA((BigInteger(12) + BigInteger(13)).llong_value() == 12 + 13);
@@ -55,7 +55,7 @@ NUT_FIXTURE(TestBigInteger)
         NUT_TA(BigInteger(4) % BigInteger(3) == BigInteger(4%3));
 	}
 
-    void testBugs()
+    void test_bugs()
     {
         // bug 无符号除数可能被当成有符号负数
         NUT_TA(BigInteger(999) / BigInteger(131) == BigInteger(999/131));
@@ -65,13 +65,13 @@ NUT_FIXTURE(TestBigInteger)
         NUT_TA(BigInteger(128) % BigInteger(7) == BigInteger(128%7));
 
         // bug 由于操作数和计算结果共享内存，导致计算bug
-        BigInteger a = BigInteger::valueOf("-985809295"), b = BigInteger::valueOf("6369612912");
+        BigInteger a = BigInteger::value_of("-985809295"), b = BigInteger::value_of("6369612912");
         BigInteger c(a);
         c -= b;
         NUT_TA(c == a - b);
     }
 
-	void testComparator()
+    void test_comparator()
 	{
 		NUT_TA(BigInteger(2) < BigInteger(5));
 		NUT_TA(BigInteger(9) > BigInteger(-5));
@@ -79,7 +79,7 @@ NUT_FIXTURE(TestBigInteger)
 		NUT_TA(!(BigInteger(2) < BigInteger(2)));
 	}
 
-	void testMathOperator()
+    void test_math_operator()
 	{
 		// +
         NUT_TA(BigInteger(2) + BigInteger(3) == BigInteger(2 + 3));
@@ -104,7 +104,7 @@ NUT_FIXTURE(TestBigInteger)
 	}
 
 	// 测试除法
-	void testDivide()
+    void test_divide()
 	{
 		NUT_TA(BigInteger(4) / BigInteger(3) == BigInteger(4/3));
 		NUT_TA(BigInteger(3) / BigInteger(4) == BigInteger(3/4));
@@ -124,7 +124,7 @@ NUT_FIXTURE(TestBigInteger)
 	}
 
 	// 测试取余数
-	void testMod()
+    void test_mod()
 	{
 		NUT_TA(BigInteger(4) % BigInteger(3) == BigInteger(4%3));
 		NUT_TA(BigInteger(3) % BigInteger(4) == BigInteger(3%4));
@@ -143,7 +143,7 @@ NUT_FIXTURE(TestBigInteger)
 		NUT_TA(BigInteger(-4) % BigInteger(-4) == BigInteger((-4)%-4));
 	}
 
-	void testBitOperator()
+    void test_bit_operator()
 	{
 		NUT_TA((BigInteger(5) << 2) == BigInteger(5 << 2));
         NUT_TA((BigInteger(5) >> 1) == BigInteger(5 >> 1));
@@ -153,46 +153,46 @@ NUT_FIXTURE(TestBigInteger)
         NUT_TA((BigInteger(-5) >> 1) == (-5 >> 1) && (-5 >> 1) == -3);
     }
 
-    void testToString()
+    void test_to_string()
     {
-        NUT_TA(BigInteger(0).toString() == "0");
-        NUT_TA(BigInteger(0).toWString() == L"0");
+        NUT_TA(BigInteger(0).to_string() == "0");
+        NUT_TA(BigInteger(0).to_wstring() == L"0");
 
-        NUT_TA(BigInteger(10).toString() == "10");
-        NUT_TA(BigInteger(10).toWString() == L"10");
+        NUT_TA(BigInteger(10).to_string() == "10");
+        NUT_TA(BigInteger(10).to_wstring() == L"10");
 
-        NUT_TA(BigInteger(-15).toString() == "-15");
-        NUT_TA(BigInteger(-15).toWString() == L"-15");
+        NUT_TA(BigInteger(-15).to_string() == "-15");
+        NUT_TA(BigInteger(-15).to_wstring() == L"-15");
 
-        NUT_TA(BigInteger(0x4A).toString(0x10) == "4A");
-        NUT_TA(BigInteger(0x4A).toWString(0x10) == L"4A");
+        NUT_TA(BigInteger(0x4A).to_string(0x10) == "4A");
+        NUT_TA(BigInteger(0x4A).to_wstring(0x10) == L"4A");
 
-        NUT_TA(BigInteger(13).toString(8) == "15");
-        NUT_TA(BigInteger(13).toWString(8) == L"15");
+        NUT_TA(BigInteger(13).to_string(8) == "15");
+        NUT_TA(BigInteger(13).to_wstring(8) == L"15");
 
-        NUT_TA(BigInteger(5).toString(2) == "101");
-        NUT_TA(BigInteger(5).toWString(2) == L"101");
+        NUT_TA(BigInteger(5).to_string(2) == "101");
+        NUT_TA(BigInteger(5).to_wstring(2) == L"101");
     }
 
-    void testValueOf()
+    void test_value_of()
     {
-        NUT_TA(BigInteger::valueOf("0").llong_value() == 0);
-        NUT_TA(BigInteger::valueOf(L"0").llong_value() == 0);
+        NUT_TA(BigInteger::value_of("0").llong_value() == 0);
+        NUT_TA(BigInteger::value_of(L"0").llong_value() == 0);
 
-        NUT_TA(BigInteger::valueOf("10").llong_value() == 10);
-        NUT_TA(BigInteger::valueOf(L"10").llong_value() == 10);
+        NUT_TA(BigInteger::value_of("10").llong_value() == 10);
+        NUT_TA(BigInteger::value_of(L"10").llong_value() == 10);
 
-        NUT_TA(BigInteger::valueOf("-14").llong_value() == -14);
-        NUT_TA(BigInteger::valueOf(L"-14").llong_value() == -14);
+        NUT_TA(BigInteger::value_of("-14").llong_value() == -14);
+        NUT_TA(BigInteger::value_of(L"-14").llong_value() == -14);
 
-        NUT_TA(BigInteger::valueOf("4a", 0x10).llong_value() == 0x4a);
-        NUT_TA(BigInteger::valueOf(L"4a", 0x10).llong_value() == 0x4a);
+        NUT_TA(BigInteger::value_of("4a", 0x10).llong_value() == 0x4a);
+        NUT_TA(BigInteger::value_of(L"4a", 0x10).llong_value() == 0x4a);
 
-        NUT_TA(BigInteger::valueOf("15", 8).llong_value() == 13);
-        NUT_TA(BigInteger::valueOf(L"15", 8).llong_value() == 13);
+        NUT_TA(BigInteger::value_of("15", 8).llong_value() == 13);
+        NUT_TA(BigInteger::value_of(L"15", 8).llong_value() == 13);
 
-        NUT_TA(BigInteger::valueOf("101",2).llong_value() == 5);
-        NUT_TA(BigInteger::valueOf(L"101",2).llong_value() == 5);
+        NUT_TA(BigInteger::value_of("101",2).llong_value() == 5);
+        NUT_TA(BigInteger::value_of(L"101",2).llong_value() == 5);
     }
 };
 

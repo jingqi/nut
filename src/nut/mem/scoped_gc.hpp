@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-03-11
- * @last-edit 2014-11-21 22:50:56 jingqi
+ * @last-edit 2015-01-06 22:33:09 jingqi
  */
 
 #ifndef ___HEADFILE_38E24C42_E36D_453F_A61D_4FE033FF649D_
@@ -38,7 +38,7 @@ class scoped_gc
     struct Block
     {
         Block *prev;
-		size_t blockSize;
+		size_t block_size;
         uint8_t body[DEFAULT_BLOCK_BODY_SIZE];
     };
 	NUT_STATIC_ASSERT(sizeof(Block) == DEFAULT_BLOCK_LEN);
@@ -54,23 +54,23 @@ class scoped_gc
     };
 
 	MemAlloc m_mem_alloc;
-	Block *m_currentBlock;
+	Block *m_current_block;
 	uint8_t *m_end;
-    DestructorNode *m_destructChain;
+    DestructorNode *m_destruct_chain;
 
 private:
     explicit scoped_gc(const scoped_gc&);
     scoped_gc& operator=(const scoped_gc&);
 
 	template <typename T>
-	static void destructSingle(void *p)
+	static void destruct_single(void *p)
 	{
 		assert(NULL != p);
 		((T*) p)->~T();
 	}
 
 	template <typename T>
-	static void destructArray(void *p)
+	static void destruct_array(void *p)
 	{
 		assert(NULL != p);
 		size_t count = *(size_t*)p;
@@ -84,7 +84,7 @@ private:
 
 public:
     scoped_gc()
-        : m_currentBlock(NULL), m_end(NULL), m_destructChain(NULL)
+        : m_current_block(NULL), m_end(NULL), m_destruct_chain(NULL)
     {}
 
     ~scoped_gc()
@@ -93,37 +93,36 @@ public:
 	}
 
 private:
-
     void* raw_alloc(size_t cb)
     {
-		if (m_currentBlock->body + cb > m_end)
+		if (m_current_block->body + cb > m_end)
 		{
 			if (cb >= DEFAULT_BLOCK_BODY_SIZE)
 			{
-				Block *newBlk = (Block*) m_mem_alloc.alloc(BLOCK_HEADER_SIZE + cb);
-				assert(NULL != newBlk);
-				newBlk->blockSize = BLOCK_HEADER_SIZE + cb;
-				if (NULL != m_currentBlock)
+				Block *new_blk = (Block*) m_mem_alloc.alloc(BLOCK_HEADER_SIZE + cb);
+				assert(NULL != new_blk);
+				new_blk->block_size = BLOCK_HEADER_SIZE + cb;
+				if (NULL != m_current_block)
 				{
-					newBlk->prev = m_currentBlock->prev;
-					m_currentBlock->prev = newBlk;
+					new_blk->prev = m_current_block->prev;
+					m_current_block->prev = new_blk;
 				}
 				else
 				{
-					newBlk->prev = NULL;
-					m_currentBlock = newBlk;
-					m_end = m_currentBlock->body;
+					new_blk->prev = NULL;
+					m_current_block = new_blk;
+					m_end = m_current_block->body;
 				}
-				return newBlk->body;
+				return new_blk->body;
 			}
 			else
 			{
-				Block *newBlk = (Block*) m_mem_alloc.alloc(DEFAULT_BLOCK_LEN);
-				assert(NULL != newBlk);
-				newBlk->blockSize = DEFAULT_BLOCK_LEN;
-				newBlk->prev = m_currentBlock;
-				m_currentBlock = newBlk;
-				m_end = m_currentBlock->body + DEFAULT_BLOCK_BODY_SIZE;
+				Block *new_blk = (Block*) m_mem_alloc.alloc(DEFAULT_BLOCK_LEN);
+				assert(NULL != new_blk);
+				new_blk->block_size = DEFAULT_BLOCK_LEN;
+				new_blk->prev = m_current_block;
+				m_current_block = new_blk;
+				m_end = m_current_block->body + DEFAULT_BLOCK_BODY_SIZE;
 			}
 		}
 		m_end -= cb;
@@ -135,8 +134,8 @@ private:
 		DestructorNode *dn = (DestructorNode*) raw_alloc(sizeof(DestructorNode) + cb);
 		assert(NULL != dn);
 		dn->destruct_func = func;
-		dn->prev = m_destructChain;
-		m_destructChain = dn;
+		dn->prev = m_destruct_chain;
+		m_destruct_chain = dn;
 		return dn + 1;
 	}
 
@@ -146,26 +145,26 @@ private:
 		assert(NULL != dn);
 		dn->destruct_func = func;
 		*(size_t*)(dn + 1) = count;
-		dn->prev = m_destructChain;
-		m_destructChain = dn;
+		dn->prev = m_destruct_chain;
+		m_destruct_chain = dn;
 		return ((size_t*)(dn + 1)) + 1;
 	}
 
 public:
     void clear()
     {
-        while (NULL != m_destructChain)
+        while (NULL != m_destruct_chain)
         {
-            assert(NULL != m_destructChain->destruct_func);
-            m_destructChain->destruct_func(m_destructChain + 1);
-            m_destructChain = m_destructChain->prev;
+            assert(NULL != m_destruct_chain->destruct_func);
+            m_destruct_chain->destruct_func(m_destruct_chain + 1);
+            m_destruct_chain = m_destruct_chain->prev;
         }
 
-        while (NULL != m_currentBlock)
+        while (NULL != m_current_block)
         {
-			Block *prev = m_currentBlock->prev;
-			m_mem_alloc.free((uint8_t*) m_currentBlock, m_currentBlock->blockSize);
-			m_currentBlock = prev;
+			Block *prev = m_current_block->prev;
+			m_mem_alloc.free((uint8_t*) m_current_block, m_current_block->block_size);
+			m_current_block = prev;
         }
 		m_end = NULL;
     }
@@ -180,7 +179,7 @@ public:
     template <typename T>
     T* gc_new()
     {
-		T *ret = (T*) alloc(sizeof(T), destructSingle<T>);
+		T *ret = (T*) alloc(sizeof(T), destruct_single<T>);
 		assert(NULL != ret);
 		new (ret) T;
 		return ret;
@@ -189,7 +188,7 @@ public:
     template <typename T, typename A1>
     T* gc_new(A1 a1)
     {
-		T *ret = (T*) alloc(sizeof(T), destructSingle<T>);
+		T *ret = (T*) alloc(sizeof(T), destruct_single<T>);
 		assert(NULL != ret);
 		new (ret) T(RefargTraits<A1>::value(a1));
 		return ret;
@@ -198,7 +197,7 @@ public:
     template <typename T, typename A1, typename A2>
     T* gc_new(A1 a1, A2 a2)
     {
-		T *ret = (T*) alloc(sizeof(T), destructSingle<T>);
+		T *ret = (T*) alloc(sizeof(T), destruct_single<T>);
 		assert(NULL != ret);
 		new (ret) T(RefargTraits<A1>::value(a1), RefargTraits<A2>::value(a2));
 		return ret;
@@ -207,7 +206,7 @@ public:
 	template <typename T>
 	T* gc_new_array(size_t count)
 	{
-		T *ret = (T*) alloc(sizeof(T), count, destructArray<T>);
+		T *ret = (T*) alloc(sizeof(T), count, destruct_array<T>);
 		assert(NULL != ret);
 		for (int i = 0; i < (int) count; ++i)
 		{

@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-03-05
- * @last-edit 2014-06-14 20:53:52 jingqi
+ * @last-edit 2015-01-06 23:15:48 jingqi
  * @brief
  *      基本上大部分的无锁并发数据结构都是依靠处理器提供的CAS(compare and swap)操作来
  * 实现的; 包括原子加、原子减、自旋锁等也是依靠这个来实现的。
@@ -354,11 +354,17 @@ union TagedPtr
 
     cas_type cas;
 
-    TagedPtr() : cas(0) {}
+    TagedPtr()
+        : cas(0)
+    {}
 
-    TagedPtr(T *p, tag_type t) : ptr(p), tag(t) {}
+    TagedPtr(T *p, tag_type t)
+        : ptr(p), tag(t)
+    {}
 
-    TagedPtr(cas_type c) : cas(c) {}
+    TagedPtr(cas_type c)
+        : cas(c)
+    {}
 };
 
 NUT_STATIC_ASSERT(sizeof(void*) == sizeof(TagedPtr<void>::tag_type));

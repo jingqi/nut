@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-03-06
- * @last-edit 2014-10-19 00:31:16 jingqi
+ * @last-edit 2015-01-06 23:54:37 jingqi
  */
 
 #ifndef ___HEADFILE_D7B6E0B3_59D4_458E_A8EB_0878F6F42145_
@@ -58,17 +58,17 @@ public:
     }
 
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-    inline CRITICAL_SECTION* innerMutex()
+    inline CRITICAL_SECTION* inner_mutex()
     {
         return &m_criticalSection;
     }
 #elif defined(NUT_PLATFORM_OS_MAC)
-    inline pthread_mutex_t* innerMutex()
+    inline pthread_mutex_t* inner_mutex()
     {
         return &m_spinlock;
     }
 #else
-    inline pthread_spinlock_t* innerMutex()
+    inline pthread_spinlock_t* inner_mutex()
     {
         return &m_spinlock;
     }

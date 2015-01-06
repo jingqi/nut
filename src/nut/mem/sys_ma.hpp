@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-04-05
- * @last-edit 2012-04-05 14:55:11 jingqi
+ * @last-edit 2015-01-06 22:28:46 jingqi
  */
 
 #ifndef ___HEADFILE_635293EA_4990_413E_A43D_3868BE4E99C7_
@@ -26,14 +26,14 @@ public:
     sys_ma() {}
     ~sys_ma() {}
 
-    inline void* alloc(size_t cb)
+    void* alloc(size_t cb)
     {
         void* ret = ::malloc(cb);
         assert(NULL != ret);
         return ret;
     }
 
-    inline void* realloc(void *p, size_t cb, size_t new_cb)
+    void* realloc(void *p, size_t cb, size_t new_cb)
     {
         assert(NULL != p);
         (void) cb; // unused
@@ -42,7 +42,7 @@ public:
         return ret;
     }
 
-    inline void free(void *p, size_t cb)
+    void free(void *p, size_t cb)
     {
         assert(NULL != p);
 		(void) cb; // unused
@@ -53,4 +53,3 @@ public:
 }
 
 #endif /* head file guarder */
-

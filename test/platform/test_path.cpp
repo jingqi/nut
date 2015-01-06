@@ -9,21 +9,21 @@ using namespace nut;
 NUT_FIXTURE(TestPath)
 {
 	NUT_CASES_BEGIN()
-    NUT_CASE(testSplit)
-    NUT_CASE(testSplitW)
-    NUT_CASE(testSplitDrive)
-    NUT_CASE(testSplitDriveW)
-    NUT_CASE(testSplitExt)
-    NUT_CASE(testSplitExtW)
-    NUT_CASE(testJoin)
-    NUT_CASE(testJoinW)
-    NUT_CASE(testAbspath)
+    NUT_CASE(test_split)
+    NUT_CASE(test_splitw)
+    NUT_CASE(test_split_drive)
+    NUT_CASE(test_split_drivew)
+    NUT_CASE(test_split_ext)
+    NUT_CASE(test_split_extw)
+    NUT_CASE(test_join)
+    NUT_CASE(test_joinw)
+    NUT_CASE(test_abspath)
     NUT_CASES_END()
 
-	void setUp() {}
-	void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
-	void testSplit()
+    void test_split()
 	{
         NUT_TA(Path::split("ab/c/d").first == "ab/c");
         NUT_TA(Path::split("ab/c/d").second == "d");
@@ -35,7 +35,7 @@ NUT_FIXTURE(TestPath)
         NUT_TA(Path::split("c:\\tmp").second == "tmp");
 	}
 
-	void testSplitW()
+    void test_splitw()
 	{
         NUT_TA(Path::split(L"ab/c/d").first == L"ab/c");
         NUT_TA(Path::split(L"ab/c/d").second == L"d");
@@ -47,7 +47,7 @@ NUT_FIXTURE(TestPath)
         NUT_TA(Path::split(L"c:\\tmp").second == L"tmp");
 	}
 
-    void testSplitDrive()
+    void test_split_drive()
     {
         NUT_TA(Path::splitdrive("c:\\mn\\p").first == "c:");
         NUT_TA(Path::splitdrive("c:\\mn\\p").second == "\\mn\\p");
@@ -56,7 +56,7 @@ NUT_FIXTURE(TestPath)
         NUT_TA(Path::splitdrive("/mnt/sdcard").second == "/mnt/sdcard");
     }
 
-    void testSplitDriveW()
+    void test_split_drivew()
     {
         NUT_TA(Path::splitdrive(L"c:\\mn\\p").first == L"c:");
         NUT_TA(Path::splitdrive(L"c:\\mn\\p").second == L"\\mn\\p");
@@ -65,19 +65,19 @@ NUT_FIXTURE(TestPath)
         NUT_TA(Path::splitdrive(L"/mnt/sdcard").second == L"/mnt/sdcard");
     }
 
-    void testSplitExt()
+    void test_split_ext()
     {
         NUT_TA(Path::splitext("a.txt").first == "a");
         NUT_TA(Path::splitext("a.txt").second == ".txt");
     }
 
-    void testSplitExtW()
+    void test_split_extw()
     {
         NUT_TA(Path::splitext(L"a.txt").first == L"a");
         NUT_TA(Path::splitext(L"a.txt").second == L".txt");
     }
 
-    void testJoin()
+    void test_join()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         NUT_TA(Path::join("a", "b") == "a\\b");
@@ -89,7 +89,7 @@ NUT_FIXTURE(TestPath)
         NUT_TA(Path::join("c:", "\\tmp") == "c:\\tmp");
     }
 
-    void testJoinW()
+    void test_joinw()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         NUT_TA(Path::join(L"a", L"b") == L"a\\b");
@@ -101,7 +101,7 @@ NUT_FIXTURE(TestPath)
         NUT_TA(Path::join(L"c:", L"\\tmp") == L"c:\\tmp");
     }
 
-    void testAbspath()
+    void test_abspath()
     {
         // cout << Path::abspath("/a//c");
 

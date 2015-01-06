@@ -489,7 +489,7 @@ inline bool ascii_to_wstr(const char *str, std::wstring *out)
 		return false;
 	out->resize(n - 1);
 	const int rs = ::MultiByteToWideChar(CP_ACP, 0, str, -1, &(*out)[0], n - 1);
-	assert(out->length() == n - 1);
+    assert(((int) out->length()) == n - 1);
 	return rs > 0;
 #else
 	const int n = (int) ::mbstowcs(NULL, str, 0); // 返回值未包含 '\0'
@@ -532,7 +532,7 @@ inline bool wstr_to_ascii(const wchar_t *wstr, std::string *out)
 		return false;
 	out->resize(n - 1);
 	const int rs = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, &(*out)[0], n - 1, NULL, NULL);
-	assert(out->length() == n - 1);
+    assert(((int) out->length()) == n - 1);
 	return rs > 0;
 #else
 	const int n = (int) ::wcstombs(NULL, wstr, 0);
@@ -575,7 +575,7 @@ inline bool utf8_to_wstr(const char *str, std::wstring *out)
 		return false;
 	out->resize(n - 1);
 	const int rs = ::MultiByteToWideChar(CP_UTF8, 0, str, -1, &(*out)[0], n - 1);
-	assert(out->length() == n - 1);
+    assert(((int) out->length()) == n - 1);
 	return rs > 0;
 #else
 	return ascii_to_wstr(str, out);
@@ -612,7 +612,7 @@ inline bool wstr_to_utf8(const wchar_t *wstr, std::string *out)
 		return false;
 	out->resize(n - 1);
 	const int rs = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, &(*out)[0], n - 1, NULL, NULL);
-	assert(out->length() == n - 1);
+    assert(((int) out->length()) == n - 1);
 	return rs > 0;
 #else
 	return wstr_to_ascii(wstr, out);

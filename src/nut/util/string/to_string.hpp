@@ -1,8 +1,10 @@
 ﻿/**
  * @file -
  * @author jingqi
- * @date 
- * @last-edit 2012-08-04 13:27:56 jingqi
+ * @date
+ * @last-edit 2015-01-06 23:47:28 jingqi
+ * @brief
+ *		扩展 std::to_string()
  */
 
 #ifndef ___HEADFILE_791BEBBF_7FE0_40BA_AC96_703F0C8F38C1_
@@ -26,18 +28,12 @@
 namespace nut
 {
 
-template <typename T>
-inline std::string toString(const T &v)
-{
-    return v.toString();
-}
-
-inline std::string toString(char c)
+inline std::string c_to_str(char c)
 {
     return std::string(1,c);
 }
 
-inline std::string toString(long long i)
+inline std::string ll_to_str(long long i)
 {
     const int BUF_SIZE = 60;
     char buf[BUF_SIZE];
@@ -51,21 +47,21 @@ inline std::string toString(long long i)
     return buf;
 }
 
-inline std::string toString(unsigned char i) { return toString((long long)i); }
-inline std::string toString(short i) { return toString((long long)i); }
-inline std::string toString(unsigned short i) { return toString((long long)i); }
-inline std::string toString(int i) { return toString((long long)i); }
-inline std::string toString(unsigned int i) { return toString((long long) i); }
-inline std::string toString(long i) { return toString((long long) i); }
-inline std::string toString(unsigned long i) { return toString((long long) i); }
-inline std::string toString(unsigned long long i) { return toString((long long) i); }
+inline std::string uc_to_str(unsigned char i) { return ll_to_str((long long)i); }
+inline std::string s_to_str(short i) { return ll_to_str((long long)i); }
+inline std::string us_to_str(unsigned short i) { return ll_to_str((long long)i); }
+inline std::string i_to_str(int i) { return ll_to_str((long long)i); }
+inline std::string ui_to_str(unsigned int i) { return ll_to_str((long long) i); }
+inline std::string l_to_str(long i) { return ll_to_str((long long) i); }
+inline std::string ul_to_str(unsigned long i) { return ll_to_str((long long) i); }
+inline std::string ull_to_str(unsigned long long i) { return ll_to_str((long long) i); }
 
-inline std::string toString(bool b)
+inline std::string b_to_str(bool b)
 {
     return (b ? "true" : "false");
 }
 
-inline std::string toString(double d)
+inline std::string d_to_str(double d)
 {
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
@@ -74,7 +70,7 @@ inline std::string toString(double d)
     return buf;
 }
 
-inline std::string toString(float f)
+inline std::string f_to_str(float f)
 {
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
@@ -83,7 +79,7 @@ inline std::string toString(float f)
     return buf;
 }
 
-inline std::string toString(const void *p)
+inline std::string ptr_to_str(const void *p)
 {
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
@@ -97,13 +93,8 @@ inline std::string toString(const void *p)
     return buf;
 }
 
-inline std::string toString(void *p)
-{
-    return toString((const void*)p);
-}
-
 /** 打印内存块 */
-inline std::string toString(const void *p, size_t align, size_t count)
+inline std::string ptr_to_str(const void *p, size_t align, size_t count)
 {
     assert(NULL != p && 0 != align && 0 != count);
     std::string ret;
@@ -114,7 +105,7 @@ inline std::string toString(const void *p, size_t align, size_t count)
     for (size_t i = 0; i < count; ++i)
     {
         if (i % 0x08 == 0)
-            ret += toString((const void*)current);
+            ret += ptr_to_str((const void*)current);
 
         std::string single;
         for (size_t j = 0; j < align; ++j)
@@ -132,12 +123,7 @@ inline std::string toString(const void *p, size_t align, size_t count)
     return ret;
 }
 
-inline std::string toString(void *p, size_t align, size_t count)
-{
-    return toString((const void*)p, align, count);
-}
-
-inline std::string toString(const char *str)
+inline std::string s_to_str(const char *str)
 {
     assert(NULL != str);
     if (NULL == str)
@@ -145,7 +131,7 @@ inline std::string toString(const char *str)
     return str;
 }
 
-inline std::string toString(const char *str, size_t size, const char *fillNul = "\\0")
+inline std::string s_to_str(const char *str, size_t size, const char *fillNul = "\\0")
 {
     assert(NULL != str && NULL != fillNul);
     if (NULL == str)
@@ -162,27 +148,7 @@ inline std::string toString(const char *str, size_t size, const char *fillNul = 
     return ret;
 }
 
-inline std::string toString(const std::string &s)
-{
-    return s;
-}
-
-template <typename T>
-inline std::string toString(const std::vector<T> &v, const std::string &split = ", ")
-{
-    std::string ret("[");
-    if (v.size() >= 1)
-        ret += toString(v[0]);
-    for (size_t i = 1; i < v.size(); ++i)
-    {
-        ret += split;
-        ret += toString(v[i]);
-    }
-    ret += "]";
-    return ret;
-}
-
-inline long toInteger(const std::string& s)
+inline long str_to_l(const std::string& s)
 {
     long ret = 0;
     sscanf(s.c_str(), "%ld", &ret);
@@ -197,4 +163,3 @@ inline long toInteger(const std::string& s)
 #endif
 
 #endif
-

@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-03-02
- * @last-edit 2012-03-02 21:21:56 jingqi
+ * @last-edit 2015-01-06 19:36:21 jingqi
  */
 
 #ifndef ___HEADFILE_CFEF4EB8_082C_417F_A58C_9D65C9F3DAD1_
@@ -31,10 +31,10 @@ public:
     {
         while (NULL != sub_root)
         {
-            if (key < sub_root->getKey())
-                sub_root = sub_root->getLeftChild();
-            else if (sub_root->getKey() < key)
-                sub_root = sub_root->getRightChild();
+            if (key < sub_root->get_key())
+                sub_root = sub_root->get_left_child();
+            else if (sub_root->get_key() < key)
+                sub_root = sub_root->get_right_child();
             else
                 return sub_root;
         }
@@ -50,29 +50,29 @@ public:
     {
         assert(NULL != new_node);
         NODE *parent = NULL;
-        bool insertToLeft = true;
+        bool insert_to_left = true;
         for (NODE *x = root; NULL != x; )
         {
             parent = x;
-            if (new_node->getKey() < x->getKey())
+            if (new_node->get_key() < x->get_key())
             {
-                x = x->getLeftChild();
-                insertToLeft = true;
+                x = x->get_left_child();
+                insert_to_left = true;
             }
             else
             {
-                x = x->getRightChild();
-                insertToLeft = false;
+                x = x->get_right_child();
+                insert_to_left = false;
             }
         }
 
-        new_node->setParent(parent);
+        new_node->set_parent(parent);
         if (NULL == parent)
             root = new_node;
-        else if (insertToLeft)
-            parent->setLeftChild(new_node);
+        else if (insert_to_left)
+            parent->set_left_child(new_node);
         else
-            parent->setRightChild(new_node);
+            parent->set_right_child(new_node);
         return root;
     }
 
@@ -85,39 +85,39 @@ public:
     {
         assert(NULL != to_be_del);
         NODE *escaper = NULL;
-        if (NULL == to_be_del->getLeftChild() || NULL == to_be_del->getRightChild())
+        if (NULL == to_be_del->get_left_child() || NULL == to_be_del->get_right_child())
             escaper = to_be_del;
         else
             escaper = successor(to_be_del);
 
         NODE *sublink = NULL;
-        if (NULL != escaper->getLeftChild())
-            sublink = escaper->getLeftChild();
+        if (NULL != escaper->get_left_child())
+            sublink = escaper->get_left_child();
         else
-            sublink = escaper->getRightChild();
+            sublink = escaper->get_right_child();
 
-        NODE *sublink_parent = escaper->getParent();
+        NODE *sublink_parent = escaper->get_parent();
         if (NULL != sublink)
-            sublink->setParent(sublink_parent);
+            sublink->set_parent(sublink_parent);
 
         if (NULL == sublink_parent)
             root = sublink;
-        else if (escaper == sublink_parent->getLeftChild())
-            sublink_parent->setLeftChild(sublink);
+        else if (escaper == sublink_parent->get_left_child())
+            sublink_parent->set_left_child(sublink);
         else
-            sublink_parent->setRightChild(sublink);
+            sublink_parent->set_right_child(sublink);
 
         if (escaper != to_be_del)
         {
-            escaper->setParent(to_be_del->getParent());
-            escaper->setLeftChild(to_be_del->getLeftChild());
-            escaper->setRightChild(to_be_del->getRightChild());
-            if (NULL == to_be_del->getParent())
+            escaper->set_parent(to_be_del->get_parent());
+            escaper->set_left_child(to_be_del->get_left_child());
+            escaper->set_right_child(to_be_del->get_right_child());
+            if (NULL == to_be_del->get_parent())
                 root = escaper;
-            else if (to_be_del == to_be_del->getParent()->getLeftChild())
-                to_be_del->getParent()->setLeftChild(escaper);
+            else if (to_be_del == to_be_del->get_parent()->get_left_child())
+                to_be_del->get_parent()->set_left_child(escaper);
             else
-                to_be_del->getParent()->setRightChild(escaper);
+                to_be_del->get_parent()->set_right_child(escaper);
         }
         return root;
     }
@@ -128,19 +128,19 @@ public:
     static NODE* minimum(NODE *sub_root)
     {
         assert(NULL != sub_root);
-        while (NULL != sub_root->getLeftChild())
-            sub_root = sub_root->getLeftChild();
+        while (NULL != sub_root->get_left_child())
+            sub_root = sub_root->get_left_child();
         return sub_root;
     }
-    
+
     /**
      * 找到最大数据所在的节点
      */
     static NODE* maximum(NODE *sub_root)
     {
         assert(NULL != sub_root);
-        while (NULL != sub_root->getRightChild())
-            sub_root = sub_root->getRightChild();
+        while (NULL != sub_root->get_right_child())
+            sub_root = sub_root->get_right_child();
         return sub_root;
     }
 
@@ -150,30 +150,30 @@ public:
     static NODE* successor(NODE *x)
     {
         assert(NULL != x);
-        if (NULL != x->getRightChild())
-            return minimum(x->getRightChild());
-        NODE *parent = x->getParent();
-        while (NULL != parent && x == parent->getRightChild())
+        if (NULL != x->get_right_child())
+            return minimum(x->get_right_child());
+        NODE *parent = x->get_parent();
+        while (NULL != parent && x == parent->get_right_child())
         {
             x = parent;
-            parent = x->getParent();
+            parent = x->get_parent();
         }
         return parent;
     }
-    
+
     /**
      * 按照数据大小顺序找到上一个结点
      */
     static NODE* predecessor(NODE *x)
     {
         assert(NULL != x);
-        if (NULL != x->getLeftChild())
-            return maximum(x->getLeftChild());
-        NODE *parent = x->getParent();
-        while (NULL != parent && x == parent->getLeftChild())
+        if (NULL != x->get_left_child())
+            return maximum(x->get_left_child());
+        NODE *parent = x->get_parent();
+        while (NULL != parent && x == parent->get_left_child())
         {
             x = parent;
-            parent = x->getParent();
+            parent = x->get_parent();
         }
         return parent;
     }
@@ -182,4 +182,3 @@ public:
 }
 
 #endif /* head file guarder */
-

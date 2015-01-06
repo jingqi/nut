@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-06-23
- * @last-edit 2014-07-17 21:27:14 jingqi
+ * @last-edit 2015-01-06 23:10:59 jingqi
  */
 
 #ifndef ___HEADFILE_291DFB4C_7D29_4D61_A691_EF83FB86CD36_
@@ -34,7 +34,7 @@ namespace nut
 class OS
 {
 private:
-    OS() {}
+    OS(); // invalid
 
 public:
 
@@ -123,7 +123,7 @@ public:
         return ret;
     }
 
-    static inline std::vector<std::string> listdir(const std::string& path, bool except_file = false,
+    static std::vector<std::string> listdir(const std::string& path, bool except_file = false,
             bool except_dir = false, bool except_initial_dot = false)
     {
         std::vector<std::string> ret;
@@ -180,7 +180,7 @@ public:
 #endif
     }
 
-    static inline std::vector<std::wstring> listdir(const wchar_t* path, bool except_file = false,
+    static std::vector<std::wstring> listdir(const wchar_t* path, bool except_file = false,
         bool except_dir = false, bool except_initial_dot = false)
     {
         std::vector<std::wstring> ret;
@@ -188,7 +188,7 @@ public:
         return ret;
     }
 
-    static inline std::vector<std::wstring> listdir(const std::wstring& path, bool except_file = false,
+    static std::vector<std::wstring> listdir(const std::wstring& path, bool except_file = false,
         bool except_dir = false, bool except_initial_dot = false)
     {
         std::vector<std::wstring> ret;
@@ -230,7 +230,7 @@ public:
 #endif
     }
 
-    static inline bool copyfile(const std::string& src, const std::string& dest)
+    static bool copyfile(const std::string& src, const std::string& dest)
     {
         return copyfile(src.c_str(), dest.c_str());
     }
@@ -247,23 +247,23 @@ public:
 #endif
     }
 
-    static inline bool copyfile(const std::wstring& src, const std::wstring& dest)
+    static bool copyfile(const std::wstring& src, const std::wstring& dest)
     {
         return copyfile(src.c_str(), dest.c_str());
     }
 
-    static inline bool removefile(const char *path)
+    static bool removefile(const char *path)
     {
         assert(NULL != path);
         return -1 != ::remove(path);
     }
 
-    static inline bool removefile(const std::string& path)
+    static bool removefile(const std::string& path)
     {
         return removefile(path.c_str());
     }
 
-    static inline bool removefile(const wchar_t *path)
+    static bool removefile(const wchar_t *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -274,12 +274,12 @@ public:
 #endif
     }
 
-    static inline bool removefile(const std::wstring& path)
+    static bool removefile(const std::wstring& path)
     {
         return removefile(path.c_str());
     }
 
-    static inline bool mkdir(const char *path)
+    static bool mkdir(const char *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -289,12 +289,12 @@ public:
 #endif
     }
 
-    static inline bool mkdir(const std::string& path)
+    static bool mkdir(const std::string& path)
     {
         return mkdir(path.c_str());
     }
 
-    static inline bool mkdir(const wchar_t *path)
+    static bool mkdir(const wchar_t *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -305,7 +305,7 @@ public:
 #endif
     }
 
-    static inline bool mkdir(const std::wstring& path)
+    static bool mkdir(const std::wstring& path)
     {
         return mkdir(path.c_str());
     }
@@ -313,7 +313,7 @@ public:
     /**
      * 删除空目录
      */
-    static inline bool removedir(const char *path)
+    static bool removedir(const char *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -323,12 +323,12 @@ public:
 #endif
     }
 
-    static inline bool removedir(const std::string& path)
+    static bool removedir(const std::string& path)
     {
         return removedir(path.c_str());
     }
 
-    static inline bool removedir(const wchar_t *path)
+    static bool removedir(const wchar_t *path)
     {
         assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -339,7 +339,7 @@ public:
 #endif
     }
 
-    static inline bool removedir(const std::wstring& path)
+    static bool removedir(const std::wstring& path)
     {
         return removedir(path.c_str());
     }
@@ -430,7 +430,7 @@ public:
 #endif
     }
 
-    static inline bool removetree(const std::string& path)
+    static bool removetree(const std::string& path)
     {
         return removetree(path.c_str());
     }
@@ -485,7 +485,7 @@ public:
 #endif
     }
 
-    static inline bool removetree(const std::wstring& path)
+    static bool removetree(const std::wstring& path)
     {
         return removetree(path.c_str());
     }

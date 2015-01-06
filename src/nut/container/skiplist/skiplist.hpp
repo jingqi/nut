@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-08-29
- * @last-edit 2014-11-21 22:45:58 jingqi
+ * @last-edit 2015-01-06 19:44:34 jingqi
  * @brief
  */
 
@@ -16,16 +16,16 @@
  *
  * @param K 键值类型，要求能用 "<" 操作符比较大小
  * @param NODE 节点类型，要求实现以下方法
- *      getKey() 获取键值
- *      getLevel() 获取 0-based 层数
- *      setLevel(int) 设置层数，并自动分配 level+1 长度的 next 数组
- *      getNext(int) 获取指定层数的指针
- *      setNext(int,NODE*) 设置指定层数的指针
+ *      const K& get_key()       获取键值
+ *      int get_level()          获取 0-based 层数
+ *      void set_level(int)      设置层数，并自动分配 level+1 长度的 next 数组
+ *      NODE* get_next(int)      获取指定层数的指针
+ *      void set_next(int,NODE*) 设置指定层数的指针
  * @param SL 跳表数据结构本身，要求实现以下方法
- *      getLevel() 获取跳表 0-based 层数
- *      setLevel(int) 设置层数，并自动分配 level+1 长度的 head 数组
- *      getHead(int) 获取跳表头
- *      setHead(int,NODE*) 设置跳表头
+ *      int get_level()          获取跳表 0-based 层数
+ *      void set_level(int)      设置层数，并自动分配 level+1 长度的 head 数组
+ *      NODE get_head(int)       获取跳表头
+ *      void set_head(int,NODE*) 设置跳表头
  */
 template <typename K, typename NODE, typename SL>
 class SkipList
@@ -46,7 +46,7 @@ public:
      *
      * @return 0-based
      */
-    static int randomLevel()
+    static int random_level()
     {
         int k = 0;
         while (k < MAX_LEVEL && 0 != (rand() & 0x01))
@@ -61,17 +61,17 @@ public:
      * @param sl        跳表本身
      * @param pre_lv    存放返回值，可以是 NULL. 存放前向节点的返回值数组，长度为 (level+1).
      */
-    static NODE* searchNode(const K& key, const SL& sl, NODE **pre_lv)
+    static NODE* search_node(const K& key, const SL& sl, NODE **pre_lv)
     {
         NODE *ret = NULL;
         NODE *pre = NULL;
-        int lv = sl.getLevel();
+        int lv = sl.get_level();
         assert(lv >= 0);
         do
         {
             while (true)
             {
-                NODE *n = (NULL == pre ? sl.getHead(lv) : pre->getNext(lv));
+                NODE *n = (NULL == pre ? sl.get_head(lv) : pre->get_next(lv));
                 if (NULL == n)
                 {
                     if (NULL != pre_lv)
@@ -79,13 +79,13 @@ public:
                     break;
                 }
 
-                if (key < n->getKey())
+                if (key < n->get_key())
                 {
                     if (NULL != pre_lv)
                         pre_lv[lv] = pre;
                     break;
                 }
-                else if (n->getKey() < key)
+                else if (n->get_key() < key)
                 {
                     pre = n;
                 }
@@ -115,39 +115,39 @@ public:
      * @param sl        跳表本身
      * @param pre_lv    前向节点数组，长度为 (level+1)
      */
-    static void insertNode(NODE *n, SL& sl, NODE** pre_lv)
+    static void insert_node(NODE *n, SL& sl, NODE** pre_lv)
     {
         assert(NULL != n && NULL != pre_lv);
 
         // random level
-        if (n->getLevel() < 0)
-            n->setLevel(randomLevel());
+        if (n->get_level() < 0)
+            n->set_level(random_level());
 
         // adjust low-half level
-        const int sl_level = sl.getLevel(), n_level = n->getLevel();
+        const int sl_level = sl.get_level(), n_level = n->get_level();
         assert(sl_level >= 0 && n_level >= 0);
         for (int i = 0; i <= sl_level && i <= n_level; ++i)
         {
             if (NULL == pre_lv[i])
             {
-                n->setNext(i, sl.getHead(i));
-                sl.setHead(i, n);
+                n->set_next(i, sl.get_head(i));
+                sl.set_head(i, n);
             }
             else
             {
-                n->setNext(i, pre_lv[i]->getNext(i));
-                pre_lv[i]->setNext(i, n);
+                n->set_next(i, pre_lv[i]->get_next(i));
+                pre_lv[i]->set_next(i, n);
             }
         }
 
         // adjust high-half level
         if (n_level > sl_level)
         {
-            sl.setLevel(n_level);
+            sl.set_level(n_level);
             for (int i = sl_level + 1; i <= n_level; ++i)
             {
-                sl.setHead(i, n);
-                n->setNext(i, NULL);
+                sl.set_head(i, n);
+                n->set_next(i, NULL);
             }
         }
     }
@@ -159,17 +159,17 @@ public:
      * @param sl        跳表本身
      * @param pre_lv    前向节点数组，长度为 (level+1)
      */
-    static void removeNode(NODE *n, SL& sl, NODE **pre_lv)
+    static void remove_node(NODE *n, SL& sl, NODE **pre_lv)
     {
         assert(NULL != n && NULL != pre_lv);
-        const int sl_level = sl.getLevel(), n_level = n->getLevel();
+        const int sl_level = sl.get_level(), n_level = n->get_level();
         assert(sl_level >= 0 && n_level >= 0);
         for (int i = 0; i <= sl_level && i <= n_level; ++i)
         {
             if (NULL == pre_lv[i])
-                sl.setHead(i, n->getNext(i));
+                sl.set_head(i, n->get_next(i));
             else
-                pre_lv[i]->setNext(i, n->getNext(i));
+                pre_lv[i]->set_next(i, n->get_next(i));
         }
     }
 };

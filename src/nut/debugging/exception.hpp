@@ -12,7 +12,7 @@
 
 namespace nut
 {
-    
+
 /**
  * 带源文件名等调试信息的异常类型
  * @param CharT 错误信息的字符格式, 可以是 char、wchar_t 等
@@ -22,8 +22,8 @@ class ExceptionBase : public std::exception
 {
     long m_code;                 // 错误码
     StringT m_message;           // 错误附带信息
-    const char *m_sourceFile;    // 源代码文件
-    int m_sourceLine;            // 源代码行数
+    const char *m_source_file;   // 源代码文件
+    int m_source_line;           // 源代码行数
     const char *m_func;          // 源代码函数
 
 public :
@@ -35,25 +35,32 @@ public :
      * @param fc 源代码函数， __FUNCTION__
      */
     ExceptionBase(long cd, StringT msg, const char *sf = NULL, int sl = -1, const char *fc = NULL)
-        : m_code(cd), m_message(msg), m_sourceFile(sf), m_sourceLine(sl), m_func(fc)
+        : m_code(cd), m_message(msg), m_source_file(sf), m_source_line(sl), m_func(fc)
     {}
 
-    virtual ~ExceptionBase() throw() {}
+    virtual ~ExceptionBase() throw()
+    {}
 
     /// 获取错误码
-    long getCode() const { return m_code; }
+    long get_code() const
+    {
+        return m_code;
+    }
 
     /// 获取出错信息
-    StringT getMessage() const { return m_message; }
+    StringT get_message() const
+    {
+        return m_message;
+    }
 
     /// 获取源文件名
-    const char* getSourceFile() const
+    const char* get_source_file() const
     {
-        if (NULL == m_sourceFile)
+        if (NULL == m_source_file)
             return NULL;
 
-        const char *ret = m_sourceFile;
-        for (const char *i = m_sourceFile; '\0' != *i; ++i)
+        const char *ret = m_source_file;
+        for (const char *i = m_source_file; '\0' != *i; ++i)
         {
             if ('\\' == *i || '/' == *i)
                 ret = i + 1;
@@ -62,13 +69,22 @@ public :
     }
 
     /// 获取源文件路径
-    const char* getSourcePath() const { return m_sourceFile; }
+    const char* get_source_path() const
+    {
+        return m_source_file;
+    }
 
     /// 获取源文件行数
-    int getSourceLine() const { return m_sourceLine; }
+    int get_source_line() const
+    {
+        return m_source_line;
+    }
 
     /// 获取源文件函数名
-    const char* getSourceFunc() const { return m_func; }
+    const char* get_source_func() const
+    {
+        return m_func;
+    }
 };
 
 typedef ExceptionBase<std::string> ExceptionA;
@@ -82,4 +98,3 @@ typedef ExceptionA Exception;
 #endif
 
 #endif /* head file guarder */
-

@@ -1,7 +1,7 @@
-
+Ôªø
 #include <nut/unittest/unittest.hpp>
 
-#include <nut/container/bytearray.hpp>
+#include <nut/container/byte_array.hpp>
 
 using namespace std;
 using namespace nut;
@@ -9,60 +9,60 @@ using namespace nut;
 NUT_FIXTURE(TestByteArray)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testToString)
-    NUT_CASE(testValueOf)
-    NUT_CASE(testCopyOnWrite)
-    NUT_CASE(testBug1)
+    NUT_CASE(test_to_string)
+    NUT_CASE(test_value_of)
+    NUT_CASE(test_copy_on_write)
+    NUT_CASE(test_bug1)
     NUT_CASES_END()
 
-    void setUp() {}
+    void set_up() {}
 
-    void tearDown() {}
+    void tear_down() {}
 
-    void testToString()
+    void test_to_string()
     {
         ByteArray ba;
         ba.append(1, 0x13);
         ba.append(1, 0x28);
         ba.append(1, 0xe4);
-        NUT_TA(ba.toString() == "1328E4");
+        NUT_TA(ba.to_string() == "1328E4");
     }
 
-    void testValueOf()
+    void test_value_of()
     {
-        ByteArray ba = ByteArray::valueOf("1328Ef");
-        NUT_TA(ba.toString() == "1328EF");
+        ByteArray ba = ByteArray::value_of("1328Ef");
+        NUT_TA(ba.to_string() == "1328EF");
     }
 
-    void testCopyOnWrite()
+    void test_copy_on_write()
     {
-        ByteArray ba = ByteArray::valueOf("1328Ef");
+        ByteArray ba = ByteArray::value_of("1328Ef");
         ByteArray b1(ba), b2;
         b2 = ba;
 
-        // ªπŒ¥∏¥÷∆ ±
+        // ËøòÊú™Â§çÂà∂Êó∂
         NUT_TA(static_cast<const ByteArray&>(b1).buffer() == static_cast<const ByteArray&>(b2).buffer());
-        NUT_TA(b1.toString() == "1328EF" && b2.toString() == "1328EF");
+        NUT_TA(b1.to_string() == "1328EF" && b2.to_string() == "1328EF");
 
-        // ∏¥÷∆∫Û
+        // Â§çÂà∂Âêé
         b1.append(1, 0x5E);
         NUT_TA(static_cast<const ByteArray&>(b1).buffer() != static_cast<const ByteArray&>(b2).buffer());
         NUT_TA(static_cast<const ByteArray&>(ba).buffer() == static_cast<const ByteArray&>(b2).buffer());
-        NUT_TA(b1.toString() == "1328EF5E" && b2.toString() == "1328EF");
+        NUT_TA(b1.to_string() == "1328EF5E" && b2.to_string() == "1328EF");
     }
 
     /**
-     * []≤Ÿ◊˜∑˚µƒ µœ÷√ª”–µ˜”√ copy-on-write£¨µº÷¬¥ÌŒÛ
+     * []Êìç‰ΩúÁ¨¶ÁöÑÂÆûÁé∞Ê≤°ÊúâË∞ÉÁî® copy-on-writeÔºåÂØºËá¥ÈîôËØØ
      */
-    void testBug1()
+    void test_bug1()
     {
-        ByteArray b1 = ByteArray::valueOf("125e");
+        ByteArray b1 = ByteArray::value_of("125e");
         ByteArray b2(b1);
 
         NUT_TA(static_cast<const ByteArray&>(b1).buffer() == static_cast<const ByteArray&>(b2).buffer());
         b1[0] = 2;
         NUT_TA(static_cast<const ByteArray&>(b1).buffer() != static_cast<const ByteArray&>(b2).buffer());
-        NUT_TA(b1.toString() == "025E" && b2.toString() == "125E");
+        NUT_TA(b1.to_string() == "025E" && b2.to_string() == "125E");
     }
 };
 

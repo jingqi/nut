@@ -2,15 +2,15 @@
  * @file -
  * @author jingqi
  * @date 2013-02-08
- * @last-edit 2014-11-21 22:52:37 jingqi
+ * @last-edit 2015-01-06 22:44:34 jingqi
  * @brief
  */
 
 #ifndef ___HEADFILE_526CD359_EF76_437B_ACDD_D24322AB6FDC_
 #define ___HEADFILE_526CD359_EF76_437B_ACDD_D24322AB6FDC_
 
-#include "../biginteger.hpp"
-#include "bitsieve.hpp"
+#include "../big_integer.hpp"
+#include "bit_sieve.hpp"
 
 // 优化程度，>= 0
 #define OPTIMIZE_LEVEL 1000

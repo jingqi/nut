@@ -24,7 +24,9 @@ class DestroyChecker
     int32_t m_tag;
 
 public:
-    DestroyChecker() : m_tag(CONSTRUCTED) {}
+    DestroyChecker()
+        : m_tag(CONSTRUCTED)
+    {}
 
     ~DestroyChecker()
     {
@@ -32,7 +34,10 @@ public:
         m_tag = DESTRUCTED;
     }
 
-    inline void assertAlive() const { assert(CONSTRUCTED == m_tag); }
+    void assert_alive() const
+    {
+        assert(CONSTRUCTED == m_tag);
+    }
 };
 
 }
@@ -41,7 +46,7 @@ public:
 /** 析构检查器 */
 #   define NUT_DEBUGGING_DESTROY_CHECKER    nut::DestroyChecker __destroy_checker_;
 /** 检查析构 */
-#   define NUT_DEBUGGING_ASSERT_ALIVE       __destroy_checker_.assertAlive()
+#   define NUT_DEBUGGING_ASSERT_ALIVE       __destroy_checker_.assert_alive()
 #else
 #   define NUT_DEBUGGING_DESTROY_CHECKER
 #   define NUT_DEBUGGING_ASSERT_ALIVE       ((void)0)

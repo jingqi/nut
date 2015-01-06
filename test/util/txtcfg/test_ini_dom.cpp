@@ -10,15 +10,15 @@ using namespace nut;
 NUT_FIXTURE(TestIniDom)
 {
     NUT_CASES_BEGIN()
-        NUT_CASE(testReadString)
-        NUT_CASE(testReadNum)
-        NUT_CASE(testReadList)
-        NUT_CASE(testSetString)
+        NUT_CASE(test_read_string)
+        NUT_CASE(test_read_num)
+        NUT_CASE(test_read_list)
+        NUT_CASE(test_set_string)
     NUT_CASES_END()
 
     nut::ref<IniDom> pf;
 
-    void setUp()
+    void set_up()
     {
 		pf = gc_new<IniDom>();
         const char *all =
@@ -35,35 +35,35 @@ NUT_FIXTURE(TestIniDom)
 		pf->parse(all);
     }
 
-    void tearDown() {}
+    void tear_down() {}
 
-    void testReadString()
+    void test_read_string()
     {
-		NUT_TA(pf->getString(NULL, "readString1") == string("abc"));
-		NUT_TA(pf->getString(NULL, "readString2") == string("abc"));
-		NUT_TA(pf->getString(NULL, "read String3") == string("ab c"));
+        NUT_TA(pf->get_string(NULL, "readString1") == string("abc"));
+        NUT_TA(pf->get_string(NULL, "readString2") == string("abc"));
+        NUT_TA(pf->get_string(NULL, "read String3") == string("ab c"));
     }
 
-    void testReadNum()
+    void test_read_num()
     {
-        NUT_TA(pf->getNum(NULL, "readNum1") == 123);
-        NUT_TA(pf->getNum(NULL, "readNum2") == 123);
+        NUT_TA(pf->get_num(NULL, "readNum1") == 123);
+        NUT_TA(pf->get_num(NULL, "readNum2") == 123);
     }
 
-    void testReadList()
+    void test_read_list()
     {
 		vector<string> vec;
-		pf->getList(NULL, "readList1", &vec);
+        pf->get_list(NULL, "readList1", &vec);
         NUT_TA(vec.size() == 3);
         NUT_TA(vec[0] == "a");
         NUT_TA(vec[1] == "b");
         NUT_TA(vec[2] == "cd");
     }
 
-    void testSetString()
+    void test_set_string()
     {
-        pf->setString("a","b", "value");
-		NUT_TA(pf->getString("a","b") == string("value"));
+        pf->set_string("a","b", "value");
+        NUT_TA(pf->get_string("a","b") == string("value"));
     }
 };
 

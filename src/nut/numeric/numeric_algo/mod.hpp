@@ -2,13 +2,13 @@
  * @file -
  * @author jingqi
  * @date 2012-11-25
- * @last-edit 2014-11-21 22:52:14 jingqi
+ * @last-edit 2015-01-06 22:43:39 jingqi
  */
 
 #ifndef ___HEADFILE_058D89EB_50A2_4934_AF92_FC4F82613999_
 #define ___HEADFILE_058D89EB_50A2_4934_AF92_FC4F82613999_
 
-#include "../biginteger.hpp"
+#include "../big_integer.hpp"
 #include "gcd.hpp"
 
 // 优化程度，>= 0

@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-10-26
- * @last-edit 2013-12-03 10:51:20 jingqi
+ * @last-edit 2015-01-06 20:26:15 jingqi
  * @brief
  */
 
@@ -11,7 +11,7 @@
 
 #include <assert.h>
 
-#include "bytearray.hpp"
+#include "byte_array.hpp"
 
 namespace nut
 {
@@ -34,53 +34,53 @@ public:
         : m_data(data), m_index(0), m_little_endian(true)
     {}
 
-    inline bool isLittleEndian() const
+    bool is_little_endian() const
     {
         return m_little_endian;
     }
 
-    inline void setLittleEndian(bool little_endian = true)
+    void set_little_endian(bool little_endian = true)
     {
         m_little_endian = little_endian;
     }
 
-    inline size_t size() const
+    size_t size() const
     {
         return m_data.size();
     }
 
-    inline size_t tell() const
+    size_t tell() const
     {
         return m_index;
     }
 
-    inline void seek(size_t index)
+    void seek(size_t index)
     {
         assert(index <= m_data.size());
         m_index = index;
     }
 
-    inline void resize(size_t new_size)
+    void resize(size_t new_size)
     {
         m_data.resize(new_size);
         if (m_index > new_size)
             m_index = new_size;
     }
 
-    inline void skip(size_t cb)
+    void skip(size_t cb)
     {
         assert(m_index + cb <= m_data.size());
         m_index += cb;
     }
 
-    inline uint8_t readUInt8()
+    uint8_t read_uint8()
     {
         assert(m_index + 1 <= m_data.size());
         const ByteArray& data = m_data;
         return data.at(m_index++);
     }
 
-    uint16_t readUInt16()
+    uint16_t read_uint16()
     {
         assert(m_index + 2 <= m_data.size());
         const ByteArray& data = m_data;
@@ -98,7 +98,7 @@ public:
         return ret;
     }
 
-    uint32_t readUInt32()
+    uint32_t read_uint32()
     {
         assert(m_index + 4 <= m_data.size());
         const ByteArray& data = m_data;
@@ -120,7 +120,7 @@ public:
         return ret;
     }
 
-    uint64_t readUInt64()
+    uint64_t read_uint64()
     {
         assert(m_index + 8 <= m_data.size());
         const ByteArray& data = m_data;
@@ -150,25 +150,25 @@ public:
         return ret;
     }
 
-    float readFloat()
+    float read_float()
     {
         assert(m_index + sizeof(float) <= m_data.size());
         float ret = 0;
         for (size_t i = 0; i < sizeof(float); ++i)
-            reinterpret_cast<uint8_t*>(&ret)[m_little_endian ? i : (sizeof(float) - i - 1)] = readUInt8();
+            reinterpret_cast<uint8_t*>(&ret)[m_little_endian ? i : (sizeof(float) - i - 1)] = read_uint8();
         return ret;
     }
 
-    double readDouble()
+    double read_double()
     {
         assert(m_index + sizeof(double) <= m_data.size());
         double ret = 0;
         for (size_t i = 0; i < sizeof(double); ++i)
-            reinterpret_cast<uint8_t*>(&ret)[m_little_endian ? i : (sizeof(double)-i - 1)] = readUInt8();
+            reinterpret_cast<uint8_t*>(&ret)[m_little_endian ? i : (sizeof(double)-i - 1)] = read_uint8();
         return ret;
     }
 
-    size_t readBytes(void *buf, size_t len)
+    size_t read_bytes(void *buf, size_t len)
     {
         assert(NULL != buf || 0 == len);
         const ByteArray& data = m_data;
@@ -178,7 +178,7 @@ public:
         return ret;
     }
 
-    void writeUInt8(uint8_t v)
+    void write_uint8(uint8_t v)
     {
         if (m_index < m_data.size())
             m_data.at(m_index) = v;
@@ -187,7 +187,7 @@ public:
         ++m_index;
     }
 
-    void writeUInt16(uint16_t v)
+    void write_uint16(uint16_t v)
     {
         for (size_t i = 0; i < 2; ++i)
         {
@@ -200,7 +200,7 @@ public:
         }
     }
 
-    void writeUInt32(uint32_t v)
+    void write_uint32(uint32_t v)
     {
         for (size_t i = 0; i < 4; ++i)
         {
@@ -213,7 +213,7 @@ public:
         }
     }
 
-    void writeUInt64(uint64_t v)
+    void write_uint64(uint64_t v)
     {
         for (size_t i = 0; i < 8; ++i)
         {
@@ -226,7 +226,7 @@ public:
         }
     }
 
-    void writeBytes(const void *buf, size_t len)
+    void write_bytes(const void *buf, size_t len)
     {
         assert(NULL != buf || 0 == len);
         const size_t copy = m_data.size() - m_index;
@@ -235,26 +235,26 @@ public:
         m_index += len;
     }
 
-    inline void writeBytes(const ByteArray& ba)
+    void write_bytes(const ByteArray& ba)
     {
         if (ba.size() == 0)
             return;
-        writeBytes(ba.buffer(), ba.size());
+        write_bytes(ba.buffer(), ba.size());
     }
 
-    void writeFloat(float v)
+    void write_float(float v)
     {
         for (size_t i = 0; i < sizeof(float); ++i)
-            writeUInt8(reinterpret_cast<const uint8_t*>(&v)[m_little_endian ? i : (sizeof(float) - i - 1)]);
+            write_uint8(reinterpret_cast<const uint8_t*>(&v)[m_little_endian ? i : (sizeof(float) - i - 1)]);
     }
 
-    void writeDouble(double v)
+    void write_double(double v)
     {
         for (size_t i = 0; i < sizeof(double); ++i)
-            writeUInt8(reinterpret_cast<const uint8_t*>(&v)[m_little_endian ? i : (sizeof(double)-i - 1)]);
+            write_uint8(reinterpret_cast<const uint8_t*>(&v)[m_little_endian ? i : (sizeof(double)-i - 1)]);
     }
 
-    inline const ByteArray& byteArray() const
+    const ByteArray& byte_array() const
     {
         return m_data;
     }

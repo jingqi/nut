@@ -9,18 +9,18 @@
 
 #include <nut/unittest/unittest.hpp>
 
-#include <nut/threading/threadpool.hpp>
+#include <nut/threading/thread_pool.hpp>
 
 using namespace nut;
 
 NUT_FIXTURE(TestThreading)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testManual)
+    NUT_CASE(test_manual)
     NUT_CASES_END()
 
-    void setUp() {}
-    void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
     static void custom(void *p)
     {
@@ -28,7 +28,7 @@ NUT_FIXTURE(TestThreading)
         printf("%c", c);
     }
 
-    void testManual()
+    void test_manual()
     {
         ref<ThreadPool> tp = gc_new<ThreadPool>(2);
         tp->start();

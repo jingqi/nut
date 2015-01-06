@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-03-26
- * @last-edit 2014-11-21 22:49:41 jingqi
+ * @last-edit 2015-01-06 18:15:41 jingqi
  * @brief
  */
 
@@ -71,7 +71,7 @@ public:
     /**
      * 扩展区域，以便包含目标区域
      */
-    void expandToContain(const self& x)
+    void expand_to_contain(const self& x)
     {
         for (size_t i = 0; i < DIMENSIONS; ++i)
         {
@@ -83,7 +83,7 @@ public:
     /**
      * 检查区域有效性
      */
-    bool isValid() const
+    bool is_valid() const
     {
         for (int i = 0; i < DIMENSIONS; ++i)
             if (lower[i] > higher[i])
@@ -127,6 +127,5 @@ public:
 };
 
 }
-
 
 #endif

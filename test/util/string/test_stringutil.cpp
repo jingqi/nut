@@ -10,41 +10,41 @@ using namespace nut;
 NUT_FIXTURE(TestStringUtil)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testToString)
-    NUT_CASE(testSplit)
-    NUT_CASE(testFormat)
-    NUT_CASE(testTrim)
-    NUT_CASE(testStrieq)
-    NUT_CASE(testwstr)
+    NUT_CASE(test_to_string)
+    NUT_CASE(test_split)
+    NUT_CASE(test_format)
+    NUT_CASE(test_trim)
+    NUT_CASE(test_strieq)
+    NUT_CASE(test_wstr)
     NUT_CASES_END()
 
 
-    void setUp() {}
-    void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
-    void testToString()
+    void test_to_string()
     {
-        NUT_TA(toString('m') == "m");
+        NUT_TA(c_to_str('m') == "m");
 
-        NUT_TA(toString((long)12) == "12");
-        NUT_TA(toString((unsigned char)13) == "13");
-        NUT_TA(toString((short)14) == "14");
-        NUT_TA(toString((unsigned short)15) == "15");
-        NUT_TA(toString((int)-16) == "-16");
-        NUT_TA(toString((unsigned int)17) == "17");
-        NUT_TA(toString((unsigned long)18) == "18");
+        NUT_TA(l_to_str((long)12) == "12");
+        NUT_TA(uc_to_str((unsigned char)13) == "13");
+        NUT_TA(s_to_str((short)14) == "14");
+        NUT_TA(us_to_str((unsigned short)15) == "15");
+        NUT_TA(i_to_str((int)-16) == "-16");
+        NUT_TA(ui_to_str((unsigned int)17) == "17");
+        NUT_TA(ul_to_str((unsigned long)18) == "18");
 
-        NUT_TA(toString(false) == "false");
-        NUT_TA(toString(true) == "true");
+        NUT_TA(b_to_str(false) == "false");
+        NUT_TA(b_to_str(true) == "true");
 
-        NUT_TA(toString((double)12.34) == "12.340000");
-        NUT_TA(toString((float)-45.67) == "-45.669998");
+        NUT_TA(d_to_str((double)12.34) == "12.340000");
+        NUT_TA(f_to_str((float)-45.67) == "-45.669998");
 
-        string s = toString((void*)0x122e);
+        string s = ptr_to_str((void*)0x122e);
         NUT_TA(s == "0x0000122E" || s == "0x122e");
     }
 
-    void testSplit()
+    void test_split()
     {
         vector<string> rs = chr_split("a,b,e", ',');
         NUT_TA(rs.size() == 3 && rs[0] == "a" && rs[1] == "b" && rs[2] == "e");
@@ -59,7 +59,7 @@ NUT_FIXTURE(TestStringUtil)
         NUT_TA(rs.size() == 2 && rs[0] == "a" && rs[1] == "b");
     }
 
-    void testFormat()
+    void test_format()
     {
         NUT_TA(format("%d,%s,%c,%f", 1, "am", 's', 1.23) == "1,am,s,1.230000");
 #if !defined(NUT_PLATFORM_OS_MAC)
@@ -67,14 +67,14 @@ NUT_FIXTURE(TestStringUtil)
 #endif
     }
 
-    void testTrim()
+    void test_trim()
     {
         NUT_TA(trim(" ab\r\t") == "ab");
         NUT_TA(ltrim(" ab\r\t") == "ab\r\t");
         NUT_TA(rtrim(" ab\r\t") == " ab");
     }
 
-    void testStrieq()
+    void test_strieq()
     {
         NUT_TA(!strieq("a", "ab"));
         NUT_TA(!strieq("ac", "ab"));
@@ -82,7 +82,7 @@ NUT_FIXTURE(TestStringUtil)
         NUT_TA(strieq("aB", "ab"));
     }
 
-    void testwstr()
+    void test_wstr()
     {
 		std::string a;
 		std::wstring b;

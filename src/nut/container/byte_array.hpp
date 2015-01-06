@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2010-7-22
- * @last-edit 2014-09-14 00:52:56 jingqi
+ * @last-edit 2015-01-06 20:05:47 jingqi
  */
 
 #ifndef ___HEADFILE___5FC80ECA_3FD3_11E0_A703_485B391122F8_
@@ -16,7 +16,7 @@
 #include <stdint.h>
 #include <string>
 
-#include <nut/memtool/copyonwrite.hpp>
+#include <nut/memtool/copy_on_write.hpp>
 
 namespace nut
 {
@@ -25,7 +25,7 @@ class ByteArray
 {
     // 使用 copy-on-write 技术
     ref<FixedBuf<uint8_t> > m_buf;
-    size_t m_datalen;
+    size_t m_data_len;
 
 private :
     /**
@@ -36,12 +36,12 @@ private :
      */
     void _copy_on_write(size_t new_size = 0, bool extra_space = true)
     {
-        new_size = (new_size > m_datalen ? new_size : m_datalen);
+        new_size = (new_size > m_data_len ? new_size : m_data_len);
 
         // buffer 为 null, 则需要生成
-        if (m_buf.isNull())
+        if (m_buf.is_null())
         {
-            assert(0 == m_datalen);
+            assert(0 == m_data_len);
             if (new_size > 0)
                 m_buf = gc_new<FixedBuf<uint8_t>, RefCounterSync>(new_size);
             return;
@@ -56,7 +56,7 @@ private :
             if (rc > 1)
             {
                 ref<FixedBuf<uint8_t> > new_buf = gc_new<FixedBuf<uint8_t>, RefCounterSync>(new_size);
-                ::memcpy(new_buf->buf, m_buf->buf, m_datalen * sizeof(uint8_t));
+                ::memcpy(new_buf->buf, m_buf->buf, m_data_len * sizeof(uint8_t));
                 m_buf = new_buf;
             }
             return;
@@ -72,14 +72,14 @@ private :
         else
         {
             ref<FixedBuf<uint8_t> > new_buf = gc_new<FixedBuf<uint8_t>, RefCounterSync>(new_cap);
-            ::memcpy(new_buf->buf, m_buf->buf, m_datalen * sizeof(uint8_t));
+            ::memcpy(new_buf->buf, m_buf->buf, m_data_len * sizeof(uint8_t));
             m_buf = new_buf;
         }
     }
 
 public :
     ByteArray()
-        : m_datalen(0)
+        : m_data_len(0)
     {}
 
     /**
@@ -87,12 +87,12 @@ public :
      * @param fillv initial data filling
      */
     explicit ByteArray(size_t len, uint8_t fillv = 0)
-        : m_datalen(0)
+        : m_data_len(0)
     {
         _copy_on_write(len, false);
         if (len > 0)
             ::memset(m_buf->buf, fillv, len * sizeof(uint8_t));
-        m_datalen = len;
+        m_data_len = len;
     }
 
     /**
@@ -100,7 +100,7 @@ public :
      * @param len initial data size
      */
     ByteArray(const void *buf, size_t len)
-        : m_datalen(0)
+        : m_data_len(0)
     {
         assert(NULL != buf);
         if (NULL == buf)
@@ -109,7 +109,7 @@ public :
         _copy_on_write(len, false);
         if (len > 0)
             ::memcpy(m_buf->buf, buf, len * sizeof(uint8_t));
-        m_datalen = len;
+        m_data_len = len;
     }
 
     /**
@@ -117,7 +117,7 @@ public :
      * @param includeTermByte if True, the 'termByte' is part of initial data
      */
     ByteArray(const void *buf, unsigned char termByte, bool includeTermByte)
-        : m_datalen(0)
+        : m_data_len(0)
     {
         assert(NULL != buf);
         if (NULL == buf)
@@ -132,11 +132,11 @@ public :
         _copy_on_write(len, false);
         if (len > 0)
             ::memcpy(m_buf->buf, buf, len * sizeof(uint8_t));
-        m_datalen = len;
+        m_data_len = len;
     }
 
     ByteArray(const void *buf, size_t index, size_t size)
-        : m_datalen(0)
+        : m_data_len(0)
     {
         assert(NULL != buf);
         if (NULL == buf)
@@ -145,34 +145,34 @@ public :
         _copy_on_write(size, false);
         if (size > 0)
             ::memcpy(m_buf->buf, ((const uint8_t*)buf) + index, size * sizeof(uint8_t));
-        m_datalen = size;
+        m_data_len = size;
     }
 
     ByteArray(const ByteArray& x)
-        : m_buf(x.m_buf), m_datalen(x.m_datalen) // copy-on-write
+        : m_buf(x.m_buf), m_data_len(x.m_data_len) // copy-on-write
     {}
 
     ~ByteArray()
     {
-        m_datalen = 0;
+        m_data_len = 0;
     }
 
     /**
      * clear data
      */
-    inline void clear()
+    void clear()
     {
-        m_datalen = 0;
+        m_data_len = 0;
     }
 
-    inline ByteArray& operator=(const ByteArray &x)
+    ByteArray& operator=(const ByteArray &x)
     {
         if (&x == this)
             return *this;
 
         // copy-on-write
         m_buf = x.m_buf;
-        m_datalen = x.m_datalen;
+        m_data_len = x.m_data_len;
         return *this;
     }
 
@@ -181,41 +181,41 @@ public :
      */
     bool operator==(const ByteArray &x) const
     {
-        if (m_datalen != x.m_datalen)
+        if (m_data_len != x.m_data_len)
             return false;
         if (m_buf == x.m_buf)
             return true;
-        for (size_t i = 0; i < m_datalen; ++i)
+        for (size_t i = 0; i < m_data_len; ++i)
             if (m_buf->buf[i] != x.m_buf->buf[i])
                 return false;
         return true;
     }
 
-    inline bool operator!=(const ByteArray &x) const
+    bool operator!=(const ByteArray &x) const
     {
         return !(*this == x);
     }
 
-    inline const uint8_t& operator[](size_t idx) const
+    const uint8_t& operator[](size_t idx) const
     {
         return at(idx);
     }
 
-    inline uint8_t& operator[](size_t idx)
+    uint8_t& operator[](size_t idx)
     {
         return at(idx);
     }
 
-    inline const uint8_t& at(size_t idx) const
+    const uint8_t& at(size_t idx) const
     {
-        assert(idx < m_datalen);
+        assert(idx < m_data_len);
         return m_buf->buf[idx];
     }
 
-    inline uint8_t& at(size_t idx)
+    uint8_t& at(size_t idx)
     {
-        assert(idx < m_datalen);
-        _copy_on_write(m_datalen); // 可能在外部更改数据，故此 copy-on-write 一下
+        assert(idx < m_data_len);
+        _copy_on_write(m_data_len); // 可能在外部更改数据，故此 copy-on-write 一下
         return const_cast<uint8_t&>(static_cast<const ByteArray&>(*this).at(idx));
     }
 
@@ -225,28 +225,28 @@ public :
      */
     void resize(size_t n, uint8_t fillv = 0)
     {
-        if (n > m_datalen)
+        if (n > m_data_len)
         {
             _copy_on_write(n);
-            ::memset(m_buf->buf + m_datalen, fillv, n - m_datalen);
+            ::memset(m_buf->buf + m_data_len, fillv, n - m_data_len);
         }
-        m_datalen = n;
+        m_data_len = n;
     }
 
-    inline void append(const ByteArray &x)
+    void append(const ByteArray &x)
     {
-        _copy_on_write(m_datalen + x.m_datalen);
-        if (x.m_datalen > 0)
-            ::memcpy(m_buf->buf + m_datalen, x.m_buf->buf, x.m_datalen);
-        m_datalen += x.m_datalen;
+        _copy_on_write(m_data_len + x.m_data_len);
+        if (x.m_data_len > 0)
+            ::memcpy(m_buf->buf + m_data_len, x.m_buf->buf, x.m_data_len);
+        m_data_len += x.m_data_len;
     }
 
-    inline void append(size_t len, uint8_t fillv = 0)
+    void append(size_t len, uint8_t fillv = 0)
     {
-        _copy_on_write(m_datalen + len);
+        _copy_on_write(m_data_len + len);
         if (len > 0)
-            ::memset(m_buf->buf + m_datalen, fillv, len);
-        m_datalen += len;
+            ::memset(m_buf->buf + m_data_len, fillv, len);
+        m_data_len += len;
     }
 
     void append(const void *buf, size_t len)
@@ -255,10 +255,10 @@ public :
         if (0 == len || NULL == buf)
             return;
 
-        _copy_on_write(m_datalen + len);
+        _copy_on_write(m_data_len + len);
         if (len > 0)
-            ::memcpy(m_buf->buf + m_datalen, buf, len);
-        m_datalen += len;
+            ::memcpy(m_buf->buf + m_data_len, buf, len);
+        m_data_len += len;
     }
 
     void append(const void *buf, uint8_t termByte, bool includeTermByte)
@@ -275,7 +275,7 @@ public :
         append(buf, len);
     }
 
-    inline void append(const void *buf, size_t index, size_t size)
+    void append(const void *buf, size_t index, size_t size)
     {
         assert(NULL != buf);
         if (NULL == buf)
@@ -287,30 +287,30 @@ public :
     /**
      * get the naked pointer
      */
-    inline const uint8_t* buffer() const
+    const uint8_t* buffer() const
     {
-        if (m_buf.isNull())
+        if (m_buf.is_null())
             return NULL;
         return m_buf->buf;
     }
 
-    inline uint8_t* buffer()
+    uint8_t* buffer()
     {
         _copy_on_write(); // 可能在外部更改数据，故此 copy-on-write 一下
         return const_cast<uint8_t*>(static_cast<const ByteArray&>(*this).buffer());
     }
 
-    inline size_t length() const
+    size_t length() const
     {
         return size();
     }
 
-    inline size_t size() const
+    size_t size() const
     {
-        return m_datalen;
+        return m_data_len;
     }
 
-    inline size_t capasity() const
+    size_t capasity() const
     {
         return m_buf->len;
     }
@@ -318,12 +318,12 @@ public :
     /**
      * 将二进制 0x51 0x5e 0x30 转换为字符串 "515e30"
      */
-    std::string toString(size_t from = 0, size_t to = ~(size_t)0) const
+    std::string to_string(size_t from = 0, size_t to = ~(size_t)0) const
     {
         assert(from <= to);
 
         std::string ret;
-        const size_t limit = (m_datalen < to ? m_datalen : to);
+        const size_t limit = (m_data_len < to ? m_data_len : to);
         for (size_t i = from; i < limit; ++i)
         {
             const uint8_t b = m_buf->buf[i];
@@ -336,12 +336,12 @@ public :
         return ret;
     }
 
-    std::wstring toWString(size_t from = 0, size_t to = ~(size_t)0) const
+    std::wstring to_wstring(size_t from = 0, size_t to = ~(size_t)0) const
     {
         assert(from <= to);
 
         std::wstring ret;
-        const size_t limit = (m_datalen < to ? m_datalen : to);
+        const size_t limit = (m_data_len < to ? m_data_len : to);
         for (size_t i = from; i < limit; ++i)
         {
             const uint8_t b = m_buf->buf[i];
@@ -360,7 +360,7 @@ public :
      *      如果限定范围的字符串长度不是偶数，最后一个字符被忽略
      *      如果字符串中间出现非16进制字符，则转换过程立即停止
      */
-    static ByteArray valueOf(const std::string& s, size_t from = 0, size_t to = ~(size_t)0)
+    static ByteArray value_of(const std::string& s, size_t from = 0, size_t to = ~(size_t)0)
     {
         assert(from <= to);
 
@@ -390,7 +390,7 @@ public :
         return ret;
     }
 
-    static ByteArray valueOf(const std::wstring& s, size_t from = 0, size_t to = ~(size_t)0)
+    static ByteArray value_of(const std::wstring& s, size_t from = 0, size_t to = ~(size_t)0)
     {
         assert(from <= to);
 

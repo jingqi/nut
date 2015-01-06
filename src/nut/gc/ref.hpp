@@ -23,16 +23,25 @@ protected:
 
 public:
     /** 构造函数 */
-    weak_ref(T *ptr = NULL) : m_ptr(ptr) {}
+    weak_ref(T *ptr = NULL)
+        : m_ptr(ptr)
+    {}
 
     /** 隐式类型转换 */
     template <typename U>
-    weak_ref(const weak_ref<U>& r) : m_ptr(r.pointer()) {}
+    weak_ref(const weak_ref<U>& r)
+        : m_ptr(r.pointer())
+    {}
 
     /** 复制构造函数(因为是特化模板，故必须放在上述模板函数的后面) */
-    weak_ref(const weak_ref<T>& r) : m_ptr(r.m_ptr) {}
+    weak_ref(const weak_ref<T>& r)
+        : m_ptr(r.m_ptr)
+    {}
 
-    ~weak_ref() { m_ptr = NULL; }
+    ~weak_ref()
+    {
+        m_ptr = NULL;
+    }
 
 public:
     /** 赋值操作符 */
@@ -42,8 +51,15 @@ public:
         return *this;
     }
 
-    inline bool operator==(const weak_ref<T>& r) const { return m_ptr == r.m_ptr; }
-    inline bool operator!=(const weak_ref<T>& r) const { return m_ptr != r.m_ptr; }
+    inline bool operator==(const weak_ref<T>& r) const
+    {
+        return m_ptr == r.m_ptr;
+    }
+
+    inline bool operator!=(const weak_ref<T>& r) const
+    {
+        return m_ptr != r.m_ptr;
+    }
 
     inline T* operator->() const
     {
@@ -58,11 +74,30 @@ public:
     }
 
 public:
-    inline bool isNull() const { return m_ptr == NULL; }
-    inline bool isNotNull() const { return m_ptr != NULL; }
-    inline T* pointer() const { return m_ptr; }
-    inline void assign(T *p) { m_ptr = p; }
-    inline void clear() { m_ptr = NULL; }
+    inline bool is_null() const
+    {
+        return m_ptr == NULL;
+    }
+
+    inline bool is_not_null() const
+    {
+        return m_ptr != NULL;
+    }
+
+    inline T* pointer() const
+    {
+        return m_ptr;
+    }
+
+    inline void assign(T *p)
+    {
+        m_ptr = p;
+    }
+
+    inline void set_null()
+    {
+        m_ptr = NULL;
+    }
 };
 
 /**
@@ -75,23 +110,44 @@ protected:
     using weak_ref<T>::m_ptr;
 
 public:
-    ref() : weak_ref<T>(NULL) {}
+    ref()
+        : weak_ref<T>(NULL)
+    {}
 
     /** 类型转换 */
-    explicit ref(T *p) : weak_ref<T>(NULL) { assign(p); }
+    explicit ref(T *p)
+        : weak_ref<T>(NULL)
+    {
+        assign(p);
+    }
 
     /** 类型转换 */
     template <typename U>
-    explicit ref(const weak_ref<U>& r) : weak_ref<T>(NULL) { assign(r.pointer()); }
+    explicit ref(const weak_ref<U>& r)
+        : weak_ref<T>(NULL)
+    {
+        assign(r.pointer());
+    }
 
     /** 隐式类型转换 */
     template <typename U>
-    ref(const ref<U>& r) : weak_ref<T>(NULL) { assign(r.pointer()); }
+    ref(const ref<U>& r)
+        : weak_ref<T>(NULL)
+    {
+        assign(r.pointer());
+    }
 
     /** 复制构造函数(因为是特化模板，故必须放在上述模板函数的后面) */
-    ref(const ref<T>& r) : weak_ref<T>(NULL) { assign(r.m_ptr); }
+    ref(const ref<T>& r)
+        : weak_ref<T>(NULL)
+    {
+        assign(r.m_ptr);
+    }
 
-    ~ref() { clear(); }
+    ~ref()
+    {
+        set_null();
+    }
 
 public:
     inline ref<T>& operator=(const ref<T>& r)
@@ -99,7 +155,7 @@ public:
         assign(r.m_ptr);
         return *this;
     }
-	
+
     inline bool operator==(const weak_ref<T>& r) const
 	{
 		return m_ptr == r.pointer();
@@ -121,7 +177,7 @@ public:
         m_ptr = p;
     }
 
-    void clear()
+    void set_null()
     {
         if (m_ptr != NULL)
         {

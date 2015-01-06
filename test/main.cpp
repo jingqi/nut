@@ -8,10 +8,10 @@
 #include <stdio.h>
 #include <iostream>
 #include <nut/unittest/unittest.hpp>
-#include <nut/unittest/consoletestlogger.hpp>
-#include <nut/unittest/streamtestlogger.hpp>
+#include <nut/unittest/console_test_logger.hpp>
+#include <nut/unittest/stream_test_logger.hpp>
 #include <nut/unittest/testrunner.hpp>
-#include <nut/logging/logmanager.hpp>
+#include <nut/logging/log_manager.hpp>
 
 using namespace std;
 using namespace nut;
@@ -36,11 +36,11 @@ int main()
 
     TestRunner trunner(l);
 
-    trunner.runAGroup("string");
+    trunner.run_a_group("quiet");
 
-    //trunner.runAFixture("TestContainer");
+    //trunner.run_a_fixture("TestContainer");
 
-    // trunner.runACase("TestGC", "testSmoking");
+    // trunner.run_a_case("TestGC", "testSmoking");
 
     printf("press any key to continue...");
 #if defined(NUT_PLATFORM_OS_WINDOWS)

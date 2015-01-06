@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-08-31
- * @last-edit 2014-11-21 22:54:18 jingqi
+ * @last-edit 2015-01-06 23:14:32 jingqi
  * @brief
  */
 
@@ -12,7 +12,7 @@
 #include <assert.h>
 #include <stdint.h>
 
-#include <nut/container/bytearray.hpp>
+#include <nut/container/byte_array.hpp>
 
 #include "aes.hpp"
 
@@ -72,7 +72,7 @@ public:
     void update_encrypt(const uint8_t *data, size_t data_len)
     {
         assert(NULL != data);
-        assert(IN_ENCRYPT == m_state && m_data_buf_size >= 0 && m_data_buf_size < 16);
+        assert(IN_ENCRYPT == m_state && m_data_buf_size < 16);
 
         if (m_data_buf_size != 0 && m_data_buf_size + data_len >= 16)
         {
@@ -96,7 +96,7 @@ public:
 
         ::memcpy(m_data_buf + m_data_buf_size, data + i * 16, data_len - i * 16);
         m_data_buf_size += data_len - i * 16;
-        assert(m_data_buf_size >= 0 && m_data_buf_size < 16);
+        assert(m_data_buf_size < 16);
     }
 
     /**
@@ -104,7 +104,7 @@ public:
      */
     void finish_encrypt()
     {
-        assert(IN_ENCRYPT == m_state && m_data_buf_size >= 0 && m_data_buf_size < 16);
+        assert(IN_ENCRYPT == m_state && m_data_buf_size < 16);
         /* PKCS5 填充 */
         for (size_t i = m_data_buf_size; i < 16; ++i)
             m_data_buf[i] = 16 - m_data_buf_size;
@@ -139,7 +139,7 @@ public:
     void update_decrypt(const uint8_t *data, size_t data_len)
     {
         assert(NULL != data);
-        assert(IN_DECRYPT == m_state && m_data_buf_size >= 0 && m_data_buf_size < 16);
+        assert(IN_DECRYPT == m_state && m_data_buf_size < 16);
 
         uint8_t buf[16];
         if (m_data_buf_size != 0 && m_data_buf_size + data_len >= 16)
@@ -166,7 +166,7 @@ public:
 
         ::memcpy(m_data_buf + m_data_buf_size, data + i * 16, data_len - i * 16);
         m_data_buf_size += data_len - i * 16;
-        assert(m_data_buf_size >= 0 && m_data_buf_size < 16);
+        assert(m_data_buf_size < 16);
     }
 
     /**
@@ -194,7 +194,7 @@ public:
     /**
      * 获取加密或者解密结果
      */
-    const ByteArray& getResult() const
+    const ByteArray& get_result() const
     {
         return m_result;
     }

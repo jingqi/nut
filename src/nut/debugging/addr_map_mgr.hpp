@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-08-30
- * @last-edit 2013-08-30 22:32:57 jingqi
+ * @last-edit 2015-01-06 21:52:06 jingqi
  * @brief
  */
 
@@ -68,15 +68,15 @@ public:
     AddrMapManager()
         : m_destruct_tag(CONSTRUCTED_TAG)
     {
-        char filePath[PATH_MAX + 1] = {0};
-        ::sprintf(filePath, "/proc/%d/maps", getpid());
-        m_maps_path = filePath;
+        char file_path[PATH_MAX + 1] = {0};
+        ::sprintf(file_path, "/proc/%d/maps", getpid());
+        m_maps_path = file_path;
 
-        char linkPath[PATH_MAX + 1] = {0};
-        char actualPath[PATH_MAX + 1] = {0};
-        ::sprintf(linkPath, "/proc/%d/exe",getpid());
-        ::readlink(linkPath, actualPath, PATH_MAX);
-        m_exec_path = actualPath;
+        char link_path[PATH_MAX + 1] = {0};
+        char actual_path[PATH_MAX + 1] = {0};
+        ::sprintf(link_path, "/proc/%d/exe",getpid());
+        ::readlink(link_path, actual_path, PATH_MAX);
+        m_exec_path = actual_path;
 
         load();
 
@@ -92,7 +92,7 @@ public:
     /**
      * 检查结构体是否依然有效
      */
-    inline bool isValid() const
+    bool is_valid() const
     {
         return NULL != this && m_destruct_tag == CONSTRUCTED_TAG;
     }
@@ -100,7 +100,7 @@ public:
     /**
      * 获取应用程序绝对路径
      */
-    inline const std::string& getExecPath() const
+    const std::string& get_exec_path() const
     {
         return m_exec_path;
     }
@@ -114,20 +114,20 @@ public:
         if (!inf)
             return;
 
-        std::string strLine;
-        while (getline(inf, strLine))
+        std::string str_line;
+        while (getline(inf, str_line))
         {
             // Linux下的getline没法处理"\r\n"
-            strLine = nut::trim(strLine, "\r\n");
+            str_line = nut::trim(str_line, "\r\n");
 
             if (!path.empty())
             {
-                if (parseLine(strLine, true, path))
+                if (parse_line(str_line, true, path))
                     break;
             }
             else // 只要是有效的，都装载
             {
-                parseLine(strLine);
+                parse_line(str_line);
             }
         }
         inf.close();
@@ -155,34 +155,34 @@ private:
      * 00577000-00578000 r-xp 00000000 08:01 160313     /usr/local/lib/libbtshare2.so
      * 它表示共享库在程序中的加载地址
      */
-    bool parseLine(const std::string& strLine, bool fappointPath = false, const std::string& path = std::string())
+    bool parse_line(const std::string& str_line, bool fappoint_path = false, const std::string& path = std::string())
     {
         // parse share library file path
-        std::string strPath;
-        const std::string::size_type posBegin = strLine.find('/');
-        const std::string::size_type posEnd = strLine.rfind(".so"); // XXX 必须包含.so，不知存不存这样的共享库：文件名不包含".so"
-        if (posBegin != std::string::npos && posEnd != std::string::npos && posBegin < posEnd)
+        std::string str_path;
+        const std::string::size_type pos_begin = str_line.find('/');
+        const std::string::size_type pos_end = str_line.rfind(".so"); // XXX 必须包含.so，不知存不存这样的共享库：文件名不包含".so"
+        if (pos_begin != std::string::npos && pos_end != std::string::npos && pos_begin < pos_end)
         {
-            strPath.assign(strLine.begin() + posBegin, strLine.end());
+            str_path.assign(str_line.begin() + pos_begin, str_line.end());
             // 如果指定分析某一个共享库，则判断当前行是否为该库信息，如果不是则不处理
-            if (fappointPath && strPath.compare(path) != 0)
+            if (fappoint_path && str_path.compare(path) != 0)
                 return false;
         }
 
         // parse share library address
-        std::string strAddr;
-        std::string::size_type pos = strLine.find('-');
+        std::string str_addr;
+        std::string::size_type pos = str_line.find('-');
         if (pos != std::string::npos)
-            strAddr.assign(strLine.begin(), strLine.begin() + pos);
+            str_addr.assign(str_line.begin(), str_line.begin() + pos);
 
-        if (strPath.size() > 0 && strAddr.size() > 0)
+        if (str_path.size() > 0 && str_addr.size() > 0)
         {
             char* pchEnd = NULL;
-            addr_t addr = ::strtoul(strAddr.c_str(), &pchEnd, 16);
-            addr_map_t::iterator iter = m_addr_map.find(strPath);
+            addr_t addr = ::strtoul(str_addr.c_str(), &pchEnd, 16);
+            addr_map_t::iterator iter = m_addr_map.find(str_path);
             // 据观察，第一个地址是最小的，所以之后的地址不需要了
             if (iter == m_addr_map.end())
-                m_addr_map.insert(make_pair(strPath, addr));
+                m_addr_map.insert(make_pair(str_path, addr));
 
             return true;
         }

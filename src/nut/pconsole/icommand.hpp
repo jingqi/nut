@@ -23,14 +23,14 @@ class ICommand
 
 public:
     /** 查询命令名 */
-    virtual const char* getCommandName() const = 0;
+    virtual const char* get_command_name() const = 0;
 
     /**
      * 命令名缩写
      * 
      * @return 最后一项必须是NULL
      */
-    virtual const char** getCommandNickNames() const
+    virtual const char** get_command_nick_names() const
     {
         static const char* ret[] = {
             NULL
@@ -44,7 +44,7 @@ public:
      * @return 简要描述，例如
      *     "这是一个测试命令"
      */
-    virtual const char* getGeneralInfo() const = 0;
+    virtual const char* get_general_info() const = 0;
 
     /**
      * 查询命令的详细描述
@@ -56,35 +56,35 @@ public:
      *     eg.:\n
      *     \ttestCommand 这是第一个消息"
      */
-    virtual const char* getDetailInfo() const = 0;
+    virtual const char* get_detail_info() const = 0;
 
     /**
      * 执行命令
      *
      * @param commandLine 命令行，包括起始部分的命令名
      */
-    virtual void execute(const char* commandLine) = 0;
+    virtual void execute(const char* command_line) = 0;
 
 public:
     /** 分析命令行 */
-    static std::vector<std::string> parseComandLine(const char *cmdLine)
+    static std::vector<std::string> parse_comand_line(const char *cmd_line)
     {
         std::vector<std::string> ret;
-        if (NULL == cmdLine)
+        if (NULL == cmd_line)
             return ret;
 
         // 略过开头的空白
-        int lastPosition = -1;
-        while (cmdLine[lastPosition + 1] != '\0' &&
-               (cmdLine[lastPosition + 1] == ' ' || cmdLine[lastPosition] == '\t'))
-            ++lastPosition;
+        int last_position = -1;
+        while (cmd_line[last_position + 1] != '\0' &&
+               (cmd_line[last_position + 1] == ' ' || cmd_line[last_position] == '\t'))
+            ++last_position;
 
         // 拆分各个参数
-        int currentPosition = lastPosition + 1;
+        int current_position = last_position + 1;
         char quot = '\0';
-        while ('\0' != cmdLine[currentPosition])
+        while ('\0' != cmd_line[current_position])
         {
-            const char c = cmdLine[currentPosition];
+            const char c = cmd_line[current_position];
             if ('\0' == quot && ('\"' == c || '\'' == c))
             {
                 quot = c;
@@ -95,37 +95,37 @@ public:
             }
             else if ('\0' == quot && ' ' == c)
             {
-                if (lastPosition + 1 < currentPosition)
-                    ret.push_back(std::string(cmdLine + (lastPosition + 1), cmdLine + currentPosition));
-                lastPosition = currentPosition;
+                if (last_position + 1 < current_position)
+                    ret.push_back(std::string(cmd_line + (last_position + 1), cmd_line + current_position));
+                last_position = current_position;
             }
-            ++currentPosition;
+            ++current_position;
         }
-        if (lastPosition + 1 < currentPosition)
-            ret.push_back(std::string(cmdLine + (lastPosition + 1), cmdLine + currentPosition));
+        if (last_position + 1 < current_position)
+            ret.push_back(std::string(cmd_line + (last_position + 1), cmd_line + current_position));
 
         return ret;
     }
 
     /** 分析命令行 */
-    static std::vector<std::wstring> parseComandLine(const wchar_t *cmdLine)
+    static std::vector<std::wstring> parse_comand_line(const wchar_t *cmd_line)
     {
         std::vector<std::wstring> ret;
-        if (NULL == cmdLine)
+        if (NULL == cmd_line)
             return ret;
 
         // 略过开头的空白
-        int lastPosition = -1;
-        while (cmdLine[lastPosition + 1] != L'\0' &&
-               (cmdLine[lastPosition + 1] == L' ' || cmdLine[lastPosition] == L'\t'))
-            ++lastPosition;
+        int last_position = -1;
+        while (cmd_line[last_position + 1] != L'\0' &&
+               (cmd_line[last_position + 1] == L' ' || cmd_line[last_position] == L'\t'))
+            ++last_position;
 
         // 拆分各个参数
-        int currentPosition = lastPosition + 1;
+        int current_position = last_position + 1;
         wchar_t quot = L'\0';
-        while (L'\0' != cmdLine[currentPosition])
+        while (L'\0' != cmd_line[current_position])
         {
-            const wchar_t c = cmdLine[currentPosition];
+            const wchar_t c = cmd_line[current_position];
             if (L'\0' == quot && (L'\"' == c || L'\'' == c))
             {
                 quot = c;
@@ -136,14 +136,14 @@ public:
             }
             else if (L'\0' == quot && L' ' == c)
             {
-                if (lastPosition + 1 < currentPosition)
-                    ret.push_back(std::wstring(cmdLine + (lastPosition + 1), cmdLine + currentPosition));
-                lastPosition = currentPosition;
+                if (last_position + 1 < current_position)
+                    ret.push_back(std::wstring(cmd_line + (last_position + 1), cmd_line + current_position));
+                last_position = current_position;
             }
-            ++currentPosition;
+            ++current_position;
         }
-        if (lastPosition + 1 < currentPosition)
-            ret.push_back(std::wstring(cmdLine + (lastPosition + 1), cmdLine + currentPosition));
+        if (last_position + 1 < current_position)
+            ret.push_back(std::wstring(cmd_line + (last_position + 1), cmd_line + current_position));
 
         return ret;
     }

@@ -11,10 +11,10 @@ using namespace nut;
 NUT_FIXTURE(TestBSTree)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testSmoking)
-    NUT_CASE(testInorderIterator)
-    NUT_CASE(testPreorderIterator)
-    NUT_CASE(testPostorderIterator)
+    NUT_CASE(test_smoking)
+    NUT_CASE(test_inorder_iterator)
+    NUT_CASE(test_preorder_iterator)
+    NUT_CASE(test_postorder_iterator)
     NUT_CASES_END()
 
     struct Node
@@ -28,13 +28,13 @@ NUT_FIXTURE(TestBSTree)
             : key(k), parent(NULL), left(NULL), right(NULL)
         {}
 
-        int getKey() const { return key; }
-        Node* getParent() const { return parent; }
-        Node* getLeftChild() const { return left; }
-        Node* getRightChild() const { return right; }
-        void setParent(Node *p) { parent = p; }
-        void setLeftChild(Node *p) { left = p; }
-        void setRightChild(Node *p) { right = p; }
+        int get_key() const { return key; }
+        Node* get_parent() const { return parent; }
+        Node* get_left_child() const { return left; }
+        Node* get_right_child() const { return right; }
+        void set_parent(Node *p) { parent = p; }
+        void set_left_child(Node *p) { left = p; }
+        void set_right_child(Node *p) { right = p; }
 
         void destroy()
         {
@@ -48,7 +48,7 @@ NUT_FIXTURE(TestBSTree)
 
     Node *root;
     
-    void setUp()
+    void set_up()
     {
         /*
          构建这样一颗树
@@ -64,17 +64,17 @@ NUT_FIXTURE(TestBSTree)
             root = BSTree<int,Node>::insert(root, new Node(nodes[i]));
     }
 
-    void tearDown()
+    void tear_down()
     {
         root->destroy();
         root = NULL;
     }
 
-    void testSmoking()
+    void test_smoking()
     {
     }
 
-    void testInorderIterator()
+    void test_inorder_iterator()
     {
         // 中序遍历
         int i = 0;
@@ -82,7 +82,7 @@ NUT_FIXTURE(TestBSTree)
         for (BTree<Node>::inorder_iterator iter = BTree<Node>::inorder_traversal_begin(root), end = BTree<Node>::inorder_traversal_end(root);
             iter != end; ++iter)
         {
-            NUT_TA(iter->getKey() == inorder[i]);
+            NUT_TA(iter->get_key() == inorder[i]);
             ++i;
         }
         NUT_TA(7 == i);
@@ -91,12 +91,12 @@ NUT_FIXTURE(TestBSTree)
             iter != end; ++iter)
         {
             --i;
-            NUT_TA(iter->getKey() == inorder[i]);
+            NUT_TA(iter->get_key() == inorder[i]);
         }
         NUT_TA(0 == i);
     }
 
-    void testPreorderIterator()
+    void test_preorder_iterator()
     {
         // 前序遍历
         int order[7] = {4, 2, 1, 3, 6, 5, 7 };
@@ -104,7 +104,7 @@ NUT_FIXTURE(TestBSTree)
         for (BTree<Node>::preorder_iterator iter = BTree<Node>::preorder_traversal_begin(root), end = BTree<Node>::preorder_traversal_end(root);
             iter != end; ++iter)
         {
-            NUT_TA(iter->getKey() == order[i]);
+            NUT_TA(iter->get_key() == order[i]);
             ++i;
         }
         NUT_TA(7 == i);
@@ -113,12 +113,12 @@ NUT_FIXTURE(TestBSTree)
             iter != end; ++iter)
         {
             --i;
-            NUT_TA(iter->getKey() == order[i]);
+            NUT_TA(iter->get_key() == order[i]);
         }
         NUT_TA(0 == i);
     }
 
-    void testPostorderIterator()
+    void test_postorder_iterator()
     {
         // 后序遍历
         int order[7] = {1, 3, 2, 5, 7, 6, 4 };
@@ -126,7 +126,7 @@ NUT_FIXTURE(TestBSTree)
         for (BTree<Node>::postorder_iterator iter = BTree<Node>::postorder_traversal_begin(root), end = BTree<Node>::postorder_traversal_end(root);
             iter != end; ++iter)
         {
-            NUT_TA(iter->getKey() == order[i]);
+            NUT_TA(iter->get_key() == order[i]);
             ++i;
         }
         NUT_TA(7 == i);
@@ -135,7 +135,7 @@ NUT_FIXTURE(TestBSTree)
             iter != end; ++iter)
         {
             --i;
-            NUT_TA(iter->getKey() == order[i]);
+            NUT_TA(iter->get_key() == order[i]);
         }
         NUT_TA(0 == i);
     }

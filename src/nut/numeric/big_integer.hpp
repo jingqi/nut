@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-04-03
- * @last-edit 2014-11-21 22:51:37 jingqi
+ * @last-edit 2015-01-06 22:47:37 jingqi
  */
 
 #ifndef ___HEADFILE_0D8E9B0B_ACDC_4FD5_A0BE_71D75F7A5EFE_
@@ -15,7 +15,7 @@
 
 #include <nut/platform/stdint.hpp>
 #include <nut/debugging/static_assert.hpp>
-#include <nut/memtool/copyonwrite.hpp>
+#include <nut/memtool/copy_on_write.hpp>
 
 #include "word_array_integer.hpp"
 
@@ -51,7 +51,7 @@ private:
         const size_t new_size = (size_needed > m_significant_len ? size_needed : m_significant_len);
 
         // buffer 为 null，则需要new
-        if (m_buffer.isNull())
+        if (m_buffer.is_null())
         {
             assert(0 == m_significant_len);
             if (new_size > 0)
@@ -134,12 +134,12 @@ public:
     }
 
     template <typename U>
-    _BigInteger(const U *buf, size_t len, bool withSign)
+    _BigInteger(const U *buf, size_t len, bool with_sign)
         : m_significant_len(0)
     {
         assert(NULL != buf && len > 0);
 
-        const uint8_t fill = (withSign ? (nut::is_positive(buf, len) ? 0 : 0xFF) : 0);
+        const uint8_t fill = (with_sign ? (nut::is_positive(buf, len) ? 0 : 0xFF) : 0);
         const size_t min_sig = sizeof(U) * len / sizeof(word_type) + 1; // 保证一个空闲字节放符号位
         _copy_on_write(min_sig);
         ::memcpy(m_buffer->buf, buf, sizeof(U) * len);
@@ -149,11 +149,11 @@ public:
     }
 
     // 上述模板函数的一个特化
-    _BigInteger(const word_type *buf, size_t len, bool withSign)
+    _BigInteger(const word_type *buf, size_t len, bool with_sign)
         : m_significant_len(0)
     {
         assert(NULL != buf && len > 0);
-        if (withSign || nut::is_positive(buf, len))
+        if (with_sign || nut::is_positive(buf, len))
         {
             _copy_on_write(len);
             ::memcpy(m_buffer->buf, buf, sizeof(word_type) * len);
@@ -886,7 +886,7 @@ private:
     }
 
 public:
-    std::string toString(size_t radix = 10) const
+    std::string to_string(size_t radix = 10) const
     {
         assert(is_valid_radix(radix));
         self tmp(*this);
@@ -909,7 +909,7 @@ public:
         return ret;
     }
 
-    std::wstring toWString(size_t radix = 10) const
+    std::wstring to_wstring(size_t radix = 10) const
     {
         assert(is_valid_radix(radix));
         self tmp(*this);
@@ -994,7 +994,7 @@ private:
     }
 
 public:
-    static self valueOf(const std::string& s, size_t radix = 10)
+    static self value_of(const std::string& s, size_t radix = 10)
     {
         assert(radix > 1 && radix <= 36);
         self ret;
@@ -1023,7 +1023,7 @@ public:
         return ret;
     }
 
-    static self valueOf(const std::wstring& s, size_t radix = 10)
+    static self value_of(const std::wstring& s, size_t radix = 10)
     {
         assert(radix > 1 && radix <= 36);
         self ret;

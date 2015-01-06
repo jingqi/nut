@@ -20,92 +20,92 @@ class TestRunner
 public:
     TestRunner(ITestLogger& logger) : m_logger(logger) {}
 
-    void runAGroup (const char *groupName)
+    void run_a_group(const char *group_name)
     {
-        m_logger.start(groupName, NULL, NULL);
-        
+        m_logger.start(group_name, NULL, NULL);
+
         TestRegister *pRegister = *(TestRegister**)nut_get_register_header();
         while (NULL != pRegister)
         {
-            if (pRegister->matchGroup(groupName))
+            if (pRegister->match_group(group_name))
             {
-                m_logger.enterFixture(pRegister->getFixtureName());
-                
-                TestFixture *fixture = pRegister->newFixture();
+                m_logger.enter_fixture(pRegister->get_fixture_name());
+
+                TestFixture *fixture = pRegister->new_fixture();
                 assert(NULL != fixture);
-                int total = fixture->___runACase(m_logger, -2, NULL);
+                int total = fixture->___run_a_case(m_logger, -2, NULL);
 
                 for (int i = 0; i < total; ++i) {
                     if (NULL == fixture)
-                        fixture = pRegister->newFixture();
-                    fixture->___runACase(m_logger, i, NULL);
-                    pRegister->deleteFixture(fixture);
+                        fixture = pRegister->new_fixture();
+                    fixture->___run_a_case(m_logger, i, NULL);
+                    pRegister->delete_fixture(fixture);
                     fixture = NULL;
                 }
                 if (NULL != fixture)
-                    pRegister->deleteFixture(fixture);
+                    pRegister->delete_fixture(fixture);
 
-                m_logger.leaveFixture();
+                m_logger.leave_fixture();
             }
-            pRegister = pRegister->getNextRegister();
+            pRegister = pRegister->get_next_register();
         }
 
         m_logger.finish();
     }
-    
-    void runAFixture (const char *fixtureName)
+
+    void run_a_fixture(const char *fixture_name)
     {
-        m_logger.start(NULL, fixtureName, NULL);
-        
+        m_logger.start(NULL, fixture_name, NULL);
+
         TestRegister *pRegister = *(TestRegister**)nut_get_register_header();
         while (NULL != pRegister)
         {
-            if (0 == ::strcmp(fixtureName, pRegister->getFixtureName()))
+            if (0 == ::strcmp(fixture_name, pRegister->get_fixture_name()))
             {
-                m_logger.enterFixture(fixtureName);
+                m_logger.enter_fixture(fixture_name);
 
-                TestFixture *fixture = pRegister->newFixture();
+                TestFixture *fixture = pRegister->new_fixture();
                 assert(NULL != fixture);
-                int total = fixture->___runACase(m_logger, -2, NULL);
+                int total = fixture->___run_a_case(m_logger, -2, NULL);
 
                 for (int i = 0; i < total; ++i) {
                     if (NULL == fixture)
-                        fixture = pRegister->newFixture();
-                    fixture->___runACase(m_logger, i, NULL);
-                    pRegister->deleteFixture(fixture);
+                        fixture = pRegister->new_fixture();
+                    fixture->___run_a_case(m_logger, i, NULL);
+                    pRegister->delete_fixture(fixture);
                     fixture = NULL;
                 }
                 if (NULL != fixture)
-                    pRegister->deleteFixture(fixture);
+                    pRegister->delete_fixture(fixture);
 
-                m_logger.leaveFixture();
+                m_logger.leave_fixture();
                 break;
             }
-            pRegister = pRegister->getNextRegister();
+            pRegister = pRegister->get_next_register();
         }
 
         m_logger.finish();
     }
-    
-    void runACase (const char *fixtureName, const char *caseName)
+
+    void run_a_case(const char *fixture_name, const char *case_name)
     {
-        m_logger.start(NULL, fixtureName, caseName);
-        
+        m_logger.start(NULL, fixture_name, case_name);
+
         TestRegister *pRegister = *(TestRegister**)nut_get_register_header();
         while (NULL != pRegister)
         {
-            if (0 == ::strcmp(fixtureName, pRegister->getFixtureName()))
+            if (0 == ::strcmp(fixture_name, pRegister->get_fixture_name()))
             {
-                m_logger.enterFixture(fixtureName);
-                
-                TestFixture *fixture = pRegister->newFixture();
-                fixture->___runACase(m_logger, -1, caseName);
-                pRegister->deleteFixture(fixture);
+                m_logger.enter_fixture(fixture_name);
 
-                m_logger.leaveFixture();
+                TestFixture *fixture = pRegister->new_fixture();
+                fixture->___run_a_case(m_logger, -1, case_name);
+                pRegister->delete_fixture(fixture);
+
+                m_logger.leave_fixture();
                 break;
             }
-            pRegister = pRegister->getNextRegister();
+            pRegister = pRegister->get_next_register();
         }
 
         m_logger.finish();

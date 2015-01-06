@@ -10,7 +10,7 @@ static int obj_count = 0;
 NUT_FIXTURE(TestGC)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testSmoking)
+    NUT_CASE(test_smoking)
     NUT_CASES_END()
 
     class B
@@ -25,10 +25,11 @@ NUT_FIXTURE(TestGC)
         ~A() { --obj_count; }
     };
 
-    void setUp() {}
-    void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
-    void testSmoking() {
+    void test_smoking()
+    {
         NUT_TA(0 == obj_count);
 
         {
@@ -47,7 +48,7 @@ NUT_FIXTURE(TestGC)
 
             NUT_TA(2 == obj_count);
 
-            pb.clear();
+            pb.set_null();
             NUT_TA(1 == obj_count);
         }
 

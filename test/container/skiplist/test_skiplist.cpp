@@ -2,8 +2,8 @@
 #include <nut/unittest/unittest.hpp>
 
 #include <iostream>
-#include <nut/container/skiplist/skiplistset.hpp>
-#include <nut/container/skiplist/skiplistmap.hpp>
+#include <nut/container/skiplist/skiplist_set.hpp>
+#include <nut/container/skiplist/skiplist_map.hpp>
 
 using namespace std;
 using namespace nut;
@@ -11,14 +11,14 @@ using namespace nut;
 NUT_FIXTURE(TestSkipList)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testSet)
-    NUT_CASE(testMap)
+    NUT_CASE(test_set)
+    NUT_CASE(test_map)
     NUT_CASES_END()
 
-    void setUp() {}
-    void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
-    void testSet()
+    void test_set()
     {
         SkipListSet<int> sl;
         NUT_TA(sl.size() == 0);
@@ -39,7 +39,7 @@ NUT_FIXTURE(TestSkipList)
         NUT_TA(!sl.contains(1));
     }
 
-    void testMap()
+    void test_map()
     {
         SkipListMap<int, int> sl;
         NUT_TA(sl.size() == 0);
@@ -49,12 +49,12 @@ NUT_FIXTURE(TestSkipList)
         NUT_TA(sl.add(3, 3));
         NUT_TA(!sl.add(4, 4));
         NUT_TA(sl.size() == 3);
-        NUT_TA(sl.containsKey(1) && sl.containsKey(3) && sl.containsKey(4));
+        NUT_TA(sl.contains_key(1) && sl.contains_key(3) && sl.contains_key(4));
         NUT_TA(!sl.remove(2));
         NUT_TA(sl.size() == 3);
         NUT_TA(sl.remove(1));
         NUT_TA(sl.size() == 2);
-        NUT_TA(!sl.containsKey(1));
+        NUT_TA(!sl.contains_key(1));
     }
 };
 

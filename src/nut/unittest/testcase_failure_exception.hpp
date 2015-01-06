@@ -24,11 +24,11 @@ public:
         : m_description(des), m_file(file), m_line(line)
     {}
 
-    const char* getDescription() const { return m_description; }
+    const char* get_description() const { return m_description; }
 
-    const char* getFile() const { return m_file; }
+    const char* get_file() const { return m_file; }
 
-    int getLine() const { return m_line; }
+    int get_line() const { return m_line; }
 };
 
 }

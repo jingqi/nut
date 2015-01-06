@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-12-10
- * @last-edit 2012-12-10 21:30:47 jingqi
+ * @last-edit 2015-01-06 22:49:52 jingqi
  * @brief
  */
 
@@ -27,27 +27,27 @@ class IConsole
 
 public:
     /** 打印伪命令行的一般信息 */
-    virtual void printGeneralInfo() const = 0;
+    virtual void print_general_info() const = 0;
 
     /** 获取所有的命令 */
-    virtual const std::vector<ref<ICommand> >& getCommands() const = 0;
+    virtual const std::vector<ref<ICommand> >& get_commands() const = 0;
 
     /** 退出当前伪命令行 */
     virtual void exit(int e) = 0;
 
 public:
     /** 从指定的命令集中挑选出匹配名称的子集 */
-    static std::vector<ref<ICommand> > matchCommands(const std::vector<ref<ICommand> >& commands, const std::string& toMatch)
-    {   
+    static std::vector<ref<ICommand> > match_commands(const std::vector<ref<ICommand> >& commands, const std::string& to_match)
+    {
         // 匹配命令
         std::vector<ref<ICommand> > matched_cmds;
         for (size_t i = 0, size = commands.size(); i < size; ++i)
         {
             ref<ICommand> cmd = commands.at(i);
-            assert(!cmd.isNull());
+            assert(!cmd.is_null());
 
             // 强匹配
-            if (NULL != cmd->getCommandName() && toMatch == cmd->getCommandName())
+            if (NULL != cmd->get_command_name() && to_match == cmd->get_command_name())
             {
                 matched_cmds.clear();
                 matched_cmds.push_back(cmd);
@@ -55,16 +55,16 @@ public:
             }
 
             // 弱匹配
-            if (NULL != cmd->getCommandName() && starts_with(cmd->getCommandName(), toMatch))
+            if (NULL != cmd->get_command_name() && starts_with(cmd->get_command_name(), to_match))
             {
                 matched_cmds.push_back(cmd);
             }
-            else if (NULL != cmd->getCommandNickNames())
+            else if (NULL != cmd->get_command_nick_names())
             {
-                const char** nn = cmd->getCommandNickNames();
+                const char** nn = cmd->get_command_nick_names();
                 for (size_t j = 0; NULL != nn[j]; ++j)
                 {
-                    if (toMatch == nn[j])
+                    if (to_match == nn[j])
                     {
                         matched_cmds.push_back(cmd);
                         break;
@@ -79,5 +79,3 @@ public:
 }
 
 #endif
-
-

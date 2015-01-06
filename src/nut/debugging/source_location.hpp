@@ -37,7 +37,7 @@ public :
         : m_path(file), m_line(line), m_func(func)
     {
         assert(NULL != file && line >= 0 && NULL != func);
-        sprintf(m_buf,"%d",line);
+        ::sprintf(m_buf,"%d",line);
         m_buf[BUF_SIZE - 1] = 0;
     }
 
@@ -45,7 +45,7 @@ public :
     {
         assert(NULL != m_path && NULL != m_func);
         assert(NULL != x.m_path && NULL != x.m_func);
-        return m_line == x.m_line && 0 == strcmp(m_path, x.m_path) && 0 == strcmp(m_func, x.m_func);
+        return m_line == x.m_line && 0 == ::strcmp(m_path, x.m_path) && 0 == ::strcmp(m_func, x.m_func);
     }
 
     bool operator!= (const SourceLocation& x) const
@@ -53,9 +53,12 @@ public :
         return !(*this == x);
     }
 
-    const char* getFilePath() const { return m_path; }
+    const char* get_file_path() const
+    {
+        return m_path;
+    }
 
-    const char* getFileName() const
+    const char* get_file_name() const
     {
         assert(NULL != m_path);
         const char *ret = m_path;
@@ -67,18 +70,27 @@ public :
         return ret;
     }
 
-    int getLineNumber() const { return m_line; }
+    int get_line_number() const
+    {
+        return m_line;
+    }
 
-    const char* getLineNumberStr() const { return m_buf; }
+    const char* getq_line_number_str() const
+    {
+        return m_buf;
+    }
 
     /**
      * @return this method may return NULL if the souce is not in a function
      */
-    const char* getFunctionName() const { return m_func; }
-
-    std::string toString() const
+    const char* get_function_name() const
     {
-        std::string ret = std::string(getFileName()) + ":" + m_buf;
+        return m_func;
+    }
+
+    std::string to_string() const
+    {
+        std::string ret = std::string(get_file_name()) + ":" + m_buf;
         if (m_func != NULL)
             ret += std::string(" ") + m_func + "()";
 
@@ -100,4 +112,3 @@ public :
 #endif
 
 #endif /* head file guarder */
-

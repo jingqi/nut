@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-08-24
- * @last-edit 2014-11-21 22:46:27 jingqi
+ * @last-edit 2015-01-06 19:50:38 jingqi
  * @brief
  */
 
@@ -39,17 +39,17 @@ class SkipListSet
             m_level = -1;
         }
 
-        inline const T& getKey() const
+        const T& get_key() const
         {
             return m_key;
         }
 
-        inline int getLevel() const
+        int get_level() const
         {
             return m_level;
         }
 
-        void setLevel(int lv)
+        void set_level(int lv)
         {
             assert(lv >= 0);
             if (NULL != m_next)
@@ -68,13 +68,13 @@ class SkipListSet
             m_level = lv;
         }
 
-        inline Node* getNext(int lv) const
+        Node* get_next(int lv) const
         {
             assert(NULL != m_next && 0 <= lv && lv <= m_level);
             return m_next[lv];
         }
 
-        inline void setNext(int lv, Node *n)
+        void set_next(int lv, Node *n)
         {
             assert(NULL != m_next && 0 <= lv && lv <= m_level);
             m_next[lv] = n;
@@ -89,12 +89,12 @@ private:
     typedef SkipList<T,Node,SkipListSet<T> > algo_t;
     friend class SkipList<T,Node,SkipListSet<T> >;
 
-    inline int getLevel() const
+    int get_level() const
     {
         return m_level;
     }
 
-    void setLevel(int lv)
+    void set_level(int lv)
     {
         assert(lv >= 0);
         if (NULL != m_head)
@@ -113,13 +113,13 @@ private:
         m_level = lv;
     }
 
-    inline Node* getHead(int lv) const
+    Node* get_head(int lv) const
     {
         assert(NULL != m_head && 0 <= lv && lv <= m_level);
         return m_head[lv];
     }
 
-    inline void setHead(int lv, Node *n)
+    void set_head(int lv, Node *n)
     {
         assert(NULL != m_head && 0 <= lv && lv <= m_level);
         m_head[lv] = n;
@@ -152,7 +152,7 @@ public:
             new (c) Node(n->m_key);
             c->m_level = n->m_level;
             c->m_next = (Node**) ::malloc(sizeof(Node*) * (c->m_level + 1));
-            algo_t::insertNode(c, *this, pre_lv);
+            algo_t::insert_node(c, *this, pre_lv);
             for (size_t i = 0; i <= c->m_level; ++i)
                 pre_lv[i] = c;
 
@@ -206,7 +206,7 @@ public:
             new (c) Node(n->m_key);
             c->m_level = n->m_level;
             c->m_next = (Node**) ::malloc(sizeof(Node*) * (c->m_level + 1));
-            algo_t::insertNode(c, *this, pre_lv);
+            algo_t::insert_node(c, *this, pre_lv);
             for (size_t i = 0; i <= c->m_level; ++i)
                 pre_lv[i] = c;
 
@@ -246,7 +246,7 @@ public:
         return !(*this == x);
     }
 
-    inline size_t size() const
+    size_t size() const
     {
         return m_size;
     }
@@ -260,7 +260,7 @@ public:
         Node *current = m_head[0];
         while (NULL != current)
         {
-            Node *next = current->getNext(0);
+            Node *next = current->get_next(0);
             current->~Node();
             ::free(current);
             current = next;
@@ -275,7 +275,7 @@ public:
             return false;
         assert(NULL != m_head && m_level >= 0);
 
-        return NULL != algo_t::searchNode(k, *this, NULL);
+        return NULL != algo_t::search_node(k, *this, NULL);
     }
 
     bool add(const T& k)
@@ -288,8 +288,8 @@ public:
             m_head = (Node**) ::malloc(sizeof(Node*) * 1);
             m_level = 0;
             m_head[0] = n;
-            n->setLevel(0);
-            n->setNext(0, NULL);
+            n->set_level(0);
+            n->set_next(0, NULL);
             m_size = 1;
             return true;
         }
@@ -297,7 +297,7 @@ public:
 
         // search
         Node **pre_lv = (Node **) ::malloc(sizeof(Node*) * (m_level + 1));
-        Node *n = algo_t::searchNode(k, *this, pre_lv);
+        Node *n = algo_t::search_node(k, *this, pre_lv);
         if (NULL != n)
         {
             ::free(pre_lv);
@@ -307,7 +307,7 @@ public:
         // insert
         n = (Node*) ::malloc(sizeof(Node));
         new (n) Node(k);
-        algo_t::insertNode(n, *this, pre_lv);
+        algo_t::insert_node(n, *this, pre_lv);
         ::free(pre_lv);
         ++m_size;
         return true;
@@ -321,7 +321,7 @@ public:
 
         // search
         Node **pre_lv = (Node **) ::malloc(sizeof(Node*) * (m_level + 1));
-        Node *n = algo_t::searchNode(k, *this, pre_lv);
+        Node *n = algo_t::search_node(k, *this, pre_lv);
         if (NULL == n)
         {
             ::free(pre_lv);
@@ -329,7 +329,7 @@ public:
         }
 
         // remove
-        algo_t::removeNode(n, *this, pre_lv);
+        algo_t::remove_node(n, *this, pre_lv);
         ::free(pre_lv);
         n->~Node();
         ::free(n);

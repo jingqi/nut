@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-03-24
- * @last-edit 2013-03-24 17:01:29 jingqi
+ * @last-edit 2015-01-06 22:37:40 jingqi
  * @brief
  */
 
@@ -37,11 +37,11 @@ struct FixedBuf
             ::free(buf);
     }
 
-    void realloc(size_t _len)
+    void realloc(size_t new_len)
     {
-        assert(get_ref() == 1 && _len > 0);
-        buf = (T*) ::realloc(buf, _len * sizeof(T)); // XXX realloc() 会处理 buf 为 NULL 的情况
-        len = _len;
+        assert(get_ref() == 1 && new_len > 0);
+        buf = (T*) ::realloc(buf, new_len * sizeof(T)); // XXX realloc() 会处理 buf 为 NULL 的情况
+        len = new_len;
     }
 };
 

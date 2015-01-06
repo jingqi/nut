@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-07-14
- * @last-edit 2014-10-05 17:15:21 jingqi
+ * @last-edit 2015-01-06 22:35:46 jingqi
  */
 
 #ifndef ___HEADFILE_D320BBBE_2351_4EBC_AEBA_E426DF662D53_
@@ -106,7 +106,7 @@ public:
         m_ptr = p;
     }
 
-    inline void clear()
+    inline void set_null()
     {
         m_ptr = NULL;
     }

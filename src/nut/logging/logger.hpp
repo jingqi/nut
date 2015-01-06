@@ -15,10 +15,10 @@
 #include <nut/gc/gc.hpp>
 #include <nut/threading/sync/mutex.hpp>
 #include <nut/threading/sync/guard.hpp>
-#include <nut/debugging/destroychecker.hpp>
+#include <nut/debugging/destroy_checker.hpp>
 
-#include "logpath.hpp"
-#include "loghandler.hpp"
+#include "log_path.hpp"
+#include "log_handler.hpp"
 
 
 #if defined(NUT_PLATFORM_CC_VC)
@@ -38,7 +38,7 @@ class Logger
     std::vector<ref<Logger> > m_subloggers;
     std::vector<ref<LogFilter> > m_filters;
     weak_ref<Logger> m_parent;
-    std::string m_loggerPath;
+    std::string m_logger_path;
     Mutex m_mutex;
 
     /** 析构检查器 */
@@ -50,33 +50,33 @@ private:
 
 private:
     Logger(weak_ref<Logger> parent, const std::string &path)
-        : m_parent(parent), m_loggerPath(path)
+        : m_parent(parent), m_logger_path(path)
     {}
 
-    void log(const std::string &logPath, const LogRecord &rec) const
+    void log(const std::string &log_path, const LogRecord &rec) const
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
 
-        if (!LogFilter::isLogable(logPath, rec, m_filters))
+        if (!LogFilter::is_logable(log_path, rec, m_filters))
             return;
 
         for (std::vector<ref<LogHandler> >::const_iterator iter = m_handlers.begin(),
             end = m_handlers.end(); iter != end; ++iter)
-                (*iter)->handleLog(logPath, rec, true);
+                (*iter)->handle_log(log_path, rec, true);
 
-        if (!m_parent.isNull())
-            m_parent->log(logPath, rec);
+        if (!m_parent.is_null())
+            m_parent->log(log_path, rec);
     }
 
 public :
-    void addHandler(ref<LogHandler> handler)
+    void add_handler(ref<LogHandler> handler)
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
 
         m_handlers.push_back(handler);
     }
 
-    void addFilter(ref<LogFilter> filter)
+    void add_filter(ref<LogFilter> filter)
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
 
@@ -87,14 +87,14 @@ public :
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
 
-        log(m_loggerPath, record);
+        log(m_logger_path, record);
     }
 
     void log(LogLevel level, const SourceLocation &sl, const std::string &msg) const
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
 
-        log(m_loggerPath, LogRecord(level, sl, msg));
+        log(m_logger_path, LogRecord(level, sl, msg));
     }
 
     void log(LogLevel level, const SourceLocation &sl, const char *format, ...) const
@@ -103,14 +103,14 @@ public :
 
         assert(NULL != format);
         size_t size = 100;
-        char *buf = (char*)malloc(size);
+        char *buf = (char*) ::malloc(size);
         assert(NULL != buf);
 
         va_list ap;
         while (NULL != buf)
         {
             va_start(ap, format);
-            int n = vsnprintf(buf, size, format, ap);
+            int n = ::vsnprintf(buf, size, format, ap);
             va_end(ap);
             if (n > -1 && n < (int)size)
                 break;
@@ -121,51 +121,51 @@ public :
                 size *= 2; /* glibc 2.0 */
 
             if (NULL != buf)
-                free(buf);
-            buf = (char*)malloc(size);
+                ::free(buf);
+            buf = (char*) ::malloc(size);
             assert(NULL != buf);
         }
         std::string msg = (NULL == buf ? "" : buf);
         if (NULL != buf)
-            free(buf);
+            ::free(buf);
 
-        log(m_loggerPath, LogRecord(level, sl, msg));
+        log(m_logger_path, LogRecord(level, sl, msg));
     }
 
-    weak_ref<Logger> getLogger(const std::string &relativepath)
+    weak_ref<Logger> get_logger(const std::string &relative_path)
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
 
         Guard<Mutex> g(&m_mutex);
 
-        if (relativepath.length() == 0)
+        if (relative_path.length() == 0)
             return this;
 
         std::vector<ref<Logger> >::const_iterator iter = m_subloggers.begin(),
             end = m_subloggers.end();
-        const std::string current = LogPath::getFirstParent(relativepath);
-        while (iter != end && current != (*iter)->getLoggerName()) ++iter;
+        const std::string current = LogPath::get_first_parent(relative_path);
+        while (iter != end && current != (*iter)->get_logger_name()) ++iter;
         if (iter == end)
         {
             m_subloggers.push_back(ref<Logger>(gc_new<Logger>(this,
-                (m_loggerPath.length() == 0 ? current : m_loggerPath + "." + current))));
+                (m_logger_path.length() == 0 ? current : m_logger_path + "." + current))));
             iter = m_subloggers.end() - 1;
         }
-        return (*iter)->getLogger(LogPath::subLogPath(relativepath));
+        return (*iter)->get_logger(LogPath::sub_log_path(relative_path));
     }
 
-    std::string getLoggerPath()
+    std::string get_logger_path()
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
 
-        return m_loggerPath;
+        return m_logger_path;
     }
 
-    std::string getLoggerName()
+    std::string get_logger_name()
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
 
-        return LogPath::getName(m_loggerPath);
+        return LogPath::get_name(m_logger_path);
     }
 
 };
@@ -178,4 +178,3 @@ public :
 #endif
 
 #endif // head file guarder
-

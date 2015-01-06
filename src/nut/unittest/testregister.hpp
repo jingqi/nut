@@ -33,67 +33,67 @@ class TestRegister
     typedef TestFixture* (*new_fixture_func)();
     typedef void (*delete_fixture_func)(TestFixture*);
 
-    new_fixture_func m_newFunc;
-    delete_fixture_func m_deleteFunc;
-    const char *m_fixtureName;
+    new_fixture_func m_new_func;
+    delete_fixture_func m_delete_func;
+    const char *m_fixture_name;
     std::vector<std::string> m_groups;
     TestRegister *m_pnext;
 
 public:
-    TestRegister(const char *fixtureName, const char *groups, new_fixture_func n, delete_fixture_func d)
-        : m_newFunc(n), m_deleteFunc(d), m_fixtureName(fixtureName)
+    TestRegister(const char *fixture_name, const char *groups, new_fixture_func n, delete_fixture_func d)
+        : m_new_func(n), m_delete_func(d), m_fixture_name(fixture_name)
     {
-        assert(NULL != fixtureName);
+        assert(NULL != fixture_name);
         assert(NULL != groups);
         assert(NULL != n);
         assert(NULL != d);
 
         // 分离出组别
-        m_groups = splitGroups(groups);
+        m_groups = split_groups(groups);
 
         // 将实例添加到链表中
         m_pnext = *(TestRegister**)nut_get_register_header();
         *(TestRegister**)nut_get_register_header() = this;
     }
 
-    bool matchGroup(const char *groupName) const
+    bool match_group(const char *group_name) const
     {
-        assert(NULL != groupName);
+        assert(NULL != group_name);
         for (std::vector<std::string>::const_iterator iter = m_groups.begin(); iter != m_groups.end(); ++iter)
         {
-            if (0 == ::strcmp(iter->c_str(), groupName))
+            if (0 == ::strcmp(iter->c_str(), group_name))
                 return true;
         }
         return false;
     }
 
-    const char* getFixtureName() const { return m_fixtureName; }
+    const char* get_fixture_name() const { return m_fixture_name; }
 
-    TestRegister* getNextRegister() const { return m_pnext; }
+    TestRegister* get_next_register() const { return m_pnext; }
 
-    TestFixture* newFixture() const { return m_newFunc(); }
+    TestFixture* new_fixture() const { return m_new_func(); }
 
-    void deleteFixture(TestFixture *p)
+    void delete_fixture(TestFixture *p)
     {
         assert(NULL != p);
-        m_deleteFunc(p);
+        m_delete_func(p);
     }
 
 private:
     /** 判断字符是否是空白 */
-    static inline bool isBlank(char c)
+    static inline bool is_blank(char c)
     {
         return c == ' ' || c == '\r' || c == '\n' || c == '\t';
     }
 
     /** 去除字符串末尾的空白 */
-    static std::string trimEnd(const std::string& s)
+    static std::string trim_end(const std::string& s)
     {
         std::string ret = s;
         while (ret.length() > 0)
         {
             char c = ret.at(ret.length() - 1);
-            if (!isBlank(c))
+            if (!is_blank(c))
                 return ret;
             ret.resize(ret.length() - 1);
         }
@@ -101,7 +101,7 @@ private:
     }
 
     /** 拆分如 "test, quiet" 的字符串为 ["test", "quiet"] */
-    static std::vector<std::string> splitGroups(const char *groups)
+    static std::vector<std::string> split_groups(const char *groups)
     {
         assert(NULL != groups);
 
@@ -114,7 +114,7 @@ private:
             if (GROUP_SPLITER == groups[i])
             {
                 // 去除尾部空格
-                s = trimEnd(s);
+                s = trim_end(s);
 
                 // 添加到结果
                 if (s.length() > 0)
@@ -123,12 +123,12 @@ private:
                     s.clear();
                 }
             }
-            else if (s.length() > 0 || !isBlank(groups[i]))
+            else if (s.length() > 0 || !is_blank(groups[i]))
             {
                 s.push_back(groups[i]);
             }
         }
-        s = trimEnd(s);
+        s = trim_end(s);
         if (s.length() > 0)
             ret.push_back(s);
 

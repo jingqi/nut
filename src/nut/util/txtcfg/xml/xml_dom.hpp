@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-10-03
- * @last-edit 2014-10-07 19:09:48 jingqi
+ * @last-edit 2015-01-06 23:42:38 jingqi
  * @brief
  */
 
@@ -37,16 +37,16 @@ public:
 		: m_version("1.0"), m_encoding("UTF-8"), m_dirty(false)
     {}
 
-	bool isDirty() const
+	bool is_dirty() const
 	{
 		if (m_dirty)
 			return true;
-		if (m_root.isNull())
+		if (m_root.is_null())
 			return false;
-		return m_root->isDirty();
+		return m_root->is_dirty();
 	}
 
-	void setDirty(bool dirty)
+	void set_dirty(bool dirty)
 	{
 		if (dirty)
 		{
@@ -55,16 +55,16 @@ public:
 		}
 
 		m_dirty = false;
-		if (m_root.isNotNull())
-			m_root->setDirty(false);
+		if (m_root.is_not_null())
+			m_root->set_dirty(false);
 	}
 
-    inline const std::string& getVersion() const
+    inline const std::string& get_version() const
     {
         return m_version;
     }
 
-    inline void setVersion(const std::string& version)
+    inline void set_version(const std::string& version)
     {
 		if (version != m_version)
 		{
@@ -73,12 +73,12 @@ public:
 		}
     }
 
-    inline const std::string& getEncoding() const
+    inline const std::string& get_encoding() const
     {
         return m_encoding;
     }
 
-    inline void setEncoding(const std::string& encoding)
+    inline void set_encoding(const std::string& encoding)
     {
 		if (encoding != m_encoding)
 		{
@@ -87,12 +87,12 @@ public:
 		}
     }
 
-    inline ref<XmlElement> getRoot() const
+    inline ref<XmlElement> get_root() const
     {
         return m_root;
     }
 
-    inline void setRoot(ref<XmlElement> root)
+    inline void set_root(ref<XmlElement> root)
     {
 		if (root != m_root)
 		{
@@ -181,7 +181,7 @@ public:
         *out += "\" encoding=\"";
         *out += m_encoding;
         *out += "\"?>";
-        if (m_root.isNull())
+        if (m_root.is_null())
             return;
         if (format)
             out->push_back('\n');

@@ -10,14 +10,14 @@ using namespace nut;
 NUT_FIXTURE(TestKMP)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testKmpSearch)
-    NUT_CASE(testKmpSearchW)
+    NUT_CASE(test_kmp_search)
+    NUT_CASE(test_kmp_searchw)
     NUT_CASES_END()
 
-    void setUp() {}
-    void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
-    void testKmpSearch()
+    void test_kmp_search()
     {
         const char *example = "abcabdabcabc";
         int kmp_expect[12] = {0, 0, 0, 1, 2, 0, 1, 2, 3, 4, 5, 3};
@@ -31,7 +31,7 @@ NUT_FIXTURE(TestKMP)
         NUT_TA(i == 3);
     }
 
-    void testKmpSearchW()
+    void test_kmp_searchw()
     {
         const wchar_t *example = L"abcabdabcabc";
         int kmp_expect[12] = {0, 0, 0, 1, 2, 0, 1, 2, 3, 4, 5, 3};

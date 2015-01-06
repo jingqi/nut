@@ -78,7 +78,7 @@ public:
      * @param t 距离现在时间的间隔,单位毫秒
      * @return 定时器id
      */
-    int addTimer(const TimeVal& interval, timer_func_type func, void *arg = NULL)
+    int add_timer(const TimeVal& interval, timer_func_type func, void *arg = NULL)
     {
         assert(NULL != func);
 
@@ -100,7 +100,7 @@ public:
         return ti->id;
     }
 
-    bool cancelTimer(int id)
+    bool cancel_timer(int id)
     {
         Guard<lock_type> g(&m_lock);
         size_t i = 0;
@@ -169,4 +169,3 @@ public:
 }
 
 #endif
-

@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-04-05
- * @last-edit 2012-08-19 18:52:05 jingqi
+ * @last-edit 2015-01-06 22:35:06 jingqi
  */
 
 #ifndef ___HEADFILE_155BBE6F_6F7B_4B42_A097_B9C87EE5EEE0_
@@ -73,16 +73,16 @@ public:
     {
         while (true)
         {
-            const TagedPtr<FreeNode> oldHead(m_head.cas);
+            const TagedPtr<FreeNode> old_head(m_head.cas);
 
-            if (NULL == oldHead.ptr)
+            if (NULL == old_head.ptr)
                 return m_mem_alloc.alloc(G);
 
-            const TagedPtr<FreeNode> newHead(oldHead.ptr->next, oldHead.tag + 1);
-            if (atomic_cas(&(m_head.cas), oldHead.cas, newHead.cas))
+            const TagedPtr<FreeNode> new_head(old_head.ptr->next, old_head.tag + 1);
+            if (atomic_cas(&(m_head.cas), old_head.cas, new_head.cas))
             {
                 atomic_add(&m_free_num, -1);
-                return oldHead.ptr;
+                return old_head.ptr;
             }
         }
     }
@@ -98,10 +98,10 @@ public:
                 return;
             }
 
-            const TagedPtr<FreeNode> oldHead(m_head.cas);
-            reinterpret_cast<FreeNode*>(p)->next = oldHead.ptr;
-            const TagedPtr<FreeNode> newHead(reinterpret_cast<FreeNode*>(p), oldHead.tag + 1);
-            if (atomic_cas(&(m_head.cas), oldHead.cas, newHead.cas))
+            const TagedPtr<FreeNode> old_head(m_head.cas);
+            reinterpret_cast<FreeNode*>(p)->next = old_head.ptr;
+            const TagedPtr<FreeNode> new_head(reinterpret_cast<FreeNode*>(p), old_head.tag + 1);
+            if (atomic_cas(&(m_head.cas), old_head.cas, new_head.cas))
             {
                 atomic_add(&m_free_num, 1);
                 return;
@@ -109,7 +109,7 @@ public:
         }
     }
 
-    inline void* alloc(size_t cb)
+    void* alloc(size_t cb)
     {
         assert(G == cb);
         void *p = self_type::alloc();
@@ -117,7 +117,7 @@ public:
         return p;
     }
 
-    inline void free(void *p, size_t cb)
+    void free(void *p, size_t cb)
     {
         assert(NULL != p && G == cb);
         self_type::free(p);
@@ -127,4 +127,3 @@ public:
 }
 
 #endif /* head file guarder */
-

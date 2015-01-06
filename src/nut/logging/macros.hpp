@@ -9,7 +9,7 @@
 
 #include <nut/platform/platform.hpp>
 #include "logger.hpp"
-#include "logmanager.hpp"
+#include "log_manager.hpp"
 
 #if defined(NUT_PLATFORM_CC_VC) /* c99,vc */
 

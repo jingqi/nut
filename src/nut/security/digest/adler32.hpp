@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-11-19
- * @last-edit 2014-11-21 22:53:39 jingqi
+ * @last-edit 2015-01-06 23:12:26 jingqi
  */
 
 #ifndef ___HEADFILE_A87EC76B_E2C1_4BCD_AF64_A177A623A874_
@@ -105,7 +105,7 @@ public:
         }
     }
 
-    uint32_t getResult() const
+    uint32_t get_result() const
     {
         return m_result;
     }

@@ -91,7 +91,7 @@ public:
         assert(NULL != mutex);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-        return FALSE != ::SleepConditionVariableCS(&m_cond, mutex->innerMutex(), INFINITE);
+        return FALSE != ::SleepConditionVariableCS(&m_cond, mutex->inner_mutex(), INFINITE);
 #else
         return 0 == ::pthread_cond_wait(&m_cond, mutex->innerMutex());
 #endif
@@ -105,8 +105,8 @@ public:
         assert(NULL != mutex);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-        const DWORD dwMilliseconds = s * 1000 + ms;
-        return FALSE != ::SleepConditionVariableCS(&m_cond, mutex->innerMutex(), dwMilliseconds);
+        const DWORD milli_seconds = s * 1000 + ms;
+        return FALSE != ::SleepConditionVariableCS(&m_cond, mutex->inner_mutex(), milli_seconds);
 #else
         struct timespec abstime;
 #   if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)

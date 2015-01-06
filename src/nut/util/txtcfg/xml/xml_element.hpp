@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-10-03
- * @last-edit 2014-11-21 22:56:19 jingqi
+ * @last-edit 2015-01-06 23:41:28 jingqi
  * @brief
  */
 
@@ -62,19 +62,19 @@ public:
         : m_name(name), m_dirty(false)
     {}
 
-    bool isDirty() const
+    bool is_dirty() const
     {
         if (m_dirty)
             return true;
         for (size_t i = 0, sz = m_children.size(); i < sz; ++i)
         {
-            if (m_children.at(i)->isDirty())
+            if (m_children.at(i)->is_dirty())
                 return true;
         }
         return false;
     }
 
-    void setDirty(bool dirty)
+    void set_dirty(bool dirty)
     {
         if (dirty)
         {
@@ -84,15 +84,15 @@ public:
 
         m_dirty = false;
         for (size_t i = 0, sz = m_children.size(); i < sz; ++i)
-            m_children.at(i)->setDirty(false);
+            m_children.at(i)->set_dirty(false);
     }
 
-    inline const std::string& getName() const
+    inline const std::string& get_name() const
     {
         return m_name;
     }
 
-    inline void setName(const std::string& name)
+    inline void set_name(const std::string& name)
     {
         if (name != m_name)
         {
@@ -101,12 +101,12 @@ public:
         }
     }
 
-    inline const std::string& getText() const
+    inline const std::string& get_text() const
     {
         return m_text;
     }
 
-    inline void setText(const std::string& text)
+    inline void set_text(const std::string& text)
     {
         if (text != m_text)
         {
@@ -115,24 +115,24 @@ public:
         }
     }
 
-    inline size_t getChildrenCount() const
+    inline size_t get_children_count() const
     {
         return m_children.size();
     }
 
-    inline ref<XmlElement> getChild(size_t i) const
+    inline ref<XmlElement> get_child(size_t i) const
     {
         if (i >= m_children.size())
             return ref<XmlElement>();
         return m_children.at(i);
     }
 
-    ref<XmlElement> getChild(const std::string& name) const
+    ref<XmlElement> get_child(const std::string& name) const
     {
         for (size_t i = 0, s = m_children.size(); i < s; ++i)
         {
             ref<XmlElement> c = m_children.at(i);
-            if (c.isNull())
+            if (c.is_null())
                 continue;
             if (c->m_name == name)
                 return c;
@@ -140,28 +140,28 @@ public:
         return ref<XmlElement>();
     }
 
-    inline void appendChild(ref<XmlElement> child)
+    inline void append_child(ref<XmlElement> child)
     {
-        assert(child.isNotNull());
+        assert(child.is_not_null());
         m_children.push_back(child);
         m_dirty = true;
     }
 
-    inline void insertChild(size_t pos, ref<XmlElement> child)
+    inline void insert_child(size_t pos, ref<XmlElement> child)
     {
-        assert(pos <= m_children.size() && child.isNotNull());
+        assert(pos <= m_children.size() && child.is_not_null());
         m_children.insert(m_children.begin() + pos, child);
         m_dirty = true;
     }
 
-    inline void removeChild(size_t pos)
+    inline void remove_child(size_t pos)
     {
         assert(pos < m_children.size());
         m_children.erase(m_children.begin() + pos);
         m_dirty = true;
     }
 
-    inline void clearChildren()
+    inline void clear_children()
     {
         m_children.clear();
         m_dirty = true;
@@ -173,7 +173,7 @@ public:
      * @param out 用来存储返回的属性值，可以为 NULL
      * @param 改属性是否存在
      */
-    bool getAttribute(const std::string& name, std::string *out) const
+    bool get_attribute(const std::string& name, std::string *out) const
     {
         const_attr_iter_t iter = m_attrs.find(name);
         if (iter == m_attrs.end())
@@ -188,7 +188,7 @@ public:
      *
      * @return 是否成功，如果属性已经存在，则添加失败
      */
-    bool addAttribute(const std::string& name, const std::string& value)
+    bool add_attribute(const std::string& name, const std::string& value)
     {
         if (m_attrs.find(name) != m_attrs.end())
             return false;
@@ -200,13 +200,13 @@ public:
     /**
      * 存在属性则设置属性值，否则添加新属性
      */
-    inline void setAttribute(const std::string& name, const std::string& value)
+    inline void set_attribute(const std::string& name, const std::string& value)
     {
         m_attrs[name] = value;
         m_dirty = true;
     }
 
-    bool removeAttribute(const std::string& name)
+    bool remove_attribute(const std::string& name)
     {
         attr_iter_t iter = m_attrs.find(name);
         if (iter == m_attrs.end())
@@ -216,13 +216,13 @@ public:
         return true;
     }
 
-    inline void clearAttributes()
+    inline void clear_attributes()
     {
         m_attrs.clear();
         m_dirty = true;
     }
 
-    void addComment(size_t pos, const std::string& text)
+    void add_comment(size_t pos, const std::string& text)
     {
         // binary search
         int left = -1, right = (int) m_comments.size();
@@ -237,7 +237,7 @@ public:
         m_comments.insert(m_comments.begin() + right, Comment(pos, text));
     }
 
-    void removeComment(size_t pos)
+    void remove_comment(size_t pos)
     {
         // binary search
         const int size = (int) m_comments.size();
@@ -278,23 +278,23 @@ public:
         m_dirty = true;
     }
 
-    inline const_attr_iter_t attrConstBegin() const
+    inline const_attr_iter_t attr_const_begin() const
     {
         return m_attrs.begin();
     }
 
-    inline const_attr_iter_t attrConstEnd() const
+    inline const_attr_iter_t attr_const_end() const
     {
         return m_attrs.end();
     }
 
-    inline attr_iter_t attrBegin()
+    inline attr_iter_t attr_begin()
     {
         m_dirty = true; // in case of modification
         return m_attrs.begin();
     }
 
-    inline attr_iter_t attrEnd()
+    inline attr_iter_t attr_end()
     {
         m_dirty = true; // in case of modification
         return m_attrs.end();
@@ -315,7 +315,7 @@ public:
 
             virtual void handle_attribute(const std::string &name, const std::string &value)
             {
-                m_elem->addAttribute(name, value);
+                m_elem->add_attribute(name, value);
             }
 
             virtual void handle_text(const std::string& text)
@@ -325,13 +325,13 @@ public:
 
             virtual void handle_comment(const std::string& comment)
             {
-                m_elem->addComment(m_elem->m_children.size(), comment);
+                m_elem->add_comment(m_elem->m_children.size(), comment);
             }
 
             virtual XmlElementHandler* handle_child(const std::string &name)
             {
                 ref<XmlElement> c = gc_new<XmlElement>(name);
-                m_elem->appendChild(c);
+                m_elem->append_child(c);
                 return new Handler(c.pointer(), m_ignore_text_blank);
             }
 
@@ -423,7 +423,7 @@ public:
 
             // children element
             ref<XmlElement> c = m_children.at(i);
-            if (c.isNull())
+            if (c.is_null())
                 continue;
             if (tab >= 0)
                 writer.write_text("\n");

@@ -18,12 +18,12 @@ int tf(int a)
 NUT_FIXTURE(TestDelegate)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testSmoking)
+    NUT_CASE(test_smoking)
     NUT_CASES_END()
 
 
-    void setUp() {}
-    void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
     int tm(int a)
     {
@@ -38,7 +38,7 @@ NUT_FIXTURE(TestDelegate)
 
     void tt() {}
 
-    void testSmoking()
+    void test_smoking()
     {
         delegate<void()> d1;
         d1.connect(this, &TestDelegate::tv);

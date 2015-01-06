@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-03-02
- * @last-edit 2014-06-14 21:42:13 jingqi
+ * @last-edit 2015-01-06 19:31:57 jingqi
  */
 
 #ifndef ___HEADFILE_BDA2D5F4_E926_4BBB_A415_DE4463C47D1A_
@@ -47,7 +47,7 @@ private:
             : m_parent_of_sub_root(parent_of_sub_root), m_current(current), m_eof(eof)
         {
             assert( (m_eof && NULL == m_current) ||
-                (m_eof && NULL != m_current && NULL == m_current->getRightChild()) ||
+                (m_eof && NULL != m_current && NULL == m_current->get_right_child()) ||
                 (!m_eof && NULL != m_current));
         }
 
@@ -67,19 +67,19 @@ private:
         {
             assert(NULL != m_current);
             assert(!m_eof); // no next
-            if (NULL != m_current->getRightChild())
+            if (NULL != m_current->get_right_child())
             {
-                m_current = m_current->getRightChild();
-                while (NULL != m_current->getLeftChild())
-                    m_current = m_current->getLeftChild();
+                m_current = m_current->get_right_child();
+                while (NULL != m_current->get_left_child())
+                    m_current = m_current->get_left_child();
             }
             else
             {
-                NODE *current = m_current, *parent = m_current->getParent();
-                while (m_parent_of_sub_root != parent && current == parent->getRightChild())
+                NODE *current = m_current, *parent = m_current->get_parent();
+                while (m_parent_of_sub_root != parent && current == parent->get_right_child())
                 {
                     current = parent;
-                    parent = current->getParent();
+                    parent = current->get_parent();
                 }
                 if (m_parent_of_sub_root == parent)
                     m_eof = true; // end
@@ -96,19 +96,19 @@ private:
             {
                 m_eof = false;
             }
-            else if (NULL != m_current->getLeftChild())
+            else if (NULL != m_current->get_left_child())
             {
-                m_current = m_current->getLeftChild();
-                while (NULL != m_current->getRightChild())
-                    m_current = m_current->getRightChild();
+                m_current = m_current->get_left_child();
+                while (NULL != m_current->get_right_child())
+                    m_current = m_current->get_right_child();
             }
             else
             {
-                NODE *parent = m_current->getParent();
-                while (m_parent_of_sub_root != parent && m_current == parent->getLeftChild())
+                NODE *parent = m_current->get_parent();
+                while (m_parent_of_sub_root != parent && m_current == parent->get_left_child())
                 {
                     m_current = parent;
-                    parent = m_current->getParent();
+                    parent = m_current->get_parent();
                 }
                 assert(m_parent_of_sub_root != parent); // no pre
                 m_current = parent;
@@ -152,9 +152,9 @@ public:
         if (NULL == sub_root)
             return inorder_iterator(NULL, NULL, true);
 
-        NODE *parent_of_sub_root = sub_root->getParent();
-        while (NULL != sub_root->getLeftChild())
-            sub_root = sub_root->getLeftChild();
+        NODE *parent_of_sub_root = sub_root->get_parent();
+        while (NULL != sub_root->get_left_child())
+            sub_root = sub_root->get_left_child();
         return inorder_iterator(parent_of_sub_root, sub_root, false);
     }
 
@@ -164,9 +164,9 @@ public:
         if (NULL == sub_root)
             return inorder_iterator(NULL, NULL, true);
 
-        NODE *parent_of_sub_root = sub_root->getParent();
-        while (NULL != sub_root->getRightChild())
-            sub_root = sub_root->getRightChild();
+        NODE *parent_of_sub_root = sub_root->get_parent();
+        while (NULL != sub_root->get_right_child())
+            sub_root = sub_root->get_right_child();
         return inorder_iterator(parent_of_sub_root, sub_root, true);
     }
 
@@ -208,7 +208,7 @@ private:
             : m_parent_of_sub_root(parent_of_sub_root), m_current(current), m_eof(eof)
         {
             assert( (m_eof && NULL == m_current) ||
-                (m_eof && NULL != m_current && NULL == m_current->getLeftChild() && NULL == m_current->getRightChild()) ||
+                (m_eof && NULL != m_current && NULL == m_current->get_left_child() && NULL == m_current->get_right_child()) ||
                 (!m_eof && NULL != m_current) );
         }
 
@@ -228,27 +228,27 @@ private:
         {
             assert(NULL != m_current);
             assert(!m_eof); // no next
-            if (NULL != m_current->getLeftChild())
+            if (NULL != m_current->get_left_child())
             {
-                m_current = m_current->getLeftChild();
+                m_current = m_current->get_left_child();
             }
-            else if (NULL != m_current->getRightChild())
+            else if (NULL != m_current->get_right_child())
             {
-                m_current = m_current->getRightChild();
+                m_current = m_current->get_right_child();
             }
             else
             {
-                NODE *current = m_current, *parent = m_current->getParent();
+                NODE *current = m_current, *parent = m_current->get_parent();
                 while (m_parent_of_sub_root != parent &&
-                    (current == parent->getRightChild() || NULL == parent->getRightChild()))
+                    (current == parent->get_right_child() || NULL == parent->get_right_child()))
                 {
                     current = parent;
-                    parent = current->getParent();
+                    parent = current->get_parent();
                 }
                 if (m_parent_of_sub_root == parent)
                     m_eof = true; // end
                 else
-                    m_current = parent->getRightChild();
+                    m_current = parent->get_right_child();
             }
             return *this;
         }
@@ -262,21 +262,21 @@ private:
             }
             else
             {
-                NODE *parent = m_current->getParent();
+                NODE *parent = m_current->get_parent();
                 assert(m_parent_of_sub_root != parent); // no pre
-                if (m_current == parent->getLeftChild() || NULL == parent->getLeftChild())
+                if (m_current == parent->get_left_child() || NULL == parent->get_left_child())
                 {
                     m_current = parent;
                 }
                 else
                 {
-                    m_current = parent->getLeftChild();
+                    m_current = parent->get_left_child();
                     while (true)
                     {
-                        if (NULL != m_current->getRightChild())
-                            m_current = m_current->getRightChild();
-                        else if (NULL != m_current->getLeftChild())
-                            m_current = m_current->getLeftChild();
+                        if (NULL != m_current->get_right_child())
+                            m_current = m_current->get_right_child();
+                        else if (NULL != m_current->get_left_child())
+                            m_current = m_current->get_left_child();
                         else
                             break;
                     }
@@ -320,7 +320,7 @@ public:
     {
         if (NULL == sub_root)
             return preorder_iterator(NULL, NULL, true);
-        return preorder_iterator(sub_root->getParent(), sub_root, false);
+        return preorder_iterator(sub_root->get_parent(), sub_root, false);
     }
 
     /** 前序遍历的终止迭代器 */
@@ -329,9 +329,9 @@ public:
         if (NULL == sub_root)
             return preorder_iterator(NULL, NULL, true);
 
-        const NODE* parent_of_sub_root = sub_root->getParent();
-        while (NULL != sub_root->getRightChild())
-            sub_root = sub_root->getRightChild();
+        const NODE* parent_of_sub_root = sub_root->get_parent();
+        while (NULL != sub_root->get_right_child())
+            sub_root = sub_root->get_right_child();
         return preorder_iterator(parent_of_sub_root, sub_root, true);
     }
 
@@ -373,7 +373,7 @@ private:
             : m_parent_of_sub_root(parent_of_sub_root), m_current(current), m_eof(eof)
         {
             assert( (m_eof && NULL == m_current) ||
-                (m_eof && NULL != m_current && m_parent_of_sub_root == m_current->getParent()) ||
+                (m_eof && NULL != m_current && m_parent_of_sub_root == m_current->get_parent()) ||
                 (!m_eof && NULL != m_current) );
         }
 
@@ -393,24 +393,24 @@ private:
         {
             assert(NULL != m_current);
             assert(!m_eof); // no next
-            NODE *parent = m_current->getParent();
+            NODE *parent = m_current->get_parent();
             if (m_parent_of_sub_root == parent)
             {
                 m_eof = true; // end
             }
-            else if (m_current == parent->getRightChild() || NULL == parent->getRightChild())
+            else if (m_current == parent->get_right_child() || NULL == parent->get_right_child())
             {
                 m_current = parent;
             }
             else
             {
-                m_current = parent->getRightChild();
+                m_current = parent->get_right_child();
                 while (true)
                 {
-                    if (NULL != m_current->getLeftChild())
-                        m_current = m_current->getLeftChild();
-                    else if (NULL != m_current->getRightChild())
-                        m_current = m_current->getRightChild();
+                    if (NULL != m_current->get_left_child())
+                        m_current = m_current->get_left_child();
+                    else if (NULL != m_current->get_right_child())
+                        m_current = m_current->get_right_child();
                     else
                         break;
                 }
@@ -426,25 +426,25 @@ private:
             {
                 m_eof = false;
             }
-            else if (NULL != m_current->getRightChild())
+            else if (NULL != m_current->get_right_child())
             {
-                m_current = m_current->getRightChild();
+                m_current = m_current->get_right_child();
             }
-            else if (NULL != m_current->getLeftChild())
+            else if (NULL != m_current->get_left_child())
             {
-                m_current = m_current->getLeftChild();
+                m_current = m_current->get_left_child();
             }
             else
             {
-                NODE *parent = m_current->getParent();
+                NODE *parent = m_current->get_parent();
                 while (m_parent_of_sub_root != parent &&
-                    (m_current == parent->getLeftChild() || NULL == parent->getLeftChild()))
+                    (m_current == parent->get_left_child() || NULL == parent->get_left_child()))
                 {
                     m_current = parent;
-                    parent = m_current->getParent();
+                    parent = m_current->get_parent();
                 }
                 assert(m_parent_of_sub_root != parent); // no pre
-                m_current = parent->getLeftChild();
+                m_current = parent->get_left_child();
             }
             return *this;
         }
@@ -485,9 +485,9 @@ public:
         if (NULL == sub_root)
             return postorder_iterator(NULL, NULL, true);
 
-        NODE* parent_of_sub_root = sub_root->getParent();
-        while (NULL != sub_root->getLeftChild())
-            sub_root = sub_root->getLeftChild();
+        NODE* parent_of_sub_root = sub_root->get_parent();
+        while (NULL != sub_root->get_left_child())
+            sub_root = sub_root->get_left_child();
         return postorder_iterator(parent_of_sub_root, sub_root, false);
     }
 
@@ -496,7 +496,7 @@ public:
     {
         if (NULL == sub_root)
             return postorder_iterator(NULL, NULL, true);
-        return postorder_iterator(sub_root->getParent(), sub_root, true);
+        return postorder_iterator(sub_root->get_parent(), sub_root, true);
     }
 
     /** 逆后序遍历的起始迭代器 */

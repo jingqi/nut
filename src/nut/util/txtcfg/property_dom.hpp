@@ -235,7 +235,7 @@ public:
 		}
 	}
 
-	inline bool isDirty() const
+	inline bool is_dirty() const
 	{
 		return m_dirty;
 	}
@@ -243,7 +243,7 @@ public:
     /**
 	 * set dirty flag
 	 */
-    inline void setDirty(bool dirty = true)
+    inline void set_dirty(bool dirty = true)
     {
         m_dirty = dirty;
     }
@@ -254,7 +254,7 @@ public:
 		m_dirty = true;
 	}
 
-    void listKeys(std::vector<std::string> *out) const
+    void list_keys(std::vector<std::string> *out) const
     {
 		assert(NULL != out);
 		for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
@@ -266,7 +266,7 @@ public:
         }
     }
 
-    bool hasKey(const char *key) const
+    bool has_key(const char *key) const
     {
         assert(NULL != key);
 		for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
@@ -277,7 +277,7 @@ public:
         return false;
     }
 
-    bool removeKey(const char *key)
+    bool remove_key(const char *key)
     {
 		assert(NULL != key);
 		for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
@@ -292,7 +292,7 @@ public:
         return false;
     }
 
-    const char* getString(const char *key, const char *defaultValue = "") const
+    const char* get_string(const char *key, const char *defaultValue = "") const
     {
         assert(NULL != key);
 		for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
@@ -303,10 +303,10 @@ public:
         return defaultValue;
     }
 
-    bool getBool(const char *key, bool defaultValue = false) const
+    bool get_bool(const char *key, bool defaultValue = false) const
     {
         assert(NULL != key);
-        std::string s = getString(key);
+        std::string s = get_string(key);
         if (s == "0" || strieq(s,"false") || strieq(s,"no"))
             return false;
         if (s == "1" || strieq(s,"true") || strieq(s,"yes"))
@@ -314,30 +314,30 @@ public:
         return defaultValue;
     }
 
-    long getNum(const char *key, long defaultValue = 0) const
+    long get_num(const char *key, long defaultValue = 0) const
     {
         assert(NULL != key);
-        const char *s = getString(key);
+        const char *s = get_string(key);
         if (NULL == s || '\0' == s[0])
             return defaultValue;
 
         return atol(s);
     }
 
-    double getDecimal(const char *key, double defaultValue = 0.0) const
+    double get_decimal(const char *key, double defaultValue = 0.0) const
     {
         assert(NULL != key);
-        const char *s = getString(key);
+        const char *s = get_string(key);
         if (NULL == s || '\0' == s[0])
             return defaultValue;
 
         return atof(s);
     }
 
-    void getList(const char *key, std::vector<std::string> *out, char splitChar = ',') const
+    void get_list(const char *key, std::vector<std::string> *out, char splitChar = ',') const
     {
         assert(NULL != key && NULL != out);
-        std::string s = getString(key);
+        std::string s = get_string(key);
         if (s.empty())
             return;
 
@@ -351,7 +351,7 @@ public:
         out->push_back(s.substr(begin));
     }
 
-    void setString(const char *key, const char *value)
+    void set_string(const char *key, const char *value)
     {
         assert(NULL != key && NULL != value);
 		for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
@@ -373,13 +373,13 @@ public:
         m_dirty = true;   // tag the need of saving
     }
 
-    void setBool(const char *key, bool value)
+    void set_bool(const char *key, bool value)
     {
         assert(NULL != key);
-        setString(key, (value ? "true" : "false"));
+        set_string(key, (value ? "true" : "false"));
     }
 
-    void setNum(const char *key, long value)
+    void set_num(const char *key, long value)
     {
         assert(NULL != key);
         const int BUF_LEN = 30;
@@ -390,20 +390,20 @@ public:
 #else
         ::sprintf(buf, "%ld", value);
 #endif
-        setString(key, buf);
+        set_string(key, buf);
     }
 
-    void setDecimal(const char *key, double value)
+    void set_decimal(const char *key, double value)
     {
         assert(NULL != key);
         const int BUF_LEN = 30;
         char buf[BUF_LEN];
         ::memset(buf, 0, BUF_LEN);
         ::sprintf(buf, "%lf", value);
-        setString(key, buf);
+        set_string(key, buf);
     }
 
-    void setList(const char *key, const std::vector<std::string>& values, char splitChar = ',')
+    void set_list(const char *key, const std::vector<std::string>& values, char splitChar = ',')
     {
         assert(NULL != key);
         std::string s;
@@ -414,7 +414,7 @@ public:
 			s.push_back(splitChar);
 			s += values.at(i);
 		}
-        setString(key, s.data());
+        set_string(key, s.data());
     }
 };
 

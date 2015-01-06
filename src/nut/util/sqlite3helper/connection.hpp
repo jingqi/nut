@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-08-10
- * @last-edit 2014-11-21 22:55:38 jingqi
+ * @last-edit 2015-01-06 23:53:11 jingqi
  */
 
 #ifndef ___HEADFILE_A7E2D32B_B83E_44AB_A6C6_98E03E0EDDBD_
@@ -26,10 +26,10 @@ class Connection
     NUT_GC_REFERABLE
 
     sqlite3 *m_sqlite;
-    bool m_autoCommit;
-    bool m_throwExceptions;
-    int m_lastError;
-    std::string m_lastErrorMsg;
+    bool m_auto_commit;
+    bool m_throw_exceptions;
+    int m_last_error;
+    std::string m_last_error_msg;
 
     struct Sqlite3Freer
     {
@@ -46,28 +46,28 @@ class Connection
 
     void onError(int err, const char *msg = NULL)
     {
-        m_lastError = err;
+        m_last_error = err;
 
         if (NULL == msg)
         {
             assert(NULL != m_sqlite);
             msg = ::sqlite3_errmsg(m_sqlite); // XXX memory of "msg" is managed internally by sqlite3
         }
-        m_lastErrorMsg = (NULL == msg ? "no error detected" : msg);
+        m_last_error_msg = (NULL == msg ? "no error detected" : msg);
 
-        if (m_throwExceptions)
-            throw ExceptionA(m_lastError, m_lastErrorMsg, __FILE__, __LINE__, __FUNCTION__);
+        if (m_throw_exceptions)
+            throw ExceptionA(m_last_error, m_last_error_msg, __FILE__, __LINE__, __FUNCTION__);
     }
 
 public:
     Connection()
-        : m_sqlite(NULL), m_autoCommit(true), m_throwExceptions(false),
-          m_lastError(SQLITE_OK)
+        : m_sqlite(NULL), m_auto_commit(true), m_throw_exceptions(false),
+          m_last_error(SQLITE_OK)
     {}
 
     Connection(sqlite3 *db)
-        : m_sqlite(db), m_autoCommit(true), m_throwExceptions(false),
-          m_lastError(SQLITE_OK)
+        : m_sqlite(db), m_auto_commit(true), m_throw_exceptions(false),
+          m_last_error(SQLITE_OK)
     {
         assert(NULL != db);
     }
@@ -76,8 +76,8 @@ public:
      * @param dbfilepath File path encoded in UTF-8
      */
     Connection(const char *dbfilepath)
-        : m_sqlite(NULL), m_autoCommit(true), m_throwExceptions(false),
-          m_lastError(SQLITE_OK)
+        : m_sqlite(NULL), m_auto_commit(true), m_throw_exceptions(false),
+          m_last_error(SQLITE_OK)
     {
         assert(NULL != dbfilepath);
         open(dbfilepath);
@@ -93,7 +93,7 @@ public:
     {
         assert(NULL != dbfilepath);
 
-        if (isValid())
+        if (is_valid())
         {
             bool rs = close();
             assert(rs);
@@ -106,7 +106,7 @@ public:
             onError(rs, "open db file failed");
             return false;
         }
-        assert(isValid());
+        assert(is_valid());
         return true;
     }
 
@@ -128,39 +128,39 @@ public:
         }
     }
 
-    inline bool isValid() const
+    inline bool is_valid() const
     {
         return NULL != m_sqlite;
     }
 
-    inline bool isAutoCommit() const
+    inline bool is_auto_commit() const
     {
-        return m_autoCommit;
+        return m_auto_commit;
     }
 
-    inline void setAutoCommit(bool b)
+    inline void set_auto_commit(bool b)
     {
-        m_autoCommit = b;
+        m_auto_commit = b;
     }
 
-    inline bool isThrowExceptions() const
+    inline bool is_throw_exceptions() const
     {
-        return m_throwExceptions;
+        return m_throw_exceptions;
     }
 
-    inline void setThrowExceptions(bool b)
+    inline void set_throw_exceptions(bool b)
     {
-        m_throwExceptions = b;
+        m_throw_exceptions = b;
     }
 
-    std::string getLastErrorMsg() const
+    const std::string& get_lastError_msg() const
     {
-        return m_lastErrorMsg;
+        return m_last_error_msg;
     }
 
     bool start()
     {
-        assert(isValid());
+        assert(is_valid());
         char *msg = NULL;
         int rs = ::sqlite3_exec(m_sqlite, "begin;", NULL, NULL, &msg);
         Sqlite3Freer _f(msg);
@@ -174,7 +174,7 @@ public:
 
     bool commit()
     {
-        assert(isValid());
+        assert(is_valid());
         char *msg = NULL;
         int rs = ::sqlite3_exec(m_sqlite, "commit;", NULL, NULL, &msg);
         Sqlite3Freer _f(msg);
@@ -188,7 +188,7 @@ public:
 
     bool rollback()
     {
-        assert(isValid());
+        assert(is_valid());
         char *msg = NULL;
         int rs = ::sqlite3_exec(m_sqlite, "rollback;", NULL, NULL, &msg);
         Sqlite3Freer _f(msg);
@@ -203,7 +203,7 @@ public:
     /** 压缩数据库 */
     bool vacuum()
     {
-        assert(isValid());
+        assert(is_valid());
         char *msg = NULL;
         int rs = ::sqlite3_exec(m_sqlite, "vacuum;", NULL, NULL, &msg);
         Sqlite3Freer _f(msg);
@@ -215,27 +215,27 @@ public:
         return true;
     }
 
-    bool executeUpdate(const char *sql)
+    bool execute_update(const char *sql)
     {
-        assert(NULL != sql && isValid());
+        assert(NULL != sql && is_valid());
         char *msg = NULL;
-        if (m_autoCommit)
+        if (m_auto_commit)
             start();
         int rs = ::sqlite3_exec(m_sqlite, sql, NULL, NULL, &msg);
         Sqlite3Freer _f(msg);
         if (SQLITE_OK != rs)
         {
-            if (m_autoCommit)
+            if (m_auto_commit)
                 rollback();
             onError(rs, msg);
             return false;
         }
-        if (m_autoCommit)
+        if (m_auto_commit)
             commit();
         return true;
     }
 
-    bool executeUpdate(const char *sql, const ParamWraper& arg1,
+    bool execute_update(const char *sql, const ParamWraper& arg1,
         const ParamWraper& arg2 = ParamWraper::none(),
         const ParamWraper& arg3 = ParamWraper::none(),
         const ParamWraper& arg4 = ParamWraper::none(),
@@ -245,11 +245,11 @@ public:
         const ParamWraper& arg8 = ParamWraper::none(),
         const ParamWraper& arg9 = ParamWraper::none())
     {
-        assert(NULL != sql && isValid());
+        assert(NULL != sql && is_valid());
 
         // 预编译
         ref<PreparedStatement> stmt = gc_new<PreparedStatement>(m_sqlite, sql);
-        if (!stmt->isValid())
+        if (!stmt->is_valid())
         {
             onError(SQLITE_ERROR);
             return false;
@@ -284,28 +284,28 @@ public:
 #undef __BIND
 
         // 执行
-        if (m_autoCommit)
+        if (m_auto_commit)
             start();
         int irs = ::sqlite3_step(stmt->stmt()->raw());
         if (SQLITE_DONE != irs)
         {
-            if (m_autoCommit)
+            if (m_auto_commit)
                 rollback();
             onError(irs);
             return false;
         }
-        if (m_autoCommit)
+        if (m_auto_commit)
             commit();
         return true;
     }
 
-    bool executeUpdate(const char *sql, const std::vector<ParamWraper>& args)
+    bool execute_update(const char *sql, const std::vector<ParamWraper>& args)
     {
-        assert(NULL != sql && isValid());
+        assert(NULL != sql && is_valid());
 
         // 预编译
         ref<PreparedStatement> stmt = gc_new<PreparedStatement>(m_sqlite, sql);
-        if (!stmt->isValid())
+        if (!stmt->is_valid())
         {
             onError(SQLITE_ERROR);
             return false;
@@ -328,22 +328,22 @@ public:
             }
         }
             // 执行
-        if (m_autoCommit)
+        if (m_auto_commit)
              start();
         int irs = ::sqlite3_step(stmt->stmt()->raw());
         if (SQLITE_DONE != irs)
         {
-            if (m_autoCommit)
+            if (m_auto_commit)
                 rollback();
             onError(irs);
             return false;
         }
-        if (m_autoCommit)
+        if (m_auto_commit)
             commit();
         return true;
     }
 
-    ref<ResultSet> executeQuery(const char *sql,
+    ref<ResultSet> execute_query(const char *sql,
         const ParamWraper& arg1 = ParamWraper::none(),
         const ParamWraper& arg2 = ParamWraper::none(),
         const ParamWraper& arg3 = ParamWraper::none(),
@@ -354,11 +354,11 @@ public:
         const ParamWraper& arg8 = ParamWraper::none(),
         const ParamWraper& arg9 = ParamWraper::none())
     {
-        assert(NULL != sql && isValid());
+        assert(NULL != sql && is_valid());
 
         // 预编译
         ref<PreparedStatement> stmt = gc_new<PreparedStatement>(m_sqlite, sql);
-        if (!stmt->isValid())
+        if (!stmt->is_valid())
         {
             onError(SQLITE_ERROR);
             return gc_new<ResultSet>();
@@ -396,13 +396,13 @@ public:
         return gc_new<ResultSet>(stmt->stmt());
     }
 
-    ref<ResultSet> executeQuery(const char *sql, const std::vector<ParamWraper> args)
+    ref<ResultSet> execute_query(const char *sql, const std::vector<ParamWraper> args)
     {
-        assert(NULL != sql && isValid());
+        assert(NULL != sql && is_valid());
 
         // 预编译
         ref<PreparedStatement> stmt = gc_new<PreparedStatement>(m_sqlite, sql);
-        if (!stmt->isValid())
+        if (!stmt->is_valid())
         {
             onError(SQLITE_ERROR);
             return gc_new<ResultSet>();

@@ -8,7 +8,7 @@ using namespace nut;
 NUT_FIXTURE(TestLengthFixedMP)
 {
 	NUT_CASES_BEGIN()
-	NUT_CASE(testSmoking)
+    NUT_CASE(test_smoking)
 	NUT_CASES_END()
 
 	struct A
@@ -16,10 +16,10 @@ NUT_FIXTURE(TestLengthFixedMP)
         int a;
     };
 
-	void setUp() {}
-	void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
-	void testSmoking()
+    void test_smoking()
 	{
 		lengthfixed_mp<sizeof(A)> mp;
 		void *p1 = mp.alloc();

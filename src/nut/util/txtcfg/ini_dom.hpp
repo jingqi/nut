@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2011-12-25
- * @last-edit 2014-11-21 22:55:58 jingqi
+ * @last-edit 2015-01-06 23:45:26 jingqi
  */
 
 #ifndef ___HEADFILE_C9DB1FAD_B2DA_45F6_AE36_818B4BB68EC1_
@@ -195,7 +195,7 @@ public:
 			start = i;
 
 			ref<Sector> sector = Sector::parse_sector_name(ln, line_comment_chars, space_chars);
-			if (sector.isNotNull())
+            if (sector.is_not_null())
 			{
 				current_lines = &(sector->m_lines);
 				m_sectors.push_back(sector);
@@ -230,12 +230,12 @@ public:
         }
     }
 
-	inline bool isDirty() const
+	inline bool is_dirty() const
 	{
 		return m_dirty;
 	}
 
-    inline void setDirty(bool dirty = true)
+    inline void set_dirty(bool dirty = true)
     {
         m_dirty = dirty;
     }
@@ -247,14 +247,14 @@ public:
         m_dirty = true;
     }
 
-    void listSectors(std::vector<std::string> *out) const
+    void list_sectors(std::vector<std::string> *out) const
     {
 		assert(NULL != out);
 		for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
 			out->push_back(m_sectors.at(i)->m_name);
     }
 
-    bool hasSector(const char *sector) const
+    bool has_sector(const char *sector) const
     {
         if (NULL == sector)
             return true;
@@ -267,7 +267,7 @@ public:
         return false;
     }
 
-    bool removeSector(const char *sector)
+    bool remove_sector(const char *sector)
     {
         if (NULL == sector)
             return false;
@@ -284,7 +284,7 @@ public:
         return false;
     }
 
-    void listKeys(const char *sector, std::vector<std::string> *out) const
+    void list_keys(const char *sector, std::vector<std::string> *out) const
     {
 		assert(NULL != out);
         if (NULL == sector)
@@ -316,7 +316,7 @@ public:
         }
     }
 
-    bool hasKey(const char *sector, const char *key) const
+    bool has_key(const char *sector, const char *key) const
     {
         assert(NULL != key);
         const std::vector<ref<Line> > *lines = NULL;
@@ -348,7 +348,7 @@ public:
         return false;
     }
 
-    bool removeKey(const char *sector, const char *key)
+    bool remove_key(const char *sector, const char *key)
     {
         assert(NULL != key);
         std::vector<ref<Line> > *lines = NULL;
@@ -382,7 +382,7 @@ public:
         return false;
     }
 
-    const char* getString(const char *sector, const char *key, const char *defaultValue = "") const
+    const char* get_string(const char *sector, const char *key, const char *defaultValue = "") const
     {
         assert(NULL != key);
         const std::vector<ref<Line> > *lines = NULL;
@@ -412,10 +412,10 @@ public:
         return defaultValue;
     }
 
-    bool getBool(const char *sector, const char *key, bool defaultValue = false) const
+    bool get_bool(const char *sector, const char *key, bool defaultValue = false) const
     {
         assert(NULL != key);
-        std::string s = getString(sector, key);
+        std::string s = get_string(sector, key);
         if (s == "0" || strieq(s,"false") || strieq(s,"no"))
             return false;
         if (s == "1" || strieq(s,"true") || strieq(s,"yes"))
@@ -423,30 +423,30 @@ public:
         return defaultValue;
     }
 
-    long getNum(const char *sector, const char *key, long defaultValue = 0) const
+    long get_num(const char *sector, const char *key, long defaultValue = 0) const
     {
         assert(NULL != key);
-        const char *s = getString(sector, key);
+        const char *s = get_string(sector, key);
         if (NULL == s || '\0' == s[0])
             return defaultValue;
 
         return atol(s);
     }
 
-    double getDecimal(const char *sector, const char *key, double defaultValue = 0.0) const
+    double get_decimal(const char *sector, const char *key, double defaultValue = 0.0) const
     {
         assert(NULL != key);
-        const char *s = getString(sector, key);
+        const char *s = get_string(sector, key);
         if (NULL == s || '\0' == s[0])
             return defaultValue;
 
         return atof(s);
     }
 
-    void getList(const char *sector, const char *key, std::vector<std::string> *out, char splitChar = ',') const
+    void get_list(const char *sector, const char *key, std::vector<std::string> *out, char splitChar = ',') const
     {
         assert(NULL != key && NULL != out);
-        std::string s = getString(sector, key);
+        std::string s = get_string(sector, key);
         if (s.length() == 0)
             return;
 
@@ -460,7 +460,7 @@ public:
         out->push_back(s.substr(begin));
     }
 
-    void setString(const char *sector, const char *key, const char *value)
+    void set_string(const char *sector, const char *key, const char *value)
     {
         assert(NULL != key && NULL != value);
         std::vector<ref<Line> > *lines = NULL;
@@ -504,13 +504,13 @@ public:
         m_dirty = true;
     }
 
-    void setBool(const char *sector, const char *key, bool value)
+    void set_bool(const char *sector, const char *key, bool value)
     {
         assert(NULL != key);
-        setString(sector, key, (value ? "true" : "false"));
+        set_string(sector, key, (value ? "true" : "false"));
     }
 
-    void setNum(const char *sector, const char *key, long value)
+    void set_num(const char *sector, const char *key, long value)
     {
         assert(NULL != key);
         const int BUF_LEN = 30;
@@ -521,20 +521,20 @@ public:
 #else
         ::sprintf(buf, "%ld", value);
 #endif
-        setString(sector, key, buf);
+        set_string(sector, key, buf);
     }
 
-    void setDecimal(const char *sector, const char *key, double value)
+    void set_decimal(const char *sector, const char *key, double value)
     {
         assert(NULL != key);
         const int BUF_LEN = 30;
         char buf[BUF_LEN];
         ::memset(buf, 0, BUF_LEN);
         ::sprintf(buf, "%lf", value);
-        setString(sector, key, buf);
+        set_string(sector, key, buf);
     }
 
-    void setList(const char *sector, const char *key, const std::vector<std::string>& values, char splitChar = ',')
+    void set_list(const char *sector, const char *key, const std::vector<std::string>& values, char splitChar = ',')
     {
         assert(NULL != key);
         std::string s;
@@ -542,7 +542,7 @@ public:
             s = values.at(0);
         for (size_t i = 1, sz = values.size(); i < sz; ++i)
             s += std::string() + splitChar + values.at(i);
-        setString(sector, key, s.data());
+        set_string(sector, key, s.data());
     }
 };
 

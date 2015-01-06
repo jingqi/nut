@@ -1,8 +1,8 @@
 ﻿/**
  * @file -
  * @author jingqi
- * @date 
- * @last-edit 2012-08-11 16:25:08 jingqi
+ * @date
+ * @last-edit 2015-01-06 23:49:48 jingqi
  */
 
 #ifndef ___HEADFILE_54107F5A_983A_4021_AB0E_0E5422FE5FD9_
@@ -85,9 +85,9 @@ public:
         return true;
     }
 
-    inline bool isValid() const
+    inline bool is_valid() const
     {
-        return !m_stmt.isNull();
+        return !m_stmt.is_null();
     }
 
     ref<SqliteStmt> stmt()
@@ -97,17 +97,17 @@ public:
 
     bool reset()
     {
-        assert(isValid());
+        assert(is_valid());
         m_strings.clear();
         return SQLITE_OK == ::sqlite3_reset(m_stmt->raw());
     }
-    
+
     /**
      * @param pos 1-based
      */
     bool bind(int pos, const ParamWraper& param)
     {
-        assert(isValid());
+        assert(is_valid());
         switch (param.type)
         {
         case ParamWraper::INTEGER:
@@ -115,7 +115,7 @@ public:
 
         case ParamWraper::STRING:
             // sqlite3 只有在用到字符串时才会去取值，这里需要缓存一下字符串
-            assert(!param.string_arg.isNull());
+            assert(!param.string_arg.is_null());
             m_strings.push_back(param.string_arg);
             return SQLITE_OK == ::sqlite3_bind_text(m_stmt->raw(), pos, param.string_arg->c_str(), -1, NULL);
 
@@ -128,4 +128,3 @@ public:
 }
 
 #endif
-

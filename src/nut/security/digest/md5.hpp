@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-07-07
- * @last-edit 2014-11-21 22:53:48 jingqi
+ * @last-edit 2015-01-06 23:12:00 jingqi
  */
 
 #ifndef ___HEADFILE_C230DE33_6F0F_45E8_A829_39F88DDC1A13_
@@ -131,19 +131,19 @@ public:
 
         /* Pad out to 56 mod 64. */
         const size_t index = (size_t)(m_byteslen & 0x3f);
-        const size_t padLen = (index < 56) ? (56 - index) : (120 - index);
+        const size_t pad_len = (index < 56) ? (56 - index) : (120 - index);
         const uint8_t PADDING[64] = {
             0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
         };
-        update(PADDING, padLen);
+        update(PADDING, pad_len);
 
         /* Append length (before padding) */
         update(&bits, 8);
     }
 
-    std::string getStringResult() const
+    std::string get_string_result() const
     {
         std::string ret;
         for (int i = 0; i < 4; ++i)
@@ -167,7 +167,7 @@ public:
         return ret;
     }
 
-    void getBytesResult(uint8_t *ret)
+    void get_bytes_result(uint8_t *ret)
     {
         assert(NULL != ret);
         ::memcpy(ret, m_state, 16);

@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-12-10
- * @last-edit 2012-12-10 21:37:25 jingqi
+ * @last-edit 2015-01-06 22:58:50 jingqi
  * @brief
  */
 
@@ -26,15 +26,15 @@ public:
     CmdHelp(weak_ref<IConsole> c)
         : m_console(c)
     {
-        assert(!c.isNull());
+        assert(!c.is_null());
     }
 
-    virtual const char* getCommandName() const
+    virtual const char* get_command_name() const
     {
         return "help";
     }
 
-    virtual const char** getCommandNickNames() const
+    virtual const char** get_command_nick_names() const
     {
         static const char* ret[] = {
             "hlp",
@@ -43,31 +43,31 @@ public:
         return ret;
     }
 
-    virtual const char* getGeneralInfo() const
+    virtual const char* get_general_info() const
     {
         return "print some helpfull information";
     }
 
-    virtual const char* getDetailInfo() const
+    virtual const char* get_detail_info() const
     {
         return "help [command_name]\neg.:\n\thelp\n\thelp exit";
     }
 
-    virtual void execute(const char* commandLine)
+    virtual void execute(const char* command_line)
     {
-        assert(NULL != commandLine);
-        const std::vector<std::string> params = parseComandLine(commandLine);
-        
+        assert(NULL != command_line);
+        const std::vector<std::string> params = parse_comand_line(command_line);
+
         // 空参数
         if (params.size() <= 1)
         {
-            m_console->printGeneralInfo();
+            m_console->print_general_info();
             return;
         }
         const std::string cmd_name = params.at(1);
 
         // 匹配命令
-        std::vector<ref<ICommand> > matched_cmds = IConsole::matchCommands(m_console->getCommands(), cmd_name);
+        std::vector<ref<ICommand> > matched_cmds = IConsole::match_commands(m_console->get_commands(), cmd_name);
 
         // 无匹配
         if (matched_cmds.size() == 0)
@@ -82,14 +82,14 @@ public:
             printf("More than one command matched:\n\t");
             for (size_t i = 0, size = matched_cmds.size(); i < size; ++i)
             {
-                const char *n = matched_cmds.at(i)->getCommandName();
+                const char *n = matched_cmds.at(i)->get_command_name();
                 printf(" %s", (NULL == n ? "(null)" : n));
             }
             return;
         }
 
         // 打印帮助信息
-        const char *i = matched_cmds.at(0)->getDetailInfo();
+        const char *i = matched_cmds.at(0)->get_detail_info();
         printf("%s\n", (NULL == i ? "(No information found)" : i));
     }
 };
@@ -97,5 +97,3 @@ public:
 }
 
 #endif
-
-

@@ -11,29 +11,29 @@ using namespace nut;
 NUT_FIXTURE(TestXmlElement)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(testWrite)
-    NUT_CASE(testWriteSingle)
-    NUT_CASE(testRead)
+    NUT_CASE(test_write)
+    NUT_CASE(test_write_single)
+    NUT_CASE(test_read)
     NUT_CASES_END()
 
-    void setUp() {}
-    void tearDown() {}
+    void set_up() {}
+    void tear_down() {}
 
-    void testWrite()
+    void test_write()
     {
         nut::ref<XmlElement> r = gc_new<XmlElement>("root");
-        r->addAttribute("attr1", "size");
-        r->addAttribute("attr2", "<good>");
-        r->setText(" nice <> \"one\" ");
-        r->addComment(1, "comment");
-        r->addComment(10, "comment2");
+        r->add_attribute("attr1", "size");
+        r->add_attribute("attr2", "<good>");
+        r->set_text(" nice <> \"one\" ");
+        r->add_comment(1, "comment");
+        r->add_comment(10, "comment2");
 
         nut::ref<XmlElement> e = gc_new<XmlElement>("e");
-        e->setText("element");
-        r->appendChild(e);
+        e->set_text("element");
+        r->append_child(e);
 
         nut::ref<XmlElement> e2 = gc_new<XmlElement>("e2");
-        r->appendChild(e2);
+        r->append_child(e2);
 
         string s;
         r->serielize(&s);
@@ -76,11 +76,11 @@ NUT_FIXTURE(TestXmlElement)
         NUT_TA(s == expect);
     }
 
-    void testWriteSingle()
+    void test_write_single()
     {
         nut::ref<XmlElement> r = gc_new<XmlElement>("root");
-        r->addAttribute("attr1", "size");
-        r->addAttribute("attr2", "<good>");
+        r->add_attribute("attr1", "size");
+        r->add_attribute("attr2", "<good>");
 
         string s;
         r->serielize(&s);
@@ -90,7 +90,7 @@ NUT_FIXTURE(TestXmlElement)
         NUT_TA(s == expect);
     }
 
-    void testRead()
+    void test_read()
     {
         const char *s =
             " <root attr1=\"size\" \t attr2=\"&lt;good&gt;\"> \n"
@@ -104,7 +104,7 @@ NUT_FIXTURE(TestXmlElement)
             "</root>";
         nut::ref<XmlElement> r = gc_new<XmlElement>();
         r->parse(s);
-		r = r->getChild(0);
+        r = r->get_child(0);
 
         std::string out;
         r->serielize(&out, false);
