@@ -20,7 +20,7 @@ class TestRunner
 public:
     TestRunner(ITestLogger& logger) : m_logger(logger) {}
 
-    void run_a_group(const char *group_name)
+    void run_group(const char *group_name)
     {
         m_logger.start(group_name, NULL, NULL);
 
@@ -33,12 +33,12 @@ public:
 
                 TestFixture *fixture = pRegister->new_fixture();
                 assert(NULL != fixture);
-                int total = fixture->___run_a_case(m_logger, -2, NULL);
+                int total = fixture->___run_case(m_logger, -2, NULL);
 
                 for (int i = 0; i < total; ++i) {
                     if (NULL == fixture)
                         fixture = pRegister->new_fixture();
-                    fixture->___run_a_case(m_logger, i, NULL);
+                    fixture->___run_case(m_logger, i, NULL);
                     pRegister->delete_fixture(fixture);
                     fixture = NULL;
                 }
@@ -53,7 +53,7 @@ public:
         m_logger.finish();
     }
 
-    void run_a_fixture(const char *fixture_name)
+    void run_fixture(const char *fixture_name)
     {
         m_logger.start(NULL, fixture_name, NULL);
 
@@ -66,12 +66,12 @@ public:
 
                 TestFixture *fixture = pRegister->new_fixture();
                 assert(NULL != fixture);
-                int total = fixture->___run_a_case(m_logger, -2, NULL);
+                int total = fixture->___run_case(m_logger, -2, NULL);
 
                 for (int i = 0; i < total; ++i) {
                     if (NULL == fixture)
                         fixture = pRegister->new_fixture();
-                    fixture->___run_a_case(m_logger, i, NULL);
+                    fixture->___run_case(m_logger, i, NULL);
                     pRegister->delete_fixture(fixture);
                     fixture = NULL;
                 }
@@ -87,7 +87,7 @@ public:
         m_logger.finish();
     }
 
-    void run_a_case(const char *fixture_name, const char *case_name)
+    void run_case(const char *fixture_name, const char *case_name)
     {
         m_logger.start(NULL, fixture_name, case_name);
 
@@ -99,7 +99,7 @@ public:
                 m_logger.enter_fixture(fixture_name);
 
                 TestFixture *fixture = pRegister->new_fixture();
-                fixture->___run_a_case(m_logger, -1, case_name);
+                fixture->___run_case(m_logger, -1, case_name);
                 pRegister->delete_fixture(fixture);
 
                 m_logger.leave_fixture();

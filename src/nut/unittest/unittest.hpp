@@ -35,9 +35,9 @@ NUT_REGISTER_FIXTURE(TestTestUnit, "test,quiet")
 int main()
 {
     nut::TestRunner runner(std::cout);
-    runner.run_a_group("quiet");
-    runner.run_a_fixture("TestTestUnit");
-    runner.run_a_case("TestTestUnit","smokingTest");
+    runner.run_group("quiet");
+    runner.run_fixture("TestTestUnit");
+    runner.run_case("TestTestUnit","smokingTest");
 
     return 0;
 }
@@ -58,7 +58,7 @@ class fixture_name : public nut::TestFixture
 
 /** cases begin */
 #define NUT_CASES_BEGIN() \
-    virtual int ___run_a_case(nut::ITestLogger& logger, const int op, const char *case_name) { \
+    virtual int ___run_case(nut::ITestLogger& logger, const int op, const char *case_name) { \
         int index = -1;
 
 /** case */

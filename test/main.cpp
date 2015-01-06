@@ -36,11 +36,11 @@ int main()
 
     TestRunner trunner(l);
 
-    trunner.run_a_group("quiet");
+    trunner.run_group("quiet");
 
-    //trunner.run_a_fixture("TestContainer");
+    //trunner.run_fixture("TestContainer");
 
-    // trunner.run_a_case("TestGC", "testSmoking");
+    // trunner.run_case("TestGC", "testSmoking");
 
     printf("press any key to continue...");
 #if defined(NUT_PLATFORM_OS_WINDOWS)
