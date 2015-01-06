@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-08-30
- * @last-edit 2015-01-06 21:48:11 jingqi
+ * @last-edit 2015-01-07 02:12:40 jingqi
  * @brief
  */
 
@@ -92,7 +92,7 @@ public:
                 // 没办法了，只能当做当前程序来处理，不管它是不是共享库了
                 if (!found)
                 {
-                    cmd = make_addr2line_cmd(func_addr, addr_map.getExecPath());
+                    cmd = make_addr2line_cmd(func_addr, addr_map.get_exec_path());
                 }
                 else // 装载成功
                 {
