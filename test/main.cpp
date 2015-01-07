@@ -31,12 +31,15 @@ int main()
 
     printf("\n%s\n", NUT_PLATFORM_STR);
 
+#if defined(NUT_PLATFORM_CC_VS)
     ConsoleTestLogger l;
-    // StreamTestLogger l(std::cout);
+#else
+    StreamTestLogger l(std::cout);
+#endif
 
     TestRunner trunner(l);
 
-    trunner.run_group("quiet");
+    trunner.run_group("platform");
 
     //trunner.run_fixture("TestContainer");
 

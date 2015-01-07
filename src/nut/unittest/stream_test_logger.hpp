@@ -69,9 +69,9 @@ public:
     {
         m_ostream << std::endl <<
             "> total fixtures  : " << m_count_of_fixtures << std::endl <<
-            "> failed fixtures : " << m_count_of_failed_fixtures << (0 == m_count_of_failed_fixtures ? "  √" : "  ×") << std::endl <<
+            "> failed fixtures : " << m_count_of_failed_fixtures << (0 == m_count_of_failed_fixtures ? "  OK" : "  FAILED") << std::endl <<
             "> total cases  : " << m_count_of_cases << std::endl <<
-            "> failed cases : " << m_count_of_failed_cases << (0 == m_count_of_failed_cases ? "  √" : "  ×") << std::endl;
+            "> failed cases : " << m_count_of_failed_cases << (0 == m_count_of_failed_cases ? "  OK" : "  FAILED") << std::endl;
 
         if (0 != m_failures.size())
         {
@@ -116,11 +116,11 @@ public:
         if (m_current_case_failed)
         {
             ++m_count_of_failed_cases;
-            m_ostream << "  ×" << std::endl;
+            m_ostream << "  FAILED" << std::endl;
         }
         else
         {
-            m_ostream << "  √" << std::endl;
+            m_ostream << "  OK" << std::endl;
         }
     }
 
