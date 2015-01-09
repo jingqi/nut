@@ -99,7 +99,7 @@ public:
                     cmd = make_addr2line_cmd(func_addr - addr, func_module_path);
                 }
             }
-            else // iter != gAddrMap.end()
+            else // iter != addr_map.end()
             {
                 cmd = make_addr2line_cmd(func_addr - addr, func_module_path);
             }
@@ -141,33 +141,33 @@ private:
         }
         else
         {
-            std::string funName;
-            std::string sourceLine;
+            std::string fun_name;
+            std::string source_line;
             char buf;
-            char lastBuf = '\0';
+            char last_buf = '\0';
             fseek(fp, 0, 0);
             while(fread(&buf, 1, 1, fp))
             {
-                lastBuf = buf;
+                last_buf = buf;
                 if (buf == '\r' || buf == '\n')
                     break;
-                funName.push_back(buf);
+                func_name.push_back(buf);
             }
             while(fread(&buf, 1, 1, fp))
             {
-                lastBuf = buf;
+                last_buf = buf;
                 if (buf == '\r')
                     break;
-                if (buf == '\n' && lastBuf != '\r')
+                if (buf == '\n' && last_buf != '\r')
                     break;
-                sourceLine.push_back(buf);
+                source_line.push_back(buf);
             }
             pclose(fp);
 
             if (out_result->empty())
-                *out_result += sourceLine + std::string(":  ") + funName;
+                *out_result += source_line + std::string(":  ") + func_name;
             else
-                *out_result += std::string("\n") + sourceLine + std::string(":  ") + funName;
+                *out_result += std::string("\n") + source_line + std::string(":  ") + func_name;
         }
     }
 

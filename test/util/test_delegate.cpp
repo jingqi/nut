@@ -19,6 +19,7 @@ NUT_FIXTURE(TestDelegate)
 {
     NUT_CASES_BEGIN()
     NUT_CASE(test_smoking)
+    NUT_CASE(test_copy_and_const)
     NUT_CASES_END()
 
 
@@ -59,12 +60,12 @@ NUT_FIXTURE(TestDelegate)
         NUT_TA(g_t == 121 && rs == 5);
 
         d2.disconnect(this, &TestDelegate::tm);
-        NUT_TA(!d2.isConnected());
+        NUT_TA(!d2.is_connected());
         rs = d2(12);
         NUT_TA(g_t == 121 && rs == 0);
     }
 
-    void testCopyAndConst()
+    void test_copy_and_const()
     {
         delegate<void()> d1;
         d1.connect(this, &TestDelegate::tt);

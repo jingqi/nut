@@ -76,7 +76,7 @@ public:
         assert(NULL == m_top.ptr);
     }
 
-    bool isEmpty() const
+    bool is_empty() const
     {
         return NULL == m_top.ptr;
     }

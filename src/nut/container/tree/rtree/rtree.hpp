@@ -240,10 +240,10 @@ public:
      */
     void insert(const area_type& rect, const data_type& data)
     {
-        DataNode *dataNode = m_data_node_alloc.allocate(1);
-        assert(NULL != dataNode);
-        new (dataNode) DataNode(rect, data);
-        insert(dataNode, m_height);
+        DataNode *data_node = m_data_node_alloc.allocate(1);
+        assert(NULL != data_node);
+        new (data_node) DataNode(rect, data);
+        insert(data_node, m_height);
         ++m_size;
     }
 
@@ -680,23 +680,23 @@ private:
 
         typedef typename std::list<Node*>::iterator iter_t;
 
-        iter_t maxDiffIndex = remained->begin();
-        RealNumT maxDiff = 0;
+        iter_t max_diff_index = remained->begin();
+        RealNumT max_diff = 0;
         for (iter_t iter = remained->begin(), end = remained->end();
             iter != end; ++iter)
         {
             RealNumT diff = acreage_needed(r1, (*iter)->area) - acreage_needed(r2, (*iter)->area);
             if (diff < 0)
                 diff = -diff;
-            if (diff > maxDiff)
+            if (diff > max_diff)
             {
-                maxDiffIndex = iter;
-                maxDiff = diff;
+                max_diff_index = iter;
+                max_diff = diff;
             }
         }
-        Node *ret = *maxDiffIndex;
+        Node *ret = *max_diff_index;
         assert(NULL != ret);
-        remained->erase(maxDiffIndex);
+        remained->erase(max_diff_index);
         return ret;
     }
 

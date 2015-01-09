@@ -177,8 +177,8 @@ private:
 
         if (str_path.size() > 0 && str_addr.size() > 0)
         {
-            char* pchEnd = NULL;
-            addr_t addr = ::strtoul(str_addr.c_str(), &pchEnd, 16);
+            char* pch_end = NULL;
+            addr_t addr = ::strtoul(str_addr.c_str(), &pch_end, 16);
             addr_map_t::iterator iter = m_addr_map.find(str_path);
             // 据观察，第一个地址是最小的，所以之后的地址不需要了
             if (iter == m_addr_map.end())

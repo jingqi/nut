@@ -14,7 +14,7 @@ NUT_FIXTURE(TestAdler32)
     void set_up() {}
     void tear_down() {}
 
-    void checkAdler32(const char *msg, uint32_t expected)
+    void check_adler32(const char *msg, uint32_t expected)
     {
         nut::Adler32 ad;
         ad.reset();
@@ -24,7 +24,7 @@ NUT_FIXTURE(TestAdler32)
 
     void test_adler32()
     {
-        checkAdler32("Wikipedia", 0x11E60398);
+        check_adler32("Wikipedia", 0x11E60398);
     }
 
     void test_rolling_adler32()

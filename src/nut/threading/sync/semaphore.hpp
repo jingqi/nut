@@ -29,17 +29,17 @@ class Semaphore
 #endif
 
 public:
-    Semaphore(int initValue)
+    Semaphore(int init_value)
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         m_sema = ::CreateSemaphoreA(
             NULL, // security attributes
-            initValue, // initial count
+            init_value, // initial count
             0x7fffffff, // maximum value
             NULL); // name
         assert(NULL != m_sema);
 #else
-        const int rs = ::sem_init(&m_sem, 0, initValue);
+        const int rs = ::sem_init(&m_sem, 0, init_value);
         assert(0 == rs);
 #endif
     }
@@ -89,8 +89,8 @@ public:
     bool timedwait(unsigned s, unsigned ms)
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        const DWORD dwMilliseconds = s * 1000 + ms;
-        return WAIT_OBJECT_0 == ::WaitForSingleObject(m_sema, dwMilliseconds);
+        const DWORD dw_milliseconds = s * 1000 + ms;
+        return WAIT_OBJECT_0 == ::WaitForSingleObject(m_sema, dw_milliseconds);
 #elif defined(NUT_PLATFORM_OS_MAC)
 #   warning FIXME MAC 不支持sem_timedwait()
         return 0 == ::sem_trywait(&m_sem);

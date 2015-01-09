@@ -19,7 +19,7 @@ extern bool miller_rabin(const BigInteger& n, unsigned s);
 /**
  * A simple bit sieve used for finding prime number candidates. Allows setting
  * and clearing of bits in a storage array. The size of the sieve is assumed to
- * be constant to reduce overhead. All the bits of a new bitSieve are zero, and
+ * be constant to reduce overhead. All the bits of a new BitSieve are zero, and
  * bits are removed from it by setting them.
  *
  * To reduce storage space and increase efficiency, no even numbers are
@@ -40,7 +40,7 @@ template <typename VOID_T>
 class _BitSieve
 {
     /**
-     * Stores the bits in this bitSieve.
+     * Stores the bits in this BitSieve.
      */
     int64_t *m_bits;
     int m_bits_cap;
@@ -217,16 +217,16 @@ public:
         int offset = 1;
         for (int i = 0; i < m_bits_cap; ++i)
         {
-            uint64_t nextLong = ~m_bits[i];
+            uint64_t next_long = ~m_bits[i];
             for (int j = 0; j < 64; ++j)
             {
-                if ((nextLong & 1) == 1)
+                if ((next_long & 1) == 1)
                 {
                     BigInteger candidate = init_value + offset;
                     if (miller_rabin(candidate, certainty))
                         return candidate;
                 }
-                nextLong >>= 1;
+                next_long >>= 1;
                 offset += 2;
             }
         }

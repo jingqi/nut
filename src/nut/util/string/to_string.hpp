@@ -131,9 +131,9 @@ inline std::string s_to_str(const char *str)
     return str;
 }
 
-inline std::string s_to_str(const char *str, size_t size, const char *fillNul = "\\0")
+inline std::string s_to_str(const char *str, size_t size, const char *fill_nul = "\\0")
 {
-    assert(NULL != str && NULL != fillNul);
+    assert(NULL != str && NULL != fill_nul);
     if (NULL == str)
         return "";
 
@@ -143,7 +143,7 @@ inline std::string s_to_str(const char *str, size_t size, const char *fillNul = 
         if (str[i] != '\0')
             ret += str[i];
         else
-            ret += fillNul;
+            ret += fill_nul;
     }
     return ret;
 }

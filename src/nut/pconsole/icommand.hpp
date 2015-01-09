@@ -61,7 +61,7 @@ public:
     /**
      * 执行命令
      *
-     * @param commandLine 命令行，包括起始部分的命令名
+     * @param command_line 命令行，包括起始部分的命令名
      */
     virtual void execute(const char* command_line) = 0;
 

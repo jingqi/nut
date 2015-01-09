@@ -37,49 +37,49 @@ namespace nut
 /**
  * 用整个字符串来分割字符串
  */
-inline void str_split(const std::string &str, const std::string &sstr, std::vector<std::string> *out, bool ignoreEmpty = false)
+inline void str_split(const std::string &str, const std::string &sstr, std::vector<std::string> *out, bool ignore_empty = false)
 {
     assert(sstr.length() > 0 && NULL != out);
 
     std::string::size_type begin = 0, end = str.find(sstr);
     while (std::string::npos != end)
     {
-        if (!ignoreEmpty || begin != end)
+        if (!ignore_empty || begin != end)
             out->push_back(str.substr(begin, end - begin));
         begin = end + sstr.length();
         end = str.find(sstr, begin);
     }
-    if (!ignoreEmpty || begin < str.length())
+    if (!ignore_empty || begin < str.length())
         out->push_back(str.substr(begin));
 }
 
-inline void str_split(const std::wstring &str, const std::wstring &sstr, std::vector<std::wstring> *out, bool ignoreEmpty = false)
+inline void str_split(const std::wstring &str, const std::wstring &sstr, std::vector<std::wstring> *out, bool ignore_empty = false)
 {
     assert(sstr.length() > 0 && NULL != out);
 
     std::wstring::size_type begin = 0, end = str.find(sstr);
     while (std::wstring::npos != end)
     {
-        if (!ignoreEmpty || begin != end)
+        if (!ignore_empty || begin != end)
             out->push_back(str.substr(begin, end - begin));
         begin = end + sstr.length();
         end = str.find(sstr, begin);
     }
-    if (!ignoreEmpty || begin < str.length())
+    if (!ignore_empty || begin < str.length())
         out->push_back(str.substr(begin));
 }
 
-inline std::vector<std::string> str_split(const std::string &str, const std::string &sstr, bool ignoreEmpty = false)
+inline std::vector<std::string> str_split(const std::string &str, const std::string &sstr, bool ignore_empty = false)
 {
     std::vector<std::string> ret;
-    str_split(str, sstr, &ret, ignoreEmpty);
+    str_split(str, sstr, &ret, ignore_empty);
     return ret;
 }
 
-inline std::vector<std::wstring> str_split(const std::wstring &str, const std::wstring &sstr, bool ignoreEmpty = false)
+inline std::vector<std::wstring> str_split(const std::wstring &str, const std::wstring &sstr, bool ignore_empty = false)
 {
     std::vector<std::wstring> ret;
-    str_split(str, sstr, &ret, ignoreEmpty);
+    str_split(str, sstr, &ret, ignore_empty);
     return ret;
 }
 
@@ -87,76 +87,76 @@ inline std::vector<std::wstring> str_split(const std::wstring &str, const std::w
  * @param sstr
  *      该字符串中的每一个字符都是分割字符
  */
-inline void chr_split(const std::string &str, const std::string &sstr, std::vector<std::string> *out, bool ignoreEmpty = false)
+inline void chr_split(const std::string &str, const std::string &sstr, std::vector<std::string> *out, bool ignore_empty = false)
 {
     assert(sstr.length() > 0 && NULL != out);
 
     std::string::size_type begin = 0, end = str.find_first_of(sstr);
     while (std::string::npos != end)
     {
-        if (!ignoreEmpty || begin != end)
+        if (!ignore_empty || begin != end)
             out->push_back(str.substr(begin, end - begin));
         begin = end + 1;
         end = str.find_first_of(sstr, begin);
     }
-    if (!ignoreEmpty || begin < str.length())
+    if (!ignore_empty || begin < str.length())
         out->push_back(str.substr(begin));
 }
 
-inline void chr_split(const std::wstring &str, const std::wstring &sstr, std::vector<std::wstring> *out, bool ignoreEmpty = false)
+inline void chr_split(const std::wstring &str, const std::wstring &sstr, std::vector<std::wstring> *out, bool ignore_empty = false)
 {
     assert(sstr.length() > 0 && NULL != out);
 
     std::wstring::size_type begin = 0, end = str.find_first_of(sstr);
     while (std::wstring::npos != end)
     {
-        if (!ignoreEmpty || begin != end)
+        if (!ignore_empty || begin != end)
             out->push_back(str.substr(begin, end - begin));
         begin = end + 1;
         end = str.find_first_of(sstr, begin);
     }
-    if (!ignoreEmpty || begin < str.length())
+    if (!ignore_empty || begin < str.length())
         out->push_back(str.substr(begin));
 }
 
-inline std::vector<std::string> chr_split(const std::string &str, const std::string &sstr, bool ignoreEmpty = false)
+inline std::vector<std::string> chr_split(const std::string &str, const std::string &sstr, bool ignore_empty = false)
 {
     std::vector<std::string> ret;
-    chr_split(str, sstr, &ret, ignoreEmpty);
+    chr_split(str, sstr, &ret, ignore_empty);
     return ret;
 }
 
-inline std::vector<std::wstring> chr_split(const std::wstring &str, const std::wstring &sstr, bool ignoreEmpty = false)
+inline std::vector<std::wstring> chr_split(const std::wstring &str, const std::wstring &sstr, bool ignore_empty = false)
 {
     std::vector<std::wstring> ret;
-    chr_split(str, sstr, &ret, ignoreEmpty);
+    chr_split(str, sstr, &ret, ignore_empty);
     return ret;
 }
 
 /** split the string */
-inline void chr_split(const std::string &str, char c, std::vector<std::string> *out, bool ignoreEmpty = false)
+inline void chr_split(const std::string &str, char c, std::vector<std::string> *out, bool ignore_empty = false)
 {
     assert(NULL != out);
-    chr_split(str, std::string(1, c), out, ignoreEmpty);
+    chr_split(str, std::string(1, c), out, ignore_empty);
 }
 
-inline void chr_split(const std::wstring &str, wchar_t c, std::vector<std::wstring> *out, bool ignoreEmpty = false)
+inline void chr_split(const std::wstring &str, wchar_t c, std::vector<std::wstring> *out, bool ignore_empty = false)
 {
     assert(NULL != out);
-    chr_split(str, std::wstring(1, c), out, ignoreEmpty);
+    chr_split(str, std::wstring(1, c), out, ignore_empty);
 }
 
-inline std::vector<std::string> chr_split(const std::string &str, char c, bool ignoreEmpty = false)
+inline std::vector<std::string> chr_split(const std::string &str, char c, bool ignore_empty = false)
 {
     std::vector<std::string> ret;
-    chr_split(str, std::string(1, c), &ret, ignoreEmpty);
+    chr_split(str, std::string(1, c), &ret, ignore_empty);
     return ret;
 }
 
-inline std::vector<std::wstring> chr_split(const std::wstring &str, wchar_t c, bool ignoreEmpty = false)
+inline std::vector<std::wstring> chr_split(const std::wstring &str, wchar_t c, bool ignore_empty = false)
 {
     std::vector<std::wstring> ret;
-    chr_split(str, std::wstring(1, c), &ret, ignoreEmpty);
+    chr_split(str, std::wstring(1, c), &ret, ignore_empty);
     return ret;
 }
 
@@ -497,7 +497,7 @@ inline bool ascii_to_wstr(const char *str, std::wstring *out)
 		return 0 == n;
 	out->resize(n);
 	const int rs = ::mbstowcs(&(*out)[0], str, n); // 未包含 '\0'
-	assert(out->length() == n);
+    assert(((int) out->length()) == n);
 	return rs > 0;
 #endif
 }
@@ -540,7 +540,7 @@ inline bool wstr_to_ascii(const wchar_t *wstr, std::string *out)
 		return 0 == n;
 	out->resize(n);
 	const int rs = ::wcstombs(&(*out)[0], wstr, n);
-	assert(out->length() == n);
+    assert(((int) out->length()) == n);
 	return rs > 0;
 #endif
 }

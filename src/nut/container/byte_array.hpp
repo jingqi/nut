@@ -113,10 +113,10 @@ public :
     }
 
     /**
-     * @param termByte the initial data terminated with 'termByte'
-     * @param includeTermByte if True, the 'termByte' is part of initial data
+     * @param term_byte the initial data terminated with 'term_byte'
+     * @param include_term_byte if True, the 'term_byte' is part of initial data
      */
-    ByteArray(const void *buf, unsigned char termByte, bool includeTermByte)
+    ByteArray(const void *buf, unsigned char term_byte, bool include_term_byte)
         : m_data_len(0)
     {
         assert(NULL != buf);
@@ -124,9 +124,9 @@ public :
             return;
 
         size_t len = 0;
-        while (((const uint8_t*)buf)[len] != termByte)
+        while (((const uint8_t*)buf)[len] != term_byte)
             ++len;
-        if (includeTermByte)
+        if (include_term_byte)
             ++len;
 
         _copy_on_write(len, false);
@@ -261,16 +261,16 @@ public :
         m_data_len += len;
     }
 
-    void append(const void *buf, uint8_t termByte, bool includeTermByte)
+    void append(const void *buf, uint8_t term_byte, bool include_term_byte)
     {
         assert(NULL != buf);
         if (NULL == buf)
             return;
 
         size_t len = 0;
-        while (((const uint8_t*)buf)[len] != termByte)
+        while (((const uint8_t*)buf)[len] != term_byte)
             ++len;
-        if (includeTermByte)
+        if (include_term_byte)
             ++len;
         append(buf, len);
     }

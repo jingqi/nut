@@ -44,7 +44,7 @@ class Connection
         }
     };
 
-    void onError(int err, const char *msg = NULL)
+    void on_error(int err, const char *msg = NULL)
     {
         m_last_error = err;
 
@@ -103,7 +103,7 @@ public:
         if (SQLITE_OK != rs)
         {
             m_sqlite = NULL;
-            onError(rs, "open db file failed");
+            on_error(rs, "open db file failed");
             return false;
         }
         assert(is_valid());
@@ -118,7 +118,7 @@ public:
         int rs = ::sqlite3_close(m_sqlite);
         if (SQLITE_OK != rs)
         {
-            onError(rs);
+            on_error(rs);
             return false;
         }
         else
@@ -166,7 +166,7 @@ public:
         Sqlite3Freer _f(msg);
         if (SQLITE_OK != rs)
         {
-            onError(rs, msg);
+            on_error(rs, msg);
             return false;
         }
         return true;
@@ -180,7 +180,7 @@ public:
         Sqlite3Freer _f(msg);
         if (SQLITE_OK != rs)
         {
-            onError(rs, msg);
+            on_error(rs, msg);
             return false;
         }
         return true;
@@ -194,7 +194,7 @@ public:
         Sqlite3Freer _f(msg);
         if (SQLITE_OK != rs)
         {
-            onError(rs, msg);
+            on_error(rs, msg);
             return false;
         }
         return true;
@@ -209,7 +209,7 @@ public:
         Sqlite3Freer _f(msg);
         if (SQLITE_OK != rs)
         {
-            onError(rs, msg);
+            on_error(rs, msg);
             return false;
         }
         return true;
@@ -227,7 +227,7 @@ public:
         {
             if (m_auto_commit)
                 rollback();
-            onError(rs, msg);
+            on_error(rs, msg);
             return false;
         }
         if (m_auto_commit)
@@ -251,7 +251,7 @@ public:
         ref<PreparedStatement> stmt = gc_new<PreparedStatement>(m_sqlite, sql);
         if (!stmt->is_valid())
         {
-            onError(SQLITE_ERROR);
+            on_error(SQLITE_ERROR);
             return false;
         }
 
@@ -259,7 +259,7 @@ public:
         bool rs = stmt->reset();
         if (!rs)
         {
-            onError(SQLITE_ERROR);
+            on_error(SQLITE_ERROR);
             return false;
         }
 
@@ -267,7 +267,7 @@ public:
         rs = stmt->bind(i, arg##i); \
         if (!rs) \
         { \
-            onError(SQLITE_ERROR); \
+            on_error(SQLITE_ERROR); \
             return false; \
         }
 
@@ -291,7 +291,7 @@ public:
         {
             if (m_auto_commit)
                 rollback();
-            onError(irs);
+            on_error(irs);
             return false;
         }
         if (m_auto_commit)
@@ -307,7 +307,7 @@ public:
         ref<PreparedStatement> stmt = gc_new<PreparedStatement>(m_sqlite, sql);
         if (!stmt->is_valid())
         {
-            onError(SQLITE_ERROR);
+            on_error(SQLITE_ERROR);
             return false;
         }
 
@@ -315,7 +315,7 @@ public:
         bool rs = stmt->reset();
         if (!rs)
         {
-            onError(SQLITE_ERROR);
+            on_error(SQLITE_ERROR);
             return false;
         }
         for (size_t i = 0, size = args.size(); i < size; ++i)
@@ -323,7 +323,7 @@ public:
             rs = stmt->bind(i + 1, args.at(i));
             if (!rs)
             {
-                onError(SQLITE_ERROR);
+                on_error(SQLITE_ERROR);
                 return false;
             }
         }
@@ -335,7 +335,7 @@ public:
         {
             if (m_auto_commit)
                 rollback();
-            onError(irs);
+            on_error(irs);
             return false;
         }
         if (m_auto_commit)
@@ -360,7 +360,7 @@ public:
         ref<PreparedStatement> stmt = gc_new<PreparedStatement>(m_sqlite, sql);
         if (!stmt->is_valid())
         {
-            onError(SQLITE_ERROR);
+            on_error(SQLITE_ERROR);
             return gc_new<ResultSet>();
         }
 
@@ -368,7 +368,7 @@ public:
         bool rs = stmt->reset();
         if (!rs)
         {
-            onError(SQLITE_ERROR);
+            on_error(SQLITE_ERROR);
             return gc_new<ResultSet>();
         }
 
@@ -376,7 +376,7 @@ public:
         rs = stmt->bind(i, arg##i); \
         if (!rs) \
         { \
-            onError(SQLITE_ERROR); \
+            on_error(SQLITE_ERROR); \
             return gc_new<ResultSet>(); \
         }
 
@@ -404,7 +404,7 @@ public:
         ref<PreparedStatement> stmt = gc_new<PreparedStatement>(m_sqlite, sql);
         if (!stmt->is_valid())
         {
-            onError(SQLITE_ERROR);
+            on_error(SQLITE_ERROR);
             return gc_new<ResultSet>();
         }
 
@@ -412,7 +412,7 @@ public:
         bool rs = stmt->reset();
         if (!rs)
         {
-            onError(SQLITE_ERROR);
+            on_error(SQLITE_ERROR);
             return gc_new<ResultSet>();
         }
         for (size_t i = 0, size = args.size(); i < size; ++i)
@@ -420,7 +420,7 @@ public:
             rs = stmt->bind(i + 1, args.at(i));
             if (!rs)
             {
-                onError(SQLITE_ERROR);
+                on_error(SQLITE_ERROR);
                 return gc_new<ResultSet>();
             }
         }

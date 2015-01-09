@@ -78,8 +78,8 @@ inline bool miller_rabin(const BigInteger& n, unsigned s)
     const BigInteger ONE(1), TWO(2);
 
     // Find a and m such that m is odd and n == 1 + 2**a * m
-    const BigInteger thisMinusOne(n - ONE);
-    BigInteger m(thisMinusOne);
+    const BigInteger this_minus_one(n - ONE);
+    BigInteger m(this_minus_one);
     const int a = m.lowest_bit();
     m >>= a;
 
@@ -91,7 +91,7 @@ inline bool miller_rabin(const BigInteger& n, unsigned s)
 
         int j = 0;
         BigInteger z = mod_pow(b, m, n);
-        while(!((j == 0 && z == ONE) || z == thisMinusOne))
+        while(!((j == 0 && z == ONE) || z == this_minus_one))
         {
             if ((j > 0 && z == ONE) || ++j == a)
                 return false;
@@ -137,7 +137,7 @@ inline BigInteger next_prime(const BigInteger& n)
                 }
             }
 
-            // All candidates of bitLength 2 and 3 are prime by this point
+            // All candidates of bit_length 2 and 3 are prime by this point
             if (result.bit_length() < 4)
                 return result;
 
@@ -154,15 +154,15 @@ inline BigInteger next_prime(const BigInteger& n)
         --result;
 
     // Looking for the next large prime
-    int searchLen = (result.bit_length() / 20) * 64;
+    int search_len = (result.bit_length() / 20) * 64;
 
     while(true) {
-        BitSieve searchSieve(result, searchLen);
-        BigInteger candidate = searchSieve.retrieve(result,
+        BitSieve search_sieve(result, search_len);
+        BigInteger candidate = search_sieve.retrieve(result,
             DEFAULT_PRIME_CERTAINTY);
         if (!candidate.is_zero())
             return candidate;
-        result += 2 * searchLen;
+        result += 2 * search_len;
     }
 }
 

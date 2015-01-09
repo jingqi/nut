@@ -27,7 +27,7 @@ class ResultSet
 
     ref<SqliteStmt> m_stmt;
 
-    int getColumnIndex(const char *column_name)
+    int get_column_index(const char *column_name)
     {
         assert(NULL != column_name && !m_stmt.is_null());
         int c = ::sqlite3_column_count(m_stmt->raw());
@@ -62,16 +62,16 @@ public:
     /**
      * @param pos is 0-based
      */
-    int get_int(int columnIndex)
+    int get_int(int column_index)
     {
-        assert(columnIndex >= 0 && !m_stmt.is_null());
-        return ::sqlite3_column_int(m_stmt->raw(), columnIndex);
+        assert(column_index >= 0 && !m_stmt.is_null());
+        return ::sqlite3_column_int(m_stmt->raw(), column_index);
     }
 
     int get_int(const char *column_name)
     {
         assert(NULL != column_name && !m_stmt.is_null());
-        int i = getColumnIndex(column_name);
+        int i = get_column_index(column_name);
         assert(i >= 0);
         return get_int(i);
     }
@@ -79,17 +79,17 @@ public:
     /**
      * @param pos is 0-based
      */
-    std::string get_string(int columnIndex)
+    std::string get_string(int column_index)
     {
-        assert(columnIndex >= 0 && !m_stmt.is_null());
-        const char *ret = (const char*) ::sqlite3_column_text(m_stmt->raw(), columnIndex);
+        assert(column-index >= 0 && !m_stmt.is_null());
+        const char *ret = (const char*) ::sqlite3_column_text(m_stmt->raw(), column_index);
         return NULL == ret ? "" : ret;
     }
 
     std::string get_string(const char *column_name)
     {
         assert(NULL != column_name && !m_stmt.is_null());
-        int i = getColumnIndex(column_name);
+        int i = get_column_index(column_name);
         assert(i >= 0);
         return get_string(i);
     }

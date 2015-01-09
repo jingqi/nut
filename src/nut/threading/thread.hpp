@@ -113,9 +113,9 @@ public:
             return true;
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        DWORD exitCode = 0;
-        ::GetExitCodeThread(m_handle, &exitCode);
-        if (exitCode != STILL_ACTIVE)
+        DWORD exit_code = 0;
+        ::GetExitCodeThread(m_handle, &exit_code);
+        if (exit_code != STILL_ACTIVE)
             m_has_finished = true;
 #else
         // send the signal 0 will just check the state, not really "kill"

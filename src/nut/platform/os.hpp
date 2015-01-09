@@ -59,8 +59,8 @@ public:
 #   endif
 
         WIN32_FIND_DATAA wfd;
-        const HANDLE hFind = ::FindFirstFileA(search_path, &wfd);
-        if (hFind == INVALID_HANDLE_VALUE)
+        const HANDLE hfind = ::FindFirstFileA(search_path, &wfd);
+        if (hfind == INVALID_HANDLE_VALUE)
         {
             out->clear();
             return;
@@ -76,10 +76,10 @@ public:
                 continue;
 
             out->push_back(wfd.cFileName);
-        } while (::FindNextFileA(hFind, &wfd));
+        } while (::FindNextFileA(hfind, &wfd));
 
         // 关闭查找句柄
-        ::FindClose(hFind);
+        ::FindClose(hfind);
 #else
         DIR *dp = NULL;
         struct dirent *dirp = NULL;
@@ -145,8 +145,8 @@ public:
 #   endif
 
         WIN32_FIND_DATAW wfd;
-        const HANDLE hFind = ::FindFirstFileW(search_path, &wfd);
-        if (hFind == INVALID_HANDLE_VALUE)
+        const HANDLE hfind = ::FindFirstFileW(search_path, &wfd);
+        if (hfind == INVALID_HANDLE_VALUE)
         {
             out->clear();
             return;
@@ -162,10 +162,10 @@ public:
                 continue;
 
             out->push_back(wfd.cFileName);
-        } while (::FindNextFileW(hFind, &wfd));
+        } while (::FindNextFileW(hfind, &wfd));
 
         // 关闭查找句柄
-        ::FindClose(hFind);
+        ::FindClose(hfind);
 #else
         std::string p;
         wstr_to_ascii(path, &p);
@@ -206,26 +206,26 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return FALSE != ::CopyFileA(src, dest, TRUE);
 #else
-        FILE *inFile = ::fopen(src, "rb");
-        if (NULL == inFile)
+        FILE *in_file = ::fopen(src, "rb");
+        if (NULL == in_file)
             return false;
 
-        FILE *outFile = ::fopen(dest, "wb+");
-        if (NULL == outFile)
+        FILE *out_file = ::fopen(dest, "wb+");
+        if (NULL == out_file)
         {
-            ::fclose(inFile);
+            ::fclose(in_file);
             return false;
         }
 
         const int BUF_LEN = 4096;
         char buf[BUF_LEN];
         int readed = -1;
-        while ((readed = (int) ::fread(buf, 1, BUF_LEN, inFile)) > 0)
+        while ((readed = (int) ::fread(buf, 1, BUF_LEN, in_file)) > 0)
         {
-            ::fwrite(buf, 1, readed, outFile);
+            ::fwrite(buf, 1, readed, out_file);
         }
-        ::fclose(inFile);
-        ::fclose(outFile);
+        ::fclose(in_file);
+        ::fclose(out_file);
         return true;
 #endif
     }
@@ -365,8 +365,8 @@ public:
 #   endif
 
         WIN32_FIND_DATAA wfd;
-        const HANDLE hFind = ::FindFirstFileA(full_path, &wfd);
-        if (hFind == INVALID_HANDLE_VALUE)
+        const HANDLE hfind = ::FindFirstFileA(full_path, &wfd);
+        if (hfind == INVALID_HANDLE_VALUE)
             return false;
 
         bool ret = true;
@@ -383,10 +383,10 @@ public:
             ::sprintf(full_path, "%s\\%s", path, wfd.cFileName);
 #   endif
             ret = removetree(full_path);
-        } while (ret && ::FindNextFileA(hFind, &wfd));
+        } while (ret && ::FindNextFileA(hfind, &wfd));
 
         // 关闭查找句柄
-        ::FindClose(hFind);
+        ::FindClose(hfind);
 
         // 移除空文件夹
         if (ret)
@@ -452,8 +452,8 @@ public:
 #   endif
 
         WIN32_FIND_DATAW wfd;
-        const HANDLE hFind = ::FindFirstFileW(full_path, &wfd);
-        if (hFind == INVALID_HANDLE_VALUE)
+        const HANDLE hfind = ::FindFirstFileW(full_path, &wfd);
+        if (hfind == INVALID_HANDLE_VALUE)
             return false;
 
         bool ret = true;
@@ -470,10 +470,10 @@ public:
             ::swprintf(full_path, L"%s\\%s", path, wfd.cFileName);
 #   endif
             ret = removetree(full_path);
-        } while (ret && ::FindNextFileW(hFind, &wfd));
+        } while (ret && ::FindNextFileW(hfind, &wfd));
 
         // 关闭查找句柄
-        ::FindClose(hFind);
+        ::FindClose(hfind);
 
         // 移除空文件夹
         if (ret)

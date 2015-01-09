@@ -34,7 +34,7 @@ NUT_FIXTURE(TestConcurrentStack)
         rs = s.pop(&v);
         NUT_TA(rs && v == 1);
 
-        NUT_TA(s.isEmpty());
+        NUT_TA(s.is_empty());
     }
 };
 

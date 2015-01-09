@@ -244,7 +244,7 @@ public: \
         m_holders.clear(); \
     } \
  \
-    bool isConnected() const \
+    bool is_connected() const \
     { \
         return m_holders.size() > 0; \
     } \

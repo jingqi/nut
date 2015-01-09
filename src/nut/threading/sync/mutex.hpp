@@ -63,12 +63,12 @@ public :
     }
 
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-    inline HANDLE innerMutex()
+    inline HANDLE inner_mutex()
     {
         return m_hmutex;
     }
 #else
-    inline pthread_mutex_t* innerMutex()
+    inline pthread_mutex_t* inner_mutex()
     {
         return &m_mutex;
     }
@@ -155,8 +155,8 @@ public :
     inline bool timedlock(unsigned s, unsigned ms = 0)
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-        const DWORD dwMilliseconds = s * 1000 + ms;
-        return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, dwMilliseconds);
+        const DWORD dw_milliseconds = s * 1000 + ms;
+        return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, dw_milliseconds);
 #elif defined(NUT_PLATFORM_OS_MAC)
 #   warning FIXME MAC 不支持pthread_mutex_timedlock()
         return 0 == ::pthread_mutex_trylock(&m_mutex); // TODO MAC 不支持 pthread_mutex_timedlock()

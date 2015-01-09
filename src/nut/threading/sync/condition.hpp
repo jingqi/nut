@@ -93,7 +93,7 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         return FALSE != ::SleepConditionVariableCS(&m_cond, mutex->inner_mutex(), INFINITE);
 #else
-        return 0 == ::pthread_cond_wait(&m_cond, mutex->innerMutex());
+        return 0 == ::pthread_cond_wait(&m_cond, mutex->inner_mutex());
 #endif
     }
 
@@ -126,7 +126,7 @@ public:
 
         abstime.tv_sec += s;
         abstime.tv_nsec += ((long)ms) * 1000 * 1000;
-        return 0 == ::pthread_cond_timedwait(&m_cond, mutex->innerMutex(), &abstime);
+        return 0 == ::pthread_cond_timedwait(&m_cond, mutex->inner_mutex(), &abstime);
 #endif
     }
 };

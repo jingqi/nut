@@ -263,9 +263,9 @@ public :
     std::string format_time(const char *format) const
     {
         assert(NULL != format);
-        size_t newSize = ::strlen(format) * 3;
-        char * buf = (char*) ::malloc(newSize);
-        ::strftime(buf, newSize, format, &time_info);
+        size_t new_size = ::strlen(format) * 3;
+        char * buf = (char*) ::malloc(new_size);
+        ::strftime(buf, new_size, format, &time_info);
         std::string ret(buf);
         ::free(buf);
         return ret;
