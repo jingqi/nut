@@ -350,7 +350,7 @@ public:
         clear();
         Handler h(this, ignore_text_blank);
         XmlParser p(&h);
-        p.input(s.data() + start_index, s.length() - start_index);
+        p.input(s.c_str() + start_index, s.length() - start_index);
         p.finish();
     }
 
@@ -370,13 +370,13 @@ public:
         // name
         for (int i = 0; i < tab; ++i)
             writer.write_text("\t");
-        writer.start_element(m_name.data());
+        writer.start_element(m_name.c_str());
 
         // attributes
         for (const_attr_iter_t iter = m_attrs.begin(), end = m_attrs.end();
             iter != end; ++iter)
         {
-            writer.write_attribute(iter->first.data(), iter->second.data());
+            writer.write_attribute(iter->first.c_str(), iter->second.c_str());
         }
 
         // text
@@ -391,13 +391,13 @@ public:
                     writer.write_text("\n");
                     for (int i = 0; i < tab + 1; ++i)
                         writer.write_text("\t");
-                    writer.write_text(text.data());
+                    writer.write_text(text.c_str());
                     has_child = true;
                 }
             }
             else
             {
-                writer.write_text(m_text.data());
+                writer.write_text(m_text.c_str());
                 has_child = true;
             }
         }
@@ -416,7 +416,7 @@ public:
                     for (int j = 0; j < tab + 1; ++j)
                         writer.write_text("\t");
                 }
-                writer.write_comment(m_comments.at(comment_pos).text.data());
+                writer.write_comment(m_comments.at(comment_pos).text.c_str());
                 ++comment_pos;
                 has_child = true;
             }
@@ -440,7 +440,7 @@ public:
                 for (int j = 0; j < tab + 1; ++j)
                     writer.write_text("\t");
             }
-            writer.write_comment(m_comments.at(comment_pos).text.data());
+            writer.write_comment(m_comments.at(comment_pos).text.c_str());
             ++comment_pos;
             has_child = true;
         }

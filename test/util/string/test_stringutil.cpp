@@ -88,14 +88,14 @@ NUT_FIXTURE(TestStringUtil)
 		std::wstring b;
 
 		wstr_to_ascii(L"c5&汉", &a); 
-		//printf("\n%d %d %s\n", a.length(), strlen(a.data()), a.data());
+        //printf("\n%d %d %s\n", a.length(), strlen(a.c_str()), a.c_str());
         NUT_TA(a == "c5&汉");
 
 		ascii_to_wstr("c5&汉", &b);
         NUT_TA(b == L"c5&汉");
 
 		wstr_to_utf8(L"c5&汉", &a);
-		utf8_to_wstr(a.data(), &b);
+        utf8_to_wstr(a.c_str(), &b);
         NUT_TA(b == L"c5&汉");
     }
 };

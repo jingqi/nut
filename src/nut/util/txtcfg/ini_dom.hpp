@@ -407,7 +407,7 @@ public:
 		for (size_t i = 0, sz = lines->size(); i < sz; ++i)
         {
             if (lines->at(i)->m_key == key)
-                return lines->at(i)->m_value.data();
+                return lines->at(i)->m_value.c_str();
         }
         return default_value;
     }
@@ -542,7 +542,7 @@ public:
             s = values.at(0);
         for (size_t i = 1, sz = values.size(); i < sz; ++i)
             s += std::string() + split_char + values.at(i);
-        set_string(sector, key, s.data());
+        set_string(sector, key, s.c_str());
     }
 };
 

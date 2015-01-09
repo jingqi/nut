@@ -298,7 +298,7 @@ public:
 		for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
         {
             if (m_lines.at(i)->m_key == key)
-                return m_lines.at(i)->m_value.data();
+                return m_lines.at(i)->m_value.c_str();
         }
         return default_value;
     }
@@ -414,7 +414,7 @@ public:
             s.push_back(split_char);
 			s += values.at(i);
 		}
-        set_string(key, s.data());
+        set_string(key, s.c_str());
     }
 };
 

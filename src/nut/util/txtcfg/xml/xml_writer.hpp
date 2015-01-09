@@ -78,7 +78,7 @@ public:
         else
         {
             write("</");
-            write(state.name.data(), state.name.length());
+            write(state.name.c_str(), state.name.length());
             write(">");
         }
 		m_elem_path.pop_back();

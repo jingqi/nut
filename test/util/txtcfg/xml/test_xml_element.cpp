@@ -48,7 +48,7 @@ NUT_FIXTURE(TestXmlElement)
                 "\t<e2 />\n"
                 "\t<!--comment2-->\n"
             "</root>";
-		/*printf("%s\n%s\n", s.data(), expect);
+        /*printf("%s\n%s\n", s.c_str(), expect);
 		for (int i = 0; i < s.length(); ++i)
 		{
 			if (s[i] != expect[i])
@@ -72,7 +72,7 @@ NUT_FIXTURE(TestXmlElement)
             "<e2 />"
             "<!--comment2-->"
             "</root>";
-		//printf("%s\n", s.data());
+        //printf("%s\n", s.c_str());
         NUT_TA(s == expect);
     }
 

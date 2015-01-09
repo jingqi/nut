@@ -36,7 +36,7 @@ NUT_FIXTURE(TestXmlWriter)
         
         w.end_element();
         
-		//printf("%s", s.data());
+        //printf("%s", s.c_str());
         const char *ss =
 			"<a b=\"c&amp;\" c=\"&quot;\">"
 				"<d e=\"&lt;\" />"

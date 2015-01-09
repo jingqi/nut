@@ -20,28 +20,28 @@ class Handle : public XmlElementHandler
 public:
     virtual void handle_attribute(const std::string &name, const std::string &value)
     {
-        //printf("attrib %s=%s\n", name.data(), value.data());
+        //printf("attrib %s=%s\n", name.c_str(), value.c_str());
         if (name == "a" && value == "b&\"<>")
             tag += "a";
     }
 
     virtual void handle_text(const std::string& text)
     {
-        //printf("text %s\n", text.data());
+        //printf("text %s\n", text.c_str());
         if (text == "c")
             tag += "t";
     }
 
     virtual void handle_comment(const std::string& comment)
     {
-        //printf("comment %s\n", comment.data());
+        //printf("comment %s\n", comment.c_str());
         if (comment == "d")
             tag += "c";
     }
 
     virtual XmlElementHandler* handle_child(const std::string &name)
     {
-        //printf("child %s\n", name.data());
+        //printf("child %s\n", name.c_str());
         if (name == "ch")
             tag += "h";
         return this;
@@ -85,9 +85,9 @@ NUT_FIXTURE(TestXmlParser)
         p.input(s);
         p.finish();
         if (p.has_error())
-            printf("xml error %d:%d %s\n", (int)p.line(), (int)p.column(), p.error_message().data());
+            printf("xml error %d:%d %s\n", (int)p.line(), (int)p.column(), p.error_message().c_str());
         NUT_TA(!p.has_error());
-        //printf("%s\n", tag.data());
+        //printf("%s\n", tag.c_str());
         NUT_TA(tag == "hayxtcyx");
     }
 };
