@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-10-03
- * @last-edit 2015-01-06 23:42:38 jingqi
+ * @last-edit 2015-01-10 01:14:39 jingqi
  * @brief
  */
 
@@ -110,7 +110,7 @@ public:
     {
         m_version = "1.0";
         m_encoding = "UTF-8";
-        m_root.clear();
+        m_root.set_null();
 		m_dirty = true;
 
         size_t i = s.find("<?");
@@ -160,10 +160,10 @@ public:
             return; // no element found
         m_root = gc_new<XmlElement>();
         m_root->parse(s, i, ignore_text_blank);
-		if (m_root->getChildrenCount() > 0)
-			m_root = m_root->getChild(0);
+		if (m_root->get_children_count() > 0)
+			m_root = m_root->get_child(0);
 		else
-			m_root.clear();
+			m_root.set_null();
     }
 
     /**
