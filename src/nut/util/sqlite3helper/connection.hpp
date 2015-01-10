@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-08-10
- * @last-edit 2015-01-06 23:53:11 jingqi
+ * @last-edit 2015-01-10 11:45:24 jingqi
  */
 
 #ifndef ___HEADFILE_A7E2D32B_B83E_44AB_A6C6_98E03E0EDDBD_
@@ -15,7 +15,7 @@
 #include <nut/gc/ref.hpp>
 #include <nut/debugging/exception.hpp>
 
-#include "preparedstatement.hpp"
+#include "prepared_statement.hpp"
 #include "resultset.hpp"
 
 namespace nut
@@ -153,7 +153,7 @@ public:
         m_throw_exceptions = b;
     }
 
-    const std::string& get_lastError_msg() const
+    const std::string& get_last_error_msg() const
     {
         return m_last_error_msg;
     }
