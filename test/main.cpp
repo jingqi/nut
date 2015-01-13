@@ -39,7 +39,7 @@ int main()
 
     TestRunner trunner(l);
 
-    trunner.run_group("platform");
+    trunner.run_group("mem");
 
     //trunner.run_fixture("TestContainer");
 

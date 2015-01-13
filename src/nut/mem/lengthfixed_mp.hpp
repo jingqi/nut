@@ -37,7 +37,8 @@ class lengthfixed_mp
         uint8_t body[G];
     };
 
-    MemAlloc m_mem_alloc;
+    MemAlloc *m_mem_alloc;
+    bool m_local_ma;
     TagedPtr<FreeNode> m_head;
     int volatile m_free_num;
 
@@ -46,13 +47,22 @@ private:
     lengthfixed_mp& operator=(const lengthfixed_mp&);
 
 public:
-    lengthfixed_mp()
-        : m_free_num(0)
-    {}
+    lengthfixed_mp(MemAlloc *ma = NULL)
+        : m_mem_alloc(ma), m_local_ma(false), m_free_num(0)
+    {
+        if (NULL == ma)
+        {
+            m_mem_alloc = new sys_ma;
+            m_local_ma = true;
+        }
+    }
 
     ~lengthfixed_mp()
     {
         clear();
+        if (m_local_ma)
+            delete m_mem_alloc;
+        m_mem_alloc = NULL;
     }
 
 public:
@@ -62,7 +72,7 @@ public:
         while (NULL != p)
         {
             FreeNode *next = p->next;
-            m_mem_alloc.free(p, G);
+            m_mem_alloc->free(p);
             p = next;
         }
         m_head.ptr = NULL;
@@ -76,35 +86,13 @@ public:
             const TagedPtr<FreeNode> old_head(m_head.cas);
 
             if (NULL == old_head.ptr)
-                return m_mem_alloc.alloc(G);
+                return m_mem_alloc->alloc(G);
 
             const TagedPtr<FreeNode> new_head(old_head.ptr->next, old_head.tag + 1);
             if (atomic_cas(&(m_head.cas), old_head.cas, new_head.cas))
             {
                 atomic_add(&m_free_num, -1);
                 return old_head.ptr;
-            }
-        }
-    }
-
-    void free(void *p)
-    {
-        assert(NULL != p);
-        while(true)
-        {
-            if (m_free_num >= (int) MAX_FREE_BLOCKS)
-            {
-                m_mem_alloc.free(p, G);
-                return;
-            }
-
-            const TagedPtr<FreeNode> old_head(m_head.cas);
-            reinterpret_cast<FreeNode*>(p)->next = old_head.ptr;
-            const TagedPtr<FreeNode> new_head(reinterpret_cast<FreeNode*>(p), old_head.tag + 1);
-            if (atomic_cas(&(m_head.cas), old_head.cas, new_head.cas))
-            {
-                atomic_add(&m_free_num, 1);
-                return;
             }
         }
     }
@@ -117,10 +105,26 @@ public:
         return p;
     }
 
-    void free(void *p, size_t cb)
+    void free(void *p)
     {
-        assert(NULL != p && G == cb);
-        self_type::free(p);
+        assert(NULL != p);
+        while(true)
+        {
+            if (m_free_num >= (int) MAX_FREE_BLOCKS)
+            {
+                m_mem_alloc->free(p);
+                return;
+            }
+
+            const TagedPtr<FreeNode> old_head(m_head.cas);
+            reinterpret_cast<FreeNode*>(p)->next = old_head.ptr;
+            const TagedPtr<FreeNode> new_head(reinterpret_cast<FreeNode*>(p), old_head.tag + 1);
+            if (atomic_cas(&(m_head.cas), old_head.cas, new_head.cas))
+            {
+                atomic_add(&m_free_num, 1);
+                return;
+            }
+        }
     }
 };
 

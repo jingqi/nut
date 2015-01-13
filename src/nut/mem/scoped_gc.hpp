@@ -29,7 +29,7 @@ class scoped_gc
 		/** 默认内存块大小，可根据需要调整 */
 		DEFAULT_BLOCK_LEN = 2048,
 		/** 内存块头部大小 */
-		BLOCK_HEADER_SIZE = sizeof(void*) + sizeof(size_t),
+		BLOCK_HEADER_SIZE = sizeof(void*),
 		/** 内存块数据部分大小 */
 		DEFAULT_BLOCK_BODY_SIZE = DEFAULT_BLOCK_LEN - BLOCK_HEADER_SIZE,
 	};
@@ -38,7 +38,6 @@ class scoped_gc
     struct Block
     {
         Block *prev;
-		size_t block_size;
         uint8_t body[DEFAULT_BLOCK_BODY_SIZE];
     };
 	NUT_STATIC_ASSERT(sizeof(Block) == DEFAULT_BLOCK_LEN);
@@ -53,7 +52,8 @@ class scoped_gc
         destruct_func_type destruct_func;
     };
 
-	MemAlloc m_mem_alloc;
+	MemAlloc *m_mem_alloc;
+	bool m_local_ma;
 	Block *m_current_block;
 	uint8_t *m_end;
     DestructorNode *m_destruct_chain;
@@ -83,13 +83,22 @@ private:
 	}
 
 public:
-    scoped_gc()
-        : m_current_block(NULL), m_end(NULL), m_destruct_chain(NULL)
-    {}
+    scoped_gc(MemAlloc *ma = NULL)
+        : m_mem_alloc(ma), m_local_ma(false), m_current_block(NULL), m_end(NULL), m_destruct_chain(NULL)
+    {
+    	if (NULL == ma)
+    	{
+    		m_mem_alloc = new sys_ma;
+    		m_local_ma = true;
+    	}
+    }
 
     ~scoped_gc()
     {
 		clear();
+		if (m_local_ma)
+			delete m_mem_alloc;
+		m_mem_alloc = NULL;
 	}
 
 private:
@@ -99,9 +108,8 @@ private:
 		{
 			if (cb >= DEFAULT_BLOCK_BODY_SIZE)
 			{
-				Block *new_blk = (Block*) m_mem_alloc.alloc(BLOCK_HEADER_SIZE + cb);
+				Block *new_blk = (Block*) m_mem_alloc->alloc(BLOCK_HEADER_SIZE + cb);
 				assert(NULL != new_blk);
-				new_blk->block_size = BLOCK_HEADER_SIZE + cb;
 				if (NULL != m_current_block)
 				{
 					new_blk->prev = m_current_block->prev;
@@ -117,9 +125,8 @@ private:
 			}
 			else
 			{
-				Block *new_blk = (Block*) m_mem_alloc.alloc(DEFAULT_BLOCK_LEN);
+				Block *new_blk = (Block*) m_mem_alloc->alloc(DEFAULT_BLOCK_LEN);
 				assert(NULL != new_blk);
-				new_blk->block_size = DEFAULT_BLOCK_LEN;
 				new_blk->prev = m_current_block;
 				m_current_block = new_blk;
 				m_end = m_current_block->body + DEFAULT_BLOCK_BODY_SIZE;
@@ -163,7 +170,7 @@ public:
         while (NULL != m_current_block)
         {
 			Block *prev = m_current_block->prev;
-			m_mem_alloc.free((uint8_t*) m_current_block, m_current_block->block_size);
+			m_mem_alloc->free((uint8_t*) m_current_block);
 			m_current_block = prev;
         }
 		m_end = NULL;
