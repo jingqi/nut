@@ -25,17 +25,17 @@ struct RefCounter
         : m_value(v)
     {}
 
-    inline int operator++()
+    int operator++()
     {
         return ++m_value;
     }
 
-    inline int operator--()
+    int operator--()
     {
         return --m_value;
     }
 
-    inline operator int() const
+    operator int() const
     {
         return m_value;
     }
@@ -52,17 +52,17 @@ struct RefCounterSync
         : m_value(v)
     {}
 
-    inline int operator++ ()
+    int operator++ ()
     {
         return atomic_add(&m_value, 1) + 1;
     }
 
-    inline int operator-- ()
+    int operator-- ()
     {
         return atomic_add(&m_value, -1) - 1;
     }
 
-    inline operator int() const
+    operator int() const
     {
         return m_value;
     }

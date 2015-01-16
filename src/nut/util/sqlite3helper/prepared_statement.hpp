@@ -85,7 +85,7 @@ public:
         return true;
     }
 
-    inline bool is_valid() const
+    bool is_valid() const
     {
         return !m_stmt.is_null();
     }

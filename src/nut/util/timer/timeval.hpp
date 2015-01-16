@@ -112,10 +112,10 @@ public:
     }
 
 public:
-    inline bool operator==(const TimeVal& x) const { return sec == x.sec && usec == x.usec; }
-    inline bool operator!=(const TimeVal& x) const { return !(*this == x); }
+    bool operator==(const TimeVal& x) const { return sec == x.sec && usec == x.usec; }
+    bool operator!=(const TimeVal& x) const { return !(*this == x); }
 
-    inline bool operator<(const TimeVal& x) const
+    bool operator<(const TimeVal& x) const
     {
         if (sec < x.sec)
             return true;
@@ -124,9 +124,9 @@ public:
         return false;
     }
 
-    inline bool operator>(const TimeVal& x) const { return x < *this; }
-    inline bool operator<=(const TimeVal& x) const { return !(x < *this); }
-    inline bool operator>=(const TimeVal& x) const { return !(*this < x); }
+    bool operator>(const TimeVal& x) const { return x < *this; }
+    bool operator<=(const TimeVal& x) const { return !(x < *this); }
+    bool operator>=(const TimeVal& x) const { return !(*this < x); }
 
     TimeVal operator+(const TimeVal& x) const { return TimeVal(sec + x.sec, usec + x.usec); }
     TimeVal operator-(const TimeVal& x) const { return TimeVal(sec - x.sec, usec - x.usec); }

@@ -42,71 +42,71 @@ public:
     }
 
 public:
-    inline ptr<T>& operator=(T* p)
+    ptr<T>& operator=(T* p)
     {
         m_ptr = p;
     }
 
-    inline ptr<T>& operator=(const ptr<T>& r)
+    ptr<T>& operator=(const ptr<T>& r)
     {
         m_ptr = r.m_ptr;
         return *this;
     }
 
-    inline operator T*() const
+    operator T*() const
     {
         return m_ptr;
     }
 
-    inline bool operator==(const T* r) const
+    bool operator==(const T* r) const
     {
         return m_ptr == r;
     }
 
-    inline bool operator!=(const T* r) const
+    bool operator!=(const T* r) const
     {
         return m_ptr != r;
     }
 
-    inline bool operator==(const ptr<T>& r) const
+    bool operator==(const ptr<T>& r) const
     {
         return m_ptr == r.m_ptr;
     }
 
-    inline bool operator!=(const ptr<T>& r) const
+    bool operator!=(const ptr<T>& r) const
     {
         return m_ptr != r.m_ptr;
     }
 
-    inline T* operator->() const
+    T* operator->() const
     {
         assert(NULL != m_ptr);
         return m_ptr;
     }
 
-    inline T& operator*() const
+    T& operator*() const
     {
         assert(NULL != m_ptr);
         return *m_ptr;
     }
 
 public:
-    inline bool is_null() const
+    bool is_null() const
     {
         return m_ptr == NULL;
     }
 
-    inline T* pointer() const
+    T* pointer() const
     {
         return m_ptr;
     }
 
-    inline void assign(T *p)
+    void assign(T *p)
     {
         m_ptr = p;
     }
 
-    inline void set_null()
+    void set_null()
     {
         m_ptr = NULL;
     }

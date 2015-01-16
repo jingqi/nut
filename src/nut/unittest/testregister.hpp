@@ -81,7 +81,7 @@ public:
 
 private:
     /** 判断字符是否是空白 */
-    static inline bool is_blank(char c)
+    static bool is_blank(char c)
     {
         return c == ' ' || c == '\r' || c == '\n' || c == '\t';
     }

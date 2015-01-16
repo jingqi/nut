@@ -54,7 +54,7 @@ class IniDom
         std::string m_comment;
         std::vector<ref<Line> > m_lines;
 
-		static inline bool contains(const char *s, char c)
+		static bool contains(const char *s, char c)
 		{
 			assert(NULL != s);
 			for (size_t i = 0; '\0' != s[i]; ++i)
@@ -230,12 +230,12 @@ public:
         }
     }
 
-	inline bool is_dirty() const
+	bool is_dirty() const
 	{
 		return m_dirty;
 	}
 
-    inline void set_dirty(bool dirty = true)
+    void set_dirty(bool dirty = true)
     {
         m_dirty = dirty;
     }

@@ -38,12 +38,12 @@ public:
         : m_writer(writer)
     {}
 
-    inline StringWriter* get_writer() const
+    StringWriter* get_writer() const
     {
         return m_writer;
     }
 
-    inline void set_writer(StringWriter *writer)
+    void set_writer(StringWriter *writer)
     {
         m_writer = writer;
     }
@@ -130,7 +130,7 @@ public:
     }
 
 private:
-    inline void write(const char *s, int len = -1)
+    void write(const char *s, int len = -1)
     {
         if (NULL == m_writer)
             return;

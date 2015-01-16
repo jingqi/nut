@@ -87,12 +87,12 @@ public:
             m_children.at(i)->set_dirty(false);
     }
 
-    inline const std::string& get_name() const
+    const std::string& get_name() const
     {
         return m_name;
     }
 
-    inline void set_name(const std::string& name)
+    void set_name(const std::string& name)
     {
         if (name != m_name)
         {
@@ -101,12 +101,12 @@ public:
         }
     }
 
-    inline const std::string& get_text() const
+    const std::string& get_text() const
     {
         return m_text;
     }
 
-    inline void set_text(const std::string& text)
+    void set_text(const std::string& text)
     {
         if (text != m_text)
         {
@@ -115,12 +115,12 @@ public:
         }
     }
 
-    inline size_t get_children_count() const
+    size_t get_children_count() const
     {
         return m_children.size();
     }
 
-    inline ref<XmlElement> get_child(size_t i) const
+    ref<XmlElement> get_child(size_t i) const
     {
         if (i >= m_children.size())
             return ref<XmlElement>();
@@ -140,28 +140,28 @@ public:
         return ref<XmlElement>();
     }
 
-    inline void append_child(ref<XmlElement> child)
+    void append_child(ref<XmlElement> child)
     {
         assert(child.is_not_null());
         m_children.push_back(child);
         m_dirty = true;
     }
 
-    inline void insert_child(size_t pos, ref<XmlElement> child)
+    void insert_child(size_t pos, ref<XmlElement> child)
     {
         assert(pos <= m_children.size() && child.is_not_null());
         m_children.insert(m_children.begin() + pos, child);
         m_dirty = true;
     }
 
-    inline void remove_child(size_t pos)
+    void remove_child(size_t pos)
     {
         assert(pos < m_children.size());
         m_children.erase(m_children.begin() + pos);
         m_dirty = true;
     }
 
-    inline void clear_children()
+    void clear_children()
     {
         m_children.clear();
         m_dirty = true;
@@ -200,7 +200,7 @@ public:
     /**
      * 存在属性则设置属性值，否则添加新属性
      */
-    inline void set_attribute(const std::string& name, const std::string& value)
+    void set_attribute(const std::string& name, const std::string& value)
     {
         m_attrs[name] = value;
         m_dirty = true;
@@ -216,7 +216,7 @@ public:
         return true;
     }
 
-    inline void clear_attributes()
+    void clear_attributes()
     {
         m_attrs.clear();
         m_dirty = true;
@@ -278,23 +278,23 @@ public:
         m_dirty = true;
     }
 
-    inline const_attr_iter_t attr_const_begin() const
+    const_attr_iter_t attr_const_begin() const
     {
         return m_attrs.begin();
     }
 
-    inline const_attr_iter_t attr_const_end() const
+    const_attr_iter_t attr_const_end() const
     {
         return m_attrs.end();
     }
 
-    inline attr_iter_t attr_begin()
+    attr_iter_t attr_begin()
     {
         m_dirty = true; // in case of modification
         return m_attrs.begin();
     }
 
-    inline attr_iter_t attr_end()
+    attr_iter_t attr_end()
     {
         m_dirty = true; // in case of modification
         return m_attrs.end();
@@ -357,7 +357,7 @@ public:
     /*
      * @param format 格式化输出，以便于阅读
      */
-    inline void serielize(std::string *out, bool format = true) const
+    void serielize(std::string *out, bool format = true) const
     {
         assert(NULL != out);
         StdStringWriter sw(out);

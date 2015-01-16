@@ -29,7 +29,7 @@ class gc_new : public ref<typename RefTraits<T>::plain_type>
 
     using weak_ref<plain_type>::m_ptr;
 
-    static inline wrapper_type* alloc_wrapper()
+    static wrapper_type* alloc_wrapper()
     {
         return (wrapper_type*)::malloc(sizeof(wrapper_type));
     }

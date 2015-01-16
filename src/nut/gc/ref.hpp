@@ -45,56 +45,56 @@ public:
 
 public:
     /** 赋值操作符 */
-    inline weak_ref<T>& operator=(const weak_ref<T>& r)
+    weak_ref<T>& operator=(const weak_ref<T>& r)
     {
         m_ptr = r.m_ptr;
         return *this;
     }
 
-    inline bool operator==(const weak_ref<T>& r) const
+    bool operator==(const weak_ref<T>& r) const
     {
         return m_ptr == r.m_ptr;
     }
 
-    inline bool operator!=(const weak_ref<T>& r) const
+    bool operator!=(const weak_ref<T>& r) const
     {
         return m_ptr != r.m_ptr;
     }
 
-    inline T* operator->() const
+    T* operator->() const
     {
         assert(NULL != m_ptr);
         return m_ptr;
     }
 
-    inline T& operator*() const
+    T& operator*() const
     {
         assert(NULL != m_ptr);
         return *m_ptr;
     }
 
 public:
-    inline bool is_null() const
+    bool is_null() const
     {
         return m_ptr == NULL;
     }
 
-    inline bool is_not_null() const
+    bool is_not_null() const
     {
         return m_ptr != NULL;
     }
 
-    inline T* pointer() const
+    T* pointer() const
     {
         return m_ptr;
     }
 
-    inline void assign(T *p)
+    void assign(T *p)
     {
         m_ptr = p;
     }
 
-    inline void set_null()
+    void set_null()
     {
         m_ptr = NULL;
     }
@@ -150,18 +150,18 @@ public:
     }
 
 public:
-    inline ref<T>& operator=(const ref<T>& r)
+    ref<T>& operator=(const ref<T>& r)
     {
         assign(r.m_ptr);
         return *this;
     }
 
-    inline bool operator==(const weak_ref<T>& r) const
+    bool operator==(const weak_ref<T>& r) const
 	{
 		return m_ptr == r.pointer();
 	}
 
-    inline bool operator!=(const weak_ref<T>& r) const
+    bool operator!=(const weak_ref<T>& r) const
 	{
 		return m_ptr != r.pointer();
 	}

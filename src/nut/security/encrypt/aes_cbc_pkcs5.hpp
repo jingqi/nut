@@ -40,7 +40,7 @@ class AES_CBC_PKCS5
     AES m_aes;
 
 private:
-    static inline void xor_buf(uint8_t *buf1, const uint8_t *buf2, size_t len = 16)
+    static void xor_buf(uint8_t *buf1, const uint8_t *buf2, size_t len = 16)
     {
         assert(NULL != buf1 && NULL != buf2);
         for (size_t i = 0; i < len; ++i)

@@ -21,7 +21,7 @@ class singleton
             singleton<T>::instance();
         }
 
-        inline void do_nothing() const
+        void do_nothing() const
         {}
     };
 

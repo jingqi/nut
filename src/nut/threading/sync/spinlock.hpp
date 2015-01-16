@@ -58,23 +58,23 @@ public:
     }
 
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-    inline CRITICAL_SECTION* inner_mutex()
+    CRITICAL_SECTION* inner_mutex()
     {
         return &m_criticalSection;
     }
 #elif defined(NUT_PLATFORM_OS_MAC)
-    inline pthread_mutex_t* inner_mutex()
+    pthread_mutex_t* inner_mutex()
     {
         return &m_spinlock;
     }
 #else
-    inline pthread_spinlock_t* inner_mutex()
+    pthread_spinlock_t* inner_mutex()
     {
         return &m_spinlock;
     }
 #endif
 
-    inline void lock()
+    void lock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         ::EnterCriticalSection(&m_criticalSection);
@@ -87,7 +87,7 @@ public:
 #endif
     }
 
-    inline bool trylock()
+    bool trylock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         return FALSE != ::TryEnterCriticalSection(&m_criticalSection);
@@ -98,7 +98,7 @@ public:
 #endif
     }
 
-    inline void unlock()
+    void unlock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         ::LeaveCriticalSection(&m_criticalSection);

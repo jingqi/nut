@@ -31,7 +31,7 @@ struct const_ref_arg
 template <typename T>
 struct RefargTraits
 {
-    inline static const T& value(const T& v)
+    static const T& value(const T& v)
     {
         return v;
     }
@@ -40,7 +40,7 @@ struct RefargTraits
 template <typename T>
 struct RefargTraits<ref_arg<T> >
 {
-    inline static T& value(const ref_arg<T>& v)
+    static T& value(const ref_arg<T>& v)
     {
         return v.ref;
     }
@@ -49,7 +49,7 @@ struct RefargTraits<ref_arg<T> >
 template <typename T>
 struct RefargTraits<const_ref_arg<T> >
 {
-    inline static const T& value(const const_ref_arg<T>& v)
+    static const T& value(const const_ref_arg<T>& v)
     {
         return v.ref;
     }

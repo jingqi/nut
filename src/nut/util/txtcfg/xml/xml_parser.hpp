@@ -544,7 +544,7 @@ class XmlParser
         return true;
     }
 
-    inline bool should_handle_child() const
+    bool should_handle_child() const
     {
         if (m_elem_path.empty())
             return false;
@@ -554,7 +554,7 @@ class XmlParser
         return 0 != (current_elem.handler->handle_mask & XmlElementHandler::HANDLE_CHILD);
     }
 
-    inline bool should_handle_attribute() const
+    bool should_handle_attribute() const
     {
         if (m_elem_path.empty())
             return false;
@@ -564,7 +564,7 @@ class XmlParser
         return 0 != (current_elem.handler->handle_mask & XmlElementHandler::HANDLE_ATTRIBUTE);
     }
 
-    inline bool should_handle_text() const
+    bool should_handle_text() const
     {
         if (m_elem_path.empty())
             return false;
@@ -574,7 +574,7 @@ class XmlParser
         return 0 != (current_elem.handler->handle_mask & XmlElementHandler::HANDLE_TEXT);
     }
 
-    inline bool should_handle_comment() const
+    bool should_handle_comment() const
     {
         if (m_elem_path.empty())
             return false;
@@ -668,12 +668,12 @@ class XmlParser
             *append_dst += e; // decode failed
     }
 
-    static inline bool is_space(char c)
+    static bool is_space(char c)
     {
         return ' ' == c || '\t' == c || '\r' == c || '\n' == c;
     }
 
-    static inline bool is_name_char(char c)
+    static bool is_name_char(char c)
     {
         if ('a' <= c && c <= 'z')
             return true;
@@ -757,17 +757,17 @@ public:
         return true;
     }
 
-    inline size_t line() const
+    size_t line() const
     {
         return m_line;
     }
 
-    inline size_t column() const
+    size_t column() const
     {
         return m_column;
     }
 
-    inline bool has_error() const
+    bool has_error() const
     {
         return IN_ERROR == m_state;
     }

@@ -59,12 +59,12 @@ public:
 			m_root->set_dirty(false);
 	}
 
-    inline const std::string& get_version() const
+    const std::string& get_version() const
     {
         return m_version;
     }
 
-    inline void set_version(const std::string& version)
+    void set_version(const std::string& version)
     {
 		if (version != m_version)
 		{
@@ -73,12 +73,12 @@ public:
 		}
     }
 
-    inline const std::string& get_encoding() const
+    const std::string& get_encoding() const
     {
         return m_encoding;
     }
 
-    inline void set_encoding(const std::string& encoding)
+    void set_encoding(const std::string& encoding)
     {
 		if (encoding != m_encoding)
 		{
@@ -87,12 +87,12 @@ public:
 		}
     }
 
-    inline ref<XmlElement> get_root() const
+    ref<XmlElement> get_root() const
     {
         return m_root;
     }
 
-    inline void set_root(ref<XmlElement> root)
+    void set_root(ref<XmlElement> root)
     {
 		if (root != m_root)
 		{

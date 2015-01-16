@@ -49,7 +49,7 @@ public:
 #endif
     }
 
-    inline void lock_read()
+    void lock_read()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         ::AcquireSRWLockShared(&m_rwlock);
@@ -59,7 +59,7 @@ public:
 #endif
     }
 
-    inline bool try_lock_read()
+    bool try_lock_read()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         return FALSE != ::TryAcquireSRWLockShared(&m_rwlock);
@@ -68,7 +68,7 @@ public:
 #endif
     }
 
-    inline void lock_write()
+    void lock_write()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         ::AcquireSRWLockExclusive(&m_rwlock);
@@ -78,7 +78,7 @@ public:
 #endif
     }
 
-    inline bool try_lock_write()
+    bool try_lock_write()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         return FALSE != ::TryAcquireSRWLockExclusive(&m_rwlock);
@@ -87,7 +87,7 @@ public:
 #endif
     }
 
-    inline void unlock_read()
+    void unlock_read()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         ::ReleaseSRWLockShared(&m_rwlock);
@@ -97,7 +97,7 @@ public:
 #endif
     }
 
-    inline void unlock_write()
+    void unlock_write()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         ::ReleaseSRWLockExclusive(&m_rwlock);

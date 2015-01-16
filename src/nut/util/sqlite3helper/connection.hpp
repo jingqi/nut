@@ -128,27 +128,27 @@ public:
         }
     }
 
-    inline bool is_valid() const
+    bool is_valid() const
     {
         return NULL != m_sqlite;
     }
 
-    inline bool is_auto_commit() const
+    bool is_auto_commit() const
     {
         return m_auto_commit;
     }
 
-    inline void set_auto_commit(bool b)
+    void set_auto_commit(bool b)
     {
         m_auto_commit = b;
     }
 
-    inline bool is_throw_exceptions() const
+    bool is_throw_exceptions() const
     {
         return m_throw_exceptions;
     }
 
-    inline void set_throw_exceptions(bool b)
+    void set_throw_exceptions(bool b)
     {
         m_throw_exceptions = b;
     }

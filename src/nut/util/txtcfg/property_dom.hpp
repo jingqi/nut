@@ -235,7 +235,7 @@ public:
 		}
 	}
 
-	inline bool is_dirty() const
+	bool is_dirty() const
 	{
 		return m_dirty;
 	}
@@ -243,7 +243,7 @@ public:
     /**
 	 * set dirty flag
 	 */
-    inline void set_dirty(bool dirty = true)
+    void set_dirty(bool dirty = true)
     {
         m_dirty = dirty;
     }

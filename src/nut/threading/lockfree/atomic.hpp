@@ -290,7 +290,7 @@ inline int32_t atomic_add(int32_t volatile *addend, int32_t value)
  *
  * @return 返回旧值
  */
- inline uint32_t atomic_add(uint32_t volatile *addend, uint32_t value)
+inline uint32_t atomic_add(uint32_t volatile *addend, uint32_t value)
  {
      assert(NULL != addend);
     return static_cast<uint32_t>(atomic_add(reinterpret_cast<int32_t volatile*>(addend), static_cast<int32_t>(value)));
@@ -320,7 +320,7 @@ inline int16_t atomic_add(int16_t volatile *addend, int16_t value)
  *
  * @return 返回旧值
  */
- inline uint16_t atomic_add(uint16_t volatile *addend, uint16_t value)
+inline uint16_t atomic_add(uint16_t volatile *addend, uint16_t value)
  {
      assert(NULL != addend);
     return static_cast<uint16_t>(atomic_add(reinterpret_cast<int16_t volatile*>(addend), static_cast<int16_t>(value)));

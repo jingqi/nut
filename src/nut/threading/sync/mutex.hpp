@@ -63,12 +63,12 @@ public :
     }
 
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-    inline HANDLE inner_mutex()
+    HANDLE inner_mutex()
     {
         return m_hmutex;
     }
 #else
-    inline pthread_mutex_t* inner_mutex()
+    pthread_mutex_t* inner_mutex()
     {
         return &m_mutex;
     }
@@ -77,7 +77,7 @@ public :
     /**
      * lock the mutex, which may blocked the thread
      */
-    inline void lock()
+    void lock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         const DWORD rs = ::WaitForSingleObject(m_hmutex, INFINITE);
@@ -91,7 +91,7 @@ public :
     /**
      * unlock the mutex
      */
-    inline void unlock()
+    void unlock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         const BOOL rs = ::ReleaseMutex(m_hmutex);
@@ -107,7 +107,7 @@ public :
      * @return
      *      true, if lock successed
      */
-    inline bool trylock()
+    bool trylock()
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, 0);
@@ -152,7 +152,7 @@ public :
      * @return
      *      true, if lock successed
      */
-    inline bool timedlock(unsigned s, unsigned ms = 0)
+    bool timedlock(unsigned s, unsigned ms = 0)
     {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
         const DWORD dw_milliseconds = s * 1000 + ms;

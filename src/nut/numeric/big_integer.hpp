@@ -93,7 +93,7 @@ private:
     /**
      * 最小化有效字节长度
      */
-    inline void minimize_significant_len()
+    void minimize_significant_len()
     {
         m_significant_len = significant_size(m_buffer->buf, m_significant_len);
     }
@@ -202,7 +202,7 @@ public:
         return *this;
     }
 
-    inline bool operator==(const self& x) const
+    bool operator==(const self& x) const
     {
         if (&x == this)
             return true;
@@ -212,63 +212,63 @@ public:
         return equals(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len);
     }
 
-    inline bool operator==(long long v) const
+    bool operator==(long long v) const
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
 
         return equals(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
     }
 
-    inline bool operator!=(const self& x) const
+    bool operator!=(const self& x) const
     {
         return !(*this == x);
     }
 
-    inline bool operator!=(long long v) const
+    bool operator!=(long long v) const
     {
         return !(*this == v);
     }
 
-    inline bool operator<(const self& x) const
+    bool operator<(const self& x) const
     {
         return less_than(m_buffer->buf, m_significant_len, x.m_buffer->buf, x.m_significant_len);
     }
 
-    inline bool operator<(long long v) const
+    bool operator<(long long v) const
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
 
         return less_than(m_buffer->buf, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
     }
 
-    inline bool operator>(const self& x) const
+    bool operator>(const self& x) const
     {
         return x < *this;
     }
 
-    inline bool operator>(long long v) const
+    bool operator>(long long v) const
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
 
         return less_than((word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer->buf, m_significant_len);
     }
 
-    inline bool operator<=(const self& x) const
+    bool operator<=(const self& x) const
     {
         return !(x < *this);
     }
 
-    inline bool operator<=(long long v) const
+    bool operator<=(long long v) const
     {
         return !(*this > v);
     }
 
-    inline bool operator>=(const self& x) const
+    bool operator>=(const self& x) const
     {
         return !(*this < x);
     }
 
-    inline bool operator>=(long long v) const
+    bool operator>=(long long v) const
     {
         return !(*this < v);
     }
@@ -497,7 +497,7 @@ public:
         return *this;
     }
 
-    inline self& operator%=(const self& x)
+    self& operator%=(const self& x)
     {
         assert(!x.is_zero());
 
@@ -517,7 +517,7 @@ public:
         return *this;
     }
 
-    inline self& operator%=(long long v)
+    self& operator%=(long long v)
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
         assert(0 != v);
@@ -537,7 +537,7 @@ public:
         return *this;
     }
 
-    inline self operator++(int)
+    self operator++(int)
     {
         self ret(*this);
         ++*this;
@@ -552,7 +552,7 @@ public:
         return *this;
     }
 
-    inline self operator--(int)
+    self operator--(int)
     {
         self ret(*this);
         --*this;
@@ -589,7 +589,7 @@ public:
         return ret;
     }
 
-    inline self& operator<<=(size_t count)
+    self& operator<<=(size_t count)
     {
         if (0 == count)
             return *this;
@@ -602,7 +602,7 @@ public:
         return *this;
     }
 
-    inline self& operator>>=(size_t count)
+    self& operator>>=(size_t count)
     {
         if (0 == count)
             return *this;
@@ -638,35 +638,35 @@ public:
         }
     }
 
-    inline void set_zero()
+    void set_zero()
     {
          _copy_on_write();
         m_buffer->buf[0] = 0;
         m_significant_len = 1;
     }
 
-    inline bool is_zero() const
+    bool is_zero() const
     {
         return nut::is_zero(m_buffer->buf, m_significant_len);
     }
 
-    inline bool is_positive() const
+    bool is_positive() const
     {
         return nut::is_positive(m_buffer->buf, m_significant_len);
     }
 
-    inline const word_type* buffer() const
+    const word_type* buffer() const
     {
         return m_buffer->buf;
     }
 
-    inline word_type* buffer()
+    word_type* buffer()
     {
         _copy_on_write();
         return const_cast<word_type*>(static_cast<const self&>(*this).buffer());
     }
 
-    inline void resize(size_t n)
+    void resize(size_t n)
     {
         assert(n > 0);
         ensure_significant_len(n);
@@ -678,7 +678,7 @@ public:
      *
      * @return 注意，返回为正数
      */
-    inline void limit_positive_bits_to(size_t bit_len)
+    void limit_positive_bits_to(size_t bit_len)
     {
         assert(bit_len > 0);
 
@@ -727,7 +727,7 @@ public:
      *
      * @return 注意，返回为正数
      */
-    inline void multiply_to_len(const self& a, size_t bit_len)
+    void multiply_to_len(const self& a, size_t bit_len)
     {
         const size_t words_len = (bit_len + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
         _copy_on_write(words_len);
@@ -739,7 +739,7 @@ public:
     /**
      * 以word_type为单位计算有效字长度
      */
-    inline size_t significant_words_length() const
+    size_t significant_words_length() const
     {
         return m_significant_len;
     }
@@ -749,7 +749,7 @@ public:
      *
      * @return 0 or 1
      */
-    inline int bit_at(size_t i) const
+    int bit_at(size_t i) const
     {
         if (i / (8 * sizeof(word_type)) >= m_significant_len)
         {
@@ -765,7 +765,7 @@ public:
     /**
      * 返回字值
      */
-    inline word_type word_at(size_t i) const
+    word_type word_at(size_t i) const
     {
         if (i >= m_significant_len)
             return is_positive() ? 0 : ~(word_type)0;
@@ -775,7 +775,7 @@ public:
     /**
      * @param v 0 or 1
      */
-    inline void set_bit(size_t i, int v)
+    void set_bit(size_t i, int v)
     {
     	assert(v == 0 || v == 1);
     	ensure_significant_len((i + 1) / (8 * sizeof(word_type)) + 1); // 避免符号位被覆盖
@@ -785,13 +785,13 @@ public:
     		m_buffer->buf[i / (8 * sizeof(word_type))] |= ((word_type)1) << (i % (8 * sizeof(word_type)));
     }
 
-    inline void set_word(size_t i, word_type v)
+    void set_word(size_t i, word_type v)
     {
         ensure_significant_len(i + 1 + 1); // 避免符号位被覆盖
         m_buffer->buf[i] = v;
     }
 
-    inline size_t bit_length() const
+    size_t bit_length() const
     {
     	if (is_positive())
     		return nut::bit_length((uint8_t*)m_buffer->buf, sizeof(word_type) * m_significant_len);
@@ -802,7 +802,7 @@ public:
     /**
      * 正数返回 bit 1 计数，负数则返回 bit 0 计数
      */
-    inline size_t bit_count() const
+    size_t bit_count() const
     {
     	const size_t bc = nut::bit_count((uint8_t*)m_buffer->buf, sizeof(word_type) * m_significant_len);
     	if (is_positive())
@@ -810,12 +810,12 @@ public:
     	return 8 * sizeof(word_type) * m_significant_len - bc;
     }
 
-    inline int lowest_bit() const
+    int lowest_bit() const
     {
         return nut::lowest_bit((uint8_t*)m_buffer->buf, sizeof(word_type) * m_significant_len);
     }
 
-    inline long long llong_value() const
+    long long llong_value() const
     {
         NUT_STATIC_ASSERT(sizeof(long long) % sizeof(word_type) == 0);
 
@@ -856,7 +856,7 @@ public:
     /**
      * 值交换
      */
-    inline static void swap(self *a, self *b)
+    static void swap(self *a, self *b)
     {
         assert(NULL != a && NULL != b);
         ref<FixedBuf<word_type> > p = a->m_buffer;
@@ -868,18 +868,18 @@ public:
     }
 
 private:
-    static inline bool is_valid_radix(size_t radix)
+    static bool is_valid_radix(size_t radix)
     {
         return 1 < radix && radix <= 36;
     }
 
-    static inline char num2char(size_t n)
+    static char num2char(size_t n)
     {
         assert(0 <= n && n < 36);
         return (n < 10 ? '0' + n : 'A' + n - 10);
     }
 
-    static inline wchar_t num2wchar(size_t n)
+    static wchar_t num2wchar(size_t n)
     {
         assert(0 <= n && n < 36);
         return (n < 10 ? L'0' + n : L'A' + n - 10);
@@ -933,31 +933,31 @@ public:
     }
 
 private:
-    static inline bool is_blank(char c)
+    static bool is_blank(char c)
     {
         return ' ' == c || '\t' == c;
     }
 
-    static inline bool is_blank(wchar_t c)
+    static bool is_blank(wchar_t c)
     {
         return L' ' == c || L'\t' == c;
     }
 
-    static inline size_t skip_blank(const std::string& s, size_t start)
+    static size_t skip_blank(const std::string& s, size_t start)
     {
         while (start < s.length() && is_blank(s[start]))
             ++start;
         return start;
     }
 
-    static inline size_t skip_blank(const std::wstring& s, size_t start)
+    static size_t skip_blank(const std::wstring& s, size_t start)
     {
         while (start < s.length() && is_blank(s[start]))
             ++start;
         return start;
     }
 
-    static inline bool is_valid_char(char c, size_t radix)
+    static bool is_valid_char(char c, size_t radix)
     {
         assert(is_valid_radix(radix));
         if (radix <= 10)
@@ -967,7 +967,7 @@ private:
         return 'a' <= (c | 0x20) && (c | 0x20) <= 'a' + (int) radix - 10 - 1;
     }
 
-    static inline bool is_valid_char(wchar_t c, size_t radix)
+    static bool is_valid_char(wchar_t c, size_t radix)
     {
         assert(is_valid_radix(radix));
         if (radix <= 10)
@@ -977,7 +977,7 @@ private:
         return L'a' <= (c | 0x20) && (c | 0x20) <= L'a' + (int) radix - 10 - 1;
     }
 
-    static inline size_t char2num(char c)
+    static size_t char2num(char c)
     {
         assert(is_valid_char(c, 36));
         if ('0' <= c && c <= '9')
@@ -985,7 +985,7 @@ private:
         return (c | 0x20) - 'a' + 10;
     }
 
-    static inline size_t char2num(wchar_t c)
+    static size_t char2num(wchar_t c)
     {
         assert(is_valid_char(c, 36));
         if (L'0' <= c && c <= L'9')

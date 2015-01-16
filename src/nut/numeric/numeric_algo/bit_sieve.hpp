@@ -142,7 +142,7 @@ private:
     /**
      * Given a bit index return unit index containing it.
      */
-    static inline int unit_index(int bit_index)
+    static int unit_index(int bit_index)
     {
         return (int)(((unsigned)bit_index) >> 6);
     }
@@ -150,7 +150,7 @@ private:
     /**
      * Return a unit that masks the specified bit in its unit.
      */
-    static inline int64_t bit(int bit_index)
+    static int64_t bit(int bit_index)
     {
         return ((int64_t) 1) << (bit_index & ((1<<6) - 1));
     }
@@ -158,7 +158,7 @@ private:
     /**
      * Get the value of the bit at the specified index.
      */
-    inline bool get(int bit_index)
+    bool get(int bit_index)
     {
         int ui = unit_index(bit_index);
         return ((m_bits[ui] & bit(bit_index)) != 0);
@@ -167,7 +167,7 @@ private:
     /**
      * Set the bit at the specified index.
      */
-    inline void set(int bit_index)
+    void set(int bit_index)
     {
         int ui = unit_index(bit_index);
         m_bits[ui] |= bit(bit_index);
@@ -178,7 +178,7 @@ private:
      * array that occurs at or after start. It will not search past the
      * specified limit. It returns -1 if there is no such clear bit.
      */
-    inline int sieve_search(int limit, int start)
+    int sieve_search(int limit, int start)
     {
         if (start >= limit)
             return -1;
@@ -198,7 +198,7 @@ private:
      * multiples of the specified step starting at the specified start index,
      * up to the specified limit.
      */
-    inline void sieve_single(int limit, int start, int step)
+    void sieve_single(int limit, int start, int step)
     {
         while(start < limit)
         {
