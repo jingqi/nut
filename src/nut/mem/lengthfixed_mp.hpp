@@ -37,8 +37,7 @@ class lengthfixed_mp
         uint8_t body[G];
     };
 
-    MemAlloc *m_mem_alloc;
-    bool m_local_ma;
+    MemAlloc *m_alloc;
     TagedPtr<FreeNode> m_head;
     int volatile m_free_num;
 
@@ -48,21 +47,19 @@ private:
 
 public:
     lengthfixed_mp(MemAlloc *ma = NULL)
-        : m_mem_alloc(ma), m_local_ma(false), m_free_num(0)
+        : m_alloc(ma), m_free_num(0)
     {
         if (NULL == ma)
-        {
-            m_mem_alloc = new sys_ma;
-            m_local_ma = true;
-        }
+            m_alloc = sys_ma::create();
+        else
+            m_alloc->add_ref();
     }
 
     ~lengthfixed_mp()
     {
         clear();
-        if (m_local_ma)
-            delete m_mem_alloc;
-        m_mem_alloc = NULL;
+        m_alloc->rls_ref();
+        m_alloc = NULL;
     }
 
 public:
@@ -72,7 +69,7 @@ public:
         while (NULL != p)
         {
             FreeNode *next = p->next;
-            m_mem_alloc->free(p);
+            m_alloc->free(p);
             p = next;
         }
         m_head.ptr = NULL;
@@ -86,7 +83,7 @@ public:
             const TagedPtr<FreeNode> old_head(m_head.cas);
 
             if (NULL == old_head.ptr)
-                return m_mem_alloc->alloc(sizeof(FreeNode));
+                return m_alloc->alloc(sizeof(FreeNode));
 
             const TagedPtr<FreeNode> new_head(old_head.ptr->next, old_head.tag + 1);
             if (atomic_cas(&(m_head.cas), old_head.cas, new_head.cas))
@@ -112,7 +109,7 @@ public:
         {
             if (m_free_num >= (int) MAX_FREE_BLOCKS)
             {
-                m_mem_alloc->free(p);
+                m_alloc->free(p);
                 return;
             }
 

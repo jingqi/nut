@@ -12,6 +12,8 @@
 #include <stdlib.h> // for malloc() and so on
 #include <stdint.h>
 
+#include <nut/threading/lockfree/atomic.hpp>
+
 namespace nut
 {
 
@@ -25,13 +27,43 @@ class sys_ma
     size_t m_alloc_count, m_free_count;
     size_t m_total_alloc_cb, m_total_free_cb;
 #endif
+    int volatile m_ref_count;
 
 private:
     explicit sys_ma(const sys_ma&);
     sys_ma& operator=(const sys_ma&);
 
+    sys_ma()
+        : m_ref_count(0)
+    {}
+
+    virtual ~sys_ma() {}
+
 public:
-    sys_ma() {}
+    static sys_ma* create()
+    {
+        sys_ma *const ret = (sys_ma*) ::malloc(sizeof(sys_ma));
+        assert(NULL != ret);
+        new (ret) sys_ma;
+        ret->add_ref();
+        return ret;
+    }
+
+    int add_ref()
+    {
+        return atomic_add(&m_ref_count, 1) + 1;
+    }
+
+    int rls_ref()
+    {
+        const int ret = atomic_add(&m_ref_count, -1) - 1;
+        if (0 == ret)
+        {
+            this->~sys_ma();
+            ::free(this);
+        }
+        return ret;
+    }
 
     void* alloc(size_t cb)
     {

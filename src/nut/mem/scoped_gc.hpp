@@ -52,8 +52,7 @@ class scoped_gc
         destruct_func_type destruct_func;
     };
 
-	MemAlloc *m_mem_alloc;
-	bool m_local_ma;
+    MemAlloc *m_alloc;
 	Block *m_current_block;
 	uint8_t *m_end;
     DestructorNode *m_destruct_chain;
@@ -84,21 +83,19 @@ private:
 
 public:
     scoped_gc(MemAlloc *ma = NULL)
-        : m_mem_alloc(ma), m_local_ma(false), m_current_block(NULL), m_end(NULL), m_destruct_chain(NULL)
+        : m_alloc(ma), m_current_block(NULL), m_end(NULL), m_destruct_chain(NULL)
     {
     	if (NULL == ma)
-    	{
-    		m_mem_alloc = new sys_ma;
-    		m_local_ma = true;
-    	}
+            m_alloc = sys_ma::create();
+        else
+            m_alloc->add_ref();
     }
 
     ~scoped_gc()
     {
 		clear();
-		if (m_local_ma)
-			delete m_mem_alloc;
-		m_mem_alloc = NULL;
+        m_alloc->rls_ref();
+        m_alloc = NULL;
 	}
 
 private:
@@ -108,7 +105,7 @@ private:
 		{
 			if (cb >= DEFAULT_BLOCK_BODY_SIZE)
 			{
-				Block *new_blk = (Block*) m_mem_alloc->alloc(BLOCK_HEADER_SIZE + cb);
+                Block *new_blk = (Block*) m_alloc->alloc(BLOCK_HEADER_SIZE + cb);
 				assert(NULL != new_blk);
 				if (NULL != m_current_block)
 				{
@@ -125,7 +122,7 @@ private:
 			}
 			else
 			{
-				Block *new_blk = (Block*) m_mem_alloc->alloc(DEFAULT_BLOCK_LEN);
+                Block *new_blk = (Block*) m_alloc->alloc(DEFAULT_BLOCK_LEN);
 				assert(NULL != new_blk);
 				new_blk->prev = m_current_block;
 				m_current_block = new_blk;
@@ -170,7 +167,7 @@ public:
         while (NULL != m_current_block)
         {
 			Block *prev = m_current_block->prev;
-			m_mem_alloc->free((uint8_t*) m_current_block);
+            m_alloc->free((uint8_t*) m_current_block);
 			m_current_block = prev;
         }
 		m_end = NULL;
