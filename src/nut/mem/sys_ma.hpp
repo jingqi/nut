@@ -65,6 +65,7 @@ public:
         return ret;
     }
 
+public:
     void* alloc(size_t cb)
     {
 #ifndef NDEBUG

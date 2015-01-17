@@ -52,6 +52,8 @@ class scoped_gc
         destruct_func_type destruct_func;
     };
 
+    typedef scoped_gc<MemAlloc> self_type;
+    int volatile m_ref_count;
     MemAlloc *m_alloc;
 	Block *m_current_block;
 	uint8_t *m_end;
@@ -61,34 +63,11 @@ private:
     explicit scoped_gc(const scoped_gc&);
     scoped_gc& operator=(const scoped_gc&);
 
-	template <typename T>
-	static void destruct_single(void *p)
-	{
-		assert(NULL != p);
-		((T*) p)->~T();
-	}
-
-	template <typename T>
-	static void destruct_array(void *p)
-	{
-		assert(NULL != p);
-		size_t count = *(size_t*)p;
-		T *pd = (T*)(((size_t*) p) + 1);
-		for (int i = 0; i < (int) count; ++i)
-		{
-			pd->~T();
-			++pd;
-		}
-	}
-
-public:
-    scoped_gc(MemAlloc *ma = NULL)
-        : m_alloc(ma), m_current_block(NULL), m_end(NULL), m_destruct_chain(NULL)
+    scoped_gc(MemAlloc *ma)
+        : m_ref_count(0), m_alloc(ma), m_current_block(NULL), m_end(NULL), m_destruct_chain(NULL)
     {
-    	if (NULL == ma)
-            m_alloc = sys_ma::create();
-        else
-            m_alloc->add_ref();
+        assert(NULL != ma);
+        m_alloc->add_ref();
     }
 
     ~scoped_gc()
@@ -98,7 +77,62 @@ public:
         m_alloc = NULL;
 	}
 
+public:
+    static self_type* create(MemAlloc *ma = NULL)
+    {
+        if (NULL == ma)
+            ma = MemAlloc::create();
+        else
+            ma->add_ref();
+        self_type *ret = (self_type*) ma->alloc(sizeof(self_type));
+        assert(NULL != ret);
+        new (ret) self_type(ma);
+        ret->add_ref();
+        ma->rls_ref();
+        return ret;
+    }
+
+    int add_ref()
+    {
+        return atomic_add(&m_ref_count, 1) + 1;
+    }
+
+    int rls_ref()
+    {
+        const int ret = atomic_add(&m_ref_count, -1) - 1;
+        if (0 == ret)
+        {
+            MemAlloc *ma = m_alloc;
+            assert(NULL != ma);
+            ma->add_ref();
+            this->~scoped_gc();
+            ma->free(this);
+            ma->rls_ref();
+        }
+        return ret;
+    }
+
 private:
+    template <typename T>
+    static void destruct_single(void *p)
+    {
+        assert(NULL != p);
+        ((T*) p)->~T();
+    }
+
+    template <typename T>
+    static void destruct_array(void *p)
+    {
+        assert(NULL != p);
+        size_t count = *(size_t*)p;
+        T *pd = (T*)(((size_t*) p) + 1);
+        for (int i = 0; i < (int) count; ++i)
+        {
+            pd->~T();
+            ++pd;
+        }
+    }
+
     void* raw_alloc(size_t cb)
     {
 		if (m_current_block->body + cb > m_end)

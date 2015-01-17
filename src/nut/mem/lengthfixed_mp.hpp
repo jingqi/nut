@@ -37,6 +37,7 @@ class lengthfixed_mp
         uint8_t body[G];
     };
 
+    int volatile m_ref_count;
     MemAlloc *m_alloc;
     TagedPtr<FreeNode> m_head;
     int volatile m_free_num;
@@ -47,7 +48,7 @@ private:
 
 public:
     lengthfixed_mp(MemAlloc *ma = NULL)
-        : m_alloc(ma), m_free_num(0)
+        : m_ref_count(0), m_alloc(ma), m_free_num(0)
     {
         if (NULL == ma)
             m_alloc = sys_ma::create();
@@ -60,6 +61,41 @@ public:
         clear();
         m_alloc->rls_ref();
         m_alloc = NULL;
+    }
+
+public:
+    static self_type* create(MemAlloc *ma)
+    {
+        if (NULL == ma)
+            ma = MemAlloc::create();
+        else
+            ma->add_ref();
+        self_type *ret = (self_type*) ma->alloc(sizeof(self_type));
+        assert(NULL != ret);
+        new (ret) self_type(ma);
+        ret->add_ref();
+        ma->rls_ref();
+        return ret;
+    }
+
+    int add_ref()
+    {
+        return atomic_add(&m_ref_count, 1) + 1;
+    }
+
+    int rls_ref()
+    {
+        const int ret = atomic_add(&m_ref_count, -1) - 1;
+        if (0 == ret)
+        {
+            MemAlloc *ma = m_alloc;
+            assert(NULL != ma);
+            ma->add_ref();
+            this->~lengthfixed_mp();
+            ma->free(this);
+            ma->rls_ref();
+        }
+        return ret;
     }
 
 public:
