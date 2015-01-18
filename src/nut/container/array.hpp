@@ -26,7 +26,7 @@ public:
 
 private:
     int volatile m_ref_count;
-    MemAlloc *m_alloc;
+    MemAlloc *const m_alloc;
     T *m_buf;
     size_type m_size, m_cap;
 
@@ -36,8 +36,8 @@ private:
     RCArray(size_type init_cap, MemAlloc *ma)
         : m_ref_count(0), m_alloc(ma), m_buf(NULL), m_size(0), m_cap(0)
     {
-        assert(NULL != ma);
-        ma->add_ref();
+        if (NULL != m_alloc)
+            m_alloc->add_ref();
         ensure_cap(init_cap);
     }
 
@@ -45,26 +45,29 @@ private:
     {
         clear();
         if (NULL != m_buf)
-            m_alloc->free(m_buf);
+        {
+            if (NULL != m_alloc)
+                m_alloc->free(m_buf);
+            else
+                ::free(m_buf);
+        }
         m_buf = NULL;
         m_cap = 0;
-        m_alloc->rls_ref();
-        m_alloc = NULL;
+        if (NULL != m_alloc)
+            m_alloc->rls_ref();
     }
 
 public:
     static self_type* create(size_type init_cap = 16, MemAlloc *ma = NULL)
     {
-        if (NULL == ma)
-            ma = MemAlloc::create();
+        self_type *ret = NULL;
+        if (NULL != ma)
+            ret = (self_type*) ma->alloc(sizeof(self_type));
         else
-            ma->add_ref();
-
-        self_type *ret = (self_type*) ma->alloc(sizeof(self_type));
+            ret = (self_type*) ::malloc(sizeof(self_type));
         assert(NULL != ret);
         new (ret) self_type(init_cap, ma);
         ret->add_ref();
-        ma->rls_ref();
         return ret;
     }
 
@@ -78,12 +81,19 @@ public:
         const int ret = atomic_add(&m_ref_count, -1) - 1;
         if (0 == ret)
         {
-            MemAlloc *ma = m_alloc;
-            assert(NULL != ma);
-            ma->add_ref();
+            MemAlloc *const ma = m_alloc;
+            if (NULL != ma)
+                ma->add_ref();
             this->~RCArray();
-            ma->free(this);
-            ma->rls_ref();
+            if (NULL != ma)
+            {
+                ma->free(this);
+                ma->rls_ref();
+            }
+            else
+            {
+                ::free(this);
+            }
         }
         return ret;
     }
@@ -102,9 +112,20 @@ private:
         if (new_cap < new_size)
             new_cap = new_size;
         if (NULL == m_buf)
-            m_buf = (T*) m_alloc->alloc(sizeof(T) * new_cap);
+        {
+            if (NULL != m_alloc)
+                m_buf = (T*) m_alloc->alloc(sizeof(T) * new_cap);
+            else
+                m_buf = (T*) ::malloc(sizeof(T) * new_cap);
+        }
         else
-            m_buf = (T*) m_alloc->realloc(m_buf, sizeof(T) * new_cap);
+        {
+            if (NULL != m_alloc)
+                m_buf = (T*) m_alloc->realloc(m_buf, sizeof(T) * new_cap);
+            else
+                m_buf = (T*) ::realloc(m_buf, sizeof(T) * new_cap);
+        }
+        assert(NULL != m_buf);
         m_cap = new_cap;
     }
 

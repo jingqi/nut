@@ -10,8 +10,9 @@
 
 #include <assert.h>
 
-#include <nut/debugging/static_assert.hpp>
 #include <nut/threading/lockfree/atomic.hpp>
+#include <nut/debugging/static_assert.hpp>
+#include <nut/debugging/destroy_checker.hpp>
 
 #include "sys_ma.hpp"
 
@@ -38,62 +39,69 @@ class lengthfixed_mp
     };
 
     int volatile m_ref_count;
-    MemAlloc *m_alloc;
+    MemAlloc *const m_alloc;
     TagedPtr<FreeNode> m_head;
     int volatile m_free_num;
+    NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
-    explicit lengthfixed_mp(const lengthfixed_mp&);
-    lengthfixed_mp& operator=(const lengthfixed_mp&);
+    explicit lengthfixed_mp(const self_type&);
+    self_type& operator=(const self_type&);
 
-public:
     lengthfixed_mp(MemAlloc *ma = NULL)
         : m_ref_count(0), m_alloc(ma), m_free_num(0)
     {
-        if (NULL == ma)
-            m_alloc = sys_ma::create();
-        else
+        if (NULL != m_alloc)
             m_alloc->add_ref();
     }
 
     ~lengthfixed_mp()
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
         clear();
-        m_alloc->rls_ref();
-        m_alloc = NULL;
+        if (NULL != m_alloc)
+            m_alloc->rls_ref();
     }
 
 public:
-    static self_type* create(MemAlloc *ma)
+    static self_type* create(MemAlloc *ma = NULL)
     {
-        if (NULL == ma)
-            ma = MemAlloc::create();
+        self_type *ret = NULL;
+        if (NULL != ma)
+            ret = (self_type*) ma->alloc(sizeof(self_type));
         else
-            ma->add_ref();
-        self_type *ret = (self_type*) ma->alloc(sizeof(self_type));
+            ret = (self_type*) ::malloc(sizeof(self_type));
         assert(NULL != ret);
         new (ret) self_type(ma);
         ret->add_ref();
-        ma->rls_ref();
         return ret;
     }
 
     int add_ref()
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
         return atomic_add(&m_ref_count, 1) + 1;
     }
 
     int rls_ref()
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
         const int ret = atomic_add(&m_ref_count, -1) - 1;
         if (0 == ret)
         {
-            MemAlloc *ma = m_alloc;
-            assert(NULL != ma);
-            ma->add_ref();
+            MemAlloc *const ma = m_alloc;
+            if (NULL != ma)
+                ma->add_ref();
             this->~lengthfixed_mp();
-            ma->free(this);
-            ma->rls_ref();
+            if (NULL != ma)
+            {
+                ma->free(this);
+                ma->rls_ref();
+            }
+            else
+            {
+                ::free(this);
+            }
         }
         return ret;
     }
@@ -101,11 +109,15 @@ public:
 public:
     void clear()
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
         FreeNode *p = m_head.ptr;
         while (NULL != p)
         {
             FreeNode *next = p->next;
-            m_alloc->free(p);
+            if (NULL != m_alloc)
+                m_alloc->free(p);
+            else
+                ::free(p);
             p = next;
         }
         m_head.ptr = NULL;
@@ -114,12 +126,18 @@ public:
 
     void* alloc()
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
         while (true)
         {
             const TagedPtr<FreeNode> old_head(m_head.cas);
 
             if (NULL == old_head.ptr)
-                return m_alloc->alloc(sizeof(FreeNode));
+            {
+                if (NULL != m_alloc)
+                    return m_alloc->alloc(sizeof(FreeNode));
+                else
+                    return ::malloc(sizeof(FreeNode));
+            }
 
             const TagedPtr<FreeNode> new_head(old_head.ptr->next, old_head.tag + 1);
             if (atomic_cas(&(m_head.cas), old_head.cas, new_head.cas))
@@ -132,6 +150,7 @@ public:
 
     void* alloc(size_t cb)
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
         assert(G == cb);
         void *p = self_type::alloc();
         assert(NULL != p);
@@ -140,12 +159,16 @@ public:
 
     void free(void *p)
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
         assert(NULL != p);
         while(true)
         {
             if (m_free_num >= (int) MAX_FREE_BLOCKS)
             {
-                m_alloc->free(p);
+                if (NULL != m_alloc)
+                    m_alloc->free(p);
+                else
+                    ::free(p);
                 return;
             }
 

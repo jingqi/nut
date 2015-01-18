@@ -38,7 +38,7 @@ public:
     typedef typename StdInt<word_type>::double_unsigned_type dword_type;
 
 private:
-    MemAlloc *m_alloc;
+    MemAlloc *const m_alloc;
     word_type *m_buffer; // 缓冲区, little-endian, 带符号
     size_type m_cap;
     size_type m_significant_len; // 有效字长度
@@ -54,9 +54,20 @@ private:
             new_cap = new_size;
 
         if (NULL == m_buffer)
-            m_buffer = (word_type*) m_alloc->alloc(sizeof(word_type) * new_cap);
+        {
+            if (NULL != m_alloc)
+                m_buffer = (word_type*) m_alloc->alloc(sizeof(word_type) * new_cap);
+            else
+                m_buffer = (word_type*) ::malloc(sizeof(word_type) * new_cap);
+        }
         else
-            m_buffer = (word_type*) m_alloc->realloc(m_buffer, sizeof(word_type) * new_cap);
+        {
+            if (NULL != m_alloc)
+                m_buffer = (word_type*) m_alloc->realloc(m_buffer, sizeof(word_type) * new_cap);
+            else
+                m_buffer = (word_type*) ::realloc(m_buffer, sizeof(word_type) * new_cap);
+        }
+        assert(NULL != m_buffer);
         m_cap = new_cap;
     }
 
@@ -87,9 +98,7 @@ public:
         : m_alloc(ma), m_buffer(NULL), m_cap(0), m_significant_len(0)
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
-        if (NULL == ma)
-            m_alloc = MemAlloc::create();
-        else
+        if (NULL != m_alloc)
             m_alloc->add_ref();
 
         ensure_cap(sizeof(v) / sizeof(word_type));
@@ -103,9 +112,7 @@ public:
         : m_alloc(ma), m_buffer(NULL), m_cap(0), m_significant_len(0)
     {
         assert(NULL != buf && len > 0);
-        if (NULL == ma)
-            m_alloc = MemAlloc::create();
-        else
+        if (NULL != m_alloc)
             m_alloc->add_ref();
 
         const uint8_t fill = (with_sign ? (::nut::is_positive(buf, len) ? 0 : 0xFF) : 0);
@@ -122,9 +129,7 @@ public:
         : m_alloc(ma), m_buffer(NULL), m_cap(0), m_significant_len(0)
     {
         assert(NULL != buf && len > 0);
-        if (NULL == ma)
-            m_alloc = MemAlloc::create();
-        else
+        if (NULL != m_alloc)
             m_alloc->add_ref();
 
         if (with_sign || nut::is_positive(buf, len))
@@ -146,7 +151,8 @@ public:
     _BigInteger(const self_type& x)
         : m_alloc(x.m_alloc), m_buffer(NULL), m_cap(0), m_significant_len(x.m_significant_len)
     {
-        m_alloc->add_ref();
+        if (NULL != m_alloc)
+            m_alloc->add_ref();
         ensure_cap(x.m_significant_len);
         ::memcpy(m_buffer, x.m_buffer, sizeof(word_type) * x.m_significant_len);
     }
@@ -154,12 +160,17 @@ public:
     ~_BigInteger()
     {
         if (NULL != m_buffer)
-            m_alloc->free(m_buffer);
+        {
+            if (NULL != m_alloc)
+                m_alloc->free(m_buffer);
+            else
+                ::free(m_buffer);
+        }
         m_buffer = NULL;
         m_cap = 0;
         m_significant_len = 0;
-        m_alloc->rls_ref();
-        m_alloc = NULL;
+        if (NULL != m_alloc)
+            m_alloc->rls_ref();
     }
 
 public:
@@ -898,7 +909,10 @@ public:
         ::memcpy(b->m_buffer, tmp, sizeof(word_type) * tmp_sig);
         b->m_significant_len = tmp_sig;
 
-        a->m_alloc->free(tmp);
+        if (NULL != a->m_alloc)
+            a->m_alloc->free(tmp);
+        else
+            ::free(tmp);
     }
 
 private:

@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <nut/threading/lockfree/atomic.hpp>
+#include <nut/debugging/destroy_checker.hpp>
 
 namespace nut
 {
@@ -29,6 +30,7 @@ class sys_ma
     size_t m_alloc_count, m_free_count;
     size_t m_total_alloc_cb, m_total_free_cb;
 #endif
+    NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
     explicit sys_ma(const sys_ma&);
@@ -43,6 +45,8 @@ private:
 
     virtual ~sys_ma()
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
+
 #ifndef NDEBUG
         assert(m_alloc_count == m_free_count);
         assert(m_total_alloc_cb == m_total_free_cb);
@@ -61,11 +65,13 @@ public:
 
     int add_ref()
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
         return atomic_add(&m_ref_count, 1) + 1;
     }
 
     int rls_ref()
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
         const int ret = atomic_add(&m_ref_count, -1) - 1;
         if (0 == ret)
         {
@@ -78,6 +84,7 @@ public:
 public:
     void* alloc(size_t cb)
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
 #ifndef NDEBUG
         const size_t total_cb = cb + sizeof(uint32_t) * 3;
         void* ret = ::malloc(total_cb);
@@ -95,6 +102,7 @@ public:
 
     void* realloc(void *p, size_t new_cb)
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
 #ifndef NDEBUG
         assert(NULL != p);
         const size_t cb = ((uint32_t*) p)[-2];
@@ -119,6 +127,7 @@ public:
 
     void free(void *p)
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
 #ifndef NDEBUG
         assert(NULL != p);
         const size_t cb = ((uint32_t*) p)[-2];
@@ -135,21 +144,25 @@ public:
 #ifndef NDEBUG
     size_t get_alloc_count() const
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
         return m_alloc_count;
     }
 
     size_t get_free_count() const
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
         return m_free_count;
     }
 
     size_t get_total_alloc_size() const
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
         return m_total_alloc_cb;
     }
 
     size_t get_total_free_size() const
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
         return m_total_free_cb;
     }
 #endif
