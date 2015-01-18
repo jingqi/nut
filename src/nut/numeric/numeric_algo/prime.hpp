@@ -81,7 +81,7 @@ inline bool miller_rabin(const BigInteger& n, unsigned s)
     const BigInteger ONE(1), TWO(2);
 
     // Find a and m such that m is odd and n == 1 + 2**a * m
-    const BigInteger this_minus_one(n - ONE);
+    const BigInteger this_minus_one(n - 1);
     BigInteger m(this_minus_one);
     const int a = m.lowest_bit();
     m >>= a;
@@ -95,9 +95,9 @@ inline bool miller_rabin(const BigInteger& n, unsigned s)
         int j = 0;
         BigInteger z;
         mod_pow(b, m, n, &z);
-        while(!((j == 0 && z == ONE) || z == this_minus_one))
+        while(!((j == 0 && z == 1) || z == this_minus_one))
         {
-            if ((j > 0 && z == ONE) || ++j == a)
+            if ((j > 0 && z == 1) || ++j == a)
                 return false;
             mod_pow(z, TWO, n, &z);
         }

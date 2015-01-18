@@ -600,7 +600,7 @@ inline void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& 
         {
             ret = (ret * ret) % n;
             if (0 != b.bit_at(i - 1))
-                ret = mod_multiply(ret, n, table);
+                mod_multiply(ret, n, table, &ret);
         }
         *out = ret;
         return;
