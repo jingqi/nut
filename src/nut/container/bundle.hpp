@@ -38,8 +38,9 @@ template <typename MemAlloc = sys_ma>
 class Bundle
 {
     typedef Bundle<MemAlloc> self_type;
+
     int volatile m_ref_count;
-    MemAlloc *m_alloc;
+    MemAlloc *const m_alloc;
 
     typedef std::map<std::string, _BundleElementBase*> map_t;
     map_t m_values;
@@ -51,29 +52,28 @@ private:
     Bundle(MemAlloc *ma)
         : m_ref_count(0), m_alloc(ma)
     {
-        assert(NULL != ma);
-        ma->add_ref();
+        if (NULL != m_alloc)
+            m_alloc->add_ref();
     }
 
     virtual ~Bundle()
     {
         clear();
-        m_alloc->rls_ref();
-        m_alloc = NULL;
+        if (NULL != m_alloc)
+            m_alloc->rls_ref();
     }
 
 public:
     static self_type* create(MemAlloc *ma = NULL)
     {
-        if (NULL == ma)
-            ma = MemAlloc::create();
+        self_type *ret = NULL;
+        if (NULL != ma)
+            ret = (self_type*) ma->alloc(sizeof(self_type));
         else
-            ma->add_ref();
-        self_type *ret = (self_type*) ma->alloc(sizeof(self_type));
+            ret = (self_type*) ::malloc(sizeof(self_type));
         assert(NULL != ret);
         new (ret) self_type(ma);
         ret->add_ref();
-        ma->rls_ref();
         return ret;
     }
 
@@ -87,12 +87,19 @@ public:
         const int ret = atomic_add(&m_ref_count, -1) - 1;
         if (0 == ret)
         {
-            MemAlloc *ma = m_alloc;
-            assert(NULL != ma);
-            ma->add_ref();
+            MemAlloc *const ma = m_alloc;
+            if (NULL != ma)
+                ma->add_ref();
             this->~Bundle();
-            ma->free(this);
-            ma->rls_ref();
+            if (NULL != ma)
+            {
+                ma->free(this);
+                ma->rls_ref();
+            }
+            else
+            {
+                ::free(this);
+            }
         }
         return ret;
     }
@@ -126,9 +133,18 @@ public:
         {
             _BundleElementBase *e = iter->second;
             e->~_BundleElementBase();
-            m_alloc->free(e);
+            if (NULL != m_alloc)
+                m_alloc->free(e);
+            else
+                ::free(e);
         }
-        _BundleElement<T> *be = (_BundleElement<T>*) m_alloc->alloc(sizeof(_BundleElement<T>));
+
+        _BundleElement<T> *be = NULL;
+        if (NULL != m_alloc)
+            be = (_BundleElement<T>*) m_alloc->alloc(sizeof(_BundleElement<T>));
+        else
+            be = (_BundleElement<T>*) ::malloc(sizeof(_BundleElement<T>));
+        assert(NULL != be);
         new (be) _BundleElement<T>(value);
         m_values[key] = be;
     }
@@ -140,7 +156,10 @@ public:
         {
             _BundleElementBase *e = iter->second;
             e->~_BundleElementBase();
-            m_alloc->free(e);
+            if (NULL != m_alloc)
+                m_alloc->free(e);
+            else
+                ::free(e);
         }
         m_values.clear();
     }
