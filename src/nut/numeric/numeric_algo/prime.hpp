@@ -11,6 +11,7 @@
 
 #include "../big_integer.hpp"
 #include "bit_sieve.hpp"
+#include "mod.hpp"
 
 // 优化程度，>= 0
 #define OPTIMIZE_LEVEL 1000
@@ -24,7 +25,9 @@ namespace nut
  */
 inline bool psedoprime(const BigInteger& n)
 {
-    if (mod_pow(BigInteger(2), n - 1, n) != 1)
+    BigInteger mp;
+    mod_pow(BigInteger(2), n - 1, n, &mp);
+    if (mp != 1)
         return false; // 一定是合数
     return true; // 可能是素数
 }
@@ -90,12 +93,13 @@ inline bool miller_rabin(const BigInteger& n, unsigned s)
         const BigInteger b = BigInteger::rand_between(ONE, n); // _rand_1_n(n);
 
         int j = 0;
-        BigInteger z = mod_pow(b, m, n);
+        BigInteger z;
+        mod_pow(b, m, n, &z);
         while(!((j == 0 && z == ONE) || z == this_minus_one))
         {
             if ((j > 0 && z == ONE) || ++j == a)
                 return false;
-            z = mod_pow(z, TWO, n);
+            mod_pow(z, TWO, n, &z);
         }
     }
     return true;

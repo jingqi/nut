@@ -43,7 +43,8 @@ NUT_FIXTURE(TestNumericAlgo)
             // BUG 预算表优化的 _mod_multiply() 实现有问题
             BigInteger a(1), b = BigInteger::value_of("400000000", 16), n = BigInteger::value_of("c00000000", 16);
             ModMultiplyPreBuildTable<2> table(a, n);
-            BigInteger x1 = mod_multiply(b, n, table);
+            BigInteger x1;
+            mod_multiply(b, n, table, &x1);
             BigInteger x2 = (a * b) % n;
 //            printf("\n%s\n%s\n", x1.toString().c_str(), x2.toString().c_str());
             NUT_TA(x1 == x2);
@@ -103,7 +104,7 @@ NUT_FIXTURE(TestNumericAlgo)
             BigInteger x;
 
             ModMultiplyPreBuildTable<4> table(a % n, n);
-            x = mod_multiply(b % n, n, table);
+            mod_multiply(b % n, n, table, &x);
             NUT_TA(x == (a * b) % n);
         }
 
@@ -159,7 +160,7 @@ NUT_FIXTURE(TestNumericAlgo)
             clock_t s = clock();
             for (int i = 0; i < iteration; ++i)
             {
-                x1 = mod_pow(a, b, n);
+                mod_pow(a, b, n, &x1);
             }
             clock_t t1 = clock() - s;
             for (int i = 0; i < iteration; ++i)

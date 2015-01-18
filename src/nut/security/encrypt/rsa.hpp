@@ -74,14 +74,16 @@ public:
         }
     }
 
-    static BigInteger encode(const BigInteger& m, const PublicKey& k)
+    static void encode(const BigInteger& m, const PublicKey& k, BigInteger *out)
     {
-        return mod_pow(m, k.e, k.n);
+        assert(NULL != out);
+        mod_pow(m, k.e, k.n, out);
     }
 
-    static BigInteger decode(const BigInteger& c, const PrivateKey& k)
+    static void decode(const BigInteger& c, const PrivateKey& k, BigInteger *out)
     {
-        return mod_pow(c, k.d, k.n);
+        assert(NULL != out);
+        mod_pow(c, k.d, k.n, out);
     }
 };
 

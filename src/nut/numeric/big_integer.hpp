@@ -70,7 +70,7 @@ private:
             return;
 
         ensure_cap(siglen);
-        expand(m_buffer, m_significant_len, m_buffer, siglen);
+        nut::expand(m_buffer, m_significant_len, m_buffer, siglen);
         m_significant_len = siglen;
     }
 
@@ -661,20 +661,6 @@ public:
     }
 
 public:
-    /**
-     * 乘以a, 然后将比特长限制为小于 bit_len 的正数
-     *
-     * @return 注意，返回为正数
-     */
-    void multiply_to_len(const self_type& a, size_type bit_len)
-    {
-        const size_type words_len = (bit_len + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
-        ensure_cap(words_len);
-        nut::multiply(m_buffer, m_significant_len, a.m_buffer, a.m_significant_len, m_buffer, words_len);
-        m_significant_len = words_len;
-        limit_positive_bits_to(bit_len);
-    }
-
     void set_zero()
     {
         m_buffer[0] = 0;
@@ -748,6 +734,20 @@ public:
     }
 
     /**
+     * 乘以a, 然后将比特长限制为小于 bit_len 的正数
+     *
+     * @return 注意，返回为正数
+     */
+    void multiply_to_len(const self_type& a, size_type bit_len)
+    {
+        const size_type words_len = (bit_len + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
+        ensure_cap(words_len);
+        nut::multiply(m_buffer, m_significant_len, a.m_buffer, a.m_significant_len, m_buffer, words_len);
+        m_significant_len = words_len;
+        limit_positive_bits_to(bit_len);
+    }
+
+    /**
      * 以word_type为单位计算有效字长度
      */
     size_type significant_words_length() const
@@ -817,7 +817,7 @@ public:
     	if (is_positive())
             return nut::bit_length((uint8_t*)m_buffer, sizeof(word_type) * m_significant_len);
     	else
-            return bit0_length((uint8_t*)m_buffer, sizeof(word_type) * m_significant_len);
+            return nut::bit0_length((uint8_t*)m_buffer, sizeof(word_type) * m_significant_len);
     }
 
     /**
@@ -841,7 +841,7 @@ public:
         NUT_STATIC_ASSERT(sizeof(long long) % sizeof(word_type) == 0);
 
         long long ret = 0;
-        expand(m_buffer, m_significant_len, (word_type*)&ret, sizeof(ret) / sizeof(word_type));
+        nut::expand(m_buffer, m_significant_len, (word_type*)&ret, sizeof(ret) / sizeof(word_type));
         return ret;
     }
 
@@ -853,7 +853,7 @@ public:
     	assert(a != b);
 
     	const bool a_is_bigger = (a > b);
-        self_type n = (a_is_bigger ? a - b : b - a);
+        const self_type n = (a_is_bigger ? a - b : b - a);
     	assert(n.is_positive());
 
         self_type ret;
@@ -863,14 +863,14 @@ public:
             for (size_type j = 0; j < sizeof(word_type); ++j)
             {
                 ret.m_buffer[i] <<= 8;
-                ret.m_buffer[i] += rand() & 0xFF;
+                ret.m_buffer[i] += ::rand() & 0xFF;
             }
         }
         ret.m_buffer[n.m_significant_len] = 0; // 保证是正数
     	ret.m_significant_len = n.m_significant_len + 1;
 
-    	ret %= n;
-    	ret += (a_is_bigger ? b : a);
+        self_type::divide(ret, n, NULL, &ret); // ret %= n;
+        self_type::add(ret, (a_is_bigger ? b : a), &ret); // ret += (a_is_bigger ? b : a);
     	return ret;
     }
 
@@ -921,7 +921,7 @@ public:
         self_type tmp(*this);
         const bool positive = tmp.is_positive();
         if (!positive)
-            tmp = -tmp;
+            self_type::negate(tmp, &tmp);
 
         const self_type RADIX(radix);
         std::string ret;
@@ -930,7 +930,7 @@ public:
             const size_type n = (size_t) (tmp % RADIX).llong_value();
             ret.push_back(num2char(n));
 
-            tmp /= RADIX;
+            self_type::divide(tmp, RADIX, &tmp, NULL);
         } while (!tmp.is_zero());
         if (!positive)
             ret.push_back('-');
@@ -944,16 +944,16 @@ public:
         self_type tmp(*this);
         const bool positive = tmp.is_positive();
         if (!positive)
-            tmp = -tmp;
+            self_type::negate(tmp, &tmp);
 
-        const self_type RADIX(radix);
+        const self_type RADIX(radix, m_alloc);
         std::wstring ret;
         do
         {
             const size_type n = (size_t) (tmp % RADIX).llong_value();
             ret.push_back(num2wchar(n));
 
-            tmp /= RADIX;
+            self_type::divide(tmp, RADIX, &tmp, NULL);
         } while (!tmp.is_zero());
         if (!positive)
             ret.push_back(L'-');
@@ -1040,15 +1040,14 @@ public:
                 return ret;
 
         // 数字值
-        const self_type RADIX(radix);
         while (index < s.length() && is_valid_char(s[index], radix))
         {
-            ret *= RADIX;
-            ret += self_type(char2num(s[index]));
+            self_type::multiply(ret, radix, &ret);
+            self_type::add(ret, char2num(s[index]), &ret);
             index = skip_blank(s, index + 1);
         }
         if (!positive)
-            ret = -ret;
+            self_type::negate(ret, &ret);
         return ret;
     }
 
@@ -1069,15 +1068,14 @@ public:
                 return ret;
 
         // 数字值
-        const self_type RADIX(radix);
         while (index < s.length() && is_valid_char(s[index], radix))
         {
-            ret *= RADIX;
-            ret += self_type(char2num(s[index]));
+            self_type::multiply(ret, radix, &ret);
+            self_type::add(ret, char2num(s[index]), &ret);
             index = skip_blank(s, index + 1);
         }
         if (!positive)
-            ret = -ret;
+            self_type::negate(ret, &ret);
         return ret;
     }
 };
