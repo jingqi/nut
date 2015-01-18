@@ -54,8 +54,8 @@ public:
         unsigned e = 65537;
 
         // d 为 e 对模 gamma_n 的乘法逆元
-        BigInteger d;
-        extended_euclid(BigInteger(e), gamma_n, NULL, &d, NULL);
+        BigInteger d(0, n.alloctor());
+        extended_euclid(BigInteger(e, n.alloctor()), gamma_n, NULL, &d, NULL);
         if (d < 0)
             d = gamma_n + (d % gamma_n); // % 运算符号与被除数一致
 

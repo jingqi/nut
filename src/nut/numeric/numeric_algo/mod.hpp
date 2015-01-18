@@ -140,7 +140,7 @@ void mod_multiply(const BigInteger& b, const BigInteger& n, const ModMultiplyPre
     assert(NULL != out);
     assert(b.is_positive() && n.is_positive() && b < n); // 一定要保证 b<n ,以便优化模加运算
 
-    BigInteger s(0);
+    BigInteger s(0, b.alloctor());
     size_t limit = (b.bit_length() + C - 1) / C;
     if (table.hight < limit)
         limit = table.hight;
@@ -171,12 +171,13 @@ inline void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, c
 {
     assert(NULL != out);
     assert(t.is_positive() && rlen > 0 && n.is_positive() && nn.is_positive());
+    typedef BigInteger::word_type word_type;
 
     // 计算 t % r
-    size_t min_sig = (rlen + 8 * sizeof(BigInteger::word_type) - 1) / (8 * sizeof(BigInteger::word_type));
+    size_t min_sig = (rlen + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
     if (t.significant_words_length() < min_sig)
         min_sig = t.significant_words_length();
-    BigInteger rs(t.data(), min_sig, true);
+    BigInteger rs(t.data(), min_sig, true, t.alloctor());
     rs.limit_positive_bits_to(rlen);
 
     rs.multiply_to_len(nn, rlen); // rs = (rs * nn) % r
@@ -200,26 +201,28 @@ inline void _montgomery(const BigInteger& t, const BigInteger& n, BigInteger::wo
 {
     assert(NULL != out);
     assert(t.is_positive() && n.is_positive() && nn > 0);
+    typedef BigInteger::word_type word_type;
+    typedef BigInteger::dword_type dword_type;
 
     const size_t r_word_count = n.significant_words_length();
     BigInteger rs(t);
     rs.resize(r_word_count * 2 + 1);
     for (size_t i = 0; i < r_word_count; ++i)
     {
-        const BigInteger::word_type op1 = static_cast<BigInteger::word_type>(rs.word_at(i) * nn);
+        const word_type op1 = static_cast<word_type>(rs.word_at(i) * nn);
         if (0 == op1)
             continue;
 
-        BigInteger::word_type carry = 0;
+        word_type carry = 0;
         for (size_t j = 0; j < r_word_count; ++j)
         {
-            BigInteger::dword_type op2 = n.word_at(j);
+            dword_type op2 = n.word_at(j);
             op2 *= op1;
             op2 += rs.word_at(i + j);
             op2 += carry;
 
-            rs.data()[i + j] = static_cast<BigInteger::word_type>(op2);
-            carry = static_cast<BigInteger::word_type>(op2 >> (8 * sizeof(BigInteger::word_type)));
+            rs.data()[i + j] = static_cast<word_type>(op2);
+            carry = static_cast<word_type>(op2 >> (8 * sizeof(word_type)));
         }
 
         for (size_t j = i; j < r_word_count; ++j)
@@ -227,15 +230,15 @@ inline void _montgomery(const BigInteger& t, const BigInteger& n, BigInteger::wo
             if (0 == carry)
                 break;
 
-            BigInteger::dword_type op = rs.word_at(j + r_word_count);
+            dword_type op = rs.word_at(j + r_word_count);
             op += carry;
 
-            rs.data()[j + r_word_count] = static_cast<BigInteger::word_type>(op);
-            carry = static_cast<BigInteger::word_type>(op >> (8 * sizeof(BigInteger::word_type)));
+            rs.data()[j + r_word_count] = static_cast<word_type>(op);
+            carry = static_cast<word_type>(op >> (8 * sizeof(word_type)));
         }
     }
 
-    rs >>= 8 * sizeof(BigInteger::word_type) * r_word_count;
+    rs >>= 8 * sizeof(word_type) * r_word_count;
 
     while (rs >= n)
         rs -= n;
@@ -258,7 +261,7 @@ inline void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *
 {
     assert(NULL != _rr || NULL != _nn);
 
-    BigInteger r(1);
+    BigInteger r(1, n.alloctor());
     r <<= rlen;
 
     /**
@@ -314,11 +317,11 @@ struct MontgomeryPreBuildTable
         ::memset(table, 0, sizeof(BigInteger*) * size);
 
         table[0] = new BigInteger(m);
-        BigInteger mm;
+        BigInteger mm(0, m.alloctor());
         _montgomery(m * m, rlen, n, nn, &mm);
         for (size_t i = 1; i < size; ++i)
         {
-            table[i] = new BigInteger;
+            table[i] = new BigInteger(0, m.alloctor());
             _montgomery(*table[i - 1] * mm, rlen, n, nn, table[i]);
         }
     }
@@ -467,7 +470,7 @@ inline void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
 
     // 准备蒙哥马利相关变量
     const size_t rlen = n.bit_length();
-    BigInteger nn;
+    BigInteger nn(0, a.alloctor());
     _mont_extended_euclid(rlen, n, NULL, &nn);
     nn.limit_positive_bits_to(rlen);
 
@@ -543,7 +546,7 @@ inline void _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p, BigIn
     assert(NULL != out);
     assert(a.is_positive() && b.is_positive() && p > 0);
 
-    BigInteger ret(1);
+    BigInteger ret(1, a.alloctor());
     for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
     {
         ret.multiply_to_len(ret, p);
@@ -627,24 +630,33 @@ inline void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& 
 
     // 模是偶数，应用中国余数定理
     const size_t p = n.lowest_bit();
-    BigInteger n1(n), n2(1);
+    BigInteger n1(n), n2(1, a.alloctor());
     n1 >>= p;
     n2 <<= p;
 
-    BigInteger a1;
+    BigInteger a1(0, a.alloctor());
     if (n1 != 1)
         _odd_mod_pow(a % n1, b, n1, &a1);
 
-    BigInteger a2;
+    BigInteger a2(0, a.alloctor());
     _mod_pow_2(a < n ? a : a % n, b, p, &a2);
 
-    BigInteger y1, y2;
+    BigInteger y1(0, a.alloctor());
     extended_euclid(n2, n1, NULL, &y1, NULL);
     if (y1 < 0)
-        y1 = n1 + (y1 % n1);
+    {
+        // y1 = n1 + (y1 % n1);
+        y1 %= n1;
+        y1 += n1;
+    }
+    BigInteger y2(0,a.alloctor());
     extended_euclid(n1, n2, NULL, &y2, NULL);
     if (y2 < 0)
-        y2 = n2 + (y2 % n2);
+    {
+        // y2 = n2 + (y2 % n2);
+        y2 %= n2;
+        y2 += n2;
+    }
 
     *out = (a1 * n2 * y1 + a2 * n1 * y2) % n;
     return;

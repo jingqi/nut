@@ -180,7 +180,7 @@ public:
         if (0 != m_data_buf_size || m_result.size() <= 0)
             return false;
 
-        uint8_t last_byte = m_result[m_result.size() - 1];
+        const uint8_t last_byte = m_result[m_result.size() - 1];
         for (size_t i = 0; i < last_byte; ++i)
             if (m_result[m_result.size() - i - 1] != last_byte)
                 return false;

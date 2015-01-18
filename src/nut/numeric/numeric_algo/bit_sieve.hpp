@@ -230,7 +230,7 @@ public:
                 offset += 2;
             }
         }
-        return BigInteger(0);
+        return BigInteger(0, init_value.alloctor());
     }
 };
 

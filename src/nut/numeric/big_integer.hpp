@@ -755,6 +755,11 @@ public:
         return m_significant_len;
     }
 
+    MemAlloc* alloctor() const
+    {
+        return m_alloc;
+    }
+
     const word_type* data() const
     {
         return m_buffer;
@@ -856,7 +861,7 @@ public:
         const self_type n = (a_is_bigger ? a - b : b - a);
     	assert(n.is_positive());
 
-        self_type ret;
+        self_type ret(0, a.alloctor());
         ret.ensure_cap(n.m_significant_len + 1);
         for (size_type i = 0; i < n.m_significant_len; ++i)
         {
@@ -869,8 +874,8 @@ public:
         ret.m_buffer[n.m_significant_len] = 0; // 保证是正数
     	ret.m_significant_len = n.m_significant_len + 1;
 
-        self_type::divide(ret, n, NULL, &ret); // ret %= n;
-        self_type::add(ret, (a_is_bigger ? b : a), &ret); // ret += (a_is_bigger ? b : a);
+        ret %= n;
+        ret += (a_is_bigger ? b : a);
     	return ret;
     }
 
@@ -930,7 +935,7 @@ public:
             const size_type n = (size_t) (tmp % RADIX).llong_value();
             ret.push_back(num2char(n));
 
-            self_type::divide(tmp, RADIX, &tmp, NULL);
+            tmp /= RADIX;
         } while (!tmp.is_zero());
         if (!positive)
             ret.push_back('-');
@@ -953,7 +958,7 @@ public:
             const size_type n = (size_t) (tmp % RADIX).llong_value();
             ret.push_back(num2wchar(n));
 
-            self_type::divide(tmp, RADIX, &tmp, NULL);
+            tmp /= RADIX;
         } while (!tmp.is_zero());
         if (!positive)
             ret.push_back(L'-');
@@ -1042,8 +1047,8 @@ public:
         // 数字值
         while (index < s.length() && is_valid_char(s[index], radix))
         {
-            self_type::multiply(ret, radix, &ret);
-            self_type::add(ret, char2num(s[index]), &ret);
+            ret *= radix;
+            ret += char2num(s[index]);
             index = skip_blank(s, index + 1);
         }
         if (!positive)
@@ -1070,8 +1075,8 @@ public:
         // 数字值
         while (index < s.length() && is_valid_char(s[index], radix))
         {
-            self_type::multiply(ret, radix, &ret);
-            self_type::add(ret, char2num(s[index]), &ret);
+            ret *= radix;
+            ret += char2num(s[index]);
             index = skip_blank(s, index + 1);
         }
         if (!positive)
