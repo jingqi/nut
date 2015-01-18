@@ -22,12 +22,13 @@ namespace nut
  */
 class sys_ma
 {
+    int volatile m_ref_count;
+
 #ifndef NDEBUG
     enum { LEFT_TAG = 0x87A4B4C4, RIGHT_TAG = 0x15BF0D3C };
     size_t m_alloc_count, m_free_count;
     size_t m_total_alloc_cb, m_total_free_cb;
 #endif
-    int volatile m_ref_count;
 
 private:
     explicit sys_ma(const sys_ma&);
@@ -35,9 +36,18 @@ private:
 
     sys_ma()
         : m_ref_count(0)
+#ifndef NDEBUG
+        , m_alloc_count(0), m_free_count(0), m_total_alloc_cb(0), m_total_free_cb(0)
+#endif
     {}
 
-    virtual ~sys_ma() {}
+    virtual ~sys_ma()
+    {
+#ifndef NDEBUG
+        assert(m_alloc_count == m_free_count);
+        assert(m_total_alloc_cb == m_total_free_cb);
+#endif
+    }
 
 public:
     static sys_ma* create()

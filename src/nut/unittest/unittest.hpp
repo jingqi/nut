@@ -54,11 +54,11 @@ int main()
 
 /** fixture */
 #define NUT_FIXTURE(fixture_name) \
-class fixture_name : public nut::TestFixture
+class fixture_name : public ::nut::TestFixture
 
 /** cases begin */
 #define NUT_CASES_BEGIN() \
-    virtual int ___run_case(nut::ITestLogger& logger, const int op, const char *case_name) { \
+    virtual int ___run_case(::nut::ITestLogger& logger, const int op, const char *case_name) { \
         int index = -1;
 
 /** case */
@@ -70,10 +70,10 @@ class fixture_name : public nut::TestFixture
                 set_up(); \
                 case_func(); \
                 tear_down(); \
-            } catch (nut::TestCaseFailureException e) { \
+            } catch (::nut::TestCaseFailureException e) { \
                 logger.failed_case(e); \
             } catch (...) { \
-                nut::TestCaseFailureException e("Unhandled exception", __FILE__, __LINE__); \
+                ::nut::TestCaseFailureException e("Unhandled exception", __FILE__, __LINE__); \
                 logger.failed_case(e); \
             } \
             logger.leave_case(); \
@@ -85,13 +85,13 @@ class fixture_name : public nut::TestFixture
     }
 
 /** test assert */
-#define NUT_TA(exp) do { if (!(exp)) throw nut::TestCaseFailureException(#exp, __FILE__, __LINE__); } while (false)
+#define NUT_TA(exp) do { if (!(exp)) throw ::nut::TestCaseFailureException(#exp, __FILE__, __LINE__); } while (false)
 
 /** fixture register */
 #define NUT_REGISTER_FIXTURE(fixture, groups) \
-    static nut::TestFixture* ___new##fixture() { return new fixture(); } \
-    static void ___delete##fixture(nut::TestFixture *p) { delete p; } \
-    static nut::TestRegister ___register##fixture(#fixture, groups, ___new##fixture, ___delete##fixture);
+    static ::nut::TestFixture* ___new##fixture() { return new fixture(); } \
+    static void ___delete##fixture(::nut::TestFixture *p) { delete p; } \
+    static ::nut::TestRegister ___register##fixture(#fixture, groups, ___new##fixture, ___delete##fixture);
 
 
 #endif /* head file guarder */

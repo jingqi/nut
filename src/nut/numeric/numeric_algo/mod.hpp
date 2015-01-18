@@ -174,7 +174,7 @@ inline BigInteger _montgomery(const BigInteger& t, size_t rlen, const BigInteger
     size_t min_sig = (rlen + 8 * sizeof(BigInteger::word_type) - 1) / (8 * sizeof(BigInteger::word_type));
     if (t.significant_words_length() < min_sig)
         min_sig = t.significant_words_length();
-    BigInteger rs(t.buffer(), min_sig, true);
+    BigInteger rs(t.data(), min_sig, true);
     rs.limit_positive_bits_to(rlen);
 
     rs.multiply_to_len(nn, rlen); // rs = (rs * nn) % r
@@ -214,7 +214,7 @@ inline BigInteger _montgomery(const BigInteger& t, const BigInteger& n, BigInteg
             op2 += rs.word_at(i + j);
             op2 += carry;
 
-            rs.buffer()[i + j] = static_cast<BigInteger::word_type>(op2);
+            rs.data()[i + j] = static_cast<BigInteger::word_type>(op2);
             carry = static_cast<BigInteger::word_type>(op2 >> (8 * sizeof(BigInteger::word_type)));
         }
 
@@ -226,7 +226,7 @@ inline BigInteger _montgomery(const BigInteger& t, const BigInteger& n, BigInteg
             BigInteger::dword_type op = rs.word_at(j + r_word_count);
             op += carry;
 
-            rs.buffer()[j + r_word_count] = static_cast<BigInteger::word_type>(op);
+            rs.data()[j + r_word_count] = static_cast<BigInteger::word_type>(op);
             carry = static_cast<BigInteger::word_type>(op >> (8 * sizeof(BigInteger::word_type)));
         }
     }
