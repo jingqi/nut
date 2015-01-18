@@ -502,7 +502,7 @@ public:
 
         const size_type max_len = (a.m_significant_len > b.m_significant_len ? a.m_significant_len : b.m_significant_len);
         x->ensure_cap(max_len + 1);
-        nut::add(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1);
+        nut::add(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, a.m_alloc);
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -514,7 +514,7 @@ public:
 
         const size_type max_len = (a.m_significant_len > sizeof(b) / sizeof(word_type) ? a.m_significant_len : sizeof(b) / sizeof(word_type));
         x->ensure_cap(max_len + 1);
-        nut::add(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->m_buffer, max_len + 1);
+        nut::add(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->m_buffer, max_len + 1, a.m_alloc);
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -526,7 +526,7 @@ public:
 
         const size_type max_len = (sizeof(a) / sizeof(word_type) > b.m_significant_len ? sizeof(a) / sizeof(word_type) : b.m_significant_len);
         x->ensure_cap(max_len + 1);
-        nut::add((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1);
+        nut::add((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, b.m_alloc);
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -537,7 +537,7 @@ public:
 
         const size_type max_len = (a.m_significant_len > b.m_significant_len ? a.m_significant_len : b.m_significant_len);
         x->ensure_cap(max_len + 1);
-        nut::sub(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1);
+        nut::sub(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, a.m_alloc);
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -549,7 +549,7 @@ public:
 
         const size_type max_len = (a.m_significant_len > sizeof(b) / sizeof(word_type) ? a.m_significant_len : sizeof(b) / sizeof(word_type));
         x->ensure_cap(max_len + 1);
-        nut::sub(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->m_buffer, max_len + 1);
+        nut::sub(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->m_buffer, max_len + 1, a.m_alloc);
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -561,7 +561,7 @@ public:
 
         const size_type max_len = (sizeof(a) / sizeof(word_type) > b.m_significant_len ? sizeof(a) / sizeof(word_type) : b.m_significant_len);
         x->ensure_cap(max_len + 1);
-        nut::sub((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1);
+        nut::sub((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, b.m_alloc);
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -571,7 +571,7 @@ public:
         assert(NULL != x);
 
         x->ensure_cap(a.m_significant_len + 1);
-        nut::negate(a.m_buffer, a.m_significant_len, x->m_buffer, a.m_significant_len + 1);
+        nut::negate(a.m_buffer, a.m_significant_len, x->m_buffer, a.m_significant_len + 1, a.m_alloc);
         x->m_significant_len = a.m_significant_len + 1;
         x->minimize_significant_len();
     }
@@ -597,7 +597,8 @@ public:
         assert(NULL != x);
 
         x->ensure_cap(a.m_significant_len + b.m_significant_len);
-        nut::multiply(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len, x->m_buffer, a.m_significant_len + b.m_significant_len);
+        nut::multiply(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len,
+            x->m_buffer, a.m_significant_len + b.m_significant_len, a.m_alloc);
         x->m_significant_len = a.m_significant_len + b.m_significant_len;
         x->minimize_significant_len();
     }
@@ -608,7 +609,8 @@ public:
         assert(NULL != x);
 
         x->ensure_cap(a.m_significant_len + sizeof(b) / sizeof(word_type));
-        nut::multiply(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->m_buffer, a.m_significant_len + sizeof(b) / sizeof(word_type));
+        nut::multiply(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type),
+            x->m_buffer, a.m_significant_len + sizeof(b) / sizeof(word_type), a.m_alloc);
         x->m_significant_len = a.m_significant_len + sizeof(b) / sizeof(word_type);
         x->minimize_significant_len();
     }
@@ -619,7 +621,8 @@ public:
         assert(NULL != x);
 
         x->ensure_cap(sizeof(a) / sizeof(word_type) + b.m_significant_len);
-        nut::multiply((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len, x->m_buffer, sizeof(a) / sizeof(word_type) + b.m_significant_len);
+        nut::multiply((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len,
+            x->m_buffer, sizeof(a) / sizeof(word_type) + b.m_significant_len, b.m_alloc);
         x->m_significant_len = sizeof(a) / sizeof(word_type) + b.m_significant_len;
         x->minimize_significant_len();
     }
@@ -640,7 +643,8 @@ public:
 
         nut::divide(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len,
                (NULL == result ? NULL : result->m_buffer), a.m_significant_len,
-               (NULL == remainder ? NULL : remainder->m_buffer), b.m_significant_len);
+               (NULL == remainder ? NULL : remainder->m_buffer), b.m_significant_len,
+               a.m_alloc);
 
         if (NULL != result)
         {
@@ -753,7 +757,7 @@ public:
     {
         const size_type words_len = (bit_len + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
         ensure_cap(words_len);
-        nut::multiply(m_buffer, m_significant_len, a.m_buffer, a.m_significant_len, m_buffer, words_len);
+        nut::multiply(m_buffer, m_significant_len, a.m_buffer, a.m_significant_len, m_buffer, words_len, m_alloc);
         m_significant_len = words_len;
         limit_positive_bits_to(bit_len);
     }
