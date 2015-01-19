@@ -28,8 +28,16 @@ NUT_FIXTURE(TestRSA)
             RSA::PublicKey pk;
             RSA::PrivateKey vk;
             RSA::gen_key(1024, &pk, &vk);
-            NUT_TA(RSA::decode(RSA::encode(BigInteger(1986), pk), vk) == 1986);
-            NUT_TA(RSA::encode(RSA::decode(BigInteger(0x457a), vk), pk) == 0x457a);
+
+            BigInteger a, b;
+            RSA::encode(BigInteger(1986), pk, &a);
+            RSA::decode(a, vk, &b);
+            NUT_TA(b == 1986);
+
+            RSA::decode(BigInteger(0x457a), vk, &a);
+            RSA::encode(a, pk, &b);
+            NUT_TA(b == 0x457a);
+
             clock_t t = clock() - s;
             printf(" %ld ms ", t * 1000 / CLOCKS_PER_SEC);
         }
@@ -43,8 +51,15 @@ NUT_FIXTURE(TestRSA)
         RSA::gen_key(31, &pk, &vk);
         // printf("public key :\n\te: %d\n\tn: %s\n", pk.e, pk.n.toString().c_str());
         // printf("private key :\n\td: %s\n\tn: %s\n", vk.d.toString().c_str(), vk.n.toString().c_str());
-        NUT_TA(RSA::decode(RSA::encode(BigInteger(1986), pk), vk) == 1986);
-        NUT_TA(RSA::encode(RSA::decode(BigInteger(0x457a), vk), pk) == 0x457a);
+
+        BigInteger a, b;
+        RSA::encode(BigInteger(1986), pk, &a);
+        RSA::decode(a, vk, &b);
+        NUT_TA(b == 1986);
+
+        RSA::decode(BigInteger(0x457a), vk, &a);
+        RSA::encode(a, pk, &b);
+        NUT_TA(b == 0x457a);
     }
 };
 

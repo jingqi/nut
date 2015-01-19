@@ -11,6 +11,7 @@
 
 #include "../big_integer.hpp"
 #include "bit_sieve.hpp"
+#include "mod.hpp"
 
 // 优化程度，>= 0
 #define OPTIMIZE_LEVEL 1000
@@ -24,14 +25,16 @@ namespace nut
  */
 inline bool psedoprime(const BigInteger& n)
 {
-    if (mod_pow(BigInteger(2), n - 1, n) != 1)
+    BigInteger mp(0, n.alloctor());
+    mod_pow(BigInteger(2, n.alloctor()), n - 1, n, &mp);
+    if (mp != 1)
         return false; // 一定是合数
     return true; // 可能是素数
 }
 
 inline bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n)
 {
-    BigInteger d(1), b(n - 1);
+    BigInteger d(1, a.alloctor()), b(n - 1);
     for (size_t i = b.bit_length(); i > 0; --i)
     {
         BigInteger x = d;
@@ -75,10 +78,10 @@ inline bool miller_rabin(const BigInteger& n, unsigned s)
      * Miller-Rabin 素数测试
      * 参见java语言BigInteger.passesMillerRabin()实现
      */
-    const BigInteger ONE(1), TWO(2);
+    const BigInteger ONE(1, n.alloctor()), TWO(2, n.alloctor());
 
     // Find a and m such that m is odd and n == 1 + 2**a * m
-    const BigInteger this_minus_one(n - ONE);
+    const BigInteger this_minus_one(n - 1);
     BigInteger m(this_minus_one);
     const int a = m.lowest_bit();
     m >>= a;
@@ -90,12 +93,13 @@ inline bool miller_rabin(const BigInteger& n, unsigned s)
         const BigInteger b = BigInteger::rand_between(ONE, n); // _rand_1_n(n);
 
         int j = 0;
-        BigInteger z = mod_pow(b, m, n);
-        while(!((j == 0 && z == ONE) || z == this_minus_one))
+        BigInteger z(0, n.alloctor());
+        mod_pow(b, m, n, &z);
+        while(!((j == 0 && z == 1) || z == this_minus_one))
         {
-            if ((j > 0 && z == ONE) || ++j == a)
+            if ((j > 0 && z == 1) || ++j == a)
                 return false;
-            z = mod_pow(z, TWO, n);
+            mod_pow(z, TWO, n, &z);
         }
     }
     return true;
@@ -109,11 +113,12 @@ inline bool miller_rabin(const BigInteger& n, unsigned s)
 inline BigInteger next_prime(const BigInteger& n)
 {
     if (n <= 1)
-        return BigInteger(2);
+        return BigInteger(2, n.alloctor());
 
     const size_t SMALL_PRIME_THRESHOLD = 95;
     const size_t DEFAULT_PRIME_CERTAINTY = 2;
-    const BigInteger SMALL_PRIME_PRODUCT(((uint64_t) 3) * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41);
+    const BigInteger SMALL_PRIME_PRODUCT(((uint64_t) 3) * 5 * 7 * 11 * 13 * 17 * 19 *
+        23 * 29 * 31 * 37 * 41, n.alloctor());
 
     BigInteger result = n + 1;
 

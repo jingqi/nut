@@ -96,10 +96,10 @@ NUT_FIXTURE(TestBigInteger)
         // 乘方
         BigInteger a;
         a.resize(4);
-        a.buffer()[0] = 45;
-        a.buffer()[1] = 0x10000;
-        a.buffer()[2] = 5;
-        a.buffer()[3] = 68;
+        a.data()[0] = 45;
+        a.data()[1] = 0x10000;
+        a.data()[2] = 5;
+        a.data()[3] = 68;
         NUT_TA(a * a == a * BigInteger(a));
 	}
 

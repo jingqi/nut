@@ -21,23 +21,25 @@ NUT_FIXTURE(TestLengthFixedMP)
 
     void test_smoking()
 	{
-		lengthfixed_mp<sizeof(A)> mp;
-		void *p1 = mp.alloc();
+        lengthfixed_mp<sizeof(A)> *mp = lengthfixed_mp<sizeof(A)>::create();
+        void *p1 = mp->alloc();
 		NUT_TA(NULL != p1);
 
-		void *p2 = mp.alloc();
+        void *p2 = mp->alloc();
 		NUT_TA(NULL != p2 && p1 != p2);
 
-		mp.free(p1);
-		void *p3 = mp.alloc();
+        mp->free(p1);
+        void *p3 = mp->alloc();
 		NUT_TA(p3 == p1);
 
-		mp.free(p2);
-		void *p4 = mp.alloc();
+        mp->free(p2);
+        void *p4 = mp->alloc();
 		NUT_TA(p4 == p2);
 
-        mp.free(p3);
-        mp.free(p4);
+        mp->free(p3);
+        mp->free(p4);
+
+        mp->rls_ref();
 	}
 };
 

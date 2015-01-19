@@ -135,11 +135,12 @@ private:
 * 参见 《公开密钥密码算法及其快速实现》.周玉洁.冯国登.国防工业出版社.2002 P57
  */
 template <size_t C>
-BigInteger mod_multiply(const BigInteger& b, const BigInteger& n, const ModMultiplyPreBuildTable<C>& table)
+void mod_multiply(const BigInteger& b, const BigInteger& n, const ModMultiplyPreBuildTable<C>& table, BigInteger *out)
 {
+    assert(NULL != out);
     assert(b.is_positive() && n.is_positive() && b < n); // 一定要保证 b<n ,以便优化模加运算
 
-    BigInteger s(0);
+    BigInteger s(0, b.alloctor());
     size_t limit = (b.bit_length() + C - 1) / C;
     if (table.hight < limit)
         limit = table.hight;
@@ -159,22 +160,24 @@ BigInteger mod_multiply(const BigInteger& b, const BigInteger& n, const ModMulti
         }
     }
 
-    return s;
+    *out = s;
 }
 
 /**
  * 蒙哥马利算法
  * {t + [(t mod r) * n' mod r] * n} / r
  */
-inline BigInteger _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, const BigInteger& nn)
+inline void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, const BigInteger& nn, BigInteger *out)
 {
+    assert(NULL != out);
     assert(t.is_positive() && rlen > 0 && n.is_positive() && nn.is_positive());
+    typedef BigInteger::word_type word_type;
 
     // 计算 t % r
-    size_t min_sig = (rlen + 8 * sizeof(BigInteger::word_type) - 1) / (8 * sizeof(BigInteger::word_type));
+    size_t min_sig = (rlen + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
     if (t.significant_words_length() < min_sig)
         min_sig = t.significant_words_length();
-    BigInteger rs(t.buffer(), min_sig, true);
+    BigInteger rs(t.data(), min_sig, true, t.alloctor());
     rs.limit_positive_bits_to(rlen);
 
     rs.multiply_to_len(nn, rlen); // rs = (rs * nn) % r
@@ -184,7 +187,8 @@ inline BigInteger _montgomery(const BigInteger& t, size_t rlen, const BigInteger
 
     if (rs >= n)
         rs -= n;
-    return rs;
+
+    *out = rs;
 }
 
 /**
@@ -193,29 +197,32 @@ inline BigInteger _montgomery(const BigInteger& t, size_t rlen, const BigInteger
  * 算法来源:
  *      王金荣，周赟，王红霞. Montgomery模平方算法及其应用[J]. 计算机工程，2007，33(24)：155 - 156
  */
-inline BigInteger _montgomery(const BigInteger& t, const BigInteger& n, BigInteger::word_type nn)
+inline void _montgomery(const BigInteger& t, const BigInteger& n, BigInteger::word_type nn, BigInteger *out)
 {
+    assert(NULL != out);
     assert(t.is_positive() && n.is_positive() && nn > 0);
+    typedef BigInteger::word_type word_type;
+    typedef BigInteger::dword_type dword_type;
 
     const size_t r_word_count = n.significant_words_length();
     BigInteger rs(t);
     rs.resize(r_word_count * 2 + 1);
     for (size_t i = 0; i < r_word_count; ++i)
     {
-        const BigInteger::word_type op1 = static_cast<BigInteger::word_type>(rs.word_at(i) * nn);
+        const word_type op1 = static_cast<word_type>(rs.word_at(i) * nn);
         if (0 == op1)
             continue;
 
-        BigInteger::word_type carry = 0;
+        word_type carry = 0;
         for (size_t j = 0; j < r_word_count; ++j)
         {
-            BigInteger::dword_type op2 = n.word_at(j);
+            dword_type op2 = n.word_at(j);
             op2 *= op1;
             op2 += rs.word_at(i + j);
             op2 += carry;
 
-            rs.buffer()[i + j] = static_cast<BigInteger::word_type>(op2);
-            carry = static_cast<BigInteger::word_type>(op2 >> (8 * sizeof(BigInteger::word_type)));
+            rs.data()[i + j] = static_cast<word_type>(op2);
+            carry = static_cast<word_type>(op2 >> (8 * sizeof(word_type)));
         }
 
         for (size_t j = i; j < r_word_count; ++j)
@@ -223,19 +230,20 @@ inline BigInteger _montgomery(const BigInteger& t, const BigInteger& n, BigInteg
             if (0 == carry)
                 break;
 
-            BigInteger::dword_type op = rs.word_at(j + r_word_count);
+            dword_type op = rs.word_at(j + r_word_count);
             op += carry;
 
-            rs.buffer()[j + r_word_count] = static_cast<BigInteger::word_type>(op);
-            carry = static_cast<BigInteger::word_type>(op >> (8 * sizeof(BigInteger::word_type)));
+            rs.data()[j + r_word_count] = static_cast<word_type>(op);
+            carry = static_cast<word_type>(op >> (8 * sizeof(word_type)));
         }
     }
 
-    rs >>= 8 * sizeof(BigInteger::word_type) * r_word_count;
+    rs >>= 8 * sizeof(word_type) * r_word_count;
 
     while (rs >= n)
         rs -= n;
-    return rs;
+
+    *out = rs;
 }
 
 /**
@@ -251,7 +259,9 @@ inline BigInteger _montgomery(const BigInteger& t, const BigInteger& n, BigInteg
  */
 inline void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *_rr, BigInteger *_nn)
 {
-    BigInteger r(1);
+    assert(NULL != _rr || NULL != _nn);
+
+    BigInteger r(1, n.alloctor());
     r <<= rlen;
 
     /**
@@ -307,9 +317,13 @@ struct MontgomeryPreBuildTable
         ::memset(table, 0, sizeof(BigInteger*) * size);
 
         table[0] = new BigInteger(m);
-        const BigInteger mm = _montgomery(m * m, rlen, n, nn);
+        BigInteger mm(0, m.alloctor());
+        _montgomery(m * m, rlen, n, nn, &mm);
         for (size_t i = 1; i < size; ++i)
-            table[i] = new BigInteger(_montgomery(*table[i - 1] * mm, rlen, n, nn));
+        {
+            table[i] = new BigInteger(0, m.alloctor());
+            _montgomery(*table[i - 1] * mm, rlen, n, nn, table[i]);
+        }
     }
 
     ~MontgomeryPreBuildTable()
@@ -362,8 +376,9 @@ inline size_t _best_wnd(size_t bit_len)
 /**
  * 使用 Montgomery 算法优化
  */
-inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n)
+inline void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigInteger *out)
 {
+    assert(NULL != out);
     assert(a.is_positive() && b.is_positive() && n.is_positive());
     assert(a < n && n.bit_at(0) == 1);
 
@@ -383,13 +398,14 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
     BigInteger ret(m);
     for (size_t i = b.bit_length() - 1; i > 0; --i)
     {
-        ret = _montgomery(ret * ret, rlen, n, nn);
+        _montgomery(ret * ret, rlen, n, nn, &ret);
         if (0 != b.bit_at(i - 1))
-            ret = _montgomery(ret * m, rlen, n, nn);
+            _montgomery(ret * m, rlen, n, nn, &ret);
     }
 
     // 处理返回值
-    return _montgomery(ret, rlen, n, nn);
+    _montgomery(ret, rlen, n, nn, out);
+    return;
 #elif (OPTIMIZE_LEVEL == 1)
     /**
      * 变形的蒙哥马利算法
@@ -408,16 +424,17 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
     for (int i = ((int) b.bit_length()) - 2; i >= 0; --i)
     {
         ret *= ret;
-        ret = _montgomery(ret, n, nnn);
+        _montgomery(ret, n, nnn, &ret);
         if (0 != b.bit_at(i))
         {
             ret *= m;
-            ret = _montgomery(ret, n, nnn);
+            _montgomery(ret, n, nnn, &ret);
         }
     }
 
     // 处理返回值
-    return _montgomery(ret, n, nnn);
+    _montgomery(ret, n, nnn, out);
+    return;
 #elif (OPTIMIZE_LEVEL == 2)
     /**
      * 特殊的扩展欧几里得算法
@@ -435,16 +452,17 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
     for (int i = ((int) b.bit_length()) - 2; i >= 0; --i)
     {
         ret *= ret;
-        ret = _montgomery(ret, rlen, n, nn);
+        _montgomery(ret, rlen, n, nn, &ret);
         if (0 != b.bit_at(i))
         {
             ret *= m;
-            ret = _montgomery(ret, rlen, n, nn);
+            _montgomery(ret, rlen, n, nn, &ret);
         }
     }
 
     // 处理返回值
-    return _montgomery(ret, rlen, n, nn);
+    _montgomery(ret, rlen, n, nn, out);
+    return;
 #else
     /**
      * 使用滑动窗口算法优化
@@ -452,7 +470,7 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
 
     // 准备蒙哥马利相关变量
     const size_t rlen = n.bit_length();
-    BigInteger nn;
+    BigInteger nn(0, a.alloctor());
     _mont_extended_euclid(rlen, n, NULL, &nn);
     nn.limit_positive_bits_to(rlen);
 
@@ -494,19 +512,19 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
                 for (size_t i = 0; i < squre_count; ++i)
                 {
                     ret *= ret;
-                    ret = _montgomery(ret, rlen, n, nn);
+                    _montgomery(ret, rlen, n, nn, &ret);
                 }
                 squre_count = 0;
 
                 ret *= tbl.at(wnd >> 1);
-                ret = _montgomery(ret, rlen, n, nn);
+                _montgomery(ret, rlen, n, nn, &ret);
                 wnd = 0;
             }
         }
         else if (0 == squre_count) // 窗口之间的0
         {
             ret *= ret;
-            ret = _montgomery(ret, rlen, n, nn);
+            _montgomery(ret, rlen, n, nn, &ret);
         }
         else // 窗口内部的0
         {
@@ -515,18 +533,20 @@ inline BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
     }
 
     // 处理返回值
-    return _montgomery(ret, rlen, n, nn);
+    _montgomery(ret, rlen, n, nn, out);
+    return;
 #endif
 }
 
 /**
  * 计算 (a ** b) mod (2 ** p)
  */
-inline BigInteger _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p)
+inline void _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p, BigInteger *out)
 {
+    assert(NULL != out);
     assert(a.is_positive() && b.is_positive() && p > 0);
 
-    BigInteger ret(1);
+    BigInteger ret(1, a.alloctor());
     for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
     {
         ret.multiply_to_len(ret, p);
@@ -534,23 +554,34 @@ inline BigInteger _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p)
         if (0 != b.bit_at(i - 1))
             ret.multiply_to_len(a, p);
     }
-    return ret;
+
+    *out = ret;
 }
 
 /**
  * 求(a**b)%n，即a的b次方(模n)
  * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P576
  */
-inline BigInteger mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n)
+inline void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigInteger *out)
 {
+    assert(NULL != out);
     assert(a.is_positive() && b.is_positive() && n.is_positive());
 
     if (b.is_zero())
-        return BigInteger(n == 1 ? 0 : 1);
+    {
+        *out = (n == 1 ? 0 : 1);
+        return;
+    }
     else if (a == 1)
-        return BigInteger(n == 1 ? 0 : 1);
+    {
+        *out = (n == 1 ? 0 : 1);
+        return;
+    }
     else if (a.is_zero())
-        return BigInteger(0);
+    {
+        out->set_zero();
+        return;
+    }
 
 #if (OPTIMIZE_LEVEL == 0)
     BigInteger ret(1);
@@ -560,7 +591,8 @@ inline BigInteger mod_pow(const BigInteger& a, const BigInteger& b, const BigInt
         if (0 != b.bit_at(i - 1))
             ret = (ret * a) % n;
     }
-    return ret;
+    *out = ret;
+    return;
 #elif (OPTIMIZE_LEVEL == 1)
     const size_t bbc = b.bit_count();
      if (bbc > 400) // 400 是一个经验数据
@@ -571,9 +603,10 @@ inline BigInteger mod_pow(const BigInteger& a, const BigInteger& b, const BigInt
         {
             ret = (ret * ret) % n;
             if (0 != b.bit_at(i - 1))
-                ret = mod_multiply(ret, n, table);
+                mod_multiply(ret, n, table, &ret);
         }
-        return ret;
+        *out = ret;
+        return;
     }
     else
     {
@@ -584,31 +617,49 @@ inline BigInteger mod_pow(const BigInteger& a, const BigInteger& b, const BigInt
             if (0 != b.bit_at(i - 1))
                 ret = (ret * a) % n;
         }
-        return ret;
+        *out = ret;
+        return;
     }
 #else
     // 模是奇数，应用蒙哥马利算法
     if (n.bit_at(0) == 1)
-        return _odd_mod_pow(a < n ? a : a % n, b, n);
+    {
+        _odd_mod_pow(a < n ? a : a % n, b, n, out);
+        return;
+    }
 
     // 模是偶数，应用中国余数定理
     const size_t p = n.lowest_bit();
-    BigInteger n1(n), n2(1);
+    BigInteger n1(n), n2(1, a.alloctor());
     n1 >>= p;
     n2 <<= p;
 
-    BigInteger a1 = (n1 == 1 ? BigInteger(0) : _odd_mod_pow(a % n1, b, n1));
-    BigInteger a2 = _mod_pow_2(a < n ? a : a % n, b, p);
+    BigInteger a1(0, a.alloctor());
+    if (n1 != 1)
+        _odd_mod_pow(a % n1, b, n1, &a1);
 
-    BigInteger y1, y2;
+    BigInteger a2(0, a.alloctor());
+    _mod_pow_2(a < n ? a : a % n, b, p, &a2);
+
+    BigInteger y1(0, a.alloctor());
     extended_euclid(n2, n1, NULL, &y1, NULL);
     if (y1 < 0)
-        y1 = n1 + (y1 % n1);
+    {
+        // y1 = n1 + (y1 % n1);
+        y1 %= n1;
+        y1 += n1;
+    }
+    BigInteger y2(0,a.alloctor());
     extended_euclid(n1, n2, NULL, &y2, NULL);
     if (y2 < 0)
-        y2 = n2 + (y2 % n2);
+    {
+        // y2 = n2 + (y2 % n2);
+        y2 %= n2;
+        y2 += n2;
+    }
 
-    return (a1 * n2 * y1 + a2 * n1 * y2) % n;
+    *out = (a1 * n2 * y1 + a2 * n1 * y2) % n;
+    return;
 #endif
 }
 

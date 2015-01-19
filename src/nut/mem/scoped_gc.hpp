@@ -12,6 +12,7 @@
 #include <nut/platform/stdint.hpp>
 #include <nut/memtool/refarg.hpp>
 #include <nut/debugging/static_assert.hpp>
+#include <nut/debugging/destroy_checker.hpp>
 
 #include "sys_ma.hpp"
 
@@ -24,6 +25,8 @@ namespace nut
 template <typename MemAlloc = sys_ma>
 class scoped_gc
 {
+    typedef scoped_gc<MemAlloc> self_type;
+
     enum
 	{
 		/** 默认内存块大小，可根据需要调整 */
@@ -52,64 +55,110 @@ class scoped_gc
         destruct_func_type destruct_func;
     };
 
-	MemAlloc *m_mem_alloc;
-	bool m_local_ma;
+    int volatile m_ref_count;
+    MemAlloc *const m_alloc;
 	Block *m_current_block;
 	uint8_t *m_end;
     DestructorNode *m_destruct_chain;
+    NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
-    explicit scoped_gc(const scoped_gc&);
-    scoped_gc& operator=(const scoped_gc&);
+    explicit scoped_gc(const self_type&);
+    self_type& operator=(const self_type&);
 
-	template <typename T>
-	static void destruct_single(void *p)
-	{
-		assert(NULL != p);
-		((T*) p)->~T();
-	}
-
-	template <typename T>
-	static void destruct_array(void *p)
-	{
-		assert(NULL != p);
-		size_t count = *(size_t*)p;
-		T *pd = (T*)(((size_t*) p) + 1);
-		for (int i = 0; i < (int) count; ++i)
-		{
-			pd->~T();
-			++pd;
-		}
-	}
-
-public:
-    scoped_gc(MemAlloc *ma = NULL)
-        : m_mem_alloc(ma), m_local_ma(false), m_current_block(NULL), m_end(NULL), m_destruct_chain(NULL)
+    scoped_gc(MemAlloc *ma)
+        : m_ref_count(0), m_alloc(ma), m_current_block(NULL), m_end(NULL), m_destruct_chain(NULL)
     {
-    	if (NULL == ma)
-    	{
-    		m_mem_alloc = new sys_ma;
-    		m_local_ma = true;
-    	}
+        if (NULL != m_alloc)
+            m_alloc->add_ref();
     }
 
     ~scoped_gc()
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
 		clear();
-		if (m_local_ma)
-			delete m_mem_alloc;
-		m_mem_alloc = NULL;
+        if (NULL != m_alloc)
+            m_alloc->rls_ref();
 	}
 
+public:
+    static self_type* create(MemAlloc *ma = NULL)
+    {
+        self_type *ret = NULL;
+        if (NULL != ma)
+            ret = (self_type*) ma->alloc(sizeof(self_type));
+        else
+            ret = (self_type*) ::malloc(sizeof(self_type));
+        assert(NULL != ret);
+        new (ret) self_type(ma);
+        ret->add_ref();
+        return ret;
+    }
+
+    int add_ref()
+    {
+        NUT_DEBUGGING_ASSERT_ALIVE;
+        return atomic_add(&m_ref_count, 1) + 1;
+    }
+
+    int rls_ref()
+    {
+        NUT_DEBUGGING_ASSERT_ALIVE;
+        const int ret = atomic_add(&m_ref_count, -1) - 1;
+        if (0 == ret)
+        {
+            MemAlloc *const ma = m_alloc;
+            if (NULL != ma)
+                ma->add_ref();
+            this->~scoped_gc();
+            if (NULL != ma)
+            {
+                ma->free(this);
+                ma->rls_ref();
+            }
+            else
+            {
+                ::free(this);
+            }
+        }
+        return ret;
+    }
+
 private:
+    template <typename T>
+    static void destruct_single(void *p)
+    {
+        assert(NULL != p);
+        ((T*) p)->~T();
+    }
+
+    template <typename T>
+    static void destruct_array(void *p)
+    {
+        assert(NULL != p);
+        size_t count = *(size_t*)p;
+        T *pd = (T*)(((size_t*) p) + 1);
+        for (int i = 0; i < (int) count; ++i)
+        {
+            pd->~T();
+            ++pd;
+        }
+    }
+
     void* raw_alloc(size_t cb)
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
 		if (m_current_block->body + cb > m_end)
 		{
 			if (cb >= DEFAULT_BLOCK_BODY_SIZE)
 			{
-				Block *new_blk = (Block*) m_mem_alloc->alloc(BLOCK_HEADER_SIZE + cb);
+                Block *new_blk = NULL;
+                if (NULL != m_alloc)
+                    new_blk = (Block*) m_alloc->alloc(BLOCK_HEADER_SIZE + cb);
+                else
+                    new_blk = (Block*) ::malloc(BLOCK_HEADER_SIZE + cb);
 				assert(NULL != new_blk);
+
 				if (NULL != m_current_block)
 				{
 					new_blk->prev = m_current_block->prev;
@@ -125,8 +174,13 @@ private:
 			}
 			else
 			{
-				Block *new_blk = (Block*) m_mem_alloc->alloc(DEFAULT_BLOCK_LEN);
+                Block *new_blk = NULL;
+                if (NULL != m_alloc)
+                    new_blk = (Block*) m_alloc->alloc(DEFAULT_BLOCK_LEN);
+                else
+                    new_blk = (Block*) ::malloc(DEFAULT_BLOCK_LEN);
 				assert(NULL != new_blk);
+
 				new_blk->prev = m_current_block;
 				m_current_block = new_blk;
 				m_end = m_current_block->body + DEFAULT_BLOCK_BODY_SIZE;
@@ -138,6 +192,7 @@ private:
 
 	void* alloc(size_t cb, destruct_func_type func)
 	{
+        NUT_DEBUGGING_ASSERT_ALIVE;
 		DestructorNode *dn = (DestructorNode*) raw_alloc(sizeof(DestructorNode) + cb);
 		assert(NULL != dn);
 		dn->destruct_func = func;
@@ -148,6 +203,7 @@ private:
 
 	void* alloc(size_t cb, size_t count, destruct_func_type func)
 	{
+        NUT_DEBUGGING_ASSERT_ALIVE;
 		DestructorNode *dn = (DestructorNode*) raw_alloc(sizeof(DestructorNode) + sizeof(size_t) + cb * count);
 		assert(NULL != dn);
 		dn->destruct_func = func;
@@ -160,6 +216,7 @@ private:
 public:
     void clear()
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
         while (NULL != m_destruct_chain)
         {
             assert(NULL != m_destruct_chain->destruct_func);
@@ -170,7 +227,10 @@ public:
         while (NULL != m_current_block)
         {
 			Block *prev = m_current_block->prev;
-			m_mem_alloc->free((uint8_t*) m_current_block);
+            if (NULL != m_alloc)
+                m_alloc->free(m_current_block);
+            else
+                ::free(m_current_block);
 			m_current_block = prev;
         }
 		m_end = NULL;
@@ -178,6 +238,7 @@ public:
 
 	void* gc_alloc(size_t cb)
 	{
+        NUT_DEBUGGING_ASSERT_ALIVE;
 		void* ret = raw_alloc(cb);
 		assert(NULL != ret);
 		return ret;
@@ -186,6 +247,7 @@ public:
     template <typename T>
     T* gc_new()
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
 		T *ret = (T*) alloc(sizeof(T), destruct_single<T>);
 		assert(NULL != ret);
 		new (ret) T;
@@ -195,6 +257,7 @@ public:
     template <typename T, typename A1>
     T* gc_new(A1 a1)
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
 		T *ret = (T*) alloc(sizeof(T), destruct_single<T>);
 		assert(NULL != ret);
 		new (ret) T(RefargTraits<A1>::value(a1));
@@ -204,6 +267,7 @@ public:
     template <typename T, typename A1, typename A2>
     T* gc_new(A1 a1, A2 a2)
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
 		T *ret = (T*) alloc(sizeof(T), destruct_single<T>);
 		assert(NULL != ret);
 		new (ret) T(RefargTraits<A1>::value(a1), RefargTraits<A2>::value(a2));
@@ -213,6 +277,7 @@ public:
 	template <typename T>
 	T* gc_new_array(size_t count)
 	{
+        NUT_DEBUGGING_ASSERT_ALIVE;
 		T *ret = (T*) alloc(sizeof(T), count, destruct_array<T>);
 		assert(NULL != ret);
 		for (int i = 0; i < (int) count; ++i)

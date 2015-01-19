@@ -502,7 +502,7 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
         if (NULL != d)
             *d = aa;
 
-        BigInteger xx(1), yy(0);
+        BigInteger xx(1, a.alloctor()), yy(0, a.alloctor());
         while (!as.empty())
         {
             BigInteger::swap(&xx, &yy);
@@ -518,7 +518,7 @@ inline void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger
         return;
     }
 
-    BigInteger aa(a), bb(b), xx(1), yy(0);
+    BigInteger aa(a), bb(b), xx(1, a.alloctor()), yy(0, a.alloctor());
     size_t left_shift = 0;
     std::stack<int> lb1s, lb2s;
     while (true)

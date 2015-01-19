@@ -39,28 +39,28 @@ NUT_FIXTURE(TestAesCbcPkcs5)
             acp.start_encrypt(key, sizeof(key) * 8, iv);
             acp.update_encrypt(data, 7);
             acp.finish_encrypt();
-            ByteArray ba = acp.get_result();
+            ByteArray<> ba = acp.get_result();
 
             acp.start_decrypt(key, sizeof(key) * 8, iv);
-            acp.update_decrypt(ba.buffer(), ba.size());
+            acp.update_decrypt(ba.data(), ba.size());
             acp.finish_decrypt();
             ba = acp.get_result();
             NUT_TA(7 == ba.size());
-            NUT_TA(0 == ::memcmp(ba.buffer(), data, 7));
+            NUT_TA(0 == ::memcmp(ba.data(), data, 7));
         }
 
         {
             acp.start_encrypt(key, sizeof(key) * 8, iv);
             acp.update_encrypt(data, 16);
             acp.finish_encrypt();
-            ByteArray ba = acp.get_result();
+            ByteArray<> ba = acp.get_result();
 
             acp.start_decrypt(key, sizeof(key) * 8, iv);
-            acp.update_decrypt(ba.buffer(), ba.size());
+            acp.update_decrypt(ba.data(), ba.size());
             acp.finish_decrypt();
             ba = acp.get_result();
             NUT_TA(16 == ba.size());
-            NUT_TA(0 == ::memcmp(ba.buffer(), data, 16));
+            NUT_TA(0 == ::memcmp(ba.data(), data, 16));
         }
         
         {
@@ -68,14 +68,14 @@ NUT_FIXTURE(TestAesCbcPkcs5)
             acp.update_encrypt(data, 7);
             acp.update_encrypt(data + 7, 19);
             acp.finish_encrypt();
-            ByteArray ba = acp.get_result();
+            ByteArray<> ba = acp.get_result();
 
             acp.start_decrypt(key, sizeof(key) * 8, iv);
-            acp.update_decrypt(ba.buffer(), ba.size());
+            acp.update_decrypt(ba.data(), ba.size());
             acp.finish_decrypt();
             ba = acp.get_result();
             NUT_TA(26 == ba.size());
-            NUT_TA(0 == ::memcmp(ba.buffer(), data, 26));
+            NUT_TA(0 == ::memcmp(ba.data(), data, 26));
         }
     }
 };

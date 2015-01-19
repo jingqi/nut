@@ -36,7 +36,7 @@ class AES_CBC_PKCS5
     } m_state;
     uint8_t m_data_buf[16], m_iv[16];
     size_t m_data_buf_size;
-    ByteArray m_result;
+    ByteArray<> m_result;
     AES m_aes;
 
 private:
@@ -180,7 +180,7 @@ public:
         if (0 != m_data_buf_size || m_result.size() <= 0)
             return false;
 
-        uint8_t last_byte = m_result[m_result.size() - 1];
+        const uint8_t last_byte = m_result[m_result.size() - 1];
         for (size_t i = 0; i < last_byte; ++i)
             if (m_result[m_result.size() - i - 1] != last_byte)
                 return false;
@@ -194,7 +194,7 @@ public:
     /**
      * 获取加密或者解密结果
      */
-    const ByteArray& get_result() const
+    const ByteArray<>& get_result() const
     {
         return m_result;
     }
