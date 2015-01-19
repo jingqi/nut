@@ -363,6 +363,7 @@ public:
         x.m_array->add_ref(); // if x is this, m_array will not be freeed
         m_array->rls_ref();
         m_array = x.m_array;
+        return *this;
     }
 
     bool operator==(const self_type& x) const

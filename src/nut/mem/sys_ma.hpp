@@ -81,6 +81,11 @@ public:
         return ret;
     }
 
+    int get_ref() const
+    {
+        return m_ref_count;
+    }
+
 public:
     void* alloc(size_t cb)
     {
