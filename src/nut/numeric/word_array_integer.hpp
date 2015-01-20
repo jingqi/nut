@@ -1023,6 +1023,53 @@ uint8_t add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc
     return carry;
 }
 
+
+/**
+ * 无符号数相加
+ * x<P> = a<M> + b<N>
+ *
+ * @return 进位
+ */
+template <typename T, typename MemAlloc>
+uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc *ma = NULL)
+{
+    assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
+    typedef typename StdInt<T>::double_unsigned_type dword_type;
+
+    // 避免区域交叉覆盖
+    word_type *retx = reinterpret_cast<word_type*>(x);
+    if ((a < x && x < a + M) || (b < x && x < b + N))
+    {
+        if (NULL != ma)
+            retx = (word_type*) ma->alloc(sizeof(word_type) * P);
+        else
+            retx = (word_type*) ::malloc(sizeof(word_type) * P);
+    }
+
+    uint8_t carry = 0;
+    for (size_t i = 0; i < P; ++i)
+    {
+        const dword_type pluser1 = (i < M ? reinterpret_cast<const word_type*>(a)[i] : 0);
+        dword_type pluser2 = (i < N ? reinterpret_cast<const word_type*>(b)[i] : 0);
+        pluser2 += pluser1 + carry;
+
+        retx[i] = static_cast<word_type>(pluser2);
+        carry = static_cast<uint8_t>(pluser2 >> (8 * sizeof(word_type)));
+    }
+
+    // 回写数据
+    if (retx != reinterpret_cast<word_type*>(x))
+    {
+        ::memcpy(x, retx, sizeof(word_type) * P);
+        if (NULL != ma)
+            ma->free(retx);
+        else
+            ::free(retx);
+    }
+    return carry;
+}
+
 /**
  * 加1
  * x<N> += 1
@@ -1330,6 +1377,247 @@ void multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAll
             ma->free(retx);
         else
             ::free(retx);
+    }
+}
+
+
+/**
+ * 无符号数相乘
+ * x<P> = a<M> * b<N>
+ */
+template <typename T, typename MemAlloc>
+void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc *ma = NULL)
+{
+    assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
+    typedef typename StdInt<T>::double_unsigned_type dword_type;
+
+    // 避免区域交叉覆盖
+    word_type *retx = reinterpret_cast<word_type*>(x);
+    if ((a - P < x && x < a + M) || (b - P < x && x < b + N))
+    {
+        if (NULL != ma)
+            retx = (word_type*) ma->alloc(sizeof(word_type) * P);
+        else
+            retx = (word_type*) ::malloc(sizeof(word_type) * P);
+    }
+
+    // 乘法
+    ::memset(retx, 0, sizeof(word_type) * P);
+    for (size_t i = 0; i < P; ++i)
+    {
+        if (i >= M)
+            break;
+
+        const dword_type mult1 = reinterpret_cast<const word_type*>(a)[i];
+        if (mult1 == 0)
+            continue;
+
+        word_type carry = 0; // 这个进位包括乘法的，故此会大于1
+        for (size_t j = 0; i + j < P; ++j)
+        {
+            if (j >= N && 0 == carry)
+                break;
+
+            dword_type mult2 = (j < N ? reinterpret_cast<const word_type*>(b)[j] : 0);
+            mult2 = mult1 * mult2 + retx[i + j] + carry;
+
+            retx[i + j] = static_cast<word_type>(mult2);
+            carry = static_cast<word_type>(mult2 >> (8 * sizeof(word_type)));
+        }
+    }
+
+    // 回写数据
+    if (retx != reinterpret_cast<word_type*>(x))
+    {
+        ::memcpy(x, retx, sizeof(word_type) * P);
+        if (NULL != ma)
+            ma->free(retx);
+        else
+            ::free(retx);
+    }
+}
+
+/**
+ * karatsuba 乘法，时间复杂度为 O(n^1.59)
+ *
+ * a = A * base + B (其中 base = 2 ^ (n/2) )
+ * b = C * base + D
+ * a * b = AC * (base^2) + ((A-B)(D-C) + AC + BD) * base + BD
+ * 只需要做 3 次 n/2 规模的乘法，以及一些加减法
+ */
+template <typename T, typename MemAlloc>
+void karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc *ma = NULL)
+{
+    assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
+    typedef typename StdInt<T>::unsigned_type word_type;
+
+    // 规模较小时使用一般算法
+    if (M < 5 || N < 5 || P < 5)
+    {
+        multiply(a, M, b, N, x, P, ma);
+        return;
+    }
+
+    // 改算法不能处理负数的补数
+    T *aa = const_cast<T*>(a), *bb = const_cast<T*>(b);
+    size_t MM = M, NN = N;
+    bool neg = false;
+    if (!is_positive(a, M))
+    {
+        ++MM;
+        if (NULL != ma)
+            aa = (T*) ma->alloc(sizeof(T) * MM);
+        else
+            aa = (T*) ::malloc(sizeof(T) * MM);
+        negate(a, M, aa, MM, ma);
+        neg = !neg;
+    }
+    if (!is_positive(b, N))
+    {
+        ++NN;
+        if (NULL != ma)
+            bb = (T*) ma->alloc(sizeof(T) * NN);
+        else
+            bb = (T*) ::malloc(sizeof(T) * NN);
+        negate(b, N, bb, NN, ma);
+        neg = !neg;
+    }
+
+    // 准备变量 A、B、C、D
+    const size_t base_len = ((MM > NN ? MM : NN) + 1) / 2;
+    const T ZERO = 0;
+    const T *A = a + base_len;
+    size_t alen = M - base_len;
+    if (M <= base_len)
+    {
+        A = &ZERO;
+        alen = 1;
+    }
+
+    T *B = const_cast<T*>(a);
+    size_t blen = base_len;
+    if (!is_positive(B, blen))
+    {
+        ++blen;
+        if (NULL != ma)
+            B = (T*) ma->alloc(sizeof(T) * blen);
+        else
+            B = (T*) ::malloc(sizeof(T) * blen);
+        ::memcpy(B, a, sizeof(T) * base_len);
+        B[base_len] = 0;
+    }
+
+    const T *C = b + base_len;
+    size_t clen = N - base_len;
+    if (N <= base_len)
+    {
+        C = &ZERO;
+        clen = 1;
+    }
+
+    T *D = const_cast<T*>(b);
+    size_t dlen = base_len;
+    if (!is_positive(D, dlen))
+    {
+        ++dlen;
+        if (NULL != ma)
+            D = (T*) ma->alloc(sizeof(T) * dlen);
+        else
+            D = (T*) ::malloc(sizeof(T) * dlen);
+        ::memcpy(D, b, sizeof(T) * base_len);
+        D[base_len] = 0;
+    }
+
+    T *AC = NULL;
+    if (NULL != ma)
+        AC = (T*) ma->alloc(sizeof(T) * (base_len * 2));
+    else
+        AC = (T*) ::malloc(sizeof(T) * (base_len * 2));
+    karatsuba_multiply(A, alen, C, clen, AC, base_len * 2, ma);
+
+    T *BD = NULL;
+    if (NULL != ma)
+        BD = (T*) ma->alloc(sizeof(T) * (base_len * 2 + 1));
+    else
+        BD = (T*) ::malloc(sizeof(T) * (base_len * 2 + 1));
+    karatsuba_multiply(B, blen, D, dlen, BD, base_len * 2 + 1, ma);
+
+    T *D_C = NULL;
+    if (NULL != ma)
+        D_C = (T*) ma->alloc(sizeof(T) * base_len + 1);
+    else
+        D_C = (T*) ::malloc(sizeof(T) * base_len + 1);
+    sub(D, dlen, C, clen, D_C, base_len + 1, ma);
+    if (D != b)
+    {
+        if (NULL != ma)
+            ma->free(D);
+        else
+            ::free(D);
+    }
+    D = NULL;
+    if (bb != b)
+    {
+        if (NULL != ma)
+            ma->free(bb);
+        else
+            ::free(bb);
+    }
+    bb = NULL;
+
+    T *ABCD = NULL;
+    if (NULL != ma)
+        ABCD = (T*) ma->alloc(sizeof(T) * (base_len * 2 + 1));
+    else
+        ABCD = (T*) ::malloc(sizeof(T) * (base_len * 2 + 1));
+    sub(A, alen, B, blen, ABCD, base_len + 1, ma);
+    if (B != a)
+    {
+        if (NULL != ma)
+            ma->free(B);
+        else
+            ::free(B);
+    }
+    B = NULL;
+    if (aa != a)
+    {
+        if (NULL != ma)
+            ma->free(aa);
+        else
+            ::free(aa);
+    }
+    aa = NULL;
+
+    karatsuba_multiply(ABCD, base_len + 1, D_C, base_len + 1, ABCD, base_len * 2 + 1, ma);
+    if (NULL != ma)
+        ma->free(D_C);
+    else
+        ::free(D_C);
+    D_C = NULL;
+
+    add(ABCD, base_len * 2 + 1, AC, base_len * 2, ABCD, base_len * 2 + 1, ma);
+    add(ABCD, base_len * 2 + 1, BD, base_len * 2 + 1, ABCD, base_len * 2 + 1, ma);
+
+    // 位移并生成结果
+    expand(AC, base_len * 2, x, P);
+    shift_left(x, P, x, P, sizeof(T) * 8 * base_len);
+    add(x, P, ABCD, base_len * 2 + 1, x, P, ma);
+    shift_left(x, P, x, P, sizeof(T) * 8 * base_len);
+    add(x, P, BD, base_len * 2 + 1, x, P, ma);
+
+    // 回收内存
+    if (NULL != ma)
+    {
+        ma->free(AC);
+        ma->free(BD);
+        ma->free(ABCD);
+    }
+    else
+    {
+        ::free(AC);
+        ::free(BD);
+        ::free(ABCD);
     }
 }
 
