@@ -1259,7 +1259,7 @@ void _square(const T *a, size_t M, T *x, size_t N, MemAlloc *ma = NULL)
     }
 
     // 回写结果
-    if (retx != x)
+    if (retx != reinterpret_cast<word_type*>(x))
     {
         ::memcpy(x, retx, sizeof(word_type) * N);
         if (NULL != ma)

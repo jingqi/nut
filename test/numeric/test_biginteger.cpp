@@ -5,6 +5,7 @@
 #include <nut/unittest/unittest.hpp>
 #include <nut/numeric/big_integer.hpp>
 
+using namespace std;
 using namespace nut;
 
 #if defined(NUT_PLATFORM_CC_VC)
@@ -18,6 +19,7 @@ NUT_FIXTURE(TestBigInteger)
     NUT_CASE(test_bugs)
     NUT_CASE(test_comparator)
     NUT_CASE(test_math_operator)
+    NUT_CASE(test_square)
     NUT_CASE(test_divide)
     NUT_CASE(test_mod)
     NUT_CASE(test_bit_operator)
@@ -122,6 +124,18 @@ NUT_FIXTURE(TestBigInteger)
 		NUT_TA(BigInteger(-3) / BigInteger(-4) == BigInteger((-3)/-4));
 		NUT_TA(BigInteger(-4) / BigInteger(-4) == BigInteger((-4)/-4));
 	}
+
+    // 测试平方
+    void test_square()
+    {
+        // 平法优化算法处理负数时可能出错
+        int a[2] = {-2, -1};
+        int x[6];
+        multiply<int,sys_ma>(a, 2, a, 2, x, 6);
+        //cout << endl << x[0] << ' ' << x[1] << ' ' << x[2] << ' ' << x[3] <<
+        //        ' ' << x[4] << ' ' << x[5] << endl;
+        NUT_TA(x[0] == 4 && x[1] == 0 && x[2] == 0 && x[3] == 0 && x[4] == 0 && x[5] == 0);
+    }
 
 	// 测试取余数
     void test_mod()
