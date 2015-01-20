@@ -1311,6 +1311,9 @@ void multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAll
         word_type carry = 0; // 这个进位包括乘法的，故此会大于1
         for (size_t j = 0; i + j < P; ++j)
         {
+            if (j >= N && 0 == fillb && 0 == carry)
+                break;
+
             dword_type mult2 = (j < N ? reinterpret_cast<const word_type*>(b)[j] : fillb);
             mult2 = mult1 * mult2 + retx[i + j] + carry;
 
