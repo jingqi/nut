@@ -1605,6 +1605,8 @@ void karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t
         add(x + base_len, P - base_len, ABCD, base_len * 2 + 1, x + base_len, P - base_len, ma);
     if (P > base_len * 2)
         add(x + base_len * 2, P - base_len * 2, AC, base_len * 2, x + base_len * 2, P - base_len * 2, ma);
+    if (neg)
+        negate(x, P, x, P, ma);
 
     // 回收内存
     if (NULL != ma)
