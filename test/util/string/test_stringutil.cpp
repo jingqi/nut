@@ -41,7 +41,8 @@ NUT_FIXTURE(TestStringUtil)
         NUT_TA(f_to_str((float)-45.67) == "-45.669998");
 
         string s = ptr_to_str((void*)0x122e);
-        NUT_TA(s == "0x0000122E" || s == "0x122e");
+        // cout << s << endl;
+        NUT_TA(s == "0x0000122E" || s == "0x122e" || s == "0x0000122e");
     }
 
     void test_split()
@@ -62,7 +63,10 @@ NUT_FIXTURE(TestStringUtil)
     void test_format()
     {
         NUT_TA(format("%d,%s,%c,%f", 1, "am", 's', 1.23) == "1,am,s,1.230000");
-#if !defined(NUT_PLATFORM_OS_MAC)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
+        // wcout << format(L"%d,%s,%c,%f", 1, L"am", L's', 1.23) << endl;
+        NUT_TA(format(L"%d,%c,%f", 1, L's', 1.23) == L"1,s,1.230000");
+#elif !defined(NUT_PLATFORM_OS_MAC)
 		NUT_TA(format(L"%d,%s,%c,%f", 1, L"am", L's', 1.23) == L"1,am,s,1.230000");
 #endif
     }
@@ -87,16 +91,25 @@ NUT_FIXTURE(TestStringUtil)
 		std::string a;
 		std::wstring b;
 
-		wstr_to_ascii(L"c5&汉", &a); 
-        //printf("\n%d %d %s\n", a.length(), strlen(a.c_str()), a.c_str());
-        NUT_TA(a == "c5&汉");
-
-		ascii_to_wstr("c5&汉", &b);
+        wstr_to_ascii(L"c5&汉", &a);
+        ascii_to_wstr(a.c_str(), &b);
         NUT_TA(b == L"c5&汉");
 
-		wstr_to_utf8(L"c5&汉", &a);
+        wstr_to_utf8(L"c5&汉", &a);
         utf8_to_wstr(a.c_str(), &b);
         NUT_TA(b == L"c5&汉");
+
+#if defined(NUT_PLATFORM_CC_GCC) || defined(NUT_PLATFORM_CC_MINGW)
+        // gcc 或直接取源码的编码并遗留到运行时编码中，目前源码的编码为 utf8
+        utf8_to_wstr("c5&汉", &b);
+        wstr_to_utf8(b.c_str(), &a);
+        NUT_TA(a == "c5&汉");
+#elif defined(NUT_PLATFORM_CC_VC)
+        // vc 会将c字符串转编码为 ascii，所以运行时全部为 ascii
+        ascii_to_wstr("c5&汉", &b);
+        wstr_to_ascii(b.c_str(), &a);
+        NUT_TA(a == "c5&汉");
+#endif
     }
 };
 
