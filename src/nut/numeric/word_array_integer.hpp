@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <string.h> // for memset(), memcpy(), memmove()
 #include <stdlib.h> // for malloc()
+#include <algorithm>
 
 #include <nut/platform/platform.hpp>
 #include <nut/platform/stdint.hpp>
@@ -88,11 +89,13 @@ bool equals(const T *a, size_t M, const T *b, size_t N)
         return false;
 
     const word_type fill = (positive1 ? 0 : ~(word_type)0);
-    const word_type limit = (M > N ? M : N);
+    const word_type limit = std::max(M, N);
     for (size_t i = 0; i < limit; ++i)
+    {
         if ((i < M ? reinterpret_cast<const word_type*>(a)[i] : fill) !=
             (i < N ? reinterpret_cast<const word_type*>(b)[i] : fill))
             return false;
+    }
     return true;
 }
 
@@ -113,7 +116,7 @@ bool less_than(const T *a, size_t M, const T *b, size_t N)
 
     // 同号比较
     const word_type fill = (positive1 ? 0 : ~(word_type)0);
-    for (int i = (M > N ? M : N) - 1; i >= 0; --i)
+    for (int i = std::max(M, N) - 1; i >= 0; --i)
     {
         const word_type op1 = (i < (int)M ? reinterpret_cast<const word_type*>(a)[i] : fill);
         const word_type op2 = (i < (int)N ? reinterpret_cast<const word_type*>(b)[i] : fill);
@@ -135,7 +138,7 @@ void expand(const T *a, size_t M, T *x, size_t N)
 
     const uint8_t fill = (is_positive(a, M) ? 0 : 0xFF); /// 先把变量算出来，避免操作数被破坏
     if (x != a)
-        ::memmove(x, a, sizeof(word_type) * (M < N ? M : N));
+        ::memmove(x, a, sizeof(word_type) * std::min(M, N));
     if (M < N)
         ::memset(x + M, fill, sizeof(word_type) * (N - M));
 }
@@ -1279,7 +1282,7 @@ void _square(const T *a, size_t M, T *x, size_t N, MemAlloc *ma = NULL)
     }
 
     // 再加上另一半
-    const size_t limit = (N < M * 2 ? N : M * 2);
+    const size_t limit = std::min(N, M * 2);
     shift_left(retx, limit, retx, limit, 1);
 
     // 加上中间对称线
@@ -1485,7 +1488,7 @@ void karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t
     }
 
     // 准备变量 A、B、C、D
-    const size_t base_len = ((MM > NN ? MM : NN) + 1) / 2;
+    const size_t base_len = (std::max(MM, NN) + 1) / 2;
     const T ZERO = 0;
     const T *A = aa + base_len;
     size_t a_len = MM - base_len;
@@ -1648,7 +1651,7 @@ void divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, si
     const size_t divisor_len = significant_size(b, N);
     const bool dividend_positive = is_positive(a, M); /// 先把变量算出来，避免操作数被破坏
     const bool divisor_positive = is_positive(b, N);
-    const size_t quotient_len = (P < dividend_len ? P : dividend_len);
+    const size_t quotient_len = std::min(P, dividend_len);
 
     // 避免数据在计算中途被破坏
     word_type *quotient = reinterpret_cast<word_type*>(x); // 商，可以为 NULL
