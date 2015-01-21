@@ -1599,12 +1599,12 @@ void karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t
     add(ABCD, base_len * 2 + 1, AC, base_len * 2, ABCD, base_len * 2 + 1, ma);
     add(ABCD, base_len * 2 + 1, BD, base_len * 2 + 1, ABCD, base_len * 2 + 1, ma);
 
-    // 位移并生成结果
-    expand(AC, base_len * 2, x, P);
-    shift_left(x, P, x, P, sizeof(T) * 8 * base_len);
-    add(x, P, ABCD, base_len * 2 + 1, x, P, ma);
-    shift_left(x, P, x, P, sizeof(T) * 8 * base_len);
-    add(x, P, BD, base_len * 2 + 1, x, P, ma);
+    // 并生成结果
+    expand(BD, base_len * 2 + 1, x, P);
+    if (P > base_len)
+        add(x + base_len, P - base_len, ABCD, base_len * 2 + 1, x + base_len, P - base_len, ma);
+    if (P > base_len * 2)
+        add(x + base_len * 2, P - base_len * 2, AC, base_len * 2, x + base_len * 2, P - base_len * 2, ma);
 
     // 回收内存
     if (NULL != ma)
