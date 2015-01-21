@@ -66,11 +66,7 @@ private:
 public:
     static self_type* create(MemAlloc *ma = NULL)
     {
-        self_type *ret = NULL;
-        if (NULL != ma)
-            ret = (self_type*) ma->alloc(sizeof(self_type));
-        else
-            ret = (self_type*) ::malloc(sizeof(self_type));
+        self_type *const ret = (self_type*) ma_alloc(ma, sizeof(self_type));
         assert(NULL != ret);
         new (ret) self_type(ma);
         ret->add_ref();
@@ -133,17 +129,10 @@ public:
         {
             _BundleElementBase *e = iter->second;
             e->~_BundleElementBase();
-            if (NULL != m_alloc)
-                m_alloc->free(e);
-            else
-                ::free(e);
+            ma_free(m_alloc, e);
         }
 
-        _BundleElement<T> *be = NULL;
-        if (NULL != m_alloc)
-            be = (_BundleElement<T>*) m_alloc->alloc(sizeof(_BundleElement<T>));
-        else
-            be = (_BundleElement<T>*) ::malloc(sizeof(_BundleElement<T>));
+        _BundleElement<T> *const be = (_BundleElement<T>*) ma_alloc(m_alloc, sizeof(_BundleElement<T>));
         assert(NULL != be);
         new (be) _BundleElement<T>(value);
         m_values[key] = be;
@@ -156,10 +145,7 @@ public:
         {
             _BundleElementBase *e = iter->second;
             e->~_BundleElementBase();
-            if (NULL != m_alloc)
-                m_alloc->free(e);
-            else
-                ::free(e);
+            ma_free(m_alloc, e);
         }
         m_values.clear();
     }

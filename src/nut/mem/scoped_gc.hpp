@@ -84,11 +84,7 @@ private:
 public:
     static self_type* create(MemAlloc *ma = NULL)
     {
-        self_type *ret = NULL;
-        if (NULL != ma)
-            ret = (self_type*) ma->alloc(sizeof(self_type));
-        else
-            ret = (self_type*) ::malloc(sizeof(self_type));
+        self_type *const ret = (self_type*) ma_alloc(ma, sizeof(self_type));
         assert(NULL != ret);
         new (ret) self_type(ma);
         ret->add_ref();
@@ -152,11 +148,7 @@ private:
 		{
 			if (cb >= DEFAULT_BLOCK_BODY_SIZE)
 			{
-                Block *new_blk = NULL;
-                if (NULL != m_alloc)
-                    new_blk = (Block*) m_alloc->alloc(BLOCK_HEADER_SIZE + cb);
-                else
-                    new_blk = (Block*) ::malloc(BLOCK_HEADER_SIZE + cb);
+                Block *const new_blk = (Block*) ma_alloc(m_alloc, BLOCK_HEADER_SIZE + cb);
 				assert(NULL != new_blk);
 
 				if (NULL != m_current_block)
@@ -174,11 +166,7 @@ private:
 			}
 			else
 			{
-                Block *new_blk = NULL;
-                if (NULL != m_alloc)
-                    new_blk = (Block*) m_alloc->alloc(DEFAULT_BLOCK_LEN);
-                else
-                    new_blk = (Block*) ::malloc(DEFAULT_BLOCK_LEN);
+                Block *new_blk = (Block*) ma_alloc(m_alloc, DEFAULT_BLOCK_LEN);
 				assert(NULL != new_blk);
 
 				new_blk->prev = m_current_block;
@@ -227,10 +215,7 @@ public:
         while (NULL != m_current_block)
         {
 			Block *prev = m_current_block->prev;
-            if (NULL != m_alloc)
-                m_alloc->free(m_current_block);
-            else
-                ::free(m_current_block);
+            ma_free(m_alloc, m_current_block);
 			m_current_block = prev;
         }
 		m_end = NULL;

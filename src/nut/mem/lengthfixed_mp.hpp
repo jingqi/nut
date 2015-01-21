@@ -66,11 +66,7 @@ private:
 public:
     static self_type* create(MemAlloc *ma = NULL)
     {
-        self_type *ret = NULL;
-        if (NULL != ma)
-            ret = (self_type*) ma->alloc(sizeof(self_type));
-        else
-            ret = (self_type*) ::malloc(sizeof(self_type));
+        self_type *const ret = (self_type*) ma_alloc(ma, sizeof(self_type));
         assert(NULL != ret);
         new (ret) self_type(ma);
         ret->add_ref();
@@ -114,10 +110,7 @@ public:
         while (NULL != p)
         {
             FreeNode *next = p->next;
-            if (NULL != m_alloc)
-                m_alloc->free(p);
-            else
-                ::free(p);
+            ma_free(m_alloc, p);
             p = next;
         }
         m_head.ptr = NULL;
@@ -132,12 +125,7 @@ public:
             const TagedPtr<FreeNode> old_head(m_head.cas);
 
             if (NULL == old_head.ptr)
-            {
-                if (NULL != m_alloc)
-                    return m_alloc->alloc(sizeof(FreeNode));
-                else
-                    return ::malloc(sizeof(FreeNode));
-            }
+                return ma_alloc(m_alloc, sizeof(FreeNode));
 
             const TagedPtr<FreeNode> new_head(old_head.ptr->next, old_head.tag + 1);
             if (atomic_cas(&(m_head.cas), old_head.cas, new_head.cas))
@@ -165,10 +153,7 @@ public:
         {
             if (m_free_num >= (int) MAX_FREE_BLOCKS)
             {
-                if (NULL != m_alloc)
-                    m_alloc->free(p);
-                else
-                    ::free(p);
+                ma_free(m_alloc, p);
                 return;
             }
 

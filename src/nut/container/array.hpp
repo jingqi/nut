@@ -45,12 +45,7 @@ private:
     {
         clear();
         if (NULL != m_buf)
-        {
-            if (NULL != m_alloc)
-                m_alloc->free(m_buf);
-            else
-                ::free(m_buf);
-        }
+            ma_free(m_alloc, m_buf);
         m_buf = NULL;
         m_cap = 0;
         if (NULL != m_alloc)
@@ -60,11 +55,7 @@ private:
 public:
     static self_type* create(size_type init_cap = 16, MemAlloc *ma = NULL)
     {
-        self_type *ret = NULL;
-        if (NULL != ma)
-            ret = (self_type*) ma->alloc(sizeof(self_type));
-        else
-            ret = (self_type*) ::malloc(sizeof(self_type));
+        self_type *const ret = (self_type*) ma_alloc(ma, sizeof(self_type));
         assert(NULL != ret);
         new (ret) self_type(init_cap, ma);
         ret->add_ref();
@@ -112,19 +103,9 @@ private:
         if (new_cap < new_size)
             new_cap = new_size;
         if (NULL == m_buf)
-        {
-            if (NULL != m_alloc)
-                m_buf = (T*) m_alloc->alloc(sizeof(T) * new_cap);
-            else
-                m_buf = (T*) ::malloc(sizeof(T) * new_cap);
-        }
+            m_buf = (T*) ma_alloc(m_alloc, sizeof(T) * new_cap);
         else
-        {
-            if (NULL != m_alloc)
-                m_buf = (T*) m_alloc->realloc(m_buf, sizeof(T) * new_cap);
-            else
-                m_buf = (T*) ::realloc(m_buf, sizeof(T) * new_cap);
-        }
+            m_buf = (T*) ma_realloc(m_alloc, m_buf, sizeof(T) * new_cap);
         assert(NULL != m_buf);
         m_cap = new_cap;
     }
