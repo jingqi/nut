@@ -1487,45 +1487,45 @@ void karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t
     // 准备变量 A、B、C、D
     const size_t base_len = ((MM > NN ? MM : NN) + 1) / 2;
     const T ZERO = 0;
-    const T *A = a + base_len;
-    size_t alen = M - base_len;
-    if (M <= base_len)
+    const T *A = aa + base_len;
+    size_t a_len = MM - base_len;
+    if (MM <= base_len)
     {
         A = &ZERO;
-        alen = 1;
+        a_len = 1;
     }
 
-    T *B = const_cast<T*>(a);
-    size_t blen = base_len;
-    if (!is_positive(B, blen))
+    T *B = const_cast<T*>(aa);
+    size_t b_len = base_len;
+    if (!is_positive(B, b_len))
     {
-        ++blen;
+        ++b_len;
         if (NULL != ma)
-            B = (T*) ma->alloc(sizeof(T) * blen);
+            B = (T*) ma->alloc(sizeof(T) * b_len);
         else
-            B = (T*) ::malloc(sizeof(T) * blen);
-        ::memcpy(B, a, sizeof(T) * base_len);
+            B = (T*) ::malloc(sizeof(T) * b_len);
+        ::memcpy(B, aa, sizeof(T) * base_len);
         B[base_len] = 0;
     }
 
-    const T *C = b + base_len;
-    size_t clen = N - base_len;
+    const T *C = bb + base_len;
+    size_t c_len = NN - base_len;
     if (N <= base_len)
     {
         C = &ZERO;
-        clen = 1;
+        c_len = 1;
     }
 
-    T *D = const_cast<T*>(b);
-    size_t dlen = base_len;
-    if (!is_positive(D, dlen))
+    T *D = const_cast<T*>(bb);
+    size_t d_len = base_len;
+    if (!is_positive(D, d_len))
     {
-        ++dlen;
+        ++d_len;
         if (NULL != ma)
-            D = (T*) ma->alloc(sizeof(T) * dlen);
+            D = (T*) ma->alloc(sizeof(T) * d_len);
         else
-            D = (T*) ::malloc(sizeof(T) * dlen);
-        ::memcpy(D, b, sizeof(T) * base_len);
+            D = (T*) ::malloc(sizeof(T) * d_len);
+        ::memcpy(D, bb, sizeof(T) * base_len);
         D[base_len] = 0;
     }
 
@@ -1534,22 +1534,22 @@ void karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t
         AC = (T*) ma->alloc(sizeof(T) * (base_len * 2));
     else
         AC = (T*) ::malloc(sizeof(T) * (base_len * 2));
-    karatsuba_multiply(A, alen, C, clen, AC, base_len * 2, ma);
+    karatsuba_multiply(A, a_len, C, c_len, AC, base_len * 2, ma);
 
     T *BD = NULL;
     if (NULL != ma)
         BD = (T*) ma->alloc(sizeof(T) * (base_len * 2 + 1));
     else
         BD = (T*) ::malloc(sizeof(T) * (base_len * 2 + 1));
-    karatsuba_multiply(B, blen, D, dlen, BD, base_len * 2 + 1, ma);
+    karatsuba_multiply(B, b_len, D, d_len, BD, base_len * 2 + 1, ma);
 
     T *D_C = NULL;
     if (NULL != ma)
         D_C = (T*) ma->alloc(sizeof(T) * base_len + 1);
     else
         D_C = (T*) ::malloc(sizeof(T) * base_len + 1);
-    sub(D, dlen, C, clen, D_C, base_len + 1, ma);
-    if (D != b)
+    sub(D, d_len, C, c_len, D_C, base_len + 1, ma);
+    if (D != bb)
     {
         if (NULL != ma)
             ma->free(D);
@@ -1571,8 +1571,8 @@ void karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t
         ABCD = (T*) ma->alloc(sizeof(T) * (base_len * 2 + 1));
     else
         ABCD = (T*) ::malloc(sizeof(T) * (base_len * 2 + 1));
-    sub(A, alen, B, blen, ABCD, base_len + 1, ma);
-    if (B != a)
+    sub(A, a_len, B, b_len, ABCD, base_len + 1, ma);
+    if (B != aa)
     {
         if (NULL != ma)
             ma->free(B);

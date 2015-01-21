@@ -23,6 +23,7 @@ NUT_FIXTURE(TestNumericAlgo)
     NUT_CASE(test_mod_multiply)
     NUT_CASE(test_mod_pow)
     NUT_CASE(test_prime)
+    NUT_CASE(test_karatsuba_multiply)
 	NUT_CASES_END()
 
     void set_up() {}
@@ -183,6 +184,44 @@ NUT_FIXTURE(TestNumericAlgo)
         BigInteger a = next_prime(bound);
         clock_t t = clock() - s;
         printf(" %ld ms ", t * 1000 / CLOCKS_PER_SEC);
+    }
+
+    void test_karatsuba_multiply()
+    {
+        typedef unsigned word_type;
+        size_t a_len = 5000, b_len = 5086, x_len = a_len + b_len;
+        word_type *a = (word_type*) ::malloc(sizeof(word_type) * a_len),
+                *b = (word_type*) ::malloc(sizeof(word_type) * b_len),
+                *x = (word_type*) ::malloc(sizeof(word_type) * x_len),
+                *y = (word_type*) ::malloc(sizeof(word_type) * x_len);
+        for (size_t i = 0; i < sizeof(word_type) * a_len; ++i)
+            reinterpret_cast<uint8_t*>(a)[i] = ::rand();
+        for (size_t i = 0; i < sizeof(word_type) * b_len; ++i)
+            reinterpret_cast<uint8_t*>(b)[i] = ::rand();
+        ::memset(x, 0, sizeof(word_type) * x_len);
+        ::memset(y, 0, sizeof(word_type) * x_len);
+
+        clock_t s = clock();
+        multiply<word_type, sys_ma>(a, a_len, b, b_len, x, x_len);
+        clock_t f1 = clock();
+        karatsuba_multiply<word_type, sys_ma>(a, a_len, b, b_len, y, x_len);
+        clock_t f2 = clock();
+        printf(" %ld ms(orgin %ld ms)", (f2 - f1) * 1000 / CLOCKS_PER_SEC, (f1 - s) * 1000 / CLOCKS_PER_SEC);
+        NUT_TA(0 == ::memcmp(x, y, sizeof(word_type) * x_len));
+
+        x_len = 156; // x 变小，应该对此做优化
+        s = clock();
+        multiply<word_type, sys_ma>(a, a_len, b, b_len, x, x_len);
+        f1 = clock();
+        karatsuba_multiply<word_type, sys_ma>(a, a_len, b, b_len, y, x_len);
+        f2 = clock();
+        printf(" %ld ms(orgin %ld ms)", (f2 - f1) * 1000 / CLOCKS_PER_SEC, (f1 - s) * 1000 / CLOCKS_PER_SEC);
+        NUT_TA(0 == ::memcmp(x, y, sizeof(word_type) * x_len));
+
+        ::free(a);
+        ::free(b);
+        ::free(x);
+        ::free(y);
     }
 };
 
