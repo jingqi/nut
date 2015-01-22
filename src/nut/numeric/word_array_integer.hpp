@@ -56,6 +56,12 @@ bool is_positive(const T *a, size_t N)
     return 0 == (a[N - 1] & (((T) 1) << (8 * sizeof(T) - 1)));
 }
 
+/**
+ * 是否为负数
+ *
+ * @return true, 参数 < 0
+ *      false, 参数 >= 0
+ */
 template <typename T>
 bool is_negative(const T *a, size_t N)
 {
@@ -63,7 +69,7 @@ bool is_negative(const T *a, size_t N)
 }
 
 /**
- * 有效字数
+ * (有符号数)有效字数
  *
  * @return 返回值>=1
  */
@@ -81,6 +87,11 @@ size_t signed_significant_size(const T *a, size_t N)
     return ret;
 }
 
+/**
+ * (无符号数)有效字数
+ *
+ * @return 返回值>=1
+ */
 template <typename T>
 size_t unsigned_significant_size(const T *a, size_t N)
 {
@@ -93,7 +104,7 @@ size_t unsigned_significant_size(const T *a, size_t N)
 }
 
 /**
- * 是否相等
+ * (有符号数)是否相等
  */
 template <typename T>
 bool signed_equals(const T *a, size_t M, const T *b, size_t N)
@@ -114,6 +125,9 @@ bool signed_equals(const T *a, size_t M, const T *b, size_t N)
     return true;
 }
 
+/**
+ * (无符号数)是否相等
+ */
 template <typename T>
 bool unsigned_equals(const T *a, size_t M, const T*b, size_t N)
 {
@@ -129,7 +143,7 @@ bool unsigned_equals(const T *a, size_t M, const T*b, size_t N)
 }
 
 /**
- * 小于
+ * (有符号数)小于
  *
  * @return a<M> < b<N>
  */
@@ -155,6 +169,11 @@ bool signed_less_than(const T *a, size_t M, const T *b, size_t N)
     return false; // 相等
 }
 
+/**
+ * (无符号数)小于
+ *
+ * @return a<M> < b<N>
+ */
 template <typename T>
 bool unsigned_less_than(const T *a, size_t M, const T *b, size_t N)
 {
@@ -172,7 +191,7 @@ bool unsigned_less_than(const T *a, size_t M, const T *b, size_t N)
 }
 
 /**
- * 带符号扩展(或者截断)
+ * (有符号数)带符号扩展(或者截断)
  * a<M> -> x<N>
  */
 template <typename T>
@@ -187,6 +206,10 @@ void signed_expand(const T *a, size_t M, T *x, size_t N)
         ::memset(x + M, fill, sizeof(T) * (N - M));
 }
 
+/**
+ * (无符号数)无符号扩展(或者截断)
+ * a<M> -> x<N>
+ */
 template <typename T>
 void unsigned_expand(const T *a, size_t M, T *x, size_t N)
 {
@@ -227,7 +250,7 @@ void _signed_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_c
 }
 
 /**
- * 左移
+ * (有符号数)左移
  * x<N> = a<N> << count
  */
 template <typename T>
@@ -291,7 +314,7 @@ void _unsigned_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word
 }
 
 /**
- * 左移
+ * (无符号数)左移
  * x<N> = a<N> << count
  */
 template <typename T>
@@ -357,7 +380,7 @@ void _signed_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t word_
 }
 
 /**
- * 右移
+ * (有符号数)右移
  * x<N> = a<N> >> count
  */
 template <typename T>
@@ -420,7 +443,7 @@ void _unsigned_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t wor
 }
 
 /**
- * 右移
+ * (无符号数)右移
  * x<N> = a<N> >> count
  */
 template <typename T>
@@ -1096,7 +1119,7 @@ inline int lowest_bit0(const uint8_t *a, size_t N)
 }
 
 /**
- * 相加
+ * (有符号数)相加
  * x<P> = a<M> + b<N>
  *
  * @return 进位
@@ -1135,7 +1158,7 @@ uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, M
 }
 
 /**
- * 无符号数相加
+ * (无符号数)相加
  * x<P> = a<M> + b<N>
  *
  * @return 进位
@@ -1198,7 +1221,7 @@ uint8_t increase(T *x, size_t N)
 }
 
 /**
- * 相减
+ * (有符号数)相减
  * x<P> = a<M> - b<N>
  *
  * @return 进位
@@ -1236,6 +1259,12 @@ uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, M
     return carry;
 }
 
+/**
+ * (无符号数)相减
+ * x<P> = a<M> - b<N>
+ *
+ * @return 进位
+ */
 template <typename T, typename MemAlloc>
 uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc *ma = NULL)
 {
@@ -1294,7 +1323,7 @@ uint8_t decrease(T *x, size_t N)
 }
 
 /**
- * 取相反数
+ * (有符号数)取相反数
  * x<N> = -a<N>
  *
  * @return 进位
@@ -1331,6 +1360,12 @@ uint8_t signed_negate(const T *a, size_t M, T *x, size_t N, MemAlloc *ma = NULL)
     return carry;
 }
 
+/**
+ * (无符号数)取相反数
+ * x<N> = -a<N>
+ *
+ * @return 进位
+ */
 template <typename T, typename MemAlloc>
 uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N, MemAlloc *ma = NULL)
 {
@@ -1363,7 +1398,7 @@ uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N, MemAlloc *ma = NUL
 }
 
 /**
- * 正数平方优化
+ * (无符号数/正数)平方优化
  *
  *              a  b  c  d  e
  *           *  a  b  c  d  e
@@ -1458,7 +1493,7 @@ void _unsigned_square(const T *a, size_t M, T *x, size_t N, MemAlloc *ma = NULL)
 }
 
 /**
- * 相乘
+ * (有符号数)相乘
  * x<P> = a<M> * b<N>
  */
 template <typename T, typename MemAlloc>
@@ -1515,7 +1550,7 @@ void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
 
 
 /**
- * 无符号数相乘
+ * (无符号数)相乘
  * x<P> = a<M> * b<N>
  */
 template <typename T, typename MemAlloc>
@@ -1688,7 +1723,7 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
 }
 
 /**
- * 相除
+ * (有符号数)相除
  * x<P> = a<M> / b<N>
  * y<Q> = a<M> % b<N>
  *
@@ -1793,6 +1828,90 @@ void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T
                 signed_sub(remainder, divisor_len, reinterpret_cast<const word_type*>(b), divisor_len, remainder, divisor_len, ma);
         }
         signed_expand(remainder, divisor_len, reinterpret_cast<word_type*>(y), Q);
+    }
+
+    // 释放空间
+    if (quotient != reinterpret_cast<word_type*>(x))
+        ma_free(ma, quotient);
+    if (remainder != reinterpret_cast<word_type*>(y))
+        ma_free(ma, remainder);
+}
+
+/**
+ * (无符号数)相除
+ * x<P> = a<M> / b<N>
+ * y<Q> = a<M> % b<N>
+ *
+ * @param x
+ *    商
+ * @param y
+ *    余数
+ */
+template <typename T, typename MemAlloc>
+void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, size_t Q, MemAlloc *ma = NULL)
+{
+    assert(NULL != a && M > 0 && NULL != b && N > 0);
+    assert((NULL != x && P > 0) || (NULL != y && Q > 0));
+    assert(NULL == x || P == 0 || NULL == y || Q == 0 || y >= x + P || x >= y + Q); // 避免区域交叉覆盖
+    assert(!is_zero(b, N)); // 被除数不能为0
+
+    typedef typename StdInt<T>::unsigned_type word_type;
+
+    // 常量
+    const size_t dividend_len = unsigned_significant_size(a, M);
+    const size_t divisor_len = unsigned_significant_size(b, N);
+    const size_t quotient_len = (std::min)(P, dividend_len);
+
+    // 避免数据在计算中途被破坏
+    word_type *quotient = reinterpret_cast<word_type*>(x); // 商，可以为 NULL
+    if ((a - P < x && x < a) || (b - P < x && x < b + N)) // 兼容 x==a 的情况
+        quotient = (word_type*) ma_alloc(ma, sizeof(word_type) * quotient_len);
+    word_type *remainder = reinterpret_cast<word_type*>(y); // 余数，不能为 NULL
+    if (NULL == y || Q < divisor_len || (a - Q < y && y < a + M) || (b - Q < y && y < b + N))
+        remainder = (word_type*) ma_alloc(ma, sizeof(word_type) * divisor_len);
+
+    // 逐位试商
+    ::memset(remainder, 0, sizeof(word_type) * divisor_len); // 初始化余数
+    bool remainder_positive = true;
+    for (size_t i = 0; i < dividend_len; ++i)
+    {
+        const size_t dividend_word_pos = dividend_len - i - 1;
+        const word_type next_dividend_word = reinterpret_cast<const word_type*>(a)[dividend_word_pos]; // 余数左移时的低位补位部分
+        if (NULL != quotient && dividend_word_pos < P)
+            quotient[dividend_word_pos] = 0; // 初始化商，注意，兼容 x==a 的情况
+
+        for (size_t j = 0; j < 8 * sizeof(word_type); ++j)
+        {
+            // 余数左移1位
+            unsigned_shift_left(remainder, divisor_len, remainder, divisor_len, 1);
+            remainder[0] |= (next_dividend_word >> (8 * sizeof(word_type) - 1 - j)) & 0x01;
+
+            // 加上/减去除数
+            if (remainder_positive)
+                unsigned_sub(remainder, divisor_len, reinterpret_cast<const word_type*>(b), divisor_len, remainder, divisor_len, ma);
+            else
+                unsigned_add(remainder, divisor_len, reinterpret_cast<const word_type*>(b), divisor_len, remainder, divisor_len, ma);
+
+            // 试商结果
+            remainder_positive = is_positive(remainder, divisor_len);
+            if (remainder_positive && NULL != quotient && dividend_word_pos < P)
+                quotient[dividend_word_pos] |= (1 << (8 * sizeof(word_type) - 1 - j));
+        }
+    }
+
+    // 商
+    if (NULL != x)
+        unsigned_expand(quotient, quotient_len, reinterpret_cast<word_type*>(x), P);
+
+    /**
+        恢复余数:
+        如果未除尽且余数符号与被除数不一致，余数需加上除数
+    */
+    if (NULL != y)
+    {
+        if (!is_zero(remainder, divisor_len) && !remainder_positive)
+            unsigned_add(remainder, divisor_len, reinterpret_cast<const word_type*>(b), divisor_len, remainder, divisor_len, ma);
+        unsigned_expand(remainder, divisor_len, reinterpret_cast<word_type>(y), Q);
     }
 
     // 释放空间
