@@ -202,18 +202,18 @@ NUT_FIXTURE(TestNumericAlgo)
         ::memset(y, 0, sizeof(word_type) * x_len);
 
         clock_t s = clock();
-        multiply<word_type, sys_ma>(a, a_len, b, b_len, x, x_len);
+        signed_multiply<word_type, sys_ma>(a, a_len, b, b_len, x, x_len);
         clock_t f1 = clock();
-        karatsuba_multiply<word_type, sys_ma>(a, a_len, b, b_len, y, x_len);
+        signed_karatsuba_multiply<word_type, sys_ma>(a, a_len, b, b_len, y, x_len);
         clock_t f2 = clock();
         printf(" %ld ms(orgin %ld ms)", (f2 - f1) * 1000 / CLOCKS_PER_SEC, (f1 - s) * 1000 / CLOCKS_PER_SEC);
         NUT_TA(0 == ::memcmp(x, y, sizeof(word_type) * x_len));
 
         x_len = 156; // x 变小，应该对此做优化
         s = clock();
-        multiply<word_type, sys_ma>(a, a_len, b, b_len, x, x_len);
+        signed_multiply<word_type, sys_ma>(a, a_len, b, b_len, x, x_len);
         f1 = clock();
-        karatsuba_multiply<word_type, sys_ma>(a, a_len, b, b_len, y, x_len);
+        signed_karatsuba_multiply<word_type, sys_ma>(a, a_len, b, b_len, y, x_len);
         f2 = clock();
         printf(" %ld ms(orgin %ld ms)", (f2 - f1) * 1000 / CLOCKS_PER_SEC, (f1 - s) * 1000 / CLOCKS_PER_SEC);
         NUT_TA(0 == ::memcmp(x, y, sizeof(word_type) * x_len));

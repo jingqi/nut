@@ -27,7 +27,7 @@ int main()
     setlocale(LC_ALL, "zh_CN.UTF8");
 #endif
 
-    srand(time(NULL));
+    srand((unsigned) time(NULL));
 
     printf("\n%s\n", NUT_PLATFORM_STR);
 
@@ -39,11 +39,11 @@ int main()
 
     TestRunner trunner(l);
 
-    //trunner.run_group("quiet");
+    trunner.run_group("numeric");
 
     //trunner.run_fixture("TestContainer");
 
-    trunner.run_case("TestNumericAlgo", "test_karatsuba_multiply");
+    //trunner.run_case("TestNumericAlgo", "test_karatsuba_multiply");
 
     printf("press any key to continue...");
 #if defined(NUT_PLATFORM_OS_WINDOWS)

@@ -81,7 +81,7 @@ private:
             return;
 
         ensure_cap(siglen);
-        nut::expand(m_buffer, m_significant_len, m_buffer, siglen);
+        signed_expand(m_buffer, m_significant_len, m_buffer, siglen);
         m_significant_len = siglen;
     }
 
@@ -90,7 +90,7 @@ private:
      */
     void minimize_significant_len()
     {
-        m_significant_len = significant_size(m_buffer, m_significant_len);
+        m_significant_len = signed_significant_size(m_buffer, m_significant_len);
     }
 
 public:
@@ -115,7 +115,7 @@ public:
         if (NULL != m_alloc)
             m_alloc->add_ref();
 
-        const uint8_t fill = (with_sign ? (::nut::is_positive(buf, len) ? 0 : 0xFF) : 0);
+        const uint8_t fill = (with_sign ? (nut::is_positive(buf, len) ? 0 : 0xFF) : 0);
         const size_type min_sig = sizeof(U) * len / sizeof(word_type) + 1; // 保证一个空闲字节放符号位
         ensure_cap(min_sig);
         ::memcpy(m_buffer, buf, sizeof(U) * len);
@@ -201,14 +201,14 @@ public:
     {
         if (&x == this)
             return true;
-        return equals(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len);
+        return signed_equals(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len);
     }
 
     bool operator==(long long v) const
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
 
-        return equals(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
+        return signed_equals(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
     }
 
     bool operator!=(const self_type& x) const
@@ -223,14 +223,14 @@ public:
 
     bool operator<(const self_type& x) const
     {
-        return less_than(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len);
+        return signed_less_than(m_buffer, m_significant_len, x.m_buffer, x.m_significant_len);
     }
 
     bool operator<(long long v) const
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
 
-        return less_than(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
+        return signed_less_than(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
     }
 
     bool operator>(const self_type& x) const
@@ -242,7 +242,7 @@ public:
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
 
-        return less_than((word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer, m_significant_len);
+        return signed_less_than((word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer, m_significant_len);
     }
 
     bool operator<=(const self_type& x) const
@@ -333,7 +333,7 @@ public:
         assert(!x.is_zero());
 
         // 简单优化
-        if (is_positive() && x.is_positive())
+        if (self_type::is_positive() && x.is_positive())
         {
             if (*this < x)
                 return *this;
@@ -410,7 +410,7 @@ public:
         assert(!x.is_zero());
 
         // 简单优化
-        if (is_positive() && x.is_positive())
+        if (self_type::is_positive() && x.is_positive())
         {
             if (*this < x)
                 return *this;
@@ -502,7 +502,7 @@ public:
 
         const size_type max_len = (a.m_significant_len > b.m_significant_len ? a.m_significant_len : b.m_significant_len);
         x->ensure_cap(max_len + 1);
-        nut::add(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, a.m_alloc);
+        signed_add(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, a.m_alloc);
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -514,7 +514,7 @@ public:
 
         const size_type max_len = (a.m_significant_len > sizeof(b) / sizeof(word_type) ? a.m_significant_len : sizeof(b) / sizeof(word_type));
         x->ensure_cap(max_len + 1);
-        nut::add(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->m_buffer, max_len + 1, a.m_alloc);
+        signed_add(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->m_buffer, max_len + 1, a.m_alloc);
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -526,7 +526,7 @@ public:
 
         const size_type max_len = (sizeof(a) / sizeof(word_type) > b.m_significant_len ? sizeof(a) / sizeof(word_type) : b.m_significant_len);
         x->ensure_cap(max_len + 1);
-        nut::add((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, b.m_alloc);
+        signed_add((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, b.m_alloc);
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -537,7 +537,7 @@ public:
 
         const size_type max_len = (a.m_significant_len > b.m_significant_len ? a.m_significant_len : b.m_significant_len);
         x->ensure_cap(max_len + 1);
-        nut::sub(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, a.m_alloc);
+        signed_sub(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, a.m_alloc);
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -549,7 +549,7 @@ public:
 
         const size_type max_len = (a.m_significant_len > sizeof(b) / sizeof(word_type) ? a.m_significant_len : sizeof(b) / sizeof(word_type));
         x->ensure_cap(max_len + 1);
-        nut::sub(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->m_buffer, max_len + 1, a.m_alloc);
+        signed_sub(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->m_buffer, max_len + 1, a.m_alloc);
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -561,7 +561,7 @@ public:
 
         const size_type max_len = (sizeof(a) / sizeof(word_type) > b.m_significant_len ? sizeof(a) / sizeof(word_type) : b.m_significant_len);
         x->ensure_cap(max_len + 1);
-        nut::sub((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, b.m_alloc);
+        signed_sub((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, b.m_alloc);
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -571,7 +571,7 @@ public:
         assert(NULL != x);
 
         x->ensure_cap(a.m_significant_len + 1);
-        nut::negate(a.m_buffer, a.m_significant_len, x->m_buffer, a.m_significant_len + 1, a.m_alloc);
+        signed_negate(a.m_buffer, a.m_significant_len, x->m_buffer, a.m_significant_len + 1, a.m_alloc);
         x->m_significant_len = a.m_significant_len + 1;
         x->minimize_significant_len();
     }
@@ -597,7 +597,7 @@ public:
         assert(NULL != x);
 
         x->ensure_cap(a.m_significant_len + b.m_significant_len);
-        nut::multiply(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len,
+        signed_multiply(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len,
             x->m_buffer, a.m_significant_len + b.m_significant_len, a.m_alloc);
         x->m_significant_len = a.m_significant_len + b.m_significant_len;
         x->minimize_significant_len();
@@ -609,7 +609,7 @@ public:
         assert(NULL != x);
 
         x->ensure_cap(a.m_significant_len + sizeof(b) / sizeof(word_type));
-        nut::multiply(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type),
+        signed_multiply(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type),
             x->m_buffer, a.m_significant_len + sizeof(b) / sizeof(word_type), a.m_alloc);
         x->m_significant_len = a.m_significant_len + sizeof(b) / sizeof(word_type);
         x->minimize_significant_len();
@@ -621,7 +621,7 @@ public:
         assert(NULL != x);
 
         x->ensure_cap(sizeof(a) / sizeof(word_type) + b.m_significant_len);
-        nut::multiply((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len,
+        signed_multiply((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len,
             x->m_buffer, sizeof(a) / sizeof(word_type) + b.m_significant_len, b.m_alloc);
         x->m_significant_len = sizeof(a) / sizeof(word_type) + b.m_significant_len;
         x->minimize_significant_len();
@@ -641,7 +641,7 @@ public:
         if (NULL != remainder)
             remainder->ensure_cap(b.m_significant_len);
 
-        nut::divide(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len,
+        signed_divide(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len,
                (NULL == result ? NULL : result->m_buffer), a.m_significant_len,
                (NULL == remainder ? NULL : remainder->m_buffer), b.m_significant_len,
                a.m_alloc);
@@ -662,7 +662,7 @@ public:
     {
         const size_type min_sig = a.m_significant_len + (count - 1) / (8 * sizeof(word_type)) + 1;
         x->ensure_cap(min_sig);
-        nut::shift_left(a.m_buffer, a.m_significant_len, x->m_buffer, min_sig, count);
+        signed_shift_left(a.m_buffer, a.m_significant_len, x->m_buffer, min_sig, count);
         x->m_significant_len = min_sig;
         x->minimize_significant_len();
     }
@@ -670,7 +670,7 @@ public:
     static void shift_right(const self_type& a, size_type count, self_type *x)
     {
         x->ensure_cap(a.m_significant_len);
-        nut::shift_right(a.m_buffer, a.m_significant_len, x->m_buffer, a.m_significant_len, count);
+        signed_shift_right(a.m_buffer, a.m_significant_len, x->m_buffer, a.m_significant_len, count);
         x->m_significant_len = a.m_significant_len;
         x->minimize_significant_len();
     }
@@ -719,7 +719,7 @@ public:
 #else
         // 正数且有效位数较小，无需做任何事情
         const size_type min_sig = bit_len / (8 * sizeof(word_type));
-        if (m_significant_len <= min_sig && is_positive())
+        if (m_significant_len <= min_sig && self_type::is_positive())
             return;
 
         // 需要扩展符号位，或者需要截断
@@ -757,7 +757,7 @@ public:
     {
         const size_type words_len = (bit_len + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
         ensure_cap(words_len);
-        nut::multiply(m_buffer, m_significant_len, a.m_buffer, a.m_significant_len, m_buffer, words_len, m_alloc);
+        signed_multiply(m_buffer, m_significant_len, a.m_buffer, a.m_significant_len, m_buffer, words_len, m_alloc);
         m_significant_len = words_len;
         limit_positive_bits_to(bit_len);
     }
@@ -795,7 +795,7 @@ public:
         if (i / (8 * sizeof(word_type)) >= m_significant_len)
         {
 #if (OPTIMIZE_LEVEL == 0)
-            return is_positive() ? 0 : 1;
+            return self_type::is_positive() ? 0 : 1;
 #else
             return m_buffer[m_significant_len - 1] >> (8 * sizeof(word_type) - 1);
 #endif
@@ -809,7 +809,7 @@ public:
     word_type word_at(size_type i) const
     {
         if (i >= m_significant_len)
-            return is_positive() ? 0 : ~(word_type)0;
+            return self_type::is_positive() ? 0 : ~(word_type)0;
         return m_buffer[i];
     }
 
@@ -834,7 +834,7 @@ public:
 
     size_type bit_length() const
     {
-    	if (is_positive())
+        if (self_type::is_positive())
             return nut::bit_length((uint8_t*)m_buffer, sizeof(word_type) * m_significant_len);
     	else
             return nut::bit0_length((uint8_t*)m_buffer, sizeof(word_type) * m_significant_len);
@@ -846,7 +846,7 @@ public:
     size_type bit_count() const
     {
         const size_type bc = nut::bit_count((uint8_t*)m_buffer, sizeof(word_type) * m_significant_len);
-    	if (is_positive())
+        if (self_type::is_positive())
     		return bc;
     	return 8 * sizeof(word_type) * m_significant_len - bc;
     }
@@ -861,7 +861,7 @@ public:
         NUT_STATIC_ASSERT(sizeof(long long) % sizeof(word_type) == 0);
 
         long long ret = 0;
-        nut::expand(m_buffer, m_significant_len, (word_type*)&ret, sizeof(ret) / sizeof(word_type));
+        signed_expand(m_buffer, m_significant_len, (word_type*)&ret, sizeof(ret) / sizeof(word_type));
         return ret;
     }
 
