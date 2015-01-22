@@ -1329,7 +1329,6 @@ template <typename T, typename MemAlloc>
 void karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc *ma = NULL)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
-    typedef typename StdInt<T>::unsigned_type word_type;
 
     // 规模较小时使用一般算法
     if (M < 5 || N < 5 || P < 5)
@@ -1402,7 +1401,7 @@ void karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t
     T *BD = (T*) ma_alloc(ma, sizeof(T) * (base_len * 2 + 1));
     karatsuba_multiply(B, b_len, D, d_len, BD, base_len * 2 + 1, ma);
 
-    T *D_C = (T*) ma_alloc(ma, sizeof(T) * base_len + 1);
+    T *D_C = (T*) ma_alloc(ma, sizeof(T) * (base_len + 1));
     sub(D, d_len, C, c_len, D_C, base_len + 1, ma);
     if (D != bb)
         ma_free(ma, D);

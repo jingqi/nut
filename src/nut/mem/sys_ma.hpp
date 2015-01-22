@@ -26,7 +26,7 @@ class sys_ma
     int volatile m_ref_count;
 
 #ifndef NDEBUG
-    enum { LEFT_TAG = 0x87A4B4C4, RIGHT_TAG = 0x15BF0D3C };
+    uint32_t m_left_tag, m_right_tag;
     size_t m_alloc_count, m_free_count;
     size_t m_total_alloc_cb, m_total_free_cb;
 #endif
@@ -39,9 +39,17 @@ private:
     sys_ma()
         : m_ref_count(0)
 #ifndef NDEBUG
-        , m_alloc_count(0), m_free_count(0), m_total_alloc_cb(0), m_total_free_cb(0)
+        , m_left_tag(0), m_right_tag(0), m_alloc_count(0), m_free_count(0),
+          m_total_alloc_cb(0), m_total_free_cb(0)
 #endif
-    {}
+    {
+#ifndef NDEBUG
+        for (size_t i = 0; i < sizeof(m_left_tag); ++i)
+            reinterpret_cast<uint8_t*>(&m_left_tag)[i] = (uint8_t) ::rand();
+        for (size_t i = 0; i < sizeof(m_right_tag); ++i)
+            reinterpret_cast<uint8_t*>(&m_right_tag)[i] = (uint8_t) ::rand();
+#endif
+    }
 
     virtual ~sys_ma()
     {
@@ -96,8 +104,9 @@ public:
         void* ret = ::malloc(total_cb);
         assert(NULL != ret);
         *(uint32_t*) ret = cb;
-        ((uint32_t*) ret)[1] = LEFT_TAG;
-        *(uint32_t*) (((uint8_t*) ret) + sizeof(uint32_t) * 2 + cb) = RIGHT_TAG;
+        ((uint32_t*) ret)[1] = m_left_tag;
+        *(uint32_t*) (((uint8_t*) ret) + sizeof(uint32_t) * 2 + cb) = m_right_tag;
+        ::memset(((uint32_t*) ret) + 2, 0xCC, cb);
         ++m_alloc_count;
         m_total_alloc_cb += cb;
         return ((uint32_t*) ret) + 2;
@@ -112,8 +121,8 @@ public:
 #ifndef NDEBUG
         assert(NULL != p);
         const size_t cb = ((uint32_t*) p)[-2];
-        assert(LEFT_TAG == ((uint32_t*) p)[-1]);
-        assert(RIGHT_TAG == *(uint32_t*)(((uint8_t*) p) + cb));
+        assert(m_left_tag == ((uint32_t*) p)[-1]);
+        assert(m_right_tag == *(uint32_t*)(((uint8_t*) p) + cb));
         ((uint32_t*) p)[-1] = 0;
         *(uint32_t*)(((uint8_t*) p) + cb) = 0;
 
@@ -121,8 +130,10 @@ public:
         void *ret = ::realloc(((uint32_t*) p) - 2, total_cb);
         assert(NULL != ret);
         *(uint32_t*) ret = new_cb;
-        ((uint32_t*) ret)[1] = LEFT_TAG;
-        *(uint32_t*) (((uint8_t*) ret) + sizeof(uint32_t) * 2 + new_cb) = RIGHT_TAG;
+        ((uint32_t*) ret)[1] = m_left_tag;
+        *(uint32_t*) (((uint8_t*) ret) + sizeof(uint32_t) * 2 + new_cb) = m_right_tag;
+        if (new_cb > cb)
+            ::memset(((uint8_t*) ret) + sizeof(uint32_t) * 2 + cb, 0xCC, new_cb - cb);
         ++m_free_count;
         ++m_alloc_count;
         m_total_free_cb += cb;
@@ -139,10 +150,11 @@ public:
 #ifndef NDEBUG
         assert(NULL != p);
         const size_t cb = ((uint32_t*) p)[-2];
-        assert(LEFT_TAG == ((uint32_t*) p)[-1]);
-        assert(RIGHT_TAG == *(uint32_t*)(((uint8_t*) p) + cb));
+        assert(m_left_tag == ((uint32_t*) p)[-1]);
+        assert(m_right_tag == *(uint32_t*)(((uint8_t*) p) + cb));
         ((uint32_t*) p)[-1] = 0;
         *(uint32_t*)(((uint8_t*) p) + cb) = 0;
+        ::memset(p, 0xFE, cb);
         ::free(((uint32_t*) p) - 2);
         ++m_free_count;
         m_total_free_cb += cb;
