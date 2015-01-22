@@ -83,6 +83,7 @@ public:
 
     int get_ref() const
     {
+        NUT_DEBUGGING_ASSERT_ALIVE;
         return m_ref_count;
     }
 
@@ -113,6 +114,8 @@ public:
         const size_t cb = ((uint32_t*) p)[-2];
         assert(LEFT_TAG == ((uint32_t*) p)[-1]);
         assert(RIGHT_TAG == *(uint32_t*)(((uint8_t*) p) + cb));
+        ((uint32_t*) p)[-1] = 0;
+        *(uint32_t*)(((uint8_t*) p) + cb) = 0;
 
         const size_t total_cb = new_cb + sizeof(uint32_t) * 3;
         void *ret = ::realloc(((uint32_t*) p) - 2, total_cb);
@@ -120,10 +123,10 @@ public:
         *(uint32_t*) ret = new_cb;
         ((uint32_t*) ret)[1] = LEFT_TAG;
         *(uint32_t*) (((uint8_t*) ret) + sizeof(uint32_t) * 2 + new_cb) = RIGHT_TAG;
-        ++m_alloc_count;
         ++m_free_count;
-        m_total_alloc_cb += new_cb;
+        ++m_alloc_count;
         m_total_free_cb += cb;
+        m_total_alloc_cb += new_cb;
         return ((uint32_t*) ret) + 2;
 #else
         return ::realloc(p, new_cb);
@@ -138,6 +141,8 @@ public:
         const size_t cb = ((uint32_t*) p)[-2];
         assert(LEFT_TAG == ((uint32_t*) p)[-1]);
         assert(RIGHT_TAG == *(uint32_t*)(((uint8_t*) p) + cb));
+        ((uint32_t*) p)[-1] = 0;
+        *(uint32_t*)(((uint8_t*) p) + cb) = 0;
         ::free(((uint32_t*) p) - 2);
         ++m_free_count;
         m_total_free_cb += cb;
