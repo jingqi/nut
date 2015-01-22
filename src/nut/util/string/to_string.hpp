@@ -38,7 +38,8 @@ inline std::string ll_to_str(long long i)
     const int BUF_SIZE = 60;
     char buf[BUF_SIZE];
     ::memset(buf, 0, BUF_SIZE);
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(_MSC_VER) && _MSC_VER <= 1310
+	// for VS2003 or ealier, "%lld" was not supported
     ::sprintf(buf, "%I64d", i);
     // ::ltoa(i, buf, 10);
 #else
