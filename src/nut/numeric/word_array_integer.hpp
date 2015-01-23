@@ -1618,7 +1618,7 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
         return;
     }
 
-    // 改算法不能处理负数的补数
+    // 改算法不能处理负数的补数形式
     T *aa = const_cast<T*>(a), *bb = const_cast<T*>(b);
     size_t MM = M, NN = N;
     bool neg = false;
@@ -1649,13 +1649,13 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
     }
 
     T *B = const_cast<T*>(aa);
-    size_t b_len = base_len;
+    size_t b_len = (std::min)(MM, base_len);
     if (!is_positive(B, b_len))
     {
+        B = (T*) ma_alloc(ma, sizeof(T) * (b_len + 1));
+        ::memcpy(B, aa, sizeof(T) * b_len);
+        B[b_len] = 0;
         ++b_len;
-        B = (T*) ma_alloc(ma, sizeof(T) * b_len);
-        ::memcpy(B, aa, sizeof(T) * base_len);
-        B[base_len] = 0;
     }
 
     const T *C = bb + base_len;
@@ -1667,13 +1667,13 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
     }
 
     T *D = const_cast<T*>(bb);
-    size_t d_len = base_len;
+    size_t d_len = (std::min)(NN, base_len);
     if (!is_positive(D, d_len))
     {
+        D = (T*) ma_alloc(ma, sizeof(T) * (d_len + 1));
+        ::memcpy(D, bb, sizeof(T) * d_len);
+        D[d_len] = 0;
         ++d_len;
-        D = (T*) ma_alloc(ma, sizeof(T) * d_len);
-        ::memcpy(D, bb, sizeof(T) * base_len);
-        D[base_len] = 0;
     }
 
     T *AC = (T*) ma_alloc(ma, sizeof(T) * (base_len * 2));
