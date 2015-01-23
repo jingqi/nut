@@ -1663,7 +1663,14 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     N = (std::min)(unsigned_significant_size(b, N), P);
 
     // 规模较小时使用一般算法
-    if (M < 5 || N < 5 || P < 5)
+	// 这个边界值是一个经验值，并且与平台相关。在 VC 上，如果设置的过小，性能甚至会急剧下降!
+#if defined(NUT_PLATFORM_CC_VC)
+	const size_t LIMIT = 256;
+#else
+	const size_t LIMIT = 32;
+#endif
+
+    if (M < LIMIT || N < LIMIT || P < LIMIT)
     {
         unsigned_multiply(a, M, b, N, x, P, ma);
         return;
