@@ -4,6 +4,7 @@
 #include <nut/numeric/numeric_algo/gcd.hpp>
 #include <nut/numeric/numeric_algo/mod.hpp>
 #include <nut/numeric/numeric_algo/prime.hpp>
+#include <nut/numeric/numeric_algo/karatsuba.hpp>
 
 #include <time.h>
 #include <stdio.h>
