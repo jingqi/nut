@@ -1654,7 +1654,7 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
  * 该算式中乘法总体规模变小了
  */
 template <typename T, typename MemAlloc>
-void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc *ma = NULL)
+void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc *ma)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
 
