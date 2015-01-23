@@ -19,31 +19,35 @@ namespace nut
 
 /**
  * 模乘之前的预计算表计算
- *
- * @return 返回的指针需要delete[] 掉
  */
-template <size_t C>
+template <size_t C, typename MemAlloc = sys_ma>
 struct ModMultiplyPreBuildTable
 {
+    MemAlloc *const alloc;
+
 #if (OPTIMIZE_LEVEL == 0)
     size_t hight, width;
     BigInteger *table;
 
-    ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n)
-        : hight(0), width(0), table(NULL)
+    ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n, MemAlloc *ma = NULL)
+        : alloc(ma), hight(0), width(0), table(NULL)
     {
         assert(a.is_positive() && n.is_positive() && a < n); // 一定要保证 a<n ，以便进行模加运算
+        if (NULL != alloc)
+            alloc->add_ref();
 
         hight = (32 * n.significant_words_length() + C - 1) / C;
         width = (1 << C) - 1;
-        table = new BigInteger[hight * width];
+
+        const size_t count = hight * width;
+        table = (BigInteger*) ma_alloc(alloc, sizeof(BigInteger) * count);
         assert(NULL != table);
 
         // 填充第一行
-        table[0] = a;
+        new (table + 0) BigInteger(a);
         for (size_t i = 1; i < width; ++i)
         {
-            table[i] = table[0] + table[i - 1];
+            new (table + i) BigInteger(table[0] + table[i - 1]);
             if (table[i] >= n)
                 table[i] -= n;
         }
@@ -51,13 +55,13 @@ struct ModMultiplyPreBuildTable
         for (size_t i = 1; i < hight; ++i)
         {
             const size_t base_off = i * width;
-            table[base_off] = table[base_off - width] + table[base_off - 1];
+            new (table + base_off) BigInteger(table[base_off - width] + table[base_off - 1]);
             if (table[base_off] >= n)
                 table[base_off] -= n;
 
             for (size_t j = 1; j < width; ++j)
             {
-                table[base_off + j] = table[base_off] + table[base_off + j - 1];
+                new (table + base_off + j) BigInteger(table[base_off] + table[base_off + j - 1]);
                 if (table[base_off + j] >= n)
                     table[base_off + j] -= n;
             }
@@ -67,8 +71,14 @@ struct ModMultiplyPreBuildTable
     ~ModMultiplyPreBuildTable()
     {
         if (NULL != table)
-            delete[] table;
-        table = NULL;
+        {
+            for (size_t i = 0, count = hight * width; i < count; ++i)
+                (table + i)->~_BigInteger();
+            ma_free(alloc, table);
+            table = NULL;
+        }
+        if (NULL != alloc)
+            alloc->rls_ref();
     }
 
     const BigInteger& at(size_t i, size_t j) const
@@ -81,17 +91,23 @@ struct ModMultiplyPreBuildTable
     BigInteger **table;
     BigInteger mod;
 
-    ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n)
-        : hight(0), width(0), table(NULL)
+    ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n, MemAlloc *ma = NULL)
+        : alloc(ma), hight(0), width(0), table(NULL)
     {
         assert(a.is_positive() && n.is_positive() && a < n); // 一定要保证 a<n ，以便进行模加运算
+        if (NULL != alloc)
+            alloc->add_ref();
 
         hight = (n.bit_length() + C - 1) / C;
         width = (1 << C) - 1;
-        table = new BigInteger*[hight * width];
+
+        const size_t count = hight * width;
+        table = (BigInteger**) ma_alloc(alloc, sizeof(BigInteger*) * count);
         assert(NULL != table);
-        ::memset(table, 0, sizeof(BigInteger*) * hight * width);
-        table[0] = new BigInteger(a);
+        ::memset(table, 0, sizeof(BigInteger*) * count);
+
+        table[0] = (BigInteger*) ma_alloc(alloc, sizeof(BigInteger));
+        new (table[0]) BigInteger(a);
         mod = n;
     }
 
@@ -100,12 +116,22 @@ struct ModMultiplyPreBuildTable
         if (NULL != table)
         {
             for (size_t i = 0; i < hight; ++i)
+            {
                 for (size_t j = 0; j < width; ++j)
+                {
                     if (NULL != table[i * width + j])
-                        delete table[i * width + j];
-            delete[] table;
+                    {
+                        table[i * width + j]->~_BigInteger();
+                        ma_free(alloc, table[i * width + j]);
+                        table[i * width + j] = NULL;
+                    }
+                }
+            }
+            ma_free(alloc, table);
+            table = NULL;
         }
-        table = NULL;
+        if (NULL != alloc)
+            alloc->rls_ref();
     }
 
     const BigInteger& at(size_t i, size_t j) const
@@ -116,9 +142,16 @@ struct ModMultiplyPreBuildTable
         if (NULL == table[base_off + j])
         {
             if (j == 0)
-                table[base_off] = new BigInteger(at(i - 1, 0) + at(i - 1, width - 1));
+            {
+                table[base_off] = (BigInteger*) ma_alloc(alloc, sizeof(BigInteger));
+                new (table[base_off]) BigInteger(at(i - 1, 0) + at(i - 1, width - 1));
+            }
             else
-                table[base_off + j] = new BigInteger(at(i, 0) + at(i, j - 1));
+            {
+                table[base_off + j] = (BigInteger*) ma_alloc(alloc, sizeof(BigInteger));
+                new (table[base_off + j]) BigInteger(at(i, 0) + at(i, j - 1));
+            }
+
             if (*table[base_off + j] >= mod) // 模加
                 *table[base_off + j] -= mod;
         }
@@ -127,20 +160,20 @@ struct ModMultiplyPreBuildTable
 #endif
 
 private:
-    ModMultiplyPreBuildTable(const ModMultiplyPreBuildTable<C>&);
+    ModMultiplyPreBuildTable(const ModMultiplyPreBuildTable<C,MemAlloc>&);
 };
 
 /**
 * 预算表法求乘模
 * 参见 《公开密钥密码算法及其快速实现》.周玉洁.冯国登.国防工业出版社.2002 P57
  */
-template <size_t C>
-void mod_multiply(const BigInteger& b, const BigInteger& n, const ModMultiplyPreBuildTable<C>& table, BigInteger *out)
+template <size_t C,typename MemAlloc>
+void mod_multiply(const BigInteger& b, const BigInteger& n, const ModMultiplyPreBuildTable<C,MemAlloc>& table, BigInteger *out)
 {
     assert(NULL != out);
     assert(b.is_positive() && n.is_positive() && b < n); // 一定要保证 b<n ,以便优化模加运算
 
-    BigInteger s(0, b.alloctor());
+    BigInteger s(0, b.allocator());
     size_t limit = (b.bit_length() + C - 1) / C;
     if (table.hight < limit)
         limit = table.hight;
@@ -177,7 +210,7 @@ inline void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, c
     size_t min_sig = (rlen + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
     if (t.significant_words_length() < min_sig)
         min_sig = t.significant_words_length();
-    BigInteger rs(t.data(), min_sig, true, t.alloctor());
+    BigInteger rs(t.data(), min_sig, true, t.allocator());
     rs.limit_positive_bits_to(rlen);
 
     rs.multiply_to_len(nn, rlen); // rs = (rs * nn) % r
@@ -261,7 +294,7 @@ inline void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *
 {
     assert(NULL != _rr || NULL != _nn);
 
-    BigInteger r(1, n.alloctor());
+    BigInteger r(1, n.allocator());
     r <<= rlen;
 
     /**
@@ -301,27 +334,34 @@ inline void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *
 /**
  * 滑动窗口算法、蒙哥马利算法的预算表
  */
+template <typename MemAlloc = sys_ma>
 struct MontgomeryPreBuildTable
 {
+    MemAlloc *const alloc;
     BigInteger **table;
     size_t size;
 
-    MontgomeryPreBuildTable(size_t wnd_sz, const BigInteger& m, size_t rlen, const BigInteger& n, const BigInteger& nn)
-        : table(NULL), size(0)
+    MontgomeryPreBuildTable(size_t wnd_sz, const BigInteger& m, size_t rlen,
+            const BigInteger& n, const BigInteger& nn, MemAlloc *ma = NULL)
+        : alloc(ma), table(NULL), size(0)
     {
         assert(0 < wnd_sz && wnd_sz < 16);
+        if (NULL != alloc)
+            alloc->add_ref();
 
         size = 1 << (wnd_sz - 1);
-        table = new BigInteger*[size];
+        table = (BigInteger**) ma_alloc(alloc, sizeof(BigInteger*) * size);
         assert(NULL != table);
         ::memset(table, 0, sizeof(BigInteger*) * size);
 
-        table[0] = new BigInteger(m);
-        BigInteger mm(0, m.alloctor());
+        table[0] = (BigInteger*) ma_alloc(alloc, sizeof(BigInteger));
+        new (table[0]) BigInteger(m);
+        BigInteger mm(0, m.allocator());
         _montgomery(m * m, rlen, n, nn, &mm);
         for (size_t i = 1; i < size; ++i)
         {
-            table[i] = new BigInteger(0, m.alloctor());
+            table[i] = (BigInteger*) ma_alloc(alloc, sizeof(BigInteger));
+            new (table[i]) BigInteger(0, m.allocator());
             _montgomery(*table[i - 1] * mm, rlen, n, nn, table[i]);
         }
     }
@@ -331,12 +371,20 @@ struct MontgomeryPreBuildTable
         if (NULL != table)
         {
             for (size_t i = 0; i < size; ++i)
+            {
                 if (NULL != table[i])
-                    delete table[i];
-            delete[] table;
+                {
+                    table[i]->~_BigInteger();
+                    ma_free(alloc, table[i]);
+                    table[i] = NULL;
+                }
+            }
+            ma_free(alloc, table);
+            table = NULL;
+            size = 0;
         }
-        table = NULL;
-        size = 0;
+        if (NULL != alloc)
+            alloc->rls_ref();
     }
 
     const BigInteger& at(size_t i) const
@@ -346,7 +394,7 @@ struct MontgomeryPreBuildTable
     }
 
 private:
-    MontgomeryPreBuildTable(const MontgomeryPreBuildTable&);
+    MontgomeryPreBuildTable(const MontgomeryPreBuildTable<MemAlloc>&);
 };
 
 /**
@@ -470,7 +518,7 @@ inline void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
 
     // 准备蒙哥马利相关变量
     const size_t rlen = n.bit_length();
-    BigInteger nn(0, a.alloctor());
+    BigInteger nn(0, a.allocator());
     _mont_extended_euclid(rlen, n, NULL, &nn);
     nn.limit_positive_bits_to(rlen);
 
@@ -480,7 +528,7 @@ inline void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
     const size_t wnd_size = _best_wnd(bits_left); // 滑动窗口大小
     const uint32_t WND_MASK = ~(((uint32_t) 1) << wnd_size);
     const BigInteger m = (a << rlen) % n;
-    const MontgomeryPreBuildTable tbl(wnd_size, m, rlen, n, nn);
+    const MontgomeryPreBuildTable<BigInteger::allocator_type> tbl(wnd_size, m, rlen, n, nn, n.allocator());
 
     // 计算过程
     BigInteger ret(m);
@@ -546,7 +594,7 @@ inline void _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p, BigIn
     assert(NULL != out);
     assert(a.is_positive() && b.is_positive() && p > 0);
 
-    BigInteger ret(1, a.alloctor());
+    BigInteger ret(1, a.allocator());
     for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
     {
         ret.multiply_to_len(ret, p);
@@ -562,6 +610,7 @@ inline void _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p, BigIn
  * 求(a**b)%n，即a的b次方(模n)
  * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P576
  */
+template <typename MemAlloc>
 inline void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigInteger *out)
 {
     assert(NULL != out);
@@ -597,7 +646,7 @@ inline void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& 
     const size_t bbc = b.bit_count();
      if (bbc > 400) // 400 是一个经验数据
     {
-        ModMultiplyPreBuildTable<4> table(a % n, n); /// 经测试，预算表模板参数取4比较合适
+        ModMultiplyPreBuildTable<4,MemAlloc> table(a % n, n, n.allocator()); /// 经测试，预算表模板参数取4比较合适
         BigInteger ret(1);
         for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
         {
@@ -630,18 +679,18 @@ inline void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& 
 
     // 模是偶数，应用中国余数定理
     const size_t p = n.lowest_bit();
-    BigInteger n1(n), n2(1, a.alloctor());
+    BigInteger n1(n), n2(1, a.allocator());
     n1 >>= p;
     n2 <<= p;
 
-    BigInteger a1(0, a.alloctor());
+    BigInteger a1(0, a.allocator());
     if (n1 != 1)
         _odd_mod_pow(a % n1, b, n1, &a1);
 
-    BigInteger a2(0, a.alloctor());
-    _mod_pow_2(a < n ? a : a % n, b, p, &a2);
+    BigInteger a2(0, a.allocator());
+    _mod_pow_2((a < n ? a : a % n), b, p, &a2);
 
-    BigInteger y1(0, a.alloctor());
+    BigInteger y1(0, a.allocator());
     extended_euclid(n2, n1, NULL, &y1, NULL);
     if (y1 < 0)
     {
@@ -649,7 +698,7 @@ inline void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& 
         y1 %= n1;
         y1 += n1;
     }
-    BigInteger y2(0,a.alloctor());
+    BigInteger y2(0,a.allocator());
     extended_euclid(n1, n2, NULL, &y2, NULL);
     if (y2 < 0)
     {
@@ -658,7 +707,9 @@ inline void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& 
         y2 += n2;
     }
 
-    *out = (a1 * n2 * y1 + a2 * n1 * y2) % n;
+    // *out = (a1 * n2 * y1 + a2 * n1 * y2) % n
+    *out = a1 * n2 * y1 + a2 * n1 * y2;
+    *out %= n;
     return;
 #endif
 }

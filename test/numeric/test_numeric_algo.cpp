@@ -162,7 +162,7 @@ NUT_FIXTURE(TestNumericAlgo)
             clock_t s = clock();
             for (int i = 0; i < iteration; ++i)
             {
-                mod_pow(a, b, n, &x1);
+                mod_pow<BigInteger::allocator_type>(a, b, n, &x1);
             }
             clock_t t1 = clock() - s;
             for (int i = 0; i < iteration; ++i)

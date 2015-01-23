@@ -33,6 +33,7 @@ class _BigInteger
     typedef _BigInteger<MemAlloc> self_type;
 
 public:
+    typedef MemAlloc allocator_type;
     typedef size_t size_type;
     typedef unsigned int word_type;
     typedef typename StdInt<word_type>::double_unsigned_type dword_type;
@@ -770,7 +771,7 @@ public:
         return m_significant_len;
     }
 
-    MemAlloc* alloctor() const
+    allocator_type* allocator() const
     {
         return m_alloc;
     }
@@ -876,7 +877,7 @@ public:
         const self_type n = (a_is_bigger ? a - b : b - a);
     	assert(n.is_positive());
 
-        self_type ret(0, a.alloctor());
+        self_type ret(0, a.allocator());
         ret.ensure_cap(n.m_significant_len + 1);
         for (size_type i = 0; i < n.m_significant_len; ++i)
         {

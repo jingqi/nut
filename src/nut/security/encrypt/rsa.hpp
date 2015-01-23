@@ -54,8 +54,8 @@ public:
         unsigned e = 65537;
 
         // d 为 e 对模 gamma_n 的乘法逆元
-        BigInteger d(0, n.alloctor());
-        extended_euclid(BigInteger(e, n.alloctor()), gamma_n, NULL, &d, NULL);
+        BigInteger d(0, n.allocator());
+        extended_euclid(BigInteger(e, n.allocator()), gamma_n, NULL, &d, NULL);
         if (d < 0)
             d = gamma_n + (d % gamma_n); // % 运算符号与被除数一致
 
@@ -77,13 +77,13 @@ public:
     static void encode(const BigInteger& m, const PublicKey& k, BigInteger *out)
     {
         assert(NULL != out);
-        mod_pow(m, k.e, k.n, out);
+        mod_pow<BigInteger::allocator_type>(m, k.e, k.n, out);
     }
 
     static void decode(const BigInteger& c, const PrivateKey& k, BigInteger *out)
     {
         assert(NULL != out);
-        mod_pow(c, k.d, k.n, out);
+        mod_pow<BigInteger::allocator_type>(c, k.d, k.n, out);
     }
 };
 
