@@ -80,18 +80,6 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
 
     // 计算中间结果
 
-    // ac_len = min(a_len + c_len, max(0, P - base_len))
-    //        = min(a_len + c_len, P - base_len)
-    // since, P - base_len >= max(M,N) - base_len > 0
-    const size_t ac_len = (std::min)(a_len + c_len, P - base_len);
-    T *AC = (T*) ma_alloc(ma, sizeof(T) * ac_len);
-    unsigned_karatsuba_multiply(A, a_len, C, c_len, AC, ac_len, ma);
-
-    // bd_len = min(b_len + d_len, P)
-    const size_t bd_len = (std::min)(b_len + d_len, P);
-    T *BD = x;
-    unsigned_karatsuba_multiply(B, b_len, D, d_len, BD, bd_len, ma);
-
     // ab_len = min(max(a_len, b_len) + 1, P - base_len)
     //        = min(b_len + 1, P - base_len)
     // since, a_len <= b_len
@@ -113,6 +101,18 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     unsigned_karatsuba_multiply(AB, ab_len, CD, cd_len, ABCD, abcd_len, ma);
     ma_free(ma, AB);
     ma_free(ma, CD);
+
+    // ac_len = min(a_len + c_len, max(0, P - base_len))
+    //        = min(a_len + c_len, P - base_len)
+    // since, P - base_len >= max(M,N) - base_len > 0
+    const size_t ac_len = (std::min)(a_len + c_len, P - base_len);
+    T *AC = (T*) ma_alloc(ma, sizeof(T) * ac_len);
+    unsigned_karatsuba_multiply(A, a_len, C, c_len, AC, ac_len, ma);
+
+    // bd_len = min(b_len + d_len, P)
+    const size_t bd_len = (std::min)(b_len + d_len, P);
+    T *BD = x; // 为了避免传入的参数 a, b 被破坏(a、b、x可能有交叉区域)，BD要放在后面算
+    unsigned_karatsuba_multiply(B, b_len, D, d_len, BD, bd_len, ma);
 
     unsigned_sub(ABCD, abcd_len, AC, ac_len, ABCD, abcd_len, ma);
     unsigned_sub(ABCD, abcd_len, BD, bd_len, ABCD, abcd_len, ma);
