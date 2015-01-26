@@ -34,7 +34,7 @@ DLL_API void* nut_get_root_logger() \
     { \
         nut::Guard<nut::Mutex> guard(&root_mutex); \
         if (root.is_null()) \
-            root = nut::gc_new<nut::Logger>((nut::Logger*)NULL, ""); \
+            root = nut::gc_new<nut::Logger>(NULL, (nut::Logger*)NULL, ""); \
     } \
     return root.pointer(); \
 }
@@ -86,7 +86,7 @@ public :
     static void load_config(const char *config_file)
     {
 		assert(NULL != config_file);
-		ref<PropertyDom> pd = gc_new<PropertyDom>();
+        ref<PropertyDom> pd = gc_new<PropertyDom>(NULL);
 		std::string all;
 		TxtFile::read_file(config_file, &all);
 		pd->parse(all);

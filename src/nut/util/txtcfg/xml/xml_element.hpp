@@ -330,7 +330,7 @@ public:
 
             virtual XmlElementHandler* handle_child(const std::string &name)
             {
-                ref<XmlElement> c = gc_new<XmlElement>(name);
+                ref<XmlElement> c = gc_new<XmlElement>(NULL, name);
                 m_elem->append_child(c);
                 return new Handler(c.pointer(), m_ignore_text_blank);
             }

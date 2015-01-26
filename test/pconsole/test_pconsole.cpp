@@ -19,7 +19,7 @@ NUT_FIXTURE(TestPConsole)
 
     void test_smoking()
     {
-        nut::ref<PConsole> con = gc_new<PConsole>();
+        nut::ref<PConsole> con = gc_new<PConsole>(NULL);
         printf("\n");
         con->execute();
     }

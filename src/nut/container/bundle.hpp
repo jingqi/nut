@@ -76,7 +76,7 @@ public:
     template <typename T>
     void set_value(const std::string& key, const T& value)
     {
-        m_values[key] = gc_new<_BundleElement<T> >(value);
+        m_values[key] = gc_new<_BundleElement<T> >(m_alloc.pointer(), value);
     }
 
     void clear()

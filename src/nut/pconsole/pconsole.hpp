@@ -42,8 +42,8 @@ public:
           m_exit(false), m_exit_value(0)
     {
         // 内建命令
-        add_a_command(gc_new<CmdExit>(this));
-        add_a_command(gc_new<CmdHelp>(this));
+        add_a_command(gc_new<CmdExit>(NULL, this));
+        add_a_command(gc_new<CmdHelp>(NULL, this));
     }
 
     char get_prompt_char() const

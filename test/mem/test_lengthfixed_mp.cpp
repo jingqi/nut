@@ -22,7 +22,7 @@ NUT_FIXTURE(TestLengthFixedMP)
 
     void test_smoking()
 	{
-        nut::ref<lengthfixed_mp<sizeof(A)> > mp = gc_new<lengthfixed_mp<sizeof(A)> >();
+        nut::ref<lengthfixed_mp<sizeof(A)> > mp = gc_new<lengthfixed_mp<sizeof(A)> >(NULL);
         void *p1 = mp->alloc();
 		NUT_TA(NULL != p1);
 

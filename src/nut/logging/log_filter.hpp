@@ -111,7 +111,7 @@ public:
                 deny_paths.push_back(arg.substr(begin));
         }
 
-        return gc_new<DefaultLogFilter>(mask[0], mask[1], mask[2], mask[3], mask[4], deny_paths);
+        return gc_new<DefaultLogFilter>(NULL, mask[0], mask[1], mask[2], mask[3], mask[4], deny_paths);
     }
 };
 

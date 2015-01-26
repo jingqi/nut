@@ -77,7 +77,7 @@ public:
     {
         for (size_t i = m_threads.size(); i < m_thread_count; ++i)
         {
-            ref<Thread> t = gc_new<Thread>(thread_process, this);
+            ref<Thread> t = gc_new<Thread>(NULL, thread_process, this);
             m_threads.push_back(t);
             t->start();
         }

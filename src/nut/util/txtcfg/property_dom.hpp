@@ -215,7 +215,7 @@ public:
 			}
 			start = i;
 
-			ref<Line> line = gc_new<Line>();
+            ref<Line> line = gc_new<Line>(NULL);
 			line->parse(ln, line_comment_chars, space_chars);
 			m_lines.push_back(line);
 		} while (std::string::npos != start);
@@ -365,7 +365,7 @@ public:
         }
 
         // if not found, then add a new record
-        ref<Line> line = gc_new<Line>();
+        ref<Line> line = gc_new<Line>(NULL);
         line->m_key = key;
         line->m_equal_sign = true;
         line->m_value = value;
