@@ -12,32 +12,32 @@
 #include <string.h>
 
 #include <nut/mem/sys_ma.hpp>
+#include <nut/gc/gc.hpp>
 
 namespace nut
 {
 
-template <typename T, typename MemAlloc = sys_ma>
+template <typename T>
 class RCArray
 {
-    typedef RCArray<T,MemAlloc> self_type;
+    typedef RCArray<T> self_type;
 
 public:
     typedef size_t size_type;
+    NUT_GC_REFERABLE
 
 private:
-    int volatile m_ref_count;
-    MemAlloc *const m_alloc;
+    const ref<memory_allocator> m_alloc;
     T *m_buf;
     size_type m_size, m_cap;
 
 private:
-    explicit RCArray(const self_type&);
+    RCArray(const self_type&);
 
-    RCArray(size_type init_cap, MemAlloc *ma)
-        : m_ref_count(0), m_alloc(ma), m_buf(NULL), m_size(0), m_cap(0)
+public:
+    RCArray(size_type init_cap = 16, memory_allocator *ma = NULL)
+        : m_alloc(ma), m_buf(NULL), m_size(0), m_cap(0)
     {
-        if (NULL != m_alloc)
-            m_alloc->add_ref();
         ensure_cap(init_cap);
     }
 
@@ -45,52 +45,14 @@ private:
     {
         clear();
         if (NULL != m_buf)
-            ma_free(m_alloc, m_buf);
+            ma_free(m_alloc.pointer(), m_buf);
         m_buf = NULL;
         m_cap = 0;
-        if (NULL != m_alloc)
-            m_alloc->rls_ref();
     }
 
-public:
-    static self_type* create(size_type init_cap = 16, MemAlloc *ma = NULL)
+    memory_allocator* allocator() const
     {
-        self_type *const ret = MA_NEW(ma, self_type, init_cap, ma);
-        assert(NULL != ret);
-        ret->add_ref();
-        return ret;
-    }
-
-    int add_ref()
-    {
-        return atomic_add(&m_ref_count, 1) + 1;
-    }
-
-    int rls_ref()
-    {
-        const int ret = atomic_add(&m_ref_count, -1) - 1;
-        if (0 == ret)
-        {
-            MemAlloc *const ma = m_alloc;
-            if (NULL != ma)
-                ma->add_ref();
-            this->~RCArray();
-            if (NULL != ma)
-            {
-                ma->free(this);
-                ma->rls_ref();
-            }
-            else
-            {
-                ::free(this);
-            }
-        }
-        return ret;
-    }
-
-    int get_ref() const
-    {
-        return m_ref_count;
+        return m_alloc.pointer();
     }
 
 private:
@@ -102,9 +64,9 @@ private:
         if (new_cap < new_size)
             new_cap = new_size;
         if (NULL == m_buf)
-            m_buf = (T*) ma_alloc(m_alloc, sizeof(T) * new_cap);
+            m_buf = (T*) ma_alloc(m_alloc.pointer(), sizeof(T) * new_cap);
         else
-            m_buf = (T*) ma_realloc(m_alloc, m_buf, sizeof(T) * new_cap);
+            m_buf = (T*) ma_realloc(m_alloc.pointer(), m_buf, sizeof(T) * new_cap);
         assert(NULL != m_buf);
         m_cap = new_cap;
     }
@@ -176,9 +138,9 @@ public:
     }
 
 public:
-    self_type* clone() const
+    ref<self_type> clone() const
     {
-        self_type *ret = create(m_size, m_alloc);
+        ref<self_type> ret = gc_new<self_type>(m_size, m_alloc.pointer());
         ret->insert(0, m_buf, m_buf + m_size);
         return ret;
     }
@@ -289,11 +251,11 @@ public:
     }
 };
 
-template <typename T, typename MemAlloc = sys_ma>
+template <typename T>
 class Array
 {
-    typedef Array<T,MemAlloc> self_type;
-    typedef RCArray<T,MemAlloc> rcarray_type;
+    typedef Array<T> self_type;
+    typedef RCArray<T> rcarray_type;
 
 public:
     typedef typename rcarray_type::size_type size_type;
@@ -301,47 +263,31 @@ public:
     typedef typename rcarray_type::const_iterator const_iterator;
 
 private:
-    rcarray_type *m_array;
+    ref<rcarray_type> m_array;
 
     /**
      * 写时复制
      */
     void copy_on_write()
     {
-        assert(NULL != m_array);
+        assert(m_array.is_not_null());
         const int rc = m_array->get_ref();
         assert(rc >= 1);
         if (rc > 1)
-        {
-            rcarray_type *x = m_array->clone();
-            m_array->rls_ref();
-            m_array = x;
-        }
+            m_array = m_array->clone();
     }
 
 public:
-    Array(size_type init_cap = 16, MemAlloc *ma = NULL)
-        : m_array(NULL)
-    {
-        m_array = rcarray_type::create(init_cap, ma);
-    }
+    Array(size_type init_cap = 16, memory_allocator *ma = NULL)
+        : m_array(gc_new<rcarray_type>(init_cap, ma))
+    {}
 
     Array(const self_type& x)
         : m_array(x.m_array)
-    {
-        m_array->add_ref();
-    }
-
-    ~Array()
-    {
-        m_array->rls_ref();
-        m_array = NULL;
-    }
+    {}
 
     self_type& operator=(const self_type& x)
     {
-        x.m_array->add_ref(); // if x is this, m_array will not be freeed
-        m_array->rls_ref();
         m_array = x.m_array;
         return *this;
     }

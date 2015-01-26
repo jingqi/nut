@@ -19,7 +19,7 @@ NUT_FIXTURE(TestByteArrayStream)
 
     void test_little_endian()
     {
-        ByteArrayStream<> bas;
+        ByteArrayStream bas;
         uint8_t arr[3] = {1, 2, 3};
         uint8_t arr_check[3] = {0, 0, 0};
 
@@ -49,7 +49,7 @@ NUT_FIXTURE(TestByteArrayStream)
 
     void test_big_endian()
     {
-        ByteArrayStream<> bas;
+        ByteArrayStream bas;
         uint8_t arr[3] = {1, 2, 3};
         uint8_t arr_check[3] = {0, 0, 0};
 

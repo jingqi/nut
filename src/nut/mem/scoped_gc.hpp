@@ -22,10 +22,9 @@ namespace nut
 /**
  * 由该分配器生成的对象将统一由该分配器的clear()函数进行清理
  */
-template <typename MemAlloc = sys_ma>
 class scoped_gc
 {
-    typedef scoped_gc<MemAlloc> self_type;
+    typedef scoped_gc self_type;
 
     enum
 	{
@@ -55,8 +54,7 @@ class scoped_gc
         destruct_func_type destruct_func;
     };
 
-    int volatile m_ref_count;
-    MemAlloc *const m_alloc;
+    const ref<memory_allocator> m_alloc;
 	Block *m_current_block;
 	uint8_t *m_end;
     DestructorNode *m_destruct_chain;
@@ -66,58 +64,18 @@ private:
     explicit scoped_gc(const self_type&);
     self_type& operator=(const self_type&);
 
-    scoped_gc(MemAlloc *ma)
-        : m_ref_count(0), m_alloc(ma), m_current_block(NULL), m_end(NULL), m_destruct_chain(NULL)
-    {
-        if (NULL != m_alloc)
-            m_alloc->add_ref();
-    }
+public:
+    NUT_GC_REFERABLE
+
+    scoped_gc(memory_allocator *ma = NULL)
+        : m_alloc(ma), m_current_block(NULL), m_end(NULL), m_destruct_chain(NULL)
+    {}
 
     ~scoped_gc()
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
-		clear();
-        if (NULL != m_alloc)
-            m_alloc->rls_ref();
+        clear();
 	}
-
-public:
-    static self_type* create(MemAlloc *ma = NULL)
-    {
-        self_type *const ret = MA_NEW(ma, self_type, ma);
-        assert(NULL != ret);
-        ret->add_ref();
-        return ret;
-    }
-
-    int add_ref()
-    {
-        NUT_DEBUGGING_ASSERT_ALIVE;
-        return atomic_add(&m_ref_count, 1) + 1;
-    }
-
-    int rls_ref()
-    {
-        NUT_DEBUGGING_ASSERT_ALIVE;
-        const int ret = atomic_add(&m_ref_count, -1) - 1;
-        if (0 == ret)
-        {
-            MemAlloc *const ma = m_alloc;
-            if (NULL != ma)
-                ma->add_ref();
-            this->~scoped_gc();
-            if (NULL != ma)
-            {
-                ma->free(this);
-                ma->rls_ref();
-            }
-            else
-            {
-                ::free(this);
-            }
-        }
-        return ret;
-    }
 
 private:
     template <typename T>
@@ -147,7 +105,7 @@ private:
 		{
 			if (cb >= DEFAULT_BLOCK_BODY_SIZE)
 			{
-                Block *const new_blk = (Block*) ma_alloc(m_alloc, BLOCK_HEADER_SIZE + cb);
+                Block *const new_blk = (Block*) ma_alloc(m_alloc.pointer(), BLOCK_HEADER_SIZE + cb);
 				assert(NULL != new_blk);
 
 				if (NULL != m_current_block)
@@ -165,7 +123,7 @@ private:
 			}
 			else
 			{
-                Block *new_blk = (Block*) ma_alloc(m_alloc, DEFAULT_BLOCK_LEN);
+                Block *new_blk = (Block*) ma_alloc(m_alloc.pointer(), DEFAULT_BLOCK_LEN);
 				assert(NULL != new_blk);
 
 				new_blk->prev = m_current_block;
@@ -214,7 +172,7 @@ public:
         while (NULL != m_current_block)
         {
 			Block *prev = m_current_block->prev;
-            ma_free(m_alloc, m_current_block);
+            ma_free(m_alloc.pointer(), m_current_block);
 			m_current_block = prev;
         }
 		m_end = NULL;

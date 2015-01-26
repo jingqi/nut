@@ -18,6 +18,7 @@
 
 #include <nut/platform/platform.hpp>
 #include <nut/platform/stdint.hpp>
+#include <nut/mem/sys_ma.hpp>
 
 // 优化程度，>= 0
 #define OPTIMIZE_LEVEL 1000
@@ -485,8 +486,8 @@ void unsigned_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count
  * 按位与
  * x<N> = a<N> & b<N>
  */
-template <typename T, typename MemAlloc>
-void bit_and(const T *a, const T *b, T *x, size_t N, MemAlloc *ma = NULL)
+template <typename T>
+void bit_and(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
 
@@ -535,8 +536,8 @@ void bit_and(const T *a, const T *b, T *x, size_t N, MemAlloc *ma = NULL)
  * 按位或
  * x<N> = a<N> | b<N>
  */
-template <typename T, typename MemAlloc>
-void bit_or(const T *a, const T *b, T *x, size_t N, MemAlloc *ma = NULL)
+template <typename T>
+void bit_or(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
 
@@ -585,8 +586,8 @@ void bit_or(const T *a, const T *b, T *x, size_t N, MemAlloc *ma = NULL)
  * 按位异或
  * x<N> = a<N> ^ b<N>
  */
-template <typename T, typename MemAlloc>
-void bit_xor(const T *a, const T *b, T *x, size_t N, MemAlloc *ma = NULL)
+template <typename T>
+void bit_xor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
 
@@ -635,8 +636,8 @@ void bit_xor(const T *a, const T *b, T *x, size_t N, MemAlloc *ma = NULL)
  * 按位同或
  * x<N> = ~(a<N> ^ b<N>)
  */
-template <typename T, typename MemAlloc>
-void bit_nxor(const T *a, const T *b, T *x, size_t N, MemAlloc *ma = NULL)
+template <typename T>
+void bit_nxor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL)
 {
     assert(NULL != a && NULL != b && NULL != x && N > 0);
 
@@ -685,7 +686,7 @@ void bit_nxor(const T *a, const T *b, T *x, size_t N, MemAlloc *ma = NULL)
  * 按位取反
  * x<N> = ~a<N>
  */
-template <typename T, typename MemAlloc>
+template <typename T>
 void bit_not(const T *a, T *x, size_t N)
 {
     assert(NULL != a && NULL != x && N > 0);
@@ -1124,8 +1125,8 @@ inline int lowest_bit0(const uint8_t *a, size_t N)
  *
  * @return 进位
  */
-template <typename T, typename MemAlloc>
-uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc *ma = NULL)
+template <typename T>
+uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma = NULL)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
@@ -1163,8 +1164,8 @@ uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, M
  *
  * @return 进位
  */
-template <typename T, typename MemAlloc>
-uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc *ma = NULL)
+template <typename T>
+uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma = NULL)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
@@ -1226,8 +1227,8 @@ uint8_t increase(T *x, size_t N)
  *
  * @return 进位
  */
-template <typename T, typename MemAlloc>
-uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc *ma = NULL)
+template <typename T>
+uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma = NULL)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
@@ -1265,8 +1266,8 @@ uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, M
  *
  * @return 进位
  */
-template <typename T, typename MemAlloc>
-uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc *ma = NULL)
+template <typename T>
+uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma = NULL)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
@@ -1328,8 +1329,8 @@ uint8_t decrease(T *x, size_t N)
  *
  * @return 进位
  */
-template <typename T, typename MemAlloc>
-uint8_t signed_negate(const T *a, size_t M, T *x, size_t N, MemAlloc *ma = NULL)
+template <typename T>
+uint8_t signed_negate(const T *a, size_t M, T *x, size_t N, memory_allocator *ma = NULL)
 {
     assert(NULL != a && M > 0 && NULL != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
@@ -1366,8 +1367,8 @@ uint8_t signed_negate(const T *a, size_t M, T *x, size_t N, MemAlloc *ma = NULL)
  *
  * @return 进位
  */
-template <typename T, typename MemAlloc>
-uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N, MemAlloc *ma = NULL)
+template <typename T>
+uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N, memory_allocator *ma = NULL)
 {
     assert(NULL != a && M > 0 && NULL != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
@@ -1420,8 +1421,8 @@ uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N, MemAlloc *ma = NUL
  *          bc bd be
  *    ab ac ad ae
  */
-template <typename T, typename MemAlloc>
-void _unsigned_square(const T *a, size_t M, T *x, size_t N, MemAlloc *ma = NULL)
+template <typename T>
+void _unsigned_square(const T *a, size_t M, T *x, size_t N, memory_allocator *ma = NULL)
 {
     assert(NULL != a && M > 0 && NULL != x && N > 0);
     assert(is_positive(a, M));
@@ -1496,8 +1497,8 @@ void _unsigned_square(const T *a, size_t M, T *x, size_t N, MemAlloc *ma = NULL)
  * (有符号数)相乘
  * x<P> = a<M> * b<N>
  */
-template <typename T, typename MemAlloc>
-void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc *ma = NULL)
+template <typename T>
+void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma = NULL)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
@@ -1553,8 +1554,8 @@ void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
  * (无符号数)相乘
  * x<P> = a<M> * b<N>
  */
-template <typename T, typename MemAlloc>
-void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc *ma = NULL)
+template <typename T>
+void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma = NULL)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
@@ -1608,8 +1609,8 @@ void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t 
  * @param y
  *      余数
  */
-template <typename T, typename MemAlloc>
-void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, size_t Q, MemAlloc *ma = NULL)
+template <typename T>
+void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, size_t Q, memory_allocator *ma = NULL)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0);
     assert((NULL != x && P > 0) || (NULL != y && Q > 0));
@@ -1723,8 +1724,8 @@ void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T
  * @param y
  *    余数
  */
-template <typename T, typename MemAlloc>
-void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, size_t Q, MemAlloc *ma = NULL)
+template <typename T>
+void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, size_t Q, memory_allocator *ma = NULL)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0);
     assert((NULL != x && P > 0) || (NULL != y && Q > 0));

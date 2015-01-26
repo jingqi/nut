@@ -39,7 +39,7 @@ NUT_FIXTURE(TestAesCbcPkcs5)
             acp.start_encrypt(key, sizeof(key) * 8, iv);
             acp.update_encrypt(data, 7);
             acp.finish_encrypt();
-            ByteArray<> ba = acp.get_result();
+            ByteArray ba = acp.get_result();
 
             acp.start_decrypt(key, sizeof(key) * 8, iv);
             acp.update_decrypt(ba.data(), ba.size());
@@ -53,7 +53,7 @@ NUT_FIXTURE(TestAesCbcPkcs5)
             acp.start_encrypt(key, sizeof(key) * 8, iv);
             acp.update_encrypt(data, 16);
             acp.finish_encrypt();
-            ByteArray<> ba = acp.get_result();
+            ByteArray ba = acp.get_result();
 
             acp.start_decrypt(key, sizeof(key) * 8, iv);
             acp.update_decrypt(ba.data(), ba.size());
@@ -68,7 +68,7 @@ NUT_FIXTURE(TestAesCbcPkcs5)
             acp.update_encrypt(data, 7);
             acp.update_encrypt(data + 7, 19);
             acp.finish_encrypt();
-            ByteArray<> ba = acp.get_result();
+            ByteArray ba = acp.get_result();
 
             acp.start_decrypt(key, sizeof(key) * 8, iv);
             acp.update_decrypt(ba.data(), ba.size());

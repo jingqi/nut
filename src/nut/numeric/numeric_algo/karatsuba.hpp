@@ -21,8 +21,8 @@ namespace nut
  * a * b = AC * (base^2) + ((A+B)(C+D) - AC - BD) * base + BD
  * 该算式中乘法总体规模变小了
  */
-template <typename T, typename MemAlloc>
-void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc *ma)
+template <typename T>
+void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
 
@@ -135,8 +135,8 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
  * a * b = AC * (base^2) + ((A+B)(C+D) - AC - BD) * base + BD
  * 该算式中乘法总体规模变小了
  */
-template <typename T, typename MemAlloc>
-void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, MemAlloc *ma = NULL)
+template <typename T>
+void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma = NULL)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
 

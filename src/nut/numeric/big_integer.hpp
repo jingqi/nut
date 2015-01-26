@@ -27,19 +27,17 @@ namespace nut
 /**
  * 无限大整数
  */
-template <typename MemAlloc = sys_ma>
-class _BigInteger
+class BigInteger
 {
-    typedef _BigInteger<MemAlloc> self_type;
+    typedef BigInteger self_type;
 
 public:
-    typedef MemAlloc allocator_type;
     typedef size_t size_type;
     typedef unsigned int word_type;
-    typedef typename StdInt<word_type>::double_unsigned_type dword_type;
+    typedef StdInt<word_type>::double_unsigned_type dword_type;
 
 private:
-    MemAlloc *const m_alloc;
+    const nut::ref<memory_allocator> m_alloc;
     word_type *m_buffer; // 缓冲区, little-endian, 带符号
     size_type m_cap;
     size_type m_significant_len; // 有效字长度
@@ -55,19 +53,9 @@ private:
             new_cap = new_size;
 
         if (NULL == m_buffer)
-        {
-            if (NULL != m_alloc)
-                m_buffer = (word_type*) m_alloc->alloc(sizeof(word_type) * new_cap);
-            else
-                m_buffer = (word_type*) ::malloc(sizeof(word_type) * new_cap);
-        }
+            m_buffer = (word_type*) ma_alloc(m_alloc.pointer(), sizeof(word_type) * new_cap);
         else
-        {
-            if (NULL != m_alloc)
-                m_buffer = (word_type*) m_alloc->realloc(m_buffer, sizeof(word_type) * new_cap);
-            else
-                m_buffer = (word_type*) ::realloc(m_buffer, sizeof(word_type) * new_cap);
-        }
+            m_buffer = (word_type*) ma_realloc(m_alloc.pointer(), m_buffer, sizeof(word_type) * new_cap);
         assert(NULL != m_buffer);
         m_cap = new_cap;
     }
@@ -95,12 +83,10 @@ private:
     }
 
 public:
-    explicit _BigInteger(long long v = 0, MemAlloc *ma = NULL)
+    explicit BigInteger(long long v = 0, memory_allocator *ma = NULL)
         : m_alloc(ma), m_buffer(NULL), m_cap(0), m_significant_len(0)
     {
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
-        if (NULL != m_alloc)
-            m_alloc->add_ref();
 
         ensure_cap(sizeof(v) / sizeof(word_type));
         ::memcpy(m_buffer, &v, sizeof(v));
@@ -109,12 +95,10 @@ public:
     }
 
     template <typename U>
-    _BigInteger(const U *buf, size_type len, bool with_sign, MemAlloc *ma = NULL)
+    BigInteger(const U *buf, size_type len, bool with_sign, memory_allocator *ma = NULL)
         : m_alloc(ma), m_buffer(NULL), m_cap(0), m_significant_len(0)
     {
         assert(NULL != buf && len > 0);
-        if (NULL != m_alloc)
-            m_alloc->add_ref();
 
         const uint8_t fill = (with_sign ? (nut::is_positive(buf, len) ? 0 : 0xFF) : 0);
         const size_type min_sig = sizeof(U) * len / sizeof(word_type) + 1; // 保证一个空闲字节放符号位
@@ -126,12 +110,10 @@ public:
     }
 
     // 上述模板函数的一个特化
-    _BigInteger(const word_type *buf, size_type len, bool with_sign, MemAlloc *ma = NULL)
+    BigInteger(const word_type *buf, size_type len, bool with_sign, memory_allocator *ma = NULL)
         : m_alloc(ma), m_buffer(NULL), m_cap(0), m_significant_len(0)
     {
         assert(NULL != buf && len > 0);
-        if (NULL != m_alloc)
-            m_alloc->add_ref();
 
         if (with_sign || nut::is_positive(buf, len))
         {
@@ -149,29 +131,20 @@ public:
         minimize_significant_len();
     }
 
-    _BigInteger(const self_type& x)
+    BigInteger(const self_type& x)
         : m_alloc(x.m_alloc), m_buffer(NULL), m_cap(0), m_significant_len(x.m_significant_len)
     {
-        if (NULL != m_alloc)
-            m_alloc->add_ref();
         ensure_cap(x.m_significant_len);
         ::memcpy(m_buffer, x.m_buffer, sizeof(word_type) * x.m_significant_len);
     }
 
-    ~_BigInteger()
+    ~BigInteger()
     {
         if (NULL != m_buffer)
-        {
-            if (NULL != m_alloc)
-                m_alloc->free(m_buffer);
-            else
-                ::free(m_buffer);
-        }
+            ma_free(m_alloc.pointer(), m_buffer);
         m_buffer = NULL;
         m_cap = 0;
         m_significant_len = 0;
-        if (NULL != m_alloc)
-            m_alloc->rls_ref();
     }
 
 public:
@@ -268,63 +241,63 @@ public:
 
     self_type operator+(const self_type& x) const
     {
-        self_type ret(0, m_alloc);
+        self_type ret(0, m_alloc.pointer());
         self_type::add(*this, x, &ret);
         return ret;
     }
 
     self_type operator+(long long v) const
     {
-        self_type ret(0, m_alloc);
+        self_type ret(0, m_alloc.pointer());
         self_type::add(*this, v, &ret);
         return ret;
     }
 
     self_type operator-(const self_type& x) const
     {
-        self_type ret(0, m_alloc);
+        self_type ret(0, m_alloc.pointer());
         self_type::sub(*this, x, &ret);
         return ret;
     }
 
     self_type operator-(long long v) const
     {
-        self_type ret(0, m_alloc);
+        self_type ret(0, m_alloc.pointer());
         self_type::sub(*this, v, &ret);
         return ret;
     }
 
     self_type operator-() const
     {
-        self_type ret(0, m_alloc);
+        self_type ret(0, m_alloc.pointer());
         self_type::negate(*this, &ret);
         return ret;
     }
 
     self_type operator*(const self_type& x) const
     {
-        self_type ret(0, m_alloc);
+        self_type ret(0, m_alloc.pointer());
         self_type::multiply(*this, x, &ret);
         return ret;
     }
 
     self_type operator*(long long v) const
     {
-        self_type ret(0, m_alloc);
+        self_type ret(0, m_alloc.pointer());
         self_type::multiply(*this, v, &ret);
         return ret;
     }
 
     self_type operator/(const self_type& x) const
     {
-        self_type ret(0, m_alloc);
+        self_type ret(0, m_alloc.pointer());
         self_type::divide(*this, x, &ret, NULL);
         return ret;
     }
 
     self_type operator/(long long v) const
     {
-        self_type divider(v, m_alloc), ret(0, m_alloc);
+        self_type divider(v, m_alloc.pointer()), ret(0, m_alloc.pointer());
         self_type::divide(*this, divider, &ret, NULL);
         return ret;
     }
@@ -342,7 +315,7 @@ public:
                 return *this - x;
         }
 
-        self_type ret(0, m_alloc);
+        self_type ret(0, m_alloc.pointer());
         self_type::divide(*this, x, NULL, &ret);
         return ret;
     }
@@ -352,7 +325,7 @@ public:
         NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
         assert(0 != v);
 
-        self_type divider(v, m_alloc), ret(0, m_alloc);
+        self_type divider(v, m_alloc.pointer()), ret(0, m_alloc.pointer());
         self_type::divide(*this, divider, NULL, &ret);
         return ret;
     }
@@ -401,7 +374,7 @@ public:
 
     self_type& operator/=(long long v)
     {
-        self_type divider(v, m_alloc);
+        self_type divider(v, m_alloc.pointer());
         self_type::divide(*this, divider, this, NULL);
         return *this;
     }
@@ -425,7 +398,7 @@ public:
 
     self_type& operator%=(long long v)
     {
-        self_type divider(v, m_alloc);
+        self_type divider(v, m_alloc.pointer());
         self_type::divide(*this, divider, NULL, this);
         return *this;
     }
@@ -503,7 +476,7 @@ public:
 
         const size_type max_len = (a.m_significant_len > b.m_significant_len ? a.m_significant_len : b.m_significant_len);
         x->ensure_cap(max_len + 1);
-        signed_add(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, a.m_alloc);
+        signed_add(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, a.m_alloc.pointer());
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -515,7 +488,7 @@ public:
 
         const size_type max_len = (a.m_significant_len > sizeof(b) / sizeof(word_type) ? a.m_significant_len : sizeof(b) / sizeof(word_type));
         x->ensure_cap(max_len + 1);
-        signed_add(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->m_buffer, max_len + 1, a.m_alloc);
+        signed_add(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->m_buffer, max_len + 1, a.m_alloc.pointer());
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -527,7 +500,7 @@ public:
 
         const size_type max_len = (sizeof(a) / sizeof(word_type) > b.m_significant_len ? sizeof(a) / sizeof(word_type) : b.m_significant_len);
         x->ensure_cap(max_len + 1);
-        signed_add((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, b.m_alloc);
+        signed_add((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, b.m_alloc.pointer());
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -538,7 +511,7 @@ public:
 
         const size_type max_len = (a.m_significant_len > b.m_significant_len ? a.m_significant_len : b.m_significant_len);
         x->ensure_cap(max_len + 1);
-        signed_sub(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, a.m_alloc);
+        signed_sub(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, a.m_alloc.pointer());
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -550,7 +523,7 @@ public:
 
         const size_type max_len = (a.m_significant_len > sizeof(b) / sizeof(word_type) ? a.m_significant_len : sizeof(b) / sizeof(word_type));
         x->ensure_cap(max_len + 1);
-        signed_sub(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->m_buffer, max_len + 1, a.m_alloc);
+        signed_sub(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->m_buffer, max_len + 1, a.m_alloc.pointer());
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -562,7 +535,7 @@ public:
 
         const size_type max_len = (sizeof(a) / sizeof(word_type) > b.m_significant_len ? sizeof(a) / sizeof(word_type) : b.m_significant_len);
         x->ensure_cap(max_len + 1);
-        signed_sub((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, b.m_alloc);
+        signed_sub((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len, x->m_buffer, max_len + 1, b.m_alloc.pointer());
         x->m_significant_len = max_len + 1;
         x->minimize_significant_len();
     }
@@ -572,7 +545,7 @@ public:
         assert(NULL != x);
 
         x->ensure_cap(a.m_significant_len + 1);
-        signed_negate(a.m_buffer, a.m_significant_len, x->m_buffer, a.m_significant_len + 1, a.m_alloc);
+        signed_negate(a.m_buffer, a.m_significant_len, x->m_buffer, a.m_significant_len + 1, a.m_alloc.pointer());
         x->m_significant_len = a.m_significant_len + 1;
         x->minimize_significant_len();
     }
@@ -599,7 +572,7 @@ public:
 
         x->ensure_cap(a.m_significant_len + b.m_significant_len);
         signed_multiply(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len,
-            x->m_buffer, a.m_significant_len + b.m_significant_len, a.m_alloc);
+            x->m_buffer, a.m_significant_len + b.m_significant_len, a.m_alloc.pointer());
         x->m_significant_len = a.m_significant_len + b.m_significant_len;
         x->minimize_significant_len();
     }
@@ -611,7 +584,7 @@ public:
 
         x->ensure_cap(a.m_significant_len + sizeof(b) / sizeof(word_type));
         signed_multiply(a.m_buffer, a.m_significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type),
-            x->m_buffer, a.m_significant_len + sizeof(b) / sizeof(word_type), a.m_alloc);
+            x->m_buffer, a.m_significant_len + sizeof(b) / sizeof(word_type), a.m_alloc.pointer());
         x->m_significant_len = a.m_significant_len + sizeof(b) / sizeof(word_type);
         x->minimize_significant_len();
     }
@@ -623,7 +596,7 @@ public:
 
         x->ensure_cap(sizeof(a) / sizeof(word_type) + b.m_significant_len);
         signed_multiply((word_type*)&a, sizeof(a) / sizeof(word_type), b.m_buffer, b.m_significant_len,
-            x->m_buffer, sizeof(a) / sizeof(word_type) + b.m_significant_len, b.m_alloc);
+            x->m_buffer, sizeof(a) / sizeof(word_type) + b.m_significant_len, b.m_alloc.pointer());
         x->m_significant_len = sizeof(a) / sizeof(word_type) + b.m_significant_len;
         x->minimize_significant_len();
     }
@@ -645,7 +618,7 @@ public:
         signed_divide(a.m_buffer, a.m_significant_len, b.m_buffer, b.m_significant_len,
                (NULL == result ? NULL : result->m_buffer), a.m_significant_len,
                (NULL == remainder ? NULL : remainder->m_buffer), b.m_significant_len,
-               a.m_alloc);
+               a.m_alloc.pointer());
 
         if (NULL != result)
         {
@@ -758,7 +731,7 @@ public:
     {
         const size_type words_len = (bit_len + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
         ensure_cap(words_len);
-        signed_multiply(m_buffer, m_significant_len, a.m_buffer, a.m_significant_len, m_buffer, words_len, m_alloc);
+        signed_multiply(m_buffer, m_significant_len, a.m_buffer, a.m_significant_len, m_buffer, words_len, m_alloc.pointer());
         m_significant_len = words_len;
         limit_positive_bits_to(bit_len);
     }
@@ -771,9 +744,9 @@ public:
         return m_significant_len;
     }
 
-    allocator_type* allocator() const
+    memory_allocator* allocator() const
     {
-        return m_alloc;
+        return m_alloc.pointer();
     }
 
     const word_type* data() const
@@ -914,10 +887,7 @@ public:
         ::memcpy(b->m_buffer, tmp, sizeof(word_type) * tmp_sig);
         b->m_significant_len = tmp_sig;
 
-        if (NULL != a->m_alloc)
-            a->m_alloc->free(tmp);
-        else
-            ::free(tmp);
+        ma_free(a->m_alloc.pointer(), tmp);
     }
 
 private:
@@ -970,7 +940,7 @@ public:
         if (!positive)
             self_type::negate(tmp, &tmp);
 
-        const self_type RADIX(radix, m_alloc);
+        const self_type RADIX(radix, m_alloc.pointer());
         std::wstring ret;
         do
         {
@@ -1103,8 +1073,6 @@ public:
         return ret;
     }
 };
-
-typedef _BigInteger<> BigInteger;
 
 #undef OPTIMIZE_LEVEL
 

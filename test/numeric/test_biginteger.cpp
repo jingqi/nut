@@ -131,7 +131,7 @@ NUT_FIXTURE(TestBigInteger)
         // 平法优化算法处理负数时可能出错
         int a[2] = {-2, -1};
         int x[6];
-        signed_multiply<int,sys_ma>(a, 2, a, 2, x, 6);
+        signed_multiply<int>(a, 2, a, 2, x, 6);
         //cout << endl << x[0] << ' ' << x[1] << ' ' << x[2] << ' ' << x[3] <<
         //        ' ' << x[4] << ' ' << x[5] << endl;
         NUT_TA(x[0] == 4 && x[1] == 0 && x[2] == 0 && x[3] == 0 && x[4] == 0 && x[5] == 0);

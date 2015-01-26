@@ -15,91 +15,58 @@
 #include <nut/threading/lockfree/atomic.hpp>
 #include <nut/debugging/destroy_checker.hpp>
 
+#include "memory_allocator.hpp"
+
 namespace nut
 {
 
 /**
  * 系统内存分配器(system memory allocator)
  */
-class sys_ma
+class sys_ma : public memory_allocator
 {
-    int volatile m_ref_count;
 
 #ifndef NDEBUG
     uint32_t m_left_tag, m_right_tag;
     size_t m_alloc_count, m_free_count;
     size_t m_total_alloc_cb, m_total_free_cb;
-#endif
     NUT_DEBUGGING_DESTROY_CHECKER
+#endif
 
 private:
     explicit sys_ma(const sys_ma&);
     sys_ma& operator=(const sys_ma&);
 
+public:
+#ifndef NDEBUG
     sys_ma()
-        : m_ref_count(0)
-#ifndef NDEBUG
-        , m_left_tag(0), m_right_tag(0), m_alloc_count(0), m_free_count(0),
+        : m_left_tag(0), m_right_tag(0), m_alloc_count(0), m_free_count(0),
           m_total_alloc_cb(0), m_total_free_cb(0)
-#endif
     {
-#ifndef NDEBUG
         for (size_t i = 0; i < sizeof(m_left_tag); ++i)
             reinterpret_cast<uint8_t*>(&m_left_tag)[i] = (uint8_t) ::rand();
         for (size_t i = 0; i < sizeof(m_right_tag); ++i)
             reinterpret_cast<uint8_t*>(&m_right_tag)[i] = (uint8_t) ::rand();
-#endif
     }
-
-    virtual ~sys_ma()
-    {
-        NUT_DEBUGGING_ASSERT_ALIVE;
+#else
+    sys_ma() {}
+#endif
 
 #ifndef NDEBUG
+    ~sys_ma()
+    {
+        NUT_DEBUGGING_ASSERT_ALIVE;
+
         assert(m_alloc_count == m_free_count);
         assert(m_total_alloc_cb == m_total_free_cb);
+    }
 #endif
-    }
-
-public:
-    static sys_ma* create()
-    {
-        sys_ma *const ret = (sys_ma*) ::malloc(sizeof(sys_ma));
-        assert(NULL != ret);
-        new (ret) sys_ma;
-        ret->add_ref();
-        return ret;
-    }
-
-    int add_ref()
-    {
-        NUT_DEBUGGING_ASSERT_ALIVE;
-        return atomic_add(&m_ref_count, 1) + 1;
-    }
-
-    int rls_ref()
-    {
-        NUT_DEBUGGING_ASSERT_ALIVE;
-        const int ret = atomic_add(&m_ref_count, -1) - 1;
-        if (0 == ret)
-        {
-            this->~sys_ma();
-            ::free(this);
-        }
-        return ret;
-    }
-
-    int get_ref() const
-    {
-        NUT_DEBUGGING_ASSERT_ALIVE;
-        return m_ref_count;
-    }
 
 public:
     void* alloc(size_t cb)
     {
-        NUT_DEBUGGING_ASSERT_ALIVE;
 #ifndef NDEBUG
+        NUT_DEBUGGING_ASSERT_ALIVE;
         const size_t total_cb = cb + sizeof(uint32_t) * 3;
         void* ret = ::malloc(total_cb);
         assert(NULL != ret);
@@ -117,8 +84,8 @@ public:
 
     void* realloc(void *p, size_t new_cb)
     {
-        NUT_DEBUGGING_ASSERT_ALIVE;
 #ifndef NDEBUG
+        NUT_DEBUGGING_ASSERT_ALIVE;
         assert(NULL != p);
         const size_t cb = ((uint32_t*) p)[-2];
         assert(m_left_tag == ((uint32_t*) p)[-1]);
@@ -146,8 +113,8 @@ public:
 
     void free(void *p)
     {
-        NUT_DEBUGGING_ASSERT_ALIVE;
 #ifndef NDEBUG
+        NUT_DEBUGGING_ASSERT_ALIVE;
         assert(NULL != p);
         const size_t cb = ((uint32_t*) p)[-2];
         assert(m_left_tag == ((uint32_t*) p)[-1]);

@@ -19,18 +19,17 @@ namespace nut
 /**
  * 处理字节数组流中的大端(Big-Endian)和小端(Little-Endian)字节序读写
  */
-template <typename MemAlloc = sys_ma>
 class ByteArrayStream
 {
-    typedef ByteArrayStream<MemAlloc> self_type;
-    typedef ByteArray<MemAlloc> array_type;
+    typedef ByteArrayStream self_type;
+    typedef ByteArray array_type;
 
     array_type m_data;
     size_t m_index;
     bool m_little_endian;
 
 public:
-    ByteArrayStream(MemAlloc *ma = NULL)
+    ByteArrayStream(memory_allocator *ma = NULL)
         : m_data(ma), m_index(0), m_little_endian(true)
     {}
 

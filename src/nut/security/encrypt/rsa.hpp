@@ -77,13 +77,13 @@ public:
     static void encode(const BigInteger& m, const PublicKey& k, BigInteger *out)
     {
         assert(NULL != out);
-        mod_pow<BigInteger::allocator_type>(m, k.e, k.n, out);
+        mod_pow(m, k.e, k.n, out);
     }
 
     static void decode(const BigInteger& c, const PrivateKey& k, BigInteger *out)
     {
         assert(NULL != out);
-        mod_pow<BigInteger::allocator_type>(c, k.d, k.n, out);
+        mod_pow(c, k.d, k.n, out);
     }
 };
 

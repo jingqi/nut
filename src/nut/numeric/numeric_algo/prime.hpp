@@ -26,7 +26,7 @@ namespace nut
 inline bool psedoprime(const BigInteger& n)
 {
     BigInteger mp(0, n.allocator());
-    mod_pow<BigInteger::allocator_type>(BigInteger(2, n.allocator()), n - 1, n, &mp);
+    mod_pow(BigInteger(2, n.allocator()), n - 1, n, &mp);
     if (mp != 1)
         return false; // 一定是合数
     return true; // 可能是素数
@@ -96,12 +96,12 @@ inline bool miller_rabin(const BigInteger& n, unsigned s)
 
         int j = 0;
         BigInteger z(0, n.allocator());
-        mod_pow<BigInteger::allocator_type>(b, m, n, &z);
+        mod_pow(b, m, n, &z);
         while (!((j == 0 && z == 1) || z == this_minus_one))
         {
             if ((j > 0 && z == 1) || ++j == a)
                 return false;
-            mod_pow<BigInteger::allocator_type>(z, TWO, n, &z);
+            mod_pow(z, TWO, n, &z);
         }
     }
     return true;

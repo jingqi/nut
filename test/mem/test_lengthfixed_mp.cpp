@@ -2,6 +2,7 @@
 #include <nut/unittest/unittest.hpp>
 
 #include <nut/mem/lengthfixed_mp.hpp>
+#include <nut/gc/gc.hpp>
 
 using namespace nut;
 
@@ -21,7 +22,7 @@ NUT_FIXTURE(TestLengthFixedMP)
 
     void test_smoking()
 	{
-        lengthfixed_mp<sizeof(A)> *mp = lengthfixed_mp<sizeof(A)>::create();
+        nut::ref<lengthfixed_mp<sizeof(A)> > mp = gc_new<lengthfixed_mp<sizeof(A)> >();
         void *p1 = mp->alloc();
 		NUT_TA(NULL != p1);
 
@@ -38,8 +39,6 @@ NUT_FIXTURE(TestLengthFixedMP)
 
         mp->free(p3);
         mp->free(p4);
-
-        mp->rls_ref();
 	}
 };
 

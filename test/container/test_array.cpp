@@ -21,7 +21,7 @@ NUT_FIXTURE(TestArray)
 
     void test_rcarray_smoking()
     {
-        RCArray<int> *rca = RCArray<int>::create();
+        nut::ref<RCArray<int> > rca = gc_new<RCArray<int> >();
         NUT_TA(rca->get_ref() == 1);
         NUT_TA(rca->size() == 0);
 
@@ -45,28 +45,24 @@ NUT_FIXTURE(TestArray)
         NUT_TA(rca->size() == 1);
         NUT_TA(rca->at(0) == 12);
 
-        RCArray<int> *rcb = rca->clone();
+        nut::ref<RCArray<int> > rcb = rca->clone();
         NUT_TA(rca->get_ref() == 1 && rcb->get_ref() == 1);
         NUT_TA(rcb->size() == 1);
         NUT_TA(rca->operator ==(*rcb));
         NUT_TA(!(rca->operator !=(*rcb)));
 
-        RCArray<int> *rcc = RCArray<int>::create();
+        nut::ref<RCArray<int> > rcc = gc_new<RCArray<int> >();
         NUT_TA(rcc->size() == 0);
         NUT_TA(!(rcc->operator ==(*rca)));
         NUT_TA(rcc->operator !=(*rca));
         rcc->operator =(*rca);
         NUT_TA(rcc->size() == 1);
         NUT_TA(rcc->operator ==(*rca));
-
-        rca->rls_ref();
-        rcb->rls_ref();
-        rcc->rls_ref();
     }
 
     void test_rcarray_insert_erase()
     {
-        RCArray<int> *rca = RCArray<int>::create();
+        nut::ref<RCArray<int> > rca = gc_new<RCArray<int> >();
         rca->insert(0, 2);
         NUT_TA(rca->size() == 1);
         NUT_TA(rca->at(0) == 2);
@@ -90,7 +86,7 @@ NUT_FIXTURE(TestArray)
         rca->clear();
         NUT_TA(rca->size() == 0 && rca->begin() == rca->end());
 
-        RCArray<int> *rcb = RCArray<int>::create();
+        nut::ref<RCArray<int> > rcb = gc_new<RCArray<int> >();
         rca->push_back(11);
         rca->push_back(12);
         rcb->push_back(21);
@@ -101,22 +97,18 @@ NUT_FIXTURE(TestArray)
         NUT_TA(rca->at(1) == 21);
         NUT_TA(rca->at(2) == 22);
         NUT_TA(rca->at(3) == 12);
-
-        rca->rls_ref();
-        rcb->rls_ref();
     }
 
     void test_rcarray_ma()
     {
-        sys_ma *ma = sys_ma::create();
-        RCArray<int> *rca = RCArray<int>::create(0, ma);
+        nut::ref<sys_ma> ma = gc_new<sys_ma>();
+        nut::ref<RCArray<int> > rca = gc_new<RCArray<int> >(0, ma.pointer());
         NUT_TA(ma->get_ref() == 2);
         rca->push_back(45);
         rca->push_back(46);
 
-        rca->rls_ref();
+        rca.set_null();
         NUT_TA(ma->get_ref() == 1);
-        ma->rls_ref();
     }
 
     void test_array_cow() // copy on write

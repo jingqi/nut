@@ -22,51 +22,43 @@
 namespace nut
 {
 
-template<typename MemAlloc = sys_ma>
 class ByteArray
 {
-    typedef ByteArray<MemAlloc> self_type;
-    typedef RCArray<uint8_t,MemAlloc> rcarray_type;
+    typedef ByteArray self_type;
+    typedef RCArray<uint8_t> rcarray_type;
 
 public:
-    typedef typename rcarray_type::size_type size_type;
-    typedef typename rcarray_type::iterator iterator;
-    typedef typename rcarray_type::const_iterator const_iterator;
+    typedef rcarray_type::size_type size_type;
+    typedef rcarray_type::iterator iterator;
+    typedef rcarray_type::const_iterator const_iterator;
 
 private:
-    rcarray_type *m_array;
+    nut::ref<rcarray_type> m_array;
 
     /**
      * 写前复制
      */
     void copy_on_write()
     {
-        assert(NULL != m_array);
+        assert(m_array.is_not_null());
         const int rc = m_array->get_ref();
         assert(rc >= 1);
         if (rc > 1)
-        {
-            rcarray_type *x = m_array->clone();
-            m_array->rls_ref();
-            m_array = x;
-        }
+            m_array = m_array->clone();
     }
 
 public :
-    ByteArray(MemAlloc *ma = NULL)
-        : m_array(NULL)
-    {
-        m_array = rcarray_type::create(0, ma);
-    }
+    ByteArray(memory_allocator *ma = NULL)
+        : m_array(gc_new<rcarray_type>(0, ma))
+    {}
 
     /**
      * @param len initial data size
      * @param fillv initial data filling
      */
-    explicit ByteArray(size_type len, uint8_t fillv = 0, MemAlloc *ma = NULL)
-        : m_array(NULL)
+    explicit ByteArray(size_type len, uint8_t fillv = 0, memory_allocator *ma = NULL)
+        : m_array(gc_new<rcarray_type>(len, ma))
     {
-        m_array = rcarray_type::create(len, ma);
         m_array->resize(len, fillv);
     }
 
@@ -74,27 +66,25 @@ public :
      * @param buf initial data
      * @param len initial data size
      */
-    ByteArray(const void *buf, size_type len, MemAlloc *ma = NULL)
-        : m_array(NULL)
+    ByteArray(const void *buf, size_type len, memory_allocator *ma = NULL)
+        : m_array(gc_new<rcarray_type>(len, ma))
     {
         assert(NULL != buf);
-        m_array = rcarray_type::create(len, ma);
-        if (NULL == buf)
-            return;
-        m_array->insert(0, (const uint8_t*)buf, ((const uint8_t*)buf) + len);
+        if (NULL != buf)
+            m_array->insert(0, (const uint8_t*)buf, ((const uint8_t*)buf) + len);
     }
 
     /**
      * @param term_byte the initial data terminated with 'term_byte'
      * @param include_term_byte if True, the 'term_byte' is part of initial data
      */
-    ByteArray(const void *buf, unsigned char term_byte, bool include_term_byte, MemAlloc *ma = NULL)
+    ByteArray(const void *buf, unsigned char term_byte, bool include_term_byte, memory_allocator *ma = NULL)
         : m_array(NULL)
     {
         assert(NULL != buf);
         if (NULL == buf)
         {
-            m_array = rcarray_type::create(0, ma);
+            m_array = gc_new<rcarray_type>(0, ma);
             return;
         }
 
@@ -104,45 +94,36 @@ public :
         if (include_term_byte)
             ++len;
 
-        m_array = rcarray_type::create(len, ma);
+        m_array = gc_new<rcarray_type>(len, ma);
         m_array->insert(0, (const uint8_t*)buf, ((const uint8_t*)buf) + len);
     }
 
-    ByteArray(const void *buf, size_type index, size_type size, MemAlloc *ma = NULL)
-        : m_array(NULL)
+    ByteArray(const void *buf, size_type index, size_type size, memory_allocator *ma = NULL)
+        : m_array(gc_new<rcarray_type>(size, ma))
     {
         assert(NULL != buf);
-        m_array = rcarray_type::create(size, ma);
-        if (NULL == buf)
-            return;
-        m_array->insert(0, ((const uint8_t*)buf) + index, ((const uint8_t*)buf) + index + size);
+        if (NULL != buf)
+            m_array->insert(0, ((const uint8_t*)buf) + index, ((const uint8_t*)buf) + index + size);
     }
 
     ByteArray(const self_type& x)
         : m_array(x.m_array)
-    {
-        m_array->add_ref();
-    }
-
-    ~ByteArray()
-    {
-        m_array->rls_ref();
-        m_array = NULL;
-    }
+    {}
 
     /**
      * clear data
      */
     void clear()
     {
-        copy_on_write();
-        m_array->clear();
+        const int rc = m_array->get_ref();
+        if (rc > 1)
+            m_array = gc_new<rcarray_type>(0, m_array->allocator());
+        else
+            m_array->clear();
     }
 
     self_type& operator=(const self_type& x)
     {
-        x.m_array->add_ref();
-        m_array->rls_ref();
         m_array = x.m_array;
         return *this;
     }
@@ -152,12 +133,12 @@ public :
      */
     bool operator==(const self_type& x) const
     {
-        return m_array->operator==(x.m_array);
+        return m_array->operator==(*x.m_array);
     }
 
     bool operator!=(const self_type& x) const
     {
-        return m_array->operator!=(x.m_array);
+        return !(*this == x);
     }
 
     const uint8_t& operator[](size_type idx) const

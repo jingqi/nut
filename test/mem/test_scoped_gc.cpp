@@ -2,6 +2,7 @@
 #include <nut/unittest/unittest.hpp>
 
 #include <nut/mem/scoped_gc.hpp>
+#include <nut/gc/gc.hpp>
 
 using namespace nut;
 
@@ -28,7 +29,7 @@ NUT_FIXTURE(TestScopedGC)
 		NUT_TA(0 == obj_count);
 
 		{
-            scoped_gc<> *gc = scoped_gc<>::create();
+            nut::ref<scoped_gc> gc = gc_new<scoped_gc>();
 
             gc->gc_new<A>();
 			assert(1 == obj_count);
@@ -38,8 +39,6 @@ NUT_FIXTURE(TestScopedGC)
 
             gc->gc_new_array<A>(3);
 			assert(5 == obj_count);
-
-            gc->rls_ref();
 		}
 
 		NUT_TA(0 == obj_count);

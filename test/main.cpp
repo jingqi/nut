@@ -39,7 +39,7 @@ int main()
 
     TestRunner trunner(l);
 
-    trunner.run_group("numeric");
+    trunner.run_group("quiet");
 
     //trunner.run_fixture("TestContainer");
 
