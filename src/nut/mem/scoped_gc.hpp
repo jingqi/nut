@@ -84,9 +84,8 @@ private:
 public:
     static self_type* create(MemAlloc *ma = NULL)
     {
-        self_type *const ret = (self_type*) ma_alloc(ma, sizeof(self_type));
+        self_type *const ret = MA_NEW(ma, self_type, ma);
         assert(NULL != ret);
-        new (ret) self_type(ma);
         ret->add_ref();
         return ret;
     }

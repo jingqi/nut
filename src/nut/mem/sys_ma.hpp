@@ -219,4 +219,17 @@ void ma_free(MemAlloc *ma, void *p)
 
 }
 
+// 使用 C99 的宏可变参数形式
+#define MA_NEW(ma, type, ...) (new ((type*) (NULL != (ma) ?  (ma)->alloc(sizeof(type)) : ::malloc(sizeof(type)))) type(__VA_ARGS__))
+
+#define MA_DELETE(ma, p, type) \
+	do \
+	{ \
+		(p)->~type(); \
+		if (NULL != (ma)) \
+			(ma)->free(p); \
+		else \
+			::free(p); \
+	} while (false)
+
 #endif /* head file guarder */

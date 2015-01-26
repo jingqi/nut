@@ -66,9 +66,8 @@ private:
 public:
     static self_type* create(MemAlloc *ma = NULL)
     {
-        self_type *const ret = (self_type*) ma_alloc(ma, sizeof(self_type));
+        self_type *const ret = MA_NEW(ma, self_type, ma);
         assert(NULL != ret);
-        new (ret) self_type(ma);
         ret->add_ref();
         return ret;
     }
@@ -132,9 +131,8 @@ public:
             ma_free(m_alloc, e);
         }
 
-        _BundleElement<T> *const be = (_BundleElement<T>*) ma_alloc(m_alloc, sizeof(_BundleElement<T>));
+        _BundleElement<T> *const be = MA_NEW(m_alloc, _BundleElement<T>, value);
         assert(NULL != be);
-        new (be) _BundleElement<T>(value);
         m_values[key] = be;
     }
 

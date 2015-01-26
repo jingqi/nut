@@ -55,9 +55,8 @@ private:
 public:
     static self_type* create(size_type init_cap = 16, MemAlloc *ma = NULL)
     {
-        self_type *const ret = (self_type*) ma_alloc(ma, sizeof(self_type));
+        self_type *const ret = MA_NEW(ma, self_type, init_cap, ma);
         assert(NULL != ret);
-        new (ret) self_type(init_cap, ma);
         ret->add_ref();
         return ret;
     }

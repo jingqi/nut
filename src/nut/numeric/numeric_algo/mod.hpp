@@ -106,8 +106,7 @@ struct ModMultiplyPreBuildTable
         assert(NULL != table);
         ::memset(table, 0, sizeof(BigInteger*) * count);
 
-        table[0] = (BigInteger*) ma_alloc(alloc, sizeof(BigInteger));
-        new (table[0]) BigInteger(a);
+        table[0] = MA_NEW(alloc, BigInteger, a);
         mod = n;
     }
 
@@ -121,8 +120,7 @@ struct ModMultiplyPreBuildTable
                 {
                     if (NULL != table[i * width + j])
                     {
-                        table[i * width + j]->~_BigInteger();
-                        ma_free(alloc, table[i * width + j]);
+						MA_DELETE(alloc, table[i * width + j], _BigInteger);
                         table[i * width + j] = NULL;
                     }
                 }
