@@ -222,10 +222,8 @@ public:
         NUT_DEBUGGING_ASSERT_ALIVE;
 		T *ret = (T*) alloc(sizeof(T), count, destruct_array<T>);
 		assert(NULL != ret);
-		for (int i = 0; i < (int) count; ++i)
-		{
+		for (size_t i = 0; i < count; ++i)
 			new (ret + i) T;
-		}
 		return ret;
 	}
 };

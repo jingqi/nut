@@ -10,6 +10,7 @@
 #define ___HEADFILE_035AE1B2_4A92_4FE9_AA5C_A73C6B52447C_
 
 #include <string.h>
+#include <memory>
 
 #include <nut/mem/sys_ma.hpp>
 #include <nut/gc/gc.hpp>
@@ -76,8 +77,7 @@ public:
     {
         clear();
         ensure_cap(x.m_size);
-        for (size_type i = 0; i < x.m_size; ++i)
-            new (m_buf + i) T(x.m_buf[i]);
+		std::uninitialized_copy_n(x.m_buf, x.m_size, m_buf);
         m_size = x.m_size;
         return *this;
     }
@@ -141,7 +141,8 @@ public:
     ref<self_type> clone() const
     {
         ref<self_type> ret = GC_NEW(m_alloc.pointer(), self_type, m_size, m_alloc.pointer());
-        ret->insert(0, m_buf, m_buf + m_size);
+		std::uninitialized_copy_n(m_buf, m_size, ret->m_buf);
+		ret->m_size = m_size;
         return ret;
     }
 
@@ -199,8 +200,7 @@ public:
         ensure_cap(m_size + len);
         if (index < m_size)
             ::memmove(m_buf + index + len, m_buf + index, sizeof(T) * (m_size - index));
-        for (size_type i = 0; i < len; ++i)
-            new (m_buf + index + i) T(*(b + i));
+		std::uninitialized_copy(b, e, m_buf + index);
         m_size += len;
     }
 
@@ -228,8 +228,8 @@ public:
         ensure_cap(new_size);
         for (size_type i = new_size; i < m_size; ++i)
             (m_buf + i)->~T();
-        for (size_type i = m_size; i < new_size; ++i)
-            new (m_buf + i) T(fill);
+		if (m_size < new_size)
+			std::uninitialized_fill_n(m_buf + m_size, new_size - m_size, fill);
         m_size = new_size;
     }
 
