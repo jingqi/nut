@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2011-12-25
- * @last-edit 2015-01-06 23:45:26 jingqi
+ * @last-edit 2015-01-27 13:18:51 jingqi
  */
 
 #ifndef ___HEADFILE_C9DB1FAD_B2DA_45F6_AE36_818B4BB68EC1_
@@ -89,7 +89,7 @@ class IniDom
 					return ref<Sector>(NULL);
             }
 
-            ref<Sector> ret = gc_new<Sector>(NULL);
+            ref<Sector> ret = GC_NEW(NULL, Sector);
             ret->m_space0 = line.substr(0, index1 - 0);
 
             if (std::string::npos != index3)
@@ -202,7 +202,7 @@ public:
 				continue;
 			}
 
-            ref<Line> line = gc_new<Line>(NULL);
+            ref<Line> line = GC_NEW(NULL, Line);
 			line->parse(ln, line_comment_chars, space_chars);
 			current_lines->push_back(line);
 		}
@@ -481,7 +481,7 @@ public:
         }
         if (NULL == lines)
         {
-            ref<Sector> sec = gc_new<Sector>(NULL);
+            ref<Sector> sec = GC_NEW(NULL, Sector);
             sec->m_name = sector;
             lines = &(sec->m_lines);
             m_sectors.push_back(sec);
@@ -496,7 +496,7 @@ public:
                 return;
             }
         }
-        ref<Line> line = gc_new<Line>(NULL);
+        ref<Line> line = GC_NEW(NULL, Line);
         line->m_key = key;
         line->m_equal_sign = true;
         line->m_value = value;

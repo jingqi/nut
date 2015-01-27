@@ -21,24 +21,24 @@ NUT_FIXTURE(TestXmlElement)
 
     void test_write()
     {
-        nut::ref<XmlElement> r = gc_new<XmlElement>(NULL, "root");
+        nut::ref<XmlElement> r = GC_NEW(NULL, XmlElement, "root");
         r->add_attribute("attr1", "size");
         r->add_attribute("attr2", "<good>");
         r->set_text(" nice <> \"one\" ");
         r->add_comment(1, "comment");
         r->add_comment(10, "comment2");
 
-        nut::ref<XmlElement> e = gc_new<XmlElement>(NULL, "e");
+        nut::ref<XmlElement> e = GC_NEW(NULL, XmlElement, "e");
         e->set_text("element");
         r->append_child(e);
 
-        nut::ref<XmlElement> e2 = gc_new<XmlElement>(NULL, "e2");
+        nut::ref<XmlElement> e2 = GC_NEW(NULL, XmlElement, "e2");
         r->append_child(e2);
 
         string s;
         r->serielize(&s);
         // cout << endl << s << endl;
-        const char *expect = 
+        const char *expect =
             "<root attr1=\"size\" attr2=\"&lt;good&gt;\">\n"
                 "\tnice &lt;&gt; &quot;one&quot;\n"
                 "\t<e>\n"
@@ -62,7 +62,7 @@ NUT_FIXTURE(TestXmlElement)
         s.clear();
         r->serielize(&s, false);
         // cout << endl << s << endl;
-        expect = 
+        expect =
             "<root attr1=\"size\" attr2=\"&lt;good&gt;\">"
             " nice &lt;&gt; &quot;one&quot; "
             "<e>"
@@ -78,7 +78,7 @@ NUT_FIXTURE(TestXmlElement)
 
     void test_write_single()
     {
-        nut::ref<XmlElement> r = gc_new<XmlElement>(NULL, "root");
+        nut::ref<XmlElement> r = GC_NEW(NULL, XmlElement, "root");
         r->add_attribute("attr1", "size");
         r->add_attribute("attr2", "<good>");
 
@@ -102,14 +102,14 @@ NUT_FIXTURE(TestXmlElement)
             "\t</e>\n"
             "\t<e2 at=\"s\" />\n"
             "</root>";
-        nut::ref<XmlElement> r = gc_new<XmlElement>(NULL);
+        nut::ref<XmlElement> r = GC_NEW(NULL, XmlElement);
         r->parse(s);
         r = r->get_child(0);
 
         std::string out;
         r->serielize(&out, false);
         // cout << endl << out << endl;
-        const char *expect = 
+        const char *expect =
             "<root attr1=\"size\" attr2=\"&lt;good&gt;\">"
                 "nice &lt;&gt; &quot;one&quot;"
                 "<e>"

@@ -19,7 +19,7 @@ NUT_FIXTURE(TestPropertyDom)
 
     void set_up()
     {
-        pf = gc_new<PropertyDom>(NULL);
+        pf = GC_NEW(NULL, PropertyDom);
         const char *all =
             "readString1=abc\n"
             "readString2=abc # comment\r"

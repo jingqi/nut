@@ -33,15 +33,15 @@ NUT_FIXTURE(TestGC)
         NUT_TA(0 == obj_count);
 
         {
-            ref<A> pa = gc_new<A>(NULL);
+            ref<A> pa = GC_NEW(NULL, A);
             ref<A> pb;
             NUT_TA(1 == obj_count);
 
             {
-                ref<A> pc = gc_new<A>(NULL);
+                ref<A> pc = GC_NEW(NULL, A);
                 NUT_TA(2 == obj_count);
 
-                ref<A> pd = gc_new<A>(NULL);
+                ref<A> pd = GC_NEW(NULL, A);
                 NUT_TA(3 == obj_count);
                 pb = pd;
             }

@@ -20,7 +20,7 @@ NUT_FIXTURE(TestIniDom)
 
     void set_up()
     {
-        pf = gc_new<IniDom>(NULL);
+        pf = GC_NEW(NULL, IniDom);
         const char *all =
             "readString1=abc\n"
             "readString2=abc # comment\r"

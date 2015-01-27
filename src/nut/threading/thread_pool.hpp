@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-07-10
- * @last-edit 2014-10-18 23:35:40 jingqi
+ * @last-edit 2015-01-27 13:16:02 jingqi
  */
 
 #ifndef ___HEADFILE_143AFA59_BBAB_4738_ADED_C980E5313152_
@@ -77,7 +77,7 @@ public:
     {
         for (size_t i = m_threads.size(); i < m_thread_count; ++i)
         {
-            ref<Thread> t = gc_new<Thread>(NULL, thread_process, this);
+            ref<Thread> t = GC_NEW(NULL, Thread, thread_process, this);
             m_threads.push_back(t);
             t->start();
         }

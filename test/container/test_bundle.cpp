@@ -18,7 +18,7 @@ NUT_FIXTURE(TestBundle)
 
     void test_smoking()
     {
-        ref<Bundle> b = gc_new<Bundle>(NULL);
+        ref<Bundle> b = GC_NEW(NULL, Bundle);
 		b->set_value<int>("int", 23);
 		NUT_TA(b->has_key("int"));
 		NUT_TA(b->get_value<int>("int") == 23);

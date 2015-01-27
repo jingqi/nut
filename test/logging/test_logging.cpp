@@ -18,7 +18,7 @@ NUT_FIXTURE(TestLogging)
     void test_smoking()
     {
         weak_ref<Logger> l = LogManager::get_logger("");
-        l->add_handler(gc_new<ConsoleLogHandler>(NULL));
+        l->add_handler(GC_NEW(NULL, ConsoleLogHandler));
         NUT_LOGGING_DEBUG(l, "debug msg");
         NUT_LOGGING_INFO(l, "info msg");
         NUT_LOGGING_WARN(l, "warn msg");

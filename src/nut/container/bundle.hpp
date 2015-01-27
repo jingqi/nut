@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-03-09
- * @last-edit 2014-11-15 22:20:48 jingqi
+ * @last-edit 2015-01-27 13:02:09 jingqi
  * @brief
  */
 
@@ -76,7 +76,7 @@ public:
     template <typename T>
     void set_value(const std::string& key, const T& value)
     {
-        m_values[key] = gc_new<_BundleElement<T> >(m_alloc.pointer(), value);
+        m_values[key] = GC_NEW(m_alloc.pointer(), _BundleElement<T>, value);
     }
 
     void clear()

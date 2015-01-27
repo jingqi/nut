@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2013-10-03
- * @last-edit 2015-01-06 23:41:28 jingqi
+ * @last-edit 2015-01-27 13:22:31 jingqi
  * @brief
  */
 
@@ -330,7 +330,7 @@ public:
 
             virtual XmlElementHandler* handle_child(const std::string &name)
             {
-                ref<XmlElement> c = gc_new<XmlElement>(NULL, name);
+                ref<XmlElement> c = GC_NEW(NULL, XmlElement, name);
                 m_elem->append_child(c);
                 return new Handler(c.pointer(), m_ignore_text_blank);
             }

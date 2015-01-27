@@ -115,7 +115,7 @@ public:
     {}
 
     /** 类型转换 */
-    explicit ref(T *p)
+    ref(T *p)
         : weak_ref<T>(NULL)
     {
         assign(p);

@@ -2,7 +2,7 @@
  * @file -
  * @author jingqi
  * @date 2012-12-10
- * @last-edit 2015-01-06 22:54:13 jingqi
+ * @last-edit 2015-01-27 13:14:50 jingqi
  * @brief
  */
 
@@ -42,8 +42,8 @@ public:
           m_exit(false), m_exit_value(0)
     {
         // 内建命令
-        add_a_command(gc_new<CmdExit>(NULL, this));
-        add_a_command(gc_new<CmdHelp>(NULL, this));
+        add_a_command(GC_NEW(NULL, CmdExit, this));
+        add_a_command(GC_NEW(NULL, CmdHelp, this));
     }
 
     char get_prompt_char() const

@@ -29,7 +29,7 @@ NUT_FIXTURE(TestScopedGC)
 		NUT_TA(0 == obj_count);
 
 		{
-            nut::ref<scoped_gc> gc = gc_new<scoped_gc>(NULL);
+            nut::ref<scoped_gc> gc = GC_NEW(NULL, scoped_gc);
 
             gc->gc_new<A>();
 			assert(1 == obj_count);
