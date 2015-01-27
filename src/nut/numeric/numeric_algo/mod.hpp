@@ -87,8 +87,8 @@ struct ModMultiplyPreBuildTable
     BigInteger **table;
     BigInteger mod;
 
-    ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n, memory_allocator *ma = NULL)
-        : alloc(ma), hight(0), width(0), table(NULL)
+    ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n)
+        : alloc(a.allocator()), hight(0), width(0), table(NULL)
     {
         assert(a.is_positive() && n.is_positive() && a < n); // 一定要保证 a<n ，以便进行模加运算
 

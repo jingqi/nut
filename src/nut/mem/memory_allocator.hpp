@@ -56,7 +56,7 @@ inline void ma_free(memory_allocator *ma, void *p)
 }
 
 // 使用 C99 的宏可变参数形式
-#define MA_NEW(ma, type, ...) (new ((type*) nut::ma_alloc((ma), sizeof(type))) type(##__VA_ARGS__))
+#define MA_NEW(ma, type, ...) (new ((type*) nut::ma_alloc((ma), sizeof(type))) (type)(__VA_ARGS__))
 
 #define MA_DELETE(ma, p, type) \
     do \

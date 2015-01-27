@@ -264,6 +264,6 @@ public:
 // 即使用户类的构造函数是private的，也能用 gc_new
 #define NUT_GC_PRIVATE_GCNEW template <typename ___T> friend class nut::GCWrapper;
 
-#define GC_NEW(ma, type, ...) (type*) (new ((nut::GCWrapper<type>*) nut::ma_alloc((ma), sizeof(nut::GCWrapper<type>))) nut::GCWrapper<type>(ma, ##__VA_ARGS__))
+#define GC_NEW(ma, type, ...) (type*) (new ((nut::GCWrapper<type >*) nut::ma_alloc((ma), sizeof(nut::GCWrapper<type >))) nut::GCWrapper<type >((ma), ##__VA_ARGS__))
 
 #endif /* head file guarder */

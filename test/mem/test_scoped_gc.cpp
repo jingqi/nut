@@ -43,6 +43,38 @@ NUT_FIXTURE(TestScopedGC)
 
 		NUT_TA(0 == obj_count);
 	}
+
+    class C
+    {
+        NUT_GC_REFERABLE
+    public:
+        C() {}
+        C(int) {}
+        C(int, int) {}
+    };
+
+    class D
+    {
+    public:
+        D() {}
+        D(int) {}
+        D(int, int) {}
+    };
+
+    // 测试可变参数宏
+    void test_var_macro()
+    {
+        nut::ref<C> p = GC_NEW(NULL, C);
+        p = GC_NEW(NULL, C, 1);
+        p = GC_NEW(NULL, C, 1, 2);
+
+        D *pp = MA_NEW(NULL, D);
+        MA_DELETE(NULL, pp, D);
+        pp = MA_NEW(NULL, D, 1);
+        MA_DELETE(NULL, pp, D);
+        pp = MA_NEW(NULL, D, 1, 2);
+        MA_DELETE(NULL, pp, D);
+    }
 };
 
 NUT_REGISTER_FIXTURE(TestScopedGC, "mem, quiet")

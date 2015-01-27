@@ -11,6 +11,7 @@
 
 #include <string.h>
 #include <memory>
+#include <algorithm>
 
 #include <nut/mem/sys_ma.hpp>
 #include <nut/gc/gc.hpp>
@@ -77,7 +78,7 @@ public:
     {
         clear();
         ensure_cap(x.m_size);
-		std::uninitialized_copy_n(x.m_buf, x.m_size, m_buf);
+        std::uninitialized_copy(x.m_buf, x.m_buf + x.m_size, m_buf);
         m_size = x.m_size;
         return *this;
     }
@@ -141,7 +142,7 @@ public:
     ref<self_type> clone() const
     {
         ref<self_type> ret = GC_NEW(m_alloc.pointer(), self_type, m_size, m_alloc.pointer());
-		std::uninitialized_copy_n(m_buf, m_size, ret->m_buf);
+        std::uninitialized_copy(m_buf, m_buf + m_size, ret->m_buf);
 		ret->m_size = m_size;
         return ret;
     }
