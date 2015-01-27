@@ -118,11 +118,11 @@ NUT_FIXTURE(TestArray)
 
         Array<int> b(a), c;
         c = a;
-        NUT_TA(static_cast<const Array<int> >(a).data() == static_cast<const Array<int> >(b).data());
-        NUT_TA(static_cast<const Array<int> >(a).data() == static_cast<const Array<int> >(c).data());
+        NUT_TA(static_cast<const Array<int>& >(a).data() == static_cast<const Array<int>& >(b).data());
+        NUT_TA(static_cast<const Array<int>& >(a).data() == static_cast<const Array<int>& >(c).data());
         a.push_back(12);
-        NUT_TA(static_cast<const Array<int> >(a).data() != static_cast<const Array<int> >(b).data());
-        NUT_TA(static_cast<const Array<int> >(b).data() == static_cast<const Array<int> >(c).data());
+        NUT_TA(static_cast<const Array<int>& >(a).data() != static_cast<const Array<int>& >(b).data());
+        NUT_TA(static_cast<const Array<int>& >(b).data() == static_cast<const Array<int>& >(c).data());
     }
 };
 

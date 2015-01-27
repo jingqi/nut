@@ -68,6 +68,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\nut\container\array.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\bit_stream.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\bundle.hpp" />
     <ClInclude Include="..\..\..\src\nut\container\byte_array.hpp" />
@@ -91,9 +92,7 @@
     <ClInclude Include="..\..\..\src\nut\debugging\static_assert.hpp" />
     <ClInclude Include="..\..\..\src\nut\gc\enref.hpp" />
     <ClInclude Include="..\..\..\src\nut\gc\gc.hpp" />
-    <ClInclude Include="..\..\..\src\nut\gc\ptr.hpp" />
     <ClInclude Include="..\..\..\src\nut\gc\ref.hpp" />
-    <ClInclude Include="..\..\..\src\nut\gc\ref_counter.hpp" />
     <ClInclude Include="..\..\..\src\nut\logging\logger.hpp" />
     <ClInclude Include="..\..\..\src\nut\logging\log_filter.hpp" />
     <ClInclude Include="..\..\..\src\nut\logging\log_handler.hpp" />
@@ -108,11 +107,13 @@
     <ClInclude Include="..\..\..\src\nut\memtool\refarg.hpp" />
     <ClInclude Include="..\..\..\src\nut\memtool\singleton.hpp" />
     <ClInclude Include="..\..\..\src\nut\mem\lengthfixed_mp.hpp" />
+    <ClInclude Include="..\..\..\src\nut\mem\memory_allocator.hpp" />
     <ClInclude Include="..\..\..\src\nut\mem\scoped_gc.hpp" />
     <ClInclude Include="..\..\..\src\nut\mem\sys_ma.hpp" />
     <ClInclude Include="..\..\..\src\nut\numeric\big_integer.hpp" />
     <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\bit_sieve.hpp" />
     <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\gcd.hpp" />
+    <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\karatsuba.hpp" />
     <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\mod.hpp" />
     <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\prime.hpp" />
     <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer.hpp" />
@@ -165,11 +166,16 @@
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\ini_dom.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\property_dom.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\txt_file.hpp" />
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\element_handler.h" />
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\string_writer.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_dom.hpp" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_element.hpp" />
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_parser.hpp" />
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_writer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\test\container\skiplist\test_skiplist.cpp" />
+    <ClCompile Include="..\..\..\test\container\test_array.cpp" />
     <ClCompile Include="..\..\..\test\container\test_bitstream.cpp" />
     <ClCompile Include="..\..\..\test\container\test_bundle.cpp" />
     <ClCompile Include="..\..\..\test\container\test_bytearray.cpp" />
@@ -204,6 +210,8 @@
     <ClCompile Include="..\..\..\test\util\txtcfg\test_ini_dom.cpp" />
     <ClCompile Include="..\..\..\test\util\txtcfg\test_property_dom.cpp" />
     <ClCompile Include="..\..\..\test\util\txtcfg\xml\test_xml_element.cpp" />
+    <ClCompile Include="..\..\..\test\util\txtcfg\xml\test_xml_parser.cpp" />
+    <ClCompile Include="..\..\..\test\util\txtcfg\xml\test_xml_writer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

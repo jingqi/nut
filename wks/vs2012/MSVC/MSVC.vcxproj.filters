@@ -252,9 +252,6 @@
     <ClInclude Include="..\..\..\src\nut\threading\sync\semaphore.hpp">
       <Filter>头文件\threading\sync</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\gc\ptr.hpp">
-      <Filter>头文件\gc</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\connection.hpp">
       <Filter>头文件\util\sqlite3helper</Filter>
     </ClInclude>
@@ -381,9 +378,6 @@
     <ClInclude Include="..\..\..\src\nut\debugging\source_location.hpp">
       <Filter>头文件\debugging</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\gc\ref_counter.hpp">
-      <Filter>头文件\gc</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\logging\log_filter.hpp">
       <Filter>头文件\logging</Filter>
     </ClInclude>
@@ -449,6 +443,27 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\console_util.hpp">
       <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\array.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\mem\memory_allocator.hpp">
+      <Filter>头文件\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\element_handler.h">
+      <Filter>头文件\util\txtcfg\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\string_writer.hpp">
+      <Filter>头文件\util\txtcfg\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_parser.hpp">
+      <Filter>头文件\util\txtcfg\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_writer.hpp">
+      <Filter>头文件\util\txtcfg\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\karatsuba.hpp">
+      <Filter>头文件\numeric\numeric_algo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -555,6 +570,15 @@
       <Filter>源文件\util\txtcfg</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\test\util\txtcfg\xml\test_xml_element.cpp">
+      <Filter>源文件\util\txtcfg\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\container\test_array.cpp">
+      <Filter>源文件\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\util\txtcfg\xml\test_xml_parser.cpp">
+      <Filter>源文件\util\txtcfg\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\util\txtcfg\xml\test_xml_writer.cpp">
       <Filter>源文件\util\txtcfg\xml</Filter>
     </ClCompile>
   </ItemGroup>
