@@ -381,9 +381,6 @@
     <ClInclude Include="..\..\..\src\nut\debugging\source_location.hpp">
       <Filter>头文件\debugging</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\gc\gc_wrapper.hpp">
-      <Filter>头文件\gc</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\gc\ref_counter.hpp">
       <Filter>头文件\gc</Filter>
     </ClInclude>

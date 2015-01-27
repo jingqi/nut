@@ -91,7 +91,6 @@
     <ClInclude Include="..\..\..\src\nut\debugging\static_assert.hpp" />
     <ClInclude Include="..\..\..\src\nut\gc\enref.hpp" />
     <ClInclude Include="..\..\..\src\nut\gc\gc.hpp" />
-    <ClInclude Include="..\..\..\src\nut\gc\gc_wrapper.hpp" />
     <ClInclude Include="..\..\..\src\nut\gc\ptr.hpp" />
     <ClInclude Include="..\..\..\src\nut\gc\ref.hpp" />
     <ClInclude Include="..\..\..\src\nut\gc\ref_counter.hpp" />
