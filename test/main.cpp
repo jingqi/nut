@@ -1,4 +1,4 @@
-
+﻿
 #include <nut/platform/platform.hpp>
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
