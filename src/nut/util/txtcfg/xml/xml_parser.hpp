@@ -1,14 +1,15 @@
-﻿/**
+/**
  * @file -
  * @author jingqi
  * @date 2014-09-02
- * @last-edit 2014-10-08 22:04:02 jingqi
+ * @last-edit 2015-03-11 00:14:37 jingqi
  * @brief
  */
 
 #ifndef ___HEADFILE_303F68D8_9542_4BDD_A2C9_69764EE0AC70_
 #define ___HEADFILE_303F68D8_9542_4BDD_A2C9_69764EE0AC70_
 
+#include <assert.h>
 #include <string>
 #include <vector>
 
@@ -734,10 +735,10 @@ public:
     bool finish()
     {
         if (IN_ERROR == m_state)
-		{
-			force_finish();
+        {
+            force_finish();
             return false;
-		}
+        }
 
         if (0 == m_elem_path.size())
         {
@@ -751,7 +752,7 @@ public:
             m_tmp_value += m_elem_path.at(m_elem_path.size() - 1).name;
             m_tmp_value += "\" is not closed";
             m_state = IN_ERROR;
-			force_finish();
+            force_finish();
             return false;
         }
         return true;
