@@ -16,7 +16,7 @@
 #include <vector>
 #include <string>
 
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 
 #include "property_dom.hpp"
 
@@ -34,7 +34,7 @@ namespace nut
  */
 class IniDom
 {
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
     typedef PropertyDom::Line Line;
 
@@ -44,7 +44,7 @@ class IniDom
      */
     struct Sector
     {
-        NUT_GC_REFERABLE
+        NUT_REF_COUNTABLE
 
         std::string m_space0;
         std::string m_space1;
@@ -52,7 +52,7 @@ class IniDom
         std::string m_space2;
         std::string m_space3;
         std::string m_comment;
-        std::vector<ref<Line> > m_lines;
+        std::vector<rc_ptr<Line> > m_lines;
 
 		static bool contains(const char *s, char c)
 		{
@@ -69,27 +69,27 @@ class IniDom
 		 * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
 		 * @param space_chars 空白字符，其中出现的字符将被视为空白
 		 */
-		static ref<Sector> parse_sector_name(const std::string& line, const char *line_comment_chars = ";#", const char *space_chars = " \t")
+        static rc_ptr<Sector> parse_sector_name(const std::string& line, const char *line_comment_chars = ";#", const char *space_chars = " \t")
         {
             const std::string::size_type index1 = line.find_first_of('[');
             const std::string::size_type index2 = line.find_first_of(']');
             if (std::string::npos == index1 || std::string::npos == index2 || index1 > index2)
-                return ref<Sector>(NULL);
+                return rc_ptr<Sector>(NULL);
 			const std::string::size_type index3 = line.find_first_of(line_comment_chars, index2);
 
             for (size_t i = 0; i < index1; ++i)
             {
 				if (!contains(space_chars, line.at(i)))
-					return ref<Sector>(NULL);
+                    return rc_ptr<Sector>(NULL);
             }
 
             for (size_t i = index2 + 1, len = line.length(); i < len && i != index3; ++i)
             {
 				if (!contains(space_chars, line.at(i)))
-					return ref<Sector>(NULL);
+                    return rc_ptr<Sector>(NULL);
             }
 
-            ref<Sector> ret = GC_NEW(NULL, Sector);
+            rc_ptr<Sector> ret = RC_NEW(NULL, Sector);
             ret->m_space0 = line.substr(0, index1 - 0);
 
             if (std::string::npos != index3)
@@ -151,8 +151,8 @@ class IniDom
         }
     };
 
-    std::vector<ref<Line> > m_global_lines;
-    std::vector<ref<Sector> > m_sectors;
+    std::vector<rc_ptr<Line> > m_global_lines;
+    std::vector<rc_ptr<Sector> > m_sectors;
     bool m_dirty;
 
 public:
@@ -174,7 +174,7 @@ public:
 		if (s.empty())
 			return;
 
-		std::vector<ref<Line> > *current_lines = &m_global_lines;
+        std::vector<rc_ptr<Line> > *current_lines = &m_global_lines;
 		size_t start = 0;
 		while (std::string::npos != start)
 		{
@@ -194,7 +194,7 @@ public:
 			}
 			start = i;
 
-			ref<Sector> sector = Sector::parse_sector_name(ln, line_comment_chars, space_chars);
+            rc_ptr<Sector> sector = Sector::parse_sector_name(ln, line_comment_chars, space_chars);
             if (sector.is_not_null())
 			{
 				current_lines = &(sector->m_lines);
@@ -202,7 +202,7 @@ public:
 				continue;
 			}
 
-            ref<Line> line = GC_NEW(NULL, Line);
+            rc_ptr<Line> line = RC_NEW(NULL, Line);
 			line->parse(ln, line_comment_chars, space_chars);
 			current_lines->push_back(line);
 		}
@@ -291,7 +291,7 @@ public:
         {
 			for (size_t i = 0, sz = m_global_lines.size(); i < sz; ++i)
             {
-				const ref<Line>& line = m_global_lines.at(i);
+                const rc_ptr<Line>& line = m_global_lines.at(i);
                 if (!line->m_equal_sign)
                     continue;
                 out->push_back(line->m_key);
@@ -303,10 +303,10 @@ public:
         {
             if (m_sectors.at(i)->m_name == sector)
             {
-                const std::vector<ref<Line> >& lines = m_sectors.at(i)->m_lines;
+                const std::vector<rc_ptr<Line> >& lines = m_sectors.at(i)->m_lines;
 				for (size_t j = 0, lsz = lines.size(); j < lsz; ++j)
                 {
-					const ref<Line>& line = lines.at(j);
+                    const rc_ptr<Line>& line = lines.at(j);
                     if (!line->m_equal_sign)
                         continue;
                     out->push_back(line->m_key);
@@ -319,7 +319,7 @@ public:
     bool has_key(const char *sector, const char *key) const
     {
         assert(NULL != key);
-        const std::vector<ref<Line> > *lines = NULL;
+        const std::vector<rc_ptr<Line> > *lines = NULL;
         if (NULL == sector)
         {
             lines = &m_global_lines;
@@ -351,7 +351,7 @@ public:
     bool remove_key(const char *sector, const char *key)
     {
         assert(NULL != key);
-        std::vector<ref<Line> > *lines = NULL;
+        std::vector<rc_ptr<Line> > *lines = NULL;
         if (NULL == sector)
         {
             lines = &m_global_lines;
@@ -385,7 +385,7 @@ public:
     const char* get_string(const char *sector, const char *key, const char *default_value = "") const
     {
         assert(NULL != key);
-        const std::vector<ref<Line> > *lines = NULL;
+        const std::vector<rc_ptr<Line> > *lines = NULL;
         if (NULL == sector)
         {
             lines = &m_global_lines;
@@ -463,7 +463,7 @@ public:
     void set_string(const char *sector, const char *key, const char *value)
     {
         assert(NULL != key && NULL != value);
-        std::vector<ref<Line> > *lines = NULL;
+        std::vector<rc_ptr<Line> > *lines = NULL;
         if (NULL == sector)
         {
             lines = &m_global_lines;
@@ -481,7 +481,7 @@ public:
         }
         if (NULL == lines)
         {
-            ref<Sector> sec = GC_NEW(NULL, Sector);
+            rc_ptr<Sector> sec = RC_NEW(NULL, Sector);
             sec->m_name = sector;
             lines = &(sec->m_lines);
             m_sectors.push_back(sec);
@@ -496,7 +496,7 @@ public:
                 return;
             }
         }
-        ref<Line> line = GC_NEW(NULL, Line);
+        rc_ptr<Line> line = RC_NEW(NULL, Line);
         line->m_key = key;
         line->m_equal_sign = true;
         line->m_value = value;

@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 
 #include "log_level.hpp"
 #include "log_record.hpp"
@@ -20,15 +20,15 @@ namespace nut
 
 class LogFilter
 {
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
 public:
     virtual bool is_logable(const std::string &logger_path, const LogRecord &log) const = 0;
 
 public:
-    static bool is_logable(const std::string& log_path, const LogRecord& rec, const std::vector<ref<LogFilter> >& filters)
+    static bool is_logable(const std::string& log_path, const LogRecord& rec, const std::vector<rc_ptr<LogFilter> >& filters)
     {
-        for (std::vector<ref<LogFilter> >::const_iterator iter = filters.begin(), end = filters.end();
+        for (std::vector<rc_ptr<LogFilter> >::const_iterator iter = filters.begin(), end = filters.end();
             iter != end; ++iter)
         {
             if (!(*iter)->is_logable(log_path, rec))
@@ -88,7 +88,7 @@ class LogFilterFactory
     LogFilterFactory();
 
 public:
-    static ref<LogFilter> create_log_filter(const std::string &arg)
+    static rc_ptr<LogFilter> create_log_filter(const std::string &arg)
     {
         bool mask[5] = { true, true, true, true, true };
         for (size_t i = 0; i < arg.length() && i < 5; ++i)
@@ -111,7 +111,7 @@ public:
                 deny_paths.push_back(arg.substr(begin));
         }
 
-        return GC_NEW(NULL, DefaultLogFilter, mask[0], mask[1], mask[2], mask[3], mask[4], deny_paths);
+        return RC_NEW(NULL, DefaultLogFilter, mask[0], mask[1], mask[2], mask[3], mask[4], deny_paths);
     }
 };
 

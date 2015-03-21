@@ -33,7 +33,7 @@ public:
     typedef rcarray_type::const_iterator const_iterator;
 
 private:
-    nut::ref<rcarray_type> m_array;
+    rc_ptr<rcarray_type> m_array;
 
     /**
      * 写前复制
@@ -49,7 +49,7 @@ private:
 
 public :
     ByteArray(memory_allocator *ma = NULL)
-        : m_array(GC_NEW(ma, rcarray_type, 0, ma))
+        : m_array(RC_NEW(ma, rcarray_type, 0, ma))
     {}
 
     /**
@@ -57,7 +57,7 @@ public :
      * @param fillv initial data filling
      */
     explicit ByteArray(size_type len, uint8_t fillv = 0, memory_allocator *ma = NULL)
-        : m_array(GC_NEW(ma, rcarray_type, len, ma))
+        : m_array(RC_NEW(ma, rcarray_type, len, ma))
     {
         m_array->resize(len, fillv);
     }
@@ -67,7 +67,7 @@ public :
      * @param len initial data size
      */
     ByteArray(const void *buf, size_type len, memory_allocator *ma = NULL)
-        : m_array(GC_NEW(ma, rcarray_type, len, ma))
+        : m_array(RC_NEW(ma, rcarray_type, len, ma))
     {
         assert(NULL != buf);
         if (NULL != buf)
@@ -84,7 +84,7 @@ public :
         assert(NULL != buf);
         if (NULL == buf)
         {
-            m_array = GC_NEW(ma, rcarray_type, 0, ma);
+            m_array = RC_NEW(ma, rcarray_type, 0, ma);
             return;
         }
 
@@ -94,12 +94,12 @@ public :
         if (include_term_byte)
             ++len;
 
-        m_array = GC_NEW(ma, rcarray_type, len, ma);
+        m_array = RC_NEW(ma, rcarray_type, len, ma);
         m_array->insert(0, (const uint8_t*)buf, ((const uint8_t*)buf) + len);
     }
 
     ByteArray(const void *buf, size_type index, size_type size, memory_allocator *ma = NULL)
-        : m_array(GC_NEW(ma, rcarray_type, size, ma))
+        : m_array(RC_NEW(ma, rcarray_type, size, ma))
     {
         assert(NULL != buf);
         if (NULL != buf)
@@ -117,7 +117,7 @@ public :
     {
         const int rc = m_array->get_ref();
         if (rc > 1)
-            m_array = GC_NEW(m_array->allocator(), rcarray_type, 0, m_array->allocator());
+            m_array = RC_NEW(m_array->allocator(), rcarray_type, 0, m_array->allocator());
         else
             m_array->clear();
     }

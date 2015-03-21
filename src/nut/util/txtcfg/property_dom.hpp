@@ -16,7 +16,7 @@
 #include <stdlib.h>     // for atoi() and so on
 #include <stdio.h>      // for sprintf()
 
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 #include "../string/string_util.hpp"
 
 
@@ -33,7 +33,7 @@ namespace nut
  */
 class PropertyDom
 {
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
     /**
      * 每一行是这样构成的
@@ -41,7 +41,7 @@ class PropertyDom
      */
     struct Line
     {
-        NUT_GC_REFERABLE
+        NUT_REF_COUNTABLE
 
         std::string m_space0;
         std::string m_key;
@@ -175,7 +175,7 @@ class PropertyDom
     };
     friend class IniDom;
 
-    std::vector<ref<Line> > m_lines;
+    std::vector<rc_ptr<Line> > m_lines;
     bool m_dirty;
 
 public:
@@ -215,7 +215,7 @@ public:
 			}
 			start = i;
 
-            ref<Line> line = GC_NEW(NULL, Line);
+            rc_ptr<Line> line = RC_NEW(NULL, Line);
 			line->parse(ln, line_comment_chars, space_chars);
 			m_lines.push_back(line);
 		} while (std::string::npos != start);
@@ -259,7 +259,7 @@ public:
 		assert(NULL != out);
 		for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
         {
-			const ref<Line>& line = m_lines.at(i);
+            const rc_ptr<Line>& line = m_lines.at(i);
             if (!line->m_equal_sign)
                 continue;
             out->push_back(line->m_key);
@@ -365,7 +365,7 @@ public:
         }
 
         // if not found, then add a new record
-        ref<Line> line = GC_NEW(NULL, Line);
+        rc_ptr<Line> line = RC_NEW(NULL, Line);
         line->m_key = key;
         line->m_equal_sign = true;
         line->m_value = value;

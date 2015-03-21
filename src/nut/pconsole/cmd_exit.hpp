@@ -20,13 +20,13 @@ namespace nut
 
 class CmdExit : public ICommand
 {
-    weak_ref<IConsole> m_console;
+    IConsole *m_console;
 
 public:
-    CmdExit(weak_ref<IConsole> c)
+    CmdExit(IConsole *c)
         : m_console(c)
     {
-        assert(!c.is_null());
+        assert(NULL != c);
     }
 
     virtual const char* get_command_name() const

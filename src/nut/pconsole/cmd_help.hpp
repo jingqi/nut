@@ -20,13 +20,13 @@ namespace nut
 
 class CmdHelp : public ICommand
 {
-    weak_ref<IConsole> m_console;
+    IConsole *m_console;
 
 public:
-    CmdHelp(weak_ref<IConsole> c)
+    CmdHelp(IConsole *c)
         : m_console(c)
     {
-        assert(!c.is_null());
+        assert(NULL != c);
     }
 
     virtual const char* get_command_name() const
@@ -67,7 +67,7 @@ public:
         const std::string cmd_name = params.at(1);
 
         // 匹配命令
-        std::vector<ref<ICommand> > matched_cmds = IConsole::match_commands(m_console->get_commands(), cmd_name);
+        std::vector<rc_ptr<ICommand> > matched_cmds = IConsole::match_commands(m_console->get_commands(), cmd_name);
 
         // 无匹配
         if (matched_cmds.size() == 0)

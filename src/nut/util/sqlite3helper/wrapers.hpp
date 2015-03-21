@@ -10,14 +10,14 @@
 
 #include <sqlite3.h>
 
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 
 namespace nut
 {
 
 class SqliteStmt
 {
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
     sqlite3_stmt *m_stmt;
 

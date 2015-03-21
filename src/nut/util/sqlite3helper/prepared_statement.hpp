@@ -12,8 +12,8 @@
 #include <string>
 #include <sqlite3.h>
 
-#include <nut/gc/gc.hpp>
-#include <nut/gc/enref.hpp>
+#include <nut/rc/rc_new.hpp>
+#include <nut/rc/enrc.hpp>
 
 #include "wrapers.hpp"
 
@@ -31,7 +31,7 @@ public:
     };
 
     ParamType type;
-    ref<enref<std::string> > string_arg;
+    rc_ptr<enrc<std::string> > string_arg;
     int int_arg;
 
 private:
@@ -43,11 +43,11 @@ public:
     {}
 
     ParamWraper(const char *arg)
-        : type(STRING), string_arg(gc_new<enref<std::string> >(arg))
+        : type(STRING), string_arg(RC_NEW(NULL, enrc<std::string>, arg))
     {}
 
     ParamWraper(const std::string& arg)
-        : type(STRING), string_arg(gc_new<enref<std::string> >(const_ref_arg<std::string>(arg)))
+        : type(STRING), string_arg(RC_NEW(NULL, enrc<std::string>, const_ref_arg<std::string>(arg)))
     {}
 
     static const ParamWraper& none()
@@ -60,10 +60,10 @@ public:
 
 class PreparedStatement
 {
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
-    ref<SqliteStmt> m_stmt;
-    std::vector<ref<enref<std::string> > > m_strings;
+    rc_ptr<SqliteStmt> m_stmt;
+    std::vector<rc_ptr<enrc<std::string> > > m_strings;
 
 public:
     PreparedStatement() {}
@@ -81,7 +81,7 @@ public:
         int rs = ::sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
         if (SQLITE_OK != rs || NULL == stmt)
             return false;
-        m_stmt = gc_new<SqliteStmt>(stmt);
+        m_stmt = RC_NEW(NULL, SqliteStmt, stmt);
         return true;
     }
 
@@ -90,7 +90,7 @@ public:
         return !m_stmt.is_null();
     }
 
-    ref<SqliteStmt> stmt()
+    rc_ptr<SqliteStmt> stmt()
     {
         return m_stmt;
     }

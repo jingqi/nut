@@ -15,14 +15,14 @@
 #include <stdint.h>
 
 #include <nut/mem/sys_ma.hpp>
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 
 namespace nut
 {
 
 struct _BundleElementBase
 {
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 };
 
 template <typename T>
@@ -37,9 +37,9 @@ struct _BundleElement : public _BundleElementBase
 
 class Bundle
 {
-    const ref<memory_allocator> m_alloc;
+    const rc_ptr<memory_allocator> m_alloc;
 
-    typedef std::map<std::string, nut::ref<_BundleElementBase> > map_t;
+    typedef std::map<std::string, rc_ptr<_BundleElementBase> > map_t;
     map_t m_values;
 
 private:
@@ -47,7 +47,7 @@ private:
     Bundle& operator=(const Bundle&);
 
 public:
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
     Bundle(memory_allocator *ma = NULL)
         : m_alloc(ma)
@@ -76,7 +76,7 @@ public:
     template <typename T>
     void set_value(const std::string& key, const T& value)
     {
-        m_values[key] = GC_NEW(m_alloc.pointer(), _BundleElement<T>, value);
+        m_values[key] = RC_NEW(m_alloc.pointer(), _BundleElement<T>, value);
     }
 
     void clear()

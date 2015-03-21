@@ -14,7 +14,7 @@
 #include <string>
 #include <map>
 
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 #include <nut/util/string/string_util.hpp>
 
 #include "xml_parser.hpp"
@@ -25,7 +25,7 @@ namespace nut
 
 class XmlElement
 {
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
     class Comment
     {
@@ -45,7 +45,7 @@ class XmlElement
     std::string m_name, m_text;
     typedef std::map<std::string, std::string> attr_map_t;
     attr_map_t m_attrs;
-    std::vector<ref<XmlElement> > m_children;
+    std::vector<rc_ptr<XmlElement> > m_children;
     std::vector<Comment> m_comments; // sorted ascending
     bool m_dirty;
 
@@ -120,34 +120,34 @@ public:
         return m_children.size();
     }
 
-    ref<XmlElement> get_child(size_t i) const
+    rc_ptr<XmlElement> get_child(size_t i) const
     {
         if (i >= m_children.size())
-            return ref<XmlElement>();
+            return rc_ptr<XmlElement>();
         return m_children.at(i);
     }
 
-    ref<XmlElement> get_child(const std::string& name) const
+    rc_ptr<XmlElement> get_child(const std::string& name) const
     {
         for (size_t i = 0, s = m_children.size(); i < s; ++i)
         {
-            ref<XmlElement> c = m_children.at(i);
+            rc_ptr<XmlElement> c = m_children.at(i);
             if (c.is_null())
                 continue;
             if (c->m_name == name)
                 return c;
         }
-        return ref<XmlElement>();
+        return rc_ptr<XmlElement>();
     }
 
-    void append_child(ref<XmlElement> child)
+    void append_child(rc_ptr<XmlElement> child)
     {
         assert(child.is_not_null());
         m_children.push_back(child);
         m_dirty = true;
     }
 
-    void insert_child(size_t pos, ref<XmlElement> child)
+    void insert_child(size_t pos, rc_ptr<XmlElement> child)
     {
         assert(pos <= m_children.size() && child.is_not_null());
         m_children.insert(m_children.begin() + pos, child);
@@ -330,7 +330,7 @@ public:
 
             virtual XmlElementHandler* handle_child(const std::string &name)
             {
-                ref<XmlElement> c = GC_NEW(NULL, XmlElement, name);
+                rc_ptr<XmlElement> c = RC_NEW(NULL, XmlElement, name);
                 m_elem->append_child(c);
                 return new Handler(c.pointer(), m_ignore_text_blank);
             }
@@ -422,7 +422,7 @@ public:
             }
 
             // children element
-            ref<XmlElement> c = m_children.at(i);
+            rc_ptr<XmlElement> c = m_children.at(i);
             if (c.is_null())
                 continue;
             if (tab >= 0)

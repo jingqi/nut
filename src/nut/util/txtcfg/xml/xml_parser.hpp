@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file -
  * @author jingqi
  * @date 2014-09-02
@@ -20,7 +20,8 @@ namespace nut
 
 class XmlParser
 {
-    enum {
+    enum
+	{
         MAX_ENCODED_LEN = 6 // 转义字符最大长度
     };
 

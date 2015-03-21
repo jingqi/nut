@@ -23,7 +23,7 @@ namespace nut
 template <size_t C>
 struct ModMultiplyPreBuildTable
 {
-    const ref<memory_allocator> alloc;
+    const rc_ptr<memory_allocator> alloc;
 
 #if (OPTIMIZE_LEVEL == 0)
     size_t hight, width;
@@ -326,7 +326,7 @@ inline void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *
  */
 struct MontgomeryPreBuildTable
 {
-    const ref<memory_allocator> alloc;
+    const rc_ptr<memory_allocator> alloc;
     BigInteger **table;
     size_t size;
 

@@ -15,7 +15,7 @@
 #include <map>
 #include <fstream>
 
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 #include <nut/platform/path.hpp>
 
 #include "xml_element.hpp"
@@ -25,11 +25,11 @@ namespace nut
 
 class XmlDom
 {
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
     std::string m_version;
     std::string m_encoding;
-    ref<XmlElement> m_root;
+    rc_ptr<XmlElement> m_root;
 	bool m_dirty;
 
 public:
@@ -87,12 +87,12 @@ public:
 		}
     }
 
-    ref<XmlElement> get_root() const
+    rc_ptr<XmlElement> get_root() const
     {
         return m_root;
     }
 
-    void set_root(ref<XmlElement> root)
+    void set_root(rc_ptr<XmlElement> root)
     {
 		if (root != m_root)
 		{
@@ -158,7 +158,7 @@ public:
         i = s.find('<', i);
         if (std::string::npos == i)
             return; // no element found
-        m_root = gc_new<XmlElement>();
+        m_root = RC_NEW(NULL, XmlElement);
         m_root->parse(s, i, ignore_text_blank);
 		if (m_root->get_children_count() > 0)
 			m_root = m_root->get_child(0);

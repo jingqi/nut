@@ -2,7 +2,7 @@
 #include <nut/unittest/unittest.hpp>
 
 #include <nut/mem/scoped_gc.hpp>
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 
 using namespace nut;
 
@@ -29,7 +29,7 @@ NUT_FIXTURE(TestScopedGC)
 		NUT_TA(0 == obj_count);
 
 		{
-            nut::ref<scoped_gc> gc = GC_NEW(NULL, scoped_gc);
+            rc_ptr<scoped_gc> gc = RC_NEW(NULL, scoped_gc);
 
             gc->gc_new<A>();
 			assert(1 == obj_count);
@@ -46,7 +46,7 @@ NUT_FIXTURE(TestScopedGC)
 
     class C
     {
-        NUT_GC_REFERABLE
+        NUT_REF_COUNTABLE
     public:
         C() {}
         C(int) {}
@@ -64,9 +64,9 @@ NUT_FIXTURE(TestScopedGC)
     // 测试可变参数宏
     void test_var_macro()
     {
-        nut::ref<C> p = GC_NEW(NULL, C);
-        p = GC_NEW(NULL, C, 1);
-        p = GC_NEW(NULL, C, 1, 2);
+        rc_ptr<C> p = RC_NEW(NULL, C);
+        p = RC_NEW(NULL, C, 1);
+        p = RC_NEW(NULL, C, 1, 2);
 
         D *pp = MA_NEW(NULL, D);
         MA_DELETE(NULL, pp, D);

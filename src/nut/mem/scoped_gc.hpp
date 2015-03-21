@@ -54,7 +54,7 @@ class scoped_gc
         destruct_func_type destruct_func;
     };
 
-    const ref<memory_allocator> m_alloc;
+    const rc_ptr<memory_allocator> m_alloc;
 	Block *m_current_block;
 	uint8_t *m_end;
     DestructorNode *m_destruct_chain;
@@ -65,7 +65,7 @@ private:
     self_type& operator=(const self_type&);
 
 public:
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
     scoped_gc(memory_allocator *ma = NULL)
         : m_alloc(ma), m_current_block(NULL), m_end(NULL), m_destruct_chain(NULL)

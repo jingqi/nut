@@ -30,7 +30,7 @@ NUT_FIXTURE(TestThreading)
 
     void test_manual()
     {
-        ref<ThreadPool> tp = GC_NEW(NULL, ThreadPool, 2);
+        rc_ptr<ThreadPool> tp = RC_NEW(NULL, ThreadPool, 2);
         tp->start();
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)

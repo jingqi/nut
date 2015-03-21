@@ -21,18 +21,18 @@ NUT_FIXTURE(TestXmlElement)
 
     void test_write()
     {
-        nut::ref<XmlElement> r = GC_NEW(NULL, XmlElement, "root");
+        rc_ptr<XmlElement> r = RC_NEW(NULL, XmlElement, "root");
         r->add_attribute("attr1", "size");
         r->add_attribute("attr2", "<good>");
         r->set_text(" nice <> \"one\" ");
         r->add_comment(1, "comment");
         r->add_comment(10, "comment2");
 
-        nut::ref<XmlElement> e = GC_NEW(NULL, XmlElement, "e");
+        rc_ptr<XmlElement> e = RC_NEW(NULL, XmlElement, "e");
         e->set_text("element");
         r->append_child(e);
 
-        nut::ref<XmlElement> e2 = GC_NEW(NULL, XmlElement, "e2");
+        rc_ptr<XmlElement> e2 = RC_NEW(NULL, XmlElement, "e2");
         r->append_child(e2);
 
         string s;
@@ -78,7 +78,7 @@ NUT_FIXTURE(TestXmlElement)
 
     void test_write_single()
     {
-        nut::ref<XmlElement> r = GC_NEW(NULL, XmlElement, "root");
+        rc_ptr<XmlElement> r = RC_NEW(NULL, XmlElement, "root");
         r->add_attribute("attr1", "size");
         r->add_attribute("attr2", "<good>");
 
@@ -102,7 +102,7 @@ NUT_FIXTURE(TestXmlElement)
             "\t</e>\n"
             "\t<e2 at=\"s\" />\n"
             "</root>";
-        nut::ref<XmlElement> r = GC_NEW(NULL, XmlElement);
+        rc_ptr<XmlElement> r = RC_NEW(NULL, XmlElement);
         r->parse(s);
         r = r->get_child(0);
 

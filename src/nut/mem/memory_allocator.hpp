@@ -9,7 +9,7 @@
 #ifndef ___HEADFILE_8FCF356E_92C5_457D_A13B_AB79C21B9E4D_
 #define ___HEADFILE_8FCF356E_92C5_457D_A13B_AB79C21B9E4D_
 
-#include <nut/gc/ref.hpp>
+#include <nut/rc/rc_ptr.hpp>
 
 namespace nut
 {
@@ -20,7 +20,7 @@ class memory_allocator
     memory_allocator& operator=(const memory_allocator&);
 
 public:
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
     memory_allocator() {}
 

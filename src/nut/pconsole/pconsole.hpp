@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 #include <nut/util/string/string_util.hpp>
 
 #include "icommand.hpp"
@@ -32,7 +32,7 @@ class PConsole : public IConsole
     char m_prompt_char;
     std::string m_prompt_string;
     std::string m_console_name;
-    std::vector<ref<ICommand> > m_commands;
+    std::vector<rc_ptr<ICommand> > m_commands;
     bool m_exit;
     int m_exit_value;
 
@@ -42,8 +42,8 @@ public:
           m_exit(false), m_exit_value(0)
     {
         // 内建命令
-        add_a_command(GC_NEW(NULL, CmdExit, this));
-        add_a_command(GC_NEW(NULL, CmdHelp, this));
+        add_a_command(RC_NEW(NULL, CmdExit, this));
+        add_a_command(RC_NEW(NULL, CmdHelp, this));
     }
 
     char get_prompt_char() const
@@ -68,7 +68,7 @@ public:
 
 
     /** 添加一个命令 */
-    void add_a_command(ref<ICommand> cmd)
+    void add_a_command(rc_ptr<ICommand> cmd)
     {
         m_commands.push_back(cmd);
     }
@@ -108,7 +108,7 @@ public:
         printf("%s\n", m_console_name.c_str());
         for (size_t i = 0, size = m_commands.size(); i < size; ++i)
         {
-            ref<ICommand> cmd = m_commands.at(i);
+            rc_ptr<ICommand> cmd = m_commands.at(i);
             assert(!cmd.is_null());
             const char* cmd_name = cmd->get_command_name();
             const char* cmd_info = cmd->get_general_info();
@@ -117,7 +117,7 @@ public:
     }
 
     /** 获取命令列表 */
-    virtual const std::vector<ref<ICommand> >& get_commands() const
+    virtual const std::vector<rc_ptr<ICommand> >& get_commands() const
     {
         return m_commands;
     }
@@ -145,7 +145,7 @@ private:
         const std::string cmd_name(l + start, l + end);
 
         // 匹配命令
-        std::vector<ref<ICommand> > matched_cmds = match_commands(m_commands, cmd_name);
+        std::vector<rc_ptr<ICommand> > matched_cmds = match_commands(m_commands, cmd_name);
 
         // 无匹配
         if (matched_cmds.size() == 0)

@@ -10,7 +10,7 @@
 
 #include <assert.h>
 #include <nut/platform/platform.hpp>
-#include <nut/gc/ref.hpp>
+#include <nut/rc/rc_ptr.hpp>
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <windows.h>
@@ -24,7 +24,7 @@ namespace nut
 
 class Thread
 {
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
 public:
     typedef void (*thread_process_type)(void*);

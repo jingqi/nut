@@ -5,7 +5,7 @@
 #include <nut/numeric/numeric_algo/mod.hpp>
 #include <nut/numeric/numeric_algo/prime.hpp>
 #include <nut/numeric/numeric_algo/karatsuba.hpp>
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 
 #include <time.h>
 #include <stdio.h>
@@ -203,7 +203,7 @@ NUT_FIXTURE(TestNumericAlgo)
         ::memset(x, 0, sizeof(word_type) * x_len);
         ::memset(y, 0, sizeof(word_type) * x_len);
 
-        ref<sys_ma> ma = GC_NEW(NULL, sys_ma);
+        rc_ptr<sys_ma> ma = RC_NEW(NULL, sys_ma);
         clock_t s = clock();
         signed_multiply<word_type>(a, a_len, b, b_len, x, x_len);
         clock_t f1 = clock();

@@ -12,7 +12,7 @@
 #include <vector>
 #include <queue>
 
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 
 #include "thread.hpp"
 #include "sync/condition.hpp"
@@ -26,7 +26,7 @@ namespace nut
  */
 class ThreadPool
 {
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
 public:
     typedef Thread::thread_process_type thread_process_type;
@@ -42,7 +42,7 @@ public:
     };
 
     size_t m_thread_count;
-    std::vector<ref<Thread> > m_threads;
+    std::vector<rc_ptr<Thread> > m_threads;
     bool volatile m_interupt;
     std::queue<Task> m_task_queue;
     Condition::condition_lock_type m_lock;
@@ -77,7 +77,7 @@ public:
     {
         for (size_t i = m_threads.size(); i < m_thread_count; ++i)
         {
-            ref<Thread> t = GC_NEW(NULL, Thread, thread_process, this);
+            rc_ptr<Thread> t = RC_NEW(NULL, Thread, thread_process, this);
             m_threads.push_back(t);
             t->start();
         }

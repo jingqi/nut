@@ -15,11 +15,11 @@ NUT_FIXTURE(TestPropertyDom)
     NUT_CASE(test_read_list)
     NUT_CASES_END()
 
-    nut::ref<PropertyDom> pf;
+    rc_ptr<PropertyDom> pf;
 
     void set_up()
     {
-        pf = GC_NEW(NULL, PropertyDom);
+        pf = RC_NEW(NULL, PropertyDom);
         const char *all =
             "readString1=abc\n"
             "readString2=abc # comment\r"

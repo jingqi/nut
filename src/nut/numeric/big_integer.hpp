@@ -37,7 +37,7 @@ public:
     typedef StdInt<word_type>::double_unsigned_type dword_type;
 
 private:
-    const nut::ref<memory_allocator> m_alloc;
+    const rc_ptr<memory_allocator> m_alloc;
     word_type *m_buffer; // 缓冲区, little-endian, 带符号
     size_type m_cap;
     size_type m_significant_len; // 有效字长度

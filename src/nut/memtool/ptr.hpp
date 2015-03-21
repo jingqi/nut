@@ -13,6 +13,9 @@
 namespace nut
 {
 
+/**
+ * 辅助工具，用于便捷的指针NULL初始化
+ */
 template <typename T>
 class ptr
 {
@@ -20,21 +23,22 @@ protected:
     T *m_ptr;
 
 public:
-    /** 构造函数 */
-    ptr(T *ptr = NULL)
-        : m_ptr(ptr)
+    /**
+     * 构造函数
+     */
+    ptr(T *p = NULL)
+        : m_ptr(p)
     {}
 
-    /** 隐式类型转换 */
+    /**
+     * 隐式类型转换(该模板不会影响默认复制构造函数)
+     */
     template <typename U>
-    ptr(const ptr<U>& r)
-        : m_ptr(r.pointer())
+    ptr(const ptr<U>& p)
+        : m_ptr(p.pointer())
     {}
 
-    /** 复制构造函数(因为是特化模板，故必须放在上述模板函数的后面) */
-    ptr(const ptr<T>& r)
-        : m_ptr(r.m_ptr)
-    {}
+    // 默认复制构造函数，保持不变
 
     ~ptr()
     {
@@ -47,35 +51,43 @@ public:
         m_ptr = p;
     }
 
-    ptr<T>& operator=(const ptr<T>& r)
+    /**
+     * (该模板不会影响默认赋值操作符)
+     */
+    template <typename U>
+    ptr<T>& operator=(const ptr<U>& p)
     {
-        m_ptr = r.m_ptr;
+        m_ptr = p.m_ptr;
         return *this;
     }
+
+    // 默认赋值操作符，保持不变
 
     operator T*() const
     {
         return m_ptr;
     }
 
-    bool operator==(const T* r) const
+    bool operator==(const T* p) const
     {
-        return m_ptr == r;
+        return m_ptr == p;
     }
 
-    bool operator!=(const T* r) const
+    template <typename U>
+    bool operator==(const ptr<U>& p) const
     {
-        return m_ptr != r;
+        return m_ptr == p.m_ptr;
     }
 
-    bool operator==(const ptr<T>& r) const
+    bool operator!=(const T* p) const
     {
-        return m_ptr == r.m_ptr;
+        return m_ptr != p;
     }
 
-    bool operator!=(const ptr<T>& r) const
+    template <typename U>
+    bool operator!=(const ptr<U>& p) const
     {
-        return m_ptr != r.m_ptr;
+        return m_ptr != p.m_ptr;
     }
 
     T* operator->() const
@@ -91,9 +103,9 @@ public:
     }
 
 public:
-    bool is_null() const
+    void assign(T *p)
     {
-        return m_ptr == NULL;
+        m_ptr = p;
     }
 
     T* pointer() const
@@ -101,9 +113,14 @@ public:
         return m_ptr;
     }
 
-    void assign(T *p)
+    bool is_null() const
     {
-        m_ptr = p;
+        return NULL == m_ptr;
+    }
+
+    bool is_not_null() const
+    {
+        return NULL != m_ptr;
     }
 
     void set_null()

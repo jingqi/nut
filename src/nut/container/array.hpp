@@ -14,7 +14,7 @@
 #include <algorithm>
 
 #include <nut/mem/sys_ma.hpp>
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 
 namespace nut
 {
@@ -26,10 +26,10 @@ class RCArray
 
 public:
     typedef size_t size_type;
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
 private:
-    const ref<memory_allocator> m_alloc;
+    const rc_ptr<memory_allocator> m_alloc;
     T *m_buf;
     size_type m_size, m_cap;
 
@@ -139,9 +139,9 @@ public:
     }
 
 public:
-    ref<self_type> clone() const
+    rc_ptr<self_type> clone() const
     {
-        ref<self_type> ret = GC_NEW(m_alloc.pointer(), self_type, m_size, m_alloc.pointer());
+        rc_ptr<self_type> ret = RC_NEW(m_alloc.pointer(), self_type, m_size, m_alloc.pointer());
         std::uninitialized_copy(m_buf, m_buf + m_size, ret->m_buf);
 		ret->m_size = m_size;
         return ret;
@@ -264,7 +264,7 @@ public:
     typedef typename rcarray_type::const_iterator const_iterator;
 
 private:
-    ref<rcarray_type> m_array;
+    rc_ptr<rcarray_type> m_array;
 
     /**
      * 写时复制
@@ -280,7 +280,7 @@ private:
 
 public:
     Array(size_type init_cap = 16, memory_allocator *ma = NULL)
-        : m_array(GC_NEW(ma, rcarray_type, init_cap, ma))
+        : m_array(RC_NEW(ma, rcarray_type, init_cap, ma))
     {}
 
     Array(const self_type& x)

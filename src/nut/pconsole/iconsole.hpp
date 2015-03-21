@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include <nut/gc/ref.hpp>
+#include <nut/rc/rc_ptr.hpp>
 #include <nut/util/string/string_util.hpp>
 
 #include "icommand.hpp"
@@ -23,27 +23,27 @@ namespace nut
 
 class IConsole
 {
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
 public:
     /** 打印伪命令行的一般信息 */
     virtual void print_general_info() const = 0;
 
     /** 获取所有的命令 */
-    virtual const std::vector<ref<ICommand> >& get_commands() const = 0;
+    virtual const std::vector<rc_ptr<ICommand> >& get_commands() const = 0;
 
     /** 退出当前伪命令行 */
     virtual void exit(int e) = 0;
 
 public:
     /** 从指定的命令集中挑选出匹配名称的子集 */
-    static std::vector<ref<ICommand> > match_commands(const std::vector<ref<ICommand> >& commands, const std::string& to_match)
+    static std::vector<rc_ptr<ICommand> > match_commands(const std::vector<rc_ptr<ICommand> >& commands, const std::string& to_match)
     {
         // 匹配命令
-        std::vector<ref<ICommand> > matched_cmds;
+        std::vector<rc_ptr<ICommand> > matched_cmds;
         for (size_t i = 0, size = commands.size(); i < size; ++i)
         {
-            ref<ICommand> cmd = commands.at(i);
+            rc_ptr<ICommand> cmd = commands.at(i);
             assert(!cmd.is_null());
 
             // 强匹配

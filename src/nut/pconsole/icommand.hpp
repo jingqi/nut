@@ -12,14 +12,14 @@
 #include <string>
 #include <vector>
 
-#include <nut/gc/ref.hpp>
+#include <nut/rc/rc_ptr.hpp>
 
 namespace nut
 {
 
 class ICommand
 {
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
 public:
     /** 查询命令名 */

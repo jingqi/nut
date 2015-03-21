@@ -90,9 +90,6 @@
     <ClInclude Include="..\..\..\src\nut\debugging\exception.hpp" />
     <ClInclude Include="..\..\..\src\nut\debugging\source_location.hpp" />
     <ClInclude Include="..\..\..\src\nut\debugging\static_assert.hpp" />
-    <ClInclude Include="..\..\..\src\nut\gc\enref.hpp" />
-    <ClInclude Include="..\..\..\src\nut\gc\gc.hpp" />
-    <ClInclude Include="..\..\..\src\nut\gc\ref.hpp" />
     <ClInclude Include="..\..\..\src\nut\logging\logger.hpp" />
     <ClInclude Include="..\..\..\src\nut\logging\log_filter.hpp" />
     <ClInclude Include="..\..\..\src\nut\logging\log_handler.hpp" />
@@ -101,7 +98,6 @@
     <ClInclude Include="..\..\..\src\nut\logging\log_path.hpp" />
     <ClInclude Include="..\..\..\src\nut\logging\log_record.hpp" />
     <ClInclude Include="..\..\..\src\nut\logging\macros.hpp" />
-    <ClInclude Include="..\..\..\src\nut\memtool\copy_on_write.hpp" />
     <ClInclude Include="..\..\..\src\nut\memtool\free_guard.hpp" />
     <ClInclude Include="..\..\..\src\nut\memtool\ptr.hpp" />
     <ClInclude Include="..\..\..\src\nut\memtool\refarg.hpp" />
@@ -126,6 +122,9 @@
     <ClInclude Include="..\..\..\src\nut\platform\path.hpp" />
     <ClInclude Include="..\..\..\src\nut\platform\platform.hpp" />
     <ClInclude Include="..\..\..\src\nut\platform\stdint.hpp" />
+    <ClInclude Include="..\..\..\src\nut\rc\enrc.hpp" />
+    <ClInclude Include="..\..\..\src\nut\rc\rc_new.hpp" />
+    <ClInclude Include="..\..\..\src\nut\rc\rc_ptr.hpp" />
     <ClInclude Include="..\..\..\src\nut\security\digest\adler32.hpp" />
     <ClInclude Include="..\..\..\src\nut\security\encrypt\aes_cbc_pkcs5.hpp" />
     <ClInclude Include="..\..\..\src\nut\security\encrypt\rsa.hpp" />
@@ -185,7 +184,6 @@
     <ClCompile Include="..\..\..\test\container\tree\rtree\test_rtree.cpp" />
     <ClCompile Include="..\..\..\test\container\tree\test_bst.cpp" />
     <ClCompile Include="..\..\..\test\debugging\test_backtrace.cpp" />
-    <ClCompile Include="..\..\..\test\gc\test_gc.cpp" />
     <ClCompile Include="..\..\..\test\logging\test_logging.cpp" />
     <ClCompile Include="..\..\..\test\main.cpp" />
     <ClCompile Include="..\..\..\test\numeric\test_biginteger.cpp" />
@@ -195,6 +193,7 @@
     <ClCompile Include="..\..\..\test\pconsole\test_pconsole.cpp" />
     <ClCompile Include="..\..\..\test\platform\test_os.cpp" />
     <ClCompile Include="..\..\..\test\platform\test_path.cpp" />
+    <ClCompile Include="..\..\..\test\rc\test_rc.cpp" />
     <ClCompile Include="..\..\..\test\security\digest\test_adler32.cpp" />
     <ClCompile Include="..\..\..\test\security\encrypt\test_aes_cbc_pkcs5.cpp" />
     <ClCompile Include="..\..\..\test\security\encrypt\test_rsa.cpp" />

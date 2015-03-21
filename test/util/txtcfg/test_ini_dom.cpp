@@ -16,11 +16,11 @@ NUT_FIXTURE(TestIniDom)
         NUT_CASE(test_set_string)
     NUT_CASES_END()
 
-    nut::ref<IniDom> pf;
+    rc_ptr<IniDom> pf;
 
     void set_up()
     {
-        pf = GC_NEW(NULL, IniDom);
+        pf = RC_NEW(NULL, IniDom);
         const char *all =
             "readString1=abc\n"
             "readString2=abc # comment\r"

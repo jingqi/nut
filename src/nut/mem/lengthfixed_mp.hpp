@@ -39,7 +39,7 @@ class lengthfixed_mp : public memory_allocator
         uint8_t body[G];
     };
 
-    const ref<memory_allocator> m_alloc;
+    const rc_ptr<memory_allocator> m_alloc;
     TagedPtr<FreeNode> m_head;
     int volatile m_free_num;
     NUT_DEBUGGING_DESTROY_CHECKER

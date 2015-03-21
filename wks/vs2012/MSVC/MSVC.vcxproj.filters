@@ -13,14 +13,8 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="头文件\gc">
-      <UniqueIdentifier>{ba4c4893-8b5a-4c01-af0b-489ae002b834}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\memtool">
       <UniqueIdentifier>{3249a447-10e1-4a3d-9919-10cd87d3c628}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\gc">
-      <UniqueIdentifier>{78788a4e-8333-407b-9d1c-d244d9c90856}</UniqueIdentifier>
     </Filter>
     <Filter Include="头文件\unittest">
       <UniqueIdentifier>{8ac5dd8b-1b8d-49f4-a920-26bcced544d2}</UniqueIdentifier>
@@ -151,14 +145,14 @@
     <Filter Include="源文件\util\txtcfg\xml">
       <UniqueIdentifier>{9095884a-1f2c-494c-9a3f-c4a0c4387754}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\rc">
+      <UniqueIdentifier>{78788a4e-8333-407b-9d1c-d244d9c90856}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\rc">
+      <UniqueIdentifier>{ba4c4893-8b5a-4c01-af0b-489ae002b834}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\nut\gc\gc.hpp">
-      <Filter>头文件\gc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\gc\ref.hpp">
-      <Filter>头文件\gc</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\unittest\testfixture.hpp">
       <Filter>头文件\unittest</Filter>
     </ClInclude>
@@ -188,9 +182,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\memtool\refarg.hpp">
       <Filter>头文件\memtool</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\gc\enref.hpp">
-      <Filter>头文件\gc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\mem\scoped_gc.hpp">
       <Filter>头文件\mem</Filter>
@@ -396,9 +387,6 @@
     <ClInclude Include="..\..\..\src\nut\logging\log_record.hpp">
       <Filter>头文件\logging</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\memtool\copy_on_write.hpp">
-      <Filter>头文件\memtool</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\memtool\free_guard.hpp">
       <Filter>头文件\memtool</Filter>
     </ClInclude>
@@ -465,11 +453,17 @@
     <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\karatsuba.hpp">
       <Filter>头文件\numeric\numeric_algo</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\rc\enrc.hpp">
+      <Filter>头文件\rc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\rc\rc_new.hpp">
+      <Filter>头文件\rc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\rc\rc_ptr.hpp">
+      <Filter>头文件\rc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\test\gc\test_gc.cpp">
-      <Filter>源文件\gc</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\test\main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -580,6 +574,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\test\util\txtcfg\xml\test_xml_writer.cpp">
       <Filter>源文件\util\txtcfg\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\rc\test_rc.cpp">
+      <Filter>源文件\rc</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

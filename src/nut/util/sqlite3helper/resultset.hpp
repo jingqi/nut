@@ -13,7 +13,7 @@
 #include <string.h>
 #include <sqlite3.h>
 
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 #include <nut/util/string/string_util.hpp>
 
 #include "wrapers.hpp"
@@ -23,9 +23,9 @@ namespace nut
 
 class ResultSet
 {
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
-    ref<SqliteStmt> m_stmt;
+    rc_ptr<SqliteStmt> m_stmt;
 
     int get_column_index(const char *column_name)
     {
@@ -44,10 +44,10 @@ class ResultSet
 public:
     ResultSet() {}
 
-    ResultSet(ref<SqliteStmt> stmt)
+    ResultSet(rc_ptr<SqliteStmt> stmt)
         : m_stmt(stmt)
     {
-        assert(!stmt.is_null());
+        assert(stmt.is_not_null());
     }
 
     bool next()

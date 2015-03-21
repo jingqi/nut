@@ -1,7 +1,7 @@
 ﻿
 #include <nut/unittest/unittest.hpp>
 
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 
 using namespace nut;
 
@@ -15,7 +15,7 @@ NUT_FIXTURE(TestGC)
 
     class B
     {
-        NUT_GC_REFERABLE
+        NUT_REF_COUNTABLE
     };
 
     class A : public B
@@ -33,15 +33,15 @@ NUT_FIXTURE(TestGC)
         NUT_TA(0 == obj_count);
 
         {
-            ref<A> pa = GC_NEW(NULL, A);
-            ref<A> pb;
+            rc_ptr<A> pa = RC_NEW(NULL, A);
+            rc_ptr<A> pb;
             NUT_TA(1 == obj_count);
 
             {
-                ref<A> pc = GC_NEW(NULL, A);
+                rc_ptr<A> pc = RC_NEW(NULL, A);
                 NUT_TA(2 == obj_count);
 
-                ref<A> pd = GC_NEW(NULL, A);
+                rc_ptr<A> pd = RC_NEW(NULL, A);
                 NUT_TA(3 == obj_count);
                 pb = pd;
             }

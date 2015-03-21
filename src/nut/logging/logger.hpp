@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 #include <nut/threading/sync/mutex.hpp>
 #include <nut/threading/sync/guard.hpp>
 #include <nut/debugging/destroy_checker.hpp>
@@ -31,13 +31,13 @@ namespace nut
 
 class Logger
 {
-    NUT_GC_REFERABLE
-    NUT_GC_PRIVATE_GCNEW
+    NUT_REF_COUNTABLE
+    NUT_PRIVATE_RCNEW
 
-    std::vector<ref<LogHandler> > m_handlers;
-    std::vector<ref<Logger> > m_subloggers;
-    std::vector<ref<LogFilter> > m_filters;
-    weak_ref<Logger> m_parent;
+    std::vector<rc_ptr<LogHandler> > m_handlers;
+    std::vector<rc_ptr<Logger> > m_subloggers;
+    std::vector<rc_ptr<LogFilter> > m_filters;
+    Logger *m_parent;
     std::string m_logger_path;
     Mutex m_mutex;
 
@@ -49,7 +49,7 @@ private:
     Logger& operator=(const Logger&);
 
 private:
-    Logger(weak_ref<Logger> parent, const std::string &path)
+    Logger(Logger *parent, const std::string &path)
         : m_parent(parent), m_logger_path(path)
     {}
 
@@ -60,23 +60,23 @@ private:
         if (!LogFilter::is_logable(log_path, rec, m_filters))
             return;
 
-        for (std::vector<ref<LogHandler> >::const_iterator iter = m_handlers.begin(),
+        for (std::vector<rc_ptr<LogHandler> >::const_iterator iter = m_handlers.begin(),
             end = m_handlers.end(); iter != end; ++iter)
                 (*iter)->handle_log(log_path, rec, true);
 
-        if (!m_parent.is_null())
+        if (NULL != m_parent)
             m_parent->log(log_path, rec);
     }
 
 public :
-    void add_handler(ref<LogHandler> handler)
+    void add_handler(rc_ptr<LogHandler> handler)
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
 
         m_handlers.push_back(handler);
     }
 
-    void add_filter(ref<LogFilter> filter)
+    void add_filter(rc_ptr<LogFilter> filter)
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
 
@@ -132,7 +132,7 @@ public :
         log(m_logger_path, LogRecord(level, sl, msg));
     }
 
-    weak_ref<Logger> get_logger(const std::string &relative_path)
+    Logger* get_logger(const std::string &relative_path)
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
 
@@ -141,13 +141,13 @@ public :
         if (relative_path.length() == 0)
             return this;
 
-        std::vector<ref<Logger> >::const_iterator iter = m_subloggers.begin(),
+        std::vector<rc_ptr<Logger> >::const_iterator iter = m_subloggers.begin(),
             end = m_subloggers.end();
         const std::string current = LogPath::get_first_parent(relative_path);
         while (iter != end && current != (*iter)->get_logger_name()) ++iter;
         if (iter == end)
         {
-            m_subloggers.push_back(GC_NEW(NULL, Logger, this,
+            m_subloggers.push_back(RC_NEW(NULL, Logger, this,
                 (m_logger_path.length() == 0 ? current : m_logger_path + "." + current)));
             iter = m_subloggers.end() - 1;
         }
@@ -167,7 +167,6 @@ public :
 
         return LogPath::get_name(m_logger_path);
     }
-
 };
 
 }

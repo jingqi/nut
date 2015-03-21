@@ -24,7 +24,7 @@
 #include <nut/util/time.hpp>
 #include <nut/threading/sync/mutex.hpp>
 #include <nut/threading/sync/guard.hpp>
-#include <nut/gc/gc.hpp>
+#include <nut/rc/rc_new.hpp>
 
 #include "log_record.hpp"
 #include "log_filter.hpp"
@@ -40,17 +40,17 @@ namespace nut
 
 class LogHandler
 {
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
     Mutex m_mutex;
-    std::vector<ref<LogFilter> > m_filters;
+    std::vector<rc_ptr<LogFilter> > m_filters;
 
 public:
     virtual ~LogHandler() {}
 
     virtual void handle_log(const std::string &log_path, const LogRecord &rec) = 0;
 
-    void add_filter(ref<LogFilter> filter)
+    void add_filter(rc_ptr<LogFilter> filter)
     {
         Guard<Mutex> g(&m_mutex);
         m_filters.push_back(filter);
@@ -234,22 +234,22 @@ public:
      * file|./dir/logfile.log
      * syslog
      */
-    static ref<LogHandler> create_log_handler(const std::string &type)
+    static rc_ptr<LogHandler> create_log_handler(const std::string &type)
     {
         if (type == "stdout")
         {
-            return GC_NEW(NULL, StreamLogHandler, ref_arg<std::ostream>(std::cout));
+            return RC_NEW(NULL, StreamLogHandler, ref_arg<std::ostream>(std::cout));
         }
         else if (type == "stderr")
         {
-            return GC_NEW(NULL, StreamLogHandler, ref_arg<std::ostream>(std::cerr));
+            return RC_NEW(NULL, StreamLogHandler, ref_arg<std::ostream>(std::cerr));
         }
         else if (type.size() >= 7 && type.substr(0,7) == "console")
         {
             if (type.size() == 15 && type.substr(7,8) == "|nocolor")
-                return GC_NEW(NULL, ConsoleLogHandler, false);
+                return RC_NEW(NULL, ConsoleLogHandler, false);
             else
-                return GC_NEW(NULL, ConsoleLogHandler, true);
+                return RC_NEW(NULL, ConsoleLogHandler, true);
         }
         else if (type.size() > 5 && type.substr(0,5) == "file|")
         {
@@ -257,7 +257,7 @@ public:
             std::string last = type.substr(pos + 1);
             if (type.size() > 12 && type.substr(5,7) == "append|")
             {
-                return GC_NEW(NULL, FileLogHandler, last.c_str(), true);
+                return RC_NEW(NULL, FileLogHandler, last.c_str(), true);
             }
             else if (type.size() > 12 && type.substr(5,7) == "circle|")
             {
@@ -271,22 +271,22 @@ public:
                 last += Time().format_time("%Y-%m-%d %H-%M-%S ");
                 last += buf;
                 last += ".log";
-                return GC_NEW(NULL, FileLogHandler, last.c_str(), false);
+                return RC_NEW(NULL, FileLogHandler, last.c_str(), false);
             }
             else // trunc
             {
-                return GC_NEW(NULL, FileLogHandler, last.c_str(), false);
+                return RC_NEW(NULL, FileLogHandler, last.c_str(), false);
             }
         }
 #if defined(NUT_PLATFORM_OS_LINUX)
         else if (type == "syslog")
         {
-            return gc_new<SyslogLogHandler>(false);
+            return RC_NEW<SyslogLogHandler>(false);
         }
 #endif
 
         /* default */
-        return GC_NEW(NULL, StreamLogHandler, ref_arg<std::ostream>(std::cout));
+        return RC_NEW(NULL, StreamLogHandler, ref_arg<std::ostream>(std::cout));
     }
 };
 

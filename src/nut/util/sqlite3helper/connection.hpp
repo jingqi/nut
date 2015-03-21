@@ -1,9 +1,3 @@
-/**
- * @file -
- * @author jingqi
- * @date 2012-08-10
- * @last-edit 2015-01-10 11:45:24 jingqi
- */
 
 #ifndef ___HEADFILE_A7E2D32B_B83E_44AB_A6C6_98E03E0EDDBD_
 #define ___HEADFILE_A7E2D32B_B83E_44AB_A6C6_98E03E0EDDBD_
@@ -12,7 +6,7 @@
 #include <sqlite3.h>
 #include <vector>
 
-#include <nut/gc/ref.hpp>
+#include <nut/rc/rc_ptr.hpp>
 #include <nut/debugging/exception.hpp>
 
 #include "prepared_statement.hpp"
@@ -23,7 +17,7 @@ namespace nut
 
 class Connection
 {
-    NUT_GC_REFERABLE
+    NUT_REF_COUNTABLE
 
     sqlite3 *m_sqlite;
     bool m_auto_commit;
@@ -248,7 +242,7 @@ public:
         assert(NULL != sql && is_valid());
 
         // 预编译
-        ref<PreparedStatement> stmt = gc_new<PreparedStatement>(m_sqlite, sql);
+        rc_ptr<PreparedStatement> stmt = RC_NEW(NULL, PreparedStatement, m_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);
@@ -304,7 +298,7 @@ public:
         assert(NULL != sql && is_valid());
 
         // 预编译
-        ref<PreparedStatement> stmt = gc_new<PreparedStatement>(m_sqlite, sql);
+        rc_ptr<PreparedStatement> stmt = RC_NEW(NULL, PreparedStatement, m_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);
@@ -343,7 +337,7 @@ public:
         return true;
     }
 
-    ref<ResultSet> execute_query(const char *sql,
+    rc_ptr<ResultSet> execute_query(const char *sql,
         const ParamWraper& arg1 = ParamWraper::none(),
         const ParamWraper& arg2 = ParamWraper::none(),
         const ParamWraper& arg3 = ParamWraper::none(),
@@ -357,11 +351,11 @@ public:
         assert(NULL != sql && is_valid());
 
         // 预编译
-        ref<PreparedStatement> stmt = gc_new<PreparedStatement>(m_sqlite, sql);
+        rc_ptr<PreparedStatement> stmt = RC_NEW(NULL, PreparedStatement, m_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);
-            return gc_new<ResultSet>();
+            return RC_NEW(NULL, ResultSet);
         }
 
         // 绑定参数
@@ -369,7 +363,7 @@ public:
         if (!rs)
         {
             on_error(SQLITE_ERROR);
-            return gc_new<ResultSet>();
+            return RC_NEW(NULL, ResultSet);
         }
 
 #define __BIND(i) \
@@ -377,7 +371,7 @@ public:
         if (!rs) \
         { \
             on_error(SQLITE_ERROR); \
-            return gc_new<ResultSet>(); \
+            return RC_NEW(NULL, ResultSet); \
         }
 
         __BIND(1)
@@ -393,19 +387,19 @@ public:
 #undef __BIND
 
         // 执行
-        return gc_new<ResultSet>(stmt->stmt());
+        return RC_NEW(NULL, ResultSet, stmt->stmt());
     }
 
-    ref<ResultSet> execute_query(const char *sql, const std::vector<ParamWraper> args)
+    rc_ptr<ResultSet> execute_query(const char *sql, const std::vector<ParamWraper> args)
     {
         assert(NULL != sql && is_valid());
 
         // 预编译
-        ref<PreparedStatement> stmt = gc_new<PreparedStatement>(m_sqlite, sql);
+        rc_ptr<PreparedStatement> stmt = RC_NEW(NULL, PreparedStatement, m_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);
-            return gc_new<ResultSet>();
+            return RC_NEW(NULL, ResultSet);
         }
 
         // 绑定参数
@@ -413,7 +407,7 @@ public:
         if (!rs)
         {
             on_error(SQLITE_ERROR);
-            return gc_new<ResultSet>();
+            return RC_NEW(NULL, ResultSet);
         }
         for (size_t i = 0, size = args.size(); i < size; ++i)
         {
@@ -421,12 +415,12 @@ public:
             if (!rs)
             {
                 on_error(SQLITE_ERROR);
-                return gc_new<ResultSet>();
+                return RC_NEW(NULL, ResultSet);
             }
         }
 
         // 执行
-        return gc_new<ResultSet>(stmt->stmt());
+        return RC_NEW(NULL, ResultSet, stmt->stmt());
     }
 };
 

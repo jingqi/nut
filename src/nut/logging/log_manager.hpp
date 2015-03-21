@@ -27,14 +27,14 @@ DLL_API void* nut_get_root_logger();
 #define NUT_LOGGING_IMPL \
 DLL_API void* nut_get_root_logger() \
 { \
-    static nut::ref<nut::Logger> root; \
+    static nut::rc_ptr<nut::Logger> root; \
     static nut::Mutex root_mutex; \
  \
     if (root.is_null()) \
     { \
         nut::Guard<nut::Mutex> guard(&root_mutex); \
         if (root.is_null()) \
-            root = GC_NEW(NULL, nut::Logger, (nut::Logger*)NULL, ""); \
+            root = RC_NEW(NULL, nut::Logger, (nut::Logger*)NULL, ""); \
     } \
     return root.pointer(); \
 }
@@ -53,12 +53,12 @@ class LogManager
     ~LogManager();
 
 public :
-    static weak_ref<Logger> get_logger(const std::string &path)
+    static Logger* get_logger(const std::string &path)
     {
         return ((Logger*)nut_get_root_logger())->get_logger(path);
     }
 
-    static void load_config(ref<PropertyDom> config)
+    static void load_config(rc_ptr<PropertyDom> config)
     {
         assert(!config.is_null());
 		std::vector<std::string> handlers;
@@ -71,8 +71,8 @@ public :
 			config->get_list((*it + "_pos").c_str(), &strpos, ':');
             std::string str_filter = config->get_string((*it + "_filter").c_str());
 
-            ref<LogHandler> handler = LogHandlerFactory::create_log_handler(str_type);
-            ref<LogFilter> filter = LogFilterFactory::create_log_filter(str_filter);
+            rc_ptr<LogHandler> handler = LogHandlerFactory::create_log_handler(str_type);
+            rc_ptr<LogFilter> filter = LogFilterFactory::create_log_filter(str_filter);
             handler->add_filter(filter);
             if (strpos.size() == 0)
                 ((Logger*)nut_get_root_logger())->add_handler(handler);
@@ -86,7 +86,7 @@ public :
     static void load_config(const char *config_file)
     {
 		assert(NULL != config_file);
-        ref<PropertyDom> pd = GC_NEW(NULL, PropertyDom);
+        rc_ptr<PropertyDom> pd = RC_NEW(NULL, PropertyDom);
 		std::string all;
 		TxtFile::read_file(config_file, &all);
 		pd->parse(all);
