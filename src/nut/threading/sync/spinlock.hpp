@@ -17,6 +17,9 @@
 #   include <pthread.h>
 #endif
 
+namespace nut
+{
+
 class SpinLock
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
@@ -109,8 +112,9 @@ public:
         const int rs = ::pthread_spin_unlock(&m_spinlock);
         assert(0 == rs);
 #endif
-}
-
+    }
 };
+
+}
 
 #endif /* head file guarder */
