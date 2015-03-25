@@ -163,8 +163,9 @@ inline std::vector<std::wstring> chr_split(const std::wstring &str, wchar_t c, b
 inline void format(std::string *out, const char *fmt, ...)
 {
     assert(NULL != out && NULL != fmt);
+
     size_t size = 100;
-    char *buf = (char*) ::malloc(size * sizeof(char));
+    char *buf = (char*) ::malloc(size);
     assert(NULL != buf);
 
     va_list ap;
@@ -186,13 +187,9 @@ inline void format(std::string *out, const char *fmt, ...)
         if (NULL != np)
             buf = np;
     }
-    if (NULL == buf)
+    if (NULL != buf)
     {
-        out->clear();
-    }
-    else
-    {
-        *out = buf;
+        *out += buf;
         ::free(buf); /* include the case of success of realloc() and failure of realloc() */
     }
 }
@@ -229,13 +226,9 @@ inline void format(std::wstring *out, const wchar_t *fmt, ...)
         if (NULL != np)
             buf = np;
     }
-    if (NULL == buf)
+    if (NULL != buf)
     {
-        out->clear();
-    }
-    else
-    {
-        *out = buf;
+        *out += buf;
         ::free(buf); /* include the case of success of realloc() and failure of realloc() */
     }
 }
@@ -316,10 +309,8 @@ inline void trim(const std::string& str, std::string *out, const std::string& bl
     assert(NULL != out);
     const std::string::size_type begin = str.find_first_not_of(blanks),
         end = str.find_last_not_of(blanks);
-    if (std::string::npos == begin || std::string::npos == end)
-        out->clear();
-    else
-        *out = str.substr(begin, end - begin + 1);
+    if (std::string::npos != begin && std::string::npos != end)
+        *out += str.substr(begin, end - begin + 1);
 }
 
 inline void trim(const std::wstring& str, std::wstring *out, const std::wstring& blanks = L" \t\r\n")
@@ -327,10 +318,8 @@ inline void trim(const std::wstring& str, std::wstring *out, const std::wstring&
     assert(NULL != out);
     const std::wstring::size_type begin = str.find_first_not_of(blanks),
         end = str.find_last_not_of(blanks);
-    if (std::wstring::npos == begin || std::wstring::npos == end)
-        out->clear();
-    else
-        *out = str.substr(begin, end - begin + 1);
+    if (std::wstring::npos != begin && std::wstring::npos == end)
+        *out += str.substr(begin, end - begin + 1);
 }
 
 inline std::string trim(const std::string& str, const std::string& blanks = " \t\r\n")
@@ -381,20 +370,16 @@ inline void rtrim(const std::string& str, std::string *out, const std::string& b
 {
     assert(NULL != out);
     const std::string::size_type end = str.find_last_not_of(blanks);
-    if (std::string::npos == end)
-        out->clear();
-    else
-        *out = str.substr(0, end + 1);
+    if (std::string::npos != end)
+        *out += str.substr(0, end + 1);
 }
 
 inline void rtrim(const std::wstring& str, std::wstring *out, const std::wstring& blanks = L" \t\r\n")
 {
     assert(NULL != out);
     const std::wstring::size_type end = str.find_last_not_of(blanks);
-    if (std::wstring::npos == end)
-        out->clear();
-    else
-        *out = str.substr(0, end + 1);
+    if (std::wstring::npos != end)
+        *out += str.substr(0, end + 1);
 }
 
 inline std::string rtrim(const std::string& str, const std::string& blanks = " \t\r\n")
@@ -480,162 +465,164 @@ inline bool ends_with(const std::wstring& s, const std::wstring& tail)
 
 inline bool ascii_to_wstr(const char *str, std::wstring *out)
 {
-	assert(NULL != str && NULL != out);
-	out->clear();
+    assert(NULL != str && NULL != out);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-	const int n = ::MultiByteToWideChar(CP_ACP, 0 /* flags */, str, -1 /* 字符串以'\0'结束 */, NULL, 0); // 返回值包含了 '\0'
-	if (n <= 0)
-		return false;
-	out->resize(n - 1);
-	const int rs = ::MultiByteToWideChar(CP_ACP, 0, str, -1, &(*out)[0], n - 1);
-    assert(((int) out->length()) == n - 1);
-	return rs > 0;
+    const int n = ::MultiByteToWideChar(CP_ACP, 0 /* flags */, str, -1 /* 字符串以'\0'结束 */, NULL, 0); // 返回值包含了 '\0'
+    if (n <= 0)
+        return false;
+    const int old_len = (int) out->length();
+    out->resize(old_len + n - 1);
+    const int rs = ::MultiByteToWideChar(CP_ACP, 0, str.data() + old_len, -1, &(*out)[0], n - 1);
+    assert(((int) out->length()) == old_len + n - 1);
+    return rs > 0;
 #else
-	const int n = (int) ::mbstowcs(NULL, str, 0); // 返回值未包含 '\0'
-	if (n <= 0)
-		return 0 == n;
-	out->resize(n);
-	const int rs = ::mbstowcs(&(*out)[0], str, n); // 未包含 '\0'
-    assert(((int) out->length()) == n);
-	return rs > 0;
+    const int n = (int) ::mbstowcs(NULL, str, 0); // 返回值未包含 '\0'
+    if (n <= 0)
+        return 0 == n;
+    const int old_len = (int) out->length();
+    out->resize(old_len + n);
+    const int rs = ::mbstowcs(&(*out)[old_len], str, n); // 未包含 '\0'
+    assert(((int) out->length()) == old_len + n);
+    return rs > 0;
 #endif
 }
 
 inline bool ascii_to_wstr(const std::string& str, std::wstring *out)
 {
-	assert(NULL != out);
-	return ascii_to_wstr(str.c_str(), out);
+    assert(NULL != out);
+    return ascii_to_wstr(str.c_str(), out);
 }
 
 inline std::wstring ascii_to_wstr(const char *str)
 {
-	assert(NULL != str);
-	std::wstring ret;
-	ascii_to_wstr(str, &ret);
-	return ret;
+    assert(NULL != str);
+    std::wstring ret;
+    ascii_to_wstr(str, &ret);
+    return ret;
 }
 
 inline std::wstring ascii_to_wstr(const std::string& str)
 {
-	return ascii_to_wstr(str.c_str());
+    return ascii_to_wstr(str.c_str());
 }
 
 inline bool wstr_to_ascii(const wchar_t *wstr, std::string *out)
 {
-	assert(NULL != wstr && NULL != out);
-	out->clear();
+    assert(NULL != wstr && NULL != out);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-	const int n = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
-	if (n <= 0)
-		return false;
-	out->resize(n - 1);
-	const int rs = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, &(*out)[0], n - 1, NULL, NULL);
-    assert(((int) out->length()) == n - 1);
-	return rs > 0;
+    const int n = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
+    if (n <= 0)
+        return false;
+    const int old_len = (int) out->length();
+    out->resize(old_len + n - 1);
+    const int rs = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, out->data() + old_len, n - 1, NULL, NULL);
+    assert(((int) out->length()) == old_len + n - 1);
+    return rs > 0;
 #else
-	const int n = (int) ::wcstombs(NULL, wstr, 0);
-	if (n <= 0)
-		return 0 == n;
-	out->resize(n);
-	const int rs = ::wcstombs(&(*out)[0], wstr, n);
-    assert(((int) out->length()) == n);
-	return rs > 0;
+    const int n = (int) ::wcstombs(NULL, wstr, 0);
+    if (n <= 0)
+        return 0 == n;
+    const int old_len = (int) out->length();
+    out->resize(old_len + n);
+    const int rs = ::wcstombs(&(*out)[old_len], wstr, n);
+    assert(((int) out->length()) == old_len + n);
+    return rs > 0;
 #endif
 }
 
 inline bool wstr_to_ascii(const std::wstring& wstr, std::string *out)
 {
-	assert(NULL != out);
-	return wstr_to_ascii(wstr.c_str(), out);
+    assert(NULL != out);
+    return wstr_to_ascii(wstr.c_str(), out);
 }
 
 inline std::string wstr_to_ascii(const wchar_t *wstr)
 {
-	assert(NULL != wstr);
-	std::string ret;
-	wstr_to_ascii(wstr, &ret);
-	return ret;
+    assert(NULL != wstr);
+    std::string ret;
+    wstr_to_ascii(wstr, &ret);
+    return ret;
 }
 
 inline std::string wstr_to_ascii(const std::wstring& wstr)
 {
-	return wstr_to_ascii(wstr.c_str());
+    return wstr_to_ascii(wstr.c_str());
 }
 
 inline bool utf8_to_wstr(const char *str, std::wstring *out)
 {
-	assert(NULL != str && NULL != out);
+    assert(NULL != str && NULL != out);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-	out->clear();
-	const int n = ::MultiByteToWideChar(CP_UTF8, 0 /* flags */, str, -1 /* 字符串以'\0'结束 */, NULL, 0);
-	if (n <= 0)
-		return false;
-	out->resize(n - 1);
-	const int rs = ::MultiByteToWideChar(CP_UTF8, 0, str, -1, &(*out)[0], n - 1);
-    assert(((int) out->length()) == n - 1);
-	return rs > 0;
+    const int n = ::MultiByteToWideChar(CP_UTF8, 0 /* flags */, str, -1 /* 字符串以'\0'结束 */, NULL, 0);
+    if (n <= 0)
+        return false;
+    const int old_len = (int) out->length();
+    out->resize(old_len + n - 1);
+    const int rs = ::MultiByteToWideChar(CP_UTF8, 0, str, -1, out->data() + old_len, n - 1);
+    assert(((int) out->length()) == old_len + n - 1);
+    return rs > 0;
 #else
-	return ascii_to_wstr(str, out);
+    return ascii_to_wstr(str, out);
 #endif
 }
 
 inline bool utf8_to_wstr(const std::string& str, std::wstring *out)
 {
-	assert(NULL != out);
-	return utf8_to_wstr(str.c_str(), out);
+    assert(NULL != out);
+    return utf8_to_wstr(str.c_str(), out);
 }
 
 inline std::wstring utf8_to_wstr(const char *str)
 {
-	assert(NULL != str);
-	std::wstring ret;
-	utf8_to_wstr(str, &ret);
-	return ret;
+    assert(NULL != str);
+    std::wstring ret;
+    utf8_to_wstr(str, &ret);
+    return ret;
 }
 
 inline std::wstring utf8_to_wstr(const std::string& str)
 {
-	return utf8_to_wstr(str.c_str());
+    return utf8_to_wstr(str.c_str());
 }
 
 inline bool wstr_to_utf8(const wchar_t *wstr, std::string *out)
 {
-	assert(NULL != wstr && NULL != out);
+    assert(NULL != wstr && NULL != out);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-	out->clear();
-	const int n = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
-	if (n <= 0)
-		return false;
-	out->resize(n - 1);
-	const int rs = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, &(*out)[0], n - 1, NULL, NULL);
-    assert(((int) out->length()) == n - 1);
-	return rs > 0;
+    const int n = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
+    if (n <= 0)
+        return false;
+    const int old_len = (int) out->length();
+    out->resize(old_len + n - 1);
+    const int rs = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, out->data() + old_len, n - 1, NULL, NULL);
+    assert(((int) out->length()) == old_len + n - 1);
+    return rs > 0;
 #else
-	return wstr_to_ascii(wstr, out);
+    return wstr_to_ascii(wstr, out);
 #endif
 }
 
 inline bool wstr_to_utf8(const std::wstring& wstr, std::string *out)
 {
-	assert(NULL != out);
-	return wstr_to_utf8(wstr.c_str(), out);
+    assert(NULL != out);
+    return wstr_to_utf8(wstr.c_str(), out);
 }
 
 inline std::string wstr_to_utf8(const wchar_t *wstr)
 {
-	assert(NULL != wstr);
-	std::string ret;
-	wstr_to_utf8(wstr, &ret);
-	return ret;
+    assert(NULL != wstr);
+    std::string ret;
+    wstr_to_utf8(wstr, &ret);
+    return ret;
 }
 
 inline std::string wstr_to_utf8(const std::wstring& wstr)
 {
-	return wstr_to_utf8(wstr.c_str());
+    return wstr_to_utf8(wstr.c_str());
 }
 
 }

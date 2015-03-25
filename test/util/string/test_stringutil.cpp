@@ -24,7 +24,7 @@ NUT_FIXTURE(TestStringUtil)
 
     void test_to_string()
     {
-        NUT_TA(c_to_str('m') == "m");
+        NUT_TA(c_to_str('m') == "109");
 
         NUT_TA(l_to_str((long)12) == "12");
         NUT_TA(uc_to_str((unsigned char)13) == "13");
