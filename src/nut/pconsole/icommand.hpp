@@ -108,11 +108,11 @@ public:
     }
 
     /** 分析命令行 */
-    static std::vector<std::wstring> parse_comand_line(const wchar_t *cmd_line)
+    static void parse_comand_line(const wchar_t *cmd_line, std::vector<std::wstring> *appended)
     {
-        std::vector<std::wstring> ret;
+        assert(NULL != appended);
         if (NULL == cmd_line)
-            return ret;
+            return;
 
         // 略过开头的空白
         int last_position = -1;
@@ -137,15 +137,13 @@ public:
             else if (L'\0' == quot && L' ' == c)
             {
                 if (last_position + 1 < current_position)
-                    ret.push_back(std::wstring(cmd_line + (last_position + 1), cmd_line + current_position));
+                    appended->push_back(std::wstring(cmd_line + (last_position + 1), cmd_line + current_position));
                 last_position = current_position;
             }
             ++current_position;
         }
         if (last_position + 1 < current_position)
-            ret.push_back(std::wstring(cmd_line + (last_position + 1), cmd_line + current_position));
-
-        return ret;
+            appended->push_back(std::wstring(cmd_line + (last_position + 1), cmd_line + current_position));
     }
 };
 

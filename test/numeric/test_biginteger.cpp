@@ -169,23 +169,47 @@ NUT_FIXTURE(TestBigInteger)
 
     void test_to_string()
     {
-        NUT_TA(BigInteger(0).to_string() == "0");
-        NUT_TA(BigInteger(0).to_wstring() == L"0");
+        string s;
+        wstring ws;
+        BigInteger(0).to_string(&s);
+        NUT_TA(s == "0");
+        BigInteger(0).to_string(&ws);
+        NUT_TA(ws == L"0");
 
-        NUT_TA(BigInteger(10).to_string() == "10");
-        NUT_TA(BigInteger(10).to_wstring() == L"10");
+        s.clear();
+        BigInteger(10).to_string(&s);
+        NUT_TA(s == "10");
+        ws.clear();
+        BigInteger(10).to_string(&ws);
+        NUT_TA(ws == L"10");
 
-        NUT_TA(BigInteger(-15).to_string() == "-15");
-        NUT_TA(BigInteger(-15).to_wstring() == L"-15");
+        s.clear();
+        BigInteger(-15).to_string(&s);
+        NUT_TA(s == "-15");
+        ws.clear();
+        BigInteger(-15).to_string(&ws);
+        NUT_TA(ws == L"-15");
 
-        NUT_TA(BigInteger(0x4A).to_string(0x10) == "4A");
-        NUT_TA(BigInteger(0x4A).to_wstring(0x10) == L"4A");
+        s.clear();
+        BigInteger(0x4A).to_string(&s, 0x10);
+        NUT_TA(s == "4A");
+        ws.clear();
+        BigInteger(0x4A).to_string(&ws, 0x10);
+        NUT_TA(ws == L"4A");
 
-        NUT_TA(BigInteger(13).to_string(8) == "15");
-        NUT_TA(BigInteger(13).to_wstring(8) == L"15");
+        s.clear();
+        BigInteger(13).to_string(&s, 8);
+        NUT_TA(s == "15");
+        ws.clear();
+        BigInteger(13).to_string(&ws, 8);
+        NUT_TA(ws == L"15");
 
-        NUT_TA(BigInteger(5).to_string(2) == "101");
-        NUT_TA(BigInteger(5).to_wstring(2) == L"101");
+        s.clear();
+        BigInteger(5).to_string(&s, 2);
+        NUT_TA(s == "101");
+        ws.clear();
+        BigInteger(5).to_string(&ws, 2);
+        NUT_TA(ws == L"101");
     }
 
     void test_value_of()

@@ -45,10 +45,10 @@ public:
      * @parma except_dir 如果传入true, 则返回值不会包含文件夹
      * @parma except_initial_dot 如果传入true, 则返回值不会包含以'.'开头的文件/文件夹
      */
-    static void listdir(const char *path, std::vector<std::string> *out, bool except_file = false,
+    static void listdir(const char *path, std::vector<std::string> *appended, bool except_file = false,
             bool except_dir = false, bool except_initial_dot = false)
     {
-        assert(NULL != path && NULL != out);
+        assert(NULL != path && NULL != appended);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         char search_path[MAX_PATH];
@@ -61,10 +61,7 @@ public:
         WIN32_FIND_DATAA wfd;
         const HANDLE hfind = ::FindFirstFileA(search_path, &wfd);
         if (hfind == INVALID_HANDLE_VALUE)
-        {
-            out->clear();
             return;
-        }
 
         do
         {
@@ -75,7 +72,7 @@ public:
             if (except_dir && (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
                 continue;
 
-            out->push_back(wfd.cFileName);
+            appended->push_back(wfd.cFileName);
         } while (::FindNextFileA(hfind, &wfd));
 
         // 关闭查找句柄
@@ -84,10 +81,7 @@ public:
         DIR *dp = NULL;
         struct dirent *dirp = NULL;
         if ((dp = ::opendir(path)) == NULL)
-        {
-            out->clear();
             return;
-        }
 
         while ((dirp = ::readdir(dp)) != NULL)
         {
@@ -107,7 +101,7 @@ public:
                     continue;
             }
 
-            out->push_back(dirp->d_name);
+            appended->push_back(dirp->d_name);
         }
 
         // 释放DIR (struct dirent是由DIR维护的，无需额外释放)
@@ -115,26 +109,10 @@ public:
 #endif
     }
 
-    static std::vector<std::string> listdir(const char *path, bool except_file = false,
-            bool except_dir = false, bool except_initial_dot = false)
-    {
-        std::vector<std::string> ret;
-        listdir(path, &ret, except_file, except_dir, except_initial_dot);
-        return ret;
-    }
-
-    static std::vector<std::string> listdir(const std::string& path, bool except_file = false,
-            bool except_dir = false, bool except_initial_dot = false)
-    {
-        std::vector<std::string> ret;
-        listdir(path.c_str(), &ret, except_file, except_dir, except_initial_dot);
-        return ret;
-    }
-
-    static void listdir(const wchar_t *path, std::vector<std::wstring> *out, bool except_file = false,
+    static void listdir(const wchar_t *path, std::vector<std::wstring> *appended, bool except_file = false,
         bool except_dir = false, bool except_initial_dot = false)
     {
-        assert(NULL != path && NULL != out);
+        assert(NULL != path && NULL != appended);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         wchar_t search_path[MAX_PATH];
@@ -147,10 +125,7 @@ public:
         WIN32_FIND_DATAW wfd;
         const HANDLE hfind = ::FindFirstFileW(search_path, &wfd);
         if (hfind == INVALID_HANDLE_VALUE)
-        {
-            out->clear();
             return;
-        }
 
         do
         {
@@ -161,7 +136,7 @@ public:
             if (except_dir && (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
                 continue;
 
-            out->push_back(wfd.cFileName);
+            appended->push_back(wfd.cFileName);
         } while (::FindNextFileW(hfind, &wfd));
 
         // 关闭查找句柄
@@ -174,26 +149,11 @@ public:
         std::wstring s;
         for (size_t i = 0, size = dirs.size(); i < size; ++i)
         {
-            ascii_to_wstr(dirs[i].c_str(), &s);
-            out->push_back(s);
+            s.clear();
+            ascii_to_wstr(dirs[i], &s);
+            appended->push_back(s);
         }
 #endif
-    }
-
-    static std::vector<std::wstring> listdir(const wchar_t* path, bool except_file = false,
-        bool except_dir = false, bool except_initial_dot = false)
-    {
-        std::vector<std::wstring> ret;
-        listdir(path, &ret, except_file, except_dir, except_initial_dot);
-        return ret;
-    }
-
-    static std::vector<std::wstring> listdir(const std::wstring& path, bool except_file = false,
-        bool except_dir = false, bool except_initial_dot = false)
-    {
-        std::vector<std::wstring> ret;
-        listdir(path.c_str(), &ret, except_file, except_dir, except_initial_dot);
-        return ret;
     }
 
     /**
@@ -242,7 +202,9 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return FALSE != ::CopyFileW(src, dest, TRUE);
 #else
-        const std::string s = wstr_to_ascii(src), d = wstr_to_ascii(dest);
+        std::string s, d;
+        wstr_to_ascii(src, &s);
+        wstr_to_ascii(dest, &d);
         return copyfile(s.c_str(), d.c_str());
 #endif
     }
@@ -269,7 +231,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return FALSE != ::DeleteFileW(path);
 #else
-        const std::string p = wstr_to_ascii(path);
+        std::string p;
+        wstr_to_ascii(path, &p);
         return removefile(p.c_str());
 #endif
     }
@@ -300,7 +263,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return FALSE != ::CreateDirectoryW(path, NULL);
 #else
-        const std::string p = wstr_to_ascii(path);
+        std::string p;
+        wstr_to_ascii(path, &p);
         return OS::mkdir(p.c_str());
 #endif
     }
@@ -334,7 +298,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return FALSE != ::RemoveDirectoryW(path);
 #else
-        const std::string p = wstr_to_ascii(path);
+        std::string p;
+        wstr_to_ascii(path, &p);
         return removedir(p.c_str());
 #endif
     }
@@ -480,7 +445,8 @@ public:
             ret = (FALSE != ::RemoveDirectoryW(path));
         return ret;
 #else
-        const std::string p = wstr_to_ascii(path);
+        std::string p;
+        wstr_to_ascii(path, &p);
         return removetree(p.c_str());
 #endif
     }

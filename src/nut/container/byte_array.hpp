@@ -264,40 +264,36 @@ public :
     /**
      * 将二进制 0x51 0x5e 0x30 转换为字符串 "515e30"
      */
-    std::string to_string(size_t from = 0, size_t to = ~(size_t)0) const
+    void to_string(std::string *appended, size_t from = 0, size_t to = ~(size_t)0) const
     {
-        assert(from <= to);
+        assert(NULL != appended && from <= to);
 
-        std::string ret;
         const size_t limit = (size() < to ? size() : to);
         for (size_t i = from; i < limit; ++i)
         {
             const uint8_t b = at(i);
             int n = (b >> 4) & 0xF;
-            ret.push_back(n < 10 ? ('0' + n) : ('A' + (n - 10)));
+            appended->push_back(n < 10 ? ('0' + n) : ('A' + (n - 10)));
 
             n = b & 0xF;
-            ret.push_back(n < 10 ? ('0' + n) : ('A' + (n - 10)));
+            appended->push_back(n < 10 ? ('0' + n) : ('A' + (n - 10)));
         }
-        return ret;
     }
 
-    std::wstring to_wstring(size_t from = 0, size_t to = ~(size_t)0) const
+    void to_string(std::wstring *appended, size_t from = 0, size_t to = ~(size_t)0) const
     {
-        assert(from <= to);
+        assert(NULL != appended && from <= to);
 
-        std::wstring ret;
         const size_t limit = (size() < to ? size() : to);
         for (size_t i = from; i < limit; ++i)
         {
             const uint8_t b = at(i);
             int n = (b >> 4) & 0xF;
-            ret.push_back(n < 10 ? (L'0' + n) : (L'A' + (n - 10)));
+            appended->push_back(n < 10 ? (L'0' + n) : (L'A' + (n - 10)));
 
             n = b & 0xF;
-            ret.push_back(n < 10 ? (L'0' + n) : (L'A' + (n - 10)));
+            appended->push_back(n < 10 ? (L'0' + n) : (L'A' + (n - 10)));
         }
-        return ret;
     }
 
     /**

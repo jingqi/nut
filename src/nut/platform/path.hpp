@@ -10,7 +10,6 @@
 
 #include <assert.h>
 #include <string>
-#include <vector>
 
 #include "platform.hpp"
 
@@ -71,9 +70,9 @@ public:
         return L'\\' == c || L'/' == c;
     }
 
-    static void get_cwd(std::string *out)
+    static void get_cwd(std::string *appended)
     {
-        assert(NULL != out);
+        assert(NULL != appended);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   if defined(NUT_PLATFORM_CC_VC)
@@ -92,12 +91,12 @@ public:
         getcwd(buf, PATH_MAX + 1);
 #endif
 
-        *out = buf;
+        *appended += buf;
     }
 
-    static void get_cwd(std::wstring *out)
+    static void get_cwd(std::wstring *appended)
     {
-        assert(NULL != out);
+        assert(NULL != appended);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   if defined(NUT_PLATFORM_CC_VC)
@@ -116,7 +115,7 @@ public:
         getcwd(buf, PATH_MAX + 1);
 #endif
 
-        ascii_to_wstr(buf, out);
+        ascii_to_wstr(buf, appended);
     }
 
     static std::string get_cwd()
@@ -133,7 +132,7 @@ public:
         return ret;
     }
 
-    static bool isabs(const std::string& p)
+    static bool is_abs(const std::string& p)
     {
         if (p.empty())
             return false;
@@ -151,7 +150,7 @@ public:
         return false;
     }
 
-    static bool isabs(const std::wstring& p)
+    static bool is_abs(const std::wstring& p)
     {
         if (p.empty())
             return false;
@@ -169,19 +168,19 @@ public:
         return false;
     }
 
-    static void abspath(const std::string& p, std::string *out)
+    static void abs_path(const std::string& p, std::string *appended)
     {
-        assert(NULL != out);
+        assert(NULL != appended);
         if (p.empty())
         {
-            get_cwd(out);
+            get_cwd(appended);
             return;
         }
 
         // 探测是否从根路径开始
-        out->clear();
-        if (!isabs(p))
-            get_cwd(out);
+        const size_t mark = appended->length();
+        if (!is_abs(p))
+            get_cwd(appended);
 
         // 组装路径
         std::string part;
@@ -196,19 +195,19 @@ public:
             }
 
             // 处理根目录
-            if (out->empty())
+            if (appended->length() == mark)
             {
                 if (part.empty())
                 {
                     // linux root
-                    out->push_back('/');
+                    appended->push_back('/');
                     continue;
                 }
                 else if (part.at(part.length() - 1) == ':')
                 {
                     // windows partition root
-                    *out += part;
-                    out->push_back('\\');
+                    *appended += part;
+                    appended->push_back('\\');
                     part.clear();
                     continue;
                 }
@@ -219,47 +218,47 @@ public:
             {
                 if (part == "..")
                 {
-                    int j = (int) out->size() - 1;
-                    if (is_path_separator(out->at(j)))
+                    int j = (int) appended->size() - 1;
+                    if (is_path_separator(appended->at(j)))
                         --j;
-                    while (j >= 0)
+                    while (j >= (int) mark)
                     {
-                        if (is_path_separator(out->at(j)))
+                        if (is_path_separator(appended->at(j)))
                             break;
                         --j;
                     }
-                    if (j == 0 || (j > 0 && out->at(j - 1) == ':'))
-                        out->resize(j + 1);
-                    else if(j > 0)
-                        out->resize(j);
+                    if (j == (int) mark || (j > (int) mark && appended->at(j - 1) == ':'))
+                        appended->resize(j + 1);
+                    else if (j > (int) mark)
+                        appended->resize(j);
                     // else: parent directory out of range
                 }
                 else if (part != ".")
                 {
-                    if (!out->empty() && !is_path_separator(out->at(out->length() - 1)))
+                    if (appended->length() > mark && !is_path_separator(appended->at(appended->length() - 1)))
                     {
-                        out->push_back(seperator());
+                        appended->push_back(seperator());
                     }
-                    *out += part;
+                    *appended += part;
                 }
                 part.clear();
             }
         }
     }
 
-    static void abspath(const std::wstring& p, std::wstring *out)
+    static void abs_path(const std::wstring& p, std::wstring *appended)
     {
-        assert(NULL != out);
+        assert(NULL != appended);
         if (p.empty())
         {
-            get_cwd(out);
+            get_cwd(appended);
             return;
         }
 
         // 探测是否从根路径开始
-        out->clear();
-        if (!isabs(p))
-            get_cwd(out);
+        const size_t mark = appended->length();
+        if (!is_abs(p))
+            get_cwd(appended);
 
         // 组装路径
         std::wstring part;
@@ -274,19 +273,19 @@ public:
             }
 
             // 处理根目录
-            if (out->empty())
+            if (appended->length() == mark)
             {
                 if (part.empty())
                 {
                     // linux root
-                    out->push_back(L'/');
+                    appended->push_back(L'/');
                     continue;
                 }
                 else if (part.at(part.length() - 1) == L':')
                 {
                     // windows partition root
-                    *out += part;
-                    out->push_back(L'\\');
+                    *appended += part;
+                    appended->push_back(L'\\');
                     part.clear();
                     continue;
                 }
@@ -297,52 +296,50 @@ public:
             {
                 if (part == L"..")
                 {
-                    int j = (int) out->size() - 1;
-                    if (is_path_separator(out->at(j)))
+                    int j = (int) appended->size() - 1;
+                    if (is_path_separator(appended->at(j)))
                         --j;
-                    while (j >= 0)
+                    while (j >= (int) mark)
                     {
-                        if (is_path_separator(out->at(j)))
+                        if (is_path_separator(appended->at(j)))
                             break;
                         --j;
                     }
-                    if (j == 0 || (j > 0 && out->at(j - 1) == L':'))
-                        out->resize(j + 1);
-                    else if(j > 0)
-                        out->resize(j);
+                    if (j == (int) mark || (j > (int) mark && appended->at(j - 1) == L':'))
+                        appended->resize(j + 1);
+                    else if (j > (int) mark)
+                        appended->resize(j);
                     // else: parent directory out of range
                 }
                 else if (part != L".")
                 {
-                    if (!out->empty() && !is_path_separator(out->at(out->length() - 1)))
+                    if (appended->length() > mark && !is_path_separator(appended->at(appended->length() - 1)))
                     {
-                        out->push_back(seperator());
+                        appended->push_back(seperator());
                     }
-                    *out += part;
+                    *appended += part;
                 }
                 part.clear();
             }
         }
     }
 
-    static std::string abspath(const std::string& p)
+    static std::string abs_path(const std::string& p)
     {
         std::string ret;
-        abspath(p, &ret);
+        abs_path(p, &ret);
         return ret;
     }
 
-    static std::wstring abspath(const std::wstring& p)
+    static std::wstring abs_path(const std::wstring& p)
     {
         std::wstring ret;
-        abspath(p, &ret);
+        abs_path(p, &ret);
         return ret;
     }
 
-    // TODO static std::string realpath() {}
-    // TODO static std::string relpath() {}
-
-    // TODO static std::string sep() {}
+    // TODO static std::string relative_path() {}
+    // TODO static std::string real_path() {}
 
     /**
      * 从路径中划分出父路径和 文件/文件夹 名
@@ -352,18 +349,16 @@ public:
      * "/ab.txt" -> "/" "ab.txt"
      * "c:\\tmp" -> "c:\\" "tmp"
      */
-    static void split(const std::string &path, std::string *parent, std::string *child)
+    static void split(const std::string &path, std::string *parent_appended, std::string *child_appended)
     {
-        assert(NULL != parent || NULL != child);
+        assert(NULL != parent_appended || NULL != child_appended);
 
         // 找到最后一个 '/'
         std::string::size_type p1 = path.find_last_of('\\'), p2 = path.find_last_of('/');
         if (std::string::npos == p1 && std::string::npos == p2)
         {
-            if (NULL != parent)
-                parent->clear();
-            if (NULL != child)
-                *child = path;
+            if (NULL != child_appended)
+                *child_appended += path;
             return;
         }
         else if (std::string::npos != p1 && std::string::npos != p2)
@@ -378,32 +373,30 @@ public:
         assert(std::string::npos != p1);
         if (0 == p1 || ':' == path[p1 - 1]) // 磁盘号 + 根目录
         {
-            if (NULL != parent)
-                *parent = path.substr(0, p1 + 1);
-            if (NULL != child)
-                *child = path.substr(p1 + 1);
+            if (NULL != parent_appended)
+                *parent_appended += path.substr(0, p1 + 1);
+            if (NULL != child_appended)
+                *child_appended += path.substr(p1 + 1);
         }
         else
         {
-            if (NULL != parent)
-                *parent = path.substr(0, p1);
-            if (NULL != child)
-                *child = path.substr(p1 + 1);
+            if (NULL != parent_appended)
+                *parent_appended += path.substr(0, p1);
+            if (NULL != child_appended)
+                *child_appended += path.substr(p1 + 1);
         }
     }
 
-    static void split(const std::wstring& path, std::wstring *parent, std::wstring *child)
+    static void split(const std::wstring& path, std::wstring *parent_appended, std::wstring *child_appended)
     {
-        assert(NULL != parent || NULL != child);
+        assert(NULL != parent_appended || NULL != child_appended);
 
         // 找到最后一个 '/'
         std::wstring::size_type p1 = path.find_last_of(L'\\'), p2 = path.find_last_of(L'/');
         if (std::wstring::npos == p1 && std::wstring::npos == p2)
         {
-            if (NULL != parent)
-                parent->clear();
-            if (NULL != child)
-                *child = path;
+            if (NULL != child_appended)
+                *child_appended += path;
             return;
         }
         else if (std::wstring::npos != p1 && std::wstring::npos != p2)
@@ -418,32 +411,18 @@ public:
         assert(std::wstring::npos != p1);
         if (0 == p1 || L':' == path[p1 - 1]) // 磁盘号 + 根目录
         {
-            if (NULL != parent)
-                *parent = path.substr(0, p1 + 1);
-            if (NULL != child)
-                *child = path.substr(p1 + 1);
+            if (NULL != parent_appended)
+                *parent_appended += path.substr(0, p1 + 1);
+            if (NULL != child_appended)
+                *child_appended += path.substr(p1 + 1);
         }
         else
         {
-            if (NULL != parent)
-                *parent = path.substr(0, p1);
-            if (NULL != child)
-                *child = path.substr(p1 + 1);
+            if (NULL != parent_appended)
+                *parent_appended += path.substr(0, p1);
+            if (NULL != child_appended)
+                *child_appended += path.substr(p1 + 1);
         }
-    }
-
-    static Tuple<std::string,std::string> split(const std::string& path)
-    {
-        Tuple<std::string,std::string> ret;
-        split(path, &ret.first, &ret.second);
-        return ret;
-    }
-
-    static Tuple<std::wstring,std::wstring> split(const std::wstring& path)
-    {
-        Tuple<std::wstring,std::wstring> ret;
-        split(path, &ret.first, &ret.second);
-        return ret;
     }
 
     /**
@@ -453,9 +432,9 @@ public:
      * "c:\\mn\\p" -> "c:" "\\mn\\p"
      * "/mnt/sdcard" -> "" "/mnt/sdcard"
      */
-    static void splitdrive(const std::string& path, std::string *drive, std::string *rest)
+    static void split_drive(const std::string& path, std::string *drive_appended, std::string *rest_appended)
     {
-        assert(NULL != drive || NULL != rest);
+        assert(NULL != drive_appended || NULL != rest_appended);
 
         int pos = -1;
         for (int i = 0; '\0' != path[i]; ++i)
@@ -470,21 +449,19 @@ public:
         }
         if (pos < 0)
         {
-            if (NULL != drive)
-                drive->clear();
-            if (NULL != rest)
-                *rest = path;
+            if (NULL != rest_appended)
+                *rest_appended += path;
             return;
         }
-        if (NULL != drive)
-            *drive = path.substr(0, pos + 1);
-        if (NULL != rest)
-            *rest = path.substr(pos + 1);
+        if (NULL != drive_appended)
+            *drive_appended += path.substr(0, pos + 1);
+        if (NULL != rest_appended)
+            *rest_appended += path.substr(pos + 1);
     }
 
-    static void splitdrive(const std::wstring& path, std::wstring *drive, std::wstring *rest)
+    static void split_drive(const std::wstring& path, std::wstring *drive_appended, std::wstring *rest_appended)
     {
-        assert(NULL != drive || NULL != rest);
+        assert(NULL != drive_appended || NULL != rest_appended);
 
         int pos = -1;
         for (int i = 0; L'\0' != path[i]; ++i)
@@ -499,30 +476,14 @@ public:
         }
         if (pos < 0)
         {
-            if (NULL != drive)
-                drive->clear();
-            if (NULL != rest)
-                *rest = path;
+            if (NULL != rest_appended)
+                *rest_appended += path;
             return;
         }
-        if (NULL != drive)
-            *drive = path.substr(0, pos + 1);
-        if (NULL != rest)
-            *rest = path.substr(pos + 1);
-    }
-
-    static Tuple<std::string,std::string> splitdrive(const std::string& path)
-    {
-        Tuple<std::string,std::string> ret;
-        splitdrive(path, &ret.first, &ret.second);
-        return ret;
-    }
-
-    static Tuple<std::wstring,std::wstring> splitdrive(const std::wstring& path)
-    {
-        Tuple<std::wstring,std::wstring> ret;
-        splitdrive(path, &ret.first, &ret.second);
-        return ret;
+        if (NULL != drive_appended)
+            *drive_appended += path.substr(0, pos + 1);
+        if (NULL != rest_appended)
+            *rest_appended += path.substr(pos + 1);
     }
 
     /**
@@ -531,9 +492,9 @@ public:
      * 例如：
      * "a.txt" -> "a" ".txt"
      */
-    static void splitext(const std::string& path, std::string *prefix, std::string *ext)
+    static void split_ext(const std::string& path, std::string *prefix_appended, std::string *ext_appended)
     {
-        assert(NULL != prefix || NULL != ext);
+        assert(NULL != prefix_appended || NULL != ext_appended);
 
         int pos = -1;
         for (int i = (int) path.length() - 1; i >= 0; --i)
@@ -550,21 +511,19 @@ public:
         }
         if (pos < 0)
         {
-            if (NULL != prefix)
-                *prefix = path;
-            if (NULL != ext)
-                ext->clear();
+            if (NULL != prefix_appended)
+                *prefix_appended += path;
             return;
         }
-        if (NULL != prefix)
-            *prefix = path.substr(0, pos);
-        if (NULL != ext)
-            *ext = path.substr(pos);
+        if (NULL != prefix_appended)
+            *prefix_appended += path.substr(0, pos);
+        if (NULL != ext_appended)
+            *ext_appended += path.substr(pos);
     }
 
-    static void splitext(const std::wstring& path, std::wstring *prefix, std::wstring *ext)
+    static void split_ext(const std::wstring& path, std::wstring *prefix_appended, std::wstring *ext_appended)
     {
-        assert(NULL != prefix || NULL != ext);
+        assert(NULL != prefix_appended || NULL != ext_appended);
 
         int pos = -1;
         for (int i = (int) path.length() - 1; i >= 0; --i)
@@ -581,30 +540,14 @@ public:
         }
         if (pos < 0)
         {
-            if (NULL != prefix)
-                *prefix = path;
-            if (NULL != ext)
-                ext->clear();
+            if (NULL != prefix_appended)
+                *prefix_appended += path;
             return;
         }
-        if (NULL != prefix)
-            *prefix = path.substr(0, pos);
-        if (NULL != ext)
-            *ext = path.substr(pos);
-    }
-
-    static Tuple<std::string,std::string> splitext(const std::string& path)
-    {
-        Tuple<std::string,std::string> ret;
-        splitext(path, &ret.first, &ret.second);
-        return ret;
-    }
-
-    static Tuple<std::wstring,std::wstring> splitext(const std::wstring& path)
-    {
-        Tuple<std::wstring,std::wstring> ret;
-        splitext(path, &ret.first, &ret.second);
-        return ret;
+        if (NULL != prefix_appended)
+            *prefix_appended += path.substr(0, pos);
+        if (NULL != ext_appended)
+            *ext_appended += path.substr(pos);
     }
 
     // TODO static void splitunc() {}
@@ -640,12 +583,16 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return -1 != ::_waccess(path, 0);
 #else
-        const std::string p = wstr_to_ascii(path);
+        std::string p;
+        wstr_to_ascii(path, &p);
         return exists(p.c_str());
 #endif
     }
 
-    static bool exists(const std::wstring& path) { return exists(path.c_str()); }
+    static bool exists(const std::wstring& path)
+    {
+        return exists(path.c_str());
+    }
 
     /**
      * last access time
@@ -678,7 +625,8 @@ public:
         ::_wstat(path, &info);
         return info.st_atime;
 #else
-        const std::string p = wstr_to_ascii(path);
+        std::string p;
+        wstr_to_ascii(path, &p);
         return getatime(p.c_str());
 #endif
     }
@@ -719,7 +667,8 @@ public:
         ::_wstat(path, &info);
         return info.st_mtime;
 #else
-        const std::string p = wstr_to_ascii(path);
+        std::string p;
+        wstr_to_ascii(path, &p);
         return getmtime(p.c_str());
 #endif
     }
@@ -760,7 +709,8 @@ public:
         ::_wstat(path, &info);
         return info.st_ctime;
 #else
-        const std::string p = wstr_to_ascii(path);
+        std::string p;
+        wstr_to_ascii(path, &p);
         return getctime(p.c_str());
 #endif
     }
@@ -801,7 +751,8 @@ public:
         ::_wstat(path, &info);
         return info.st_size;
 #else
-        const std::string p = wstr_to_ascii(path);
+        std::string p;
+        wstr_to_ascii(path, &p);
         return getsize(p.c_str());
 #endif
     }
@@ -835,7 +786,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return 0 != (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(path));
 #else
-        const std::string p = wstr_to_ascii(path);
+        std::string p;
+        wstr_to_ascii(path, &p);
         return isdir(p.c_str());
 #endif
     }
@@ -869,7 +821,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return 0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(path));
 #else
-        const std::string p = wstr_to_ascii(path);
+        std::string p;
+        wstr_to_ascii(path, &p);
         return isfile(p.c_str());
 #endif
     }
@@ -903,7 +856,8 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
         return false;
 #else
-        const std::string p = wstr_to_ascii(path);
+        std::string p;
+        wstr_to_ascii(path, &p);
         return isfile(p.c_str());
 #endif
     }
@@ -923,66 +877,82 @@ public:
      * "/" "sd" -> "/sd"
      * "c:" "\\tmp" -> "c:\\tmp"
      */
-    static void join(const std::string& a, const std::string& b, std::string *out)
+    static void join(const std::string& a, const std::string& b, std::string *appended)
     {
-        assert(NULL != out);
+        assert(NULL != appended);
 
         if (a.length() == 0)
         {
-            *out = b;
+            *appended += b;
             return;
         }
 
         // 处理磁盘号
         if (':' == *a.rbegin())
         {
-            *out = a + b;
+            *appended += a;
+            *appended += b;
             return;
         }
 
         // 处理根目录 '/', 'c:\\'
         if (b.length() > 0 && (is_path_separator(*b.begin()) || std::string::npos != b.find_first_of(':')))
         {
-            *out = b;
+            *appended += b;
             return;
         }
 
         // 连接
         if (is_path_separator(*a.rbegin()))
-            *out = a + b;
+        {
+            *appended += a;
+            *appended += b;
+        }
         else
-            *out = a + seperator() + b;
+        {
+            *appended += a;
+            appended->push_back(seperator());
+            *appended += b;
+        }
     }
 
-    static void join(const std::wstring& a, const std::wstring& b, std::wstring *out)
+    static void join(const std::wstring& a, const std::wstring& b, std::wstring *appended)
     {
-        assert(NULL != out);
+        assert(NULL != appended);
 
         if (a.length() == 0)
         {
-            *out = b;
+            *appended += b;
             return;
         }
 
         // 处理磁盘号
         if (L':' == *a.rbegin())
         {
-            *out = a + b;
+            *appended += a;
+            *appended += b;
             return;
         }
 
         // 处理根目录 '/', 'c:\\'
         if (b.length() > 0 && (is_path_separator(*b.begin()) || std::wstring::npos != b.find_first_of(L':')))
         {
-            *out = b;
+            *appended += b;
             return;
         }
 
         // 连接
         if (is_path_separator(*a.rbegin()))
-            *out = a + b;
+        {
+            *appended += a;
+            *appended += b;
+        }
         else
-            *out = a + wseperator() + b;
+        {
+            *appended += a;
+            appended->push_back(wseperator());
+            *appended += b;
+        }
     }
 
     static std::string join(const std::string& a, const std::string& b)

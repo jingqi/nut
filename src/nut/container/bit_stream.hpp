@@ -279,20 +279,18 @@ public:
         return m_bit_size - bit1_count();
     }
 
-    std::string to_string()
+    void to_string(std::string *appended)
     {
-        std::string ret;
+        assert(NULL != appended);
         for (size_t i = 0; i < m_bit_size; ++i)
-            ret += (bit_at(i) ? '1' : '0');
-        return ret;
+            appended->push_back(bit_at(i) ? '1' : '0');
     }
 
-    std::wstring to_wstring()
+    void to_string(std::wstring *appended)
     {
-        std::wstring ret;
+        assert(NULL != appended);
         for (size_t i = 0; i < m_bit_size; ++i)
-            ret += (bit_at(i) ? L'1' : '0');
-        return ret;
+            appended->push_back(bit_at(i) ? L'1' : '0');
     }
 };
 

@@ -909,50 +909,48 @@ private:
     }
 
 public:
-    std::string to_string(size_type radix = 10) const
+    void to_string(std::string *appended, size_type radix = 10) const
     {
-        assert(is_valid_radix(radix));
+        assert(NULL != appended && is_valid_radix(radix));
         self_type tmp(*this);
         const bool positive = tmp.is_positive();
         if (!positive)
             self_type::negate(tmp, &tmp);
 
         const self_type RADIX(radix);
-        std::string ret;
+        const size_t mark = appended->length();
         do
         {
             const size_type n = (size_t) (tmp % RADIX).llong_value();
-            ret.push_back(num2char(n));
+            appended->push_back(num2char(n));
 
             tmp /= RADIX;
         } while (!tmp.is_zero());
         if (!positive)
-            ret.push_back('-');
-        std::reverse(ret.begin(), ret.end());
-        return ret;
+            appended->push_back('-');
+        std::reverse(appended->begin() + mark, appended->end());
     }
 
-    std::wstring to_wstring(size_type radix = 10) const
+    void to_string(std::wstring *appended, size_type radix = 10) const
     {
-        assert(is_valid_radix(radix));
+        assert(NULL != appended && is_valid_radix(radix));
         self_type tmp(*this);
         const bool positive = tmp.is_positive();
         if (!positive)
             self_type::negate(tmp, &tmp);
 
         const self_type RADIX(radix, m_alloc.pointer());
-        std::wstring ret;
+        const size_t mark = appended->length();
         do
         {
             const size_type n = (size_t) (tmp % RADIX).llong_value();
-            ret.push_back(num2wchar(n));
+            appended->push_back(num2wchar(n));
 
             tmp /= RADIX;
         } while (!tmp.is_zero());
         if (!positive)
-            ret.push_back(L'-');
-        std::reverse(ret.begin(), ret.end());
-        return ret;
+            appended->push_back(L'-');
+        std::reverse(appended->begin() + mark, appended->end());
     }
 
 private:

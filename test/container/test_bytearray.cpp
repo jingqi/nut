@@ -25,13 +25,17 @@ NUT_FIXTURE(TestByteArray)
         ba.append(1, 0x13);
         ba.append(1, 0x28);
         ba.append(1, 0xe4);
-        NUT_TA(ba.to_string() == "1328E4");
+        string s;
+        ba.to_string(&s);
+        NUT_TA(s == "1328E4");
     }
 
     void test_value_of()
     {
         ByteArray ba = ByteArray::value_of("1328Ef");
-        NUT_TA(ba.to_string() == "1328EF");
+        string s;
+        ba.to_string(&s);
+        NUT_TA(s == "1328EF");
     }
 
     void test_copy_on_write()
@@ -41,14 +45,24 @@ NUT_FIXTURE(TestByteArray)
         b2 = ba;
 
         // 还未复制时
+        string s;
         NUT_TA(static_cast<const ByteArray&>(b1).data() == static_cast<const ByteArray&>(b2).data());
-        NUT_TA(b1.to_string() == "1328EF" && b2.to_string() == "1328EF");
+        b1.to_string(&s);
+        NUT_TA(s == "1328EF");
+        s.clear();
+        b2.to_string(&s);
+        NUT_TA(s == "1328EF");
 
         // 复制后
         b1.append(1, 0x5E);
         NUT_TA(static_cast<const ByteArray&>(b1).data() != static_cast<const ByteArray&>(b2).data());
         NUT_TA(static_cast<const ByteArray&>(ba).data() == static_cast<const ByteArray&>(b2).data());
-        NUT_TA(b1.to_string() == "1328EF5E" && b2.to_string() == "1328EF");
+        s.clear();
+        b1.to_string(&s);
+        NUT_TA(s == "1328EF5E");
+        s.clear();
+        b2.to_string(&s);
+        NUT_TA(s == "1328EF");
     }
 
     /**
@@ -62,7 +76,12 @@ NUT_FIXTURE(TestByteArray)
         NUT_TA(static_cast<const ByteArray&>(b1).data() == static_cast<const ByteArray&>(b2).data());
         b1[0] = 2;
         NUT_TA(static_cast<const ByteArray&>(b1).data() != static_cast<const ByteArray&>(b2).data());
-        NUT_TA(b1.to_string() == "025E" && b2.to_string() == "125E");
+        string s;
+        b1.to_string(&s);
+        NUT_TA(s == "025E");
+        s.clear();
+        b2.to_string(&s);
+        NUT_TA(s == "125E");
     }
 };
 
