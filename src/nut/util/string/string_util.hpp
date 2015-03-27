@@ -473,7 +473,7 @@ inline bool ascii_to_wstr(const char *str, std::wstring *out)
         return false;
     const int old_len = (int) out->length();
     out->resize(old_len + n - 1);
-    const int rs = ::MultiByteToWideChar(CP_ACP, 0, str.data() + old_len, -1, &(*out)[0], n - 1);
+    const int rs = ::MultiByteToWideChar(CP_ACP, 0, str, -1, &(*out)[old_len], n - 1);
     assert(((int) out->length()) == old_len + n - 1);
     return rs > 0;
 #else
@@ -517,7 +517,7 @@ inline bool wstr_to_ascii(const wchar_t *wstr, std::string *out)
         return false;
     const int old_len = (int) out->length();
     out->resize(old_len + n - 1);
-    const int rs = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, out->data() + old_len, n - 1, NULL, NULL);
+    const int rs = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, &(*out)[old_len], n - 1, NULL, NULL);
     assert(((int) out->length()) == old_len + n - 1);
     return rs > 0;
 #else
@@ -561,7 +561,7 @@ inline bool utf8_to_wstr(const char *str, std::wstring *out)
         return false;
     const int old_len = (int) out->length();
     out->resize(old_len + n - 1);
-    const int rs = ::MultiByteToWideChar(CP_UTF8, 0, str, -1, out->data() + old_len, n - 1);
+    const int rs = ::MultiByteToWideChar(CP_UTF8, 0, str, -1, &(*out)[old_len], n - 1);
     assert(((int) out->length()) == old_len + n - 1);
     return rs > 0;
 #else
@@ -598,7 +598,7 @@ inline bool wstr_to_utf8(const wchar_t *wstr, std::string *out)
         return false;
     const int old_len = (int) out->length();
     out->resize(old_len + n - 1);
-    const int rs = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, out->data() + old_len, n - 1, NULL, NULL);
+    const int rs = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, &(*out)[old_len], n - 1, NULL, NULL);
     assert(((int) out->length()) == old_len + n - 1);
     return rs > 0;
 #else

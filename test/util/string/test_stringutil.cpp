@@ -97,6 +97,8 @@ NUT_FIXTURE(TestStringUtil)
         //wcout << endl << b << endl;
         NUT_TA(b == L"c5&汉");
 
+		a.clear();
+		b.clear();
         wstr_to_utf8(L"c5&汉", &a);
         utf8_to_wstr(a.c_str(), &b);
         //wcout << endl << b << endl;
@@ -105,11 +107,15 @@ NUT_FIXTURE(TestStringUtil)
 
 #if defined(NUT_PLATFORM_CC_GCC) || defined(NUT_PLATFORM_CC_MINGW)
         // gcc 或直接取源码的编码并遗留到运行时编码中，目前源码的编码为 utf8
+		a.clear();
+		b.clear();
         utf8_to_wstr("c5&汉", &b);
         wstr_to_utf8(b.c_str(), &a);
         NUT_TA(a == "c5&汉");
 #elif defined(NUT_PLATFORM_CC_VC)
         // vc 会将c字符串转编码为 ascii，所以运行时全部为 ascii
+		a.clear();
+		b.clear();
         ascii_to_wstr("c5&汉", &b);
         wstr_to_ascii(b.c_str(), &a);
         NUT_TA(a == "c5&汉");
