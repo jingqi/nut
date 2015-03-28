@@ -24,9 +24,9 @@ class TxtFile
     TxtFile();
 
 public:
-    static bool read_file(const char *path, std::string *out)
+    static bool read_file(const char *path, std::string *rs)
     {
-        assert(NULL != path && NULL != out);
+        assert(NULL != path && NULL != rs);
         if (!Path::exists(path))
             return false;
 
@@ -44,8 +44,8 @@ public:
             }
 
             if (!first_line)
-                out->push_back('\n');
-            *out += line;
+                rs->push_back('\n');
+            *rs += line;
             first_line = false;
         }
         ifs.close();

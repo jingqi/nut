@@ -47,16 +47,20 @@ NUT_FIXTURE(TestStringUtil)
 
     void test_split()
     {
-        vector<string> rs = chr_split("a,b,e", ',');
+        vector<string> rs;
+        chr_split("a,b,e", ',', &rs);
         NUT_TA(rs.size() == 3 && rs[0] == "a" && rs[1] == "b" && rs[2] == "e");
 
-        rs = chr_split("a,b&e", ",&");
+        rs.clear();
+        chr_split("a,b&e", ",&", &rs);
         NUT_TA(rs.size() == 3 && rs[0] == "a" && rs[1] == "b" && rs[2] == "e");
 
-        rs = str_split("a,&b,&", ",&");
+        rs.clear();
+        str_split("a,&b,&", ",&", &rs);
         NUT_TA(rs.size() == 3 && rs[0] == "a" && rs[1] == "b" && rs[2] == "");
 
-        rs = str_split("a,&b,&", ",&", true);
+        rs.clear();
+        str_split("a,&b,&", ",&", &rs, true);
         NUT_TA(rs.size() == 2 && rs[0] == "a" && rs[1] == "b");
     }
 

@@ -171,23 +171,23 @@ public:
      *
      * @param format 格式化输出，以便于阅读
      */
-    void serielize(std::string *out, bool format = true) const
+    void serielize(std::string *appended, bool format = true) const
     {
-        assert(NULL != out);
+        assert(NULL != appended);
 
 		// xml header
-        *out += "<?xml version=\"";
-        *out += m_version;
-        *out += "\" encoding=\"";
-        *out += m_encoding;
-        *out += "\"?>";
+        *appended += "<?xml version=\"";
+        *appended += m_version;
+        *appended += "\" encoding=\"";
+        *appended += m_encoding;
+        *appended += "\"?>";
         if (m_root.is_null())
             return;
         if (format)
-            out->push_back('\n');
+            appended->push_back('\n');
 
         // xml elements
-        StdStringWriter sw(out);
+        StdStringWriter sw(appended);
         XmlWriter w(&sw);
         m_root->serielize(w, format ? 0 : -1);
     }

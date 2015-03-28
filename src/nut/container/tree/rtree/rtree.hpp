@@ -364,9 +364,9 @@ public:
     /**
      * 查找与指定区域相交的数据
      */
-    void search_intersect(const area_type& rect, std::vector<std::pair<area_type,data_type> > *out)
+    void search_intersect(const area_type& rect, std::vector<std::pair<area_type,data_type> > *appended)
     {
-        assert(NULL != out);
+        assert(NULL != appended);
 
         std::stack<TreeNode*> s;
         s.push(m_root);
@@ -389,7 +389,7 @@ public:
                 else
                 {
                     DataNode *dn = dynamic_cast<DataNode*>(c);
-                    out->push_back(std::pair<area_type,data_type>(dn->area, dn->data));
+                    appended->push_back(std::pair<area_type,data_type>(dn->area, dn->data));
                 }
             }
         }
@@ -398,9 +398,9 @@ public:
     /**
      * 查找包含在指定区域内的数据
      */
-    void search_contains(const area_type& rect, std::vector<std::pair<area_type, data_type> > *out)
+    void search_contains(const area_type& rect, std::vector<std::pair<area_type, data_type> > *appended)
     {
-        assert(NULL != out);
+        assert(NULL != appended);
 
         std::stack<TreeNode*> s;
         s.push(m_root);
@@ -423,7 +423,7 @@ public:
                 else if (rect.contains(c->area))
                 {
                     DataNode *dn = dynamic_cast<DataNode*>(c);
-                    out->push_back(dn->data);
+                    appended->push_back(dn->data);
                 }
             }
         }
@@ -432,9 +432,9 @@ public:
     /**
      * 返回所有的数据
      */
-    void get_all(std::vector<data_type> *out)
+    void get_all(std::vector<data_type> *appended)
     {
-        assert(NULL != out);
+        assert(NULL != appended);
 
         std::stack<TreeNode*> s;
         s.push(m_root);
@@ -454,7 +454,7 @@ public:
                 else
                 {
                     DataNode *dn = dynamic_cast<DataNode*>(c);
-                    out->push_back(dn->data);
+                    appended->push_back(dn->data);
                 }
             }
         }

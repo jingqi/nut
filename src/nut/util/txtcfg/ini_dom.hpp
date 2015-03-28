@@ -132,21 +132,21 @@ class IniDom
 		/**
 		 * @param le 换行符
 		 */
-		void serielize(std::string *out, const char *le = "\n")
+        void serielize(std::string *appended, const char *le = "\n")
         {
-			assert(NULL != out);
-			*out += m_space0;
-			out->push_back('[');
-			*out += m_space1;
-			*out += m_name;
-			*out += m_space2;
-			out->push_back(']');
-			*out += m_space3;
-			*out += m_comment;
+            assert(NULL != appended);
+            *appended += m_space0;
+            appended->push_back('[');
+            *appended += m_space1;
+            *appended += m_name;
+            *appended += m_space2;
+            appended->push_back(']');
+            *appended += m_space3;
+            *appended += m_comment;
 			for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
 			{
-				*out += le;
-				m_lines.at(i)->serielize(out);
+                *appended += le;
+                m_lines.at(i)->serielize(appended);
 			}
         }
     };
@@ -211,22 +211,22 @@ public:
 	/**
 	 * @param le 换行符
 	 */
-	void serielize(std::string *out, const char *le = "\n") const
+    void serielize(std::string *appended, const char *le = "\n") const
     {
         // 全局数据
 		for (size_t i = 0, sz = m_global_lines.size(); i < sz; ++i)
 		{
 			if (0 != i)
-				*out += le;
-			m_global_lines.at(i)->serielize(out);
+                *appended += le;
+            m_global_lines.at(i)->serielize(appended);
 		}
 
         // 各个块
 		for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
         {
 			if (0 != i || !m_global_lines.empty())
-				*out += le;
-			m_sectors.at(i)->serielize(out, le);
+                *appended += le;
+            m_sectors.at(i)->serielize(appended, le);
         }
     }
 
@@ -247,11 +247,11 @@ public:
         m_dirty = true;
     }
 
-    void list_sectors(std::vector<std::string> *out) const
+    void list_sectors(std::vector<std::string> *rs) const
     {
-		assert(NULL != out);
+        assert(NULL != rs);
 		for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
-			out->push_back(m_sectors.at(i)->m_name);
+            rs->push_back(m_sectors.at(i)->m_name);
     }
 
     bool has_sector(const char *sector) const
@@ -284,9 +284,9 @@ public:
         return false;
     }
 
-    void list_keys(const char *sector, std::vector<std::string> *out) const
+    void list_keys(const char *sector, std::vector<std::string> *rs) const
     {
-		assert(NULL != out);
+        assert(NULL != rs);
         if (NULL == sector)
         {
 			for (size_t i = 0, sz = m_global_lines.size(); i < sz; ++i)
@@ -294,7 +294,7 @@ public:
                 const rc_ptr<Line>& line = m_global_lines.at(i);
                 if (!line->m_equal_sign)
                     continue;
-                out->push_back(line->m_key);
+                rs->push_back(line->m_key);
             }
             return;
         }
@@ -309,7 +309,7 @@ public:
                     const rc_ptr<Line>& line = lines.at(j);
                     if (!line->m_equal_sign)
                         continue;
-                    out->push_back(line->m_key);
+                    rs->push_back(line->m_key);
                 }
                 return;
             }
@@ -443,9 +443,9 @@ public:
         return atof(s);
     }
 
-    void get_list(const char *sector, const char *key, std::vector<std::string> *out, char split_char = ',') const
+    void get_list(const char *sector, const char *key, std::vector<std::string> *rs, char split_char = ',') const
     {
-        assert(NULL != key && NULL != out);
+        assert(NULL != key && NULL != rs);
         std::string s = get_string(sector, key);
         if (s.length() == 0)
             return;
@@ -453,11 +453,11 @@ public:
         std::string::size_type begin = 0, end = s.find_first_of(split_char);
         while (end != std::string::npos)
         {
-            out->push_back(s.substr(begin, end - begin));
+            rs->push_back(s.substr(begin, end - begin));
             begin = end + 1;
             end = s.find_first_of(split_char, begin);
         }
-        out->push_back(s.substr(begin));
+        rs->push_back(s.substr(begin));
     }
 
     void set_string(const char *sector, const char *key, const char *value)

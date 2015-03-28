@@ -158,9 +158,9 @@ private:
 * 参见 《公开密钥密码算法及其快速实现》.周玉洁.冯国登.国防工业出版社.2002 P57
  */
 template <size_t C>
-void mod_multiply(const BigInteger& b, const BigInteger& n, const ModMultiplyPreBuildTable<C>& table, BigInteger *out)
+void mod_multiply(const BigInteger& b, const BigInteger& n, const ModMultiplyPreBuildTable<C>& table, BigInteger *rs)
 {
-    assert(NULL != out);
+    assert(NULL != rs);
     assert(b.is_positive() && n.is_positive() && b < n); // 一定要保证 b<n ,以便优化模加运算
 
     BigInteger s(0, b.allocator());
@@ -183,16 +183,16 @@ void mod_multiply(const BigInteger& b, const BigInteger& n, const ModMultiplyPre
         }
     }
 
-    *out = s;
+    *rs = s;
 }
 
 /**
  * 蒙哥马利算法
  * {t + [(t mod r) * n' mod r] * n} / r
  */
-inline void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, const BigInteger& nn, BigInteger *out)
+inline void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, const BigInteger& nn, BigInteger *rs)
 {
-    assert(NULL != out);
+    assert(NULL != rs);
     assert(t.is_positive() && rlen > 0 && n.is_positive() && nn.is_positive());
     typedef BigInteger::word_type word_type;
 
@@ -200,18 +200,18 @@ inline void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, c
     size_t min_sig = (rlen + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
     if (t.significant_words_length() < min_sig)
         min_sig = t.significant_words_length();
-    BigInteger rs(t.data(), min_sig, true, t.allocator());
-    rs.limit_positive_bits_to(rlen);
+    BigInteger s(t.data(), min_sig, true, t.allocator());
+    s.limit_positive_bits_to(rlen);
 
-    rs.multiply_to_len(nn, rlen); // rs = (rs * nn) % r
-    rs *= n;
-    rs += t;
-    rs >>= rlen;
+    s.multiply_to_len(nn, rlen); // rs = (rs * nn) % r
+    s *= n;
+    s += t;
+    s >>= rlen;
 
-    if (rs >= n)
-        rs -= n;
+    if (s >= n)
+        s -= n;
 
-    *out = rs;
+    *rs = s;
 }
 
 /**
@@ -220,9 +220,9 @@ inline void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, c
  * 算法来源:
  *      王金荣，周赟，王红霞. Montgomery模平方算法及其应用[J]. 计算机工程，2007，33(24)：155 - 156
  */
-inline void _montgomery(const BigInteger& t, const BigInteger& n, BigInteger::word_type nn, BigInteger *out)
+inline void _montgomery(const BigInteger& t, const BigInteger& n, BigInteger::word_type nn, BigInteger *_rs)
 {
-    assert(NULL != out);
+    assert(NULL != _rs);
     assert(t.is_positive() && n.is_positive() && nn > 0);
     typedef BigInteger::word_type word_type;
     typedef BigInteger::dword_type dword_type;
@@ -266,7 +266,7 @@ inline void _montgomery(const BigInteger& t, const BigInteger& n, BigInteger::wo
     while (rs >= n)
         rs -= n;
 
-    *out = rs;
+    *_rs = rs;
 }
 
 /**
@@ -409,9 +409,9 @@ inline size_t _best_wnd(size_t bit_len)
 /**
  * 使用 Montgomery 算法优化
  */
-inline void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigInteger *out)
+inline void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigInteger *rs)
 {
-    assert(NULL != out);
+    assert(NULL != rs);
     assert(a.is_positive() && b.is_positive() && n.is_positive());
     assert(a < n && n.bit_at(0) == 1);
 
@@ -437,7 +437,7 @@ inline void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
     }
 
     // 处理返回值
-    _montgomery(ret, rlen, n, nn, out);
+    _montgomery(ret, rlen, n, nn, rs);
     return;
 #elif (OPTIMIZE_LEVEL == 1)
     /**
@@ -466,7 +466,7 @@ inline void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
     }
 
     // 处理返回值
-    _montgomery(ret, n, nnn, out);
+    _montgomery(ret, n, nnn, rs);
     return;
 #elif (OPTIMIZE_LEVEL == 2)
     /**
@@ -494,7 +494,7 @@ inline void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
     }
 
     // 处理返回值
-    _montgomery(ret, rlen, n, nn, out);
+    _montgomery(ret, rlen, n, nn, rs);
     return;
 #else
     /**
@@ -566,7 +566,7 @@ inline void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
     }
 
     // 处理返回值
-    _montgomery(ret, rlen, n, nn, out);
+    _montgomery(ret, rlen, n, nn, rs);
     return;
 #endif
 }
@@ -574,9 +574,9 @@ inline void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
 /**
  * 计算 (a ** b) mod (2 ** p)
  */
-inline void _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p, BigInteger *out)
+inline void _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p, BigInteger *rs)
 {
-    assert(NULL != out);
+    assert(NULL != rs);
     assert(a.is_positive() && b.is_positive() && p > 0);
 
     BigInteger ret(1, a.allocator());
@@ -588,31 +588,31 @@ inline void _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p, BigIn
             ret.multiply_to_len(a, p);
     }
 
-    *out = ret;
+    *rs = ret;
 }
 
 /**
  * 求(a**b)%n，即a的b次方(模n)
  * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P576
  */
-inline void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigInteger *out)
+inline void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigInteger *rs)
 {
-    assert(NULL != out);
+    assert(NULL != rs);
     assert(a.is_positive() && b.is_positive() && n.is_positive());
 
     if (b.is_zero())
     {
-        *out = (n == 1 ? 0 : 1);
+        *rs = (n == 1 ? 0 : 1);
         return;
     }
     else if (a == 1)
     {
-        *out = (n == 1 ? 0 : 1);
+        *rs = (n == 1 ? 0 : 1);
         return;
     }
     else if (a.is_zero())
     {
-        out->set_zero();
+        rs->set_zero();
         return;
     }
 
@@ -624,7 +624,7 @@ inline void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& 
         if (0 != b.bit_at(i - 1))
             ret = (ret * a) % n;
     }
-    *out = ret;
+    *rs = ret;
     return;
 #elif (OPTIMIZE_LEVEL == 1)
     const size_t bbc = b.bit_count();
@@ -638,7 +638,7 @@ inline void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& 
             if (0 != b.bit_at(i - 1))
                 mod_multiply(ret, n, table, &ret);
         }
-        *out = ret;
+        *rs = ret;
         return;
     }
     else
@@ -650,14 +650,14 @@ inline void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& 
             if (0 != b.bit_at(i - 1))
                 ret = (ret * a) % n;
         }
-        *out = ret;
+        *rs = ret;
         return;
     }
 #else
     // 模是奇数，应用蒙哥马利算法
     if (n.bit_at(0) == 1)
     {
-        _odd_mod_pow(a < n ? a : a % n, b, n, out);
+        _odd_mod_pow(a < n ? a : a % n, b, n, rs);
         return;
     }
 
@@ -691,9 +691,9 @@ inline void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& 
         y2 += n2;
     }
 
-    // *out = (a1 * n2 * y1 + a2 * n1 * y2) % n
-    *out = a1 * n2 * y1 + a2 * n1 * y2;
-    *out %= n;
+    // *rs = (a1 * n2 * y1 + a2 * n1 * y2) % n
+    *rs = a1 * n2 * y1 + a2 * n1 * y2;
+    *rs %= n;
     return;
 #endif
 }

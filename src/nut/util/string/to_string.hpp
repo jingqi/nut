@@ -29,9 +29,9 @@ namespace nut
 {
 
 /// long long
-inline void ll_to_str(long long i, std::string *out)
+inline void ll_to_str(long long i, std::string *appended)
 {
-    assert(NULL != out);
+    assert(NULL != appended);
 
     const int BUF_SIZE = 60;
     char buf[BUF_SIZE];
@@ -44,7 +44,7 @@ inline void ll_to_str(long long i, std::string *out)
     ::sprintf(buf, "%lld", i);
 #endif
 
-    *out += buf;
+    *appended += buf;
 }
 
 inline std::string ll_to_str(long long i)
@@ -55,9 +55,9 @@ inline std::string ll_to_str(long long i)
 }
 
 /// char
-inline void c_to_str(char i, std::string *out)
+inline void c_to_str(char i, std::string *rs)
 {
-    ll_to_str((long long) i, out);
+    ll_to_str((long long) i, rs);
 }
 
 inline std::string c_to_str(char i)
@@ -66,9 +66,9 @@ inline std::string c_to_str(char i)
 }
 
 /// unsigned char
-inline void uc_to_str(unsigned char i, std::string *out)
+inline void uc_to_str(unsigned char i, std::string *rs)
 {
-    ll_to_str((long long) i, out);
+    ll_to_str((long long) i, rs);
 }
 
 inline std::string uc_to_str(unsigned char i)
@@ -77,9 +77,9 @@ inline std::string uc_to_str(unsigned char i)
 }
 
 /// short
-inline void s_to_str(short i, std::string *out)
+inline void s_to_str(short i, std::string *rs)
 {
-    ll_to_str((long long) i, out);
+    ll_to_str((long long) i, rs);
 }
 
 inline std::string s_to_str(short i)
@@ -88,9 +88,9 @@ inline std::string s_to_str(short i)
 }
 
 /// unsigned short
-inline void us_to_str(unsigned short i, std::string *out)
+inline void us_to_str(unsigned short i, std::string *rs)
 {
-    ll_to_str((long long) i, out);
+    ll_to_str((long long) i, rs);
 }
 
 inline std::string us_to_str(unsigned short i)
@@ -99,9 +99,9 @@ inline std::string us_to_str(unsigned short i)
 }
 
 /// int
-inline void i_to_str(int i, std::string *out)
+inline void i_to_str(int i, std::string *rs)
 {
-    ll_to_str((long long) i, out);
+    ll_to_str((long long) i, rs);
 }
 
 inline std::string i_to_str(int i)
@@ -110,9 +110,9 @@ inline std::string i_to_str(int i)
 }
 
 /// unsigned int
-inline void ui_to_str(unsigned int i, std::string *out)
+inline void ui_to_str(unsigned int i, std::string *rs)
 {
-    ll_to_str((long long) i, out);
+    ll_to_str((long long) i, rs);
 }
 
 inline std::string ui_to_str(unsigned int i)
@@ -121,9 +121,9 @@ inline std::string ui_to_str(unsigned int i)
 }
 
 /// long
-inline void l_to_str(long i, std::string *out)
+inline void l_to_str(long i, std::string *rs)
 {
-    ll_to_str((long long) i, out);
+    ll_to_str((long long) i, rs);
 }
 
 inline std::string l_to_str(long i)
@@ -132,9 +132,9 @@ inline std::string l_to_str(long i)
 }
 
 /// unsigned long
-inline void ul_to_str(unsigned long i, std::string *out)
+inline void ul_to_str(unsigned long i, std::string *rs)
 {
-    ll_to_str((long long) i, out);
+    ll_to_str((long long) i, rs);
 }
 
 inline std::string ul_to_str(unsigned long i)
@@ -143,9 +143,9 @@ inline std::string ul_to_str(unsigned long i)
 }
 
 /// unsigned long long
-inline void ull_to_str(unsigned long long i, std::string *out)
+inline void ull_to_str(unsigned long long i, std::string *rs)
 {
-    ll_to_str((long long) i, out);
+    ll_to_str((long long) i, rs);
 }
 
 inline std::string ull_to_str(unsigned long long i)
@@ -154,10 +154,10 @@ inline std::string ull_to_str(unsigned long long i)
 }
 
 /// bool
-inline void b_to_str(bool b, std::string *out)
+inline void b_to_str(bool b, std::string *rs)
 {
-    assert(NULL != out);
-    *out += (b ? "true" : "false");
+    assert(NULL != rs);
+    *rs += (b ? "true" : "false");
 }
 
 inline std::string b_to_str(bool b)
@@ -166,15 +166,15 @@ inline std::string b_to_str(bool b)
 }
 
 /// double
-inline void d_to_str(double d, std::string *out)
+inline void d_to_str(double d, std::string *rs)
 {
-    assert(NULL != out);
+    assert(NULL != rs);
 
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
     ::memset(buf, 0, BUF_SIZE);
     ::sprintf(buf, "%lf", d);
-    *out += buf;
+    *rs += buf;
 }
 
 inline std::string d_to_str(double d)
@@ -185,15 +185,15 @@ inline std::string d_to_str(double d)
 }
 
 /// float
-inline void f_to_str(float f, std::string *out)
+inline void f_to_str(float f, std::string *rs)
 {
-    assert(NULL != out);
+    assert(NULL != rs);
 
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
     ::memset(buf, 0, BUF_SIZE);
     ::sprintf(buf, "%f", f);
-    *out += buf;
+    *rs += buf;
 }
 
 inline std::string f_to_str(float f)
@@ -204,9 +204,9 @@ inline std::string f_to_str(float f)
 }
 
 /// pointer
-inline void ptr_to_str(const void *p, std::string *out)
+inline void ptr_to_str(const void *p, std::string *rs)
 {
-    assert(NULL != out);
+    assert(NULL != rs);
 
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
@@ -217,7 +217,7 @@ inline void ptr_to_str(const void *p, std::string *out)
     ::sprintf(buf,"%p",p);      // linux: 0x2e459f
 #endif
 
-    *out += buf;
+    *rs += buf;
 }
 
 inline std::string ptr_to_str(const void *p)
@@ -228,9 +228,9 @@ inline std::string ptr_to_str(const void *p)
 }
 
 /// memory block
-inline void mem_to_str(const void *p, size_t align, size_t count, std::string *out)
+inline void mem_to_str(const void *p, size_t align, size_t count, std::string *rs)
 {
-    assert(NULL != p && align > 0 && count > 0 && NULL != out);
+    assert(NULL != p && align > 0 && count > 0 && NULL != rs);
 
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
@@ -239,7 +239,7 @@ inline void mem_to_str(const void *p, size_t align, size_t count, std::string *o
     for (size_t i = 0; i < count; ++i)
     {
         if (i % 0x08 == 0)
-            ptr_to_str((const void*) current, out);
+            ptr_to_str((const void*) current, rs);
 
         std::string single;
         for (size_t j = 0; j < align; ++j)
@@ -249,11 +249,11 @@ inline void mem_to_str(const void *p, size_t align, size_t count, std::string *o
             single = std::string(buf) + single;
             ++current;
         }
-        *out += " ";
-        *out += single;
+        *rs += " ";
+        *rs += single;
 
         if ((i % 0x08 == 0x07) && (i != count - 1))
-            *out += "\n";
+            *rs += "\n";
     }
 }
 
@@ -265,16 +265,16 @@ inline std::string mem_to_str(const void *p, size_t align, size_t count)
 }
 
 /// n-size string
-inline void ns_to_str(const char *str, size_t len, std::string *out, const char *fill_nil = "\\0")
+inline void ns_to_str(const char *str, size_t len, std::string *rs, const char *fill_nil = "\\0")
 {
-    assert(NULL != str && NULL != out && NULL != fill_nil);
+    assert(NULL != str && NULL != rs && NULL != fill_nil);
 
     for (size_t i = 0; i < len; ++i)
     {
         if (str[i] != '\0')
-            out->push_back(str[i]);
+            rs->push_back(str[i]);
         else
-            *out += fill_nil;
+            *rs += fill_nil;
     }
 }
 

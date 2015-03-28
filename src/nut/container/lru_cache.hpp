@@ -195,9 +195,9 @@ public:
         return m_map.find(k) != m_map.end();
     }
 
-    bool get(const K& k, V *out)
+    bool get(const K& k, V *v)
     {
-        assert(NULL != out);
+        assert(NULL != v);
         Guard<SpinLock> g(&m_lock);
 
         typename map_t::const_iterator const n = m_map.find(k);
@@ -211,7 +211,7 @@ public:
 
         Node *const p = n->second;
         assert(NULL != p);
-        *out = p->value;
+        *v = p->value;
         remove_from_list(p);
         push_list_head(p);
 

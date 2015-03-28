@@ -655,19 +655,19 @@ class XmlParser
         return true;
     }
 
-    static void decode_append(const std::string& e, std::string *append_dst)
+    static void decode_append(const std::string& e, std::string *appended)
     {
-        assert(NULL != append_dst);
+        assert(NULL != appended);
         if (e == "&amp;")
-            append_dst->push_back('&');
+            appended->push_back('&');
         else if (e == "&quot;")
-            append_dst->push_back('\"');
+            appended->push_back('\"');
         else if (e == "&lt;")
-            append_dst->push_back('<');
+            appended->push_back('<');
         else if (e == "&gt;")
-            append_dst->push_back('>');
+            appended->push_back('>');
         else
-            *append_dst += e; // decode failed
+            *appended += e; // decode failed
     }
 
     static bool is_space(char c)

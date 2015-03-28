@@ -170,16 +170,16 @@ public:
     /**
      * 获取属性
      *
-     * @param out 用来存储返回的属性值，可以为 NULL
+     * @param attr 用来存储返回的属性值，可以为 NULL
      * @param 改属性是否存在
      */
-    bool get_attribute(const std::string& name, std::string *out) const
+    bool get_attribute(const std::string& name, std::string *attr) const
     {
         const_attr_iter_t iter = m_attrs.find(name);
         if (iter == m_attrs.end())
             return false;
-        if (NULL != out)
-            *out = iter->second;
+        if (NULL != attr)
+            *attr = iter->second;
         return true;
     }
 
@@ -357,10 +357,10 @@ public:
     /*
      * @param format 格式化输出，以便于阅读
      */
-    void serielize(std::string *out, bool format = true) const
+    void serielize(std::string *appended, bool format = true) const
     {
-        assert(NULL != out);
-        StdStringWriter sw(out);
+        assert(NULL != appended);
+        StdStringWriter sw(appended);
         XmlWriter w(&sw);
         serielize(w, format ? 0 : -1);
     }

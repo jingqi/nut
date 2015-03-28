@@ -159,18 +159,18 @@ class PropertyDom
 		/**
 		 * 序列化，不包含尾部的 '\n'
 		 */
-		void serielize(std::string *out)
+        void serielize(std::string *appended)
         {
-			assert(NULL != out);
-			*out += m_space0;
-			*out += m_key;
-			*out += m_space1;
+            assert(NULL != appended);
+            *appended += m_space0;
+            *appended += m_key;
+            *appended += m_space1;
 			if (m_equal_sign)
-				out->push_back('=');
-			*out += m_space2;
-			*out += m_value;
-			*out += m_space3;
-			*out += m_comment;
+                appended->push_back('=');
+            *appended += m_space2;
+            *appended += m_value;
+            *appended += m_space3;
+            *appended += m_comment;
         }
     };
     friend class IniDom;
@@ -224,14 +224,14 @@ public:
 	/**
 	 * @param le 换行符
 	 */
-	void serielize(std::string *out, const char *le = "\n") const
+    void serielize(std::string *appended, const char *le = "\n") const
 	{
-		assert(NULL != out && NULL != le);
+        assert(NULL != appended && NULL != le);
 		for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
 		{
 			if (0 != i)
-				*out += le;
-			m_lines.at(i)->serielize(out);
+                *appended += le;
+            m_lines.at(i)->serielize(appended);
 		}
 	}
 
@@ -254,15 +254,15 @@ public:
 		m_dirty = true;
 	}
 
-    void list_keys(std::vector<std::string> *out) const
+    void list_keys(std::vector<std::string> *rs) const
     {
-		assert(NULL != out);
+        assert(NULL != rs);
 		for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
         {
             const rc_ptr<Line>& line = m_lines.at(i);
             if (!line->m_equal_sign)
                 continue;
-            out->push_back(line->m_key);
+            rs->push_back(line->m_key);
         }
     }
 
@@ -334,9 +334,9 @@ public:
         return atof(s);
     }
 
-    void get_list(const char *key, std::vector<std::string> *out, char split_char = ',') const
+    void get_list(const char *key, std::vector<std::string> *rs, char split_char = ',') const
     {
-        assert(NULL != key && NULL != out);
+        assert(NULL != key && NULL != rs);
         std::string s = get_string(key);
         if (s.empty())
             return;
@@ -344,11 +344,11 @@ public:
         std::string::size_type begin = 0, end = s.find_first_of(split_char);
         while (std::string::npos != end)
         {
-            out->push_back(s.substr(begin, end - begin));
+            rs->push_back(s.substr(begin, end - begin));
             begin = end + 1;
             end = s.find_first_of(split_char, begin);
         }
-        out->push_back(s.substr(begin));
+        rs->push_back(s.substr(begin));
     }
 
     void set_string(const char *key, const char *value)

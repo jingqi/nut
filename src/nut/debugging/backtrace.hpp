@@ -54,10 +54,9 @@ public:
      * @return >=0， 调用栈层数
      *         <0， 出错
      */
-    static int backtrace(std::string *out)
+    static int backtrace(std::string *appended)
     {
-        assert(NULL != out);
-        out->clear();
+        assert(NULL != appended);
 
         // XXX 有可能该方法在静态域中被调用，而此时 AddrMapManager 已经被析构
         AddrMapManager& addr_map = get_addr_map_mgr();
@@ -105,7 +104,7 @@ public:
             }
 
             // 调用addr2line
-            call_addr2line(cmd, out);
+            call_addr2line(cmd, appended);
 
         }
 
@@ -132,7 +131,7 @@ private:
     /*
      * 调用 addr2line，查询地址，获得源文件、行号和函数名
      */
-    static void call_addr2line(const std::string& cmd, std::string *out_result)
+    static void call_addr2line(const std::string& cmd, std::string *appended_result)
     {
         FILE* fp = popen(cmd.c_str(), "r");
         if (!fp)
@@ -164,10 +163,10 @@ private:
             }
             pclose(fp);
 
-            if (out_result->empty())
-                *out_result += source_line + std::string(":  ") + func_name;
+            if (appended_result->empty())
+                *appended_result += source_line + std::string(":  ") + func_name;
             else
-                *out_result += std::string("\n") + source_line + std::string(":  ") + func_name;
+                *appended_result += std::string("\n") + source_line + std::string(":  ") + func_name;
         }
     }
 
@@ -195,7 +194,6 @@ private:
     static void parse_backtrace_symbol(const char* backtrace_symbol, std::string *module_path, addr_t *addr)
     {
         assert(NULL != backtrace_symbol && NULL != module_path && NULL != addr);
-        module_path->clear();
         *addr = 0;
 
         std::string str(backtrace_symbol);
@@ -203,7 +201,7 @@ private:
         // parse path of shared library
         const size_t pos = str.find('(');
         if (pos != std::string::npos)
-            module_path->assign(str.begin(), str.begin() + pos);
+            *module_path += std::string(str.begin(), str.begin() + pos);
 
         // parse address
         const size_t pos_begin = str.find('['), pos_end = str.find(']');
@@ -221,10 +219,9 @@ public:
      * @return >=0， 调用栈层数
      *         <0， 出错
      */
-    static int backtrace(std::string *out)
+    static int backtrace(std::string *appended)
     {
-        assert(NULL != out);
-        out->clear();
+        assert(NULL != appended);
 
         void *buffer[MAX_BACKTRACE + 1];
         const int nptrs = ::backtrace(buffer, MAX_BACKTRACE + 1);
@@ -233,8 +230,8 @@ public:
             return -1;
         for (int i = 1; i < nptrs; ++i) // 不包含本函数的调用地址
         {
-            *out += strs[i];
-            *out += "\n";
+            *appended += strs[i];
+            *appended += "\n";
         }
         ::free(strs);
         return nptrs - 1;
