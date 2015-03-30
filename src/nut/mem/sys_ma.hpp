@@ -70,7 +70,7 @@ public:
         const size_t total_cb = cb + sizeof(uint32_t) * 3;
         void* ret = ::malloc(total_cb);
         assert(NULL != ret);
-        *(uint32_t*) ret = cb;
+        *(uint32_t*) ret = (uint32_t) cb;
         ((uint32_t*) ret)[1] = m_left_tag;
         *(uint32_t*) (((uint8_t*) ret) + sizeof(uint32_t) * 2 + cb) = m_right_tag;
         ::memset(((uint32_t*) ret) + 2, 0xCC, cb);
@@ -96,7 +96,7 @@ public:
         const size_t total_cb = new_cb + sizeof(uint32_t) * 3;
         void *ret = ::realloc(((uint32_t*) p) - 2, total_cb);
         assert(NULL != ret);
-        *(uint32_t*) ret = new_cb;
+        *(uint32_t*) ret = (uint32_t) new_cb;
         ((uint32_t*) ret)[1] = m_left_tag;
         *(uint32_t*) (((uint8_t*) ret) + sizeof(uint32_t) * 2 + new_cb) = m_right_tag;
         if (new_cb > cb)

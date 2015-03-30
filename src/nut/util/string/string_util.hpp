@@ -438,13 +438,13 @@ inline bool ascii_to_wstr(const char *str, std::wstring *appended)
     assert(((int) appended->length()) == old_len + n - 1);
     return rs > 0;
 #else
-    const int n = (int) ::mbstowcs(NULL, str, 0); // 返回值未包含 '\0'
+    const size_t n = ::mbstowcs(NULL, str, 0); // 返回值未包含 '\0'
     if (n <= 0)
-        return 0 == n;
-    const int old_len = (int) appended->length();
+        return false;
+    const size_t old_len = appended->length();
     appended->resize(old_len + n);
-    const int rs = ::mbstowcs(&(*appended)[old_len], str, n); // 未包含 '\0'
-    assert(((int) appended->length()) == old_len + n);
+    const size_t rs = ::mbstowcs(&(*appended)[old_len], str, n); // 未包含 '\0'
+    assert(appended->length() == old_len + n);
     return rs > 0;
 #endif
 }
@@ -482,13 +482,13 @@ inline bool wstr_to_ascii(const wchar_t *wstr, std::string *appended)
     assert(((int) appended->length()) == old_len + n - 1);
     return rs > 0;
 #else
-    const int n = (int) ::wcstombs(NULL, wstr, 0);
+    const size_t n = ::wcstombs(NULL, wstr, 0);
     if (n <= 0)
-        return 0 == n;
-    const int old_len = (int) appended->length();
+        return false;
+    const size_t old_len = appended->length();
     appended->resize(old_len + n);
-    const int rs = ::wcstombs(&(*appended)[old_len], wstr, n);
-    assert(((int) appended->length()) == old_len + n);
+    const size_t rs = ::wcstombs(&(*appended)[old_len], wstr, n);
+    assert(appended->length() == old_len + n);
     return rs > 0;
 #endif
 }
