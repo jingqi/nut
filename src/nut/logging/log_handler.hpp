@@ -281,7 +281,7 @@ public:
 #if defined(NUT_PLATFORM_OS_LINUX)
         else if (type == "syslog")
         {
-            return RC_NEW<SyslogLogHandler>(false);
+            return RC_NEW(NULL, SyslogLogHandler, false);
         }
 #endif
 

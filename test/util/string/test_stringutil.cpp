@@ -67,10 +67,11 @@ NUT_FIXTURE(TestStringUtil)
     void test_format()
     {
         NUT_TA(format("%d,%s,%c,%f", 1, "am", 's', 1.23) == "1,am,s,1.230000");
-#if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
-        // wcout << format(L"%d,%s,%c,%f", 1, L"am", L's', 1.23) << endl;
-        NUT_TA(format(L"%d,%c,%f", 1, L's', 1.23) == L"1,s,1.230000");
-#elif !defined(NUT_PLATFORM_OS_MAC)
+
+        // wcout << format(L"%d,%S,%c,%f", 1, L"am", L's', 1.23) << endl;
+#if defined(NUT_PLATFORM_CC_MINGW) || defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
+        NUT_TA(format(L"%d,%S,%C,%f", 1, L"am", L's', 1.23) == L"1,am,s,1.230000");
+#else
 		NUT_TA(format(L"%d,%s,%c,%f", 1, L"am", L's', 1.23) == L"1,am,s,1.230000");
 #endif
     }

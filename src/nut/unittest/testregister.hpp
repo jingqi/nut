@@ -49,7 +49,7 @@ public:
         assert(NULL != d);
 
         // 分离出组别
-        m_groups = split_groups(groups);
+        split_groups(groups, &m_groups);
 
         // 将实例添加到链表中
         m_pnext = *(TestRegister**)nut_get_register_header();
@@ -101,13 +101,12 @@ private:
     }
 
     /** 拆分如 "test, quiet" 的字符串为 ["test", "quiet"] */
-    static std::vector<std::string> split_groups(const char *groups)
+    static void split_groups(const char *groups, std::vector<std::string> *rs)
     {
-        assert(NULL != groups);
+        assert(NULL != groups && NULL != rs);
 
         const char GROUP_SPLITER = ','; // 分组分隔符
 
-        std::vector<std::string> ret;
         std::string s;
         for (int i = 0; '\0' != groups[i]; ++i)
         {
@@ -119,7 +118,7 @@ private:
                 // 添加到结果
                 if (s.length() > 0)
                 {
-                    ret.push_back(s);
+                    rs->push_back(s);
                     s.clear();
                 }
             }
@@ -130,9 +129,7 @@ private:
         }
         s = trim_end(s);
         if (s.length() > 0)
-            ret.push_back(s);
-
-        return ret;
+            rs->push_back(s);
     }
 };
 

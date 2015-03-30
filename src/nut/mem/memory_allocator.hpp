@@ -9,6 +9,8 @@
 #ifndef ___HEADFILE_8FCF356E_92C5_457D_A13B_AB79C21B9E4D_
 #define ___HEADFILE_8FCF356E_92C5_457D_A13B_AB79C21B9E4D_
 
+#include <stdlib.h>
+
 #include <nut/rc/rc_ptr.hpp>
 
 namespace nut

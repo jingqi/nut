@@ -140,7 +140,7 @@ private:
         }
         else
         {
-            std::string fun_name;
+            std::string func_name;
             std::string source_line;
             char buf;
             char last_buf = '\0';
