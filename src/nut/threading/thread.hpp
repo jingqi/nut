@@ -86,6 +86,8 @@ public:
             join();
 #if defined(NUT_PLATFORM_OS_WINDOWS)
             ::CloseHandle(m_handle);
+#else
+            ::pthread_detach(m_pthread);
 #endif
         }
     }
@@ -146,7 +148,7 @@ public:
         }
         return true;
 #else
-        int rs = ::pthread_create(&m_pthread, NULL, thread_entry, this);
+        const int rs = ::pthread_create(&m_pthread, NULL, thread_entry, this);
         if (rs != 0)
         {
             m_has_finished = true;
