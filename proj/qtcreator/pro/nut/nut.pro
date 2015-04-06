@@ -5,6 +5,7 @@ TEMPLATE = lib
 include(../global.pri)
 
 QT -= core gui
+CONFIG += staticlib
 
 DEFINES += 
 

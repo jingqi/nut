@@ -1,22 +1,14 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2010-7-22
- * @last-edit 2015-01-27 13:05:28 jingqi
- */
-
+﻿
 #ifndef ___HEADFILE___5FC80ECA_3FD3_11E0_A703_485B391122F8_
 #define ___HEADFILE___5FC80ECA_3FD3_11E0_A703_485B391122F8_
 
-
 #include <assert.h>
-#include <string.h>  /* for memset() and memcpy() */
-#include <stdlib.h>  /* for malloc() and free() */
 #include <stdio.h> /* for size_t */
 #include <stdint.h>
 #include <string>
 
 #include <nut/mem/sys_ma.hpp>
+
 #include "array.hpp"
 
 namespace nut
@@ -38,95 +30,39 @@ private:
     /**
      * 写前复制
      */
-    void copy_on_write()
-    {
-        assert(m_array.is_not_null());
-        const int rc = m_array->get_ref();
-        assert(rc >= 1);
-        if (rc > 1)
-            m_array = m_array->clone();
-    }
+    void copy_on_write();
 
 public :
-    ByteArray(memory_allocator *ma = NULL)
-        : m_array(RC_NEW(ma, rcarray_type, 0, ma))
-    {}
+    ByteArray(memory_allocator *ma = NULL);
 
     /**
      * @param len initial data size
      * @param fillv initial data filling
      */
-    explicit ByteArray(size_type len, uint8_t fillv = 0, memory_allocator *ma = NULL)
-        : m_array(RC_NEW(ma, rcarray_type, len, ma))
-    {
-        m_array->resize(len, fillv);
-    }
+    explicit ByteArray(size_type len, uint8_t fillv = 0, memory_allocator *ma = NULL);
 
     /**
      * @param buf initial data
      * @param len initial data size
      */
-    ByteArray(const void *buf, size_type len, memory_allocator *ma = NULL)
-        : m_array(RC_NEW(ma, rcarray_type, len, ma))
-    {
-        assert(NULL != buf);
-        if (NULL != buf)
-            m_array->insert(0, (const uint8_t*)buf, ((const uint8_t*)buf) + len);
-    }
+    ByteArray(const void *buf, size_type len, memory_allocator *ma = NULL);
 
     /**
      * @param term_byte the initial data terminated with 'term_byte'
      * @param include_term_byte if True, the 'term_byte' is part of initial data
      */
-    ByteArray(const void *buf, unsigned char term_byte, bool include_term_byte, memory_allocator *ma = NULL)
-        : m_array(NULL)
-    {
-        assert(NULL != buf);
-        if (NULL == buf)
-        {
-            m_array = RC_NEW(ma, rcarray_type, 0, ma);
-            return;
-        }
+    ByteArray(const void *buf, unsigned char term_byte, bool include_term_byte, memory_allocator *ma = NULL);
 
-        size_type len = 0;
-        while (((const uint8_t*)buf)[len] != term_byte)
-            ++len;
-        if (include_term_byte)
-            ++len;
+    ByteArray(const void *buf, size_type index, size_type size, memory_allocator *ma = NULL);
 
-        m_array = RC_NEW(ma, rcarray_type, len, ma);
-        m_array->insert(0, (const uint8_t*)buf, ((const uint8_t*)buf) + len);
-    }
-
-    ByteArray(const void *buf, size_type index, size_type size, memory_allocator *ma = NULL)
-        : m_array(RC_NEW(ma, rcarray_type, size, ma))
-    {
-        assert(NULL != buf);
-        if (NULL != buf)
-            m_array->insert(0, ((const uint8_t*)buf) + index, ((const uint8_t*)buf) + index + size);
-    }
-
-    ByteArray(const self_type& x)
-        : m_array(x.m_array)
-    {}
+    ByteArray(const self_type& x);
 
     /**
      * clear data
      */
-    void clear()
-    {
-        const int rc = m_array->get_ref();
-        if (rc > 1)
-            m_array = RC_NEW(m_array->allocator(), rcarray_type, 0, m_array->allocator());
-        else
-            m_array->clear();
-    }
+    void clear();
 
-    self_type& operator=(const self_type& x)
-    {
-        m_array = x.m_array;
-        return *this;
-    }
+    self_type& operator=(const self_type& x);
 
     /**
      * works like memcmp()
@@ -207,29 +143,9 @@ public :
         m_array->resize(size() + len, fillv);
     }
 
-    void append(const void *buf, size_t len)
-    {
-        assert(0 == len || NULL != buf);
-        if (0 == len || NULL == buf)
-            return;
+    void append(const void *buf, size_t len);
 
-        copy_on_write();
-        m_array->insert(size(), (const uint8_t*)buf, ((const uint8_t*)buf) + len);
-    }
-
-    void append(const void *buf, uint8_t term_byte, bool include_term_byte)
-    {
-        assert(NULL != buf);
-        if (NULL == buf)
-            return;
-
-        size_t len = 0;
-        while (((const uint8_t*)buf)[len] != term_byte)
-            ++len;
-        if (include_term_byte)
-            ++len;
-        append(buf, len);
-    }
+    void append(const void *buf, uint8_t term_byte, bool include_term_byte);
 
     void append(const void *buf, size_t index, size_t size)
     {
@@ -264,37 +180,9 @@ public :
     /**
      * 将二进制 0x51 0x5e 0x30 转换为字符串 "515e30"
      */
-    void to_string(std::string *appended, size_t from = 0, size_t to = ~(size_t)0) const
-    {
-        assert(NULL != appended && from <= to);
+    void to_string(std::string *appended, size_t from = 0, size_t to = ~(size_t)0) const;
 
-        const size_t limit = (size() < to ? size() : to);
-        for (size_t i = from; i < limit; ++i)
-        {
-            const uint8_t b = at(i);
-            int n = (b >> 4) & 0xF;
-            appended->push_back(n < 10 ? ('0' + n) : ('A' + (n - 10)));
-
-            n = b & 0xF;
-            appended->push_back(n < 10 ? ('0' + n) : ('A' + (n - 10)));
-        }
-    }
-
-    void to_string(std::wstring *appended, size_t from = 0, size_t to = ~(size_t)0) const
-    {
-        assert(NULL != appended && from <= to);
-
-        const size_t limit = (size() < to ? size() : to);
-        for (size_t i = from; i < limit; ++i)
-        {
-            const uint8_t b = at(i);
-            int n = (b >> 4) & 0xF;
-            appended->push_back(n < 10 ? (L'0' + n) : (L'A' + (n - 10)));
-
-            n = b & 0xF;
-            appended->push_back(n < 10 ? (L'0' + n) : (L'A' + (n - 10)));
-        }
-    }
+    void to_string(std::wstring *appended, size_t from = 0, size_t to = ~(size_t)0) const;
 
     /**
      * 将类似于 "1234ab" 的字符串转为二进制 0x12 0x34 0xab
@@ -302,65 +190,9 @@ public :
      *      如果限定范围的字符串长度不是偶数，最后一个字符被忽略
      *      如果字符串中间出现非16进制字符，则转换过程立即停止
      */
-    static self_type value_of(const std::string& s, size_t from = 0, size_t to = ~(size_t)0)
-    {
-        assert(from <= to);
+    static self_type value_of(const std::string& s, size_t from = 0, size_t to = ~(size_t)0);
 
-        self_type ret;
-        const size_t limit = (s.length() < to ? s.length() : to);
-        for (size_t i = 0; from + i * 2 + 1 < limit; ++i)
-        {
-            int p1, p2;
-            char c = s.at(from + i * 2);
-            if ('0' <= c && c <= '9')
-                p1 = c - '0';
-            else if (('a' <= c && c <= 'f') || ('A' <= c && c <= 'F'))
-                p1 = (c | 0x20) - 'a' + 10;
-            else
-                break;
-
-            c = s.at(from + i * 2 + 1);
-            if ('0' <= c && c <= '9')
-                p2 = c - '0';
-            else if (('a' <= c && c <= 'f') || ('A' <= c && c <= 'F'))
-                p2 = (c | 0x20) - 'a' + 10;
-            else
-                break;
-
-            ret.append(1, (uint8_t)(p1 * 16 + p2));
-        }
-        return ret;
-    }
-
-    static self_type value_of(const std::wstring& s, size_t from = 0, size_t to = ~(size_t)0)
-    {
-        assert(from <= to);
-
-        self_type ret;
-        const size_t limit = (s.length() < to ? s.length() : to);
-        for (size_t i = 0; from + i * 2 + 1 < limit; ++i)
-        {
-            int p1, p2;
-            wchar_t c = s.at(from + i * 2);
-            if (L'0' <= c && c <= L'9')
-                p1 = c - L'0';
-            else if ((L'a' <= c && c <= L'f') || (L'A' <= c && c <= L'F'))
-                p1 = (c & 0x20) - L'a' + 10;
-            else
-                break;
-
-            c = s.at(from + i * 2 + 1);
-            if (L'0' <= c && c <= L'9')
-                p2 = c - L'0';
-            else if ((L'a' <= c && c <= L'f') || (L'A' <= c && c <= L'F'))
-                p2 = (c & 0x20) - L'a' + 10;
-            else
-                break;
-
-            ret.append(1, (uint8_t)(p1 * 16 + p2));
-        }
-        return ret;
-    }
+    static self_type value_of(const std::wstring& s, size_t from = 0, size_t to = ~(size_t)0);
 };
 
 }
