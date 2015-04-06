@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <map>
 
-#include <nut/threading/sync/spinlock.hpp>
+#include <nut/threading/sync/spinlock.h>
 #include <nut/threading/sync/guard.hpp>
 
 namespace nut

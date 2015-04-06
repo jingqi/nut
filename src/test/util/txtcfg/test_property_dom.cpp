@@ -1,8 +1,8 @@
 ﻿
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
-#include <nut/util/txtcfg/property_dom.hpp>
-#include <nut/util/txtcfg/txt_file.hpp>
+#include <nut/util/txtcfg/property_dom.h>
+#include <nut/util/txtcfg/txt_file.h>
 
 using namespace std;
 using namespace nut;

@@ -1,5 +1,5 @@
 ﻿
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
 #include <nut/mem/lengthfixed_mp.hpp>
 #include <nut/rc/rc_new.hpp>

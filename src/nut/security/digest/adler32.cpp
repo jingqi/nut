@@ -1,8 +1,8 @@
 
-#include "adler32.hpp"
-
 #include <assert.h>
 #include <stdlib.h> /* for malloc() */
+
+#include "adler32.h"
 
 /* 65521 是小于 2^16 的最大素数 */
 #define MOD_ADLER 65521

@@ -1,6 +1,4 @@
 
-#include "byte_array.hpp"
-
 #include <assert.h>
 #include <string.h>  /* for memset() and memcpy() */
 #include <stdlib.h>  /* for malloc() and free() */
@@ -8,7 +6,9 @@
 #include <stdint.h>
 #include <string>
 
-#include <nut/mem/sys_ma.hpp>
+#include <nut/mem/sys_ma.h>
+
+#include "byte_array.h"
 
 namespace nut
 {

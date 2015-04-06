@@ -1,10 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2012-08-11
- * @last-edit 2012-08-11 16:44:24 jingqi
- */
-
+﻿
 #ifndef ___HEADFILE_F597ABF0_3C94_490D_A072_5EA0331BFD83_
 #define ___HEADFILE_F597ABF0_3C94_490D_A072_5EA0331BFD83_
 

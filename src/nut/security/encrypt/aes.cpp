@@ -1,5 +1,5 @@
 
-#include "aes.hpp"
+#include "aes.h"
 
 /**
  *  set FIXED_TABLES to 0 to use pre-computed tables.

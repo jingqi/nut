@@ -1,7 +1,7 @@
 ﻿
 #include <iostream>
-#include <nut/unittest/unittest.hpp>
-#include <nut/platform/os.hpp>
+#include <nut/unittest/unittest.h>
+#include <nut/platform/os.h>
 
 using namespace std;
 using namespace nut;

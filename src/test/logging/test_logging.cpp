@@ -1,7 +1,7 @@
 ﻿
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
-#include <nut/logging/macros.hpp>
+#include <nut/logging/macros.h>
 
 using namespace nut;
 

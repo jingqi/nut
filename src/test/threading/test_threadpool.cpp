@@ -1,5 +1,5 @@
 ﻿
-#include <nut/platform/platform.hpp>
+#include <nut/platform/platform.h>
 
 #if defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
 #   include <unistd.h>
@@ -7,9 +7,9 @@
 
 #include <stdio.h>
 
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
-#include <nut/threading/thread_pool.hpp>
+#include <nut/threading/thread_pool.h>
 
 using namespace nut;
 

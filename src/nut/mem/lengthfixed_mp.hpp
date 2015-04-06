@@ -10,12 +10,12 @@
 
 #include <assert.h>
 
-#include <nut/threading/lockfree/atomic.hpp>
-#include <nut/debugging/static_assert.hpp>
-#include <nut/debugging/destroy_checker.hpp>
+#include <nut/threading/lockfree/atomic.h>
+#include <nut/debugging/static_assert.h>
+#include <nut/debugging/destroy_checker.h>
 
-#include "memory_allocator.hpp"
-#include "sys_ma.hpp"
+#include "memory_allocator.h"
+#include "sys_ma.h"
 
 namespace nut
 {
@@ -92,7 +92,7 @@ public:
         }
     }
 
-    virtual void* alloc(size_t cb)
+    virtual void* alloc(size_t cb) override
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         assert(G == cb);
@@ -101,13 +101,13 @@ public:
         return p;
     }
 
-    virtual void* realloc(void *p, size_t cb)
+    virtual void* realloc(void *p, size_t cb) override
     {
         assert(G == cb);
         return p;
     }
 
-    virtual void free(void *p)
+    virtual void free(void *p) override
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         assert(NULL != p);

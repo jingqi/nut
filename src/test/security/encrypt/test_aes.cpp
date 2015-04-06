@@ -2,9 +2,9 @@
 #include <stdio.h>
 
 
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
-#include <nut/security/encrypt/aes.hpp>
+#include <nut/security/encrypt/aes.h>
 
 using namespace nut;
 

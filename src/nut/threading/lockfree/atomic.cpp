@@ -1,14 +1,15 @@
 
 #include <assert.h>
 
-#include <nut/platform/platform.hpp>
-#include <nut/platform/stdint.hpp>
+#include <nut/platform/platform.h>
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <windows.h>
 #endif
 
-#include <nut/debugging/static_assert.hpp>
+#include <nut/debugging/static_assert.h>
+
+#include "atomic.h"
 
 namespace nut
 {

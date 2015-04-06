@@ -13,7 +13,7 @@
 #include <memory>
 #include <algorithm>
 
-#include <nut/mem/sys_ma.hpp>
+#include <nut/mem/sys_ma.h>
 #include <nut/rc/rc_new.hpp>
 
 namespace nut

@@ -1,10 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date
- * @last-edit 2015-01-06 23:49:48 jingqi
- */
-
+﻿
 #ifndef ___HEADFILE_54107F5A_983A_4021_AB0E_0E5422FE5FD9_
 #define ___HEADFILE_54107F5A_983A_4021_AB0E_0E5422FE5FD9_
 

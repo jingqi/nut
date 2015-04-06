@@ -1,7 +1,7 @@
 ﻿
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
-#include <nut/security/digest/md5.hpp>
+#include <nut/security/digest/md5.h>
 
 
 NUT_FIXTURE(TestMD5)

@@ -1,9 +1,9 @@
 ﻿
 #include <iostream>
-#include <nut/unittest/unittest.hpp>
-#include <nut/numeric/numeric_algo/gcd.hpp>
-#include <nut/numeric/numeric_algo/mod.hpp>
-#include <nut/numeric/numeric_algo/prime.hpp>
+#include <nut/unittest/unittest.h>
+#include <nut/numeric/numeric_algo/gcd.h>
+#include <nut/numeric/numeric_algo/mod.h>
+#include <nut/numeric/numeric_algo/prime.h>
 #include <nut/numeric/numeric_algo/karatsuba.hpp>
 #include <nut/rc/rc_new.hpp>
 

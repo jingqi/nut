@@ -1,10 +1,3 @@
-/**
- * @file -
- * @author jingqi
- * @date 2014-07-25
- * @last-edit
- * @brief
- */
 
 #ifndef ___HEADFILE_B81E878E_513C_4792_A8F8_73215B57ACBE_
 #define ___HEADFILE_B81E878E_513C_4792_A8F8_73215B57ACBE_
@@ -13,7 +6,7 @@
 #include <stdlib.h>
 #include <map>
 
-#include <nut/threading/sync/spinlock.hpp>
+#include <nut/threading/sync/spinlock.h>
 #include <nut/threading/sync/guard.hpp>
 
 namespace nut

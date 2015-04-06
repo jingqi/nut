@@ -1,7 +1,7 @@
 ﻿
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
-#include <nut/mem/scoped_gc.hpp>
+#include <nut/mem/scoped_gc.h>
 #include <nut/rc/rc_new.hpp>
 
 using namespace nut;

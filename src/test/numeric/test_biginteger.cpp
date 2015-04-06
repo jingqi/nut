@@ -2,8 +2,8 @@
 #include <iostream>
 #include <time.h>
 #include <stdio.h>
-#include <nut/unittest/unittest.hpp>
-#include <nut/numeric/big_integer.hpp>
+#include <nut/unittest/unittest.h>
+#include <nut/numeric/big_integer.h>
 
 using namespace std;
 using namespace nut;

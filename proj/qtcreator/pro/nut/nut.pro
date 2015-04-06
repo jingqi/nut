@@ -7,7 +7,7 @@ include(../global.pri)
 QT -= core gui
 CONFIG += staticlib
 
-DEFINES += 
+DEFINES +=
 
 SRC_ROOT = $$PWD/../../../../src
 

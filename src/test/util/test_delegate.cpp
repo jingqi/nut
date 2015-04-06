@@ -1,5 +1,5 @@
 ﻿
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
 #include <iostream>
 #include <nut/util/delegate.hpp>

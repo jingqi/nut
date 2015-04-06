@@ -1,7 +1,7 @@
 ﻿
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
-#include <nut/debugging/backtrace.hpp>
+#include <nut/debugging/backtrace.h>
 #include <iostream>
 
 using namespace nut;

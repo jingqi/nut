@@ -2,9 +2,9 @@
 #include <stdio.h>
 
 
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
-#include <nut/security/encrypt/rsa.hpp>
+#include <nut/security/encrypt/rsa.h>
 
 #include <time.h>
 

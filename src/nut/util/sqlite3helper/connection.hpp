@@ -10,7 +10,7 @@
 #include <nut/debugging/exception.hpp>
 
 #include "prepared_statement.hpp"
-#include "resultset.hpp"
+#include "result_set.hpp"
 
 namespace nut
 {

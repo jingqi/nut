@@ -1,14 +1,8 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2013-08-29
- * @last-edit 2015-01-06 19:44:34 jingqi
- * @brief
- */
-
+﻿
 #ifndef ___HEADFILE_CD9958A8_95CB_49A7_A294_60B2304EDB7E_
 #define ___HEADFILE_CD9958A8_95CB_49A7_A294_60B2304EDB7E_
 
+#include <assert.h>
 #include <stdlib.h>
 
 /**

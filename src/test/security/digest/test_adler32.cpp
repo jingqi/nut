@@ -1,7 +1,7 @@
 ﻿
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
-#include <nut/security/digest/adler32.hpp>
+#include <nut/security/digest/adler32.h>
 
 
 NUT_FIXTURE(TestAdler32)

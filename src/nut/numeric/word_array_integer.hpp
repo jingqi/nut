@@ -16,9 +16,9 @@
 #include <stdlib.h> // for malloc()
 #include <algorithm>
 
-#include <nut/platform/platform.hpp>
+#include <nut/platform/platform.h>
 #include <nut/platform/stdint.hpp>
-#include <nut/mem/sys_ma.hpp>
+#include <nut/mem/sys_ma.h>
 
 // 优化程度，>= 0
 #define OPTIMIZE_LEVEL 1000

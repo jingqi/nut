@@ -1,7 +1,7 @@
 ﻿
-#include "addr_map_mgr.hpp"
+#include <nut/platform/platform.h>
 
-#include <nut/platform/platform.hpp>
+#include "addr_map_mgr.h"
 
 #if defined(NUT_PLATFORM_OS_LINUX)
 

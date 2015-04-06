@@ -8,7 +8,7 @@
 #ifndef ___HEADFILE_784AE107_1B8B_4833_ADE0_1C516A19FBE7_
 #define ___HEADFILE_784AE107_1B8B_4833_ADE0_1C516A19FBE7_
 
-#include "platform.hpp"
+#include "platform.h"
 
 #include <stdint.h>
 

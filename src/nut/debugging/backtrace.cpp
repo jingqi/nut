@@ -1,7 +1,7 @@
 ﻿
-#include "backtrace.hpp"
+#include <nut/platform/platform.h>
 
-#include <nut/platform/platform.hpp>
+#include "backtrace.h"
 
 #if defined(NUT_PLATFORM_OS_LINUX)
 

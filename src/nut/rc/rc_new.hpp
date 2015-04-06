@@ -12,9 +12,9 @@
 #include <new>
 
 #include <nut/memtool/refarg.hpp>
-#include <nut/debugging/destroy_checker.hpp>
-#include <nut/threading/lockfree/atomic.hpp>
-#include <nut/mem/memory_allocator.hpp>
+#include <nut/debugging/destroy_checker.h>
+#include <nut/threading/lockfree/atomic.h>
+#include <nut/mem/memory_allocator.h>
 
 #include "enrc.hpp"
 #include "rc_ptr.hpp"

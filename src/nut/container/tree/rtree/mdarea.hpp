@@ -9,7 +9,7 @@
 #ifndef ___HEADFILE_F8CA88A7_CD94_4F1D_AA24_A5E53F2E2E96_
 #define ___HEADFILE_F8CA88A7_CD94_4F1D_AA24_A5E53F2E2E96_
 
-#include <nut/platform/platform.hpp>
+#include <nut/platform/platform.h>
 
 #if defined(NUT_PLATFORM_CC_VS)
 #   include <xutility>

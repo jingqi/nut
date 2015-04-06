@@ -1,8 +1,8 @@
 ﻿
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
 #include <stdio.h>
-#include <nut/threading/lockfree/atomic.hpp>
+#include <nut/threading/lockfree/atomic.h>
 
 using namespace nut;
 

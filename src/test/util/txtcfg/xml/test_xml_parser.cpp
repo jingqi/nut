@@ -1,7 +1,7 @@
 ﻿
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
-#include <nut/util/txtcfg/xml/xml_parser.hpp>
+#include <nut/util/txtcfg/xml/xml_parser.h>
 
 #include <stdio.h>
 #include <iostream>

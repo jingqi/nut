@@ -1,5 +1,5 @@
 ﻿
-#include <nut/platform/platform.hpp>
+#include <nut/platform/platform.h>
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <conio.h>
@@ -7,11 +7,11 @@
 
 #include <stdio.h>
 #include <iostream>
-#include <nut/unittest/unittest.hpp>
-#include <nut/unittest/console_test_logger.hpp>
-#include <nut/unittest/stream_test_logger.hpp>
-#include <nut/unittest/testrunner.hpp>
-#include <nut/logging/log_manager.hpp>
+#include <nut/unittest/unittest.h>
+#include <nut/unittest/console_test_logger.h>
+#include <nut/unittest/stream_test_logger.h>
+#include <nut/unittest/testrunner.h>
+#include <nut/logging/log_manager.h>
 
 using namespace std;
 using namespace nut;

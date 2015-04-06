@@ -1,7 +1,7 @@
 ﻿
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
-#include <nut/container/bundle.hpp>
+#include <nut/container/bundle.h>
 
 using namespace std;
 using namespace nut;

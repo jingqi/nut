@@ -1,5 +1,5 @@
 ﻿
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
 #include <iostream>
 #include <nut/container/skiplist/skiplist_set.hpp>

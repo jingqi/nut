@@ -1,8 +1,8 @@
 ﻿
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
 #include <iostream>
-#include <nut/util/string/kmp.hpp>
+#include <nut/util/string/kmp.h>
 
 using namespace std;
 using namespace nut;

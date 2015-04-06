@@ -1,10 +1,9 @@
 
-#include "big_integer.hpp"
-
 #include <assert.h>
 #include <string>
 #include <algorithm> // for std::reverse()
 
+#include "big_integer.h"
 #include "word_array_integer.hpp"
 
 #define OPTIMIZE_LEVEL 1000

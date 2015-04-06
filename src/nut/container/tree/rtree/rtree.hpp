@@ -14,14 +14,14 @@
 #include <map> // for pair
 #include <assert.h>
 
-#include <nut/platform/platform.hpp>
+#include <nut/platform/platform.h>
 
 #if defined(NUT_PLATFORM_CC_VS)
 #   include <allocators>
 #   include <xutility>
 #endif
 
-#include <nut/debugging/static_assert.hpp>
+#include <nut/debugging/static_assert.h>
 #include <nut/container/tuple.hpp>
 
 #include "mdarea.hpp"

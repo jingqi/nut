@@ -1,14 +1,8 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2012-03-04
- * @last-edit 2015-01-06 23:24:01 jingqi
- */
-
+﻿
 #ifndef ___HEADFILE_C020D343_98AA_41A4_AFE8_01825671348C_
 #define ___HEADFILE_C020D343_98AA_41A4_AFE8_01825671348C_
 
-#include <nut/platform/platform.hpp>
+#include <nut/platform/platform.h>
 
 #include <assert.h>
 #include <string.h> // for memcpy()
@@ -18,14 +12,14 @@
 #   include <allocators>
 #endif
 
-#include <nut/debugging/source_location.hpp>
+#include <nut/debugging/source_location.h>
 #include <nut/debugging/exception.hpp>
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <windows.h>
 #endif
 
-#include "atomic.hpp"
+#include "atomic.h"
 
 namespace nut
 {

@@ -1,8 +1,8 @@
 ﻿
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
 #include <iostream>
-#include <nut/pconsole/pconsole.hpp>
+#include <nut/pconsole/pconsole.h>
 
 using namespace std;
 using namespace nut;

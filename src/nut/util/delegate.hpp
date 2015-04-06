@@ -1,17 +1,11 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2012-08-09
- * @last-edit 2015-01-06 23:35:14 jingqi
- */
-
+﻿
 #ifndef ___HEADFILE_FD589E58_04A2_4A16_AF82_9F6AE78BCEAE_
 #define ___HEADFILE_FD589E58_04A2_4A16_AF82_9F6AE78BCEAE_
 
 #include <assert.h>
 #include <vector>
 
-#include <nut/platform/platform.hpp>
+#include <nut/platform/platform.h>
 
 namespace nut
 {

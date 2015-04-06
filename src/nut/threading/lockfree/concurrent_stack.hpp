@@ -1,14 +1,8 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2012-03-05
- * @last-edit 2015-01-06 23:29:17 jingqi
- */
-
+﻿
 #ifndef ___HEADFILE_039EC871_866B_4C6A_AF26_747D92A9ADA7_
 #define ___HEADFILE_039EC871_866B_4C6A_AF26_747D92A9ADA7_
 
-#include <nut/platform/platform.hpp>
+#include <nut/platform/platform.h>
 
 #include <assert.h>
 #include <stdlib.h> // for rand()
@@ -17,7 +11,7 @@
 #   include <allocators>
 #endif
 
-#include "atomic.hpp"
+#include "atomic.h"
 
 namespace nut
 {

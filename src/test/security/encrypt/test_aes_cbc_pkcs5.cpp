@@ -2,9 +2,9 @@
 #include <stdio.h>
 
 
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
-#include <nut/security/encrypt/aes_cbc_pkcs5.hpp>
+#include <nut/security/encrypt/aes_cbc_pkcs5.h>
 
 using namespace nut;
 
