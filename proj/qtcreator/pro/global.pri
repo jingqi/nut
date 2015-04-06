@@ -6,6 +6,10 @@ CONFIG(debug, debug|release) {
     DEFINES += NDEBUG
 }
 
+# C++11 支持
+QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CFLAGS += -std=c++11
+
 # 配置输出目录
 OUTDIR = $$PWD/..
 mac {

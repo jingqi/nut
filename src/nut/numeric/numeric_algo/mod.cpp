@@ -42,7 +42,7 @@ static void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, c
  * 算法来源:
  *      王金荣，周赟，王红霞. Montgomery模平方算法及其应用[J]. 计算机工程，2007，33(24)：155 - 156
  */
-static void _montgomery(const BigInteger& t, const BigInteger& n, BigInteger::word_type nn, BigInteger *_rs)
+static void _montgomery2(const BigInteger& t, const BigInteger& n, BigInteger::word_type nn, BigInteger *_rs)
 {
     assert(NULL != _rs);
     assert(t.is_positive() && n.is_positive() && nn > 0);
@@ -279,16 +279,16 @@ static void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
     for (int i = ((int) b.bit_length()) - 2; i >= 0; --i)
     {
         ret *= ret;
-        _montgomery(ret, n, nnn, &ret);
+        _montgomery2(ret, n, nnn, &ret);
         if (0 != b.bit_at(i))
         {
             ret *= m;
-            _montgomery(ret, n, nnn, &ret);
+            _montgomery2(ret, n, nnn, &ret);
         }
     }
 
     // 处理返回值
-    _montgomery(ret, n, nnn, rs);
+    _montgomery2(ret, n, nnn, rs);
     return;
 #elif (OPTIMIZE_LEVEL == 2)
     /**
@@ -452,7 +452,7 @@ void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigI
     const size_t bbc = b.bit_count();
      if (bbc > 400) // 400 是一个经验数据
     {
-        ModMultiplyPreBuildTable<4,MemAlloc> table(a % n, n, n.allocator()); /// 经测试，预算表模板参数取4比较合适
+        ModMultiplyPreBuildTable<4> table(a % n, n); /// 经测试，预算表模板参数取4比较合适
         BigInteger ret(1);
         for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
         {

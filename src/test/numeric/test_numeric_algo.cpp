@@ -139,7 +139,7 @@ NUT_FIXTURE(TestNumericAlgo)
         assert(a.is_positive() && b.is_positive() && n.is_positive());
 
         BigInteger ret(1);
-        for (register size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
+        for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
         {
             ret = (ret * ret) % n;
             if (0 != b.bit_at(i - 1))
