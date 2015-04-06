@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>     // for atoi() and so on
 #include <stdio.h>      // for sprintf()
+#include <string.h>     // for memset()
 
 #include <nut/platform/platform.h>
 

@@ -1,5 +1,7 @@
 
 #include <assert.h>
+#include <time.h>
+
 #include <nut/platform/platform.h>
 
 #include "semaphore.h"
@@ -74,7 +76,7 @@ bool Semaphore::timedwait(unsigned s, unsigned ms)
     return 0 == ::sem_trywait(&m_sem);
 #else
     struct timespec abstime;
-    clock_gettime(CLOCK_REALTIME, &abstime);
+    ::clock_gettime(CLOCK_REALTIME, &abstime);
     abstime.tv_sec += s;
     abstime.tv_nsec += ((long)ms) * 1000 * 1000;
     return 0 == ::sem_timedwait(&m_sem, &abstime);

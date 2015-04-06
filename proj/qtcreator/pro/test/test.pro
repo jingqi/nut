@@ -40,4 +40,5 @@ SOURCES +=\
     $$files($${SRC_ROOT}/util/txtcfg/*.c*) \
     $$files($${SRC_ROOT}/util/txtcfg/xml/*.c*)
 
+unix:!mac: LIBS += -lrt
 LIBS += -lnut

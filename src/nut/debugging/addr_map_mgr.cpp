@@ -38,6 +38,11 @@ AddrMapManager::~AddrMapManager()
     m_destruct_tag = DESTRUCTED_TAG;
 }
 
+bool AddrMapManager::is_valid() const
+{
+    return NULL != this && m_destruct_tag == CONSTRUCTED_TAG;
+}
+
 void AddrMapManager::load(const std::string& path)
 {
     std::ifstream inf(m_maps_path.c_str());

@@ -18,7 +18,7 @@
 #include <string>
 
 #if NUT_BACKTRACE_USE_ADDR_MAP
-#   include "addr_map_mgr.hpp"
+#   include "addr_map_mgr.h"
 #endif
 
 namespace nut

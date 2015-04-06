@@ -652,13 +652,13 @@ static bool is_valid_radix(size_t radix)
 
 static char num2char(size_t n)
 {
-    assert(0 <= n && n < 36);
+    assert(n < 36);
     return (n < 10 ? '0' + n : 'A' + n - 10);
 }
 
 static wchar_t num2wchar(size_t n)
 {
-    assert(0 <= n && n < 36);
+    assert(n < 36);
     return (n < 10 ? L'0' + n : L'A' + n - 10);
 }
 

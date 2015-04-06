@@ -1,8 +1,9 @@
 
 #include <nut/platform/platform.h>
 
-
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if defined(NUT_PLATFORM_OS_MAC)
+#   include <unistd.h> // for getpid()
+#elif defined(NUT_PLATFORM_OS_LINUX)
 #   include <unistd.h> // for getpid()
 #   include <syslog.h>
 #endif
@@ -187,7 +188,7 @@ rc_ptr<LogHandler> LogHandlerFactory::create_log_handler(const std::string &type
 #if defined(NUT_PLATFORM_OS_WINDOWS)
             long pid = ::GetCurrentProcessId();
 #else
-            pid_t pid = getpid();
+            pid_t pid = ::getpid();
 #endif
             sprintf(buf, "%ld", (long)pid);
             last += Time().format_time("%Y-%m-%d %H-%M-%S ");

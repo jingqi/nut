@@ -41,6 +41,8 @@ int main()
 
 /* *************************************************************************/
 
+#include <string.h> // for strcmp()
+
 #include "testcase_failure_exception.h"
 #include "testlogger.h"
 #include "testfixture.h"

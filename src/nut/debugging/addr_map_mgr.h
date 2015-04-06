@@ -19,7 +19,7 @@
 #include <fstream>
 #include <stdint.h>
 
-#include <nut/util/string/string_util.hpp>
+#include <nut/util/string/string_util.h>
 
 namespace nut
 {
@@ -59,10 +59,7 @@ public:
     /**
      * 检查结构体是否依然有效
      */
-    bool is_valid() const
-    {
-        return NULL != this && m_destruct_tag == CONSTRUCTED_TAG;
-    }
+    bool is_valid() const;
 
     /**
      * 获取应用程序绝对路径

@@ -1,5 +1,6 @@
 
 #include <assert.h>
+#include <stdlib.h> // for NULL
 
 #include <nut/platform/platform.h>
 

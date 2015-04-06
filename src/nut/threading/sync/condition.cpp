@@ -1,5 +1,6 @@
 
 #include <assert.h>
+#include <time.h>
 
 #include <nut/platform/platform.h>
 
