@@ -31,7 +31,7 @@ int main()
 
     printf("\n%s\n", NUT_PLATFORM_STR);
 
-#if defined(NUT_PLATFORM_CC_VS)
+#if defined(NUT_PLATFORM_CC_VC)
     ConsoleTestLogger l;
 #else
     StreamTestLogger l(std::cout);

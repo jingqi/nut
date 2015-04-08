@@ -8,7 +8,7 @@
 #include <string.h> // for memcpy()
 #include <stdlib.h> // for rand()
 
-#if defined(NUT_PLATFORM_CC_VS)
+#if defined(NUT_PLATFORM_CC_VC)
 #   include <allocators>
 #endif
 

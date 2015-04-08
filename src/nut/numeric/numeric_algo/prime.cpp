@@ -1,4 +1,4 @@
-
+﻿
 #include "prime.h"
 #include "bit_sieve.h"
 #include "mod.h"

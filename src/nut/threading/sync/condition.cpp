@@ -1,4 +1,4 @@
-
+﻿
 #include <assert.h>
 #include <time.h>
 
@@ -6,7 +6,7 @@
 
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
 #   include <windows.h>
-#   include "spinlock.hpp"
+#   include "spinlock.h"
 #elif defined(NUT_PLATFORM_OS_MAC)
 #   include <time.h>
 #   include <sys/time.h>

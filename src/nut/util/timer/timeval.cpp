@@ -1,4 +1,4 @@
-
+﻿
 #include <time.h>
 
 #include <nut/platform/platform.h>
@@ -43,7 +43,7 @@ void TimeVal::set(const SYSTEMTIME& wtm)
     tm.tm_min = wtm.wMinute;
     tm.tm_sec = wtm.wSecond;
     tm.tm_isdst = -1;
-    clock_t clock = mktime(&tm);
+    time_t clock = ::mktime(&tm);
     set(clock, wtm.wMilliseconds * USECS_PER_MSEC);
 }
 #else

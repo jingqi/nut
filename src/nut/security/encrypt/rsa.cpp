@@ -1,4 +1,4 @@
-
+﻿
 #include <assert.h>
 
 #include <nut/numeric/numeric_algo/mod.h>

@@ -1,4 +1,4 @@
-
+﻿
 #include <assert.h>
 #include <nut/platform/stdint.hpp>
 #include <nut/debugging/destroy_checker.h>

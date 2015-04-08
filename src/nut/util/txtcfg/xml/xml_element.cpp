@@ -1,4 +1,4 @@
-
+﻿
 #include <assert.h>
 
 #include <nut/util/string/string_util.h>

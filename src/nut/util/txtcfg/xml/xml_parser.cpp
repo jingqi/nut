@@ -1,4 +1,4 @@
-
+﻿
 #include <assert.h>
 
 #include "xml_parser.h"

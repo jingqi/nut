@@ -1,4 +1,4 @@
-
+﻿
 #include <assert.h>
 #include <stdio.h> // for sprintf()
 
@@ -435,7 +435,7 @@ bool OS::removetree(const wchar_t *path)
 #endif
 }
 
-bool OS::OS::removetree(const std::wstring& path)
+bool OS::removetree(const std::wstring& path)
 {
     return removetree(path.c_str());
 }

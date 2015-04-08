@@ -1,4 +1,4 @@
-
+﻿
 #include <assert.h>
 #include <time.h>
 #include <algorithm>
@@ -109,7 +109,7 @@ void TimerManager::run()
         else if (m_timers[0]->time > now + min_interval)
         {
             const TimeVal wait = m_timers[0]->time - now;
-            m_cond.timedwait(&m_lock, wait.sec, wait.usec / 1000);
+            m_cond.timedwait(&m_lock, (unsigned) wait.sec, wait.usec / 1000);
         }
         else
         {

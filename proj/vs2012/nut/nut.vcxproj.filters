@@ -1,0 +1,642 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="头文件\memtool">
+      <UniqueIdentifier>{3249a447-10e1-4a3d-9919-10cd87d3c628}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\unittest">
+      <UniqueIdentifier>{8ac5dd8b-1b8d-49f4-a920-26bcced544d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\debugging">
+      <UniqueIdentifier>{606cafde-0cc6-4373-b247-11e994a5421b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\logging">
+      <UniqueIdentifier>{96581bb1-f9ff-4a79-b239-b74d504bd960}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\threading">
+      <UniqueIdentifier>{ade82e3c-1227-431b-bcaa-59cfbd0a085b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\util">
+      <UniqueIdentifier>{07bcb9a5-2e88-4e25-83b4-2a85999b4e3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\logging">
+      <UniqueIdentifier>{be89f9d3-9aea-452a-93b8-7df99944fe19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\numeric">
+      <UniqueIdentifier>{a0f4a4be-8c96-42bc-b29c-65f88a29ecbc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\numeric">
+      <UniqueIdentifier>{d7d572d4-3a7b-4cf7-b727-d0ffc2b4bfb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\util">
+      <UniqueIdentifier>{1a33d577-2005-458f-a87f-0912ca5b567a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\mem">
+      <UniqueIdentifier>{41823d73-0684-4920-bcbd-24eeade40542}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\platform">
+      <UniqueIdentifier>{7525b6bf-43dc-436a-a53a-6f938530c9d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\mem">
+      <UniqueIdentifier>{b85d0dbf-7120-4cf2-b5aa-9da0f38df56d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\threading\sync">
+      <UniqueIdentifier>{a0c43bf1-ab5e-4a7d-830a-61f7e6e6fc20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\threading\lockfree">
+      <UniqueIdentifier>{eba3114f-14ac-40ac-a664-7b8e199b71ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\threading">
+      <UniqueIdentifier>{a168620a-1056-43e5-aa38-ad2d763dd1ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\threading\lockfree">
+      <UniqueIdentifier>{4b3ca1e1-9ba1-45fc-b99c-92733fad8dd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\security">
+      <UniqueIdentifier>{85b3e43e-4f43-40c1-b35c-822a05da2f31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\security\digest">
+      <UniqueIdentifier>{c955cc37-77cf-4058-ad28-a8fb29c282f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\security">
+      <UniqueIdentifier>{49f59d30-334f-4bcf-8b04-ba7643f31187}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\security\digest">
+      <UniqueIdentifier>{20c153cb-f6b7-495b-9816-238cd03d3c33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\security\encrypt">
+      <UniqueIdentifier>{a00e0c28-c778-456a-a52a-de5a62358c4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\security\encrypt">
+      <UniqueIdentifier>{1025b502-7aae-4732-b417-41c20d45c96c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\util\string">
+      <UniqueIdentifier>{cbe09b2d-e419-45dc-8260-2edf5a72dbf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\util\sqlite3helper">
+      <UniqueIdentifier>{f0283209-e4e1-4191-abab-413cc72e01ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\util\string">
+      <UniqueIdentifier>{7f233c5a-13e7-49b9-b5d1-fe63d81eda75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\platform">
+      <UniqueIdentifier>{7874e9df-c776-414b-a8f8-53c6e0c19e11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\util\timer">
+      <UniqueIdentifier>{1e249ce9-6f65-4fa9-aeb4-7c0b9977266e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\pconsole">
+      <UniqueIdentifier>{725f643e-cac0-4354-9836-005909361bc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\pconsole">
+      <UniqueIdentifier>{8a2d5239-dade-423d-8c09-019c8f7f570c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\numeric\numeric_algo">
+      <UniqueIdentifier>{2b813f75-fa5d-4775-94f7-ecd84fe0bfba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\container">
+      <UniqueIdentifier>{a680a30c-6896-4e43-9428-2ad75cb61d2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\container\skiplist">
+      <UniqueIdentifier>{2c0f605e-3cfd-4bb1-ac90-0413a429cb45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\container\tree">
+      <UniqueIdentifier>{6778fcf5-3263-4007-b696-3910ec4eea06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\container\tree\rtree">
+      <UniqueIdentifier>{4a8481a0-0951-4ba5-8eb9-2e0438e7199e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\container">
+      <UniqueIdentifier>{97d58f32-c3ab-4aa8-b78f-98b8d4372b01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\container\tree">
+      <UniqueIdentifier>{1c66cf2b-fafe-42b5-ab2b-0650ef054ff7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\container\tree\rtree">
+      <UniqueIdentifier>{486ce0e7-8bb5-41e6-a807-f0bec0a7e761}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\container\skiplist">
+      <UniqueIdentifier>{b34905cf-9982-49a1-9915-451af6401629}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\debugging">
+      <UniqueIdentifier>{780a08c8-dcf8-4caf-b482-655781cefe50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\util\txtcfg">
+      <UniqueIdentifier>{79e964aa-56a7-48f0-95d0-995a255ef72f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\util\txtcfg\xml">
+      <UniqueIdentifier>{4f87ff7a-4879-4d78-9553-6680e94df034}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\util\txtcfg">
+      <UniqueIdentifier>{1c681d73-5d03-48c9-bfd9-4f1426bf0150}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\util\txtcfg\xml">
+      <UniqueIdentifier>{9095884a-1f2c-494c-9a3f-c4a0c4387754}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\rc">
+      <UniqueIdentifier>{78788a4e-8333-407b-9d1c-d244d9c90856}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\rc">
+      <UniqueIdentifier>{ba4c4893-8b5a-4c01-af0b-489ae002b834}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\numeric\numeric_algo">
+      <UniqueIdentifier>{521bfb82-7c8b-4144-9638-9c8478d877a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\threading\sync">
+      <UniqueIdentifier>{e81f51b0-cfc2-4747-bd0a-e9215c95b47c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\util\timer">
+      <UniqueIdentifier>{7836630d-d5a1-4673-9142-80f2443f355a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\unittest">
+      <UniqueIdentifier>{c3aed811-e9ed-4033-b178-7bb4a0fd4eff}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\nut\debugging\exception.hpp">
+      <Filter>头文件\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\memtool\refarg.hpp">
+      <Filter>头文件\memtool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\memtool\singleton.hpp">
+      <Filter>头文件\memtool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\platform\stdint.hpp">
+      <Filter>头文件\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\mem\lengthfixed_mp.hpp">
+      <Filter>头文件\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\sync\guard.hpp">
+      <Filter>头文件\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\connection.hpp">
+      <Filter>头文件\util\sqlite3helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\wrapers.hpp">
+      <Filter>头文件\util\sqlite3helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer.hpp">
+      <Filter>头文件\numeric</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\tuple.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist.hpp">
+      <Filter>头文件\container\skiplist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\tree\rtree\mdarea.hpp">
+      <Filter>头文件\container\tree\rtree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\tree\rtree\rtree.hpp">
+      <Filter>头文件\container\tree\rtree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\tree\bstree.hpp">
+      <Filter>头文件\container\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\tree\btree.hpp">
+      <Filter>头文件\container\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\tree\rbtree.hpp">
+      <Filter>头文件\container\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\delegate.hpp">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\lru_cache.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist_map.hpp">
+      <Filter>头文件\container\skiplist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist_set.hpp">
+      <Filter>头文件\container\skiplist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\lru_data_cache.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\memtool\free_guard.hpp">
+      <Filter>头文件\memtool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\memtool\ptr.hpp">
+      <Filter>头文件\memtool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_queue.hpp">
+      <Filter>头文件\threading\lockfree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_stack.hpp">
+      <Filter>头文件\threading\lockfree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\prepared_statement.hpp">
+      <Filter>头文件\util\sqlite3helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\array.hpp">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\element_handler.h">
+      <Filter>头文件\util\txtcfg\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\karatsuba.hpp">
+      <Filter>头文件\numeric\numeric_algo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\rc\enrc.hpp">
+      <Filter>头文件\rc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\rc\rc_new.hpp">
+      <Filter>头文件\rc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\rc\rc_ptr.hpp">
+      <Filter>头文件\rc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\bit_stream.h">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\bundle.h">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\byte_array.h">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\byte_array_stream.h">
+      <Filter>头文件\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\debugging\addr_map_mgr.h">
+      <Filter>头文件\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\debugging\backtrace.h">
+      <Filter>头文件\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\debugging\destroy_checker.h">
+      <Filter>头文件\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\debugging\source_location.h">
+      <Filter>头文件\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\debugging\static_assert.h">
+      <Filter>头文件\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_filter.h">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_handler.h">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_level.h">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_manager.h">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_path.h">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_record.h">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\logger.h">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\macros.h">
+      <Filter>头文件\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\mem\memory_allocator.h">
+      <Filter>头文件\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\mem\scoped_gc.h">
+      <Filter>头文件\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\mem\sys_ma.h">
+      <Filter>头文件\mem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\big_integer.h">
+      <Filter>头文件\numeric</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\bit_sieve.h">
+      <Filter>头文件\numeric\numeric_algo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\gcd.h">
+      <Filter>头文件\numeric\numeric_algo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\mod.h">
+      <Filter>头文件\numeric\numeric_algo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\prime.h">
+      <Filter>头文件\numeric\numeric_algo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\pconsole\cmd_exit.h">
+      <Filter>头文件\pconsole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\pconsole\cmd_help.h">
+      <Filter>头文件\pconsole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\pconsole\icommand.h">
+      <Filter>头文件\pconsole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\pconsole\iconsole.h">
+      <Filter>头文件\pconsole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\pconsole\pconsole.h">
+      <Filter>头文件\pconsole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\platform\os.h">
+      <Filter>头文件\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\platform\path.h">
+      <Filter>头文件\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\platform\platform.h">
+      <Filter>头文件\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\security\digest\adler32.h">
+      <Filter>头文件\security\digest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\security\digest\md5.h">
+      <Filter>头文件\security\digest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\security\encrypt\aes.h">
+      <Filter>头文件\security\encrypt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\security\encrypt\aes_cbc_pkcs5.h">
+      <Filter>头文件\security\encrypt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\security\encrypt\rsa.h">
+      <Filter>头文件\security\encrypt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\lockfree\atomic.h">
+      <Filter>头文件\threading\lockfree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\sync\condition.h">
+      <Filter>头文件\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\sync\mutex.h">
+      <Filter>头文件\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\sync\rwlock.h">
+      <Filter>头文件\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\sync\semaphore.h">
+      <Filter>头文件\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\sync\spinlock.h">
+      <Filter>头文件\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\sync\threading.h">
+      <Filter>头文件\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\thread.h">
+      <Filter>头文件\threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\thread_pool.h">
+      <Filter>头文件\threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\console_test_logger.h">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\stream_test_logger.h">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\testcase_failure_exception.h">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\testfixture.h">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\testlogger.h">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\testregister.h">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\testrunner.h">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\unittest.h">
+      <Filter>头文件\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\result_set.hpp">
+      <Filter>头文件\util\sqlite3helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\string\kmp.h">
+      <Filter>头文件\util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\string\string_util.h">
+      <Filter>头文件\util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\string\to_string.h">
+      <Filter>头文件\util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\timer\timer_manager.h">
+      <Filter>头文件\util\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\timer\timeval.h">
+      <Filter>头文件\util\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\string_writer.h">
+      <Filter>头文件\util\txtcfg\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_dom.h">
+      <Filter>头文件\util\txtcfg\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_element.h">
+      <Filter>头文件\util\txtcfg\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_parser.h">
+      <Filter>头文件\util\txtcfg\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_writer.h">
+      <Filter>头文件\util\txtcfg\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\ini_dom.h">
+      <Filter>头文件\util\txtcfg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\property_dom.h">
+      <Filter>头文件\util\txtcfg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\txt_file.h">
+      <Filter>头文件\util\txtcfg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\console_util.h">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\time.h">
+      <Filter>头文件\util</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">
+      <Filter>源文件\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\container\byte_array.cpp">
+      <Filter>源文件\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\container\byte_array_stream.cpp">
+      <Filter>源文件\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\debugging\addr_map_mgr.cpp">
+      <Filter>源文件\debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\debugging\backtrace.cpp">
+      <Filter>源文件\debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_filter.cpp">
+      <Filter>源文件\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_handler.cpp">
+      <Filter>源文件\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_level.cpp">
+      <Filter>源文件\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_manager.cpp">
+      <Filter>源文件\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\logger.cpp">
+      <Filter>源文件\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\mem\scoped_gc.cpp">
+      <Filter>源文件\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\mem\sys_ma.cpp">
+      <Filter>源文件\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\bit_sieve.cpp">
+      <Filter>源文件\numeric\numeric_algo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\gcd.cpp">
+      <Filter>源文件\numeric\numeric_algo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\mod.cpp">
+      <Filter>源文件\numeric\numeric_algo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\prime.cpp">
+      <Filter>源文件\numeric\numeric_algo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\numeric\big_integer.cpp">
+      <Filter>源文件\numeric</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\pconsole\cmd_help.cpp">
+      <Filter>源文件\pconsole</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\pconsole\icommand.cpp">
+      <Filter>源文件\pconsole</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\pconsole\iconsole.cpp">
+      <Filter>源文件\pconsole</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\pconsole\pconsole.cpp">
+      <Filter>源文件\pconsole</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\platform\os.cpp">
+      <Filter>源文件\platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\platform\path.cpp">
+      <Filter>源文件\platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\security\digest\adler32.cpp">
+      <Filter>源文件\security\digest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\security\digest\md5.cpp">
+      <Filter>源文件\security\digest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\security\encrypt\aes.cpp">
+      <Filter>源文件\security\encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\security\encrypt\aes_cbc_pkcs5.cpp">
+      <Filter>源文件\security\encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\security\encrypt\rsa.cpp">
+      <Filter>源文件\security\encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\threading\lockfree\atomic.cpp">
+      <Filter>源文件\threading\lockfree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\threading\thread.cpp">
+      <Filter>源文件\threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\threading\thread_pool.cpp">
+      <Filter>源文件\threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\threading\sync\condition.cpp">
+      <Filter>源文件\threading\sync</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\threading\sync\mutex.cpp">
+      <Filter>源文件\threading\sync</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\threading\sync\rwlock.cpp">
+      <Filter>源文件\threading\sync</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\threading\sync\semaphore.cpp">
+      <Filter>源文件\threading\sync</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\threading\sync\spinlock.cpp">
+      <Filter>源文件\threading\sync</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\string\kmp.cpp">
+      <Filter>源文件\util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\string\string_util.cpp">
+      <Filter>源文件\util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\string\to_string.cpp">
+      <Filter>源文件\util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\timer\timer_manager.cpp">
+      <Filter>源文件\util\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\timer\timeval.cpp">
+      <Filter>源文件\util\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\txtcfg\xml\xml_dom.cpp">
+      <Filter>源文件\util\txtcfg\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\txtcfg\xml\xml_element.cpp">
+      <Filter>源文件\util\txtcfg\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\txtcfg\xml\xml_parser.cpp">
+      <Filter>源文件\util\txtcfg\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\txtcfg\xml\xml_writer.cpp">
+      <Filter>源文件\util\txtcfg\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\txtcfg\ini_dom.cpp">
+      <Filter>源文件\util\txtcfg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\txtcfg\property_dom.cpp">
+      <Filter>源文件\util\txtcfg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\txtcfg\txt_file.cpp">
+      <Filter>源文件\util\txtcfg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\console_util.cpp">
+      <Filter>源文件\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\time.cpp">
+      <Filter>源文件\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\unittest\console_test_logger.cpp">
+      <Filter>源文件\unittest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\unittest\stream_test_logger.cpp">
+      <Filter>源文件\unittest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\unittest\testregister.cpp">
+      <Filter>源文件\unittest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\unittest\testrunner.cpp">
+      <Filter>源文件\unittest</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

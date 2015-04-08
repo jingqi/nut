@@ -1,4 +1,4 @@
-
+﻿
 #include <stack>
 
 #include "gcd.h"

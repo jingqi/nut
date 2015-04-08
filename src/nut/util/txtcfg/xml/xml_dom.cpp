@@ -1,4 +1,4 @@
-
+﻿
 #include <assert.h>
 
 #include <nut/platform/path.h>

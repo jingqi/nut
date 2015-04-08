@@ -1,4 +1,4 @@
-
+﻿
 #include <assert.h>
 
 #include "byte_array_stream.h"

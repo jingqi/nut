@@ -1,4 +1,4 @@
-
+﻿
 #include <assert.h>
 
 #include "stream_test_logger.h"

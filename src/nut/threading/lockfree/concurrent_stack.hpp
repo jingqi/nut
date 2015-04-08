@@ -7,7 +7,10 @@
 #include <assert.h>
 #include <stdlib.h> // for rand()
 
-#if defined(NUT_PLATFORM_CC_VS)
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+#	include <windows.h>
+#endif
+#if defined(NUT_PLATFORM_CC_VC)
 #   include <allocators>
 #endif
 

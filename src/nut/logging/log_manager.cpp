@@ -1,4 +1,4 @@
-
+﻿
 #include <nut/platform/platform.h>
 #include <nut/util/txtcfg/property_dom.h>
 #include <nut/util/txtcfg/txt_file.h>

@@ -2,12 +2,13 @@
 *.dll
 *.lib
 *.suo
-*.user
+*.vcxproj.user
 *.opensdf
 *.sdf
 
 /Debug
 /Release
-/ipch
-/MSVC/Debug
-/MSVC/Release
+/nut/Debug
+/nut/Release
+/test/Debug
+/test/Release
