@@ -1,11 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2015-01-18
- * @last-edit 2015-01-27 12:57:58 jingqi
- * @brief
- */
-
+﻿
 #ifndef ___HEADFILE_035AE1B2_4A92_4FE9_AA5C_A73C6B52447C_
 #define ___HEADFILE_035AE1B2_4A92_4FE9_AA5C_A73C6B52447C_
 
@@ -14,7 +7,7 @@
 #include <algorithm>
 
 #include <nut/mem/sys_ma.h>
-#include <nut/rc/rc_new.hpp>
+#include <nut/rc/rc_new.h>
 
 namespace nut
 {

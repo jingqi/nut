@@ -1,9 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2010-4-24
- */
-
+﻿
 #ifndef ___HEADFILE___2BD47B8B_B18E_421F_8A9D_DC72BAF49ABF_
 #define ___HEADFILE___2BD47B8B_B18E_421F_8A9D_DC72BAF49ABF_
 

@@ -1,13 +1,8 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2010-11-10
- */
-
+﻿
 #ifndef ___HEADFILE_0BA3A842_E42B_4C60_A89E_86200AFC1B81_
 #define ___HEADFILE_0BA3A842_E42B_4C60_A89E_86200AFC1B81_
 
-#include "rc_ptr.hpp"
+#include "rc_ptr.h"
 
 namespace nut
 {

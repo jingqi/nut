@@ -6,7 +6,7 @@
 #include <nut/util/txtcfg/property_dom.h>
 #include <nut/util/txtcfg/txt_file.h>
 #include <nut/threading/sync/mutex.h>
-#include <nut/threading/sync/guard.hpp>
+#include <nut/threading/sync/guard.h>
 
 #include "logger.h"
 

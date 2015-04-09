@@ -11,8 +11,8 @@
 #include <nut/util/console_util.h>
 #include <nut/util/time.h>
 #include <nut/threading/sync/mutex.h>
-#include <nut/threading/sync/guard.hpp>
-#include <nut/rc/rc_new.hpp>
+#include <nut/threading/sync/guard.h>
+#include <nut/rc/rc_new.h>
 
 #include "log_handler.h"
 

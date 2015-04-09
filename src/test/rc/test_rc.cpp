@@ -1,7 +1,7 @@
 ﻿
 #include <nut/unittest/unittest.h>
 
-#include <nut/rc/rc_new.hpp>
+#include <nut/rc/rc_new.h>
 
 using namespace nut;
 

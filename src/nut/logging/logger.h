@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include <nut/rc/rc_new.hpp>
+#include <nut/rc/rc_new.h>
 #include <nut/threading/sync/mutex.h>
 #include <nut/debugging/destroy_checker.h>
 

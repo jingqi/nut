@@ -1,9 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @lastedit 2014-08-31 17:01:49 jingqi
- */
-
+﻿
 #ifndef ___HEADFILE_4471D2BB_37EC_4263_A29B_ECDAD1482F25_
 #define ___HEADFILE_4471D2BB_37EC_4263_A29B_ECDAD1482F25_
 

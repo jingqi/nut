@@ -6,10 +6,10 @@
 #include <string>
 #include <sqlite3.h>
 
-#include <nut/rc/rc_new.hpp>
-#include <nut/rc/enrc.hpp>
+#include <nut/rc/rc_new.h>
+#include <nut/rc/enrc.h>
 
-#include "wrapers.hpp"
+#include "wrapers.h"
 
 namespace nut
 {
@@ -29,7 +29,9 @@ public:
     int int_arg;
 
 private:
-    ParamWraper() : type(NONE) {}
+    ParamWraper()
+        : type(NONE)
+    {}
 
 public:
     ParamWraper(int arg)
@@ -60,7 +62,8 @@ class PreparedStatement
     std::vector<rc_ptr<enrc<std::string> > > m_strings;
 
 public:
-    PreparedStatement() {}
+    PreparedStatement()
+    {}
 
     PreparedStatement(sqlite3 *db, const char *sql)
     {

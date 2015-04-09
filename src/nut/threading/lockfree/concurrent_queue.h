@@ -13,7 +13,7 @@
 #endif
 
 #include <nut/debugging/source_location.h>
-#include <nut/debugging/exception.hpp>
+#include <nut/debugging/exception.h>
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <windows.h>

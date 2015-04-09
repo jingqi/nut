@@ -4,7 +4,7 @@
 #include <algorithm> // for std::reverse()
 
 #include "big_integer.h"
-#include "word_array_integer.hpp"
+#include "word_array_integer.h"
 
 #define OPTIMIZE_LEVEL 1000
 

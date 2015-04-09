@@ -1,11 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2013-08-30
- * @last-edit 2015-01-07 02:12:40 jingqi
- * @brief
- */
-
+﻿
 #ifndef ___HEADFILE_B3E81AC9_35E7_4ADF_A586_39A6E77844E7_
 #define ___HEADFILE_B3E81AC9_35E7_4ADF_A586_39A6E77844E7_
 

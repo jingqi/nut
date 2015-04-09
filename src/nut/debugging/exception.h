@@ -1,9 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2011-01-06
- */
-
+﻿
 #ifndef ___HEADFILE___1767487A_1A0E_11E0_A9DB_485B391122F8_
 #define ___HEADFILE___1767487A_1A0E_11E0_A9DB_485B391122F8_
 

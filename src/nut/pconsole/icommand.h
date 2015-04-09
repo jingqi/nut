@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include <nut/rc/rc_ptr.hpp>
+#include <nut/rc/rc_ptr.h>
 
 namespace nut
 {

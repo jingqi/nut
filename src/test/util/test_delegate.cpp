@@ -2,7 +2,7 @@
 #include <nut/unittest/unittest.h>
 
 #include <iostream>
-#include <nut/util/delegate.hpp>
+#include <nut/util/delegate.h>
 
 using namespace std;
 using namespace nut;

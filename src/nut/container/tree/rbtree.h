@@ -1,10 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2012-02-13
- * @last-edit 2015-01-06 18:59:16 jingqi
- */
-
+﻿
 #ifndef ___HEADFILE_16D8579F_C3D1_4CE7_ACA2_3C4B4B82E45D_
 #define ___HEADFILE_16D8579F_C3D1_4CE7_ACA2_3C4B4B82E45D_
 

@@ -6,11 +6,11 @@
 #include <stdint.h>
 #include <string>
 
-#include <nut/platform/stdint.hpp>
+#include <nut/platform/stdint.h>
 #include <nut/debugging/static_assert.h>
 #include <nut/mem/sys_ma.h>
 
-#include "word_array_integer.hpp"
+#include "word_array_integer.h"
 
 namespace nut
 {

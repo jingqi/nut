@@ -4,7 +4,7 @@
 
 #include <sqlite3.h>
 
-#include <nut/rc/rc_new.hpp>
+#include <nut/rc/rc_new.h>
 
 namespace nut
 {

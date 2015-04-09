@@ -2,8 +2,8 @@
 #include <nut/unittest/unittest.h>
 
 #include <iostream>
-#include <nut/container/skiplist/skiplist_set.hpp>
-#include <nut/container/skiplist/skiplist_map.hpp>
+#include <nut/container/skiplist/skiplist_set.h>
+#include <nut/container/skiplist/skiplist_map.h>
 
 using namespace std;
 using namespace nut;

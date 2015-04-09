@@ -1,34 +1,31 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2013-08-24
- * @last-edit 2015-01-06 19:50:38 jingqi
- * @brief
- */
-
-#ifndef ___HEADFILE_60C4D68A_A1D8_4B2C_A488_40E9A9FFE426_
-#define ___HEADFILE_60C4D68A_A1D8_4B2C_A488_40E9A9FFE426_
+﻿
+#ifndef ___HEADFILE_40DE4FAF_9BB0_4CF2_A78E_8FB1F58E09D3_
+#define ___HEADFILE_40DE4FAF_9BB0_4CF2_A78E_8FB1F58E09D3_
 
 #include <stdlib.h>
 #include <new>
 
-#include "skiplist.hpp"
+#include "skiplist.h"
 
 namespace nut
 {
 
-template <typename T>
-class SkipListSet
+template <typename K, typename V>
+class SkipListMap
 {
+    // 最大 level 数, >0
+    enum { MAX_LEVEL = 16 };
+
     class Node
     {
-        T m_key;
+        K m_key;
+        V m_value;
         Node **m_next;
         int m_level; // 0-based
 
     public:
-        Node(const T& k)
-            : m_key(k), m_next(NULL), m_level(-1)
+        Node(const K& k, const V& v)
+            : m_key(k), m_value(v), m_next(NULL), m_level(-1)
         {}
 
         ~Node()
@@ -39,7 +36,7 @@ class SkipListSet
             m_level = -1;
         }
 
-        const T& get_key() const
+        const K& get_key() const
         {
             return m_key;
         }
@@ -86,8 +83,8 @@ class SkipListSet
     size_t m_size;
 
 private:
-    typedef SkipList<T,Node,SkipListSet<T> > algo_t;
-    friend class SkipList<T,Node,SkipListSet<T> >;
+    typedef SkipList<K,Node,SkipListMap<K,V> > algo_t;
+    friend class SkipList<K,Node,SkipListMap<K,V> >;
 
     int get_level() const
     {
@@ -126,11 +123,11 @@ private:
     }
 
 public:
-    SkipListSet()
+    SkipListMap()
         : m_level(-1), m_head(NULL), m_size(0)
     {}
 
-    SkipListSet(const SkipListSet<T>& x)
+    SkipListMap(const SkipListMap<K,V>& x)
         : m_level(-1), m_head(NULL), m_size(0)
     {
         if (x.m_size == 0)
@@ -149,7 +146,7 @@ public:
         while (NULL != n)
         {
             Node *c = (Node*) ::malloc(sizeof(Node));
-            new (c) Node(n->m_key);
+            new (c) Node(n->m_key, n->m_value);
             c->m_level = n->m_level;
             c->m_next = (Node**) ::malloc(sizeof(Node*) * (c->m_level + 1));
             algo_t::insert_node(c, *this, pre_lv);
@@ -162,7 +159,7 @@ public:
         m_size = x.m_size;
     }
 
-    ~SkipListSet()
+    ~SkipListMap()
     {
         clear();
         if (NULL != m_head)
@@ -171,7 +168,7 @@ public:
         m_level = -1;
     }
 
-    SkipListSet<T>& operator=(const SkipListSet<T>& x)
+    SkipListMap<K,V>& operator=(const SkipListMap<K,V>& x)
     {
         if (this == &x)
             return *this;
@@ -203,7 +200,7 @@ public:
         while (NULL != n)
         {
             Node *c = (Node*) ::malloc(sizeof(Node));
-            new (c) Node(n->m_key);
+            new (c) Node(n->m_key, n->m_value);
             c->m_level = n->m_level;
             c->m_next = (Node**) ::malloc(sizeof(Node*) * (c->m_level + 1));
             algo_t::insert_node(c, *this, pre_lv);
@@ -218,7 +215,7 @@ public:
         return *this;
     }
 
-    bool operator==(const SkipListSet<T>& x) const
+    bool operator==(const SkipListMap<K,V>& x) const
     {
         if (this == &x)
             return true;
@@ -232,7 +229,7 @@ public:
         while (NULL != current1)
         {
             assert(NULL != current2);
-            if (current1->m_key != current2->m_key)
+            if (current1->m_key != current2->m_key || current1->m_value != current2->m_value)
                 return false;
             current1 = current1->m_next[0];
             current2 = current2->m_next[0];
@@ -241,7 +238,7 @@ public:
         return true;
     }
 
-    bool operator!=(const SkipListSet<T>& x) const
+    bool operator!=(const SkipListMap<K,V>& x) const
     {
         return !(*this == x);
     }
@@ -269,7 +266,7 @@ public:
         m_size = 0;
     }
 
-    bool contains(const T& k) const
+    bool contains_key(const K& k) const
     {
         if (0 == m_size)
             return false;
@@ -278,13 +275,13 @@ public:
         return NULL != algo_t::search_node(k, *this, NULL);
     }
 
-    bool add(const T& k)
+    bool add(const K& k, const V& v)
     {
         if (NULL == m_head)
         {
             assert(m_level < 0 && m_size == 0);
             Node *n = (Node*) ::malloc(sizeof(Node));
-            new (n) Node(k);
+            new (n) Node(k,v);
             m_head = (Node**) ::malloc(sizeof(Node*) * 1);
             m_level = 0;
             m_head[0] = n;
@@ -306,14 +303,14 @@ public:
 
         // insert
         n = (Node*) ::malloc(sizeof(Node));
-        new (n) Node(k);
+        new (n) Node(k,v);
         algo_t::insert_node(n, *this, pre_lv);
         ::free(pre_lv);
         ++m_size;
         return true;
     }
 
-    bool remove(const T& k)
+    bool remove(const K& k)
     {
         if (0 == m_size)
             return false;

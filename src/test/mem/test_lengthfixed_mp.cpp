@@ -1,8 +1,8 @@
 ﻿
 #include <nut/unittest/unittest.h>
 
-#include <nut/mem/lengthfixed_mp.hpp>
-#include <nut/rc/rc_new.hpp>
+#include <nut/mem/lengthfixed_mp.h>
+#include <nut/rc/rc_new.h>
 
 using namespace nut;
 

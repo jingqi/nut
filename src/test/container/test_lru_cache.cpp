@@ -2,7 +2,7 @@
 #include <nut/unittest/unittest.h>
 
 #include <iostream>
-#include <nut/container/lru_cache.hpp>
+#include <nut/container/lru_cache.h>
 
 using namespace std;
 using namespace nut;

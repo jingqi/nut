@@ -10,7 +10,7 @@
 #include <nut/platform/platform.h>
 
 #include <nut/threading/sync/mutex.h>
-#include <nut/rc/rc_new.hpp>
+#include <nut/rc/rc_new.h>
 
 #include "log_record.h"
 #include "log_filter.h"

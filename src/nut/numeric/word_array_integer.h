@@ -1,10 +1,4 @@
 ﻿/**
- * @file -
- * @author jingqi
- * @date 2011-12-17
- * @last-edit 2014-11-21 22:53:19 jingqi
- * @brief
- *
  * 有符号不定长大整数：由word_type的数组来表示，字节序为little-endian，最高位为符号位
  */
 
@@ -17,8 +11,8 @@
 #include <algorithm>
 
 #include <nut/platform/platform.h>
-#include <nut/platform/stdint.hpp>
-#include <nut/mem/sys_ma.h>
+#include <nut/platform/stdint.h>
+#include <nut/mem/memory_allocator.h>
 
 // 优化程度，>= 0
 #define OPTIMIZE_LEVEL 1000

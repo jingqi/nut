@@ -3,7 +3,7 @@
 #define ___HEADFILE_93CDBEEC_8BDC_4AE9_A2D1_717CAC0ECD85_
 
 #include <nut/platform/platform.h>
-#include <nut/rc/rc_ptr.hpp>
+#include <nut/rc/rc_ptr.h>
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <windows.h>

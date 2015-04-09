@@ -1,11 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2013-03-26
- * @last-edit 2015-01-06 18:15:41 jingqi
- * @brief
- */
-
+﻿
 #ifndef ___HEADFILE_F8CA88A7_CD94_4F1D_AA24_A5E53F2E2E96_
 #define ___HEADFILE_F8CA88A7_CD94_4F1D_AA24_A5E53F2E2E96_
 

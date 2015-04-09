@@ -6,11 +6,11 @@
 #include <sqlite3.h>
 #include <vector>
 
-#include <nut/rc/rc_ptr.hpp>
-#include <nut/debugging/exception.hpp>
+#include <nut/rc/rc_ptr.h>
+#include <nut/debugging/exception.h>
 
-#include "prepared_statement.hpp"
-#include "result_set.hpp"
+#include "prepared_statement.h"
+#include "result_set.h"
 
 namespace nut
 {
@@ -29,8 +29,15 @@ class Connection
     {
         void *pt;
 
-        Sqlite3Freer(void *p = NULL) : pt(p) {}
-        void attach(void *p) { pt = p; }
+        Sqlite3Freer(void *p = NULL)
+            : pt(p)
+        {}
+
+        void attach(void *p)
+        {
+            pt = p;
+        }
+
         ~Sqlite3Freer()
         {
             if (NULL != pt)

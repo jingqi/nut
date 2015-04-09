@@ -1,10 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2012-03-02
- * @last-edit 2015-01-06 19:31:57 jingqi
- */
-
+﻿
 #ifndef ___HEADFILE_BDA2D5F4_E926_4BBB_A415_DE4463C47D1A_
 #define ___HEADFILE_BDA2D5F4_E926_4BBB_A415_DE4463C47D1A_
 

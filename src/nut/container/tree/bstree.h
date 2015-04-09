@@ -1,14 +1,8 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2012-03-02
- * @last-edit 2015-01-06 19:36:21 jingqi
- */
-
+﻿
 #ifndef ___HEADFILE_CFEF4EB8_082C_417F_A58C_9D65C9F3DAD1_
 #define ___HEADFILE_CFEF4EB8_082C_417F_A58C_9D65C9F3DAD1_
 
-#include "btree.hpp"
+#include "btree.h"
 
 namespace nut
 {

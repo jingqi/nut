@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include <nut/threading/sync/guard.hpp>
+#include <nut/threading/sync/guard.h>
 
 #include "logger.h"
 #include "log_path.h"

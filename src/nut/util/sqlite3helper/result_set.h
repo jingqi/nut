@@ -7,10 +7,10 @@
 #include <string.h>
 #include <sqlite3.h>
 
-#include <nut/rc/rc_new.hpp>
+#include <nut/rc/rc_new.h>
 #include <nut/util/string/string_util.h>
 
-#include "wrapers.hpp"
+#include "wrapers.h"
 
 namespace nut
 {
@@ -36,7 +36,8 @@ class ResultSet
     }
 
 public:
-    ResultSet() {}
+    ResultSet()
+    {}
 
     ResultSet(rc_ptr<SqliteStmt> stmt)
         : m_stmt(stmt)

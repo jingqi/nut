@@ -6,7 +6,7 @@
 #include <vector>
 #include <queue>
 
-#include <nut/rc/rc_new.hpp>
+#include <nut/rc/rc_new.h>
 
 #include "thread.h"
 #include "sync/condition.h"

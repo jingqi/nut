@@ -1,10 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2012-03-25
- * @last-edit 2012-03-25 19:46:52 jingqi
- */
-
+﻿
 #ifndef ___HEADFILE_784AE107_1B8B_4833_ADE0_1C516A19FBE7_
 #define ___HEADFILE_784AE107_1B8B_4833_ADE0_1C516A19FBE7_
 

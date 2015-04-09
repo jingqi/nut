@@ -7,7 +7,7 @@
 #include <string>
 #include <map>
 
-#include <nut/rc/rc_new.hpp>
+#include <nut/rc/rc_new.h>
 
 #include "xml_writer.h"
 

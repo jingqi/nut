@@ -1,9 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2011-11-19
- */
-
+﻿
 #ifndef ___HEADFILE_699C2419_3BD9_4E56_8C80_1E0EDEF4EC84_
 #define ___HEADFILE_699C2419_3BD9_4E56_8C80_1E0EDEF4EC84_
 

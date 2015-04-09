@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include <nut/rc/rc_new.hpp>
+#include <nut/rc/rc_new.h>
 #include <nut/util/string/string_util.h>
 
 #include "icommand.h"

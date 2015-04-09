@@ -8,7 +8,7 @@
 
 #include <nut/unittest/unittest.h>
 
-#include <nut/threading/lockfree/concurrent_queue.hpp>
+#include <nut/threading/lockfree/concurrent_queue.h>
 
 using namespace nut;
 

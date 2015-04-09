@@ -1,11 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2012-12-15
- * @last-edit 2015-01-06 20:00:06 jingqi
- * @brief
- */
-
+﻿
 #ifndef ___HEADFILE_CBBC3AB5_C145_43C1_AAD4_5149A52AF3DD_
 #define ___HEADFILE_CBBC3AB5_C145_43C1_AAD4_5149A52AF3DD_
 
@@ -14,7 +7,7 @@
 #include <map>
 
 #include <nut/threading/sync/spinlock.h>
-#include <nut/threading/sync/guard.hpp>
+#include <nut/threading/sync/guard.h>
 
 namespace nut
 {

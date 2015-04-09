@@ -1,7 +1,7 @@
 ﻿
 #include <nut/unittest/unittest.h>
 
-#include <nut/container/array.hpp>
+#include <nut/container/array.h>
 
 using namespace std;
 using namespace nut;

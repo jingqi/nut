@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include <nut/mem/sys_ma.h>
-#include <nut/rc/rc_new.hpp>
+#include <nut/rc/rc_new.h>
 
 namespace nut
 {

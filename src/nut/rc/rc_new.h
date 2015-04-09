@@ -1,9 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2011-11-11 18:49
- */
-
+﻿
 #ifndef ___HEADFILE___B77B6DC2_6C30_4732_943B_117AF7E35B83_
 #define ___HEADFILE___B77B6DC2_6C30_4732_943B_117AF7E35B83_
 
@@ -11,13 +6,13 @@
 #include <stdlib.h>
 #include <new>
 
-#include <nut/memtool/refarg.hpp>
+#include <nut/memtool/refarg.h>
 #include <nut/debugging/destroy_checker.h>
 #include <nut/threading/lockfree/atomic.h>
 #include <nut/mem/memory_allocator.h>
 
-#include "enrc.hpp"
-#include "rc_ptr.hpp"
+#include "enrc.h"
+#include "rc_ptr.h"
 
 namespace nut
 {

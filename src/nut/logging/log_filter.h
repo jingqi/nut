@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include <nut/rc/rc_new.hpp>
+#include <nut/rc/rc_new.h>
 
 #include "log_level.h"
 #include "log_record.h"

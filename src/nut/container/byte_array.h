@@ -9,7 +9,7 @@
 
 #include <nut/mem/sys_ma.h>
 
-#include "array.hpp"
+#include "array.h"
 
 namespace nut
 {

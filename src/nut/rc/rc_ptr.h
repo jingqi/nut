@@ -1,9 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2011-11-11 18:49
- */
-
+﻿
 #ifndef ___HEADFILE___9698630E_2BC3_42BB_91C2_734500687C95_
 #define ___HEADFILE___9698630E_2BC3_42BB_91C2_734500687C95_
 

@@ -1,10 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2011-12-17
- * @last-edit 2011-12-17 17:23:51 jingqi
- */
-
+﻿
 #ifndef ___HEADFILE_E134CCCD_BA57_49BB_A1D7_8BA2C91957FA_
 #define ___HEADFILE_E134CCCD_BA57_49BB_A1D7_8BA2C91957FA_
 

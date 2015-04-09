@@ -1,14 +1,8 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2015-01-23
- * @brief
- */
-
+﻿
 #ifndef ___HEADFILE_2B908A00_62CA_4D3C_ADB3_8CB4BAB97554_
 #define ___HEADFILE_2B908A00_62CA_4D3C_ADB3_8CB4BAB97554_
 
-#include "../word_array_integer.hpp"
+#include "../word_array_integer.h"
 
 namespace nut
 {

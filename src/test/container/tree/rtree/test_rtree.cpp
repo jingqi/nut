@@ -5,7 +5,7 @@
 
 #include <nut/unittest/unittest.h>
 
-#include <nut/container/tree/rtree/rtree.hpp>
+#include <nut/container/tree/rtree/rtree.h>
 
 using namespace nut;
 

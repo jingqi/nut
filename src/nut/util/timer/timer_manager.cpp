@@ -4,7 +4,7 @@
 #include <algorithm>
 
 #include <nut/platform/platform.h>
-#include <nut/threading/sync/guard.hpp>
+#include <nut/threading/sync/guard.h>
 #include <nut/threading/thread.h>
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)

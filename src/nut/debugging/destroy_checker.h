@@ -1,9 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2011-11-11 18:49
- */
-
+﻿
 #ifndef ___HEADFILE___31A42BCF_A2BF_4E7C_8387_751B0648CFBA_
 #define ___HEADFILE___31A42BCF_A2BF_4E7C_8387_751B0648CFBA_
 

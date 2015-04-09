@@ -7,7 +7,7 @@
 #include <map>
 
 #include <nut/threading/sync/spinlock.h>
-#include <nut/threading/sync/guard.hpp>
+#include <nut/threading/sync/guard.h>
 
 namespace nut
 {

@@ -2,7 +2,7 @@
 #include <assert.h>
 
 #include "thread_pool.h"
-#include "sync/guard.hpp"
+#include "sync/guard.h"
 
 namespace nut
 {

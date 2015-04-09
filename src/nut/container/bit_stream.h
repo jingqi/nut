@@ -7,7 +7,7 @@
 #include <memory.h>
 #include <string>
 
-#include <nut/numeric/word_array_integer.hpp>
+#include <nut/numeric/word_array_integer.h>
 
 namespace nut
 {
