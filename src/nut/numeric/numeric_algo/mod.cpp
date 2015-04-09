@@ -36,6 +36,7 @@ static void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, c
     *rs = s;
 }
 
+#if OPTIMIZE_LEVEL == 1
 /**
  * 变形的蒙哥马利算法
  *
@@ -90,6 +91,7 @@ static void _montgomery2(const BigInteger& t, const BigInteger& n, BigInteger::w
 
     *_rs = rs;
 }
+#endif
 
 /**
  * 已知:

@@ -22,6 +22,7 @@ bool psedoprime(const BigInteger& n)
     return true; // 可能是素数
 }
 
+#if OPTIMIZE_LEVEL == 0
 static bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n)
 {
     BigInteger d(1, a.allocator()), b(n);
@@ -43,6 +44,7 @@ static bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n)
         return true;
     return false;
 }
+#endif
 
 /**
  * 米勒-拉宾(Miller-Rabin)素数测试
