@@ -4,7 +4,6 @@
 
 #include <assert.h>
 #include <nut/platform/stdint.h>
-#include <nut/memtool/refarg.h>
 #include <nut/debugging/static_assert.h>
 #include <nut/debugging/destroy_checker.h>
 
@@ -96,35 +95,137 @@ public:
 
     void* gc_alloc(size_t cb);
 
+#ifndef _LIBCPP_HAS_NO_VARIADICS
+    template <typename T, typename ...Args>
+    T* gc_new(Args ...args)
+    {
+        NUT_DEBUGGING_ASSERT_ALIVE;
+        T *p = (T*) alloc(sizeof(T), destruct_single<T>);
+        assert(NULL != p);
+        new (p) T(args...);
+        return p;
+    }
+#else
     template <typename T>
     T* gc_new()
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
-		T *ret = (T*) alloc(sizeof(T), destruct_single<T>);
-		assert(NULL != ret);
-		new (ret) T;
-		return ret;
+        T *p = (T*) alloc(sizeof(T), destruct_single<T>);
+        assert(NULL != p);
+        new (p) T;
+        return p;
 	}
 
-    template <typename T, typename A1>
-    T* gc_new(A1 a1)
+    template <typename T, typename Arg1>
+    T* gc_new(Arg1&& arg1)
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
-		T *ret = (T*) alloc(sizeof(T), destruct_single<T>);
-		assert(NULL != ret);
-		new (ret) T(RefargTraits<A1>::value(a1));
-		return ret;
+        T *p = (T*) alloc(sizeof(T), destruct_single<T>);
+        assert(NULL != p);
+        new (p) T(arg1);
+        return p;
 	}
 
-    template <typename T, typename A1, typename A2>
-    T* gc_new(A1 a1, A2 a2)
+    template <typename T, typename Arg1, typename Arg2>
+    T* gc_new(Arg1&& arg1, Arg2&& arg2)
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
-		T *ret = (T*) alloc(sizeof(T), destruct_single<T>);
-		assert(NULL != ret);
-		new (ret) T(RefargTraits<A1>::value(a1), RefargTraits<A2>::value(a2));
-		return ret;
+        T *p = (T*) alloc(sizeof(T), destruct_single<T>);
+        assert(NULL != p);
+        new (p) T(arg1, arg2);
+        return p;
 	}
+
+    template <typename T, typename Arg1, typename Arg2, typename Arg3>
+    T* gc_new(Arg1&& arg1, Arg2&& arg2, Arg3&& arg3)
+    {
+        NUT_DEBUGGING_ASSERT_ALIVE;
+        T *p = (T*) alloc(sizeof(T), destruct_single<T>);
+        assert(NULL != p);
+        new (p) T(arg1, arg2, arg3);
+        return p;
+    }
+
+    template <typename T, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+    T* gc_new(Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, Arg4&& arg4)
+    {
+        NUT_DEBUGGING_ASSERT_ALIVE;
+        T *p = (T*) alloc(sizeof(T), destruct_single<T>);
+        assert(NULL != p);
+        new (p) T(arg1, arg2, arg3, arg4);
+        return p;
+    }
+
+    template <typename T, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
+    T* gc_new(Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, Arg4&& arg4, Arg5&& arg5)
+    {
+        NUT_DEBUGGING_ASSERT_ALIVE;
+        T *p = (T*) alloc(sizeof(T), destruct_single<T>);
+        assert(NULL != p);
+        new (p) T(arg1, arg2, arg3, arg4, arg5);
+        return p;
+    }
+
+    template <typename T, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
+              typename Arg6>
+    T* gc_new(Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, Arg4&& arg4, Arg5&& arg5,
+              Arg6&& arg6)
+    {
+        NUT_DEBUGGING_ASSERT_ALIVE;
+        T *p = (T*) alloc(sizeof(T), destruct_single<T>);
+        assert(NULL != p);
+        new (p) T(arg1, arg2, arg3, arg4, arg5, arg6);
+        return p;
+    }
+
+    template <typename T, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
+              typename Arg6, typename Arg7>
+    T* gc_new(Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, Arg4&& arg4, Arg5&& arg5,
+              Arg6&& arg6, Arg7&& arg7)
+    {
+        NUT_DEBUGGING_ASSERT_ALIVE;
+        T *p = (T*) alloc(sizeof(T), destruct_single<T>);
+        assert(NULL != p);
+        new (p) T(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+        return p;
+    }
+
+    template <typename T, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
+              typename Arg6, typename Arg7, typename Arg8>
+    T* gc_new(Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, Arg4&& arg4, Arg5&& arg5,
+              Arg6&& arg6, Arg7&& arg7, Arg8&& arg8)
+    {
+        NUT_DEBUGGING_ASSERT_ALIVE;
+        T *p = (T*) alloc(sizeof(T), destruct_single<T>);
+        assert(NULL != p);
+        new (p) T(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+        return p;
+    }
+
+    template <typename T, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
+              typename Arg6, typename Arg7, typename Arg8, typename Arg9>
+    T* gc_new(Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, Arg4&& arg4, Arg5&& arg5,
+              Arg6&& arg6, Arg7&& arg7, Arg8&& arg8, Arg9&& arg9)
+    {
+        NUT_DEBUGGING_ASSERT_ALIVE;
+        T *p = (T*) alloc(sizeof(T), destruct_single<T>);
+        assert(NULL != p);
+        new (p) T(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+        return p;
+    }
+
+    template <typename T, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5,
+              typename Arg6, typename Arg7, typename Arg8, typename Arg9, typename Arg10>
+    T* gc_new(Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, Arg4&& arg4, Arg5&& arg5,
+              Arg6&& arg6, Arg7&& arg7, Arg8&& arg8, Arg9&& arg9, Arg10&& arg10)
+    {
+        NUT_DEBUGGING_ASSERT_ALIVE;
+        T *p = (T*) alloc(sizeof(T), destruct_single<T>);
+        assert(NULL != p);
+        new (p) T(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+        return p;
+    }
+#endif
 
 	template <typename T>
 	T* gc_new_array(size_t count)
