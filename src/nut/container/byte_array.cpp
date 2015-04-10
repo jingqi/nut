@@ -26,7 +26,7 @@ void ByteArray::copy_on_write()
 }
 
 ByteArray::ByteArray(memory_allocator *ma)
-    : m_array(RC_NEW(ma, rcarray_type, 0, ma))
+    : m_array(rca_new<rcarray_type>(ma, 0, ma))
 {}
 
 /**
@@ -34,7 +34,7 @@ ByteArray::ByteArray(memory_allocator *ma)
  * @param fillv initial data filling
  */
 ByteArray::ByteArray(size_type len, uint8_t fillv, memory_allocator *ma)
-    : m_array(RC_NEW(ma, rcarray_type, len, ma))
+    : m_array(rca_new<rcarray_type>(ma, len, ma))
 {
     m_array->resize(len, fillv);
 }
@@ -44,7 +44,7 @@ ByteArray::ByteArray(size_type len, uint8_t fillv, memory_allocator *ma)
  * @param len initial data size
  */
 ByteArray::ByteArray(const void *buf, size_type len, memory_allocator *ma)
-    : m_array(RC_NEW(ma, rcarray_type, len, ma))
+    : m_array(rca_new<rcarray_type>(ma, len, ma))
 {
     assert(NULL != buf);
     if (NULL != buf)
@@ -61,7 +61,7 @@ ByteArray::ByteArray(const void *buf, unsigned char term_byte, bool include_term
     assert(NULL != buf);
     if (NULL == buf)
     {
-        m_array = RC_NEW(ma, rcarray_type, 0, ma);
+        m_array = rca_new<rcarray_type>(ma, 0, ma);
         return;
     }
 
@@ -71,12 +71,12 @@ ByteArray::ByteArray(const void *buf, unsigned char term_byte, bool include_term
     if (include_term_byte)
         ++len;
 
-    m_array = RC_NEW(ma, rcarray_type, len, ma);
+    m_array = rca_new<rcarray_type>(ma, len, ma);
     m_array->insert(0, (const uint8_t*)buf, ((const uint8_t*)buf) + len);
 }
 
 ByteArray::ByteArray(const void *buf, size_type index, size_type size, memory_allocator *ma)
-    : m_array(RC_NEW(ma, rcarray_type, size, ma))
+    : m_array(rca_new<rcarray_type>(ma, size, ma))
 {
     assert(NULL != buf);
     if (NULL != buf)
@@ -94,7 +94,7 @@ void ByteArray::clear()
 {
     const int rc = m_array->get_ref();
     if (rc > 1)
-        m_array = RC_NEW(m_array->allocator(), rcarray_type, 0, m_array->allocator());
+        m_array = rca_new<rcarray_type>(m_array->allocator(), 0, m_array->allocator());
     else
         m_array->clear();
 }

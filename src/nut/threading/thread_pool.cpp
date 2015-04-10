@@ -35,7 +35,7 @@ void ThreadPool::start()
 {
     for (size_t i = m_threads.size(); i < m_thread_count; ++i)
     {
-        rc_ptr<Thread> t = RC_NEW(NULL, Thread, thread_process, this);
+        rc_ptr<Thread> t = rc_new<Thread>(thread_process, this);
         m_threads.push_back(t);
         t->start();
     }

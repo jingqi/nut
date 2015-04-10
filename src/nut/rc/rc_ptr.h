@@ -131,7 +131,7 @@ public:
             if (p != NULL)
                 p->add_ref();
             if (m_ptr != NULL)
-                m_ptr->rls_ref();
+                m_ptr->release_ref();
             m_ptr = p;
         }
     }
@@ -155,7 +155,7 @@ public:
     {
         if (m_ptr != NULL)
         {
-            m_ptr->rls_ref();
+            m_ptr->release_ref();
             m_ptr = NULL;
         }
     }
@@ -218,7 +218,7 @@ struct dynamic_rc_ptr_cast : public rc_ptr<typename RCPtrTraits<T>::plain_type>
  */
 #define NUT_REF_COUNTABLE \
     virtual int add_ref() = 0; \
-    virtual int rls_ref() = 0; \
+    virtual int release_ref() = 0; \
     virtual int get_ref() const = 0; \
     template <typename ___T> friend class nut::rc_ptr;
 

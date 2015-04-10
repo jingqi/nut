@@ -50,7 +50,7 @@ void LogManager::load_config(rc_ptr<PropertyDom> config)
 void LogManager::load_config(const char *config_file)
 {
     assert(NULL != config_file);
-    rc_ptr<PropertyDom> pd = RC_NEW(NULL, PropertyDom);
+    rc_ptr<PropertyDom> pd = rc_new<PropertyDom>();
     std::string all;
     TxtFile::read_file(config_file, &all);
     pd->parse(all);

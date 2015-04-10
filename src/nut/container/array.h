@@ -134,7 +134,7 @@ public:
 public:
     rc_ptr<self_type> clone() const
     {
-        rc_ptr<self_type> ret = RC_NEW(m_alloc.pointer(), self_type, m_size, m_alloc.pointer());
+        rc_ptr<self_type> ret = rca_new<self_type,int>(m_alloc.pointer(), m_size, m_alloc.pointer());
         std::uninitialized_copy(m_buf, m_buf + m_size, ret->m_buf);
 		ret->m_size = m_size;
         return ret;
@@ -273,7 +273,7 @@ private:
 
 public:
     Array(size_type init_cap = 16, memory_allocator *ma = NULL)
-        : m_array(RC_NEW(ma, rcarray_type, init_cap, ma))
+        : m_array(rca_new<rcarray_type>(ma, init_cap, ma))
     {}
 
     Array(const self_type& x)

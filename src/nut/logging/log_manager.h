@@ -22,7 +22,7 @@ DLL_API void* nut_get_root_logger() \
     { \
         nut::Guard<nut::Mutex> guard(&root_mutex); \
         if (root.is_null()) \
-            root = RC_NEW(NULL, nut::Logger, (nut::Logger*)NULL, ""); \
+            root = nut::rc_new<nut::Logger>((nut::Logger*)NULL, ""); \
     } \
     return root.pointer(); \
 }

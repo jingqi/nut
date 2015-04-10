@@ -17,8 +17,8 @@ PConsole::PConsole(const std::string& name)
       m_exit(false), m_exit_value(0)
 {
     // 内建命令
-    add_a_command(RC_NEW(NULL, CmdExit, this));
-    add_a_command(RC_NEW(NULL, CmdHelp, this));
+    add_a_command(rc_new<CmdExit>(this));
+    add_a_command(rc_new<CmdHelp>(this));
 }
 
 /** 读取并执行一次 */

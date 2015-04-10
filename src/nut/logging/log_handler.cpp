@@ -161,18 +161,18 @@ rc_ptr<LogHandler> LogHandlerFactory::create_log_handler(const std::string &type
 {
     if (type == "stdout")
     {
-        return RC_NEW(NULL, StreamLogHandler, ref_arg<std::ostream>(std::cout));
+        return rc_new<StreamLogHandler>(std::cout);
     }
     else if (type == "stderr")
     {
-        return RC_NEW(NULL, StreamLogHandler, ref_arg<std::ostream>(std::cerr));
+        return rc_new<StreamLogHandler>(std::cerr);
     }
     else if (type.size() >= 7 && type.substr(0,7) == "console")
     {
         if (type.size() == 15 && type.substr(7,8) == "|nocolor")
-            return RC_NEW(NULL, ConsoleLogHandler, false);
+            return rc_new<ConsoleLogHandler>(false);
         else
-            return RC_NEW(NULL, ConsoleLogHandler, true);
+            return rc_new<ConsoleLogHandler>(true);
     }
     else if (type.size() > 5 && type.substr(0,5) == "file|")
     {
@@ -180,7 +180,7 @@ rc_ptr<LogHandler> LogHandlerFactory::create_log_handler(const std::string &type
         std::string last = type.substr(pos + 1);
         if (type.size() > 12 && type.substr(5,7) == "append|")
         {
-            return RC_NEW(NULL, FileLogHandler, last.c_str(), true);
+            return rc_new<FileLogHandler>(last.c_str(), true);
         }
         else if (type.size() > 12 && type.substr(5,7) == "circle|")
         {
@@ -194,22 +194,22 @@ rc_ptr<LogHandler> LogHandlerFactory::create_log_handler(const std::string &type
             last += Time().format_time("%Y-%m-%d %H-%M-%S ");
             last += buf;
             last += ".log";
-            return RC_NEW(NULL, FileLogHandler, last.c_str(), false);
+            return rc_new<FileLogHandler>(last.c_str(), false);
         }
         else // trunc
         {
-            return RC_NEW(NULL, FileLogHandler, last.c_str(), false);
+            return rc_new<FileLogHandler>(last.c_str(), false);
         }
     }
 #if defined(NUT_PLATFORM_OS_LINUX)
     else if (type == "syslog")
     {
-        return RC_NEW(NULL, SyslogLogHandler, false);
+        return rc_new<SyslogLogHandler>(false);
     }
 #endif
 
     /* default */
-    return RC_NEW(NULL, StreamLogHandler, ref_arg<std::ostream>(std::cout));
+    return rc_new<StreamLogHandler>(std::cout);
 }
 
 }

@@ -170,7 +170,7 @@ void PropertyDom::parse(const std::string& s, const char *line_comment_chars, co
         }
         start = i;
 
-        rc_ptr<Line> line = RC_NEW(NULL, Line);
+        rc_ptr<Line> line = rc_new<Line>();
         line->parse(ln, line_comment_chars, space_chars);
         m_lines.push_back(line);
     } while (std::string::npos != start);
@@ -307,7 +307,7 @@ void PropertyDom::set_string(const char *key, const char *value)
     }
 
     // if not found, then add a new record
-    rc_ptr<Line> line = RC_NEW(NULL, Line);
+    rc_ptr<Line> line = rc_new<Line>();
     line->m_key = key;
     line->m_equal_sign = true;
     line->m_value = value;

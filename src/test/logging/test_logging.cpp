@@ -18,7 +18,7 @@ NUT_FIXTURE(TestLogging)
     void test_smoking()
     {
         Logger *l = LogManager::get_logger("");
-        l->add_handler(RC_NEW(NULL, ConsoleLogHandler));
+        l->add_handler(rc_new<ConsoleLogHandler>());
         NUT_LOGGING_DEBUG(l, "debug msg");
         NUT_LOGGING_INFO(l, "info msg");
         NUT_LOGGING_WARN(l, "warn msg");

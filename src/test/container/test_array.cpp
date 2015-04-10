@@ -21,7 +21,7 @@ NUT_FIXTURE(TestArray)
 
     void test_rcarray_smoking()
     {
-        rc_ptr<RCArray<int> > rca = RC_NEW(NULL, RCArray<int>);
+        rc_ptr<RCArray<int> > rca = rc_new<RCArray<int> >();
         NUT_TA(rca->get_ref() == 1);
         NUT_TA(rca->size() == 0);
 
@@ -51,7 +51,7 @@ NUT_FIXTURE(TestArray)
         NUT_TA(rca->operator ==(*rcb));
         NUT_TA(!(rca->operator !=(*rcb)));
 
-        rc_ptr<RCArray<int> > rcc = RC_NEW(NULL, RCArray<int>);
+        rc_ptr<RCArray<int> > rcc = rc_new<RCArray<int> >();
         NUT_TA(rcc->size() == 0);
         NUT_TA(!(rcc->operator ==(*rca)));
         NUT_TA(rcc->operator !=(*rca));
@@ -62,7 +62,7 @@ NUT_FIXTURE(TestArray)
 
     void test_rcarray_insert_erase()
     {
-        rc_ptr<RCArray<int> > rca = RC_NEW(NULL, RCArray<int>);
+        rc_ptr<RCArray<int> > rca = rc_new<RCArray<int> >();
         rca->insert(0, 2);
         NUT_TA(rca->size() == 1);
         NUT_TA(rca->at(0) == 2);
@@ -86,7 +86,7 @@ NUT_FIXTURE(TestArray)
         rca->clear();
         NUT_TA(rca->size() == 0 && rca->begin() == rca->end());
 
-        rc_ptr<RCArray<int> > rcb = RC_NEW(NULL, RCArray<int>);
+        rc_ptr<RCArray<int> > rcb = rc_new<RCArray<int> >();
         rca->push_back(11);
         rca->push_back(12);
         rcb->push_back(21);
@@ -101,8 +101,8 @@ NUT_FIXTURE(TestArray)
 
     void test_rcarray_ma()
     {
-        rc_ptr<sys_ma> ma = RC_NEW(NULL, sys_ma);
-        rc_ptr<RCArray<int> > rca = RC_NEW(NULL, RCArray<int>, 0, ma.pointer());
+        rc_ptr<sys_ma> ma = rc_new<sys_ma>();
+        rc_ptr<RCArray<int> > rca = rc_new<RCArray<int> >(0, ma.pointer());
         NUT_TA(ma->get_ref() == 2);
         rca->push_back(45);
         rca->push_back(46);

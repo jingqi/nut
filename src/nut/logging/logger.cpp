@@ -113,8 +113,8 @@ Logger* Logger::get_logger(const std::string &relative_path)
     while (iter != end && current != (*iter)->get_logger_name()) ++iter;
     if (iter == end)
     {
-        m_subloggers.push_back(RC_NEW(NULL, Logger, this,
-            (m_logger_path.length() == 0 ? current : m_logger_path + "." + current)));
+        m_subloggers.push_back(rc_new<Logger>(this, (m_logger_path.length() == 0 ?
+            current : m_logger_path + "." + current)));
         iter = m_subloggers.end() - 1;
     }
     return (*iter)->get_logger(LogPath::sub_log_path(relative_path));

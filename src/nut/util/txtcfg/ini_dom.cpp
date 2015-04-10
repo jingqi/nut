@@ -50,7 +50,7 @@ rc_ptr<IniDom::Sector> IniDom::Sector::parse_sector_name(const std::string& line
             return rc_ptr<Sector>(NULL);
     }
 
-    rc_ptr<Sector> ret = RC_NEW(NULL, Sector);
+    rc_ptr<Sector> ret = rc_new<Sector>();
     ret->m_space0 = line.substr(0, index1 - 0);
 
     if (std::string::npos != index3)
@@ -157,7 +157,7 @@ void IniDom::parse(const std::string& s, const char *line_comment_chars, const c
             continue;
         }
 
-        rc_ptr<Line> line = RC_NEW(NULL, Line);
+        rc_ptr<Line> line = rc_new<Line>();
         line->parse(ln, line_comment_chars, space_chars);
         current_lines->push_back(line);
     }
@@ -426,7 +426,7 @@ void IniDom::set_string(const char *sector, const char *key, const char *value)
     }
     if (NULL == lines)
     {
-        rc_ptr<Sector> sec = RC_NEW(NULL, Sector);
+        rc_ptr<Sector> sec = rc_new<Sector>();
         sec->m_name = sector;
         lines = &(sec->m_lines);
         m_sectors.push_back(sec);
@@ -441,7 +441,7 @@ void IniDom::set_string(const char *sector, const char *key, const char *value)
             return;
         }
     }
-    rc_ptr<Line> line = RC_NEW(NULL, Line);
+    rc_ptr<Line> line = rc_new<Line>();
     line->m_key = key;
     line->m_equal_sign = true;
     line->m_value = value;

@@ -118,7 +118,7 @@ void XmlDom::parse(const std::string& s, bool ignore_text_blank)
     i = s.find('<', i);
     if (std::string::npos == i)
         return; // no element found
-    m_root = RC_NEW(NULL, XmlElement);
+    m_root = rc_new<XmlElement>();
     m_root->parse(s, i, ignore_text_blank);
     if (m_root->get_children_count() > 0)
         m_root = m_root->get_child(0);

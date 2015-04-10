@@ -78,7 +78,7 @@ rc_ptr<LogFilter> LogFilterFactory::create_log_filter(const std::string &arg)
             deny_paths.push_back(arg.substr(begin));
     }
 
-    return RC_NEW(NULL, DefaultLogFilter, mask[0], mask[1], mask[2], mask[3], mask[4], deny_paths);
+    return rc_new<DefaultLogFilter>(mask[0], mask[1], mask[2], mask[3], mask[4], deny_paths);
 }
 
 }

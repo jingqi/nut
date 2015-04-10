@@ -203,7 +203,7 @@ NUT_FIXTURE(TestNumericAlgo)
         ::memset(x, 0, sizeof(word_type) * x_len);
         ::memset(y, 0, sizeof(word_type) * x_len);
 
-        rc_ptr<sys_ma> ma = RC_NEW(NULL, sys_ma);
+        rc_ptr<sys_ma> ma = rc_new<sys_ma>();
         clock_t s = clock();
         signed_multiply<word_type>(a, a_len, b, b_len, x, x_len);
         clock_t f1 = clock();

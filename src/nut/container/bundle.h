@@ -69,7 +69,7 @@ public:
     template <typename T>
     void set_value(const std::string& key, const T& value)
     {
-        m_values[key] = RC_NEW(m_alloc.pointer(), _BundleElement<T>, value);
+        m_values[key] = rca_new<_BundleElement<T> >(m_alloc.pointer(), value);
     }
 
     void clear()
