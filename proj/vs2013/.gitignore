@@ -1,0 +1,15 @@
+*.exe
+*.dll
+*.lib
+*.suo
+*.user
+*.opensdf
+*.sdf
+
+/Debug
+/Release
+/ipch
+/nut/Debug
+/nut/Release
+/test/Debug
+/test/Release

@@ -1,11 +1,4 @@
-﻿/**
- * @file -
- * @author jingqi
- * @date 2014-09-02
- * @last-edit 2014-09-02 23:57:49 jingqi
- * @brief
- */
-
+﻿
 #ifndef ___HEADFILE_543264C6_1906_4757_AFBF_6B9D023B2EA6_
 #define ___HEADFILE_543264C6_1906_4757_AFBF_6B9D023B2EA6_
 

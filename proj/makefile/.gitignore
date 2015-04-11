@@ -1,0 +1,7 @@
+*.pyc
+*.prop
+
+/*.a
+/*.so
+/*.dylib
+/test
