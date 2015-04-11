@@ -8,8 +8,6 @@
 #   include <windows.h>
 #endif
 
-#include <nut/debugging/static_assert.h>
-
 #include "atomic.h"
 
 namespace nut
@@ -130,7 +128,7 @@ bool atomic_cas(int32_t volatile *dest, int32_t oldval, int32_t newval)
 #elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
     return InterlockedCompareExchange(reinterpret_cast<uint32_t volatile*>(dest), static_cast<uint32_t>(newval), static_cast<uint32_t>(oldval)) == oldval;
 #elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_GCC)
-    NUT_STATIC_ASSERT(sizeof(int32_t) == sizeof(LONG));
+    static_assert(sizeof(int32_t) == sizeof(LONG), "atomic_cas() 匹配API问题");
     return InterlockedCompareExchange(reinterpret_cast<LONG volatile*>(dest), static_cast<LONG>(newval), static_cast<LONG>(oldval)) == oldval;
 #else
 #   error platform not supported!
@@ -264,7 +262,7 @@ int32_t atomic_add(int32_t volatile *addend, int32_t value)
 #elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
     return static_cast<int32_t>(InterlockedExchangeAdd(reinterpret_cast<uint32_t volatile*>(addend), static_cast<uint32_t>(value)));
 #elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_GCC)
-    NUT_STATIC_ASSERT(sizeof(int32_t) == sizeof(LONG));
+    static_assert(sizeof(int32_t) == sizeof(LONG), "atomic_add() 匹配API问题");
     return static_cast<int32_t>(InterlockedExchangeAdd(reinterpret_cast<LONG volatile*>(addend), static_cast<LONG>(value)));
 #else
     uint32_t old;

@@ -139,7 +139,6 @@
 		2E1928C71AD90DA900FDFFA6 /* destroy_checker.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1926C81AD8FF9A00FDFFA6 /* destroy_checker.h */; };
 		2E1928C81AD90DAA00FDFFA6 /* exception.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1926C91AD8FF9A00FDFFA6 /* exception.h */; };
 		2E1928C91AD90DAA00FDFFA6 /* source_location.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1926CA1AD8FF9A00FDFFA6 /* source_location.h */; };
-		2E1928CA1AD90DAA00FDFFA6 /* static_assert.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1926CB1AD8FF9A00FDFFA6 /* static_assert.h */; };
 		2E1928CB1AD90DAA00FDFFA6 /* log_filter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1926D61AD8FFC300FDFFA6 /* log_filter.h */; };
 		2E1928CC1AD90DAA00FDFFA6 /* log_handler.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1926D81AD8FFC300FDFFA6 /* log_handler.h */; };
 		2E1928CD1AD90DAA00FDFFA6 /* log_level.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1926DA1AD8FFC300FDFFA6 /* log_level.h */; };
@@ -256,7 +255,6 @@
 		2E1926C81AD8FF9A00FDFFA6 /* destroy_checker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = destroy_checker.h; path = ../../src/nut/debugging/destroy_checker.h; sourceTree = "<group>"; };
 		2E1926C91AD8FF9A00FDFFA6 /* exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exception.h; path = ../../src/nut/debugging/exception.h; sourceTree = "<group>"; };
 		2E1926CA1AD8FF9A00FDFFA6 /* source_location.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = source_location.h; path = ../../src/nut/debugging/source_location.h; sourceTree = "<group>"; };
-		2E1926CB1AD8FF9A00FDFFA6 /* static_assert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = static_assert.h; path = ../../src/nut/debugging/static_assert.h; sourceTree = "<group>"; };
 		2E1926D51AD8FFC300FDFFA6 /* log_filter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = log_filter.cpp; path = ../../src/nut/logging/log_filter.cpp; sourceTree = "<group>"; };
 		2E1926D61AD8FFC300FDFFA6 /* log_filter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = log_filter.h; path = ../../src/nut/logging/log_filter.h; sourceTree = "<group>"; };
 		2E1926D71AD8FFC300FDFFA6 /* log_handler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = log_handler.cpp; path = ../../src/nut/logging/log_handler.cpp; sourceTree = "<group>"; };
@@ -529,7 +527,6 @@
 				2E1926C81AD8FF9A00FDFFA6 /* destroy_checker.h */,
 				2E1926C91AD8FF9A00FDFFA6 /* exception.h */,
 				2E1926CA1AD8FF9A00FDFFA6 /* source_location.h */,
-				2E1926CB1AD8FF9A00FDFFA6 /* static_assert.h */,
 			);
 			name = debugging;
 			sourceTree = "<group>";
@@ -1108,7 +1105,6 @@
 				2E1928C71AD90DA900FDFFA6 /* destroy_checker.h in Headers */,
 				2E1928C81AD90DAA00FDFFA6 /* exception.h in Headers */,
 				2E1928C91AD90DAA00FDFFA6 /* source_location.h in Headers */,
-				2E1928CA1AD90DAA00FDFFA6 /* static_assert.h in Headers */,
 				2E1928CB1AD90DAA00FDFFA6 /* log_filter.h in Headers */,
 				2E1928CC1AD90DAA00FDFFA6 /* log_handler.h in Headers */,
 				2E1928CD1AD90DAA00FDFFA6 /* log_level.h in Headers */,
@@ -1489,6 +1485,7 @@
 				2E19286B1AD90CBF00FDFFA6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2E6429C51A1F762B0037E554 /* Build configuration list for PBXProject "nut" */ = {
 			isa = XCConfigurationList;

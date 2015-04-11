@@ -7,7 +7,6 @@
 #include <string>
 
 #include <nut/platform/stdint_traits.h>
-#include <nut/debugging/static_assert.h>
 #include <nut/mem/sys_ma.h>
 
 #include "word_array_integer.h"
@@ -406,8 +405,6 @@ public:
     static self_type value_of(const std::string& s, size_type radix = 10);
     static self_type value_of(const std::wstring& s, size_type radix = 10);
 };
-
-#undef OPTIMIZE_LEVEL
 
 }
 

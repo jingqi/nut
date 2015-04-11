@@ -8,7 +8,6 @@
 
 #include <nut/platform/platform.h>
 #include <nut/platform/stdint_traits.h>
-#include <nut/debugging/static_assert.h>
 
 namespace nut
 {
@@ -184,9 +183,9 @@ union TagedPtr
     {}
 };
 
-NUT_STATIC_ASSERT(sizeof(void*) == sizeof(TagedPtr<void>::tag_type));
-NUT_STATIC_ASSERT(sizeof(void*) * 2 == sizeof(TagedPtr<void>::cas_type));
-NUT_STATIC_ASSERT(sizeof(TagedPtr<void>) == sizeof(TagedPtr<void>::cas_type));
+static_assert(sizeof(void*) == sizeof(TagedPtr<void>::tag_type), "TagedPtr 数据结构对齐问题");
+static_assert(sizeof(void*) * 2 == sizeof(TagedPtr<void>::cas_type), "TagedPtr 数据结构对齐问题");
+static_assert(sizeof(TagedPtr<void>) == sizeof(TagedPtr<void>::cas_type), "TagedPtr 数据结构对齐问题");
 
 }
 

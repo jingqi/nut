@@ -29,21 +29,6 @@ public:
 
 }
 
-#else
-
-namespace nut
-{
-
-/**
- * dummy class
- */
-class Backtrace
-{
-    Backtrace();
-};
-
-}
-
 #endif
 
 #endif

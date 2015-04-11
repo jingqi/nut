@@ -53,7 +53,7 @@ void BigInteger::minimize_significant_len()
 BigInteger::BigInteger(long long v, memory_allocator *ma)
     : m_alloc(ma), m_buffer(NULL), m_cap(0), m_significant_len(0)
 {
-    NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
+    static_assert(sizeof(v) % sizeof(word_type) == 0, "整数长度对齐问题");
 
     ensure_cap(sizeof(v) / sizeof(word_type));
     ::memcpy(m_buffer, &v, sizeof(v));
@@ -111,7 +111,7 @@ BigInteger& BigInteger::operator=(const self_type& x)
 
 BigInteger& BigInteger::operator=(long long v)
 {
-    NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
+    static_assert(sizeof(v) % sizeof(word_type) == 0, "整数长度对齐问题");
 
     ensure_cap(sizeof(v) / sizeof(word_type));
     ::memcpy(m_buffer, &v, sizeof(v));
@@ -130,7 +130,7 @@ bool BigInteger::operator==(const self_type& x) const
 
 bool BigInteger::operator==(long long v) const
 {
-    NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
+    static_assert(sizeof(v) % sizeof(word_type) == 0, "整数长度对齐问题");
 
     return signed_equals(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
 }
@@ -142,14 +142,14 @@ bool BigInteger::operator<(const self_type& x) const
 
 bool BigInteger::operator<(long long v) const
 {
-    NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
+    static_assert(sizeof(v) % sizeof(word_type) == 0, "整数长度对齐问题");
 
     return signed_less_than(m_buffer, m_significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
 }
 
 bool BigInteger::operator>(long long v) const
 {
-    NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
+    static_assert(sizeof(v) % sizeof(word_type) == 0, "整数长度对齐问题");
 
     return signed_less_than((word_type*)&v, sizeof(v) / sizeof(word_type), m_buffer, m_significant_len);
 }
@@ -174,7 +174,7 @@ BigInteger BigInteger::operator%(const self_type& x) const
 
 BigInteger BigInteger::operator%(long long v) const
 {
-    NUT_STATIC_ASSERT(sizeof(v) % sizeof(word_type) == 0);
+    static_assert(sizeof(v) % sizeof(word_type) == 0, "整数长度对齐问题");
     assert(0 != v);
 
     self_type divider(v, m_alloc.pointer()), ret(0, m_alloc.pointer());
@@ -262,7 +262,7 @@ void BigInteger::add(const self_type& a, const self_type& b, self_type *x)
 
 void BigInteger::add(const self_type& a, long long b, self_type *x)
 {
-    NUT_STATIC_ASSERT(sizeof(b) % sizeof(word_type) == 0);
+    static_assert(sizeof(b) % sizeof(word_type) == 0, "整数长度对齐问题");
     assert(NULL != x);
 
     const size_type max_len = (a.m_significant_len > sizeof(b) / sizeof(word_type) ? a.m_significant_len : sizeof(b) / sizeof(word_type));
@@ -274,7 +274,7 @@ void BigInteger::add(const self_type& a, long long b, self_type *x)
 
 void BigInteger::add(long long a, const self_type& b, self_type *x)
 {
-    NUT_STATIC_ASSERT(sizeof(a) % sizeof(word_type) == 0);
+    static_assert(sizeof(a) % sizeof(word_type) == 0, "整数长度对齐问题");
     assert(NULL != x);
 
     const size_type max_len = (sizeof(a) / sizeof(word_type) > b.m_significant_len ? sizeof(a) / sizeof(word_type) : b.m_significant_len);
@@ -297,7 +297,7 @@ void BigInteger::sub(const self_type& a, const self_type& b, self_type *x)
 
 void BigInteger::sub(const self_type& a, long long b, self_type *x)
 {
-    NUT_STATIC_ASSERT(sizeof(b) % sizeof(word_type) == 0);
+    static_assert(sizeof(b) % sizeof(word_type) == 0, "整数长度对齐问题");
     assert(NULL != x);
 
     const size_type max_len = (a.m_significant_len > sizeof(b) / sizeof(word_type) ? a.m_significant_len : sizeof(b) / sizeof(word_type));
@@ -309,7 +309,7 @@ void BigInteger::sub(const self_type& a, long long b, self_type *x)
 
 void BigInteger::sub(long long a, const self_type& b, self_type *x)
 {
-    NUT_STATIC_ASSERT(sizeof(a) % sizeof(word_type) == 0);
+    static_assert(sizeof(a) % sizeof(word_type) == 0, "整数长度对齐问题");
     assert(NULL != x);
 
     const size_type max_len = (sizeof(a) / sizeof(word_type) > b.m_significant_len ? sizeof(a) / sizeof(word_type) : b.m_significant_len);
@@ -358,7 +358,7 @@ void BigInteger::multiply(const self_type& a, const self_type& b, self_type *x)
 
 void BigInteger::multiply(const self_type& a, long long b, self_type *x)
 {
-    NUT_STATIC_ASSERT(sizeof(b) % sizeof(word_type) == 0);
+    static_assert(sizeof(b) % sizeof(word_type) == 0, "整数长度对齐问题");
     assert(NULL != x);
 
     x->ensure_cap(a.m_significant_len + sizeof(b) / sizeof(word_type));
@@ -370,7 +370,7 @@ void BigInteger::multiply(const self_type& a, long long b, self_type *x)
 
 void BigInteger::multiply(long long a, const self_type& b, self_type *x)
 {
-    NUT_STATIC_ASSERT(sizeof(a) % sizeof(word_type) == 0);
+    static_assert(sizeof(a) % sizeof(word_type) == 0, "整数长度对齐问题");
     assert(NULL != x);
 
     x->ensure_cap(sizeof(a) / sizeof(word_type) + b.m_significant_len);
@@ -587,7 +587,7 @@ int BigInteger::lowest_bit() const
 
 long long BigInteger::llong_value() const
 {
-    NUT_STATIC_ASSERT(sizeof(long long) % sizeof(word_type) == 0);
+    static_assert(sizeof(long long) % sizeof(word_type) == 0, "整数长度对齐问题");
 
     long long ret = 0;
     signed_expand(m_buffer, m_significant_len, (word_type*)&ret, sizeof(ret) / sizeof(word_type));
@@ -823,5 +823,3 @@ BigInteger BigInteger::value_of(const std::wstring& s, size_type radix)
 }
 
 }
-
-#undef OPTIMIZE_LEVEL

@@ -217,14 +217,4 @@ int Backtrace::backtrace(std::string *appended)
 
 }
 
-#else
-
-namespace nut
-{
-
-Backtrace::Backtrace()
-{}
-
-}
-
 #endif

@@ -5,7 +5,6 @@
 #include <assert.h>
 #include <stdint.h>
 
-#include <nut/debugging/static_assert.h>
 #include <nut/debugging/destroy_checker.h>
 
 #include "sys_ma.h"
@@ -38,7 +37,7 @@ class scoped_gc
         Block *prev;
         uint8_t body[DEFAULT_BLOCK_BODY_SIZE];
     };
-	NUT_STATIC_ASSERT(sizeof(Block) == DEFAULT_BLOCK_LEN);
+    static_assert(sizeof(Block) == DEFAULT_BLOCK_LEN, "数据结构对齐问题");
 
 	/** 析构函数 */
     typedef void (*destruct_func_type)(void*);

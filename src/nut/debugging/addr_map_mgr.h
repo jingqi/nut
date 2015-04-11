@@ -90,21 +90,6 @@ private:
 
 }
 
-#else
-
-namespace nut
-{
-
-/**
- * dummy class
- */
-class AddrMapManager
-{
-    AddrMapManager();
-};
-
-}
-
 #endif
 
 #endif

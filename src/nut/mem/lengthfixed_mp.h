@@ -5,7 +5,6 @@
 #include <assert.h>
 
 #include <nut/threading/lockfree/atomic.h>
-#include <nut/debugging/static_assert.h>
 #include <nut/debugging/destroy_checker.h>
 
 #include "memory_allocator.h"
@@ -24,7 +23,7 @@ namespace nut
 template <size_t G, size_t MAX_FREE_BLOCKS = 50>
 class lengthfixed_mp : public memory_allocator
 {
-    NUT_STATIC_ASSERT(G > 0);
+    static_assert(G > 0, "模板参数问题");
     typedef lengthfixed_mp<G,MAX_FREE_BLOCKS> self_type;
 
     union FreeNode

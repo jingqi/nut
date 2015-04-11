@@ -117,14 +117,4 @@ bool AddrMapManager::parse_line(const std::string& str_line, bool fappoint_path,
 
 }
 
-#else
-
-namespace nut
-{
-
-AddrMapManager::AddrMapManager()
-{}
-
-}
-
 #endif

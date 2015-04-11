@@ -15,7 +15,6 @@
 #   include <xutility>
 #endif
 
-#include <nut/debugging/static_assert.h>
 #include <nut/container/tuple.h>
 
 #include "mdarea.h"
@@ -42,6 +41,10 @@ template <typename DataT, typename NumT, size_t DIMENSIONS = 2, typename RealNum
     typename AllocT = std::allocator<DataT> >
 class RTree
 {
+    static_assert(DIMENSIONS >= 2, "rtree 空间维数");
+    static_assert(MAX_ENTRY_COUNT >= 2, "rtree 最大子节点数");
+    static_assert(1 <= MIN_ENTRY_COUNT && MIN_ENTRY_COUNT <= (MAX_ENTRY_COUNT + 1) / 2, "rtree 最小子节点数");
+
 public:
     typedef MDArea<NumT, DIMENSIONS, RealNumT>  area_type;
     typedef DataT                               data_type;
@@ -211,10 +214,6 @@ public:
     RTree()
         : m_root(NULL), m_height(1), m_size(0)
     {
-        NUT_STATIC_ASSERT(DIMENSIONS >= 2 && // 空间维数
-            MAX_ENTRY_COUNT >= 2 && // 最大子节点数
-            1 <= MIN_ENTRY_COUNT && MIN_ENTRY_COUNT <= (MAX_ENTRY_COUNT + 1) / 2); // 最小子节点数
-
         m_root = m_tree_node_alloc.allocate(1);
         assert(NULL != m_root);
         new (m_root) TreeNode();
