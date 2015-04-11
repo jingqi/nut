@@ -4,7 +4,7 @@
 
 #include <assert.h>
 
-#include "bstree.hpp"
+#include "bstree.h"
 
 namespace nut
 {
