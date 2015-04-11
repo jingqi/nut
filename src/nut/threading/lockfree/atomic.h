@@ -7,7 +7,7 @@
 #define ___HEADFILE_CBAE01C9_CF0C_4836_A4DC_E7B0934DEA6E_
 
 #include <nut/platform/platform.h>
-#include <nut/platform/stdint.h>
+#include <nut/platform/stdint_traits.h>
 #include <nut/debugging/static_assert.h>
 
 namespace nut

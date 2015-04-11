@@ -39,7 +39,7 @@ HEADERS +=\
     $$files($${SRC_ROOT}/nut/util/*.h*) \
     $$files($${SRC_ROOT}/nut/util/sqlite3helper/*.h*) \
     $$files($${SRC_ROOT}/nut/util/string/*.h*) \
-    $$files($${SRC_ROOT}/nut/util/timer/*.h*) \
+    $$files($${SRC_ROOT}/nut/util/time/*.h*) \
     $$files($${SRC_ROOT}/nut/util/txtcfg/*.h*) \
     $$files($${SRC_ROOT}/nut/util/txtcfg/xml/*.h*)
 
@@ -68,6 +68,6 @@ SOURCES +=\
     $$files($${SRC_ROOT}/nut/util/*.c*) \
     $$files($${SRC_ROOT}/nut/util/sqlite3helper/*.c*) \
     $$files($${SRC_ROOT}/nut/util/string/*.c*) \
-    $$files($${SRC_ROOT}/nut/util/timer/*.c*) \
+    $$files($${SRC_ROOT}/nut/util/time/*.c*) \
     $$files($${SRC_ROOT}/nut/util/txtcfg/*.c*) \
     $$files($${SRC_ROOT}/nut/util/txtcfg/xml/*.c*)

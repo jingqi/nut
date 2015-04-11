@@ -9,7 +9,7 @@
 #   include <sys/time.h>
 #endif
 
-#include "timeval.h"
+#include "time_val.h"
 
 
 #define USECS_PER_SEC (1000 * 1000)

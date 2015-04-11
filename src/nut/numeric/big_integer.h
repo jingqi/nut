@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <string>
 
-#include <nut/platform/stdint.h>
+#include <nut/platform/stdint_traits.h>
 #include <nut/debugging/static_assert.h>
 #include <nut/mem/sys_ma.h>
 

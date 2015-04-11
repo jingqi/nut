@@ -16,7 +16,7 @@
 #   include <sys/time.h>
 #endif
 
-#include "timeval.h"
+#include "time_val.h"
 
 namespace nut
 {

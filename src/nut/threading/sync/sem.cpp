@@ -4,7 +4,7 @@
 
 #include <nut/platform/platform.h>
 
-#include "semaphore.h"
+#include "sem.h"
 
 namespace nut
 {

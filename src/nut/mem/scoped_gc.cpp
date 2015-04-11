@@ -1,6 +1,5 @@
 ﻿
 #include <assert.h>
-#include <nut/platform/stdint.h>
 #include <nut/debugging/destroy_checker.h>
 
 #include "scoped_gc.h"

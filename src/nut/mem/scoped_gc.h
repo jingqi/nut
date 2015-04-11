@@ -3,7 +3,8 @@
 #define ___HEADFILE_38E24C42_E36D_453F_A61D_4FE033FF649D_
 
 #include <assert.h>
-#include <nut/platform/stdint.h>
+#include <stdint.h>
+
 #include <nut/debugging/static_assert.h>
 #include <nut/debugging/destroy_checker.h>
 
