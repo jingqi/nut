@@ -4,7 +4,7 @@
 
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
 #   include <windows.h>
 #else
 #   include <pthread.h>

@@ -1,4 +1,5 @@
 ﻿
+#include <assert.h>
 #include <time.h>
 
 #include <nut/platform/platform.h>
@@ -100,5 +101,21 @@ void TimeVal::normalize()
         usec -= USECS_PER_SEC;
     }
 }
+
+
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+#   define PTW32_TIMESPEC_TO_FILETIME_OFFSET (LONGLONG)((((LONGLONG) 27111902LL << 32)+(LONGLONG) 3577643008LL ))
+void clock_getrealtime(struct timespec *ts)
+{
+    assert(NULL != ts);
+
+    SYSTEMTIME st;
+    ::GetSystemTime(&st);
+    FILETIME ft;
+    ::SystemTimeToFileTime(&st, &ft);
+    ts->tv_sec = (int)((*(LONGLONG *)&ft - PTW32_TIMESPEC_TO_FILETIME_OFFSET) / 10000000LL);
+    ts->tv_nsec = (int)((*(LONGLONG *)&ft - PTW32_TIMESPEC_TO_FILETIME_OFFSET - ((LONGLONG)ts->tv_sec * (LONGLONG)10000000LL)) * 100);
+}
+#endif
 
 }

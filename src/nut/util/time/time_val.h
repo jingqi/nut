@@ -110,6 +110,16 @@ public:
     }
 };
 
+/**
+ * time between jan 1, 1601 and jan 1, 1970 in units of 100 nanoseconds
+ *
+ * mingw 没有定义clock_gettime(), 这里参考其pthread_mutex_timedlock.c ptw32_relmillisecs.c 的实现
+ * 相当于 ::clock_gettime(CLOCK_REALTIME, &ts);
+ */
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+void clock_getrealtime(struct timespec *ts);
+#endif
+
 }
 
 #endif

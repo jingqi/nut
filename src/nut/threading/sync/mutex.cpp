@@ -1,6 +1,9 @@
 ﻿
 #include <assert.h>
+
 #include <nut/platform/platform.h>
+#include <nut/util/time/time_val.h>
+
 
 #include "mutex.h"
 
@@ -86,26 +89,6 @@ bool Mutex::trylock()
     return 0 == lock_result;
 #endif
 }
-
-#if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
-/** time between jan 1, 1601 and jan 1, 1970 in units of 100 nanoseconds */
-#   define PTW32_TIMESPEC_TO_FILETIME_OFFSET (LONGLONG)((((LONGLONG) 27111902LL << 32)+(LONGLONG) 3577643008LL ))
-/**
- * mingw 没有定义clock_gettime(), 这里参考其pthread_mutex_timedlock.c ptw32_relmillisecs.c 的实现
- */
-static void clock_getrealtime(struct timespec *ts)
-{
-    assert(NULL != ts);
-
-    SYSTEMTIME st;
-    ::GetSystemTime(&st);
-    FILETIME ft;
-    ::SystemTimeToFileTime(&st, &ft);
-    ts->tv_sec = (int)((*(LONGLONG *)&ft - PTW32_TIMESPEC_TO_FILETIME_OFFSET) / 10000000LL);
-    ts->tv_nsec = (int)((*(LONGLONG *)&ft - PTW32_TIMESPEC_TO_FILETIME_OFFSET - ((LONGLONG)ts->tv_sec * (LONGLONG)10000000LL)) * 100);
-}
-#   undef PTW32_TIMESPEC_TO_FILETIME_OFFSET
-#endif
 
 /**
  * try lock the mutex in given time

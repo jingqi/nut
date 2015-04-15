@@ -16,6 +16,8 @@
 #   include <pthread.h>
 #endif
 
+#include <nut/util/time/time_val.h>
+
 #include "condition.h"
 
 namespace nut
@@ -88,7 +90,7 @@ bool Condition::timedwait(condition_lock_type *mutex, unsigned s, unsigned ms)
 #else
     struct timespec abstime;
 #   if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
-    Mutex::clock_getrealtime(&abstime);
+    clock_getrealtime(&abstime);
 #   elif defined(NUT_PLATFORM_OS_MAC)
     // OS X does not have clock_gettime(), use clock_get_time()
     clock_serv_t cclock;
