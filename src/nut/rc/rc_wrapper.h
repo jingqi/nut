@@ -29,7 +29,8 @@ protected:
     NUT_DEBUGGING_DESTROY_CHECKER
 
 public:
-#ifndef _LIBCPP_HAS_NO_VARIADICS
+// _MSC_VER == 1700 for Visual Studio 2012
+#if (defined(_MSC_VER) && _MSC_VER > 1700) || (!defined(_MSC_VER) && !defined(_LIBCPP_HAS_NO_VARIADICS))
     template <typename ...Args>
     RCWrapper(Args&& ...args)
         : T(args...), m_ref_count(0)
@@ -141,7 +142,8 @@ protected:
     NUT_DEBUGGING_DESTROY_CHECKER
 
 public:
-#ifndef _LIBCPP_HAS_NO_VARIADICS
+// _MSC_VER == 1700 for Visual Studio 2012
+#if (defined(_MSC_VER) && _MSC_VER > 1700) || (!defined(_MSC_VER) && !defined(_LIBCPP_HAS_NO_VARIADICS))
     template <typename ...Args>
     RCAllocWrapper(memory_allocator *ma, Args&& ...args)
         : T(args...), m_ref_count(0), m_alloc(ma)

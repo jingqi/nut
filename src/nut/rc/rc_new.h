@@ -13,7 +13,8 @@
 namespace nut
 {
 
-#ifndef _LIBCPP_HAS_NO_VARIADICS
+// _MSC_VER == 1700 for Visual Studio 2012
+#if (defined(_MSC_VER) && _MSC_VER > 1700) || (!defined(_MSC_VER) && !defined(_LIBCPP_HAS_NO_VARIADICS))
 template <typename T, typename Counter=int, typename ...Args>
 rc_ptr<T> rc_new(Args&& ...args)
 {
