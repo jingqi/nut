@@ -29,6 +29,9 @@ void ll_to_str(long long i, std::string *appended)
     // for VS2003 or ealier, "%lld" was not supported
     ::sprintf(buf, "%I64d", i);
     // ::ltoa(i, buf, 10);
+#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
+    assert(sizeof(long long) == 8);
+    ::sprintf(buf, "%I64d", i);
 #else
     ::sprintf(buf, "%lld", i);
 #endif
