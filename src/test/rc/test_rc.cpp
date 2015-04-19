@@ -1,6 +1,6 @@
 ﻿
 #include <iostream>
-#include <nut/unittest/unittest.h>
+#include <nut/unittest/unit_test.h>
 
 #include <nut/rc/rc_new.h>
 

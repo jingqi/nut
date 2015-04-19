@@ -1,5 +1,5 @@
 ﻿
-#include <nut/unittest/unittest.h>
+#include <nut/unittest/unit_test.h>
 
 #include <nut/logging/macros.h>
 #include <nut/logging/log_handler.h>

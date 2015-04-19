@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 
-#include <nut/unittest/unittest.h>
+#include <nut/unittest/unit_test.h>
 
 #include <nut/security/encrypt/aes_cbc_pkcs5.h>
 

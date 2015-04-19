@@ -44,10 +44,10 @@ int main()
 #include <string.h> // for strcmp()
 
 #include "testcase_failure_exception.h"
-#include "testlogger.h"
-#include "testfixture.h"
-#include "testregister.h"
-#include "testrunner.h"
+#include "test_logger.h"
+#include "test_fixture.h"
+#include "test_register.h"
+#include "test_runner.h"
 
 /** fixture */
 #define NUT_FIXTURE(fixture_name) \

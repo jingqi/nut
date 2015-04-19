@@ -1,6 +1,6 @@
 ﻿
 #include <iostream>
-#include <nut/unittest/unittest.h>
+#include <nut/unittest/unit_test.h>
 #include <nut/numeric/numeric_algo/gcd.h>
 #include <nut/numeric/numeric_algo/mod.h>
 #include <nut/numeric/numeric_algo/prime.h>

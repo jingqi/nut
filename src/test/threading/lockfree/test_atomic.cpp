@@ -1,5 +1,5 @@
 ﻿
-#include <nut/unittest/unittest.h>
+#include <nut/unittest/unit_test.h>
 
 #include <stdio.h>
 #include <nut/threading/lockfree/atomic.h>

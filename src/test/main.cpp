@@ -7,10 +7,10 @@
 
 #include <stdio.h>
 #include <iostream>
-#include <nut/unittest/unittest.h>
+#include <nut/unittest/unit_test.h>
 #include <nut/unittest/console_test_logger.h>
 #include <nut/unittest/stream_test_logger.h>
-#include <nut/unittest/testrunner.h>
+#include <nut/unittest/test_runner.h>
 #include <nut/logging/log_manager.h>
 
 using namespace std;
@@ -41,7 +41,7 @@ int main()
 
     trunner.run_group("quiet");
 
-    //trunner.run_fixture("TestContainer");
+    //trunner.run_fixture("TestLogging");
 
     //trunner.run_case("TestNumericAlgo", "test_karatsuba_multiply");
 

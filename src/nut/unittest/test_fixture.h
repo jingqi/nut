@@ -2,7 +2,7 @@
 #ifndef ___HEADFILE___E93561C3_AF61_47A7_A9AB_87CF78307C80_
 #define ___HEADFILE___E93561C3_AF61_47A7_A9AB_87CF78307C80_
 
-#include "testlogger.h"
+#include "test_logger.h"
 #include "testcase_failure_exception.h"
 
 namespace nut

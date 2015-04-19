@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <string.h> // for strcmp()
 
-#include "testregister.h"
+#include "test_register.h"
 
 namespace nut
 {

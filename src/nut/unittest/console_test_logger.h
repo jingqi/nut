@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "testlogger.h"
+#include "test_logger.h"
 #include "testcase_failure_exception.h"
 
 namespace nut

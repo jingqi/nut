@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <algorithm>
 
-#include <nut/unittest/unittest.h>
+#include <nut/unittest/unit_test.h>
 
 #include <nut/container/tree/rtree/rtree.h>
 

@@ -2,9 +2,9 @@
 #include <assert.h>
 #include <string.h>
 
-#include "testrunner.h"
-#include "testregister.h"
-#include "testfixture.h"
+#include "test_runner.h"
+#include "test_register.h"
+#include "test_fixture.h"
 
 namespace nut
 {

@@ -6,7 +6,7 @@
 #include <ostream>
 #include <vector>
 
-#include "testlogger.h"
+#include "test_logger.h"
 
 namespace nut
 {
