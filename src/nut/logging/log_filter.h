@@ -21,7 +21,8 @@ public:
     virtual bool is_logable(const std::string &logger_path, const LogRecord &log) const = 0;
 
 public:
-    static bool is_logable(const std::string& log_path, const LogRecord& rec, const std::vector<rc_ptr<LogFilter> >& filters);
+    static bool is_logable(const std::string& log_path, const LogRecord& rec,
+        const std::vector<rc_ptr<LogFilter> >& filters);
 };
 
 class DefaultLogFilter : public LogFilter
@@ -29,11 +30,13 @@ class DefaultLogFilter : public LogFilter
     bool m_level_mask[COUNT_OF_LOG_LEVEL];
     std::vector<std::string> m_deny_paths;
 
-public :
-    DefaultLogFilter (LogLevel min_level, const std::vector<std::string> &deny_paths = std::vector<std::string>());
+public:
+    DefaultLogFilter (LogLevel min_level, const std::vector<std::string> &deny_paths =
+        std::vector<std::string>());
 
     DefaultLogFilter(bool allow_debug = true, bool allow_info = true, bool allow_warn = true,
-        bool allow_error = true, bool allow_fatal = true, const std::vector<std::string> &excepts = std::vector<std::string>());
+        bool allow_error = true, bool allow_fatal = true,
+        const std::vector<std::string> &excepts = std::vector<std::string>());
 
     virtual bool is_logable(const std::string &log_path, const LogRecord &rec) const override;
 

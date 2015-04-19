@@ -9,7 +9,6 @@
 
 #include <nut/platform/platform.h>
 
-#include <nut/threading/sync/mutex.h>
 #include <nut/rc/rc_new.h>
 
 #include "log_record.h"
@@ -22,7 +21,6 @@ class LogHandler
 {
     NUT_REF_COUNTABLE
 
-    Mutex m_mutex;
     std::vector<rc_ptr<LogFilter> > m_filters;
 
 public:
@@ -56,7 +54,7 @@ class ConsoleLogHandler : public LogHandler
 {
     bool m_colored;
 
-public :
+public:
     ConsoleLogHandler(bool colored = true)
         : m_colored(colored)
     {}
@@ -68,7 +66,7 @@ class FileLogHandler : public LogHandler
 {
     std::ofstream m_ofs;
 
-public :
+public:
     FileLogHandler(const char *file, bool append = false);
 
     virtual void handle_log(const std::string &log_path, const LogRecord & rec) override;
@@ -79,7 +77,7 @@ class SyslogLogHandler : public LogHandler
 {
     bool m_close_syslog_on_exit;
 
-public :
+public:
     SyslogLogHandler(bool close_syslog_on_exit = false)
         : m_close_syslog_on_exit(close_syslog_on_exit)
     {}

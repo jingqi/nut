@@ -5,8 +5,6 @@
 #include <nut/platform/platform.h>
 #include <nut/util/txtcfg/property_dom.h>
 #include <nut/util/txtcfg/txt_file.h>
-#include <nut/threading/sync/mutex.h>
-#include <nut/threading/sync/guard.h>
 
 #include "logger.h"
 
@@ -16,14 +14,8 @@ DLL_API void* nut_get_root_logger();
 DLL_API void* nut_get_root_logger() \
 { \
     static nut::rc_ptr<nut::Logger> root; \
-    static nut::Mutex root_mutex; \
- \
     if (root.is_null()) \
-    { \
-        nut::Guard<nut::Mutex> guard(&root_mutex); \
-        if (root.is_null()) \
-            root = nut::rc_new<nut::Logger>((nut::Logger*)NULL, ""); \
-    } \
+        root = nut::rc_new<nut::Logger>((nut::Logger*)NULL, ""); \
     return root.pointer(); \
 }
 
@@ -36,7 +28,7 @@ class LogManager
     LogManager();
     ~LogManager();
 
-public :
+public:
     static Logger* get_logger(const std::string &path);
 
     static void load_config(rc_ptr<PropertyDom> config);

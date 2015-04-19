@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#include <nut/threading/sync/mutex.h>
 #include <nut/threading/sync/guard.h>
 
 #include "logger.h"
@@ -16,6 +17,8 @@
 namespace nut
 {
 
+static Mutex g_mutex;
+
 Logger::Logger(Logger *parent, const std::string &path)
     : m_parent(parent), m_logger_path(path)
 {}
@@ -27,9 +30,10 @@ void Logger::log(const std::string &log_path, const LogRecord &rec) const
     if (!LogFilter::is_logable(log_path, rec, m_filters))
         return;
 
-    for (std::vector<rc_ptr<LogHandler> >::const_iterator iter = m_handlers.begin(),
-        end = m_handlers.end(); iter != end; ++iter)
-            (*iter)->handle_log(log_path, rec, true);
+    Guard<Mutex> _g(&g_mutex);
+
+    for (size_t i = 0, sz = m_handlers.size(); i < sz; ++i)
+        m_handlers.at(i)->handle_log(log_path, rec, true);
 
     if (NULL != m_parent)
         m_parent->log(log_path, rec);
@@ -102,22 +106,23 @@ Logger* Logger::get_logger(const std::string &relative_path)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
 
-    Guard<Mutex> g(&m_mutex);
-
     if (relative_path.length() == 0)
         return this;
 
-    std::vector<rc_ptr<Logger> >::const_iterator iter = m_subloggers.begin(),
-        end = m_subloggers.end();
+    Guard<Mutex> g(&g_mutex);
+
     const std::string current = LogPath::get_first_parent(relative_path);
-    while (iter != end && current != (*iter)->get_logger_name()) ++iter;
-    if (iter == end)
+    size_t i = 0, count = m_subloggers.size();
+    while (i < count && current != m_subloggers.at(i)->get_logger_name())
+        ++i;
+
+    if (i == count)
     {
         m_subloggers.push_back(rc_new<Logger>(this, (m_logger_path.length() == 0 ?
             current : m_logger_path + "." + current)));
-        iter = m_subloggers.end() - 1;
+        i = m_subloggers.size() - 1;
     }
-    return (*iter)->get_logger(LogPath::sub_log_path(relative_path));
+    return m_subloggers.at(i)->get_logger(LogPath::sub_log_path(relative_path));
 }
 
 std::string Logger::get_logger_path()

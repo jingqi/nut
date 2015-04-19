@@ -22,18 +22,18 @@ class SourceLocation
 {
     enum { BUF_SIZE = 25 };
 
-    const char *m_path;    // source file path
-    int m_line;            // source file line
-    const char *m_func;    // source function
-    char m_buf[BUF_SIZE];        // source file line string
+    const char *m_path;         // source file path
+    int m_line;                 // source file line
+    const char *m_func;         // source function
+    char m_line_str[BUF_SIZE];  // source file line string
 
 public :
     SourceLocation(const char *file, int line, const char *func)
         : m_path(file), m_line(line), m_func(func)
     {
         assert(NULL != file && line >= 0 && NULL != func);
-        ::sprintf(m_buf,"%d",line);
-        m_buf[BUF_SIZE - 1] = 0;
+        ::sprintf(m_line_str,"%d",line);
+        m_line_str[BUF_SIZE - 1] = 0;
     }
 
     bool operator== (const SourceLocation& x) const
@@ -70,9 +70,9 @@ public :
         return m_line;
     }
 
-    const char* getq_line_number_str() const
+    const char* get_line_number_str() const
     {
-        return m_buf;
+        return m_line_str;
     }
 
     /**
@@ -85,7 +85,7 @@ public :
 
     std::string to_string() const
     {
-        std::string ret = std::string(get_file_name()) + ":" + m_buf;
+        std::string ret = std::string(get_file_name()) + ":" + get_line_number_str();
         if (m_func != NULL)
             ret += std::string(" ") + m_func + "()";
 

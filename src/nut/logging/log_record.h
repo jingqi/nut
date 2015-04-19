@@ -13,18 +13,19 @@ namespace nut
 
 class LogRecord
 {
-private :
+private:
     Time m_time;
     LogLevel m_level;
     SourceLocation m_source_location;
     std::string m_message;
 
-public :
+public:
     LogRecord(LogLevel level, const SourceLocation &sl, const std::string &message)
         : m_level(level), m_source_location(sl), m_message(message)
     {}
 
-    LogRecord(const Time &time, LogLevel level, const SourceLocation &sl, const std::string &message)
+    LogRecord(const Time &time, LogLevel level, const SourceLocation &sl,
+        const std::string &message)
         : m_time(time), m_level(level), m_source_location(sl), m_message(message)
     {}
 
@@ -50,8 +51,9 @@ public :
 
     std::string to_string() const
     {
-        std::string ret = std::string("[") + m_time.to_string() + "] " + log_level_to_str(m_level) + " " +
-            m_source_location.to_string() + " " + m_message;
+        std::string ret = std::string("[") + m_time.to_string() + "] " +
+            log_level_to_str(m_level) + " " + m_source_location.to_string() +
+            " " + m_message;
         return ret;
     }
 };

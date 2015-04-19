@@ -6,12 +6,12 @@
 namespace nut
 {
 
-bool LogFilter::is_logable(const std::string& log_path, const LogRecord& rec, const std::vector<rc_ptr<LogFilter> >& filters)
+bool LogFilter::is_logable(const std::string& log_path, const LogRecord& rec,
+    const std::vector<rc_ptr<LogFilter> >& filters)
 {
-    for (std::vector<rc_ptr<LogFilter> >::const_iterator iter = filters.begin(), end = filters.end();
-        iter != end; ++iter)
+    for (size_t i = 0, sz = filters.size(); i < sz; ++i)
     {
-        if (!(*iter)->is_logable(log_path, rec))
+        if (!filters.at(i)->is_logable(log_path, rec))
             return false;
     }
     return true;
@@ -21,7 +21,7 @@ DefaultLogFilter::DefaultLogFilter(LogLevel min_level, const std::vector<std::st
     : m_deny_paths(deny_paths)
 {
     for (int i = 0; i < COUNT_OF_LOG_LEVEL; ++i)
-        m_level_mask[i] = (i < min_level ? true : false);
+        m_level_mask[i] = (i < min_level);
 }
 
 DefaultLogFilter::DefaultLogFilter(bool allow_debug, bool allow_info, bool allow_warn,
@@ -40,11 +40,11 @@ bool DefaultLogFilter::is_logable(const std::string &log_path, const LogRecord &
     if (!m_level_mask[rec.get_level()])
         return false;
 
-    for (std::vector<std::string>::const_iterator iter = m_deny_paths.begin(), end = m_deny_paths.end();
-        iter != end; ++iter)
+    for (size_t i = 0, sz = m_deny_paths.size(); i < sz; ++i)
     {
-        if (iter->length() <= log_path.length() &&
-            *iter == log_path.substr(0, iter->length()))
+        const std::string& deny_path = m_deny_paths.at(i);
+        if (deny_path.length() <= log_path.length() &&
+            deny_path == log_path.substr(0, deny_path.length()))
             return false;
     }
     return true;
@@ -58,7 +58,7 @@ void DefaultLogFilter::add_deny_path(const std::string &path)
 rc_ptr<LogFilter> LogFilterFactory::create_log_filter(const std::string &arg)
 {
     bool mask[5] = { true, true, true, true, true };
-    for (size_t i = 0; i < arg.length() && i < 5; ++i)
+    for (size_t i = 0, sz = arg.length(); i < sz && i < 5; ++i)
     {
         if (arg[i] == '0')
             mask[i] = false;

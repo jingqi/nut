@@ -18,7 +18,7 @@ enum LogLevel
     COUNT_OF_LOG_LEVEL
 };
 
-const char * log_level_to_str(LogLevel level);
+const char* log_level_to_str(LogLevel level);
 LogLevel str_to_log_level(const char *str);
 
 }

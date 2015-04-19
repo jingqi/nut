@@ -10,8 +10,6 @@
 
 #include <nut/util/console_util.h>
 #include <nut/util/time/date_time.h>
-#include <nut/threading/sync/mutex.h>
-#include <nut/threading/sync/guard.h>
 #include <nut/rc/rc_new.h>
 
 #include "log_handler.h"
@@ -26,7 +24,6 @@ namespace nut
 
 void LogHandler::add_filter(rc_ptr<LogFilter> filter)
 {
-    Guard<Mutex> g(&m_mutex);
     m_filters.push_back(filter);
 }
 
@@ -37,7 +34,6 @@ void LogHandler::add_filter(rc_ptr<LogFilter> filter)
  */
 void LogHandler::handle_log(const std::string log_path, const LogRecord& rec, bool apply_filter)
 {
-    Guard<Mutex> g(&m_mutex);
     if (apply_filter && !LogFilter::is_logable(log_path, rec, m_filters))
         return;
     handle_log(log_path, rec);
