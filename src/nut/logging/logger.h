@@ -37,7 +37,8 @@ public:
 	void remove_handler(LogHandler *handler);
 	void clear_handlers();
 
-    void log(LogLevel level, const char *tag, const char *file, int line, const char *func, const char *fmt, ...) const;
+    void log(LogLevel level, const char *tag, const char *file, int line,
+        const char *func, const char *fmt, ...) const;
 };
 
 }

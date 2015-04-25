@@ -8,6 +8,9 @@
 namespace nut
 {
 
+/**
+ * C/C++ 源码位置
+ */
 class SourceLocation
 {
     const char *m_path;    // source file path
@@ -41,7 +44,7 @@ public :
     }
 
     /**
-     * @return This method may return NULL if the source is not in a function
+     * @return This method may return NULL if the location is not in any function
      */
     const char* get_function_name() const
     {

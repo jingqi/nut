@@ -18,10 +18,22 @@ namespace nut
 
 class LogHandler
 {
-    LogFilter m_filter;
+    LogFilter m_filter;     // 过滤器
+
+protected:
+    ll_mask_t m_flush_mask; // 控制那些日志需要立即刷新到磁盘
 
 public:
     NUT_REF_COUNTABLE
+
+    LogHandler()
+        : m_flush_mask(LL_FATAL)
+    {}
+
+    void set_flush_mask(ll_mask_t mask)
+    {
+        m_flush_mask = mask;
+    }
 
     LogFilter& get_filter()
     {
@@ -36,7 +48,7 @@ class StreamLogHandler : public LogHandler
     std::ostream &m_os;
 
 public:
-    StreamLogHandler (std::ostream &os)
+    StreamLogHandler(std::ostream &os)
         : m_os(os)
     {}
 
@@ -51,6 +63,11 @@ public:
     ConsoleLogHandler(bool colored = true)
         : m_colored(colored)
     {}
+
+    void set_colored(bool colored)
+    {
+        m_colored = colored;
+    }
 
     virtual void handle_log(const LogRecord &l) override;
 };
@@ -76,6 +93,11 @@ public:
     {}
 
     ~SyslogLogHandler();
+
+    void set_close_syslog_on_exit(bool close_on_exit)
+    {
+        m_close_syslog_on_exit = close_on_exit;
+    }
 
     virtual void handle_log(const LogRecord &rec) override;
 };

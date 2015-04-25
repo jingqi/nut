@@ -125,7 +125,7 @@ LogFilter::LogFilter()
 
 LogFilter::hash_t LogFilter::hash_to_dot(const char *s, int *char_accum)
 {
-    assert(NULL != s);
+    assert(NULL != s && NULL != char_accum);
 
     // SDBRHash 算法
     hash_t hash = 17;
@@ -136,8 +136,7 @@ LogFilter::hash_t LogFilter::hash_to_dot(const char *s, int *char_accum)
         hash = s[i] + (hash << 6) + (hash << 16) - hash;
         ++i;
     }
-    if (NULL != char_accum)
-        *char_accum += i;
+    *char_accum += i;
     return hash;
 }
 

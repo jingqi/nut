@@ -29,8 +29,8 @@ public :
      * @param sl 源代码行数， __LINE__
      * @param fc 源代码函数， __FUNCTION__
      */
-    ExceptionBase(long cd, StringT msg, const char *sf = NULL, int sl = -1, const char *fc = NULL)
-        : m_code(cd), m_message(msg), m_source_file(sf), m_source_line(sl), m_func(fc)
+    ExceptionBase(long cd, StringT msg, const char *file = NULL, int line = -1, const char *func = NULL)
+        : m_code(cd), m_message(msg), m_source_file(file), m_source_line(line), m_func(func)
     {}
 
     virtual ~ExceptionBase() throw()
@@ -43,7 +43,7 @@ public :
     }
 
     /// 获取出错信息
-    StringT get_message() const
+    const StringT& get_message() const
     {
         return m_message;
     }

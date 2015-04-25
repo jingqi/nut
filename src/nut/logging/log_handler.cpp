@@ -22,15 +22,17 @@ void StreamLogHandler::handle_log(const LogRecord &rec)
     std::string msg;
     rec.to_string(&msg);
     m_os << msg << std::endl;
-    m_os.flush();
+
+    if (0 != (m_flush_mask & rec.get_level()))
+        m_os.flush();
 }
 
-void ConsoleLogHandler::handle_log(const LogRecord &l)
+void ConsoleLogHandler::handle_log(const LogRecord &rec)
 {
-    std::cout << "[" << l.get_time().to_string() << "] ";
+    std::cout << "[" << rec.get_time().to_string() << "] ";
     if (m_colored)
     {
-        switch(l.get_level())
+        switch (rec.get_level())
         {
         case LL_DEBUG:
             ConsoleUtil::set_text_color(ConsoleUtil::WHITE, ConsoleUtil::BLUE);
@@ -57,24 +59,23 @@ void ConsoleLogHandler::handle_log(const LogRecord &l)
         }
     }
 
-    std::cout << log_level_to_str(l.get_level());
+    std::cout << log_level_to_str(rec.get_level());
 
     if (m_colored)
         ConsoleUtil::set_text_color();
 
-    std::cout << " " << l.get_file_name() << ":" << i_to_str(l.get_line()) <<
-        "  " << l.get_message() << "\n";
-    std::cout.flush();
+    std::cout << " " << rec.get_file_name() << ":" << i_to_str(rec.get_line()) <<
+        "  " << rec.get_message() << "\n";
+
+    if (0 != (m_flush_mask & rec.get_level()))
+        std::cout.flush();
 }
 
 FileLogHandler::FileLogHandler(const char *file, bool append)
     : m_ofs(file, (append ? std::ios::app : std::ios::trunc))
 {
     if (append)
-    {
         m_ofs << "\n\n\n\n\n\n------------- ---------------- ---------------\n";
-        m_ofs.flush();
-    }
 }
 
 void FileLogHandler::handle_log(const LogRecord & rec)
@@ -82,7 +83,9 @@ void FileLogHandler::handle_log(const LogRecord & rec)
     std::string msg;
     rec.to_string(&msg);
     m_ofs << msg << std::endl;
-    m_ofs.flush();
+
+    if (0 != (m_flush_mask & rec.get_level()))
+        m_ofs.flush();
 }
 
 #if defined(NUT_PLATFORM_OS_LINUX)
@@ -95,8 +98,6 @@ SyslogLogHandler::~SyslogLogHandler()
 
 void SyslogLogHandler::handle_log(const LogRecord &rec)
 {
-    (void) log_path; // unused
-
     int level = 0;
     switch (rec.get_level())
     {

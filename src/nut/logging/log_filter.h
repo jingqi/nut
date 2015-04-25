@@ -20,8 +20,8 @@ class LogFilter
         ll_mask_t forbid_mask;
 
         Node *parent;
-        hash_t *children_hash;
-        Node **children; // ascending
+        hash_t *children_hash; // 升序排列
+        Node **children;
         int children_size, children_cap;
 
         Node(Node *p);
@@ -45,6 +45,9 @@ class LogFilter
     };
     struct Node m_root;
 
+    /**
+     * 哈稀字符串，直到遇到结尾或者 '.' 字符
+     */
     static hash_t hash_to_dot(const char *s, int *char_accum);
 
 public:
