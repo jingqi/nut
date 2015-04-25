@@ -2,6 +2,7 @@
 #ifndef ___HEADFILE_067B6549_8608_42D0_A979_AB3E08E1B4B3_
 #define ___HEADFILE_067B6549_8608_42D0_A979_AB3E08E1B4B3_
 
+#include <string>
 #include <vector>
 
 #include <nut/platform/platform.h>
@@ -19,26 +20,31 @@ namespace nut
 class Logger
 {
     LogFilter m_filter;
-	std::vector<LogHandler*> m_handlers;
-	
-	NUT_DEBUGGING_DESTROY_CHECKER
+    std::vector<LogHandler*> m_handlers;
+
+    NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
-	void log(const LogRecord& record) const;
+    void log(const LogRecord& record) const;
 
 public:
-	~Logger();
+    ~Logger();
 
-	static Logger* get_instance();
+    static Logger* get_instance();
 
     LogFilter& get_filter();
-	
-	void add_handler(LogHandler *handler);
-	void remove_handler(LogHandler *handler);
-	void clear_handlers();
+
+    void add_handler(LogHandler *handler);
+    void remove_handler(LogHandler *handler);
+    void clear_handlers();
 
     void log(LogLevel level, const char *tag, const char *file, int line,
         const char *func, const char *fmt, ...) const;
+
+    /**
+     * 加载配置文件
+     */
+    void load_config(const std::string& config);
 };
 
 }
@@ -48,8 +54,8 @@ DLL_API void* nut_get_logger();
 #define NUT_LOGGING_IMPL \
 DLL_API void* nut_get_logger() \
 { \
-	static nut::Logger logger; \
-	return &logger; \
+    static nut::Logger logger; \
+    return &logger; \
 }
 
 #define NUT_LOG_D(tag, fmt, ...) do { nut::Logger::get_instance()->log(nut::LL_DEBUG, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), ##__VA_ARGS__); } while (false)

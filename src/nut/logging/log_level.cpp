@@ -1,6 +1,8 @@
 ﻿
 #include <string.h>
 
+#include <nut/util/string/string_util.h>
+
 #include "log_level.h"
 
 namespace nut
@@ -31,20 +33,18 @@ const char* log_level_to_str(LogLevel level)
 
 LogLevel str_to_log_level(const char *str)
 {
-    if (NULL == str)
-        return LL_FATAL;
-    else if (0 == ::strncmp(str, "DEBUG", 5))
+    if (NULL == str || 0 == strincmp(str, "DEBUG", 5))
         return LL_DEBUG;
-    else if (0 == ::strncmp(str, "INFO", 4))
+    else if (0 == strincmp(str, "INFO", 4))
         return LL_INFO;
-    else if (0 == ::strncmp(str, "WARN", 4))
+    else if (0 == strincmp(str, "WARN", 4))
         return LL_WARN;
-    else if (0 == ::strncmp(str, "ERROR", 5))
+    else if (0 == strincmp(str, "ERROR", 5))
         return LL_ERROR;
-    else if (0 == ::strncmp(str, "FATAL", 5))
+    else if (0 == strincmp(str, "FATAL", 5))
         return LL_FATAL;
 
-    return LL_FATAL;
+    return LL_DEBUG;
 }
 
 }
