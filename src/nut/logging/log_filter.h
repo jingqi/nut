@@ -41,6 +41,7 @@ class LogFilter
         void insert(int pos, hash_t hash);
 
         void remove(Node *child);
+        void clear();
     };
     struct Node m_root;
 
@@ -62,6 +63,8 @@ public:
      * @param mask 禁用的 LogLevel 掩码
      */
     void unforbid(const char *tag, ll_mask_t mask = LL_ALL_MASK);
+
+    void clear_forbids();
 
     /**
      * 查询是否被禁用掉

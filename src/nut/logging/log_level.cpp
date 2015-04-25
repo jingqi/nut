@@ -8,35 +8,43 @@ namespace nut
 
 const char* log_level_to_str(LogLevel level)
 {
+    // 为了对齐，保持返回字符串长度一致
     switch (level)
     {
-#define _H(l) case l: return #l
-    _H(LL_DEBUG);
-    _H(LL_INFO);
-    _H(LL_WARN);
-    _H(LL_ERROR);
-    _H(LL_FATAL);
-#undef _H
+    case LL_DEBUG:
+        return "DEBUG";
+
+    case LL_INFO:
+        return "INFO ";
+
+    case LL_WARN:
+        return "WARN ";
+
+    case LL_ERROR:
+        return "ERROR";
+
+    case LL_FATAL:
     default:
-        return "LL_FATAL";
+        return "FATAL";
     }
 }
 
 LogLevel str_to_log_level(const char *str)
 {
-#define _H(l) else if (0 == ::strcmp(str, #l)) return l
-
     if (NULL == str)
         return LL_FATAL;
-    _H(LL_DEBUG);
-    _H(LL_INFO);
-    _H(LL_WARN);
-    _H(LL_ERROR);
-    _H(LL_FATAL);
-    else
+    else if (0 == ::strncmp(str, "DEBUG", 5))
+        return LL_DEBUG;
+    else if (0 == ::strncmp(str, "INFO", 4))
+        return LL_INFO;
+    else if (0 == ::strncmp(str, "WARN", 4))
+        return LL_WARN;
+    else if (0 == ::strncmp(str, "ERROR", 5))
+        return LL_ERROR;
+    else if (0 == ::strncmp(str, "FATAL", 5))
         return LL_FATAL;
 
-#undef _H
+    return LL_FATAL;
 }
 
 }

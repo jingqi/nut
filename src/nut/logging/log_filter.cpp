@@ -16,18 +16,7 @@ LogFilter::Node::Node(Node *p)
 
 LogFilter::Node::~Node()
 {
-    for (int i = 0; i < children_size; ++i)
-    {
-        assert(NULL != children && NULL != children[i]);
-        children[i]->~Node();
-    }
-
-    if (NULL != children_hash)
-    {
-        ::free(children_hash);
-        assert(NULL != children);
-        ::free(children);
-    }
+    clear();
 }
 
 int LogFilter::Node::search(hash_t hash) const
@@ -106,6 +95,28 @@ void LogFilter::Node::remove(Node *child)
         ::memmove(children + pos, children + pos + 1, sizeof(Node*) * count);
     }
     --children_size;
+}
+
+void LogFilter::Node::clear()
+{
+    for (int i = 0; i < children_size; ++i)
+    {
+        assert(NULL != children && NULL != children[i]);
+        children[i]->~Node();
+    }
+
+    if (NULL != children_hash)
+    {
+        ::free(children_hash);
+        assert(NULL != children);
+        ::free(children);
+    }
+
+    forbid_mask = 0;
+    children_hash = NULL;
+    children = NULL;
+    children_size = 0;
+    children_cap = 0;
 }
 
 LogFilter::LogFilter()
@@ -226,11 +237,18 @@ void LogFilter::unforbid(const char *tag, ll_mask_t mask)
     }
 }
 
+void LogFilter::clear_forbids()
+{
+    m_root.clear();
+}
+
 bool LogFilter::is_forbidden(const char *tag, LogLevel level) const
 {
     // root rule
+    if (0 != (m_root.forbid_mask & level))
+        return true;
     if (NULL == tag || 0 == tag[0])
-        return 0 != (m_root.forbid_mask & level);
+        return false;
 
     // find the node
     const Node *current = &m_root;
@@ -248,6 +266,11 @@ bool LogFilter::is_forbidden(const char *tag, LogLevel level) const
         else
             current = current->children[pos];
 
+        // apply rule
+        assert(NULL != current);
+        if (0 != (current->forbid_mask & level))
+            return true;
+
         if (0 != tag[i])
         {
             assert('.' == tag[i]);
@@ -255,9 +278,7 @@ bool LogFilter::is_forbidden(const char *tag, LogLevel level) const
         }
     } while (0 != tag[i]);
 
-    // get the rule
-    assert(NULL != current);
-    return 0 != (current->forbid_mask & level);
+    return false;
 }
 
 }
