@@ -2,7 +2,6 @@
 #ifndef ___HEADFILE___4CDF318F_AF06_4CEF_BAC8_DE26853A73AB_
 #define ___HEADFILE___4CDF318F_AF06_4CEF_BAC8_DE26853A73AB_
 
-
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -19,23 +18,17 @@ namespace nut
 
 class LogHandler
 {
-    NUT_REF_COUNTABLE
-
-    std::vector<rc_ptr<LogFilter> > m_filters;
+    LogFilter m_filter;
 
 public:
-    virtual ~LogHandler() {}
+    NUT_REF_COUNTABLE
 
-    virtual void handle_log(const std::string &log_path, const LogRecord &rec) = 0;
+    LogFilter& get_filter()
+    {
+        return m_filter;
+    }
 
-    void add_filter(rc_ptr<LogFilter> filter);
-
-    /**
-     * @return
-     *      true, 通过筛选
-     *      false, 在筛选过程中被剔除
-     */
-    void handle_log(const std::string log_path, const LogRecord& rec, bool apply_filter);
+    virtual void handle_log(const LogRecord &rec) = 0;
 };
 
 class StreamLogHandler : public LogHandler
@@ -47,7 +40,7 @@ public:
         : m_os(os)
     {}
 
-    virtual void handle_log(const std::string &log_path, const LogRecord &rec) override;
+    virtual void handle_log(const LogRecord &rec) override;
 };
 
 class ConsoleLogHandler : public LogHandler
@@ -59,7 +52,7 @@ public:
         : m_colored(colored)
     {}
 
-    virtual void handle_log(const std::string &logger_path, const LogRecord &l) override;
+    virtual void handle_log(const LogRecord &l) override;
 };
 
 class FileLogHandler : public LogHandler
@@ -69,7 +62,7 @@ class FileLogHandler : public LogHandler
 public:
     FileLogHandler(const char *file, bool append = false);
 
-    virtual void handle_log(const std::string &log_path, const LogRecord & rec) override;
+    virtual void handle_log(const LogRecord & rec) override;
 };
 
 #if defined(NUT_PLATFORM_OS_LINUX)
@@ -84,29 +77,9 @@ public:
 
     ~SyslogLogHandler();
 
-    virtual void handle_log(const std::string &log_path, const LogRecord &rec) override;
+    virtual void handle_log(const LogRecord &rec) override;
 };
 #endif
-
-
-class LogHandlerFactory
-{
-    LogHandlerFactory();
-
-public:
-    /**
-     * the following is allowed:
-     * stdout
-     * stderr
-     * console
-     * console|nocolor
-     * file|append|./logfile.log
-     * file|circle|./dir/prefix
-     * file|./dir/logfile.log
-     * syslog
-     */
-    static rc_ptr<LogHandler> create_log_handler(const std::string &type);
-};
 
 }
 

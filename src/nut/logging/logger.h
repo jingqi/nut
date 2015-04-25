@@ -1,14 +1,16 @@
 ﻿
-#ifndef ___HEADFILE___C2472118_B9F0_49CE_BE12_59F3AE4991CA_
-#define ___HEADFILE___C2472118_B9F0_49CE_BE12_59F3AE4991CA_
+#ifndef ___HEADFILE_067B6549_8608_42D0_A979_AB3E08E1B4B3_
+#define ___HEADFILE_067B6549_8608_42D0_A979_AB3E08E1B4B3_
 
-#include <string>
 #include <vector>
 
-#include <nut/rc/rc_new.h>
+#include <nut/platform/platform.h>
 #include <nut/debugging/destroy_checker.h>
+#include <nut/debugging/source_location.h>
 
-#include "log_path.h"
+#include "log_level.h"
+#include "log_record.h"
+#include "log_filter.h"
 #include "log_handler.h"
 
 namespace nut
@@ -16,43 +18,43 @@ namespace nut
 
 class Logger
 {
-    NUT_REF_COUNTABLE
-    NUT_PRIVATE_RCNEW
-
-    std::vector<rc_ptr<LogHandler> > m_handlers;
-    std::vector<rc_ptr<Logger> > m_subloggers;
-    std::vector<rc_ptr<LogFilter> > m_filters;
-    Logger *m_parent;
-    std::string m_logger_path;
-
-    /** 析构检查器 */
-    NUT_DEBUGGING_DESTROY_CHECKER
+    LogFilter m_filter;
+	std::vector<LogHandler*> m_handlers;
+	
+	NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
-    Logger(const Logger&);
-    Logger& operator=(const Logger&);
-
-private:
-    Logger(Logger *parent, const std::string &path);
-
-    void log(const std::string &log_path, const LogRecord &rec) const;
+	void log(const LogRecord& record) const;
 
 public:
-    void add_handler(rc_ptr<LogHandler> handler);
+	~Logger();
 
-    void add_filter(rc_ptr<LogFilter> filter);
+	static Logger* get_instance();
 
-    void log(const LogRecord &record) const;
-    void log(LogLevel level, const SourceLocation &sl, const std::string &msg) const;
-    void log(LogLevel level, const SourceLocation &sl, const char *format, ...) const;
+    LogFilter& get_filter();
+	
+	void add_handler(LogHandler *handler);
+	void remove_handler(LogHandler *handler);
+	void clear_handlers();
 
-    Logger* get_logger(const std::string &relative_path);
-
-    std::string get_logger_path();
-
-    std::string get_logger_name();
+    void log(LogLevel level, const char *tag, const char *file, int line, const char *func, const char *fmt, ...) const;
 };
 
 }
 
-#endif // head file guarder
+DLL_API void* nut_get_logger();
+
+#define NUT_LOGGING_IMPL \
+DLL_API void* nut_get_logger() \
+{ \
+	static nut::Logger logger; \
+	return &logger; \
+}
+
+#define NUT_LOG_D(tag, fmt, ...) do { nut::Logger::get_instance()->log(nut::LL_DEBUG, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), ##__VA_ARGS__); } while (false)
+#define NUT_LOG_I(tag, fmt, ...) do { nut::Logger::get_instance()->log(nut::LL_INFO, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), ##__VA_ARGS__); } while (false)
+#define NUT_LOG_W(tag, fmt, ...) do { nut::Logger::get_instance()->log(nut::LL_WARN, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), ##__VA_ARGS__); } while (false)
+#define NUT_LOG_E(tag, fmt, ...) do { nut::Logger::get_instance()->log(nut::LL_ERROR, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), ##__VA_ARGS__); } while (false)
+#define NUT_LOG_F(tag, fmt, ...) do { nut::Logger::get_instance()->log(nut::LL_FATAL, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), ##__VA_ARGS__); } while (false)
+
+#endif

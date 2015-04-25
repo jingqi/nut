@@ -6,7 +6,7 @@
 namespace nut
 {
 
-const char * log_level_to_str(LogLevel level)
+const char* log_level_to_str(LogLevel level)
 {
     switch (level)
     {
@@ -18,7 +18,7 @@ const char * log_level_to_str(LogLevel level)
     _H(LL_FATAL);
 #undef _H
     default:
-        return "";
+        return "LL_FATAL";
     }
 }
 
@@ -40,3 +40,4 @@ LogLevel str_to_log_level(const char *str)
 }
 
 }
+

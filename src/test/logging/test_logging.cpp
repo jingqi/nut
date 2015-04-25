@@ -1,8 +1,7 @@
 ﻿
 #include <nut/unittest/unit_test.h>
 
-#include <nut/logging/macros.h>
-#include <nut/logging/log_handler.h>
+#include <nut/logging/logger.h>
 
 using namespace nut;
 
@@ -18,14 +17,14 @@ NUT_FIXTURE(TestLogging)
 
     void test_smoking()
     {
-        Logger *l = LogManager::get_logger("");
+        Logger *l = Logger::get_instance();
         l->add_handler(rc_new<StreamLogHandler>(std::cout));
 
-        NUT_LOGGING_DEBUG(l, "debug msg");
-        NUT_LOGGING_INFO(l, "info msg");
-        NUT_LOGGING_WARN(l, "warn msg");
-        NUT_LOGGING_ERROR(l, "error msg");
-        NUT_LOGGING_FATAL(l, "fatal msg");
+        NUT_LOG_D("a", "debug msg");
+        NUT_LOG_I("a.b", "info msg");
+        NUT_LOG_W("b.c", "warn msg");
+        NUT_LOG_E("a.m", "error msg");
+        NUT_LOG_F(NULL, "fatal msg");
 
         NUT_LOG_D("a", "debug msg");
         NUT_LOG_I("a.b", "info msg");
