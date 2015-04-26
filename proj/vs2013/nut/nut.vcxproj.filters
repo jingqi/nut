@@ -148,30 +148,6 @@
     <ClInclude Include="..\..\..\src\nut\debugging\source_location.h">
       <Filter>nut\debugging</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\log_filter.h">
-      <Filter>nut\logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\log_handler.h">
-      <Filter>nut\logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\log_level.h">
-      <Filter>nut\logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\log_manager.h">
-      <Filter>nut\logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\log_path.h">
-      <Filter>nut\logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\log_record.h">
-      <Filter>nut\logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\logger.h">
-      <Filter>nut\logging</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\macros.h">
-      <Filter>nut\logging</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\mem\lengthfixed_mp.h">
       <Filter>nut\mem</Filter>
     </ClInclude>
@@ -255,30 +231,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\delegate.h">
       <Filter>nut\util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\unittest\console_test_logger.h">
-      <Filter>nut\unittest</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\unittest\stream_test_logger.h">
-      <Filter>nut\unittest</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\unittest\testcase_failure_exception.h">
-      <Filter>nut\unittest</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\unittest\testfixture.h">
-      <Filter>nut\unittest</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\unittest\testlogger.h">
-      <Filter>nut\unittest</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\unittest\testregister.h">
-      <Filter>nut\unittest</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\unittest\testrunner.h">
-      <Filter>nut\unittest</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\unittest\unittest.h">
-      <Filter>nut\unittest</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\atomic.h">
       <Filter>nut\threading\lockfree</Filter>
@@ -394,6 +346,45 @@
     <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer.h">
       <Filter>nut\numeric</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_filter.h">
+      <Filter>nut\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_handler.h">
+      <Filter>nut\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_level.h">
+      <Filter>nut\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_record.h">
+      <Filter>nut\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\logger.h">
+      <Filter>nut\logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\console_test_logger.h">
+      <Filter>nut\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\stream_test_logger.h">
+      <Filter>nut\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\test_fixture.h">
+      <Filter>nut\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\test_logger.h">
+      <Filter>nut\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\test_register.h">
+      <Filter>nut\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\test_runner.h">
+      <Filter>nut\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\testcase_failure_exception.h">
+      <Filter>nut\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\unit_test.h">
+      <Filter>nut\unittest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">
@@ -410,21 +401,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\debugging\backtrace.cpp">
       <Filter>nut\debugging</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\logging\log_filter.cpp">
-      <Filter>nut\logging</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\logging\log_handler.cpp">
-      <Filter>nut\logging</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\logging\log_level.cpp">
-      <Filter>nut\logging</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\logging\log_manager.cpp">
-      <Filter>nut\logging</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\logging\logger.cpp">
-      <Filter>nut\logging</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\mem\scoped_gc.cpp">
       <Filter>nut\mem</Filter>
@@ -456,9 +432,6 @@
     <ClCompile Include="..\..\..\src\nut\util\time\date_time.cpp">
       <Filter>nut\util\time</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\util\time\time_var.cpp">
-      <Filter>nut\util\time</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\nut\util\time\timer_manager.cpp">
       <Filter>nut\util\time</Filter>
     </ClCompile>
@@ -473,18 +446,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\util\console_util.cpp">
       <Filter>nut\util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\unittest\console_test_logger.cpp">
-      <Filter>nut\unittest</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\unittest\stream_test_logger.cpp">
-      <Filter>nut\unittest</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\unittest\testregister.cpp">
-      <Filter>nut\unittest</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\unittest\testrunner.cpp">
-      <Filter>nut\unittest</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\threading\lockfree\atomic.cpp">
       <Filter>nut\threading\lockfree</Filter>
@@ -557,6 +518,36 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\numeric\big_integer.cpp">
       <Filter>nut\numeric</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_filter.cpp">
+      <Filter>nut\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_handler.cpp">
+      <Filter>nut\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_level.cpp">
+      <Filter>nut\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_record.cpp">
+      <Filter>nut\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\logger.cpp">
+      <Filter>nut\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\time\time_val.cpp">
+      <Filter>nut\util\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\unittest\console_test_logger.cpp">
+      <Filter>nut\unittest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\unittest\stream_test_logger.cpp">
+      <Filter>nut\unittest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\unittest\test_register.cpp">
+      <Filter>nut\unittest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\unittest\test_runner.cpp">
+      <Filter>nut\unittest</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
