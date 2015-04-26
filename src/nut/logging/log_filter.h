@@ -1,57 +1,80 @@
 ﻿
-#ifndef ___HEADFILE___38990555_F0A8_4BA9_BE50_9A477A2A3F47_
-#define ___HEADFILE___38990555_F0A8_4BA9_BE50_9A477A2A3F47_
-
-#include <string>
-#include <vector>
-
-#include <nut/rc/rc_new.h>
+#ifndef ___HEADFILE_96AEB548_0516_4970_A913_AF51AAC6E02C_
+#define ___HEADFILE_96AEB548_0516_4970_A913_AF51AAC6E02C_
 
 #include "log_level.h"
-#include "log_record.h"
 
 namespace nut
 {
 
+/**
+ * 日志筛选器
+ */
 class LogFilter
 {
-    NUT_REF_COUNTABLE
+    typedef unsigned hash_t;
+
+    // 字典树节点
+    struct Node
+    {
+        ll_mask_t forbid_mask;
+
+        Node *parent;
+        hash_t *children_hash; // 升序排列
+        Node **children;
+        int children_size, children_cap;
+
+        Node(Node *p);
+        ~Node();
+
+        /**
+         * @return >=0, 找到的位置
+         *         <0, 插入位置
+         */
+        int search(hash_t hash) const;
+
+        void ensure_cap(int new_size);
+
+        /**
+         * @param pos 必须小于 0
+         */
+        void insert(int pos, hash_t hash);
+
+        void remove(Node *child);
+        void clear();
+    };
+    struct Node m_root;
+
+    /**
+     * 哈稀字符串，直到遇到结尾或者 '.' 字符
+     */
+    static hash_t hash_to_dot(const char *s, int *char_accum);
 
 public:
-    virtual bool is_logable(const std::string &logger_path, const LogRecord &log) const = 0;
+    LogFilter();
 
-public:
-    static bool is_logable(const std::string& log_path, const LogRecord& rec,
-        const std::vector<rc_ptr<LogFilter> >& filters);
-};
+    /**
+     * 禁用指定 tag
+     *
+     * @param mask 禁用的 LogLevel 掩码
+     */
+    void forbid(const char *tag, ll_mask_t mask = LL_ALL_MASK);
 
-class DefaultLogFilter : public LogFilter
-{
-    bool m_level_mask[COUNT_OF_LOG_LEVEL];
-    std::vector<std::string> m_deny_paths;
+    /**
+     * 解禁指定 tag
+     *
+     * @param mask 禁用的 LogLevel 掩码
+     */
+    void unforbid(const char *tag, ll_mask_t mask = LL_ALL_MASK);
 
-public:
-    DefaultLogFilter (LogLevel min_level, const std::vector<std::string> &deny_paths =
-        std::vector<std::string>());
+    void clear_forbids();
 
-    DefaultLogFilter(bool allow_debug = true, bool allow_info = true, bool allow_warn = true,
-        bool allow_error = true, bool allow_fatal = true,
-        const std::vector<std::string> &excepts = std::vector<std::string>());
-
-    virtual bool is_logable(const std::string &log_path, const LogRecord &rec) const override;
-
-    void add_deny_path(const std::string &path);
-};
-
-class LogFilterFactory
-{
-    LogFilterFactory();
-
-public:
-    static rc_ptr<LogFilter> create_log_filter(const std::string &arg);
+    /**
+     * 查询是否被禁用掉
+     */
+    bool is_forbidden(const char *tag, LogLevel level) const;
 };
 
 }
 
-
-#endif // head file guarder
+#endif

@@ -11,7 +11,7 @@
 #include <nut/unittest/console_test_logger.h>
 #include <nut/unittest/stream_test_logger.h>
 #include <nut/unittest/test_runner.h>
-#include <nut/logging/log_manager.h>
+#include <nut/logging/logger.h>
 
 using namespace std;
 using namespace nut;
@@ -39,9 +39,9 @@ int main()
 
     TestRunner trunner(l);
 
-    trunner.run_group("quiet");
+    //trunner.run_group("quiet");
 
-    //trunner.run_fixture("TestLogging");
+    trunner.run_fixture("TestLogging");
 
     //trunner.run_case("TestNumericAlgo", "test_karatsuba_multiply");
 

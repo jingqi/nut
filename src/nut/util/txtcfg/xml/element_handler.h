@@ -22,10 +22,11 @@ public:
         HANDLE_CHILD = 0x08
     };
 
+    const char *name;
     const uint8_t handle_mask;
 
-    XmlElementHandler(uint8_t mask = 0xFF)
-        : handle_mask(mask)
+    XmlElementHandler(const char *n = NULL, uint8_t mask = 0xFF)
+        : name(n), handle_mask(mask)
     {}
 
     virtual ~XmlElementHandler()

@@ -55,6 +55,11 @@ std::wstring rtrim(const std::wstring& str, const std::wstring& blanks = L" \t\r
 bool strieq(const std::string& str1, const std::string& str2);
 bool strieq(const std::wstring& str1, const std::wstring& str2);
 
+int stricmp(const char *str1, const char *str2);
+int stricmp(const wchar_t *str1, const char *str2);
+int strincmp(const char *str1, const char *str2, size_t n);
+int strincmp(const wchar_t *str1, const wchar_t *str2, size_t n);
+
 /**
  * 匹配字符串的开头
  */

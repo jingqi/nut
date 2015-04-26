@@ -3,7 +3,7 @@
 #define ___HEADFILE___8E93C94A_595D_4161_A718_E024606E84A8_
 
 #include <string>
-#include <nut/debugging/source_location.h>
+
 #include <nut/util/time/date_time.h>
 
 #include "log_level.h"
@@ -16,18 +16,19 @@ class LogRecord
 private:
     Time m_time;
     LogLevel m_level;
-    SourceLocation m_source_location;
-    std::string m_message;
+	const char *m_tag; 			// can be NULL, which indicated a root tag
+    const char *m_file_path;
+    int m_line;
+	const char *m_func;			// can be NULL, when the source location is out of any function
+	char *m_message;
+
+private:
+	LogRecord(const LogRecord&);
 
 public:
-    LogRecord(LogLevel level, const SourceLocation &sl, const std::string &message)
-        : m_level(level), m_source_location(sl), m_message(message)
-    {}
-
-    LogRecord(const Time &time, LogLevel level, const SourceLocation &sl,
-        const std::string &message)
-        : m_time(time), m_level(level), m_source_location(sl), m_message(message)
-    {}
+    LogRecord(LogLevel level, const char *tag, const char *file_path, int line,
+		const char *func, char *message);
+	~LogRecord();
 
     const Time& get_time() const
     {
@@ -38,26 +39,32 @@ public:
     {
         return m_level;
     }
+	
+	const char* get_tag() const
+	{
+		return m_tag;
+	}
 
-    const SourceLocation& get_source_location() const
+    const char* get_file_path() const
     {
-        return m_source_location;
+        return m_file_path;
+    }
+	
+	const char* get_file_name() const;
+
+    int get_line() const
+    {
+        return m_line;
     }
 
-    const std::string& get_message() const
+    const char* get_message() const
     {
         return m_message;
     }
 
-    std::string to_string() const
-    {
-        std::string ret = std::string("[") + m_time.to_string() + "] " +
-            log_level_to_str(m_level) + " " + m_source_location.to_string() +
-            " " + m_message;
-        return ret;
-    }
+    void to_string(std::string *appended) const;
 };
 
 }
 
-#endif // head file guarder
+#endif

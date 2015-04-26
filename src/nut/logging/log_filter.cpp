@@ -1,84 +1,283 @@
 ﻿
-#include <nut/rc/rc_new.h>
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+#include <new>
 
 #include "log_filter.h"
 
 namespace nut
 {
 
-bool LogFilter::is_logable(const std::string& log_path, const LogRecord& rec,
-    const std::vector<rc_ptr<LogFilter> >& filters)
+LogFilter::Node::Node(Node *p)
+    : forbid_mask(0), parent(p), children_hash(NULL), children(NULL),
+      children_size(0), children_cap(0)
+{}
+
+LogFilter::Node::~Node()
 {
-    for (size_t i = 0, sz = filters.size(); i < sz; ++i)
+    clear();
+}
+
+int LogFilter::Node::search(hash_t hash) const
+{
+    // binary search
+    int left = -1, right = children_size;
+    while (left + 1 < right)
     {
-        if (!filters.at(i)->is_logable(log_path, rec))
-            return false;
+        const int mid = (left + right) / 2;
+        if (hash == children_hash[mid])
+            return mid;
+        else if (hash < children_hash[mid])
+            right = mid;
+        else
+            left = mid;
     }
-    return true;
+    return -right - 1;
 }
 
-DefaultLogFilter::DefaultLogFilter(LogLevel min_level, const std::vector<std::string> &deny_paths)
-    : m_deny_paths(deny_paths)
+void LogFilter::Node::ensure_cap(int new_size)
 {
-    for (int i = 0; i < COUNT_OF_LOG_LEVEL; ++i)
-        m_level_mask[i] = (i < min_level);
+    if (new_size < children_cap)
+        return;
+
+    int new_cap = children_cap * 3 / 2;
+    if (new_cap < new_size)
+        new_cap = new_size;
+
+    if (NULL == children_hash)
+    {
+        assert(NULL == children && 0 == children_size);
+        children_hash = (hash_t*) ::malloc(sizeof(hash_t) * new_cap);
+        children = (Node**) ::malloc(sizeof(Node*) * new_cap);
+    }
+    else
+    {
+        assert(NULL != children);
+        children_hash = (hash_t*) ::realloc(children_hash, sizeof(hash_t) * new_cap);
+        children = (Node**) ::realloc(children, sizeof(Node*) * new_cap);
+    }
+    children_cap = new_cap;
 }
 
-DefaultLogFilter::DefaultLogFilter(bool allow_debug, bool allow_info, bool allow_warn,
-    bool allow_error, bool allow_fatal, const std::vector<std::string> &excepts)
-    : m_deny_paths(excepts)
+void LogFilter::Node::insert(int pos, hash_t hash)
 {
-    m_level_mask[LL_DEBUG] = allow_debug;
-    m_level_mask[LL_INFO] = allow_info;
-    m_level_mask[LL_WARN] = allow_warn;
-    m_level_mask[LL_ERROR] = allow_error;
-    m_level_mask[LL_FATAL] = allow_fatal;
+    assert(pos < 0);
+    pos = -pos - 1;
+    ensure_cap(children_size + 1);
+    if (pos < children_size)
+    {
+        const int count = children_size - pos;
+        ::memmove(children_hash + pos + 1, children_hash + pos, sizeof(hash_t) * count);
+        ::memmove(children + pos + 1, children + pos, sizeof(Node*) * count);
+    }
+    children_hash[pos] = hash;
+    Node *child = (Node*) ::malloc(sizeof(Node));
+    assert(NULL != child);
+    new (child) Node(this);
+    children[pos] = child;
+    ++children_size;
 }
 
-bool DefaultLogFilter::is_logable(const std::string &log_path, const LogRecord &rec) const
+void LogFilter::Node::remove(Node *child)
 {
-    if (!m_level_mask[rec.get_level()])
+    assert(NULL != child);
+    int pos = 0;
+    while (pos < children_size && child != children[pos])
+        ++pos;
+    assert(pos < children_size);
+
+    children[pos]->~Node();
+    if (pos < children_size - 1)
+    {
+        const int count = children_size - pos - 1;
+        ::memmove(children_hash + pos, children_hash + pos + 1, sizeof(hash_t) * count);
+        ::memmove(children + pos, children + pos + 1, sizeof(Node*) * count);
+    }
+    --children_size;
+}
+
+void LogFilter::Node::clear()
+{
+    for (int i = 0; i < children_size; ++i)
+    {
+        assert(NULL != children && NULL != children[i]);
+        children[i]->~Node();
+    }
+
+    if (NULL != children_hash)
+    {
+        ::free(children_hash);
+        assert(NULL != children);
+        ::free(children);
+    }
+
+    forbid_mask = 0;
+    children_hash = NULL;
+    children = NULL;
+    children_size = 0;
+    children_cap = 0;
+}
+
+LogFilter::LogFilter()
+    : m_root(NULL)
+{}
+
+LogFilter::hash_t LogFilter::hash_to_dot(const char *s, int *char_accum)
+{
+    assert(NULL != s && NULL != char_accum);
+
+    // SDBRHash 算法
+    hash_t hash = 17;
+    int i = 0;
+    while (0 != s[i] && '.' != s[i])
+    {
+        // hash = 65599 * hash + (*s++);
+        hash = s[i] + (hash << 6) + (hash << 16) - hash;
+        ++i;
+    }
+    *char_accum += i;
+    return hash;
+}
+
+void LogFilter::forbid(const char *tag, ll_mask_t mask)
+{
+    // dummy operation
+    if (0 == mask)
+        return;
+
+    // root rule
+    if (NULL == tag || 0 == tag[0])
+    {
+        m_root.forbid_mask |= mask;
+        return;
+    }
+
+    // find the node
+    Node *current = &m_root;
+    int i = 0;
+    do
+    {
+        // hash 一段标志符
+        const hash_t hash = hash_to_dot(tag + i, &i);
+
+        // 找到对应的节点
+        assert(NULL != current);
+        const int pos = current->search(hash);
+        if (pos < 0)
+        {
+            current->insert(pos, hash);
+            current = current->children[-pos - 1];
+        }
+        else
+        {
+            current = current->children[pos];
+        }
+
+        if (0 != tag[i])
+        {
+            assert('.' == tag[i]);
+            ++i;
+        }
+    } while (0 != tag[i]);
+
+    // apply the rule
+    assert(NULL != current);
+    current->forbid_mask |= mask;
+}
+
+void LogFilter::unforbid(const char *tag, ll_mask_t mask)
+{
+    // dummy operation
+    if (0 == mask)
+        return;
+
+    // root rule
+    if (NULL == tag || 0 == tag[0])
+    {
+        m_root.forbid_mask &= ~mask;
+        return;
+    }
+
+    // find the node
+    Node *current = &m_root;
+    int i = 0;
+    do
+    {
+        // hash 一段标志符
+        const hash_t hash = hash_to_dot(tag + i, &i);
+
+        // 找到对应的节点
+        assert(NULL != current);
+        const int pos = current->search(hash);
+        if (pos < 0)
+            return;
+        else
+            current = current->children[pos];
+
+        if (0 != tag[i])
+        {
+            assert('.' == tag[i]);
+            ++i;
+        }
+    } while (0 != tag[i]);
+
+    // apply the rule
+    assert(NULL != current);
+    current->forbid_mask &= ~mask;
+
+    // remove empty nodes
+    while (0 == current->forbid_mask && 0 == current->children_size &&
+           NULL != current->parent)
+    {
+        Node *parent = current->parent;
+        parent->remove(current);
+        current = parent;
+    }
+}
+
+void LogFilter::clear_forbids()
+{
+    m_root.clear();
+}
+
+bool LogFilter::is_forbidden(const char *tag, LogLevel level) const
+{
+    // root rule
+    if (0 != (m_root.forbid_mask & level))
+        return true;
+    if (NULL == tag || 0 == tag[0])
         return false;
 
-    for (size_t i = 0, sz = m_deny_paths.size(); i < sz; ++i)
+    // find the node
+    const Node *current = &m_root;
+    int i = 0;
+    do
     {
-        const std::string& deny_path = m_deny_paths.at(i);
-        if (deny_path.length() <= log_path.length() &&
-            deny_path == log_path.substr(0, deny_path.length()))
+        // hash 一段标志符
+        const hash_t hash = hash_to_dot(tag + i, &i);
+
+        // 找到对应的节点
+        assert(NULL != current);
+        const int pos = current->search(hash);
+        if (pos < 0)
             return false;
-    }
-    return true;
-}
+        else
+            current = current->children[pos];
 
-void DefaultLogFilter::add_deny_path(const std::string &path)
-{
-    m_deny_paths.push_back(path);
-}
+        // apply rule
+        assert(NULL != current);
+        if (0 != (current->forbid_mask & level))
+            return true;
 
-rc_ptr<LogFilter> LogFilterFactory::create_log_filter(const std::string &arg)
-{
-    bool mask[5] = { true, true, true, true, true };
-    for (size_t i = 0, sz = arg.length(); i < sz && i < 5; ++i)
-    {
-        if (arg[i] == '0')
-            mask[i] = false;
-    }
-    std::vector<std::string> deny_paths;
-    if (arg.length() > 6 && arg[5] == '|')
-    {
-        std::string::size_type begin = 6, end = arg.find_first_of(':',6);
-        while (end != std::string::npos)
+        if (0 != tag[i])
         {
-            if (begin != end)
-                deny_paths.push_back(arg.substr(begin, end - begin));
-            begin = end + 1;
-            end = arg.find_first_of(':',begin);
+            assert('.' == tag[i]);
+            ++i;
         }
-        if (begin != arg.length())
-            deny_paths.push_back(arg.substr(begin));
-    }
+    } while (0 != tag[i]);
 
-    return rc_new<DefaultLogFilter>(mask[0], mask[1], mask[2], mask[3], mask[4], deny_paths);
+    return false;
 }
 
 }

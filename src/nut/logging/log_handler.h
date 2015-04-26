@@ -2,7 +2,6 @@
 #ifndef ___HEADFILE___4CDF318F_AF06_4CEF_BAC8_DE26853A73AB_
 #define ___HEADFILE___4CDF318F_AF06_4CEF_BAC8_DE26853A73AB_
 
-
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -19,23 +18,29 @@ namespace nut
 
 class LogHandler
 {
-    NUT_REF_COUNTABLE
+    LogFilter m_filter;     // 过滤器
 
-    std::vector<rc_ptr<LogFilter> > m_filters;
+protected:
+    ll_mask_t m_flush_mask; // 控制那些日志需要立即刷新到磁盘
 
 public:
-    virtual ~LogHandler() {}
+    NUT_REF_COUNTABLE
 
-    virtual void handle_log(const std::string &log_path, const LogRecord &rec) = 0;
+    LogHandler()
+        : m_flush_mask(LL_FATAL)
+    {}
 
-    void add_filter(rc_ptr<LogFilter> filter);
+    void set_flush_mask(ll_mask_t mask)
+    {
+        m_flush_mask = mask;
+    }
 
-    /**
-     * @return
-     *      true, 通过筛选
-     *      false, 在筛选过程中被剔除
-     */
-    void handle_log(const std::string log_path, const LogRecord& rec, bool apply_filter);
+    LogFilter& get_filter()
+    {
+        return m_filter;
+    }
+
+    virtual void handle_log(const LogRecord &rec) = 0;
 };
 
 class StreamLogHandler : public LogHandler
@@ -43,11 +48,11 @@ class StreamLogHandler : public LogHandler
     std::ostream &m_os;
 
 public:
-    StreamLogHandler (std::ostream &os)
+    StreamLogHandler(std::ostream &os)
         : m_os(os)
     {}
 
-    virtual void handle_log(const std::string &log_path, const LogRecord &rec) override;
+    virtual void handle_log(const LogRecord &rec) override;
 };
 
 class ConsoleLogHandler : public LogHandler
@@ -59,7 +64,12 @@ public:
         : m_colored(colored)
     {}
 
-    virtual void handle_log(const std::string &logger_path, const LogRecord &l) override;
+    void set_colored(bool colored)
+    {
+        m_colored = colored;
+    }
+
+    virtual void handle_log(const LogRecord &l) override;
 };
 
 class FileLogHandler : public LogHandler
@@ -69,7 +79,7 @@ class FileLogHandler : public LogHandler
 public:
     FileLogHandler(const char *file, bool append = false);
 
-    virtual void handle_log(const std::string &log_path, const LogRecord & rec) override;
+    virtual void handle_log(const LogRecord & rec) override;
 };
 
 #if defined(NUT_PLATFORM_OS_LINUX)
@@ -84,29 +94,14 @@ public:
 
     ~SyslogLogHandler();
 
-    virtual void handle_log(const std::string &log_path, const LogRecord &rec) override;
+    void set_close_syslog_on_exit(bool close_on_exit)
+    {
+        m_close_syslog_on_exit = close_on_exit;
+    }
+
+    virtual void handle_log(const LogRecord &rec) override;
 };
 #endif
-
-
-class LogHandlerFactory
-{
-    LogHandlerFactory();
-
-public:
-    /**
-     * the following is allowed:
-     * stdout
-     * stderr
-     * console
-     * console|nocolor
-     * file|append|./logfile.log
-     * file|circle|./dir/prefix
-     * file|./dir/logfile.log
-     * syslog
-     */
-    static rc_ptr<LogHandler> create_log_handler(const std::string &type);
-};
 
 }
 
