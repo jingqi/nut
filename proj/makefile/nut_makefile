@@ -14,7 +14,7 @@ endif
 ifeq ($(HOST), Darwin)
 	CC_FLAGS = -Wall -g -std=c++11
 else
-	CC_FLAGS = -Wall -g -fPIC -rdynamic -std=c++11
+	CC_FLAGS = -Wall -g -rdynamic -std=c++11
 endif
 
 PWD = $(shell pwd)

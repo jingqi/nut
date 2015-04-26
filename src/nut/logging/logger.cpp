@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -305,9 +306,9 @@ void Logger::load_config(const std::string& config)
                 Logger::get_instance()->add_handler(handler.pointer());
             }
 #if defined(NUT_PLATFORM_OS_LINUX)
-            else if (m_type = "syslog")
+            else if (m_type == "syslog")
             {
-                rc<SyslogLogHandler> handler = rc_new<SyslogLogHandler>(m_close_syslog_on_exit);
+                rc_ptr<SyslogLogHandler> handler = rc_new<SyslogLogHandler>(m_close_syslog_on_exit);
                 Logger::get_instance()->add_handler(handler.pointer());
             }
 #endif

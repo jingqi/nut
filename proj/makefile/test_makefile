@@ -48,8 +48,9 @@ nemiver: $(TARGET)
 valgrind: $(TARGET)
 	valgrind -v --leak-check=full $(TARGET)
 
+# NOTE: in linux, $(LIB) should be the last parameter
 $(TARGET): $(OBJS)
-	$(CC) $(LIB) $^ -o $@
+	$(CC) -o $@ $^ $(LIB)
 
 %.o: %.cpp
 	$(CC) $(INC) $(DEF) $(CC_FLAGS) -c $< -o $@
