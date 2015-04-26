@@ -24,9 +24,6 @@ class Logger
 
     NUT_DEBUGGING_DESTROY_CHECKER
 
-private:
-    void log(const LogRecord& record) const;
-
 public:
     ~Logger();
 

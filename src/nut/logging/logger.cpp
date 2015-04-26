@@ -83,28 +83,6 @@ void Logger::clear_handlers()
 	m_handlers.clear();
 }
 
-void Logger::log(const LogRecord &rec) const
-{
-    NUT_DEBUGGING_ASSERT_ALIVE;
-
-    if (m_handlers.empty())
-        return;
-
-    const char *tag = rec.get_tag();
-    LogLevel level = rec.get_level();
-    if (m_filter.is_forbidden(tag, level))
-        return;
-
-    for (size_t i = 0, sz = m_handlers.size(); i < sz; ++i)
-    {
-        LogHandler *handler = m_handlers.at(i);
-        assert(NULL != handler);
-        if (handler->get_filter().is_forbidden(tag, level))
-            continue;
-        handler->handle_log(rec);
-    }
-}
-
 void Logger::log(LogLevel level, const char *tag, const char *file, int line, const char *func, const char *format, ...) const
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
@@ -113,17 +91,19 @@ void Logger::log(LogLevel level, const char *tag, const char *file, int line, co
     if (m_handlers.empty())
         return;
 
+    if (m_filter.is_forbidden(tag, level))
+        return;
+
     size_t size = 32;
     char *buf = (char*) ::malloc(size);
     assert(NULL != buf);
-
     va_list ap;
     while (NULL != buf)
     {
         va_start(ap, format);
         int n = ::vsnprintf(buf, size, format, ap);
         va_end(ap);
-        if (n > -1 && n < (int)size)
+        if (n > -1 && n < (int) size)
             break;
 
         if (n > -1)
@@ -137,7 +117,14 @@ void Logger::log(LogLevel level, const char *tag, const char *file, int line, co
 		return;
 
 	LogRecord record(level, tag, file, line, func, buf); /* buf will be freed by LogRecord */
-    log(record);
+    for (size_t i = 0, sz = m_handlers.size(); i < sz; ++i)
+    {
+        LogHandler *handler = m_handlers.at(i);
+        assert(NULL != handler);
+        if (handler->get_filter().is_forbidden(tag, level))
+            continue;
+        handler->handle_log(record);
+    }
 }
 
 void Logger::load_config(const std::string& config)
