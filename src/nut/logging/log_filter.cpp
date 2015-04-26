@@ -19,6 +19,38 @@ LogFilter::Node::~Node()
     clear();
 }
 
+void LogFilter::Node::swap(Node *x)
+{
+    assert(NULL != x);
+    if (this == x)
+        return;
+
+    const ll_mask_t mask = forbid_mask;
+    forbid_mask = x->forbid_mask;
+    x->forbid_mask = mask;
+
+    hash_t *const hash = children_hash;
+    children_hash = x->children_hash;
+    x->children_hash = hash;
+
+    Node **const chdr = children;
+    children = x->children;
+    x->children = chdr;
+
+    int v = children_size;
+    children_size = x->children_size;
+    x->children_size = v;
+
+    v = children_cap;
+    children_cap = x->children_cap;
+    x->children_cap = v;
+
+    for (int i = 0; i < children_size; ++i)
+        children[i]->parent = this;
+    for (int i = 0; i < x->children_size; ++i)
+        x->children[i]->parent = x;
+}
+
 int LogFilter::Node::search(hash_t hash) const
 {
     // binary search
@@ -122,6 +154,15 @@ void LogFilter::Node::clear()
 LogFilter::LogFilter()
     : m_root(NULL)
 {}
+
+void LogFilter::swap(LogFilter *x)
+{
+    assert(NULL != x);
+    if (this == x)
+        return;
+
+    m_root.swap(&x->m_root);
+}
 
 LogFilter::hash_t LogFilter::hash_to_dot(const char *s, int *char_accum)
 {

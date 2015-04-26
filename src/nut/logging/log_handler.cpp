@@ -19,9 +19,10 @@ namespace nut
 
 void StreamLogHandler::handle_log(const LogRecord &rec)
 {
-    std::string msg;
-    rec.to_string(&msg);
-    m_os << msg << std::endl;
+    m_os << "[" << rec.get_time().get_clock_str() << "] " <<
+         log_level_to_str(rec.get_level()) << " (" <<
+            rec.get_file_name() << ":" << rec.get_line() << ") " <<
+            rec.get_message() << std::endl;
 
     if (0 != (m_flush_mask & rec.get_level()))
         m_os.flush();
@@ -29,7 +30,7 @@ void StreamLogHandler::handle_log(const LogRecord &rec)
 
 void ConsoleLogHandler::handle_log(const LogRecord &rec)
 {
-    std::cout << "[" << rec.get_time().to_string() << "] ";
+    std::cout << "[" << rec.get_time().get_clock_str() << "] ";
     if (m_colored)
     {
         switch (rec.get_level())
@@ -64,8 +65,8 @@ void ConsoleLogHandler::handle_log(const LogRecord &rec)
     if (m_colored)
         ConsoleUtil::set_text_color();
 
-    std::cout << " " << rec.get_file_name() << ":" << i_to_str(rec.get_line()) <<
-        "  " << rec.get_message() << "\n";
+    std::cout << " (" << rec.get_file_name() << ":" << rec.get_line() <<
+        ")  " << rec.get_message() << std::endl;
 
     if (0 != (m_flush_mask & rec.get_level()))
         std::cout.flush();

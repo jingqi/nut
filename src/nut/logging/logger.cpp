@@ -153,6 +153,7 @@ void Logger::load_config(const std::string& config)
                 std::vector<std::string> forbids;
                 chr_split(value, ',', &forbids, true);
 
+                m_forbid_mask = 0;
                 for (size_t i = 0, sz = forbids.size(); i < sz; ++i)
                     m_forbid_mask |= str_to_log_level(forbids.at(i).c_str());
             }
@@ -204,27 +205,73 @@ void Logger::load_config(const std::string& config)
         std::string m_file_path;
         bool m_append, m_colored, m_close_syslog_on_exit;
         int m_circle;
+        ll_mask_t m_flush_mask;
+        LogFilter m_filter;
 
     public:
         HandlerHandler()
             : XmlElementHandler("handler"), m_append(false), m_colored(true),
-              m_close_syslog_on_exit(false), m_circle(-1)
+              m_close_syslog_on_exit(false), m_circle(-1), m_flush_mask(LL_FATAL)
         {}
+
+        virtual XmlElementHandler* handle_child(const std::string& name) override
+        {
+            if (name == "Filter")
+            {
+                FilterHandler *handler = (FilterHandler*) ::malloc(sizeof(FilterHandler));
+                new (handler) FilterHandler(&m_filter);
+                return handler;
+            }
+            return NULL;
+        }
 
         virtual void handle_attribute(const std::string& name, const std::string& value) override
         {
             if (name == "type")
+            {
                 m_type = value;
+            }
+            else if (name == "flushs")
+            {
+                std::vector<std::string> flushs;
+                chr_split(value, ',', &flushs, true);
+
+                m_flush_mask = 0;
+                for (size_t i = 0, sz = flushs.size(); i < sz; ++i)
+                    m_flush_mask |= str_to_log_level(flushs.at(i).c_str());
+            }
             else if (name == "path")
+            {
                 m_file_path = value;
+            }
             else if (name == "append")
+            {
                 m_append = (value == "true" || value == "1");
+            }
             else if (name == "circle")
+            {
                 m_circle = ::atoi(value.c_str());
+            }
             else if (name == "colored")
+            {
                 m_colored = (value == "true" || value == "1");
+            }
             else if (name == "close_syslog_on_exit")
+            {
                 m_close_syslog_on_exit = (value == "true" || value == "1");
+            }
+        }
+
+        virtual void handle_child_finish(XmlElementHandler *child) override
+        {
+            if (NULL == child)
+                return;
+            FilterHandler *handler = dynamic_cast<FilterHandler*>(child);
+            if (NULL != handler)
+            {
+                handler->~FilterHandler();
+                ::free(handler);
+            }
         }
 
         virtual void handle_finish() override
@@ -232,16 +279,22 @@ void Logger::load_config(const std::string& config)
             if (m_type == "stdout")
             {
                 rc_ptr<StreamLogHandler> handler = rc_new<StreamLogHandler>(std::cout);
+                handler->set_flush_mask(m_flush_mask);
+                handler->get_filter().swap(&m_filter);
                 Logger::get_instance()->add_handler(handler.pointer());
             }
             else if (m_type == "stderr")
             {
                 rc_ptr<StreamLogHandler> handler = rc_new<StreamLogHandler>(std::cerr);
+                handler->set_flush_mask(m_flush_mask);
+                handler->get_filter().swap(&m_filter);
                 Logger::get_instance()->add_handler(handler.pointer());
             }
             else if (m_type == "console")
             {
                 rc_ptr<ConsoleLogHandler> handler = rc_new<ConsoleLogHandler>();
+                handler->set_flush_mask(m_flush_mask);
+                handler->get_filter().swap(&m_filter);
                 handler->set_colored(m_colored);
                 Logger::get_instance()->add_handler(handler.pointer());
             }
@@ -290,12 +343,16 @@ void Logger::load_config(const std::string& config)
                 }
 
                 rc_ptr<FileLogHandler> handler = rc_new<FileLogHandler>(m_file_path.c_str(), m_append);
+                handler->set_flush_mask(m_flush_mask);
+                handler->get_filter().swap(&m_filter);
                 Logger::get_instance()->add_handler(handler.pointer());
             }
 #if defined(NUT_PLATFORM_OS_LINUX)
             else if (m_type == "syslog")
             {
                 rc_ptr<SyslogLogHandler> handler = rc_new<SyslogLogHandler>(m_close_syslog_on_exit);
+                handler->set_flush_mask(m_flush_mask);
+                handler->get_filter().swap(&m_filter);
                 Logger::get_instance()->add_handler(handler.pointer());
             }
 #endif

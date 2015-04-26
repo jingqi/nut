@@ -47,13 +47,14 @@ void LogRecord::to_string(std::string *appended) const
     *appended += log_level_to_str(m_level);
 	if (NULL != m_tag)
 	{
-		*appended += " ";
-		*appended += m_tag;
+        *appended += " ";
+        *appended += m_tag;
 	}
-    *appended += " ";
+    *appended += " (";
     *appended += get_file_name();
     *appended += ":";
     *appended += i_to_str(m_line);
+    *appended += ")";
 	if (NULL != m_func)
 	{
 		*appended += " ";

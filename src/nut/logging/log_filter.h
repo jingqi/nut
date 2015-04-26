@@ -15,8 +15,9 @@ class LogFilter
     typedef unsigned hash_t;
 
     // 字典树节点
-    struct Node
+    class Node
     {
+    public:
         ll_mask_t forbid_mask;
 
         Node *parent;
@@ -24,8 +25,15 @@ class LogFilter
         Node **children;
         int children_size, children_cap;
 
+    private:
+        Node(const Node&);
+        Node& operator=(const Node&);
+
+    public:
         Node(Node *p);
         ~Node();
+
+        void swap(Node *x);
 
         /**
          * @return >=0, 找到的位置
@@ -45,6 +53,10 @@ class LogFilter
     };
     struct Node m_root;
 
+private:
+    LogFilter(const LogFilter&);
+    LogFilter& operator=(const LogFilter&);
+
     /**
      * 哈稀字符串，直到遇到结尾或者 '.' 字符
      */
@@ -52,6 +64,8 @@ class LogFilter
 
 public:
     LogFilter();
+
+    void swap(LogFilter *x);
 
     /**
      * 禁用指定 tag

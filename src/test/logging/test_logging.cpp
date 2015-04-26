@@ -68,7 +68,16 @@ NUT_FIXTURE(TestLogging)
                         "<Tag forbids=\"info\" />"
                         "<Tag name=\"a.b\" forbids=\"fatal\" />"
                     "</Filter>"
-                    "<Handler type=\"stdout\" />"
+                    "<Handler type=\"stdout\" flushs=\"debug,info,warn,error,fatal\" >"
+                        "<Filter>"
+                            "<Tag forbids=\"error\" />"
+                        "</Filter>"
+                    "</Handler>"
+                    "<Handler type=\"stderr\" flushs=\"debug,info,warn,error,fatal\" >"
+                        "<Filter>"
+                            "<Tag name=\"a\" forbids=\"debug,info,warn\" />"
+                        "</Filter>"
+                    "</Handler>"
                 "</Logger>";
         Logger::get_instance()->load_config(config);
 
