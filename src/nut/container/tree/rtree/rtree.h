@@ -651,7 +651,7 @@ private:
             RealNumT nomalize = separation / width;
             if (i == 0 || nomalize > greatest_separation)
             {
-                greatest_separation_idx = i;
+                greatest_separation_idx = (int) i;
                 greatest_separation = nomalize;
             }
         }
@@ -868,8 +868,8 @@ public:
             return false; // wrong node type with depth
 
         TreeNode *n = dynamic_cast<TreeNode*>(e);
-        const int cc = n->child_count();
-        if (depth != 1 && cc < (int) MIN_ENTRY_COUNT)
+        const size_t cc = n->child_count();
+        if (depth != 1 && cc < MIN_ENTRY_COUNT)
             return false; // under fill
         for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
         {

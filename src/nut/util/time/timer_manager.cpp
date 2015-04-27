@@ -24,7 +24,7 @@ TimerManager::TimerManager()
 
 TimerManager::~TimerManager()
 {
-    for (int i = 0, size = m_timers.size(); i < size; ++i)
+    for (size_t i = 0, sz = m_timers.size(); i < sz; ++i)
         delete m_timers.at(i);
     m_timers.clear();
 }
@@ -109,7 +109,7 @@ void TimerManager::run()
         else if (m_timers[0]->time > now + min_interval)
         {
             const TimeVal wait = m_timers[0]->time - now;
-            m_cond.timedwait(&m_lock, (unsigned) wait.sec, wait.usec / 1000);
+            m_cond.timedwait(&m_lock, (unsigned) wait.sec, (unsigned) (wait.usec / 1000));
         }
         else
         {

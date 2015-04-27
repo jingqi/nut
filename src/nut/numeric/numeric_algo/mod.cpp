@@ -332,7 +332,7 @@ static void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
     nn.limit_positive_bits_to(rlen);
 
     // 准备预运算表
-    int bits_left = b.bit_length() - 1; // 剩余还未处理的比特数
+    int bits_left = (int) b.bit_length() - 1; // 剩余还未处理的比特数
     assert(bits_left >= 0);
     const size_t wnd_size = _best_wnd(bits_left); // 滑动窗口大小
     const uint32_t WND_MASK = ~(((uint32_t) 1) << wnd_size);

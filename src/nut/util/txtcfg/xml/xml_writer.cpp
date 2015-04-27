@@ -40,7 +40,7 @@ void XmlWriter::end_element()
     else
     {
         write("</");
-        write(state.name.c_str(), state.name.length());
+        write(state.name.c_str(), (int) state.name.length());
         write(">");
     }
     m_elem_path.pop_back();

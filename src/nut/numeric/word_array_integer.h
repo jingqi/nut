@@ -154,7 +154,7 @@ bool signed_less_than(const T *a, size_t M, const T *b, size_t N)
 
     // 同号比较
     const word_type fill = (positive1 ? 0 : ~(word_type)0);
-    for (int i = (std::max)(M, N) - 1; i >= 0; --i)
+    for (int i = (int) (std::max)(M, N) - 1; i >= 0; --i)
     {
         const word_type op1 = (i < (int)M ? reinterpret_cast<const word_type*>(a)[i] : fill);
         const word_type op2 = (i < (int)N ? reinterpret_cast<const word_type*>(b)[i] : fill);
@@ -175,7 +175,7 @@ bool unsigned_less_than(const T *a, size_t M, const T *b, size_t N)
     assert(NULL != a && M > 0 && NULL != b && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
-    for (int i = (std::max)(M, N) - 1; i >= 0; --i)
+    for (int i = (int) (std::max)(M, N) - 1; i >= 0; --i)
     {
         const word_type op1 = (i < (int)M ? reinterpret_cast<const word_type*>(a)[i] : 0);
         const word_type op2 = (i < (int)N ? reinterpret_cast<const word_type*>(b)[i] : 0);
@@ -274,7 +274,7 @@ void signed_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
     else
     {
         const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
-        for (int i = N - 1; i >= 0; --i)
+        for (int i = (int) N - 1; i >= 0; --i)
         {
             const word_type high = (i < (int) words_off ? 0 : (i - (int) words_off >= (int) M ? fill :
                     reinterpret_cast<const word_type*>(a)[i - (int) words_off])) << bits_off;
@@ -336,7 +336,7 @@ void unsigned_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
     }
     else
     {
-        for (int i = N - 1; i >= 0; --i)
+        for (int i = (int) N - 1; i >= 0; --i)
         {
             const word_type high = (i < (int) words_off ? 0 : (i - (int) words_off >= (int) M ? 0 :
                     reinterpret_cast<const word_type*>(a)[i - (int) words_off])) << bits_off;
@@ -369,7 +369,7 @@ void _signed_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t word_
     else
     {
         const T fill = (is_positive(a, M) ? 0 : ~(T)0);
-        for (int i = N - 1; i >= 0; --i)
+        for (int i = (int) N - 1; i >= 0; --i)
             x[i] = (i + (int) word_count >= (int) M ? fill : a[i + (int) word_count]);
     }
 }
@@ -404,7 +404,7 @@ void signed_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count)
     else
     {
         const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
-        for (int i = N - 1; i >= 0; --i)
+        for (int i = (int) N - 1; i >= 0; --i)
         {
             const word_type high = (i + (int) words_off + 1 >= (int) M ? fill :
                     reinterpret_cast<const word_type*>(a)[i + (int) words_off + 1]) << (8 * sizeof(word_type) - bits_off);
@@ -432,7 +432,7 @@ void _unsigned_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t wor
     }
     else
     {
-        for (int i = N - 1; i >= 0; --i)
+        for (int i = (int) N - 1; i >= 0; --i)
             x[i] = (i + (int) word_count >= M ? 0 : a[i + (int) word_count]);
     }
 }
@@ -465,7 +465,7 @@ void unsigned_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count
     }
     else
     {
-        for (int i = N - 1; i >= 0; --i)
+        for (int i = (int) N - 1; i >= 0; --i)
         {
             const word_type high = (i + (int) words_off + 1 >= (int) M ? 0 :
                     reinterpret_cast<const word_type*>(a)[i + (int) words_off + 1]) << (8 * sizeof(word_type) - bits_off);
@@ -558,7 +558,7 @@ void bit_or(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL)
     }
     else if ((x <= a - N || x >= a) && (x <= b - N || x >= b))
     {
-        for (int i = N - 1; i >= 0; --i)
+        for (int i = (int) N - 1; i >= 0; --i)
             x[i] = a[i] | b[i];
     }
     else
@@ -608,7 +608,7 @@ void bit_xor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL
     }
     else if ((x <= a - N || x >= a) && (x <= b - N || x >= b))
     {
-        for (int i = N - 1; i >= 0; --i)
+        for (int i = (int) N - 1; i >= 0; --i)
             x[i] = a[i] ^ b[i];
     }
     else
@@ -658,7 +658,7 @@ void bit_nxor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NUL
     }
     else if ((x <= a - N || x >= a) && (x <= b - N || x >= b))
     {
-        for (int i = N - 1; i >= 0; --i)
+        for (int i = (int) N - 1; i >= 0; --i)
             x[i] = ~(a[i] ^ b[i]);
     }
     else
@@ -692,7 +692,7 @@ void bit_not(const T *a, T *x, size_t N)
     }
     else
     {
-        for (int i = N - 1; i >= 0; --i)
+        for (int i = (int) N - 1; i >= 0; --i)
             x[i] = ~a[i];
     }
 }
@@ -823,12 +823,12 @@ inline size_t bit_length(const uint8_t *a,  size_t N)
     return 0;
 #else
     const size_t bits32_count = N / sizeof(uint32_t);
-    for (int i = N - 1, limit = bits32_count * sizeof(uint32_t); i >= limit; --i)
+    for (int i = (int) N - 1, limit = (int) bits32_count * sizeof(uint32_t); i >= limit; --i)
     {
         if (0 != a[i])
             return i * 8 + _bit_length(a[i]);
     }
-    for (int i = bits32_count - 1; i >= 0; --i)
+    for (int i = (int) bits32_count - 1; i >= 0; --i)
     {
         if (0 != reinterpret_cast<const uint32_t*>(a)[i])
             return i * 32 + _bit_length(reinterpret_cast<const uint32_t*>(a)[i]);
@@ -853,12 +853,12 @@ inline size_t bit0_length(const uint8_t *a, size_t N)
     return 0;
 #else
     const size_t bits32_count = N / sizeof(uint32_t);
-    for (int i = N - 1, limit = bits32_count * sizeof(uint32_t); i >= limit; --i)
+    for (int i = (int) N - 1, limit = (int) bits32_count * sizeof(uint32_t); i >= limit; --i)
     {
         if (0xFF != a[i])
             return i * 8 + _bit_length((uint8_t)~a[i]);
     }
-    for (int i = bits32_count - 1; i >= 0; --i)
+    for (int i = (int) bits32_count - 1; i >= 0; --i)
     {
         if (0xFFFFFFFF != reinterpret_cast<const uint32_t*>(a)[i])
             return i * 32 + _bit_length((uint32_t)~reinterpret_cast<const uint32_t*>(a)[i]);
@@ -969,7 +969,7 @@ inline int _lowest_bit(uint64_t a)
         a >>= 2;
     }
     ret -= a & 1;
-    return ret;
+    return (int) ret;
 }
 
 inline int _lowest_bit(uint32_t a)
@@ -999,7 +999,7 @@ inline int _lowest_bit(uint32_t a)
         a >>= 2;
     }
     ret -= a & 1;
-    return ret;
+    return (int) ret;
 }
 
 inline int _lowest_bit(uint16_t a)
@@ -1024,7 +1024,7 @@ inline int _lowest_bit(uint16_t a)
         a >>= 2;
     }
     ret -= a & 1;
-    return ret;
+    return (int) ret;
 }
 
 inline int _lowest_bit(uint8_t a)
@@ -1044,7 +1044,7 @@ inline int _lowest_bit(uint8_t a)
         a >>= 2;
     }
     ret -= a & 1;
-    return ret;
+    return (int) ret;
 }
 
 /**
@@ -1069,12 +1069,12 @@ inline int lowest_bit(const uint8_t *a, size_t N)
     for (size_t i = 0; i < bits32_count; ++i)
     {
         if (0 != reinterpret_cast<const uint32_t*>(a)[i])
-            return i * 32 + _lowest_bit(reinterpret_cast<const uint32_t*>(a)[i]);
+            return (int) i * 32 + _lowest_bit(reinterpret_cast<const uint32_t*>(a)[i]);
     }
     for (size_t i = bits32_count * sizeof(uint32_t); i < N; ++i)
     {
         if (0 != a[i])
-            return i * 8 + _lowest_bit(a[i]);
+            return (int) i * 8 + _lowest_bit(a[i]);
     }
     return -1;
 #endif
@@ -1102,12 +1102,12 @@ inline int lowest_bit0(const uint8_t *a, size_t N)
     for (size_t i = 0; i < bits32_count; ++i)
     {
         if (0xffffffff != reinterpret_cast<const uint32_t*>(a)[i])
-            return i * 32 + _lowest_bit((uint32_t)~reinterpret_cast<const uint32_t*>(a)[i]);
+            return (int) i * 32 + _lowest_bit((uint32_t)~reinterpret_cast<const uint32_t*>(a)[i]);
     }
     for (size_t i = bits32_count * sizeof(uint32_t); i < N; ++i)
     {
         if (0xff != a[i])
-            return i * 8 + _lowest_bit((uint8_t)~a[i]);
+            return (int) i * 8 + _lowest_bit((uint8_t)~a[i]);
     }
     return -1;
 #endif

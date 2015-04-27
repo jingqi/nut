@@ -215,7 +215,7 @@ public:
         {
             if (enqueue_attempt(new_node))
                 return;
-            if (seen_tail <= m_head.tag && try_to_eliminate_enqueue(new_node, seen_tail))
+            if (seen_tail <= m_head.tag && try_to_eliminate_enqueue(new_node, (unsigned int) seen_tail))
                 return;
         }
     }
@@ -331,7 +331,7 @@ private:
 
     bool try_to_eliminate_dequeue(T *p)
     {
-        const unsigned int seen_head = m_head.tag;
+        const unsigned int seen_head = (unsigned int) m_head.tag;
         const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
         const TagedPtr<Node> old_collision(m_collisions[i].cas);
         if (old_collision.ptr == reinterpret_cast<Node*>(COLLISION_EMPTY_PTR) ||

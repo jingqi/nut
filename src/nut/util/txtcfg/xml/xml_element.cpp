@@ -290,7 +290,7 @@ void XmlElement::parse(const std::string& s, size_t start_index, bool ignore_tex
     clear();
     Handler h(this, ignore_text_blank);
     XmlParser p(&h);
-    p.input(s.c_str() + start_index, s.length() - start_index);
+    p.input(s.c_str() + start_index, (int) (s.length() - start_index));
     p.finish();
 }
 

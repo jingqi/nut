@@ -160,7 +160,7 @@ BigInteger next_prime(const BigInteger& n)
 
     while (true)
     {
-        BitSieve search_sieve(result, search_len);
+        BitSieve search_sieve(result, (int) search_len);
         const BigInteger candidate = search_sieve.retrieve(result, DEFAULT_PRIME_CERTAINTY);
         if (!candidate.is_zero())
             return candidate;

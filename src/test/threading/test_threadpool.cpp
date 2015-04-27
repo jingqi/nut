@@ -24,7 +24,7 @@ NUT_FIXTURE(TestThreading)
 
     static void custom(void *p)
     {
-        int c = reinterpret_cast<char*>(p) - (char*)NULL;
+        int c = (int) (reinterpret_cast<char*>(p) - (char*)NULL);
         printf("%c", c);
     }
 

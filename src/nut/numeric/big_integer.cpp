@@ -656,7 +656,7 @@ static char num2char(size_t n)
 static wchar_t num2wchar(size_t n)
 {
     assert(n < 36);
-    return (n < 10 ? L'0' + n : L'A' + n - 10);
+    return (wchar_t) (n < 10 ? L'0' + n : L'A' + n - 10);
 }
 
 void BigInteger::to_string(std::string *appended, size_type radix) const

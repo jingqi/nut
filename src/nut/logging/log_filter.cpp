@@ -77,18 +77,8 @@ void LogFilter::Node::ensure_cap(int new_size)
     if (new_cap < new_size)
         new_cap = new_size;
 
-    if (NULL == children_hash)
-    {
-        assert(NULL == children && 0 == children_size);
-        children_hash = (hash_t*) ::malloc(sizeof(hash_t) * new_cap);
-        children = (Node**) ::malloc(sizeof(Node*) * new_cap);
-    }
-    else
-    {
-        assert(NULL != children);
-        children_hash = (hash_t*) ::realloc(children_hash, sizeof(hash_t) * new_cap);
-        children = (Node**) ::realloc(children, sizeof(Node*) * new_cap);
-    }
+    children_hash = (hash_t*) ::realloc(children_hash, sizeof(hash_t) * new_cap);
+    children = (Node**) ::realloc(children, sizeof(Node*) * new_cap);
     children_cap = new_cap;
 }
 

@@ -74,7 +74,7 @@ int kmp_search(const T *src, size_t len_src, size_t start, const T *target, cons
     while (i < len_src && ((size_t) state) < len_target)
         state = kmp_update(src[i++], state, target, next);
     if (state == (int)len_target)
-        return i - len_target;
+        return (int) (i - len_target);
     return -1;
 }
 
