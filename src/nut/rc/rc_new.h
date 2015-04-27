@@ -30,7 +30,7 @@ rc_ptr<T> rca_new(memory_allocator *ma, Args&& ...args)
     if (NULL == ma)
         return rc_new<T,Counter>(args...);
 
-    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_alloc(ma, sizeof(RCAllocWrapper<T,Counter>));
+    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_realloc(ma, NULL, sizeof(RCAllocWrapper<T,Counter>));
     assert(NULL != p);
     new (p) RCAllocWrapper<T,Counter>(ma, args...);
     return rc_ptr<T>(p);
@@ -152,7 +152,7 @@ rc_ptr<T> rca_new(memory_allocator *ma)
     if (NULL == ma)
         return rc_new<T,Counter>();
 
-    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_alloc(ma, sizeof(RCAllocWrapper<T,Counter>));
+    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_realloc(ma, NULL, sizeof(RCAllocWrapper<T,Counter>));
     assert(NULL != p);
     new (p) RCAllocWrapper<T,Counter>(ma);
     return rc_ptr<T>(p);
@@ -164,7 +164,7 @@ rc_ptr<T> rca_new(memory_allocator *ma, Arg1&& arg1)
     if (NULL == ma)
         return rc_new<T,Counter>(arg1);
 
-    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_alloc(ma, sizeof(RCAllocWrapper<T,Counter>));
+    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_realloc(ma, NULL, sizeof(RCAllocWrapper<T,Counter>));
     assert(NULL != p);
     new (p) RCAllocWrapper<T,Counter>(ma, arg1);
     return rc_ptr<T>(p);
@@ -176,7 +176,7 @@ rc_ptr<T> rca_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2)
     if (NULL == ma)
         return rc_new<T,Counter>(arg1, arg2);
 
-    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_alloc(ma, sizeof(RCAllocWrapper<T,Counter>));
+    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_realloc(ma, NULL, sizeof(RCAllocWrapper<T,Counter>));
     assert(NULL != p);
     new (p) RCAllocWrapper<T,Counter>(ma, arg1, arg2);
     return rc_ptr<T>(p);
@@ -188,7 +188,7 @@ rc_ptr<T> rca_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3)
     if (NULL == ma)
         return rc_new<T,Counter>(arg1, arg2, arg3);
 
-    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_alloc(ma, sizeof(RCAllocWrapper<T,Counter>));
+    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_realloc(ma, NULL, sizeof(RCAllocWrapper<T,Counter>));
     assert(NULL != p);
     new (p) RCAllocWrapper<T,Counter>(ma, arg1, arg2, arg3);
     return rc_ptr<T>(p);
@@ -200,7 +200,7 @@ rc_ptr<T> rca_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, A
     if (NULL == ma)
         return rc_new<T,Counter>(arg1, arg2, arg3, arg4);
 
-    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_alloc(ma, sizeof(RCAllocWrapper<T,Counter>));
+    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_realloc(ma, NULL, sizeof(RCAllocWrapper<T,Counter>));
     assert(NULL != p);
     new (p) RCAllocWrapper<T,Counter>(ma, arg1, arg2, arg3, arg4);
     return rc_ptr<T>(p);
@@ -212,7 +212,7 @@ rc_ptr<T> rca_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, A
     if (NULL == ma)
         return rc_new<T,Counter>(arg1, arg2, arg3, arg4, arg5);
 
-    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_alloc(ma, sizeof(RCAllocWrapper<T,Counter>));
+    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_realloc(ma, NULL, sizeof(RCAllocWrapper<T,Counter>));
     assert(NULL != p);
     new (p) RCAllocWrapper<T,Counter>(ma, arg1, arg2, arg3, arg4, arg5);
     return rc_ptr<T>(p);
@@ -226,7 +226,7 @@ rc_ptr<T> rca_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, A
     if (NULL == ma)
         return rc_new<T,Counter>(arg1, arg2, arg3, arg4, arg5, arg6);
 
-    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_alloc(ma, sizeof(RCAllocWrapper<T,Counter>));
+    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_realloc(ma, NULL, sizeof(RCAllocWrapper<T,Counter>));
     assert(NULL != p);
     new (p) RCAllocWrapper<T,Counter>(ma, arg1, arg2, arg3, arg4, arg5, arg6);
     return rc_ptr<T>(p);
@@ -240,7 +240,7 @@ rc_ptr<T> rca_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, A
     if (NULL == ma)
         return rc_new<T,Counter>(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 
-    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_alloc(ma, sizeof(RCAllocWrapper<T,Counter>));
+    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_realloc(ma, NULL, sizeof(RCAllocWrapper<T,Counter>));
     assert(NULL != p);
     new (p) RCAllocWrapper<T,Counter>(ma, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
     return rc_ptr<T>(p);
@@ -254,7 +254,7 @@ rc_ptr<T> rca_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, A
     if (NULL == ma)
         return rc_new<T,Counter>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 
-    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_alloc(ma, sizeof(RCAllocWrapper<T,Counter>));
+    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_realloc(ma, NULL, sizeof(RCAllocWrapper<T,Counter>));
     assert(NULL != p);
     new (p) RCAllocWrapper<T,Counter>(ma, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
     return rc_ptr<T>(p);
@@ -268,7 +268,7 @@ rc_ptr<T> rca_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, A
     if (NULL == ma)
         return rc_new<T,Counter>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
 
-    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_alloc(ma, sizeof(RCAllocWrapper<T,Counter>));
+    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_realloc(ma, NULL, sizeof(RCAllocWrapper<T,Counter>));
     assert(NULL != p);
     new (p) RCAllocWrapper<T,Counter>(ma, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
     return rc_ptr<T>(p);
@@ -282,7 +282,7 @@ rc_ptr<T> rca_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, A
     if (NULL == ma)
         return rc_new<T,Counter>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
 
-    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_alloc(ma, sizeof(RCAllocWrapper<T,Counter>));
+    RCAllocWrapper<T,Counter> *p = (RCAllocWrapper<T,Counter>*) ma_realloc(ma, NULL, sizeof(RCAllocWrapper<T,Counter>));
     assert(NULL != p);
     new (p) RCAllocWrapper<T,Counter>(ma, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
     return rc_ptr<T>(p);

@@ -32,7 +32,7 @@ struct ModMultiplyPreBuildTable
         width = (1 << C) - 1;
 
         const size_t count = hight * width;
-        table = (BigInteger*) ma_alloc(alloc.pointer(), sizeof(BigInteger) * count);
+        table = (BigInteger*) ma_realloc(alloc.pointer(), NULL, sizeof(BigInteger) * count);
         assert(NULL != table);
 
         // 填充第一行
@@ -90,7 +90,7 @@ struct ModMultiplyPreBuildTable
         width = (1 << C) - 1;
 
         const size_t count = hight * width;
-        table = (BigInteger**) ma_alloc(alloc.pointer(), sizeof(BigInteger*) * count);
+        table = (BigInteger**) ma_realloc(alloc.pointer(), NULL, sizeof(BigInteger*) * count);
         assert(NULL != table);
         ::memset(table, 0, sizeof(BigInteger*) * count);
 
@@ -127,12 +127,12 @@ struct ModMultiplyPreBuildTable
         {
             if (j == 0)
             {
-                table[base_off] = (BigInteger*) ma_alloc(alloc.pointer(), sizeof(BigInteger));
+                table[base_off] = (BigInteger*) ma_realloc(alloc.pointer(), NULL, sizeof(BigInteger));
                 new (table[base_off]) BigInteger(at(i - 1, 0) + at(i - 1, width - 1));
             }
             else
             {
-                table[base_off + j] = (BigInteger*) ma_alloc(alloc.pointer(), sizeof(BigInteger));
+                table[base_off + j] = (BigInteger*) ma_realloc(alloc.pointer(), NULL, sizeof(BigInteger));
                 new (table[base_off + j]) BigInteger(at(i, 0) + at(i, j - 1));
             }
 

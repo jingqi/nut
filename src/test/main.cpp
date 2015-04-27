@@ -39,9 +39,9 @@ int main()
 
     TestRunner trunner(l);
 
-    //trunner.run_group("quiet");
+    trunner.run_group("quiet");
 
-    trunner.run_fixture("TestLogging");
+    //trunner.run_fixture("TestLogging");
 
     //trunner.run_case("TestNumericAlgo", "test_karatsuba_multiply");
 

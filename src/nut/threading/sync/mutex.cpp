@@ -106,6 +106,8 @@ bool Mutex::timedlock(unsigned s, unsigned ms)
     return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, dw_milliseconds);
 #elif defined(NUT_PLATFORM_OS_MAC)
 #   warning FIXME MAC 不支持pthread_mutex_timedlock()
+    (void)s;
+    (void)ms;
     return 0 == ::pthread_mutex_trylock(&m_mutex); // TODO MAC 不支持 pthread_mutex_timedlock()
 #else
     struct timespec abstime;

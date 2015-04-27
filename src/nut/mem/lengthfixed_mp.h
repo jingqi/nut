@@ -74,7 +74,7 @@ public:
             const TagedPtr<FreeNode> old_head(m_head.cas);
 
             if (NULL == old_head.ptr)
-                return ma_alloc(m_alloc.pointer(), sizeof(FreeNode));
+                return ma_realloc(m_alloc.pointer(), NULL, sizeof(FreeNode));
 
             const TagedPtr<FreeNode> new_head(old_head.ptr->next, old_head.tag + 1);
             if (atomic_cas(&(m_head.cas), old_head.cas, new_head.cas))
@@ -85,25 +85,21 @@ public:
         }
     }
 
-    virtual void* alloc(size_t cb) override
-    {
-        NUT_DEBUGGING_ASSERT_ALIVE;
-        assert(G == cb);
-        void *p = self_type::alloc();
-        assert(NULL != p);
-        return p;
-    }
-
     virtual void* realloc(void *p, size_t cb) override
     {
-        assert(G == cb);
-        return p;
+        assert(NULL == p && G == cb);
+        NUT_DEBUGGING_ASSERT_ALIVE;
+        if (NULL != p)
+            self_type::free(p);
+        if (G == cb)
+            return self_type::alloc();
+        return NULL;
     }
 
     virtual void free(void *p) override
     {
-        NUT_DEBUGGING_ASSERT_ALIVE;
         assert(NULL != p);
+        NUT_DEBUGGING_ASSERT_ALIVE;
         while(true)
         {
             if (m_free_num >= (int) MAX_FREE_BLOCKS)

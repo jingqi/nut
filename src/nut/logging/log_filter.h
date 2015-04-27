@@ -51,7 +51,7 @@ class LogFilter
         void remove(Node *child);
         void clear();
     };
-    struct Node m_root;
+    class Node m_root;
 
 private:
     LogFilter(const LogFilter&);

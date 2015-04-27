@@ -21,6 +21,7 @@ void BitStream::_ensure_cap(size_t new_bit_size)
     size_t new_word_cap = m_word_cap * 3 / 2;
     if (new_word_cap < new_word_size)
         new_word_cap = new_word_size;
+
     m_buf = (word_type*) ::realloc(m_buf, sizeof(word_type) * new_word_cap); // XXX realloc() handle NULL
     assert(NULL != m_buf);
     m_word_cap = new_word_cap;

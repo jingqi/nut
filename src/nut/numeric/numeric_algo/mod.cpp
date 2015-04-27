@@ -161,17 +161,17 @@ struct MontgomeryPreBuildTable
         assert(0 < wnd_sz && wnd_sz < 16);
 
         size = 1 << (wnd_sz - 1);
-        table = (BigInteger**) ma_alloc(alloc.pointer(), sizeof(BigInteger*) * size);
+        table = (BigInteger**) ma_realloc(alloc.pointer(), NULL, sizeof(BigInteger*) * size);
         assert(NULL != table);
         ::memset(table, 0, sizeof(BigInteger*) * size);
 
-        table[0] = (BigInteger*) ma_alloc(alloc.pointer(), sizeof(BigInteger));
+        table[0] = (BigInteger*) ma_realloc(alloc.pointer(), NULL, sizeof(BigInteger));
         new (table[0]) BigInteger(m);
         BigInteger mm(0, m.allocator());
         _montgomery(m * m, rlen, n, nn, &mm);
         for (size_t i = 1; i < size; ++i)
         {
-            table[i] = (BigInteger*) ma_alloc(alloc.pointer(), sizeof(BigInteger));
+            table[i] = (BigInteger*) ma_realloc(alloc.pointer(), NULL, sizeof(BigInteger));
             new (table[i]) BigInteger(0, m.allocator());
             _montgomery(*table[i - 1] * mm, rlen, n, nn, table[i]);
         }

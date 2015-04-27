@@ -55,13 +55,12 @@ private:
     {
         if (new_size <= m_cap)
             return;
+
         size_type new_cap = m_cap * 3 / 2;
         if (new_cap < new_size)
             new_cap = new_size;
-        if (NULL == m_buf)
-            m_buf = (T*) ma_alloc(m_alloc.pointer(), sizeof(T) * new_cap);
-        else
-            m_buf = (T*) ma_realloc(m_alloc.pointer(), m_buf, sizeof(T) * new_cap);
+
+        m_buf = (T*) ma_realloc(m_alloc.pointer(), m_buf, sizeof(T) * new_cap);
         assert(NULL != m_buf);
         m_cap = new_cap;
     }

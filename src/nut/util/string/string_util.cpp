@@ -370,7 +370,7 @@ int stricmp(const char *str1, const char *str2)
 {
     assert(NULL != str1 && NULL != str2);
     size_t i = 0;
-    while ((str1[i] | 0x20) == (str2[i] | 0x20) && NULL != str1[i])
+    while ((str1[i] | 0x20) == (str2[i] | 0x20) && 0 != str1[i])
         ++i;
     return str1[i] - str2[i];
 }
@@ -379,7 +379,7 @@ int stricmp(const wchar_t *str1, const char *str2)
 {
     assert(NULL != str1 && NULL != str2);
     size_t i = 0;
-    while ((str1[i] | 0x20) == (str2[i] | 0x20) && NULL != str1[i])
+    while ((str1[i] | 0x20) == (str2[i] | 0x20) && 0 != str1[i])
         ++i;
     return (str1[i] | 0x20) - (str2[i] | 0x20);
 }

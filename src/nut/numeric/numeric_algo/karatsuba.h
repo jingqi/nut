@@ -78,20 +78,20 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     //        = min(b_len + 1, P - base_len)
     // since, a_len <= b_len
     const size_t ab_len = (std::min)(b_len + 1, P - base_len);
-    T *AB = (T*) ma_alloc(ma, sizeof(T) * ab_len);
+    T *AB = (T*) ma_realloc(ma, NULL, sizeof(T) * ab_len);
     unsigned_add(A, a_len, B, b_len, AB, ab_len, ma);
 
     // cd_len = min(max(c_len, d_len) + 1, P - base_len)
     //        = min(d_len + 1, P - base_len)
     // since, c_len <= d_len
     const size_t cd_len = (std::min)(d_len + 1, P - base_len);
-    T *CD = (T*) ma_alloc(ma, sizeof(T) * cd_len);
+    T *CD = (T*) ma_realloc(ma, NULL, sizeof(T) * cd_len);
     unsigned_add(C, c_len, D, d_len, CD, cd_len, ma);
 
     // abcd_len = min(ab_len + cd_len, P - base_len)
     //          = min(b_len + d_len + 1, P - base_len)
     const size_t abcd_len = (std::min)(b_len + d_len + 1, P - base_len);
-    T *ABCD = (T*) ma_alloc(ma, sizeof(T) * abcd_len);
+    T *ABCD = (T*) ma_realloc(ma, NULL, sizeof(T) * abcd_len);
     unsigned_karatsuba_multiply(AB, ab_len, CD, cd_len, ABCD, abcd_len, ma);
     ma_free(ma, AB);
     ma_free(ma, CD);
@@ -100,7 +100,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     //        = min(a_len + c_len, P - base_len)
     // since, P - base_len >= max(M,N) - base_len > 0
     const size_t ac_len = (std::min)(a_len + c_len, P - base_len);
-    T *AC = (T*) ma_alloc(ma, sizeof(T) * ac_len);
+    T *AC = (T*) ma_realloc(ma, NULL, sizeof(T) * ac_len);
     unsigned_karatsuba_multiply(A, a_len, C, c_len, AC, ac_len, ma);
 
     // bd_len = min(b_len + d_len, P)
@@ -141,14 +141,14 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
     if (!is_positive(a, M))
     {
         ++MM;
-        aa = (T*) ma_alloc(ma, sizeof(T) * MM);
+        aa = (T*) ma_realloc(ma, NULL, sizeof(T) * MM);
         signed_negate(a, M, aa, MM, ma);
         neg = !neg;
     }
     if (!is_positive(b, N))
     {
         ++NN;
-        bb = (T*) ma_alloc(ma, sizeof(T) * NN);
+        bb = (T*) ma_realloc(ma, NULL, sizeof(T) * NN);
         signed_negate(b, N, bb, NN, ma);
         neg = !neg;
     }

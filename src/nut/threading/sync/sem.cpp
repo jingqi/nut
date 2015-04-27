@@ -73,6 +73,8 @@ bool Semaphore::timedwait(unsigned s, unsigned ms)
     return WAIT_OBJECT_0 == ::WaitForSingleObject(m_sema, dw_milliseconds);
 #elif defined(NUT_PLATFORM_OS_MAC)
 #   warning FIXME MAC 不支持sem_timedwait()
+    (void)s;
+    (void)ms;
     return 0 == ::sem_trywait(&m_sem);
 #else
     struct timespec abstime;

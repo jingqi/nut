@@ -37,11 +37,9 @@ public:
 #endif
 
 public:
-    void* alloc(size_t cb);
+    virtual void* realloc(void *p, size_t cb) override;
 
-    void* realloc(void *p, size_t new_cb);
-
-    void free(void *p);
+    virtual void free(void *p) override;
 
 #ifndef NDEBUG
     size_t get_alloc_count() const;

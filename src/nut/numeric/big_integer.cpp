@@ -20,10 +20,7 @@ void BigInteger::ensure_cap(size_type new_size)
     if (new_cap < new_size)
         new_cap = new_size;
 
-    if (NULL == m_buffer)
-        m_buffer = (word_type*) ma_alloc(m_alloc.pointer(), sizeof(word_type) * new_cap);
-    else
-        m_buffer = (word_type*) ma_realloc(m_alloc.pointer(), m_buffer, sizeof(word_type) * new_cap);
+    m_buffer = (word_type*) ma_realloc(m_alloc.pointer(), m_buffer, sizeof(word_type) * new_cap);
     assert(NULL != m_buffer);
     m_cap = new_cap;
 }

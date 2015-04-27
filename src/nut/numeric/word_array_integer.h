@@ -489,7 +489,7 @@ void bit_and(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL
     // 避免区域交叉覆盖
     T *retx = x;
     if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (T*) ma_alloc(ma, sizeof(T) * N);
+        retx = (T*) ma_realloc(ma, NULL, sizeof(T) * N);
 
     for (size_t i = 0; i < N; ++i)
         retx[i] = a[i] & b[i];
@@ -514,7 +514,7 @@ void bit_and(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL
     else
     {
         // 避免区域交叉覆盖
-        T *const retx = (T*) ma_alloc(ma, sizeof(T) * N);
+        T *const retx = (T*) ma_realloc(ma, NULL, sizeof(T) * N);
 
         for (size_t i = 0; i < N; ++i)
             retx[i] = a[i] & b[i];
@@ -539,7 +539,7 @@ void bit_or(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL)
     // 避免区域交叉覆盖
     T *retx = x;
     if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (T*) ma_alloc(ma, sizeof(T) * N);
+        retx = (T*) ma_realloc(ma, NULL, sizeof(T) * N);
 
     for (size_t i = 0; i < N; ++i)
         retx[i] = a[i] | b[i];
@@ -564,7 +564,7 @@ void bit_or(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL)
     else
     {
         // 避免区域交叉覆盖
-        T *const retx = (T*) ma_alloc(ma, sizeof(T) * N);
+        T *const retx = (T*) ma_realloc(ma, NULL, sizeof(T) * N);
 
         for (size_t i = 0; i < N; ++i)
             retx[i] = a[i] | b[i];
@@ -589,7 +589,7 @@ void bit_xor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL
     // 避免区域交叉覆盖
     T *retx = x;
     if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (T*) ma_alloc(ma, sizeof(T) * N);
+        retx = (T*) ma_realloc(ma, NULL, sizeof(T) * N);
 
     for (size_t i = 0; i < N; ++i)
         retx[i] = a[i] ^ b[i];
@@ -614,7 +614,7 @@ void bit_xor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL
     else
     {
         // 避免区域交叉覆盖
-        T *const retx = (T*) ma_alloc(ma, sizeof(T) * N);
+        T *const retx = (T*) ma_realloc(ma, NULL, sizeof(T) * N);
 
         for (size_t i = 0; i < N; ++i)
             retx[i] = a[i] ^ b[i];
@@ -639,7 +639,7 @@ void bit_nxor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NUL
     // 避免区域交叉覆盖
     T *retx = x;
     if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (T*) ma_alloc(ma, sizeof(T) * N);
+        retx = (T*) ma_realloc(ma, NULL, sizeof(T) * N);
 
     for (size_t i = 0; i < N; ++i)
         retx[i] = ~(a[i] ^ b[i]);
@@ -664,7 +664,7 @@ void bit_nxor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NUL
     else
     {
         // 避免区域交叉覆盖
-        T *const retx = (T*) ma_alloc(ma, sizeof(T) * N);
+        T *const retx = (T*) ma_realloc(ma, NULL, sizeof(T) * N);
 
         for (size_t i = 0; i < N; ++i)
             retx[i] = ~(a[i] ^ b[i]);
@@ -1129,7 +1129,7 @@ uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, m
     // 避免区域交叉覆盖
     word_type *retx = reinterpret_cast<word_type*>(x);
     if ((a < x && x < a + M) || (b < x && x < b + N))
-        retx = (word_type*) ma_alloc(ma, sizeof(word_type) * P);
+        retx = (word_type*) ma_realloc(ma, NULL, sizeof(word_type) * P);
 
     uint8_t carry = 0;
     const word_type filla = (is_positive(a, M) ? 0 : ~(word_type)0), fillb = (is_positive(b, N) ? 0 : ~(word_type)0);
@@ -1168,7 +1168,7 @@ uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
     // 避免区域交叉覆盖
     word_type *retx = reinterpret_cast<word_type*>(x);
     if ((a < x && x < a + M) || (b < x && x < b + N))
-        retx = (word_type*) ma_alloc(ma, sizeof(word_type) * P);
+        retx = (word_type*) ma_realloc(ma, NULL, sizeof(word_type) * P);
 
     uint8_t carry = 0;
     for (size_t i = 0; i < P; ++i)
@@ -1231,7 +1231,7 @@ uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, m
     // 避免区域交叉覆盖
     word_type *retx = reinterpret_cast<word_type*>(x);
     if ((a < x && x < a + M) || (b < x && x < b + N))
-        retx = (word_type*) ma_alloc(ma, sizeof(word_type) * P);
+        retx = (word_type*) ma_realloc(ma, NULL, sizeof(word_type) * P);
 
     const word_type filla = (is_positive(a, M) ? 0 : ~(word_type)0), fillb = (is_positive(b, N) ? 0 : ~(word_type)0);
     uint8_t carry = 1;
@@ -1270,7 +1270,7 @@ uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
     // 避免区域交叉覆盖
     word_type *retx = reinterpret_cast<word_type*>(x);
     if ((a < x && x < a + M) || (b < x && x < b + N))
-        retx = (word_type*) ma_alloc(ma, sizeof(word_type) * P);
+        retx = (word_type*) ma_realloc(ma, NULL, sizeof(word_type) * P);
 
     uint8_t carry = 1;
     for (size_t i = 0; i < P; ++i)
@@ -1333,7 +1333,7 @@ uint8_t signed_negate(const T *a, size_t M, T *x, size_t N, memory_allocator *ma
     // 避免区域交叉覆盖
     word_type *retx = reinterpret_cast<word_type*>(x);
     if (a < x && x < a + M)
-        retx = (word_type*) ma_alloc(ma, sizeof(word_type) * N);
+        retx = (word_type*) ma_realloc(ma, NULL, sizeof(word_type) * N);
 
     uint8_t carry = 1;
     const word_type fill = (is_positive(a, M) ? 0 : ~(word_type)0);
@@ -1371,7 +1371,7 @@ uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N, memory_allocator *
     // 避免区域交叉覆盖
     word_type *retx = reinterpret_cast<word_type*>(x);
     if (a < x && x < a + M)
-        retx = (word_type*) ma_alloc(ma, sizeof(word_type) * N);
+        retx = (word_type*) ma_realloc(ma, NULL, sizeof(word_type) * N);
 
     uint8_t carry = 1;
     for (size_t i = 0; i < N; ++i)
@@ -1426,7 +1426,7 @@ void _unsigned_square(const T *a, size_t M, T *x, size_t N, memory_allocator *ma
     // 避免区域交叉覆盖
     word_type *retx = reinterpret_cast<word_type*>(x);
     if (a - N < x && x < a + M)
-        retx = (word_type*) ma_alloc(ma, sizeof(word_type) * N);
+        retx = (word_type*) ma_realloc(ma, NULL, sizeof(word_type) * N);
 
     // 先计算一半
     ::memset(retx, 0, sizeof(word_type) * N);
@@ -1507,7 +1507,7 @@ void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
     // 避免区域交叉覆盖
     word_type *retx = reinterpret_cast<word_type*>(x);
     if ((a - P < x && x < a + M) || (b - P < x && x < b + N))
-        retx = (word_type*) ma_alloc(ma, sizeof(word_type) * P);
+        retx = (word_type*) ma_realloc(ma, NULL, sizeof(word_type) * P);
 
     // 乘法
     const word_type filla = (is_positive(a,M) ? 0 : ~(word_type)0), fillb = (is_positive(b,N) ? 0 : ~(word_type)0); /// 先把变量算出来，避免操作数被破坏
@@ -1558,7 +1558,7 @@ void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t 
     // 避免区域交叉覆盖
     word_type *retx = reinterpret_cast<word_type*>(x);
     if ((a - P < x && x < a + M) || (b - P < x && x < b + N))
-        retx = (word_type*) ma_alloc(ma, sizeof(word_type) * P);
+        retx = (word_type*) ma_realloc(ma, NULL, sizeof(word_type) * P);
 
     // 乘法
     ::memset(retx, 0, sizeof(word_type) * P);
@@ -1623,10 +1623,10 @@ void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T
     // 避免数据在计算中途被破坏
     word_type *quotient = reinterpret_cast<word_type*>(x); // 商，可以为 NULL
     if ((a - P < x && x < a) || (b - P < x && x < b + N)) // 兼容 x==a 的情况
-        quotient = (word_type*) ma_alloc(ma, sizeof(word_type) * quotient_len);
+        quotient = (word_type*) ma_realloc(ma, NULL, sizeof(word_type) * quotient_len);
     word_type *remainder = reinterpret_cast<word_type*>(y); // 余数，不能为 NULL
     if (NULL == y || Q < divisor_len || (a - Q < y && y < a + M) || (b - Q < y && y < b + N))
-        remainder = (word_type*) ma_alloc(ma, sizeof(word_type) * divisor_len);
+        remainder = (word_type*) ma_realloc(ma, NULL, sizeof(word_type) * divisor_len);
 
     // 逐位试商
     ::memset(remainder, (dividend_positive ? 0 : 0xFF), sizeof(word_type) * divisor_len); // 初始化余数
@@ -1736,10 +1736,10 @@ void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
     // 避免数据在计算中途被破坏
     word_type *quotient = reinterpret_cast<word_type*>(x); // 商，可以为 NULL
     if ((a - P < x && x < a) || (b - P < x && x < b + N)) // 兼容 x==a 的情况
-        quotient = (word_type*) ma_alloc(ma, sizeof(word_type) * quotient_len);
+        quotient = (word_type*) ma_realloc(ma, NULL, sizeof(word_type) * quotient_len);
     word_type *remainder = reinterpret_cast<word_type*>(y); // 余数，不能为 NULL
     if (NULL == y || Q < divisor_len || (a - Q < y && y < a + M) || (b - Q < y && y < b + N))
-        remainder = (word_type*) ma_alloc(ma, sizeof(word_type) * divisor_len);
+        remainder = (word_type*) ma_realloc(ma, NULL, sizeof(word_type) * divisor_len);
 
     // 逐位试商
     ::memset(remainder, 0, sizeof(word_type) * divisor_len); // 初始化余数
