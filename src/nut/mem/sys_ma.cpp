@@ -80,7 +80,7 @@ void* sys_ma::realloc(void *p, size_t cb)
         return ((uint32_t*) ret) + 2;
     }
 #else
-    return ::realloc(p, cb)
+    return ::realloc(p, cb);
 #endif
 }
 

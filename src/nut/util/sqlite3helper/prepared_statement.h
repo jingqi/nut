@@ -39,11 +39,11 @@ public:
     {}
 
     ParamWraper(const char *arg)
-        : type(STRING), string_arg(RC_NEW(NULL, enrc<std::string>, arg))
+        : type(STRING), string_arg(rc_new<enrc<std::string> >(arg))
     {}
 
     ParamWraper(const std::string& arg)
-        : type(STRING), string_arg(RC_NEW(NULL, enrc<std::string>, const_ref_arg<std::string>(arg)))
+        : type(STRING), string_arg(rc_new<enrc<std::string> >(arg))
     {}
 
     static const ParamWraper& none()
@@ -78,7 +78,7 @@ public:
         int rs = ::sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
         if (SQLITE_OK != rs || NULL == stmt)
             return false;
-        m_stmt = RC_NEW(NULL, SqliteStmt, stmt);
+        m_stmt = rc_new<SqliteStmt>(stmt);
         return true;
     }
 

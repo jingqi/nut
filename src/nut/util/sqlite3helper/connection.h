@@ -249,7 +249,7 @@ public:
         assert(NULL != sql && is_valid());
 
         // 预编译
-        rc_ptr<PreparedStatement> stmt = RC_NEW(NULL, PreparedStatement, m_sqlite, sql);
+        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(m_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);
@@ -305,7 +305,7 @@ public:
         assert(NULL != sql && is_valid());
 
         // 预编译
-        rc_ptr<PreparedStatement> stmt = RC_NEW(NULL, PreparedStatement, m_sqlite, sql);
+        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(m_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);
@@ -358,11 +358,11 @@ public:
         assert(NULL != sql && is_valid());
 
         // 预编译
-        rc_ptr<PreparedStatement> stmt = RC_NEW(NULL, PreparedStatement, m_sqlite, sql);
+        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(m_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);
-            return RC_NEW(NULL, ResultSet);
+            return rc_new<ResultSet>();
         }
 
         // 绑定参数
@@ -370,7 +370,7 @@ public:
         if (!rs)
         {
             on_error(SQLITE_ERROR);
-            return RC_NEW(NULL, ResultSet);
+            return rc_new<ResultSet>();
         }
 
 #define __BIND(i) \
@@ -378,7 +378,7 @@ public:
         if (!rs) \
         { \
             on_error(SQLITE_ERROR); \
-            return RC_NEW(NULL, ResultSet); \
+            return rc_new<ResultSet>(); \
         }
 
         __BIND(1)
@@ -394,7 +394,7 @@ public:
 #undef __BIND
 
         // 执行
-        return RC_NEW(NULL, ResultSet, stmt->stmt());
+        return rc_new<ResultSet>(stmt->stmt());
     }
 
     rc_ptr<ResultSet> execute_query(const char *sql, const std::vector<ParamWraper> args)
@@ -402,11 +402,11 @@ public:
         assert(NULL != sql && is_valid());
 
         // 预编译
-        rc_ptr<PreparedStatement> stmt = RC_NEW(NULL, PreparedStatement, m_sqlite, sql);
+        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(m_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);
-            return RC_NEW(NULL, ResultSet);
+            return rc_new<ResultSet>();
         }
 
         // 绑定参数
@@ -414,7 +414,7 @@ public:
         if (!rs)
         {
             on_error(SQLITE_ERROR);
-            return RC_NEW(NULL, ResultSet);
+            return rc_new<ResultSet>();
         }
         for (size_t i = 0, size = args.size(); i < size; ++i)
         {
@@ -422,12 +422,12 @@ public:
             if (!rs)
             {
                 on_error(SQLITE_ERROR);
-                return RC_NEW(NULL, ResultSet);
+                return rc_new<ResultSet>();
             }
         }
 
         // 执行
-        return RC_NEW(NULL, ResultSet, stmt->stmt());
+        return rc_new<ResultSet>(stmt->stmt());
     }
 };
 
