@@ -2,72 +2,103 @@
 TARGET = nut
 TEMPLATE = lib
 
-include(../global.pri)
-
 QT -= core gui
 CONFIG += staticlib
 
-DEFINES +=
+# 配置输出目录
+DESTDIR = $$PWD/../..
+mac {
+    DESTDIR = $${DESTDIR}/mac
+} else: unix {
+    DESTDIR = $${DESTDIR}/unix
+} else {
+    DESTDIR = $${DESTDIR}/win
+}
+DESTDIR = $${DESTDIR}-$${QMAKE_HOST.arch}
+CONFIG(debug, debug|release) {
+    DESTDIR = $${DESTDIR}-debug
+} else {
+    DESTDIR = $${DESTDIR}-release
+}
+message("DESTDIR: "$${DESTDIR})
 
-SRC_ROOT = $$PWD/../../../../src
+# C++11 支持
+QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CFLAGS += -std=c++11
 
+# 这里貌似是qmake的一个bug，不会主动添加 _DEBUG/NDEBUG 宏
+CONFIG(debug, debug|release) {
+    DEFINES += _DEBUG
+} else {
+    DEFINES += NDEBUG
+}
+
+# INCLUDE 路径
+SRC_ROOT = $$PWD/../../../../src/nut
 INCLUDEPATH += \
-    $${SRC_ROOT}
+    $${SRC_ROOT}/..
 
+# 头文件
 HEADERS +=\
-    $$files($${SRC_ROOT}/nut/*.h*) \
-    $$files($${SRC_ROOT}/nut/container/*.h*) \
-    $$files($${SRC_ROOT}/nut/container/skiplist/*.h*) \
-    $$files($${SRC_ROOT}/nut/container/tree/*.h*) \
-    $$files($${SRC_ROOT}/nut/container/tree/rtree/*.h*) \
-    $$files($${SRC_ROOT}/nut/debugging/*.h*) \
-    $$files($${SRC_ROOT}/nut/rc/*.h*) \
-    $$files($${SRC_ROOT}/nut/logging/*.h*) \
-    $$files($${SRC_ROOT}/nut/mem/*.h*) \
-    $$files($${SRC_ROOT}/nut/memtool/*.h*) \
-    $$files($${SRC_ROOT}/nut/numeric/*.h*) \
-    $$files($${SRC_ROOT}/nut/numeric/numeric_algo/*.h*) \
-    $$files($${SRC_ROOT}/nut/pconsole/*.h*) \
-    $$files($${SRC_ROOT}/nut/platform/*.h*) \
-    $$files($${SRC_ROOT}/nut/security/*.h*) \
-    $$files($${SRC_ROOT}/nut/security/digest/*.h*) \
-    $$files($${SRC_ROOT}/nut/security/encrypt/*.h*) \
-    $$files($${SRC_ROOT}/nut/threading/*.h*) \
-    $$files($${SRC_ROOT}/nut/threading/lockfree/*.h*) \
-    $$files($${SRC_ROOT}/nut/threading/sync/*.h*) \
-    $$files($${SRC_ROOT}/nut/unittest/*.h*) \
-    $$files($${SRC_ROOT}/nut/util/*.h*) \
-    $$files($${SRC_ROOT}/nut/util/sqlite3helper/*.h*) \
-    $$files($${SRC_ROOT}/nut/util/string/*.h*) \
-    $$files($${SRC_ROOT}/nut/util/time/*.h*) \
-    $$files($${SRC_ROOT}/nut/util/txtcfg/*.h*) \
-    $$files($${SRC_ROOT}/nut/util/txtcfg/xml/*.h*)
+    $$files($${SRC_ROOT}/*.h*) \
+    $$files($${SRC_ROOT}/container/*.h*) \
+    $$files($${SRC_ROOT}/container/skiplist/*.h*) \
+    $$files($${SRC_ROOT}/container/tree/*.h*) \
+    $$files($${SRC_ROOT}/container/tree/rtree/*.h*) \
+    $$files($${SRC_ROOT}/debugging/*.h*) \
+    $$files($${SRC_ROOT}/rc/*.h*) \
+    $$files($${SRC_ROOT}/logging/*.h*) \
+    $$files($${SRC_ROOT}/mem/*.h*) \
+    $$files($${SRC_ROOT}/memtool/*.h*) \
+    $$files($${SRC_ROOT}/numeric/*.h*) \
+    $$files($${SRC_ROOT}/numeric/numeric_algo/*.h*) \
+    $$files($${SRC_ROOT}/pconsole/*.h*) \
+    $$files($${SRC_ROOT}/platform/*.h*) \
+    $$files($${SRC_ROOT}/security/*.h*) \
+    $$files($${SRC_ROOT}/security/digest/*.h*) \
+    $$files($${SRC_ROOT}/security/encrypt/*.h*) \
+    $$files($${SRC_ROOT}/threading/*.h*) \
+    $$files($${SRC_ROOT}/threading/lockfree/*.h*) \
+    $$files($${SRC_ROOT}/threading/sync/*.h*) \
+    $$files($${SRC_ROOT}/unittest/*.h*) \
+    $$files($${SRC_ROOT}/util/*.h*) \
+    $$files($${SRC_ROOT}/util/sqlite3helper/*.h*) \
+    $$files($${SRC_ROOT}/util/string/*.h*) \
+    $$files($${SRC_ROOT}/util/time/*.h*) \
+    $$files($${SRC_ROOT}/util/txtcfg/*.h*) \
+    $$files($${SRC_ROOT}/util/txtcfg/xml/*.h*)
 
+# 源代码
 SOURCES +=\
-    $$files($${SRC_ROOT}/nut/*.c*) \
-    $$files($${SRC_ROOT}/nut/container/*.c*) \
-    $$files($${SRC_ROOT}/nut/container/skiplist/*.c*) \
-    $$files($${SRC_ROOT}/nut/container/tree/*.c*) \
-    $$files($${SRC_ROOT}/nut/container/tree/rtree/*.c*) \
-    $$files($${SRC_ROOT}/nut/debugging/*.c*) \
-    $$files($${SRC_ROOT}/nut/rc/*.c*) \
-    $$files($${SRC_ROOT}/nut/logging/*.c*) \
-    $$files($${SRC_ROOT}/nut/mem/*.c*) \
-    $$files($${SRC_ROOT}/nut/memtool/*.c*) \
-    $$files($${SRC_ROOT}/nut/numeric/*.c*) \
-    $$files($${SRC_ROOT}/nut/numeric/numeric_algo/*.c*) \
-    $$files($${SRC_ROOT}/nut/pconsole/*.c*) \
-    $$files($${SRC_ROOT}/nut/platform/*.c*) \
-    $$files($${SRC_ROOT}/nut/security/*.c*) \
-    $$files($${SRC_ROOT}/nut/security/digest/*.c*) \
-    $$files($${SRC_ROOT}/nut/security/encrypt/*.c*) \
-    $$files($${SRC_ROOT}/nut/threading/*.c*) \
-    $$files($${SRC_ROOT}/nut/threading/lockfree/*.c*) \
-    $$files($${SRC_ROOT}/nut/threading/sync/*.c*) \
-    $$files($${SRC_ROOT}/nut/unittest/*.c*) \
-    $$files($${SRC_ROOT}/nut/util/*.c*) \
-    $$files($${SRC_ROOT}/nut/util/sqlite3helper/*.c*) \
-    $$files($${SRC_ROOT}/nut/util/string/*.c*) \
-    $$files($${SRC_ROOT}/nut/util/time/*.c*) \
-    $$files($${SRC_ROOT}/nut/util/txtcfg/*.c*) \
-    $$files($${SRC_ROOT}/nut/util/txtcfg/xml/*.c*)
+    $$files($${SRC_ROOT}/*.c*) \
+    $$files($${SRC_ROOT}/container/*.c*) \
+    $$files($${SRC_ROOT}/container/skiplist/*.c*) \
+    $$files($${SRC_ROOT}/container/tree/*.c*) \
+    $$files($${SRC_ROOT}/container/tree/rtree/*.c*) \
+    $$files($${SRC_ROOT}/debugging/*.c*) \
+    $$files($${SRC_ROOT}/rc/*.c*) \
+    $$files($${SRC_ROOT}/logging/*.c*) \
+    $$files($${SRC_ROOT}/mem/*.c*) \
+    $$files($${SRC_ROOT}/memtool/*.c*) \
+    $$files($${SRC_ROOT}/numeric/*.c*) \
+    $$files($${SRC_ROOT}/numeric/numeric_algo/*.c*) \
+    $$files($${SRC_ROOT}/pconsole/*.c*) \
+    $$files($${SRC_ROOT}/platform/*.c*) \
+    $$files($${SRC_ROOT}/security/*.c*) \
+    $$files($${SRC_ROOT}/security/digest/*.c*) \
+    $$files($${SRC_ROOT}/security/encrypt/*.c*) \
+    $$files($${SRC_ROOT}/threading/*.c*) \
+    $$files($${SRC_ROOT}/threading/lockfree/*.c*) \
+    $$files($${SRC_ROOT}/threading/sync/*.c*) \
+    $$files($${SRC_ROOT}/unittest/*.c*) \
+    $$files($${SRC_ROOT}/util/*.c*) \
+    $$files($${SRC_ROOT}/util/sqlite3helper/*.c*) \
+    $$files($${SRC_ROOT}/util/string/*.c*) \
+    $$files($${SRC_ROOT}/util/time/*.c*) \
+    $$files($${SRC_ROOT}/util/txtcfg/*.c*) \
+    $$files($${SRC_ROOT}/util/txtcfg/xml/*.c*)
+
+# 连接库
+!unix {
+    LIBS += -lpthread
+}

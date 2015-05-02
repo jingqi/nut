@@ -1,22 +1,46 @@
 
-TARGET = nut_test
+TARGET = test_nut
 TEMPLATE = app
-
-include(../global.pri)
 
 QT -= core gui
 CONFIG += console
 CONFIG -= app_bundle
 
-DEFINES += 
+# 配置输出目录
+DESTDIR = $$PWD/../..
+mac {
+    DESTDIR = $${DESTDIR}/mac
+} else : unix {
+    DESTDIR = $${DESTDIR}/unix
+} else {
+    DESTDIR = $${DESTDIR}/win
+}
+DESTDIR = $${DESTDIR}-$${QMAKE_HOST.arch}
+CONFIG(debug, debug|release) {
+    DESTDIR = $${DESTDIR}-debug
+} else {
+    DESTDIR = $${DESTDIR}-release
+}
+message("DESTDIR: "$${DESTDIR})
 
-NUT_ROOT = $$PWD/../../../../src
-SRC_ROOT = $${NUT_ROOT}/test
+# C++11 支持
+QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CFLAGS += -std=c++11
 
+# 这里貌似是qmake的一个bug，不会主动添加 _DEBUG/NDEBUG 宏
+CONFIG(debug, debug|release) {
+    DEFINES += _DEBUG
+} else {
+    DEFINES += NDEBUG
+}
+
+# INCLUDE 路径
+SRC_ROOT = $$PWD/../../../../src/test
 INCLUDEPATH += \
-    $${NUT_ROOT} \
+    $${SRC_ROOT}/.. \
     $${SRC_ROOT}
 
+# 源代码
 SOURCES +=\
     $$files($${SRC_ROOT}/*.c*) \
     $$files($${SRC_ROOT}/container/*.c*) \
@@ -40,5 +64,10 @@ SOURCES +=\
     $$files($${SRC_ROOT}/util/txtcfg/*.c*) \
     $$files($${SRC_ROOT}/util/txtcfg/xml/*.c*)
 
-unix:!mac: LIBS += -lrt
-LIBS += -lnut
+# 连接库
+unix {
+    !mac: LIBS += -lrt
+} else {
+    LIBS += -lpthread
+}
+LIBS += -L$${DESTDIR} -lnut
