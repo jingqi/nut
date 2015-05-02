@@ -76,7 +76,7 @@ public:
      */
     std::string get_string(int column_index)
     {
-        assert(column-index >= 0 && !m_stmt.is_null());
+        assert(column_index >= 0 && !m_stmt.is_null());
         const char *ret = (const char*) ::sqlite3_column_text(m_stmt->raw(), column_index);
         return NULL == ret ? "" : ret;
     }
