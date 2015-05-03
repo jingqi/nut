@@ -88,6 +88,7 @@ public:
     {
         bool rs = close();
         assert(rs);
+        (void)rs;
     }
 
     bool open(const char *dbfilepath)
@@ -98,6 +99,7 @@ public:
         {
             bool rs = close();
             assert(rs);
+            (void)rs;
         }
 
         int rs = ::sqlite3_open(dbfilepath, &m_sqlite);

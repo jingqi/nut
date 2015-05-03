@@ -28,6 +28,7 @@ public:
         {
             int rs = ::sqlite3_finalize(m_stmt);
             assert(SQLITE_OK == rs);
+            (void)rs;
             m_stmt = NULL;
         }
     }

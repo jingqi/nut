@@ -43,6 +43,7 @@ public:
     ptr<T>& operator=(T* p)
     {
         m_ptr = p;
+        return *this;
     }
 
     /**
