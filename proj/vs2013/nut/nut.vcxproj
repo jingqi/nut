@@ -93,7 +93,6 @@
     <ClInclude Include="..\..\..\src\nut\logging\log_level.h" />
     <ClInclude Include="..\..\..\src\nut\logging\log_record.h" />
     <ClInclude Include="..\..\..\src\nut\memtool\free_guard.h" />
-    <ClInclude Include="..\..\..\src\nut\memtool\ptr.h" />
     <ClInclude Include="..\..\..\src\nut\memtool\singleton.h" />
     <ClInclude Include="..\..\..\src\nut\mem\lengthfixed_mp.h" />
     <ClInclude Include="..\..\..\src\nut\mem\memory_allocator.h" />

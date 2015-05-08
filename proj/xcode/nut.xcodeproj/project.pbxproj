@@ -134,7 +134,6 @@
 		2E1928D51AD90DAA00FDFFA6 /* scoped_gc.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1926F31AD8FFDB00FDFFA6 /* scoped_gc.h */; };
 		2E1928D61AD90DAA00FDFFA6 /* sys_ma.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1926F51AD8FFDB00FDFFA6 /* sys_ma.h */; };
 		2E1928D71AD90DAA00FDFFA6 /* free_guard.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1926FD1AD8FFEF00FDFFA6 /* free_guard.h */; };
-		2E1928D81AD90DAA00FDFFA6 /* ptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1926FE1AD8FFEF00FDFFA6 /* ptr.h */; };
 		2E1928D91AD90DAA00FDFFA6 /* singleton.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1926FF1AD8FFEF00FDFFA6 /* singleton.h */; };
 		2E1928DA1AD90DAA00FDFFA6 /* atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1927831AD900FF00FDFFA6 /* atomic.h */; };
 		2E1928DB1AD90DAA00FDFFA6 /* concurrent_queue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1927841AD900FF00FDFFA6 /* concurrent_queue.h */; };
@@ -259,7 +258,6 @@
 		2E1926F41AD8FFDB00FDFFA6 /* sys_ma.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sys_ma.cpp; path = ../../src/nut/mem/sys_ma.cpp; sourceTree = "<group>"; };
 		2E1926F51AD8FFDB00FDFFA6 /* sys_ma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sys_ma.h; path = ../../src/nut/mem/sys_ma.h; sourceTree = "<group>"; };
 		2E1926FD1AD8FFEF00FDFFA6 /* free_guard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = free_guard.h; path = ../../src/nut/memtool/free_guard.h; sourceTree = "<group>"; };
-		2E1926FE1AD8FFEF00FDFFA6 /* ptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ptr.h; path = ../../src/nut/memtool/ptr.h; sourceTree = "<group>"; };
 		2E1926FF1AD8FFEF00FDFFA6 /* singleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = singleton.h; path = ../../src/nut/memtool/singleton.h; sourceTree = "<group>"; };
 		2E1927041AD9001D00FDFFA6 /* big_integer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = big_integer.cpp; path = ../../src/nut/numeric/big_integer.cpp; sourceTree = "<group>"; };
 		2E1927051AD9001D00FDFFA6 /* big_integer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = big_integer.h; path = ../../src/nut/numeric/big_integer.h; sourceTree = "<group>"; };
@@ -559,7 +557,6 @@
 			isa = PBXGroup;
 			children = (
 				2E1926FD1AD8FFEF00FDFFA6 /* free_guard.h */,
-				2E1926FE1AD8FFEF00FDFFA6 /* ptr.h */,
 				2E1926FF1AD8FFEF00FDFFA6 /* singleton.h */,
 			);
 			name = memtool;
@@ -1109,7 +1106,6 @@
 				2E1928D51AD90DAA00FDFFA6 /* scoped_gc.h in Headers */,
 				2E1928D61AD90DAA00FDFFA6 /* sys_ma.h in Headers */,
 				2E1928D71AD90DAA00FDFFA6 /* free_guard.h in Headers */,
-				2E1928D81AD90DAA00FDFFA6 /* ptr.h in Headers */,
 				2E1928D91AD90DAA00FDFFA6 /* singleton.h in Headers */,
 				2E1928DA1AD90DAA00FDFFA6 /* atomic.h in Headers */,
 				2E1928DB1AD90DAA00FDFFA6 /* concurrent_queue.h in Headers */,
