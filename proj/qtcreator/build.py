@@ -29,7 +29,7 @@ def build_win32(debug):
 	print(cmd)
 	if 0 != os.system(cmd):
 		raise Exception('make failed')
-		
+
 def clean_win():
 	# make clean
 	cmd = cd_cmd + ' && mingw32-make clean'
@@ -51,7 +51,7 @@ def build_mac64(debug):
 	print(cmd)
 	if 0 != os.system(cmd):
 		raise Exception('make failed')
-		
+
 def clean_mac():
 	# make clean
 	cmd = cd_cmd + ' ; make clean'
@@ -107,7 +107,7 @@ def main():
 			raise Exception('Unexpected argument: ' + sys.argv[i])
 
 	_setup_path()
-			
+
 	if clean:
 		if sys.platform == 'win32':
 			clean_win()
