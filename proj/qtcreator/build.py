@@ -59,9 +59,9 @@ def clean_mac():
 	if 0 != os.system(cmd):
 		raise Exception('make failed')
 
-def build_linux64():
+def build_linux64(debug):
 	# qmake
-	cmd = cd_cmd + ' ; qmake ' + pro_path + ' -r -spec linux64-g++'
+	cmd = cd_cmd + ' ; qmake ' + pro_path + ' -r -spec linux-g++-64'
 	if debug:
 		cmd = cmd + ' CONFIG+=debug'
 	print(cmd)
