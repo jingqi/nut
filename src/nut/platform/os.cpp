@@ -415,7 +415,7 @@ bool OS::remove_tree(const char *path)
 
     // 删除空目录
     if (ret)
-        ret = ::rmdir(path);
+        ret = (0 == ::rmdir(path));
     return ret;
 #endif
 }
