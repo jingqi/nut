@@ -726,7 +726,7 @@ time_t Path::get_ctime(const std::wstring& path)
 /**
  * 获取文件大小
  */
-long Path::get_size(const char *path)
+long long Path::get_size(const char *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -741,12 +741,12 @@ long Path::get_size(const char *path)
 #endif
 }
 
-long Path::get_size(const std::string& path)
+long long Path::get_size(const std::string& path)
 {
     return Path::get_size(path.c_str());
 }
 
-long Path::get_size(const wchar_t *path)
+long long Path::get_size(const wchar_t *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -760,7 +760,7 @@ long Path::get_size(const wchar_t *path)
 #endif
 }
 
-long Path::get_size(const std::wstring& path)
+long long Path::get_size(const std::wstring& path)
 {
     return Path::get_size(path.c_str());
 }

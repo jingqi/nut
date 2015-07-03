@@ -116,10 +116,10 @@ public:
     /**
      * 获取文件大小
      */
-    static long get_size(const char *path);
-    static long get_size(const std::string& path);
-    static long get_size(const wchar_t *path);
-    static long get_size(const std::wstring& path);
+    static long long get_size(const char *path);
+    static long long get_size(const std::string& path);
+    static long long get_size(const wchar_t *path);
+    static long long get_size(const std::wstring& path);
 
     static bool is_dir(const char *path);
     static bool is_dir(const std::string& path);
