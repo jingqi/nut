@@ -50,6 +50,11 @@ public:
     static bool mkdir(const wchar_t *path);
     static bool mkdir(const std::wstring& path);
 
+    static bool mkdirs(const char *path);
+    static bool mkdirs(const std::string& path);
+    static bool mkdirs(const wchar_t *path);
+    static bool mkdirs(const std::wstring& path);
+
     /**
      * 删除空目录
      */

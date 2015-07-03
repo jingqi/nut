@@ -18,6 +18,7 @@
 #include <nut/util/string/string_util.h>
 
 #include "os.h"
+#include "path.h"
 
 namespace nut
 {
@@ -256,6 +257,46 @@ bool OS::mkdir(const wchar_t *path)
 bool OS::mkdir(const std::wstring& path)
 {
     return OS::mkdir(path.c_str());
+}
+
+bool OS::mkdirs(const char *path)
+{
+    assert(NULL != path);
+
+    // 可能目录已经存在
+    if (Path::exists(path))
+        return Path::is_dir(path);
+
+    // 可能是根目录
+    std::string fullpath;
+    Path::abs_path(path, &fullpath);
+    std::string parent, name;
+    Path::split(fullpath, &parent, &name);
+    if (parent.length() == fullpath.length() || name.empty())
+        return false; // 根目录是无法创建的
+
+    // 递归创建
+    if (!Path::exists(parent) && !OS::mkdirs(parent))
+        return false;
+    return OS::mkdir(path);
+}
+
+bool OS::mkdirs(const std::string &path)
+{
+    return OS::mkdirs(path.c_str());
+}
+
+bool OS::mkdirs(const wchar_t *path)
+{
+    assert(NULL != path);
+    std::string p;
+    wstr_to_ascii(path, &p);
+    return OS::mkdirs(p.c_str());
+}
+
+bool OS::mkdirs(const std::wstring &path)
+{
+    return OS::mkdirs(path.c_str());
 }
 
 /**
