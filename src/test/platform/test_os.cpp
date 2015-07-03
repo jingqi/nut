@@ -19,13 +19,13 @@ NUT_FIXTURE(TestOS)
 	{
         //cout << endl;
         vector<string> subs;
-        OS::listdir(".", &subs);
+        OS::list_dir(".", &subs);
         //for (size_t i = 0, sz = subs.size(); i < sz; ++i)
             //cout << subs.at(i) << endl;
 
         //wcout << endl;
         vector<wstring> subsw;
-        OS::listdir(L".", &subsw);
+        OS::list_dir(L".", &subsw);
         //for (size_t i = 0, sz = subsw.size(); i < sz; ++i)
             //wcout << subsw.at(i) << endl;
         NUT_TA(subs.size() == subsw.size());

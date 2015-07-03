@@ -29,7 +29,7 @@ namespace nut
  * @parma except_dir 如果传入true, 则返回值不会包含文件夹
  * @parma except_initial_dot 如果传入true, 则返回值不会包含以'.'开头的文件/文件夹
  */
-void OS::listdir(const char *path, std::vector<std::string> *appended, bool except_file,
+void OS::list_dir(const char *path, std::vector<std::string> *appended, bool except_file,
         bool except_dir, bool except_initial_dot)
 {
     assert(NULL != path && NULL != appended);
@@ -79,7 +79,7 @@ void OS::listdir(const char *path, std::vector<std::string> *appended, bool exce
             struct stat buf;
             if (::lstat(file_path, &buf) < 0)
                 continue;
-            if (except_file && !S_ISDIR(buf.st_mode))
+            if (except_file && S_ISREG(buf.st_mode))
                 continue;
             if (except_dir && S_ISDIR(buf.st_mode))
                 continue;
@@ -93,7 +93,7 @@ void OS::listdir(const char *path, std::vector<std::string> *appended, bool exce
 #endif
 }
 
-void OS::listdir(const wchar_t *path, std::vector<std::wstring> *appended, bool except_file,
+void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *appended, bool except_file,
     bool except_dir, bool except_initial_dot)
 {
     assert(NULL != path && NULL != appended);
@@ -129,7 +129,7 @@ void OS::listdir(const wchar_t *path, std::vector<std::wstring> *appended, bool 
     std::string p;
     wstr_to_ascii(path, &p);
     std::vector<std::string> dirs;
-    listdir(p.c_str(), &dirs, except_file, except_dir, except_initial_dot);
+    OS::list_dir(p.c_str(), &dirs, except_file, except_dir, except_initial_dot);
     std::wstring s;
     for (size_t i = 0, size = dirs.size(); i < size; ++i)
     {
@@ -143,7 +143,7 @@ void OS::listdir(const wchar_t *path, std::vector<std::wstring> *appended, bool 
 /**
  * 复制文件
  */
-bool OS::copyfile(const char *src, const char *dest)
+bool OS::copy_file(const char *src, const char *dest)
 {
     assert(NULL != src && NULL != dest);
 
@@ -174,12 +174,12 @@ bool OS::copyfile(const char *src, const char *dest)
 #endif
 }
 
-bool OS::copyfile(const std::string& src, const std::string& dest)
+bool OS::copy_file(const std::string& src, const std::string& dest)
 {
-    return copyfile(src.c_str(), dest.c_str());
+    return OS::copy_file(src.c_str(), dest.c_str());
 }
 
-bool OS::copyfile(const wchar_t *src, const wchar_t *dest)
+bool OS::copy_file(const wchar_t *src, const wchar_t *dest)
 {
     assert(NULL != src && NULL != dest);
 
@@ -189,27 +189,27 @@ bool OS::copyfile(const wchar_t *src, const wchar_t *dest)
     std::string s, d;
     wstr_to_ascii(src, &s);
     wstr_to_ascii(dest, &d);
-    return copyfile(s.c_str(), d.c_str());
+    return OS::copy_file(s.c_str(), d.c_str());
 #endif
 }
 
-bool OS::copyfile(const std::wstring& src, const std::wstring& dest)
+bool OS::copy_file(const std::wstring& src, const std::wstring& dest)
 {
-    return copyfile(src.c_str(), dest.c_str());
+    return OS::copy_file(src.c_str(), dest.c_str());
 }
 
-bool OS::removefile(const char *path)
+bool OS::remove_file(const char *path)
 {
     assert(NULL != path);
     return -1 != ::remove(path);
 }
 
-bool OS::removefile(const std::string& path)
+bool OS::remove_file(const std::string& path)
 {
-    return removefile(path.c_str());
+    return OS::remove_file(path.c_str());
 }
 
-bool OS::removefile(const wchar_t *path)
+bool OS::remove_file(const wchar_t *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -217,13 +217,13 @@ bool OS::removefile(const wchar_t *path)
 #else
     std::string p;
     wstr_to_ascii(path, &p);
-    return removefile(p.c_str());
+    return OS::remove_file(p.c_str());
 #endif
 }
 
-bool OS::removefile(const std::wstring& path)
+bool OS::remove_file(const std::wstring& path)
 {
-    return removefile(path.c_str());
+    return OS::remove_file(path.c_str());
 }
 
 bool OS::mkdir(const char *path)
@@ -232,13 +232,13 @@ bool OS::mkdir(const char *path)
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return FALSE != ::CreateDirectoryA(path, NULL);
 #else
-    return 0 == ::mkdir(path, S_IWRITE);
+    return 0 == ::mkdir(path, S_IREAD | S_IWRITE | S_IEXEC);
 #endif
 }
 
 bool OS::mkdir(const std::string& path)
 {
-    return mkdir(path.c_str());
+    return OS::mkdir(path.c_str());
 }
 
 bool OS::mkdir(const wchar_t *path)
@@ -255,13 +255,13 @@ bool OS::mkdir(const wchar_t *path)
 
 bool OS::mkdir(const std::wstring& path)
 {
-    return mkdir(path.c_str());
+    return OS::mkdir(path.c_str());
 }
 
 /**
  * 删除空目录
  */
-bool OS::removedir(const char *path)
+bool OS::rmdir(const char *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -271,12 +271,12 @@ bool OS::removedir(const char *path)
 #endif
 }
 
-bool OS::removedir(const std::string& path)
+bool OS::rmdir(const std::string& path)
 {
-    return removedir(path.c_str());
+    return OS::rmdir(path.c_str());
 }
 
-bool OS::removedir(const wchar_t *path)
+bool OS::rmdir(const wchar_t *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -284,19 +284,19 @@ bool OS::removedir(const wchar_t *path)
 #else
     std::string p;
     wstr_to_ascii(path, &p);
-    return removedir(p.c_str());
+    return OS::rmdir(p.c_str());
 #endif
 }
 
-bool OS::removedir(const std::wstring& path)
+bool OS::rmdir(const std::wstring& path)
 {
-    return removedir(path.c_str());
+    return OS::rmdir(path.c_str());
 }
 
 /**
  * 删除目录树
  */
-bool OS::removetree(const char *path)
+bool OS::remove_tree(const char *path)
 {
     assert(NULL != path);
 
@@ -366,7 +366,7 @@ bool OS::removetree(const char *path)
             continue;
 
         ::sprintf(full_path, "%s/%s", path, dirp->d_name);
-        ret = removetree(full_path);
+        ret = OS::remove_tree(full_path);
     }
 
     // 释放DIR (struct dirent是由DIR维护的，无需额外释放)
@@ -379,12 +379,12 @@ bool OS::removetree(const char *path)
 #endif
 }
 
-bool OS::removetree(const std::string& path)
+bool OS::remove_tree(const std::string& path)
 {
-    return removetree(path.c_str());
+    return OS::remove_tree(path.c_str());
 }
 
-bool OS::removetree(const wchar_t *path)
+bool OS::remove_tree(const wchar_t *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -431,13 +431,13 @@ bool OS::removetree(const wchar_t *path)
 #else
     std::string p;
     wstr_to_ascii(path, &p);
-    return removetree(p.c_str());
+    return OS::remove_tree(p.c_str());
 #endif
 }
 
-bool OS::removetree(const std::wstring& path)
+bool OS::remove_tree(const std::wstring& path)
 {
-    return removetree(path.c_str());
+    return OS::remove_tree(path.c_str());
 }
 
 }

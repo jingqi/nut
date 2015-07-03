@@ -309,7 +309,7 @@ void Logger::load_config(const std::string& config)
                     std::string dir_path;
                     Path::split(m_file_path, &dir_path, NULL);
                     std::vector<std::string> files;
-                    OS::listdir(dir_path.c_str(), &files, false, true, true);
+                    OS::list_dir(dir_path.c_str(), &files, false, true, true);
                     const std::string log_ext(".log");
                     for (size_t i = 0; i < files.size(); ++i)
                     {
@@ -326,7 +326,7 @@ void Logger::load_config(const std::string& config)
                         std::sort(files.begin(), files.end());
                         for (size_t i = 0, count = files.size() - m_circle; i < count; ++i)
                         {
-                            OS::removefile(Path::join(dir_path, files.at(i)).c_str());
+                            OS::remove_file(Path::join(dir_path, files.at(i)).c_str());
                             files.pop_back();
                         }
                     }

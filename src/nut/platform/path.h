@@ -84,49 +84,49 @@ public:
     /**
      * last access time
      */
-    static time_t getatime(const char *path);
-    static time_t getatime(const std::string& path);
-    static time_t getatime(const wchar_t *path);
-    static time_t getatime(const std::wstring& path);
+    static time_t get_atime(const char *path);
+    static time_t get_atime(const std::string& path);
+    static time_t get_atime(const wchar_t *path);
+    static time_t get_atime(const std::wstring& path);
 
     /**
      * last modified time
      */
-    static time_t getmtime(const char *path);
-    static time_t getmtime(const std::string& path);
-    static time_t getmtime(const wchar_t *path);
-    static time_t getmtime(const std::wstring& path);
+    static time_t get_mtime(const char *path);
+    static time_t get_mtime(const std::string& path);
+    static time_t get_mtime(const wchar_t *path);
+    static time_t get_mtime(const std::wstring& path);
 
     /**
      * created time
      */
-    static time_t getctime(const char *path);
-    static time_t getctime(const std::string& path);
-    static time_t getctime(const wchar_t *path);
-    static time_t getctime(const std::wstring& path);
+    static time_t get_ctime(const char *path);
+    static time_t get_ctime(const std::string& path);
+    static time_t get_ctime(const wchar_t *path);
+    static time_t get_ctime(const std::wstring& path);
 
     /**
      * 获取文件大小
      */
-    static long getsize(const char *path);
-    static long getsize(const std::string& path);
-    static long getsize(const wchar_t *path);
-    static long getsize(const std::wstring& path);
+    static long get_size(const char *path);
+    static long get_size(const std::string& path);
+    static long get_size(const wchar_t *path);
+    static long get_size(const std::wstring& path);
 
-    static bool isdir(const char *path);
-    static bool isdir(const std::string& path);
-    static bool isdir(const wchar_t *path);
-    static bool isdir(const std::wstring& path);
+    static bool is_dir(const char *path);
+    static bool is_dir(const std::string& path);
+    static bool is_dir(const wchar_t *path);
+    static bool is_dir(const std::wstring& path);
 
-    static bool isfile(const char *path);
-    static bool isfile(const std::string& path);
-    static bool isfile(const wchar_t *path);
-    static bool isfile(const std::wstring& path);
+    static bool is_file(const char *path);
+    static bool is_file(const std::string& path);
+    static bool is_file(const wchar_t *path);
+    static bool is_file(const std::wstring& path);
 
-    static bool islink(const char *path);
-    static bool islink(const std::string& path);
-    static bool islink(const wchar_t *path);
-    static bool islink(const std::wstring& path);
+    static bool is_link(const char *path);
+    static bool is_link(const std::string& path);
+    static bool is_link(const wchar_t *path);
+    static bool is_link(const std::wstring& path);
 
     // TODO static bool ismount() {}
 

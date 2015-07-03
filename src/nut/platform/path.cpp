@@ -577,7 +577,7 @@ bool Path::exists(const std::wstring& path)
 /**
  * last access time
  */
-time_t Path::getatime(const char *path)
+time_t Path::get_atime(const char *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -592,12 +592,12 @@ time_t Path::getatime(const char *path)
 #endif
 }
 
-time_t Path::getatime(const std::string& path)
+time_t Path::get_atime(const std::string& path)
 {
-    return getatime(path.c_str());
+    return Path::get_atime(path.c_str());
 }
 
-time_t Path::getatime(const wchar_t *path)
+time_t Path::get_atime(const wchar_t *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -607,19 +607,19 @@ time_t Path::getatime(const wchar_t *path)
 #else
     std::string p;
     wstr_to_ascii(path, &p);
-    return getatime(p.c_str());
+    return Path::get_atime(p.c_str());
 #endif
 }
 
-time_t Path::getatime(const std::wstring& path)
+time_t Path::get_atime(const std::wstring& path)
 {
-    return getatime(path.c_str());
+    return Path::get_atime(path.c_str());
 }
 
 /**
  * last modified time
  */
-time_t Path::getmtime(const char *path)
+time_t Path::get_mtime(const char *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -634,12 +634,12 @@ time_t Path::getmtime(const char *path)
 #endif
 }
 
-time_t Path::getmtime(const std::string& path)
+time_t Path::get_mtime(const std::string& path)
 {
-    return getmtime(path.c_str());
+    return Path::get_mtime(path.c_str());
 }
 
-time_t Path::getmtime(const wchar_t *path)
+time_t Path::get_mtime(const wchar_t *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -649,19 +649,19 @@ time_t Path::getmtime(const wchar_t *path)
 #else
     std::string p;
     wstr_to_ascii(path, &p);
-    return getmtime(p.c_str());
+    return Path::get_mtime(p.c_str());
 #endif
 }
 
-time_t Path::getmtime(const std::wstring& path)
+time_t Path::get_mtime(const std::wstring& path)
 {
-    return getmtime(path.c_str());
+    return Path::get_mtime(path.c_str());
 }
 
 /**
  * created time
  */
-time_t Path::getctime(const char *path)
+time_t Path::get_ctime(const char *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -676,12 +676,12 @@ time_t Path::getctime(const char *path)
 #endif
 }
 
-time_t Path::getctime(const std::string& path)
+time_t Path::get_ctime(const std::string& path)
 {
-    return getctime(path.c_str());
+    return Path::get_ctime(path.c_str());
 }
 
-time_t Path::getctime(const wchar_t *path)
+time_t Path::get_ctime(const wchar_t *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -691,19 +691,19 @@ time_t Path::getctime(const wchar_t *path)
 #else
     std::string p;
     wstr_to_ascii(path, &p);
-    return getctime(p.c_str());
+    return Path::get_ctime(p.c_str());
 #endif
 }
 
-time_t Path::getctime(const std::wstring& path)
+time_t Path::get_ctime(const std::wstring& path)
 {
-    return getctime(path.c_str());
+    return Path::get_ctime(path.c_str());
 }
 
 /**
  * 获取文件大小
  */
-long Path::getsize(const char *path)
+long Path::get_size(const char *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -718,12 +718,12 @@ long Path::getsize(const char *path)
 #endif
 }
 
-long Path::getsize(const std::string& path)
+long Path::get_size(const std::string& path)
 {
-    return getsize(path.c_str());
+    return Path::get_size(path.c_str());
 }
 
-long Path::getsize(const wchar_t *path)
+long Path::get_size(const wchar_t *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -733,16 +733,16 @@ long Path::getsize(const wchar_t *path)
 #else
     std::string p;
     wstr_to_ascii(path, &p);
-    return getsize(p.c_str());
+    return Path::get_size(p.c_str());
 #endif
 }
 
-long Path::getsize(const std::wstring& path)
+long Path::get_size(const std::wstring& path)
 {
-    return getsize(path.c_str());
+    return Path::get_size(path.c_str());
 }
 
-bool Path::isdir(const char *path)
+bool Path::is_dir(const char *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -755,12 +755,12 @@ bool Path::isdir(const char *path)
 #endif
 }
 
-bool Path::isdir(const std::string& path)
+bool Path::is_dir(const std::string& path)
 {
-    return isdir(path.c_str());
+    return Path::is_dir(path.c_str());
 }
 
-bool Path::isdir(const wchar_t *path)
+bool Path::is_dir(const wchar_t *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -768,16 +768,16 @@ bool Path::isdir(const wchar_t *path)
 #else
     std::string p;
     wstr_to_ascii(path, &p);
-    return isdir(p.c_str());
+    return Path::is_dir(p.c_str());
 #endif
 }
 
-bool Path::isdir(const std::wstring& path)
+bool Path::is_dir(const std::wstring& path)
 {
-    return isdir(path.c_str());
+    return Path::is_dir(path.c_str());
 }
 
-bool Path::isfile(const char *path)
+bool Path::is_file(const char *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -790,12 +790,12 @@ bool Path::isfile(const char *path)
 #endif
 }
 
-bool Path::isfile(const std::string& path)
+bool Path::is_file(const std::string& path)
 {
-    return isfile(path.c_str());
+    return Path::is_file(path.c_str());
 }
 
-bool Path::isfile(const wchar_t *path)
+bool Path::is_file(const wchar_t *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -803,16 +803,16 @@ bool Path::isfile(const wchar_t *path)
 #else
     std::string p;
     wstr_to_ascii(path, &p);
-    return isfile(p.c_str());
+    return Path::is_file(p.c_str());
 #endif
 }
 
-bool Path::isfile(const std::wstring& path)
+bool Path::is_file(const std::wstring& path)
 {
-    return isfile(path.c_str());
+    return Path::is_file(path.c_str());
 }
 
-bool Path::islink(const char *path)
+bool Path::is_link(const char *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -825,12 +825,12 @@ bool Path::islink(const char *path)
 #endif
 }
 
-bool Path::islink(const std::string& path)
+bool Path::is_link(const std::string& path)
 {
-    return islink(path.c_str());
+    return Path::is_link(path.c_str());
 }
 
-bool Path::islink(const wchar_t *path)
+bool Path::is_link(const wchar_t *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -838,13 +838,13 @@ bool Path::islink(const wchar_t *path)
 #else
     std::string p;
     wstr_to_ascii(path, &p);
-    return isfile(p.c_str());
+    return Path::is_link(p.c_str());
 #endif
 }
 
-bool Path::islink(const std::wstring& path)
+bool Path::is_link(const std::wstring& path)
 {
-    return islink(path.c_str());
+    return Path::is_link(path.c_str());
 }
 
 /**
@@ -936,35 +936,35 @@ void Path::join(const std::wstring& a, const std::wstring& b, std::wstring *appe
 std::string Path::join(const std::string& a, const std::string& b)
 {
     std::string ret;
-    join(a, b, &ret);
+    Path::join(a, b, &ret);
     return ret;
 }
 
 std::wstring Path::join(const std::wstring& a, const std::wstring& b)
 {
     std::wstring ret;
-    join(a, b, &ret);
+    Path::join(a, b, &ret);
     return ret;
 }
 
 std::string Path::join(const std::string& a, const std::string& b, const std::string& c)
 {
-    return join(join(a, b), c);
+    return Path::join(Path::join(a, b), c);
 }
 
 std::wstring Path::join(const std::wstring& a, const std::wstring& b, const std::wstring& c)
 {
-    return join(join(a, b),c);
+    return Path::join(Path::join(a, b),c);
 }
 
 std::string Path::join(const std::string& a, const std::string& b, const std::string& c, const std::string& d)
 {
-    return join(join(a, b, c), d);
+    return Path::join(Path::join(a, b, c), d);
 }
 
 std::wstring Path::join(const std::wstring& a, const std::wstring& b, const std::wstring& c, const std::wstring& d)
 {
-    return join(join(a, b, c), d);
+    return Path::join(Path::join(a, b, c), d);
 }
 
 }
