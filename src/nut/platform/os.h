@@ -14,7 +14,6 @@ private:
     OS(); // invalid
 
 public:
-
     /**
      * 枚举目录下的文件/文件夹
      *
@@ -66,6 +65,33 @@ public:
     static bool remove_tree(const std::string& path);
     static bool remove_tree(const wchar_t *path);
     static bool remove_tree(const std::wstring& path);
+
+    /**
+     * 读取符号链接地址
+     */
+    static bool read_link(const char *path, std::string *appended);
+    static bool read_link(const std::string& path, std::string *appended);
+    static bool read_link(const wchar_t *path, std::wstring *appended);
+    static bool read_link(const std::wstring& path, std::wstring *appended);
+
+    /**
+     * 创建符号链接
+     *
+     * @param link 软链接指向的位置
+     * @param path 软链接本身所在的位置
+     */
+    static bool symlink(const char *link, const char *path);
+    static bool symlink(const std::string& link, const std::string& path);
+    static bool symlink(const wchar_t *link, const wchar_t *path);
+    static bool symlink(const std::wstring& link, const std::wstring& path);
+
+    /**
+     * 重命名
+     */
+    static bool rename(const char *from, const char *to);
+    static bool rename(const std::string& from, const std::string& to);
+    static bool rename(const wchar_t *from, const wchar_t *to);
+    static bool rename(const std::wstring& from, const std::wstring& to);
 };
 
 }

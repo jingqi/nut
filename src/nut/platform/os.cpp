@@ -1,6 +1,6 @@
 ﻿
 #include <assert.h>
-#include <stdio.h> // for sprintf()
+#include <stdio.h> // for sprintf(), rename()
 
 #include "platform.h"
 
@@ -438,6 +438,107 @@ bool OS::remove_tree(const wchar_t *path)
 bool OS::remove_tree(const std::wstring& path)
 {
     return OS::remove_tree(path.c_str());
+}
+
+bool OS::read_link(const char *path, std::string *appended)
+{
+    assert(NULL != path && NULL != appended);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+    return false; // windows 上没有软链接功能
+#else
+    const size_t buf_len = 1024;
+    char buf[buf_len + 1];
+    const ssize_t rs = ::readlink(path, buf, buf_len);
+    if (rs < 0)
+        return false;
+    buf[rs] = 0;
+    *appended += buf;
+    return true;
+#endif
+}
+
+bool OS::read_link(const std::string &path, std::string *appended)
+{
+    return OS::read_link(path.c_str(), appended);
+}
+
+bool OS::read_link(const wchar_t *path, std::wstring *appended)
+{
+    assert(NULL != path && NULL != appended);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+    return false; // windows 上没有软链接功能
+#else
+    std::string p;
+    wstr_to_ascii(path, &p);
+    std::string lk;
+    if (!OS::read_link(p.c_str(), &lk))
+        return false;
+    ascii_to_wstr(lk, appended);
+    return true;
+#endif
+}
+
+bool OS::read_link(const std::wstring &path, std::wstring *appended)
+{
+    return OS::read_link(path.c_str(), appended);
+}
+
+bool OS::symlink(const char *link, const char *path)
+{
+    assert(NULL != link && NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+    return false; // windows 上没有软链接功能
+#else
+    return 0 == ::symlink(link, path);
+#endif
+}
+
+bool OS::symlink(const std::string &link, const std::string &path)
+{
+    return OS::symlink(link.c_str(), path.c_str());
+}
+
+bool OS::symlink(const wchar_t *link, const wchar_t *path)
+{
+    assert(NULL != link && NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+    return false; // windows 上没有软链接功能
+#else
+    std::string l, p;
+    wstr_to_ascii(link, &l);
+    wstr_to_ascii(path, &p);
+    return OS::symlink(l.c_str(), p.c_str());
+#endif
+}
+
+bool OS::symlink(const std::wstring &link, const std::wstring &path)
+{
+    return OS::symlink(link.c_str(), path.c_str());
+}
+
+bool OS::rename(const char *from, const char *to)
+{
+    assert(NULL != from && NULL != to);
+    return 0 == ::rename(from, to);
+}
+
+bool OS::rename(const std::string &from, const std::string &to)
+{
+    return 0 == ::rename(from.c_str(), to.c_str());
+}
+
+bool OS::rename(const wchar_t *from, const wchar_t *to)
+{
+    assert(NULL != from && NULL != to);
+    std::string f, t;
+    wstr_to_ascii(from, &f);
+    wstr_to_ascii(to, &t);
+    return 0 == ::rename(f.c_str(), t.c_str());
+}
+
+bool OS::rename(const std::wstring &from, const std::wstring &to)
+{
+    return OS::rename(from.c_str(), to.c_str());
 }
 
 }

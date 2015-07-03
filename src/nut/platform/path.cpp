@@ -10,6 +10,7 @@
 #   include <direct.h> // for getcwd()
 #else
 #   include <unistd.h> // for access(), getcwd()
+#   include <fcntl.h> // for AT_FDCWD, AT_SYMLINK_NOFOLLOW
 #   include <sys/stat.h> // for stat()
 #   include <limits.h> // for PATH_MAX
 #endif
@@ -532,29 +533,51 @@ void Path::split_ext(const std::wstring& path, std::wstring *prefix_appended, st
         *ext_appended += path.substr(pos);
 }
 
-/**
- * 检查路径是否存在
- */
+bool Path::lexists(const char *path)
+{
+    assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+    return -1 != ::_access(path, 0);
+#else
+    return 0 == ::faccessat(AT_FDCWD, path, F_OK, AT_SYMLINK_NOFOLLOW); // F_OK 检查存在性, AT_SYMLINK_NOFOLLOW 不解析符号链接
+#endif
+}
+
+bool Path::lexists(const std::string& path)
+{
+    return Path::lexists(path.c_str());
+}
+
+bool Path::lexists(const wchar_t *path)
+{
+    assert(NULL != path);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+    return -1 != ::_waccess(path, 0);
+#else
+    std::string p;
+    wstr_to_ascii(path, &p);
+    return Path::lexists(p.c_str());
+#endif
+}
+
+bool Path::lexists(const std::wstring& path)
+{
+    return Path::lexists(path.c_str());
+}
+
 bool Path::exists(const char *path)
 {
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return -1 != ::_access(path, 0);
 #else
-    /*
-     *  0-检查文件是否存在
-     *  1-检查文件是否可运行
-     *  2-检查文件是否可写访问
-     *  4-检查文件是否可读访问
-     *  6-检查文件是否可读/写访问
-     */
-    return 0 == ::access(path, 0);
+    return 0 == ::access(path, F_OK); // F_OK 检查存在性
 #endif
 }
 
 bool Path::exists(const std::string& path)
 {
-    return exists(path.c_str());
+    return Path::exists(path.c_str());
 }
 
 bool Path::exists(const wchar_t *path)
@@ -565,13 +588,13 @@ bool Path::exists(const wchar_t *path)
 #else
     std::string p;
     wstr_to_ascii(path, &p);
-    return exists(p.c_str());
+    return Path::exists(p.c_str());
 #endif
 }
 
 bool Path::exists(const std::wstring& path)
 {
-    return exists(path.c_str());
+    return Path::exists(path.c_str());
 }
 
 /**

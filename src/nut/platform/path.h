@@ -74,7 +74,15 @@ public:
     // TODO static void splitunc() {}
 
     /**
-     * 检查路径是否存在
+     * 检查路径存在性(不解析符号链接)
+     */
+    static bool lexists(const char *path);
+    static bool lexists(const std::string& path);
+    static bool lexists(const wchar_t *path);
+    static bool lexists(const std::wstring& path);
+
+    /**
+     * 检查路径存在性(解析符号链接)
      */
     static bool exists(const char *path);
     static bool exists(const std::string& path);
