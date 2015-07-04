@@ -26,12 +26,12 @@ namespace nut
 /**
  * 枚举目录下的文件/文件夹
  *
- * @param except_file 如果传入true, 则返回值不会包含文件
- * @parma except_dir 如果传入true, 则返回值不会包含文件夹
- * @parma except_initial_dot 如果传入true, 则返回值不会包含以'.'开头的文件/文件夹
+ * @param exclude_file 如果传入true, 则返回值不会包含文件
+ * @parma exclude_dir 如果传入true, 则返回值不会包含文件夹
+ * @parma exclude_initial_dot 如果传入true, 则返回值不会包含以'.'开头的文件/文件夹
  */
-void OS::list_dir(const char *path, std::vector<std::string> *appended, bool except_file,
-        bool except_dir, bool except_initial_dot)
+void OS::list_dir(const char *path, std::vector<std::string> *appended, bool exclude_file,
+        bool exclude_dir, bool exclude_initial_dot)
 {
     assert(NULL != path && NULL != appended);
 
@@ -50,11 +50,11 @@ void OS::list_dir(const char *path, std::vector<std::string> *appended, bool exc
 
     do
     {
-        if (except_initial_dot && '.' == wfd.cFileName[0])
+        if (exclude_initial_dot && '.' == wfd.cFileName[0])
             continue;
-        if (except_file && !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+        if (exclude_file && !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
             continue;
-        if (except_dir && (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+        if (exclude_dir && (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
             continue;
 
         appended->push_back(wfd.cFileName);
@@ -70,19 +70,19 @@ void OS::list_dir(const char *path, std::vector<std::string> *appended, bool exc
 
     while ((dirp = ::readdir(dp)) != NULL)
     {
-        if (except_initial_dot && dirp->d_name[0] == '.')
+        if (exclude_initial_dot && dirp->d_name[0] == '.')
             continue;
 
-        if (except_file || except_dir)
+        if (exclude_file || exclude_dir)
         {
             char file_path[PATH_MAX];
             ::sprintf(file_path, "%s/%s", path, dirp->d_name);
             struct stat buf;
             if (::lstat(file_path, &buf) < 0)
                 continue;
-            if (except_file && S_ISREG(buf.st_mode))
+            if (exclude_file && (S_ISLNK(buf.st_mode) || !S_ISDIR(buf.st_mode)))
                 continue;
-            if (except_dir && S_ISDIR(buf.st_mode))
+            if (exclude_dir && (!S_ISLNK(buf.st_mode) && S_ISDIR(buf.st_mode)))
                 continue;
         }
 
@@ -94,8 +94,8 @@ void OS::list_dir(const char *path, std::vector<std::string> *appended, bool exc
 #endif
 }
 
-void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *appended, bool except_file,
-    bool except_dir, bool except_initial_dot)
+void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *appended, bool exclude_file,
+    bool exclude_dir, bool exclude_initial_dot)
 {
     assert(NULL != path && NULL != appended);
 
@@ -114,11 +114,11 @@ void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *appended, bool
 
     do
     {
-        if (except_initial_dot && L'.' == wfd.cFileName[0])
+        if (exclude_initial_dot && L'.' == wfd.cFileName[0])
             continue;
-        if (except_file && !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+        if (exclude_file && !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
             continue;
-        if (except_dir && (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+        if (exclude_dir && (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
             continue;
 
         appended->push_back(wfd.cFileName);
@@ -130,7 +130,7 @@ void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *appended, bool
     std::string p;
     wstr_to_ascii(path, &p);
     std::vector<std::string> dirs;
-    OS::list_dir(p.c_str(), &dirs, except_file, except_dir, except_initial_dot);
+    OS::list_dir(p.c_str(), &dirs, exclude_file, exclude_dir, exclude_initial_dot);
     std::wstring s;
     for (size_t i = 0, size = dirs.size(); i < size; ++i)
     {
@@ -202,7 +202,7 @@ bool OS::copy_file(const std::wstring& src, const std::wstring& dest)
 bool OS::remove_file(const char *path)
 {
     assert(NULL != path);
-    return -1 != ::remove(path);
+    return 0 == ::remove(path);
 }
 
 bool OS::remove_file(const std::string& path)
@@ -384,11 +384,11 @@ bool OS::remove_tree(const char *path)
     return ret;
 #else
     struct stat info;
-    if (0 != ::stat(path, &info))
+    if (0 != ::lstat(path, &info))
         return false;
 
     // 删除文件
-    if (!S_ISDIR(info.st_mode))
+    if (S_ISLNK(info.st_mode) || !S_ISDIR(info.st_mode))
         return 0 == ::unlink(path); // 这里就不用 remove() 了
 
     // 遍历文件夹

@@ -17,14 +17,14 @@ public:
     /**
      * 枚举目录下的文件/文件夹
      *
-     * @param except_file 如果传入true, 则返回值不会包含文件
-     * @parma except_dir 如果传入true, 则返回值不会包含文件夹
-     * @parma except_initial_dot 如果传入true, 则返回值不会包含以'.'开头的文件/文件夹
+     * @param exclude_file 如果传入true, 则返回值不会包含文件
+     * @parma exclude_dir 如果传入true, 则返回值不会包含文件夹
+     * @parma exclude_initial_dot 如果传入true, 则返回值不会包含以'.'开头的文件/文件夹
      */
-    static void list_dir(const char *path, std::vector<std::string> *appended, bool except_file = false,
-            bool except_dir = false, bool except_initial_dot = false);
-    static void list_dir(const wchar_t *path, std::vector<std::wstring> *appended, bool except_file = false,
-        bool except_dir = false, bool except_initial_dot = false);
+    static void list_dir(const char *path, std::vector<std::string> *appended, bool exclude_file = false,
+            bool exclude_dir = false, bool exclude_initial_dot = false);
+    static void list_dir(const wchar_t *path, std::vector<std::wstring> *appended, bool exclude_file = false,
+        bool exclude_dir = false, bool exclude_initial_dot = false);
 
     /**
      * 复制文件
