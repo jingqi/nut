@@ -123,7 +123,7 @@ bool Path::is_abs(const std::string& p)
     if (p.empty())
         return false;
 
-    if (p.at(0) == '/') // linux root
+    if (p.at(0) == '/' || p.at(0) == '~') // linux root
         return true;
     for (size_t i = 0, len = p.length(); i < len; ++i)
     {
@@ -141,7 +141,7 @@ bool Path::is_abs(const std::wstring& p)
     if (p.empty())
         return false;
 
-    if (p.at(0) == L'/') // linux root
+    if (p.at(0) == L'/' || p.at(0) == L'~') // linux root or linux home
         return true;
     for (size_t i = 0, len = p.length(); i < len; ++i)
     {
@@ -189,6 +189,15 @@ void Path::abs_path(const std::string& p, std::string *appended)
                 appended->push_back('/');
                 continue;
             }
+#if !defined(NUT_PLATFORM_OS_WINDOWS)
+            else if (part == "~")
+            {
+                *appended += ::getenv("HOME");
+                appended->push_back(seperator());
+                part.clear();
+                continue;
+            }
+#endif
             else if (part.at(part.length() - 1) == ':')
             {
                 // windows partition root
@@ -267,6 +276,15 @@ void Path::abs_path(const std::wstring& p, std::wstring *appended)
                 appended->push_back(L'/');
                 continue;
             }
+#if !defined(NUT_PLATFORM_OS_WINDOWS)
+            else if (part == L"~")
+            {
+                ascii_to_wstr(::getenv("HOME"), appended);
+                appended->push_back(wseperator());
+                part.clear();
+                continue;
+            }
+#endif
             else if (part.at(part.length() - 1) == L':')
             {
                 // windows partition root
