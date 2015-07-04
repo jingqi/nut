@@ -538,6 +538,15 @@ bool Path::lexists(const char *path)
     assert(NULL != path);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return -1 != ::_access(path, 0);
+#elif defined(NUT_PLATFORM_OS_MAC) // mac 下 faccessat() 实现不支持 AT_SYMLINK_NOFOLLOW
+    // 对符号链接做特殊处理
+    struct stat info;
+    if (0 != ::lstat(path, &info))
+        return false;
+    if (S_ISLNK(info.st_mode))
+        return true;
+    // 非符号链接
+    return 0 == ::access(path, F_OK); // F_OK 检查存在性
 #else
     return 0 == ::faccessat(AT_FDCWD, path, F_OK, AT_SYMLINK_NOFOLLOW); // F_OK 检查存在性, AT_SYMLINK_NOFOLLOW 不解析符号链接
 #endif
@@ -842,7 +851,7 @@ bool Path::is_link(const char *path)
     return false;
 #else
     struct stat info;
-    if (0 != ::stat(path, &info))
+    if (0 != ::lstat(path, &info))
         return false;
     return S_ISLNK(info.st_mode);
 #endif
