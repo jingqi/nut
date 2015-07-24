@@ -25,7 +25,7 @@ public:
     typedef rcarray_type::const_iterator const_iterator;
 
 private:
-    rc_ptr<rcarray_type> m_array;
+    rc_ptr<rcarray_type> _array;
 
     /**
      * 写前复制
@@ -69,7 +69,7 @@ public :
      */
     bool operator==(const self_type& x) const
     {
-        return m_array->operator==(*x.m_array);
+        return _array->operator==(*x._array);
     }
 
     bool operator!=(const self_type& x) const
@@ -79,46 +79,46 @@ public :
 
     const uint8_t& operator[](size_type idx) const
     {
-        return m_array->operator[](idx);
+        return _array->operator[](idx);
     }
 
     uint8_t& operator[](size_type idx)
     {
         copy_on_write();
-        return m_array->operator[](idx);
+        return _array->operator[](idx);
     }
 
     const_iterator begin() const
     {
-        return m_array->begin();
+        return _array->begin();
     }
 
     iterator begin()
     {
         copy_on_write();
-        return m_array->begin();
+        return _array->begin();
     }
 
     const_iterator end() const
     {
-        return m_array->end();
+        return _array->end();
     }
 
     iterator end()
     {
         copy_on_write();
-        return m_array->end();
+        return _array->end();
     }
 
     const uint8_t& at(size_type idx) const
     {
-        return m_array->at(idx);
+        return _array->at(idx);
     }
 
     uint8_t& at(size_type idx)
     {
         copy_on_write();
-        return m_array->at(idx);
+        return _array->at(idx);
     }
 
     /**
@@ -128,19 +128,19 @@ public :
     void resize(size_type n, uint8_t fillv = 0)
     {
         copy_on_write();
-        m_array->resize(n, fillv);
+        _array->resize(n, fillv);
     }
 
     void append(const self_type &x)
     {
         copy_on_write();
-        m_array->insert(size(), x.begin(), x.end());
+        _array->insert(size(), x.begin(), x.end());
     }
 
     void append(size_type len, uint8_t fillv = 0)
     {
         copy_on_write();
-        m_array->resize(size() + len, fillv);
+        _array->resize(size() + len, fillv);
     }
 
     void append(const void *buf, size_t len);
@@ -158,13 +158,13 @@ public :
 
     const uint8_t* data() const
     {
-        return m_array->data();
+        return _array->data();
     }
 
     uint8_t* data()
     {
         copy_on_write();
-        return m_array->data();
+        return _array->data();
     }
 
     size_t length() const
@@ -174,7 +174,7 @@ public :
 
     size_t size() const
     {
-        return m_array->size();
+        return _array->size();
     }
 
     /**

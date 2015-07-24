@@ -10,32 +10,33 @@ namespace nut
 
 class FreeGuard
 {
-    void *m_ptr;
+    void *_ptr = NULL;
+
 public:
     FreeGuard(void *p = NULL)
-        : m_ptr(p)
+        : _ptr(p)
     {}
 
 	void* get() const
 	{
-		return m_ptr;
+		return _ptr;
 	}
 
     void set(void *p)
     {
-        m_ptr = p;
+        _ptr = p;
     }
 
     void clear()
     {
-        m_ptr = NULL;
+        _ptr = NULL;
     }
 
 	void release()
 	{
-		if (NULL != m_ptr)
-			::free(m_ptr);
-		m_ptr = NULL;
+		if (NULL != _ptr)
+			::free(_ptr);
+		_ptr = NULL;
 	}
 
     ~FreeGuard()
@@ -47,32 +48,33 @@ public:
 template <typename T>
 class DeleteGuard
 {
-    T *m_ptr;
+    T *_ptr = NULL;
+
 public:
     DeleteGuard(T *p = NULL)
-        : m_ptr(p)
+        : _ptr(p)
     {}
 
 	T* get() const
 	{
-		return m_ptr;
+		return _ptr;
 	}
 
     void set(T *p)
     {
-        m_ptr = p;
+        _ptr = p;
     }
 
     void clear()
     {
-        m_ptr = NULL;
+        _ptr = NULL;
     }
 
 	void release()
 	{
-		if (NULL != m_ptr)
-			delete m_ptr;
-		m_ptr = NULL;
+		if (NULL != _ptr)
+			delete _ptr;
+		_ptr = NULL;
 	}
 
     ~DeleteGuard()

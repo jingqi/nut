@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <utility>
 
 #include <nut/rc/rc_ptr.h>
 
@@ -56,7 +57,7 @@ T* ma_new(memory_allocator *ma, Args&& ...args)
 {
     T *p = (T*) ma_realloc(ma, NULL, sizeof(T));
     assert(NULL != p);
-    new (p) T(args...);
+    new (p) T(std::forward<Args>(args)...);
     return p;
 }
 #else
@@ -74,7 +75,7 @@ T* ma_new(memory_allocator *ma, Arg1&& arg1)
 {
     T *p = (T*) ma_realloc(ma, NULL, sizeof(T));
     assert(NULL != p);
-    new (p) T(arg1);
+    new (p) T(std::forward<Arg1>(arg1));
     return p;
 }
 
@@ -83,7 +84,7 @@ T* ma_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2)
 {
     T *p = (T*) ma_realloc(ma, NULL, sizeof(T));
     assert(NULL != p);
-    new (p) T(arg1, arg2);
+    new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2));
     return p;
 }
 
@@ -92,7 +93,7 @@ T* ma_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3)
 {
     T *p = (T*) ma_realloc(ma, NULL, sizeof(T));
     assert(NULL != p);
-    new (p) T(arg1, arg2, arg3);
+    new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3));
     return p;
 }
 
@@ -101,7 +102,7 @@ T* ma_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, Arg4&& ar
 {
     T *p = (T*) ma_realloc(ma, NULL, sizeof(T));
     assert(NULL != p);
-    new (p) T(arg1, arg2, arg3, arg4);
+    new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4));
     return p;
 }
 
@@ -110,7 +111,7 @@ T* ma_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, Arg4&& ar
 {
     T *p = (T*) ma_realloc(ma, NULL, sizeof(T));
     assert(NULL != p);
-    new (p) T(arg1, arg2, arg3, arg4, arg5);
+    new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5));
     return p;
 }
 
@@ -121,7 +122,8 @@ T* ma_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, Arg4&& ar
 {
     T *p = (T*) ma_realloc(ma, NULL, sizeof(T));
     assert(NULL != p);
-    new (p) T(arg1, arg2, arg3, arg4, arg5, arg6);
+    new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5),
+              std::forward<Arg6>(arg6));
     return p;
 }
 
@@ -132,7 +134,8 @@ T* ma_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, Arg4&& ar
 {
     T *p = (T*) ma_realloc(ma, NULL, sizeof(T));
     assert(NULL != p);
-    new (p) T(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+    new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5),
+              std::forward<Arg6>(arg6), std::forward<Arg7>(arg7));
     return p;
 }
 
@@ -143,7 +146,8 @@ T* ma_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, Arg4&& ar
 {
     T *p = (T*) ma_realloc(ma, NULL, sizeof(T));
     assert(NULL != p);
-    new (p) T(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+    new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5),
+              std::forward<Arg6>(arg6), std::forward<Arg7>(arg7), std::forward<Arg8>(arg8));
     return p;
 }
 
@@ -154,7 +158,8 @@ T* ma_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, Arg4&& ar
 {
     T *p = (T*) ma_realloc(ma, NULL, sizeof(T));
     assert(NULL != p);
-    new (p) T(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+    new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5),
+              std::forward<Arg6>(arg6), std::forward<Arg7>(arg7), std::forward<Arg8>(arg8), std::forward<Arg9>(arg9));
     return p;
 }
 
@@ -165,7 +170,8 @@ T* ma_new(memory_allocator *ma, Arg1&& arg1, Arg2&& arg2, Arg3&& arg3, Arg4&& ar
 {
     T *p = (T*) ma_realloc(ma, NULL, sizeof(T));
     assert(NULL != p);
-    new (p) T(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+    new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5),
+              std::forward<Arg6>(arg6), std::forward<Arg7>(arg7), std::forward<Arg8>(arg8), std::forward<Arg9>(arg9), std::forward<Arg10>(arg10));
     return p;
 }
 #endif

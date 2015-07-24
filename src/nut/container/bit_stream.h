@@ -15,9 +15,9 @@ namespace nut
 class BitStream
 {
     typedef unsigned int word_type;
-    word_type *m_buf; // 缓冲区
-    size_t m_word_cap; // 缓冲区长度
-    size_t m_bit_size; // bit 长度
+    word_type *_buf = NULL; // 缓冲区
+    size_t _word_cap = 0; // 缓冲区长度
+    size_t _bit_size = 0; // bit 长度
 
 private:
     void _ensure_cap(size_t new_bit_size);
@@ -34,10 +34,12 @@ public:
     explicit BitStream(const std::wstring& s);
 
     BitStream(const BitStream& x);
+    BitStream(BitStream&& x);
 
     ~BitStream();
 
     BitStream& operator=(const BitStream& x);
+    BitStream& operator=(BitStream&& x);
 
     bool operator==(const BitStream& x) const;
 
@@ -61,14 +63,14 @@ public:
 
     size_t size() const
     {
-        return m_bit_size;
+        return _bit_size;
     }
 
     void resize(size_t new_bit_size, bool fill_setb = false);
 
     void clear()
     {
-        m_bit_size = 0;
+        _bit_size = 0;
     }
 
     bool bit_at(size_t i) const;
@@ -93,7 +95,7 @@ public:
 
     size_t bit0_count()
     {
-        return m_bit_size - bit1_count();
+        return _bit_size - bit1_count();
     }
 
     void to_string(std::string *appended);

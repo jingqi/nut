@@ -9,55 +9,55 @@ namespace nut
 {
 
 XmlDom::XmlDom()
-    : m_version("1.0"), m_encoding("UTF-8"), m_dirty(false)
+    : _version("1.0"), _encoding("UTF-8")
 {}
 
 bool XmlDom::is_dirty() const
 {
-    if (m_dirty)
+    if (_dirty)
         return true;
-    if (m_root.is_null())
+    if (_root.is_null())
         return false;
-    return m_root->is_dirty();
+    return _root->is_dirty();
 }
 
 void XmlDom::set_dirty(bool dirty)
 {
     if (dirty)
     {
-        m_dirty = true;
+        _dirty = true;
         return;
     }
 
-    m_dirty = false;
-    if (m_root.is_not_null())
-        m_root->set_dirty(false);
+    _dirty = false;
+    if (_root.is_not_null())
+        _root->set_dirty(false);
 }
 
 void XmlDom::set_version(const std::string& version)
 {
-    if (version != m_version)
+    if (version != _version)
     {
-        m_version = version;
-        m_dirty = true;
+        _version = version;
+        _dirty = true;
     }
 }
 
 void XmlDom::set_encoding(const std::string& encoding)
 {
-    if (encoding != m_encoding)
+    if (encoding != _encoding)
     {
-        m_encoding = encoding;
-        m_dirty = true;
+        _encoding = encoding;
+        _dirty = true;
     }
 }
 
 void XmlDom::set_root(rc_ptr<XmlElement> root)
 {
-    if (root != m_root)
+    if (root != _root)
     {
-        m_root = root;
-        m_dirty = true;
+        _root = root;
+        _dirty = true;
     }
 }
 
@@ -68,10 +68,10 @@ void XmlDom::set_root(rc_ptr<XmlElement> root)
  */
 void XmlDom::parse(const std::string& s, bool ignore_text_blank)
 {
-    m_version = "1.0";
-    m_encoding = "UTF-8";
-    m_root.set_null();
-    m_dirty = true;
+    _version = "1.0";
+    _encoding = "UTF-8";
+    _root.set_null();
+    _dirty = true;
 
     size_t i = s.find("<?");
     if (std::string::npos == i)
@@ -93,7 +93,7 @@ void XmlDom::parse(const std::string& s, bool ignore_text_blank)
     i = s.find('\"', i);
     if (std::string::npos == i)
         return;
-    m_version = s.substr(start, i - start);
+    _version = s.substr(start, i - start);
     i += 2; // length of '\"' and a space
 
     i = s.find("encoding", i);
@@ -108,7 +108,7 @@ void XmlDom::parse(const std::string& s, bool ignore_text_blank)
     i = s.find('\"', i);
     if (std::string::npos == i)
         return;
-    m_encoding = s.substr(start, i - start);
+    _encoding = s.substr(start, i - start);
     ++i;
     i = s.find("?>", i);
     if (std::string::npos == i)
@@ -118,12 +118,12 @@ void XmlDom::parse(const std::string& s, bool ignore_text_blank)
     i = s.find('<', i);
     if (std::string::npos == i)
         return; // no element found
-    m_root = rc_new<XmlElement>();
-    m_root->parse(s, i, ignore_text_blank);
-    if (m_root->get_children_count() > 0)
-        m_root = m_root->get_child(0);
+    _root = rc_new<XmlElement>();
+    _root->parse(s, i, ignore_text_blank);
+    if (_root->get_children_count() > 0)
+        _root = _root->get_child(0);
     else
-        m_root.set_null();
+        _root.set_null();
 }
 
 /**
@@ -137,11 +137,11 @@ void XmlDom::serielize(std::string *appended, bool format) const
 
     // xml header
     *appended += "<?xml version=\"";
-    *appended += m_version;
+    *appended += _version;
     *appended += "\" encoding=\"";
-    *appended += m_encoding;
+    *appended += _encoding;
     *appended += "\"?>";
-    if (m_root.is_null())
+    if (_root.is_null())
         return;
     if (format)
         appended->push_back('\n');
@@ -149,7 +149,7 @@ void XmlDom::serielize(std::string *appended, bool format) const
     // xml elements
     StdStringWriter sw(appended);
     XmlWriter w(&sw);
-    m_root->serielize(w, format ? 0 : -1);
+    _root->serielize(w, format ? 0 : -1);
 }
 
 }

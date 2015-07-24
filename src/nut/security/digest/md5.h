@@ -10,9 +10,9 @@ namespace nut
 
 class MD5
 {
-    uint32_t m_state[4]; // state ABCD
-    uint8_t m_buffer[64];
-    uint64_t m_byteslen; // len of bytes
+    uint32_t _state[4]; // state ABCD
+    uint8_t _buffer[64];
+    uint64_t _byteslen = 0; // len of bytes
 
 public:
     MD5();

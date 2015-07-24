@@ -16,22 +16,21 @@ class DestroyChecker
         DESTRUCTED = 0xDEADBEEF /* magic dead-beaf */
     };
 
-    int32_t m_tag;
+    int32_t _tag = CONSTRUCTED;
 
 public:
     DestroyChecker()
-        : m_tag(CONSTRUCTED)
     {}
 
     ~DestroyChecker()
     {
-        assert(CONSTRUCTED == m_tag);
-        m_tag = DESTRUCTED;
+        assert(CONSTRUCTED == _tag);
+        _tag = DESTRUCTED;
     }
 
     void assert_alive() const
     {
-        assert(CONSTRUCTED == m_tag);
+        assert(CONSTRUCTED == _tag);
     }
 };
 

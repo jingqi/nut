@@ -25,18 +25,14 @@ class PropertyDom
     {
         NUT_REF_COUNTABLE
 
-        std::string m_space0;
-        std::string m_key;
-        std::string m_space1;
-        bool m_equal_sign;
-        std::string m_space2;
-        std::string m_value;
-        std::string m_space3;
-        std::string m_comment;
-
-        Line()
-			: m_equal_sign(false)
-		{}
+        std::string _space0;
+        std::string _key;
+        std::string _space1;
+        bool _equal_sign = false;
+        std::string _space2;
+        std::string _value;
+        std::string _space3;
+        std::string _comment;
 
         void clear();
 
@@ -54,8 +50,8 @@ class PropertyDom
     };
     friend class IniDom;
 
-    std::vector<rc_ptr<Line> > m_lines;
-    bool m_dirty;
+    std::vector<rc_ptr<Line> > _lines;
+    bool _dirty = false;
 
 public:
     PropertyDom();
@@ -73,7 +69,7 @@ public:
 
 	bool is_dirty() const
 	{
-		return m_dirty;
+		return _dirty;
 	}
 
     /**
@@ -81,7 +77,7 @@ public:
 	 */
     void set_dirty(bool dirty = true)
     {
-        m_dirty = dirty;
+        _dirty = dirty;
     }
 
     void clear();

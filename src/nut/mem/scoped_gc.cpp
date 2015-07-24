@@ -8,7 +8,7 @@ namespace nut
 {
 
 scoped_gc::scoped_gc(memory_allocator *ma)
-    : m_alloc(ma), m_current_block(NULL), m_end(NULL), m_destruct_chain(NULL)
+    : _alloc(ma)
 {}
 
 scoped_gc::~scoped_gc()
@@ -20,38 +20,38 @@ scoped_gc::~scoped_gc()
 void* scoped_gc::raw_alloc(size_t cb)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    if (m_current_block->body + cb > m_end)
+    if (_current_block->body + cb > _end)
     {
         if (cb >= DEFAULT_BLOCK_BODY_SIZE)
         {
-            Block *const new_blk = (Block*) ma_realloc(m_alloc.pointer(), NULL, BLOCK_HEADER_SIZE + cb);
+            Block *const new_blk = (Block*) ma_realloc(_alloc.pointer(), NULL, BLOCK_HEADER_SIZE + cb);
             assert(NULL != new_blk);
 
-            if (NULL != m_current_block)
+            if (NULL != _current_block)
             {
-                new_blk->prev = m_current_block->prev;
-                m_current_block->prev = new_blk;
+                new_blk->prev = _current_block->prev;
+                _current_block->prev = new_blk;
             }
             else
             {
                 new_blk->prev = NULL;
-                m_current_block = new_blk;
-                m_end = m_current_block->body;
+                _current_block = new_blk;
+                _end = _current_block->body;
             }
             return new_blk->body;
         }
         else
         {
-            Block *new_blk = (Block*) ma_realloc(m_alloc.pointer(), NULL, DEFAULT_BLOCK_LEN);
+            Block *new_blk = (Block*) ma_realloc(_alloc.pointer(), NULL, DEFAULT_BLOCK_LEN);
             assert(NULL != new_blk);
 
-            new_blk->prev = m_current_block;
-            m_current_block = new_blk;
-            m_end = m_current_block->body + DEFAULT_BLOCK_BODY_SIZE;
+            new_blk->prev = _current_block;
+            _current_block = new_blk;
+            _end = _current_block->body + DEFAULT_BLOCK_BODY_SIZE;
         }
     }
-    m_end -= cb;
-    return m_end;
+    _end -= cb;
+    return _end;
 }
 
 void* scoped_gc::alloc(size_t cb, destruct_func_type func)
@@ -60,8 +60,8 @@ void* scoped_gc::alloc(size_t cb, destruct_func_type func)
     DestructorNode *dn = (DestructorNode*) raw_alloc(sizeof(DestructorNode) + cb);
     assert(NULL != dn);
     dn->destruct_func = func;
-    dn->prev = m_destruct_chain;
-    m_destruct_chain = dn;
+    dn->prev = _destruct_chain;
+    _destruct_chain = dn;
     return dn + 1;
 }
 
@@ -72,28 +72,28 @@ void* scoped_gc::alloc(size_t cb, size_t count, destruct_func_type func)
     assert(NULL != dn);
     dn->destruct_func = func;
     *(size_t*)(dn + 1) = count;
-    dn->prev = m_destruct_chain;
-    m_destruct_chain = dn;
+    dn->prev = _destruct_chain;
+    _destruct_chain = dn;
     return ((size_t*)(dn + 1)) + 1;
 }
 
 void scoped_gc::clear()
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    while (NULL != m_destruct_chain)
+    while (NULL != _destruct_chain)
     {
-        assert(NULL != m_destruct_chain->destruct_func);
-        m_destruct_chain->destruct_func(m_destruct_chain + 1);
-        m_destruct_chain = m_destruct_chain->prev;
+        assert(NULL != _destruct_chain->destruct_func);
+        _destruct_chain->destruct_func(_destruct_chain + 1);
+        _destruct_chain = _destruct_chain->prev;
     }
 
-    while (NULL != m_current_block)
+    while (NULL != _current_block)
     {
-        Block *prev = m_current_block->prev;
-        ma_free(m_alloc.pointer(), m_current_block);
-        m_current_block = prev;
+        Block *prev = _current_block->prev;
+        ma_free(_alloc.pointer(), _current_block);
+        _current_block = prev;
     }
-    m_end = NULL;
+    _end = NULL;
 }
 
 void* scoped_gc::gc_alloc(size_t cb)

@@ -28,16 +28,16 @@ public:
 
 private:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-    HANDLE m_handle;
-    DWORD m_tid;
+    HANDLE _handle = NULL;
+    DWORD _tid = 0;
 #else
-    pthread_t m_pthread;
+    pthread_t _pthread;
 #endif
 
-    thread_process_type m_thread_process;
-    void *m_thread_arg;
-    bool m_has_started;
-    bool mutable m_has_finished;
+    thread_process_type _thread_process;
+    void *_thread_arg = NULL;
+    bool _has_started = false;
+    bool mutable _has_finished = false;
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     static DWORD WINAPI thread_entry(LPVOID p);
@@ -55,17 +55,17 @@ public:
 
     void set_thread_process(thread_process_type process)
     {
-        m_thread_process = process;
+        _thread_process = process;
     }
 
     void set_thread_arg(void *arg)
     {
-        m_thread_arg = arg;
+        _thread_arg = arg;
     }
 
     bool has_started() const
     {
-        return m_has_started;
+        return _has_started;
     }
 
     bool has_finished() const;

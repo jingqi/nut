@@ -1,4 +1,4 @@
-﻿
+
 #ifndef ___HEADFILE_160547E9_5A30_4A78_A5FF_76E0C5EBE229_
 #define ___HEADFILE_160547E9_5A30_4A78_A5FF_76E0C5EBE229_
 
@@ -57,15 +57,15 @@ private:
     struct Node
     {
         area_type area;
-        TreeNode *parent;
-        const bool tree_node; // 是树节点还是数据节点
+        TreeNode *parent = NULL;
+        const bool tree_node = true; // 是树节点还是数据节点
 
         Node(bool tn)
-            : parent(NULL), tree_node(tn)
+            : tree_node(tn)
         {}
 
         Node(const area_type& rt, bool tn)
-            : area(rt), parent(NULL), tree_node(tn)
+            : area(rt), tree_node(tn)
         {}
 
         virtual ~Node()
@@ -191,11 +191,11 @@ private:
     typedef typename AllocT::template rebind<TreeNode>::other                                   treenode_allocator_type;
     typedef typename AllocT::template rebind<DataNode>::other                                   datanode_allocator_type;
 
-    treenode_allocator_type m_tree_node_alloc;
-    datanode_allocator_type m_data_node_alloc;
-    TreeNode *m_root; // 根节点
-    size_t m_height; // 高度，TreeNode的层数
-    size_t m_size; // 容量
+    treenode_allocator_type _tree_node_alloc;
+    datanode_allocator_type _data_node_alloc;
+    TreeNode *_root = NULL; // 根节点
+    size_t _height = 0; // 高度，TreeNode的层数
+    size_t _size = 0; // 容量
 
     /**
      * 扩展到包容指定的区域所需要扩展的空间
@@ -212,20 +212,20 @@ private:
 
 public:
     RTree()
-        : m_root(NULL), m_height(1), m_size(0)
     {
-        m_root = m_tree_node_alloc.allocate(1);
-        assert(NULL != m_root);
-        new (m_root) TreeNode();
+        _root = _tree_node_alloc.allocate(1);
+        assert(NULL != _root);
+        new (_root) TreeNode();
+        _height = 1;
     }
 
     ~RTree()
     {
         clear();
-        assert(NULL != m_root);
-        m_root->~TreeNode();
-        m_tree_node_alloc.deallocate(m_root, 1);
-        m_root = NULL;
+        assert(NULL != _root);
+        _root->~TreeNode();
+        _tree_node_alloc.deallocate(_root, 1);
+        _root = NULL;
     }
 
     /**
@@ -233,11 +233,11 @@ public:
      */
     void insert(const area_type& rect, const data_type& data)
     {
-        DataNode *data_node = m_data_node_alloc.allocate(1);
+        DataNode *data_node = _data_node_alloc.allocate(1);
         assert(NULL != data_node);
         new (data_node) DataNode(rect, data);
-        insert(data_node, m_height);
-        ++m_size;
+        insert(data_node, _height);
+        ++_size;
     }
 
     /**
@@ -258,22 +258,22 @@ public:
 
         // 释放内存
         dn->~DataNode();
-        m_data_node_alloc.deallocate(dn, 1);
+        _data_node_alloc.deallocate(dn, 1);
 
         // 调整树
         condense_tree(l);
-        if (m_root->child_count() == 1 && m_root->child_at(0)->is_tree_node())
+        if (_root->child_count() == 1 && _root->child_at(0)->is_tree_node())
         {
-            TreeNode *tobedel = m_root;
-            m_root = dynamic_cast<TreeNode*>(m_root->child_at(0));
-            m_root->parent = NULL;
-            --m_height;
+            TreeNode *tobedel = _root;
+            _root = dynamic_cast<TreeNode*>(_root->child_at(0));
+            _root->parent = NULL;
+            --_height;
 
             // 释放内存
             tobedel->~TreeNode();
-            m_tree_node_alloc.deallocate(tobedel, 1);
+            _tree_node_alloc.deallocate(tobedel, 1);
         }
-        --m_size;
+        --_size;
         return true;
     }
 
@@ -295,22 +295,22 @@ public:
 
         // 释放内存
         dn->~DataNode();
-        m_data_node_alloc.deallocate(dn, 1);
+        _data_node_alloc.deallocate(dn, 1);
 
         // 调整树
         condense_tree(l);
-        if (m_root->child_count() == 1 && m_root->child_at(0)->is_tree_node())
+        if (_root->child_count() == 1 && _root->child_at(0)->is_tree_node())
         {
-            TreeNode *tobedel = m_root;
-            m_root = dynamic_cast<TreeNode*>(m_root->child_at(0));
-            m_root->parent = NULL;
-            --m_height;
+            TreeNode *tobedel = _root;
+            _root = dynamic_cast<TreeNode*>(_root->child_at(0));
+            _root->parent = NULL;
+            --_height;
 
             // 释放内存
             tobedel->~TreeNode();
-            m_tree_node_alloc.deallocate(tobedel, 1);
+            _tree_node_alloc.deallocate(tobedel, 1);
         }
-        --m_size;
+        --_size;
         return true;
     }
 
@@ -321,7 +321,7 @@ public:
     {
         // 清除所有
         std::stack<TreeNode*> s;
-        s.push(m_root);
+        s.push(_root);
         while (!s.empty())
         {
             TreeNode *n = s.top();
@@ -339,19 +339,19 @@ public:
                 {
                     DataNode *dn = dynamic_cast<DataNode*>(c);
                     dn->~DataNode();
-                    m_data_node_alloc.deallocate(dn, 1);
+                    _data_node_alloc.deallocate(dn, 1);
                 }
             }
-            if (n != m_root)
+            if (n != _root)
             {
                 n->~TreeNode();
-                m_tree_node_alloc.deallocate(n, 1);
+                _tree_node_alloc.deallocate(n, 1);
             }
         }
-        m_root->area.clear();
-        m_root->clear_children(false);
-        m_height = 1;
-        m_size = 0;
+        _root->area.clear();
+        _root->clear_children(false);
+        _height = 1;
+        _size = 0;
     }
 
     /**
@@ -362,7 +362,7 @@ public:
         assert(NULL != appended);
 
         std::stack<TreeNode*> s;
-        s.push(m_root);
+        s.push(_root);
         while (!s.empty())
         {
             TreeNode *n = s.top();
@@ -396,7 +396,7 @@ public:
         assert(NULL != appended);
 
         std::stack<TreeNode*> s;
-        s.push(m_root);
+        s.push(_root);
         while (!s.empty())
         {
             TreeNode *n = s.top();
@@ -430,7 +430,7 @@ public:
         assert(NULL != appended);
 
         std::stack<TreeNode*> s;
-        s.push(m_root);
+        s.push(_root);
         while (!s.empty())
         {
             TreeNode *n = s.top();
@@ -467,14 +467,14 @@ private:
         if (NULL != r)
         {
             // new root
-            TreeNode *nln = m_tree_node_alloc.allocate(1);
+            TreeNode *nln = _tree_node_alloc.allocate(1);
             assert(NULL != nln);
             new (nln) TreeNode();
-            nln->append_child(m_root);
+            nln->append_child(_root);
             nln->append_child(r);
             nln->fit_rect();
-            m_root = nln;
-            ++m_height;
+            _root = nln;
+            ++_height;
         }
     }
 
@@ -483,7 +483,7 @@ private:
      */
     TreeNode* choose_node(const area_type& rect_to_add, size_t depth)
     {
-        TreeNode *ret = m_root;
+        TreeNode *ret = _root;
         while (depth > 1)
         {
             TreeNode *nn = NULL;
@@ -534,7 +534,7 @@ private:
         parent->clear_children();
         parent->area = seed1->area;
         parent->append_child(seed1);
-        TreeNode *uncle = m_tree_node_alloc.allocate(1);
+        TreeNode *uncle = _tree_node_alloc.allocate(1);
         assert(NULL != uncle);
         new (uncle) TreeNode();
         uncle->append_child(seed2);
@@ -724,7 +724,7 @@ private:
     DataNode* find_first_data_node(const area_type& r)
     {
         std::stack<TreeNode*> st;
-        st.push(m_root);
+        st.push(_root);
         while (!st.empty())
         {
             TreeNode *n = st.top();
@@ -752,7 +752,7 @@ private:
     DataNode* find_data_node(const area_type& r, const data_type& d)
     {
         std::stack<TreeNode*> st;
-        st.push(m_root);
+        st.push(_root);
         while (!st.empty())
         {
             TreeNode *n = st.top();
@@ -792,7 +792,7 @@ private:
         std::stack<TreeNode*> q;
         std::stack<size_t> qd;
         TreeNode *n = l;
-        size_t depth = m_height;
+        size_t depth = _height;
         while (depth > 1)
         {
             TreeNode* parent = n->parent;
@@ -823,7 +823,7 @@ private:
 
             // 释放内存
             n->~TreeNode();
-            m_tree_node_alloc.deallocate(n, 1);
+            _tree_node_alloc.deallocate(n, 1);
         }
         assert(qd.empty());
     }
@@ -834,7 +834,7 @@ public:
      */
     size_t size() const
     {
-        return m_size;
+        return _size;
     }
 
     /**
@@ -842,7 +842,7 @@ public:
      */
     size_t height() const
     {
-        return m_height;
+        return _height;
     }
 
     /**
@@ -852,12 +852,12 @@ public:
     {
         if (NULL == e)
         {
-            e = m_root;
+            e = _root;
             depth = 1;
         }
-        assert(NULL != e && 1 <= depth && depth <= m_height + 1);
+        assert(NULL != e && 1 <= depth && depth <= _height + 1);
 
-        if (depth == m_height + 1)
+        if (depth == _height + 1)
         {
             if (e->is_tree_node())
                 return false; // wrong node type with depth

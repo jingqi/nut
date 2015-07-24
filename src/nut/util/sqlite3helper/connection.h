@@ -19,15 +19,15 @@ class Connection
 {
     NUT_REF_COUNTABLE
 
-    sqlite3 *m_sqlite;
-    bool m_auto_commit;
-    bool m_throw_exceptions;
-    int m_last_error;
-    std::string m_last_error_msg;
+    sqlite3 *_sqlite = NULL;
+    bool _auto_commit = true;
+    bool _throw_exceptions = false;
+    int _last_error = SQLITE_OK;
+    std::string _last_error_msg;
 
     struct Sqlite3Freer
     {
-        void *pt;
+        void *pt = NULL;
 
         Sqlite3Freer(void *p = NULL)
             : pt(p)
@@ -47,28 +47,25 @@ class Connection
 
     void on_error(int err, const char *msg = NULL)
     {
-        m_last_error = err;
+        _last_error = err;
 
         if (NULL == msg)
         {
-            assert(NULL != m_sqlite);
-            msg = ::sqlite3_errmsg(m_sqlite); // XXX memory of "msg" is managed internally by sqlite3
+            assert(NULL != _sqlite);
+            msg = ::sqlite3_errmsg(_sqlite); // XXX memory of "msg" is managed internally by sqlite3
         }
-        m_last_error_msg = (NULL == msg ? "no error detected" : msg);
+        _last_error_msg = (NULL == msg ? "no error detected" : msg);
 
-        if (m_throw_exceptions)
-            throw ExceptionA(m_last_error, m_last_error_msg, __FILE__, __LINE__, __FUNCTION__);
+        if (_throw_exceptions)
+            throw ExceptionA(_last_error, _last_error_msg, __FILE__, __LINE__, __FUNCTION__);
     }
 
 public:
     Connection()
-        : m_sqlite(NULL), m_auto_commit(true), m_throw_exceptions(false),
-          m_last_error(SQLITE_OK)
     {}
 
     Connection(sqlite3 *db)
-        : m_sqlite(db), m_auto_commit(true), m_throw_exceptions(false),
-          m_last_error(SQLITE_OK)
+        : _sqlite(db)
     {
         assert(NULL != db);
     }
@@ -77,8 +74,6 @@ public:
      * @param dbfilepath File path encoded in UTF-8
      */
     Connection(const char *dbfilepath)
-        : m_sqlite(NULL), m_auto_commit(true), m_throw_exceptions(false),
-          m_last_error(SQLITE_OK)
     {
         assert(NULL != dbfilepath);
         open(dbfilepath);
@@ -88,7 +83,6 @@ public:
     {
         bool rs = close();
         assert(rs);
-        (void)rs;
     }
 
     bool open(const char *dbfilepath)
@@ -99,13 +93,12 @@ public:
         {
             bool rs = close();
             assert(rs);
-            (void)rs;
         }
 
-        int rs = ::sqlite3_open(dbfilepath, &m_sqlite);
+        int rs = ::sqlite3_open(dbfilepath, &_sqlite);
         if (SQLITE_OK != rs)
         {
-            m_sqlite = NULL;
+            _sqlite = NULL;
             on_error(rs, "open db file failed");
             return false;
         }
@@ -115,10 +108,10 @@ public:
 
     bool close()
     {
-        if (NULL == m_sqlite)
+        if (NULL == _sqlite)
             return true;
 
-        int rs = ::sqlite3_close(m_sqlite);
+        int rs = ::sqlite3_close(_sqlite);
         if (SQLITE_OK != rs)
         {
             on_error(rs);
@@ -126,46 +119,46 @@ public:
         }
         else
         {
-            m_sqlite = NULL;
+            _sqlite = NULL;
             return true;
         }
     }
 
     bool is_valid() const
     {
-        return NULL != m_sqlite;
+        return NULL != _sqlite;
     }
 
     bool is_auto_commit() const
     {
-        return m_auto_commit;
+        return _auto_commit;
     }
 
     void set_auto_commit(bool b)
     {
-        m_auto_commit = b;
+        _auto_commit = b;
     }
 
     bool is_throw_exceptions() const
     {
-        return m_throw_exceptions;
+        return _throw_exceptions;
     }
 
     void set_throw_exceptions(bool b)
     {
-        m_throw_exceptions = b;
+        _throw_exceptions = b;
     }
 
     const std::string& get_last_error_msg() const
     {
-        return m_last_error_msg;
+        return _last_error_msg;
     }
 
     bool start()
     {
         assert(is_valid());
         char *msg = NULL;
-        int rs = ::sqlite3_exec(m_sqlite, "begin;", NULL, NULL, &msg);
+        int rs = ::sqlite3_exec(_sqlite, "begin;", NULL, NULL, &msg);
         Sqlite3Freer _f(msg);
         if (SQLITE_OK != rs)
         {
@@ -179,7 +172,7 @@ public:
     {
         assert(is_valid());
         char *msg = NULL;
-        int rs = ::sqlite3_exec(m_sqlite, "commit;", NULL, NULL, &msg);
+        int rs = ::sqlite3_exec(_sqlite, "commit;", NULL, NULL, &msg);
         Sqlite3Freer _f(msg);
         if (SQLITE_OK != rs)
         {
@@ -193,7 +186,7 @@ public:
     {
         assert(is_valid());
         char *msg = NULL;
-        int rs = ::sqlite3_exec(m_sqlite, "rollback;", NULL, NULL, &msg);
+        int rs = ::sqlite3_exec(_sqlite, "rollback;", NULL, NULL, &msg);
         Sqlite3Freer _f(msg);
         if (SQLITE_OK != rs)
         {
@@ -208,7 +201,7 @@ public:
     {
         assert(is_valid());
         char *msg = NULL;
-        int rs = ::sqlite3_exec(m_sqlite, "vacuum;", NULL, NULL, &msg);
+        int rs = ::sqlite3_exec(_sqlite, "vacuum;", NULL, NULL, &msg);
         Sqlite3Freer _f(msg);
         if (SQLITE_OK != rs)
         {
@@ -222,18 +215,18 @@ public:
     {
         assert(NULL != sql && is_valid());
         char *msg = NULL;
-        if (m_auto_commit)
+        if (_auto_commit)
             start();
-        int rs = ::sqlite3_exec(m_sqlite, sql, NULL, NULL, &msg);
+        int rs = ::sqlite3_exec(_sqlite, sql, NULL, NULL, &msg);
         Sqlite3Freer _f(msg);
         if (SQLITE_OK != rs)
         {
-            if (m_auto_commit)
+            if (_auto_commit)
                 rollback();
             on_error(rs, msg);
             return false;
         }
-        if (m_auto_commit)
+        if (_auto_commit)
             commit();
         return true;
     }
@@ -251,7 +244,7 @@ public:
         assert(NULL != sql && is_valid());
 
         // 预编译
-        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(m_sqlite, sql);
+        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);
@@ -287,17 +280,17 @@ public:
 #undef __BIND
 
         // 执行
-        if (m_auto_commit)
+        if (_auto_commit)
             start();
         int irs = ::sqlite3_step(stmt->stmt()->raw());
         if (SQLITE_DONE != irs)
         {
-            if (m_auto_commit)
+            if (_auto_commit)
                 rollback();
             on_error(irs);
             return false;
         }
-        if (m_auto_commit)
+        if (_auto_commit)
             commit();
         return true;
     }
@@ -307,7 +300,7 @@ public:
         assert(NULL != sql && is_valid());
 
         // 预编译
-        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(m_sqlite, sql);
+        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);
@@ -331,17 +324,17 @@ public:
             }
         }
             // 执行
-        if (m_auto_commit)
+        if (_auto_commit)
              start();
         int irs = ::sqlite3_step(stmt->stmt()->raw());
         if (SQLITE_DONE != irs)
         {
-            if (m_auto_commit)
+            if (_auto_commit)
                 rollback();
             on_error(irs);
             return false;
         }
-        if (m_auto_commit)
+        if (_auto_commit)
             commit();
         return true;
     }
@@ -360,7 +353,7 @@ public:
         assert(NULL != sql && is_valid());
 
         // 预编译
-        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(m_sqlite, sql);
+        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);
@@ -404,7 +397,7 @@ public:
         assert(NULL != sql && is_valid());
 
         // 预编译
-        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(m_sqlite, sql);
+        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);

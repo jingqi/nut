@@ -16,19 +16,19 @@ class XmlParser
     struct ElementInfo
     {
         std::string name;
-        XmlElementHandler *handler;
+        XmlElementHandler *handler = NULL;
 
         ElementInfo(const std::string& n, XmlElementHandler *h)
             : name(n), handler(h)
         {}
     };
-    std::vector<ElementInfo> m_elem_path;
+    std::vector<ElementInfo> _elem_path;
 
-    size_t m_line, m_column;
+    size_t _line = 1, _column = 1;
 
     // 状态机定义
-    std::string m_tmp_name, m_tmp_value, m_tmp_encoded;
-    int m_state;
+    std::string _tmp_name, _tmp_value, _tmp_encoded;
+    int _state = 0;
 
 private:
     bool input(char c);
@@ -61,12 +61,12 @@ public:
 
     size_t line() const
     {
-        return m_line;
+        return _line;
     }
 
     size_t column() const
     {
-        return m_column;
+        return _column;
     }
 
     bool has_error() const;

@@ -19,9 +19,9 @@ class sys_ma : public memory_allocator
 {
 
 #ifndef NDEBUG
-    uint32_t m_left_tag, m_right_tag;
-    size_t m_alloc_count, m_free_count;
-    size_t m_total_alloc_cb, m_total_free_cb;
+    uint32_t _left_tag = 0, _right_tag = 0;
+    size_t _alloc_count = 0, _free_count = 0;
+    size_t _total_alloc_cb = 0, _total_free_cb = 0;
     NUT_DEBUGGING_DESTROY_CHECKER
 #endif
 

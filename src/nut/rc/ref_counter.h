@@ -12,26 +12,26 @@ namespace nut
  */
 class SyncRefCounter
 {
-    int volatile m_ref_count;
+    int volatile _ref_count;
 
 public:
     SyncRefCounter(int c)
-        : m_ref_count(c)
+        : _ref_count(c)
     {}
 
     int operator++()
     {
-        return atomic_add(&m_ref_count, 1) + 1;
+        return atomic_add(&_ref_count, 1) + 1;
     }
 
     int operator--()
     {
-        return atomic_add(&m_ref_count, -1) - 1;
+        return atomic_add(&_ref_count, -1) - 1;
     }
 
     operator int() const
     {
-        return m_ref_count;
+        return _ref_count;
     }
 };
 

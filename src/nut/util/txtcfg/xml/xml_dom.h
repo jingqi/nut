@@ -17,10 +17,10 @@ class XmlDom
 {
     NUT_REF_COUNTABLE
 
-    std::string m_version;
-    std::string m_encoding;
-    rc_ptr<XmlElement> m_root;
-	bool m_dirty;
+    std::string _version;
+    std::string _encoding;
+    rc_ptr<XmlElement> _root;
+	bool _dirty = false;
 
 public:
     XmlDom();
@@ -31,21 +31,21 @@ public:
 
     const std::string& get_version() const
     {
-        return m_version;
+        return _version;
     }
 
     void set_version(const std::string& version);
 
     const std::string& get_encoding() const
     {
-        return m_encoding;
+        return _encoding;
     }
 
     void set_encoding(const std::string& encoding);
 
     rc_ptr<XmlElement> get_root() const
     {
-        return m_root;
+        return _root;
     }
 
     void set_root(rc_ptr<XmlElement> root);

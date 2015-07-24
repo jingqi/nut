@@ -10,11 +10,11 @@ namespace nut
 class AES
 {
     /** encryption round keys */
-    uint32_t m_erk[64];
+    uint32_t _erk[64];
     /** decryption round keys */
-    uint32_t m_drk[64];
+    uint32_t _drk[64];
     /** number of rounds */
-    int m_nr;
+    int _nr;
 
 public:
     AES();

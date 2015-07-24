@@ -14,7 +14,7 @@ namespace nut
 class LogRecord
 {
 private:
-    Time m_time;
+    DateTime m_time;
     LogLevel m_level;
 	const char *m_tag; 			// can be NULL, which indicated a root tag
     const char *m_file_path;
@@ -30,7 +30,7 @@ public:
 		const char *func, char *message);
 	~LogRecord();
 
-    const Time& get_time() const
+    const DateTime& get_time() const
     {
         return m_time;
     }
@@ -39,7 +39,7 @@ public:
     {
         return m_level;
     }
-	
+
 	const char* get_tag() const
 	{
 		return m_tag;
@@ -49,7 +49,7 @@ public:
     {
         return m_file_path;
     }
-	
+
 	const char* get_file_name() const;
 
     int get_line() const

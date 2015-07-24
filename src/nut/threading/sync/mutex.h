@@ -18,9 +18,9 @@ namespace nut
 class Mutex
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-    HANDLE m_hmutex;
+    HANDLE _hmutex = NULL;
 #else
-    pthread_mutex_t m_mutex;
+    pthread_mutex_t _mutex;
 #endif
 
 public :
@@ -31,12 +31,12 @@ public :
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
     HANDLE inner_mutex()
     {
-        return m_hmutex;
+        return _hmutex;
     }
 #else
     pthread_mutex_t* inner_mutex()
     {
-        return &m_mutex;
+        return &_mutex;
     }
 #endif
 

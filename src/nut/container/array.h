@@ -22,16 +22,16 @@ public:
     NUT_REF_COUNTABLE
 
 private:
-    const rc_ptr<memory_allocator> m_alloc;
-    T *m_buf;
-    size_type m_size, m_cap;
+    const rc_ptr<memory_allocator> _alloc;
+    T *_buf = NULL;
+    size_type _size = 0, _cap = 0;
 
 private:
     RCArray(const self_type&);
 
 public:
     RCArray(size_type init_cap = 16, memory_allocator *ma = NULL)
-        : m_alloc(ma), m_buf(NULL), m_size(0), m_cap(0)
+        : _alloc(ma)
     {
         ensure_cap(init_cap);
     }
@@ -39,39 +39,71 @@ public:
     ~RCArray()
     {
         clear();
-        if (NULL != m_buf)
-            ma_free(m_alloc.pointer(), m_buf);
-        m_buf = NULL;
-        m_cap = 0;
+        if (NULL != _buf)
+            ma_free(_alloc.pointer(), _buf);
+        _buf = NULL;
+        _cap = 0;
     }
 
     memory_allocator* allocator() const
     {
-        return m_alloc.pointer();
+        return _alloc.pointer();
     }
 
 private:
     void ensure_cap(size_type new_size)
     {
-        if (new_size <= m_cap)
+        if (new_size <= _cap)
             return;
 
-        size_type new_cap = m_cap * 3 / 2;
+        size_type new_cap = _cap * 3 / 2;
         if (new_cap < new_size)
             new_cap = new_size;
 
-        m_buf = (T*) ma_realloc(m_alloc.pointer(), m_buf, sizeof(T) * new_cap);
-        assert(NULL != m_buf);
-        m_cap = new_cap;
+        _buf = (T*) ma_realloc(_alloc.pointer(), _buf, sizeof(T) * new_cap);
+        assert(NULL != _buf);
+        _cap = new_cap;
     }
 
 public:
     self_type& operator=(const self_type& x)
     {
-        clear();
-        ensure_cap(x.m_size);
-        std::uninitialized_copy(x.m_buf, x.m_buf + x.m_size, m_buf);
-        m_size = x.m_size;
+        if (this != &x)
+        {
+            clear();
+            ensure_cap(x._size);
+            std::uninitialized_copy(x._buf, x._buf + x._size, _buf);
+            _size = x._size;
+        }
+        return *this;
+    }
+
+    self_type& operator=(self_type&& x)
+    {
+        if (this != &x)
+        {
+            if (_alloc == x._alloc)
+            {
+                clear();
+                if (NULL != _buf)
+                    ma_free(_alloc.pointer(), _buf);
+
+                _buf = x._buf;
+                _size = x._size;
+                _cap = x._cap;
+
+                x._buf = NULL;
+                x._size = 0;
+                x._cap = 0;
+            }
+            else
+            {
+                clear();
+                ensure_cap(x._size);
+                std::uninitialized_copy(x._buf, x._buf + x._size, _buf);
+                _size = x._size;
+            }
+        }
         return *this;
     }
 
@@ -79,9 +111,9 @@ public:
     {
         if (this == &x)
             return true;
-        if (m_size != x.m_size)
+        if (_size != x._size)
             return false;
-        for (size_type i = 0; i < m_size; ++i)
+        for (size_type i = 0; i < _size; ++i)
         {
             if (at(i) != x.at(i))
                 return false;
@@ -96,13 +128,13 @@ public:
 
     const T& operator[](size_type i) const
     {
-        assert(i < m_size);
-        return m_buf[i];
+        assert(i < _size);
+        return _buf[i];
     }
 
     T& operator[](size_type i)
     {
-        assert(i < m_size);
+        assert(i < _size);
         return const_cast<T&>(static_cast<const self_type&>(*this)[i]);
     }
 
@@ -112,130 +144,130 @@ public:
 
     const_iterator begin() const
     {
-        return m_buf;
+        return _buf;
     }
 
     iterator begin()
     {
-        return m_buf;
+        return _buf;
     }
 
     const_iterator end() const
     {
-        return m_buf + m_size;
+        return _buf + _size;
     }
 
     iterator end()
     {
-        return m_buf + m_size;
+        return _buf + _size;
     }
 
 public:
     rc_ptr<self_type> clone() const
     {
-        rc_ptr<self_type> ret = rca_new<self_type,int>(m_alloc.pointer(), m_size, m_alloc.pointer());
-        std::uninitialized_copy(m_buf, m_buf + m_size, ret->m_buf);
-		ret->m_size = m_size;
+        rc_ptr<self_type> ret = rca_new<self_type,int>(_alloc.pointer(), _size, _alloc.pointer());
+        std::uninitialized_copy(_buf, _buf + _size, ret->_buf);
+		ret->_size = _size;
         return ret;
     }
 
     size_type size() const
     {
-        return m_size;
+        return _size;
     }
 
     size_type capacity() const
     {
-        return m_cap;
+        return _cap;
     }
 
     const T& at(size_type i) const
     {
-        assert(i < m_size);
-        return m_buf[i];
+        assert(i < _size);
+        return _buf[i];
     }
 
     T& at(size_type i)
     {
-        assert(i < m_size);
+        assert(i < _size);
         return const_cast<T&>(static_cast<const self_type&>(*this).at(i));
     }
 
     void push_back(const T& e)
     {
-        ensure_cap(m_size + 1);
-        new (m_buf + m_size) T(e);
-        ++m_size;
+        ensure_cap(_size + 1);
+        new (_buf + _size) T(e);
+        ++_size;
     }
 
     void pop_back()
     {
-        assert(m_size > 0);
-        --m_size;
-        (m_buf + m_size)->~T();
+        assert(_size > 0);
+        --_size;
+        (_buf + _size)->~T();
     }
 
     void insert(size_type index, const T& e)
     {
-        assert(index <= m_size);
-        ensure_cap(m_size + 1);
-        if (index < m_size)
-            ::memmove(m_buf + index + 1, m_buf + index, sizeof(T) * (m_size - index));
-        new (m_buf + index) T(e);
-        ++m_size;
+        assert(index <= _size);
+        ensure_cap(_size + 1);
+        if (index < _size)
+            ::memmove(_buf + index + 1, _buf + index, sizeof(T) * (_size - index));
+        new (_buf + index) T(e);
+        ++_size;
     }
 
     template <typename Iter>
     void insert(size_type index, const Iter& b, const Iter& e)
     {
-        assert(index <= m_size);
+        assert(index <= _size);
         const size_type len = e - b;
-        ensure_cap(m_size + len);
-        if (index < m_size)
-            ::memmove(m_buf + index + len, m_buf + index, sizeof(T) * (m_size - index));
-		std::uninitialized_copy(b, e, m_buf + index);
-        m_size += len;
+        ensure_cap(_size + len);
+        if (index < _size)
+            ::memmove(_buf + index + len, _buf + index, sizeof(T) * (_size - index));
+		std::uninitialized_copy(b, e, _buf + index);
+        _size += len;
     }
 
     void erase(size_type index)
     {
-        assert(index < m_size);
-        (m_buf + index)->~T();
-        if (index < m_size - 1)
-            ::memmove(m_buf + index, m_buf + index + 1, sizeof(T) * (m_size - index - 1));
-        --m_size;
+        assert(index < _size);
+        (_buf + index)->~T();
+        if (index < _size - 1)
+            ::memmove(_buf + index, _buf + index + 1, sizeof(T) * (_size - index - 1));
+        --_size;
     }
 
     void erase(size_type b, size_type e)
     {
-        assert(b <= e && e <= m_size);
+        assert(b <= e && e <= _size);
         for (size_type i = b; i < e; ++i)
-            (m_buf + i)->~T();
-        if (b < e && e < m_size)
-            ::memmove(m_buf + b, m_buf + e, sizeof(T) * (m_size - e));
-        m_size -= e - b;
+            (_buf + i)->~T();
+        if (b < e && e < _size)
+            ::memmove(_buf + b, _buf + e, sizeof(T) * (_size - e));
+        _size -= e - b;
     }
 
     void resize(size_type new_size, const T& fill = T())
     {
         ensure_cap(new_size);
-        for (size_type i = new_size; i < m_size; ++i)
-            (m_buf + i)->~T();
-		if (m_size < new_size)
-			std::uninitialized_fill_n(m_buf + m_size, new_size - m_size, fill);
-        m_size = new_size;
+        for (size_type i = new_size; i < _size; ++i)
+            (_buf + i)->~T();
+		if (_size < new_size)
+			std::uninitialized_fill_n(_buf + _size, new_size - _size, fill);
+        _size = new_size;
     }
 
     void clear()
     {
-        for (size_type i = 0; i < m_size; ++i)
-            (m_buf + i)->~T();
-        m_size = 0;
+        for (size_type i = 0; i < _size; ++i)
+            (_buf + i)->~T();
+        _size = 0;
     }
 
     const T* data() const
     {
-        return m_buf;
+        return _buf;
     }
 
     T* data()

@@ -2,6 +2,8 @@
 #ifndef ___HEADFILE_E134CCCD_BA57_49BB_A1D7_8BA2C91957FA_
 #define ___HEADFILE_E134CCCD_BA57_49BB_A1D7_8BA2C91957FA_
 
+#include <utility>
+
 namespace nut
 {
 
@@ -18,10 +20,10 @@ struct Tuple
 
     Tuple() {}
 
-    Tuple(const T1& t1, const T2& t2, const T3& t3, const T4& t4, const T5& t5,
-          const T6& t6)
-        : first(t1), second(t2), third(t3), forth(t4), fifth(t5),
-          sixth(t6)
+    Tuple(T1&& t1, T2&& t2, T3&& t3, T4&& t4, T5&& t5,
+          T6&& t6)
+        : first(std::forward<T1>(t1)), second(std::forward<T2>(t2)), third(std::forward<T3>(t3)), forth(std::forward<T4>(t4)), fifth(std::forward<T5>(t5)),
+          sixth(std::forward<T6>(t6))
     {}
 };
 
@@ -36,8 +38,8 @@ struct Tuple<T1, T2, T3, T4, T5, void>
 
     Tuple() {}
 
-    Tuple(const T1& t1, const T2& t2, const T3& t3, const T4& t4, const T5& t5)
-        : first(t1), second(t2), third(t3), forth(t4), fifth(t5)
+    Tuple(T1&& t1, T2&& t2, T3&& t3, T4&& t4, T5&& t5)
+        : first(std::forward<T1>(t1)), second(std::forward<T2>(t2)), third(std::forward<T3>(t3)), forth(std::forward<T4>(t4)), fifth(std::forward<T5>(t5))
     {}
 };
 
@@ -51,8 +53,8 @@ struct Tuple<T1, T2, T3, T4, void, void>
 
     Tuple() {}
 
-    Tuple(const T1& t1, const T2& t2, const T3& t3, const T4& t4)
-        : first(t1), second(t2), third(t3), forth(t4)
+    Tuple(T1&& t1, T2&& t2, T3&& t3, T4&& t4)
+        : first(std::forward<T1>(t1)), second(std::forward<T2>(t2)), third(std::forward<T3>(t3)), forth(std::forward<T4>(t4))
     {}
 };
 
@@ -65,8 +67,8 @@ struct Tuple<T1, T2, T3, void, void, void>
 
     Tuple() {}
 
-    Tuple(const T1& t1, const T2& t2, const T3& t3)
-        : first(t1), second(t2), third(t3)
+    Tuple(T1&& t1, T2&& t2, T3&& t3)
+        : first(std::forward<T1>(t1)), second(std::forward<T2>(t2)), third(std::forward<T3>(t3))
     {}
 };
 
@@ -78,8 +80,8 @@ struct Tuple<T1, T2, void, void, void, void>
 
     Tuple() {}
 
-    Tuple(const T1& t1, const T2& t2)
-        : first(t1), second(t2)
+    Tuple(T1&& t1, T2&& t2)
+        : first(std::forward<T1>(t1)), second(std::forward<T2>(t2))
     {}
 };
 

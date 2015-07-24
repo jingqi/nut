@@ -27,20 +27,20 @@ public:
 private:
     struct Task
     {
-        thread_process_type process;
-        void *arg;
+        thread_process_type process = NULL;
+        void *arg = NULL;
 
         Task(thread_process_type p = NULL, void *a = NULL)
             : process(p), arg(a)
         {}
     };
 
-    size_t m_thread_count;
-    std::vector<rc_ptr<Thread> > m_threads;
-    bool volatile m_interupt;
-    std::queue<Task> m_task_queue;
-    Condition::condition_lock_type m_lock;
-    Condition m_condition;
+    size_t _thread_count = 1;
+    std::vector<rc_ptr<Thread> > _threads;
+    bool volatile _interrupt = false;
+    std::queue<Task> _task_queue;
+    Condition::condition_lock_type _lock;
+    Condition _condition;
 
 public:
     ThreadPool(size_t thread_count);

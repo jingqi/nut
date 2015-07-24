@@ -10,7 +10,7 @@ namespace nut
 
 class CmdHelp : public ICommand
 {
-    IConsole *m_console;
+    IConsole *_console = NULL;
 
 public:
     CmdHelp(IConsole *c);

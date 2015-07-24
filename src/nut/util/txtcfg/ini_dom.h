@@ -29,13 +29,13 @@ class IniDom
     {
         NUT_REF_COUNTABLE
 
-        std::string m_space0;
-        std::string m_space1;
-        std::string m_name;
-        std::string m_space2;
-        std::string m_space3;
-        std::string m_comment;
-        std::vector<rc_ptr<Line> > m_lines;
+        std::string _space0;
+        std::string _space1;
+        std::string _name;
+        std::string _space2;
+        std::string _space3;
+        std::string _comment;
+        std::vector<rc_ptr<Line> > _lines;
 
 		/**
 		 * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
@@ -49,9 +49,9 @@ class IniDom
         void serielize(std::string *appended, const char *le = "\n");
     };
 
-    std::vector<rc_ptr<Line> > m_global_lines;
-    std::vector<rc_ptr<Sector> > m_sectors;
-    bool m_dirty;
+    std::vector<rc_ptr<Line> > _global_lines;
+    std::vector<rc_ptr<Sector> > _sectors;
+    bool _dirty = false;
 
 public:
     IniDom();
@@ -69,12 +69,12 @@ public:
 
 	bool is_dirty() const
 	{
-		return m_dirty;
+		return _dirty;
 	}
 
     void set_dirty(bool dirty = true)
     {
-        m_dirty = dirty;
+        _dirty = dirty;
     }
 
     void clear();

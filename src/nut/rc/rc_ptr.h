@@ -14,18 +14,17 @@ template <typename T>
 class rc_ptr
 {
 protected:
-    T *m_ptr;
+    template <typename U> friend class rc_ptr;
+    T *_ptr = NULL;
 
 public:
     rc_ptr()
-        : m_ptr(NULL)
     {}
 
     /**
      * 类型转换
      */
     rc_ptr(T *p)
-        : m_ptr(NULL)
     {
         assign(p);
     }
@@ -35,9 +34,8 @@ public:
      */
     template <typename U>
     rc_ptr(const rc_ptr<U>& p)
-        : m_ptr(NULL)
     {
-        assign(p.pointer());
+        assign(p._ptr);
     }
 
     /**
@@ -48,9 +46,15 @@ public:
      *  反而会生成默认拷贝式默认复制构造函数
      */
     rc_ptr(const rc_ptr<T>& p)
-        : m_ptr(NULL)
     {
-        assign(p.m_ptr);
+        assign(p._ptr);
+    }
+
+    template <typename U>
+    rc_ptr(rc_ptr<U>&& p)
+    {
+        _ptr = p._ptr;
+        p._ptr = NULL;
     }
 
     ~rc_ptr()
@@ -68,7 +72,7 @@ public:
     template <typename U>
     rc_ptr<T>& operator=(const rc_ptr<U>& p)
     {
-        assign(p.pointer());
+        assign(p._ptr);
         return *this;
     }
 
@@ -79,84 +83,98 @@ public:
      */
     rc_ptr<T>& operator=(const rc_ptr<T> &p)
     {
-        assign(p.m_ptr);
+        assign(p._ptr);
+        return *this;
+    }
+
+    template <typename U>
+    rc_ptr<T>& operator=(rc_ptr<U>&& p)
+    {
+        if (_ptr != p._ptr)
+        {
+            T *tmp = _ptr;
+            _ptr = p._ptr;
+            p._ptr = NULL;
+            if (NULL != tmp)
+                tmp->release_ref();
+        }
         return *this;
     }
 
     operator T*() const
     {
-        return m_ptr;
+        return _ptr;
     }
 
     bool operator==(const T *p) const
     {
-        return m_ptr == p;
+        return _ptr == p;
     }
 
     template <typename U>
     bool operator==(const rc_ptr<U>& p) const
 	{
-		return m_ptr == p.pointer();
+		return _ptr == p._ptr;
 	}
 
     bool operator!=(const T *p) const
     {
-        return m_ptr != p;
+        return _ptr != p;
     }
 
     template <typename U>
     bool operator!=(const rc_ptr<U>& p) const
 	{
-		return m_ptr != p.pointer();
+		return _ptr != p._ptr;
 	}
 
     T* operator->() const
     {
-        assert(NULL != m_ptr);
-        return m_ptr;
+        assert(NULL != _ptr);
+        return _ptr;
     }
 
     T& operator*() const
     {
-        assert(NULL != m_ptr);
-        return *m_ptr;
+        assert(NULL != _ptr);
+        return *_ptr;
     }
 
 public:
     void assign(T *p)
     {
-        if (m_ptr != p)
+        if (_ptr != p)
         {
             // 先添加引用，以免先减少引用的话引发连锁反应
             if (p != NULL)
                 p->add_ref();
-            if (m_ptr != NULL)
-                m_ptr->release_ref();
-            m_ptr = p;
+            if (_ptr != NULL)
+                _ptr->release_ref();
+            _ptr = p;
         }
     }
 
     T* pointer() const
     {
-        return m_ptr;
+        return _ptr;
     }
 
     bool is_null() const
     {
-        return NULL == m_ptr;
+        return NULL == _ptr;
     }
 
     bool is_not_null() const
     {
-        return NULL != m_ptr;
+        return NULL != _ptr;
     }
 
     void set_null()
     {
-        if (m_ptr != NULL)
+        if (_ptr != NULL)
         {
-            m_ptr->release_ref();
-            m_ptr = NULL;
+            _ptr->release_ref();
+            _ptr = NULL;
         }
     }
 };
@@ -216,10 +234,10 @@ struct dynamic_rc_ptr_cast : public rc_ptr<typename RCPtrTraits<T>::plain_type>
  *
  * @return 引用计数更改之后的值
  */
-#define NUT_REF_COUNTABLE \
-    virtual int add_ref() = 0; \
-    virtual int release_ref() = 0; \
-    virtual int get_ref() const = 0; \
+#define NUT_REF_COUNTABLE                               \
+    virtual int add_ref() = 0;                          \
+    virtual int release_ref() = 0;                      \
+    virtual int get_ref() const = 0;                    \
     template <typename ___T> friend class nut::rc_ptr;
 
 

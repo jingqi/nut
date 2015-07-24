@@ -25,11 +25,11 @@ class AES_CBC_PKCS5
         READY,
         IN_ENCRYPT,
         IN_DECRYPT
-    } m_state;
-    uint8_t m_data_buf[16], m_iv[16];
-    size_t m_data_buf_size;
-    ByteArray m_result;
-    AES m_aes;
+    } _state = READY;
+    uint8_t _data_buf[16], _iv[16];
+    size_t _data_buf_size = 0;
+    ByteArray _result;
+    AES _aes;
 
 public:
     /**
@@ -77,7 +77,7 @@ public:
      */
     const ByteArray& get_result() const
     {
-        return m_result;
+        return _result;
     }
 };
 

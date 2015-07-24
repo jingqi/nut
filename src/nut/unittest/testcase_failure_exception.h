@@ -10,28 +10,28 @@ namespace nut
  */
 class TestCaseFailureException
 {
-    const char *m_description;
-    const char *m_file;
-    int m_line;
+    const char *_description = NULL;
+    const char *_file = NULL;
+    int _line = -1;
 
 public:
     TestCaseFailureException(const char *des, const char *file, int line)
-        : m_description(des), m_file(file), m_line(line)
+        : _description(des), _file(file), _line(line)
     {}
 
     const char* get_description() const
     {
-        return m_description;
+        return _description;
     }
 
     const char* get_file() const
     {
-        return m_file;
+        return _file;
     }
 
     int get_line() const
     {
-        return m_line;
+        return _line;
     }
 };
 

@@ -21,12 +21,12 @@ class LRUDataCache
     struct Node
     {
         K key;
-        void *data;
-        size_t size;
-        Node *pre, *next;
+        void *data = NULL;
+        size_t size = 0;
+        Node *pre = NULL, *next = NULL;
 
         Node(const K& k, const void *buf, size_t cb)
-            : key(k), data(NULL), size(cb), pre(NULL), next(NULL)
+            : key(k), size(cb)
         {
             assert(NULL != buf || 0 == cb);
             if (cb > 0)
@@ -80,13 +80,13 @@ class LRUDataCache
     enum { DEFAULT_BYTES_CAPACITY = 5 * 1024 * 1024 }; // 单位: 字节
     typedef std::map<K,Node*> map_t;
 
-    size_t m_bytes_size, m_bytes_capacity;
-    map_t m_map;
-    Node *m_list_head, *m_list_end;
-    SpinLock m_lock; // 注意，linux下自旋锁不可重入
+    size_t _bytes_size = 0, _bytes_capacity = 0;
+    map_t _map;
+    Node *_list_head = NULL, *_list_end = NULL;
+    SpinLock _lock; // 注意，linux下自旋锁不可重入
 
 #ifndef NDEBUG
-    size_t m_hit_count, m_hit_size, m_miss_count;
+    size_t m_hit_count = 0, m_hit_size = 0, _miss_count = 0;
 #endif
 
     static Node* alloc_node()
@@ -121,24 +121,24 @@ class LRUDataCache
         if (NULL != p->pre)
             p->pre->next = p->next;
         else
-            m_list_head = p->next;
+            _list_head = p->next;
 
         if (NULL != p->next)
             p->next->pre = p->pre;
         else
-            m_list_end = p->pre;
+            _list_end = p->pre;
     }
 
     void push_list_head(Node *p)
     {
         assert(NULL != p);
-        p->next = m_list_head;
+        p->next = _list_head;
         p->pre = NULL;
-        if (NULL != m_list_head)
-            m_list_head->pre = p;
+        if (NULL != _list_head)
+            _list_head->pre = p;
         else
-            m_list_end = p;
-        m_list_head = p;
+            _list_end = p;
+        _list_head = p;
     }
 
 private:
@@ -148,17 +148,11 @@ private:
 
 public:
     LRUDataCache()
-        : m_bytes_size(0), m_bytes_capacity(DEFAULT_BYTES_CAPACITY), m_list_head(NULL), m_list_end(NULL)
-#ifndef NDEBUG
-        , m_hit_count(0), m_hit_size(0), m_miss_count(0)
-#endif
+        : _bytes_capacity(DEFAULT_BYTES_CAPACITY)
     {}
 
     LRUDataCache(size_t bytes_capacity)
-        : m_bytes_size(0), m_bytes_capacity(bytes_capacity), m_list_head(NULL), m_list_end(NULL)
-#ifndef NDEBUG
-        , m_hit_count(0), m_hit_size(0), m_miss_count(0)
-#endif
+        : _bytes_capacity(bytes_capacity)
     {
         assert(bytes_capacity > 0);
     }
@@ -170,47 +164,47 @@ public:
 
     size_t size() const
     {
-        return m_map.size();
+        return _map.size();
     }
 
     size_t bytes_size() const
     {
-        return m_bytes_size;
+        return _bytes_size;
     }
 
     size_t bytes_capacity() const
     {
-        return m_bytes_capacity;
+        return _bytes_capacity;
     }
 
     void set_bytes_capacity(size_t bytes_capacity)
     {
         assert(bytes_capacity > 0);
-        m_bytes_capacity = bytes_capacity;
+        _bytes_capacity = bytes_capacity;
     }
 
     void put(const K& k, const void *buf, size_t cb)
     {
         assert(NULL != buf || 0 == cb);
-        Guard<SpinLock> g(&m_lock);
+        Guard<SpinLock> g(&_lock);
 
-        typename map_t::const_iterator const n = m_map.find(k);
-        if (n == m_map.end())
+        typename map_t::const_iterator const n = _map.find(k);
+        if (n == _map.end())
         {
             Node *const p = new_node(k, buf, cb);
-            m_map.insert(std::pair<K,Node*>(k,p));
+            _map.insert(std::pair<K,Node*>(k,p));
             push_list_head(p);
-            m_bytes_size += cb;
+            _bytes_size += cb;
 
-            while (m_bytes_size > m_bytes_capacity)
+            while (_bytes_size > _bytes_capacity)
             {
-                assert(NULL != m_list_end);
-                typename map_t::iterator const nn = m_map.find(m_list_end->key);
-                assert(nn != m_map.end());
+                assert(NULL != _list_end);
+                typename map_t::iterator const nn = _map.find(_list_end->key);
+                assert(nn != _map.end());
                 Node *const pp = nn->second;
-                assert(NULL != pp && m_bytes_size >= pp->size);
-                m_bytes_size -= pp->size;
-                m_map.erase(nn);
+                assert(NULL != pp && _bytes_size >= pp->size);
+                _bytes_size -= pp->size;
+                _map.erase(nn);
                 remove_from_list(pp);
                 delete_node(pp);
             }
@@ -218,45 +212,45 @@ public:
         }
 
         Node *const p = n->second;
-        assert(NULL != p && m_bytes_size >= p->size);
-        m_bytes_size -= p->size;
+        assert(NULL != p && _bytes_size >= p->size);
+        _bytes_size -= p->size;
         p->copy_from(buf, cb);
         remove_from_list(p);
         push_list_head(p);
-        m_bytes_size += cb;
+        _bytes_size += cb;
     }
 
     void remove(const K& k)
     {
-        Guard<SpinLock> g(&m_lock);
+        Guard<SpinLock> g(&_lock);
 
-        typename map_t::iterator const n = m_map.find(k);
-        if (n == m_map.end())
+        typename map_t::iterator const n = _map.find(k);
+        if (n == _map.end())
             return;
 
         Node *const p = n->second;
-        assert(NULL != p && m_bytes_size >= p->size);
-        m_bytes_size -= p->size;
-        m_map.erase(n);
+        assert(NULL != p && _bytes_size >= p->size);
+        _bytes_size -= p->size;
+        _map.erase(n);
         remove_from_list(p);
         delete_node(p);
     }
 
     bool has_key(const K& k)
     {
-        return m_map.find(k) != m_map.end();
+        return _map.find(k) != _map.end();
     }
 
     bool get(const K& k, const void **pdata, size_t *psize)
     {
         assert(NULL != pdata && NULL != psize);
-        Guard<SpinLock> g(&m_lock);
+        Guard<SpinLock> g(&_lock);
 
-        typename map_t::const_iterator const n = m_map.find(k);
-        if (n == m_map.end())
+        typename map_t::const_iterator const n = _map.find(k);
+        if (n == _map.end())
         {
 #ifndef NDEBUG
-            ++m_miss_count;
+            ++_miss_count;
 #endif
             return false;
         }
@@ -277,24 +271,24 @@ public:
 
     void clear()
     {
-        Guard<SpinLock> g(&m_lock);
+        Guard<SpinLock> g(&_lock);
 
-        Node *p = m_list_head;
+        Node *p = _list_head;
         while (NULL != p)
         {
             Node *const n = p->next;
             delete_node(p);
             p = n;
         }
-        m_list_head = NULL;
-        m_list_end = NULL;
-        m_map.clear();
-        m_bytes_size = 0;
+        _list_head = NULL;
+        _list_end = NULL;
+        _map.clear();
+        _bytes_size = 0;
 
 #ifndef NDEBUG
         m_hit_count = 0;
         m_hit_size = 0;
-        m_miss_count = 0;
+        _miss_count = 0;
 #endif
     }
 };

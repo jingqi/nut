@@ -9,7 +9,7 @@ namespace nut
 
 class TestRunner
 {
-    ITestLogger &m_logger;
+    ITestLogger& _logger;
 
 public:
     TestRunner(ITestLogger& logger);

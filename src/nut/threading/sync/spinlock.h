@@ -16,11 +16,11 @@ namespace nut
 class SpinLock
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-    CRITICAL_SECTION m_criticalSection;
+    CRITICAL_SECTION _critical_section;
 #elif defined(NUT_PLATFORM_OS_MAC)
-    pthread_mutex_t m_spinlock; // TODO mac 系统没有spinlock
+    pthread_mutex_t _spinlock; // TODO mac 系统没有spinlock
 #else
-    pthread_spinlock_t m_spinlock;
+    pthread_spinlock_t _spinlock;
 #endif
 
 public:
@@ -31,17 +31,17 @@ public:
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
     CRITICAL_SECTION* inner_mutex()
     {
-        return &m_criticalSection;
+        return &_critical_section;
     }
 #elif defined(NUT_PLATFORM_OS_MAC)
     pthread_mutex_t* inner_mutex()
     {
-        return &m_spinlock;
+        return &_spinlock;
     }
 #else
     pthread_spinlock_t* inner_mutex()
     {
-        return &m_spinlock;
+        return &_spinlock;
     }
 #endif
 

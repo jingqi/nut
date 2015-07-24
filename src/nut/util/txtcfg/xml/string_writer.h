@@ -16,11 +16,11 @@ public:
 
 class StdStringWriter : public StringWriter
 {
-    std::string *m_output;
+    std::string *_output = NULL;
 
 public:
     StdStringWriter(std::string *output)
-        : m_output(output)
+        : _output(output)
     {}
 
     virtual void write(const char *s, int len) override
@@ -28,9 +28,9 @@ public:
         if (NULL == s || 0 == len)
             return;
         if (len < 0)
-            *m_output += s;
+            *_output += s;
         for (int i = 0; i < len && '\0' != s[i]; ++i)
-            m_output->push_back(s[i]);
+            _output->push_back(s[i]);
     }
 };
 

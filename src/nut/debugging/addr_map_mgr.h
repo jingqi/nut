@@ -34,23 +34,23 @@ public:
 
 private:
     // 析构检查字段
-    uint32_t m_destruct_tag;
+    uint32_t _destruct_tag;
 
     /**
      * key 为动态链接库实际绝对路径（不是软链接，也不是相对路径）
      * value为动态链接库加载地址
      */
     typedef std::map<std::string, addr_t> addr_map_t;
-    addr_map_t m_addr_map;
+    addr_map_t _addr_map;
 
     // 程序的绝对路径
-    std::string m_exec_path;
+    std::string _exec_path;
 
     /**
      * 文件"/proc/xxx/maps"的路径，其中xxx为进程ID.
      * 该文件保存着共享库在进程空间的映射地址.
      */
-    std::string m_maps_path;
+    std::string _maps_path;
 
 public:
     AddrMapManager();
@@ -66,11 +66,11 @@ public:
      */
     const std::string& get_exec_path() const
     {
-        return m_exec_path;
+        return _exec_path;
     }
 
 	/**
-     * 从文件 m_maps_path 中加载地址的映射，path为空表示加载所有。
+     * 从文件 _maps_path 中加载地址的映射，path为空表示加载所有。
      */
     void load(const std::string& path = std::string());
 

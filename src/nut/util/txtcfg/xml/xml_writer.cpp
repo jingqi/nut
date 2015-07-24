@@ -7,21 +7,21 @@ namespace nut
 {
 
 XmlWriter::XmlWriter(StringWriter *writer)
-    : m_writer(writer)
+    : _writer(writer)
 {}
 
 void XmlWriter::start_element(const char *name)
 {
     assert(NULL != name && '\0' != name[0]);
 
-    if (!m_elem_path.empty())
+    if (!_elem_path.empty())
     {
-        ElemState& parent_state = m_elem_path[m_elem_path.size() - 1];
+        ElemState& parent_state = _elem_path[_elem_path.size() - 1];
         if (!parent_state.has_child)
             write(">");
         parent_state.has_child = true;
     }
-    m_elem_path.push_back(name);
+    _elem_path.push_back(name);
 
     write("<");
     write(name);
@@ -29,10 +29,10 @@ void XmlWriter::start_element(const char *name)
 
 void XmlWriter::end_element()
 {
-    if (m_elem_path.empty())
+    if (_elem_path.empty())
         return;
 
-    const ElemState& state = m_elem_path.at(m_elem_path.size() - 1);
+    const ElemState& state = _elem_path.at(_elem_path.size() - 1);
     if (!state.has_child)
     {
         write(" />");
@@ -43,15 +43,15 @@ void XmlWriter::end_element()
         write(state.name.c_str(), (int) state.name.length());
         write(">");
     }
-    m_elem_path.pop_back();
+    _elem_path.pop_back();
 }
 
 void XmlWriter::write_attribute(const char *name, const char *value)
 {
     assert(NULL != name && '\0' != name[0] && NULL != value);
-    if (m_elem_path.empty())
+    if (_elem_path.empty())
         return;
-    if (m_elem_path.at(m_elem_path.size() - 1).has_child)
+    if (_elem_path.at(_elem_path.size() - 1).has_child)
         return;
 
     write(" ");
@@ -64,9 +64,9 @@ void XmlWriter::write_attribute(const char *name, const char *value)
 void XmlWriter::write_text(const char *text)
 {
     assert(NULL != text);
-    if (!m_elem_path.empty())
+    if (!_elem_path.empty())
     {
-        ElemState& parent_state = m_elem_path[m_elem_path.size() - 1];
+        ElemState& parent_state = _elem_path[_elem_path.size() - 1];
         if (!parent_state.has_child)
             write(">");
         parent_state.has_child = true;
@@ -78,9 +78,9 @@ void XmlWriter::write_text(const char *text)
 void XmlWriter::write_comment(const char *comment)
 {
     assert(NULL != comment);
-    if (!m_elem_path.empty())
+    if (!_elem_path.empty())
     {
-        ElemState& parent_state = m_elem_path[m_elem_path.size() - 1];
+        ElemState& parent_state = _elem_path[_elem_path.size() - 1];
         if (!parent_state.has_child)
             write(">");
         parent_state.has_child = true;
@@ -93,9 +93,9 @@ void XmlWriter::write_comment(const char *comment)
 
 void XmlWriter::write(const char *s, int len)
 {
-    if (NULL == m_writer)
+    if (NULL == _writer)
         return;
-    m_writer->write(s, len);
+    _writer->write(s, len);
 }
 
 void XmlWriter::write_encode(const char *s, int len)

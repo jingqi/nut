@@ -50,12 +50,12 @@ public:
         }
     };
 
-    int volatile m_next_id;  // 用于生成不重复的 timer id
-    std::vector<Timer*> m_timers; // 小头堆
-    Condition m_cond;
+    int volatile _next_id = 1;  // 用于生成不重复的 timer id
+    std::vector<Timer*> _timers; // 小头堆
+    Condition _cond;
     typedef Condition::condition_lock_type lock_type;
-    lock_type m_lock;
-    bool volatile m_stopping; // 是否停止所有计时器
+    lock_type _lock;
+    bool volatile _stopping = false; // 是否停止所有计时器
 
 public:
     TimerManager();

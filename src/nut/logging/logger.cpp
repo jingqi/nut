@@ -332,7 +332,7 @@ void Logger::load_config(const std::string& config)
                     }
 
                     // 给文件名添加附加标志符
-                    m_file_path += Time().format_time("%Y-%m-%d %H-%M-%S ");
+                    m_file_path += DateTime().format_time("%Y-%m-%d %H-%M-%S ");
         #if defined(NUT_PLATFORM_OS_WINDOWS)
                     long pid = ::GetCurrentProcessId();
         #else

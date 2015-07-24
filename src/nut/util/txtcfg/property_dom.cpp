@@ -19,14 +19,14 @@ namespace nut
 
 void PropertyDom::Line::clear()
 {
-    m_space0.clear();
-    m_key.clear();
-    m_space1.clear();
-    m_equal_sign = false;
-    m_space2.clear();
-    m_value.clear();
-    m_space3.clear();
-    m_comment.clear();
+    _space0.clear();
+    _key.clear();
+    _space1.clear();
+    _equal_sign = false;
+    _space2.clear();
+    _value.clear();
+    _space3.clear();
+    _comment.clear();
 }
 
 /**
@@ -45,7 +45,7 @@ void PropertyDom::Line::parse(const std::string& line, const char *line_comment_
     std::string::size_type index = s.find_first_of(line_comment_chars);
     if (std::string::npos != index)
     {
-        m_comment = s.substr(index);
+        _comment = s.substr(index);
         s.erase(index);
     }
 
@@ -53,12 +53,12 @@ void PropertyDom::Line::parse(const std::string& line, const char *line_comment_
     index = s.find_first_not_of(space_chars);
     if (std::string::npos != index)
     {
-        m_space0 = s.substr(0, index - 0);
+        _space0 = s.substr(0, index - 0);
         s.erase(0, index);
     }
     else
     {
-        m_space0 = s;
+        _space0 = s;
         return;
     }
 
@@ -66,12 +66,12 @@ void PropertyDom::Line::parse(const std::string& line, const char *line_comment_
     index = s.find_last_not_of(space_chars);
     if (std::string::npos != index)
     {
-        m_space3 = s.substr(index + 1);
+        _space3 = s.substr(index + 1);
         s.erase(index + 1);
     }
     else
     {
-        m_space3 = s;
+        _space3 = s;
         return;
     }
 
@@ -80,13 +80,13 @@ void PropertyDom::Line::parse(const std::string& line, const char *line_comment_
     std::string key, value;
     if (std::string::npos != index)
     {
-        m_equal_sign = true;
+        _equal_sign = true;
         key = s.substr(0, index - 0);
         value = s.substr(index + 1);
     }
     else
     {
-        m_equal_sign = false;
+        _equal_sign = false;
         key = s;
     }
 
@@ -94,26 +94,26 @@ void PropertyDom::Line::parse(const std::string& line, const char *line_comment_
     index = key.find_last_not_of(space_chars);
     if (std::string::npos != index)
     {
-        m_space1 = key.substr(index + 1);
-        m_key = key.substr(0, index + 1 - 0);
+        _space1 = key.substr(index + 1);
+        _key = key.substr(0, index + 1 - 0);
     }
     else
     {
-        m_space1 = key;
-        m_key.clear();
+        _space1 = key;
+        _key.clear();
     }
 
     // space2, value
     index = value.find_first_not_of(space_chars);
     if (std::string::npos != index)
     {
-        m_space2 = value.substr(0, index - 0);
-        m_value = value.substr(index);
+        _space2 = value.substr(0, index - 0);
+        _value = value.substr(index);
     }
     else
     {
-        m_space2 = value;
-        m_value.clear();
+        _space2 = value;
+        _value.clear();
     }
 }
 
@@ -123,19 +123,18 @@ void PropertyDom::Line::parse(const std::string& line, const char *line_comment_
 void PropertyDom::Line::serielize(std::string *appended)
 {
     assert(NULL != appended);
-    *appended += m_space0;
-    *appended += m_key;
-    *appended += m_space1;
-    if (m_equal_sign)
+    *appended += _space0;
+    *appended += _key;
+    *appended += _space1;
+    if (_equal_sign)
         appended->push_back('=');
-    *appended += m_space2;
-    *appended += m_value;
-    *appended += m_space3;
-    *appended += m_comment;
+    *appended += _space2;
+    *appended += _value;
+    *appended += _space3;
+    *appended += _comment;
 }
 
 PropertyDom::PropertyDom()
-    : m_dirty(false)
 {}
 
 /**
@@ -146,8 +145,8 @@ void PropertyDom::parse(const std::string& s, const char *line_comment_chars, co
 {
     assert(NULL != line_comment_chars && NULL != space_chars);
 
-    m_lines.clear();
-    m_dirty = true;
+    _lines.clear();
+    _dirty = true;
     if (s.empty())
         return;
 
@@ -172,7 +171,7 @@ void PropertyDom::parse(const std::string& s, const char *line_comment_chars, co
 
         rc_ptr<Line> line = rc_new<Line>();
         line->parse(ln, line_comment_chars, space_chars);
-        m_lines.push_back(line);
+        _lines.push_back(line);
     } while (std::string::npos != start);
 }
 
@@ -182,38 +181,38 @@ void PropertyDom::parse(const std::string& s, const char *line_comment_chars, co
 void PropertyDom::serielize(std::string *appended, const char *le) const
 {
     assert(NULL != appended && NULL != le);
-    for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
+    for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
         if (0 != i)
             *appended += le;
-        m_lines.at(i)->serielize(appended);
+        _lines.at(i)->serielize(appended);
     }
 }
 
 void PropertyDom::clear()
 {
-    m_lines.clear();
-    m_dirty = true;
+    _lines.clear();
+    _dirty = true;
 }
 
 void PropertyDom::list_keys(std::vector<std::string> *rs) const
 {
     assert(NULL != rs);
-    for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
+    for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
-        const rc_ptr<Line>& line = m_lines.at(i);
-        if (!line->m_equal_sign)
+        const rc_ptr<Line>& line = _lines.at(i);
+        if (!line->_equal_sign)
             continue;
-        rs->push_back(line->m_key);
+        rs->push_back(line->_key);
     }
 }
 
 bool PropertyDom::has_key(const char *key) const
 {
     assert(NULL != key);
-    for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
+    for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
-        if (m_lines.at(i)->m_key == key)
+        if (_lines.at(i)->_key == key)
             return true;
     }
     return false;
@@ -222,12 +221,12 @@ bool PropertyDom::has_key(const char *key) const
 bool PropertyDom::remove_key(const char *key)
 {
     assert(NULL != key);
-    for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
+    for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
-        if (m_lines.at(i)->m_key == key)
+        if (_lines.at(i)->_key == key)
         {
-            m_lines.erase(m_lines.begin() + i);
-            m_dirty = true;
+            _lines.erase(_lines.begin() + i);
+            _dirty = true;
             return true;
         }
     }
@@ -237,10 +236,10 @@ bool PropertyDom::remove_key(const char *key)
 const char* PropertyDom::get_string(const char *key, const char *default_value) const
 {
     assert(NULL != key);
-    for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
+    for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
-        if (m_lines.at(i)->m_key == key)
-            return m_lines.at(i)->m_value.c_str();
+        if (_lines.at(i)->_key == key)
+            return _lines.at(i)->_value.c_str();
     }
     return default_value;
 }
@@ -296,23 +295,23 @@ void PropertyDom::get_list(const char *key, std::vector<std::string> *rs, char s
 void PropertyDom::set_string(const char *key, const char *value)
 {
     assert(NULL != key && NULL != value);
-    for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
+    for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
-        if (m_lines.at(i)->m_key == key)
+        if (_lines.at(i)->_key == key)
         {
-            m_lines[i]->m_value = value;
-            m_dirty = true;  // tag the need of saving
+            _lines[i]->_value = value;
+            _dirty = true;  // tag the need of saving
             return;
         }
     }
 
     // if not found, then add a new record
     rc_ptr<Line> line = rc_new<Line>();
-    line->m_key = key;
-    line->m_equal_sign = true;
-    line->m_value = value;
-    m_lines.push_back(line);
-    m_dirty = true;   // tag the need of saving
+    line->_key = key;
+    line->_equal_sign = true;
+    line->_value = value;
+    _lines.push_back(line);
+    _dirty = true;   // tag the need of saving
 }
 
 void PropertyDom::set_bool(const char *key, bool value)

@@ -22,8 +22,8 @@ public:
         HANDLE_CHILD = 0x08
     };
 
-    const char *name;
-    const uint8_t handle_mask;
+    const char *name = NULL;
+    const uint8_t handle_mask = 0xFF;
 
     XmlElementHandler(const char *n = NULL, uint8_t mask = 0xFF)
         : name(n), handle_mask(mask)

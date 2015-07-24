@@ -16,9 +16,9 @@ namespace nut
 class Semaphore
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-    HANDLE m_sema;
+    HANDLE _sem = NULL;
 #else
-    sem_t m_sem;
+    sem_t _sem;
 #endif
 
 public:

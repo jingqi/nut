@@ -16,27 +16,27 @@ class XmlWriter
     struct ElemState
     {
         std::string name;
-        bool has_child;
+        bool has_child = false;
 
         ElemState(const char *n)
-            : name(n), has_child(false)
+            : name(n)
         {}
     };
 
-    StringWriter *m_writer;
-    std::vector<ElemState> m_elem_path;
+    StringWriter *_writer = NULL;
+    std::vector<ElemState> _elem_path;
 
 public:
     XmlWriter(StringWriter *writer = NULL);
 
     StringWriter* get_writer() const
     {
-        return m_writer;
+        return _writer;
     }
 
     void set_writer(StringWriter *writer)
     {
-        m_writer = writer;
+        _writer = writer;
     }
 
     void start_element(const char *name);

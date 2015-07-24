@@ -32,9 +32,9 @@ class lengthfixed_mp : public memory_allocator
         uint8_t body[G];
     };
 
-    const rc_ptr<memory_allocator> m_alloc;
-    TagedPtr<FreeNode> m_head;
-    int volatile m_free_num;
+    const rc_ptr<memory_allocator> _alloc;
+    TagedPtr<FreeNode> _head;
+    int volatile _free_num = 0;
     NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
@@ -43,7 +43,7 @@ private:
 
 public:
     lengthfixed_mp(memory_allocator *ma = NULL)
-        : m_alloc(ma), m_free_num(0)
+        : _alloc(ma)
     {}
 
     ~lengthfixed_mp()
@@ -55,15 +55,15 @@ public:
     void clear()
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
-        FreeNode *p = m_head.ptr;
+        FreeNode *p = _head.ptr;
         while (NULL != p)
         {
             FreeNode *next = p->next;
-            ma_free(m_alloc.pointer(), p);
+            ma_free(_alloc.pointer(), p);
             p = next;
         }
-        m_head.ptr = NULL;
-        m_free_num = 0;
+        _head.ptr = NULL;
+        _free_num = 0;
     }
 
     void* alloc()
@@ -71,15 +71,15 @@ public:
         NUT_DEBUGGING_ASSERT_ALIVE;
         while (true)
         {
-            const TagedPtr<FreeNode> old_head(m_head.cas);
+            const TagedPtr<FreeNode> old_head(_head.cas);
 
             if (NULL == old_head.ptr)
-                return ma_realloc(m_alloc.pointer(), NULL, sizeof(FreeNode));
+                return ma_realloc(_alloc.pointer(), NULL, sizeof(FreeNode));
 
             const TagedPtr<FreeNode> new_head(old_head.ptr->next, old_head.tag + 1);
-            if (atomic_cas(&(m_head.cas), old_head.cas, new_head.cas))
+            if (atomic_cas(&(_head.cas), old_head.cas, new_head.cas))
             {
-                atomic_add(&m_free_num, -1);
+                atomic_add(&_free_num, -1);
                 return old_head.ptr;
             }
         }
@@ -102,18 +102,18 @@ public:
         NUT_DEBUGGING_ASSERT_ALIVE;
         while(true)
         {
-            if (m_free_num >= (int) MAX_FREE_BLOCKS)
+            if (_free_num >= (int) MAX_FREE_BLOCKS)
             {
-                ma_free(m_alloc.pointer(), p);
+                ma_free(_alloc.pointer(), p);
                 return;
             }
 
-            const TagedPtr<FreeNode> old_head(m_head.cas);
+            const TagedPtr<FreeNode> old_head(_head.cas);
             reinterpret_cast<FreeNode*>(p)->next = old_head.ptr;
             const TagedPtr<FreeNode> new_head(reinterpret_cast<FreeNode*>(p), old_head.tag + 1);
-            if (atomic_cas(&(m_head.cas), old_head.cas, new_head.cas))
+            if (atomic_cas(&(_head.cas), old_head.cas, new_head.cas))
             {
-                atomic_add(&m_free_num, 1);
+                atomic_add(&_free_num, 1);
                 return;
             }
         }

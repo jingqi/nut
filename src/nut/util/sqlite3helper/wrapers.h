@@ -13,34 +13,32 @@ class SqliteStmt
 {
     NUT_REF_COUNTABLE
 
-    sqlite3_stmt *m_stmt;
+    sqlite3_stmt *_stmt = NULL;
 
 public:
     SqliteStmt(sqlite3_stmt *stmt)
-        : m_stmt(stmt)
+        : _stmt(stmt)
     {
         assert(NULL != stmt);
     }
 
     ~SqliteStmt()
     {
-        if (NULL != m_stmt)
+        if (NULL != _stmt)
         {
-            int rs = ::sqlite3_finalize(m_stmt);
+            int rs = ::sqlite3_finalize(_stmt);
             assert(SQLITE_OK == rs);
             (void)rs;
-            m_stmt = NULL;
+            _stmt = NULL;
         }
     }
 
     sqlite3_stmt* raw()
     {
-        return m_stmt;
+        return _stmt;
     }
 };
 
 }
 
 #endif
-
-

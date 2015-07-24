@@ -17,9 +17,9 @@ class ByteArrayStream
     typedef ByteArrayStream self_type;
     typedef ByteArray array_type;
 
-    array_type m_data;
-    size_t m_index;
-    bool m_little_endian;
+    array_type _data;
+    size_t _index = 0;
+    bool _little_endian = true;
 
 public:
     ByteArrayStream(memory_allocator *ma = NULL);
@@ -27,12 +27,12 @@ public:
 
     bool is_little_endian() const
     {
-        return m_little_endian;
+        return _little_endian;
     }
 
     void set_little_endian(bool little_endian = true)
     {
-        m_little_endian = little_endian;
+        _little_endian = little_endian;
     }
 
     size_t size() const;
@@ -60,7 +60,7 @@ public:
 
     const array_type& byte_array() const
     {
-        return m_data;
+        return _data;
     }
 };
 

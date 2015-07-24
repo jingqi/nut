@@ -13,13 +13,13 @@ namespace nut
  */
 class SourceLocation
 {
-    const char *m_path;    // source file path
-    int m_line;            // source file line
-    const char *m_func;    // source function
+    const char *_path = NULL;    // source file path
+    int _line = -1;            // source file line
+    const char *_func = NULL;    // source function
 
 public :
     SourceLocation(const char *file, int line, const char *func)
-        : m_path(file), m_line(line), m_func(func)
+        : _path(file), _line(line), _func(func)
     {
         assert(NULL != file && line >= 0);
     }
@@ -33,14 +33,14 @@ public :
 
     const char* get_file_path() const
     {
-        return m_path;
+        return _path;
     }
 
     const char* get_file_name() const;
 
     int get_line_number() const
     {
-        return m_line;
+        return _line;
     }
 
     /**
@@ -48,7 +48,7 @@ public :
      */
     const char* get_function_name() const
     {
-        return m_func;
+        return _func;
     }
 
     void to_string(std::string *appended) const;

@@ -10,18 +10,22 @@ namespace nut
 
 class Adler32
 {
-    uint32_t m_result;
+    uint32_t _result = 1;
 
 public:
-    Adler32();
+    Adler32()
+    {}
 
-    void reset();
+    void reset()
+    {
+        _result = 1;
+    }
 
     void update(const void *buf, size_t len);
 
     uint32_t digest() const
     {
-        return m_result;
+        return _result;
     }
 };
 
@@ -30,10 +34,10 @@ public:
  */
 class RollingAdler32
 {
-    uint32_t m_result;
-    const size_t m_window_size;
-    uint8_t *m_buf;
-    size_t m_count;
+    uint32_t _result = 1;
+    const size_t _window_size = 16;
+    uint8_t *_buf = NULL;
+    size_t _count = 0;
 
 public:
     RollingAdler32(size_t window);
@@ -45,7 +49,7 @@ public:
 
     uint32_t get_result() const
     {
-        return m_result;
+        return _result;
     }
 };
 

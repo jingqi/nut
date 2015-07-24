@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include <utility>
 
 #include <nut/debugging/destroy_checker.h>
 
@@ -49,10 +50,10 @@ class scoped_gc
         destruct_func_type destruct_func;
     };
 
-    const rc_ptr<memory_allocator> m_alloc;
-	Block *m_current_block;
-	uint8_t *m_end;
-    DestructorNode *m_destruct_chain;
+    const rc_ptr<memory_allocator> _alloc;
+	Block *_current_block = NULL;
+	uint8_t *_end = NULL;
+    DestructorNode *_destruct_chain = NULL;
     NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
@@ -97,12 +98,12 @@ public:
 
 #ifndef _LIBCPP_HAS_NO_VARIADICS
     template <typename T, typename ...Args>
-    T* gc_new(Args ...args)
+    T* gc_new(Args&& ...args)
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
         assert(NULL != p);
-        new (p) T(args...);
+        new (p) T(std::forward<Args>(args)...);
         return p;
     }
 #else
@@ -122,7 +123,7 @@ public:
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
         assert(NULL != p);
-        new (p) T(arg1);
+        new (p) T(std::forward<Arg1>(arg1));
         return p;
 	}
 
@@ -132,7 +133,7 @@ public:
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
         assert(NULL != p);
-        new (p) T(arg1, arg2);
+        new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2));
         return p;
 	}
 
@@ -142,7 +143,7 @@ public:
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
         assert(NULL != p);
-        new (p) T(arg1, arg2, arg3);
+        new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3));
         return p;
     }
 
@@ -152,7 +153,7 @@ public:
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
         assert(NULL != p);
-        new (p) T(arg1, arg2, arg3, arg4);
+        new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4));
         return p;
     }
 
@@ -162,7 +163,7 @@ public:
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
         assert(NULL != p);
-        new (p) T(arg1, arg2, arg3, arg4, arg5);
+        new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5));
         return p;
     }
 
@@ -174,7 +175,8 @@ public:
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
         assert(NULL != p);
-        new (p) T(arg1, arg2, arg3, arg4, arg5, arg6);
+        new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5),
+                  std::forward<Arg6>(arg6));
         return p;
     }
 
@@ -186,7 +188,8 @@ public:
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
         assert(NULL != p);
-        new (p) T(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+        new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5),
+                  std::forward<Arg6>(arg6), std::forward<Arg7>(arg7));
         return p;
     }
 
@@ -198,7 +201,8 @@ public:
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
         assert(NULL != p);
-        new (p) T(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+        new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5),
+                  std::forward<Arg6>(arg6), std::forward<Arg7>(arg7), std::forward<Arg8>(arg8));
         return p;
     }
 
@@ -210,7 +214,8 @@ public:
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
         assert(NULL != p);
-        new (p) T(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+        new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5),
+                  std::forward<Arg6>(arg6), std::forward<Arg7>(arg7), std::forward<Arg8>(arg8), std::forward<Arg9>(arg9));
         return p;
     }
 
@@ -222,7 +227,8 @@ public:
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
         assert(NULL != p);
-        new (p) T(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+        new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5),
+                  std::forward<Arg6>(arg6), std::forward<Arg7>(arg7), std::forward<Arg8>(arg8), std::forward<Arg9>(arg9), std::forward<Arg10>(arg10));
         return p;
     }
 #endif

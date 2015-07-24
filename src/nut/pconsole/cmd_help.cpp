@@ -8,7 +8,7 @@ namespace nut
 {
 
 CmdHelp::CmdHelp(IConsole *c)
-    : m_console(c)
+    : _console(c)
 {
     assert(NULL != c);
 }
@@ -45,13 +45,13 @@ void CmdHelp::execute(const char* command_line)
     // 空参数
     if (params.size() <= 1)
     {
-        m_console->print_general_info();
+        _console->print_general_info();
         return;
     }
     const std::string cmd_name = params.at(1);
 
     // 匹配命令
-    std::vector<rc_ptr<ICommand> > matched_cmds = IConsole::match_commands(m_console->get_commands(), cmd_name);
+    std::vector<rc_ptr<ICommand> > matched_cmds = IConsole::match_commands(_console->get_commands(), cmd_name);
 
     // 无匹配
     if (matched_cmds.size() == 0)

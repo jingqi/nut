@@ -25,9 +25,9 @@ namespace nut
 class Condition
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-    CONDITION_VARIABLE m_cond;
+    CONDITION_VARIABLE _cond;
 #else
-    pthread_cond_t m_cond;
+    pthread_cond_t _cond;
 #endif
 
 public:

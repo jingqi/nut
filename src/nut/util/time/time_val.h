@@ -1,4 +1,4 @@
-﻿
+
 #ifndef ___HEADFILE_5CAFD4E0_0BB4_474D_A465_CD320415264E_
 #define ___HEADFILE_5CAFD4E0_0BB4_474D_A465_CD320415264E_
 
@@ -21,8 +21,8 @@ namespace nut
 class TimeVal
 {
 public:
-    time_t sec;
-    long usec;
+    time_t sec = 0;
+    long usec = 0;
 
 public:
     TimeVal(time_t s = 0, long us = 0);
@@ -123,4 +123,3 @@ void clock_getrealtime(struct timespec *ts);
 }
 
 #endif
-

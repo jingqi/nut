@@ -10,21 +10,21 @@ namespace nut
 
 bool SourceLocation::operator==(const SourceLocation& x) const
 {
-	if (m_line != x.m_line)
+	if (_line != x._line)
 		return false;
 
-	if (m_path != x.m_path)
+	if (_path != x._path)
 	{
-		assert(NULL != m_path && NULL != x.m_path);
-		if (0 != ::strcmp(m_path, x.m_path))
+		assert(NULL != _path && NULL != x._path);
+		if (0 != ::strcmp(_path, x._path))
 			return false;
 	}
-	
-	if (m_func != x.m_func)
+
+	if (_func != x._func)
 	{
-		if (NULL == m_func || NULL == x.m_func)
+		if (NULL == _func || NULL == x._func)
 			return false;
-		if (0 != ::strcmp(m_func, x.m_func))
+		if (0 != ::strcmp(_func, x._func))
 			return false;
 	}
 
@@ -33,10 +33,10 @@ bool SourceLocation::operator==(const SourceLocation& x) const
 
 const char* SourceLocation::get_file_name() const
 {
-	assert(NULL != m_path);
+	assert(NULL != _path);
 
-	const char *ret = m_path;
-	for (const char *tmp = m_path; 0 != *tmp; ++tmp)
+	const char *ret = _path;
+	for (const char *tmp = _path; 0 != *tmp; ++tmp)
 	{
 		if ('\\' == *tmp || '/' == *tmp)
 			ret = tmp + 1;
@@ -50,11 +50,11 @@ void SourceLocation::to_string(std::string *appended) const
 
 	*appended += get_file_name();
 	appended->push_back(':');
-	nut::i_to_str(m_line, appended);
-	if (m_func != NULL)
+	nut::i_to_str(_line, appended);
+	if (_func != NULL)
 	{
 		appended->push_back(' ');
-		*appended += m_func;
+		*appended += _func;
 		*appended += "()";
 	}
 }

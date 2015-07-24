@@ -19,14 +19,13 @@ namespace nut
 {
 
 TimerManager::TimerManager()
-    : m_next_id(1), m_stopping(false)
 {}
 
 TimerManager::~TimerManager()
 {
-    for (size_t i = 0, sz = m_timers.size(); i < sz; ++i)
-        delete m_timers.at(i);
-    m_timers.clear();
+    for (size_t i = 0, sz = _timers.size(); i < sz; ++i)
+        delete _timers.at(i);
+    _timers.clear();
 }
 
 /**
@@ -39,42 +38,42 @@ int TimerManager::add_timer(const TimeVal& interval, timer_func_type func, void 
 {
     assert(NULL != func);
 
-    Guard<lock_type> g(&m_lock);
+    Guard<lock_type> g(&_lock);
     Timer *ti = new Timer();
     ti->func = func;
     ti->arg = arg;
-    ti->id = m_next_id++;
+    ti->id = _next_id++;
     ti->time = TimeVal::now() + interval;
 
     // 通知条件变量
-    if (m_timers.size() == 0 || ti->time < m_timers[0]->time)
-        m_cond.signal();
+    if (_timers.size() == 0 || ti->time < _timers[0]->time)
+        _cond.signal();
 
     // 插入小头堆
-    m_timers.push_back(ti);
-    std::push_heap(m_timers.begin(), m_timers.end(), TimerPtrComparor());
+    _timers.push_back(ti);
+    std::push_heap(_timers.begin(), _timers.end(), TimerPtrComparor());
 
     return ti->id;
 }
 
 bool TimerManager::cancel_timer(int id)
 {
-    Guard<lock_type> g(&m_lock);
+    Guard<lock_type> g(&_lock);
     size_t i = 0;
-    while (i < m_timers.size() && m_timers[i]->id != id)
+    while (i < _timers.size() && _timers[i]->id != id)
         ++i;
-    if (i >= m_timers.size())
+    if (i >= _timers.size())
         return false;
     else if (0 == i)
-        m_cond.signal(); // 通知条件变量
+        _cond.signal(); // 通知条件变量
 
     // 从堆中移除
-    m_timers[i]->time.set(0,0); // 使之成为最小的元素
-    std::push_heap(m_timers.begin(), m_timers.begin() + i + 1, TimerPtrComparor());
-    std::pop_heap(m_timers.begin(), m_timers.end(), TimerPtrComparor());
-    Timer* t = *m_timers.rbegin();
+    _timers[i]->time.set(0,0); // 使之成为最小的元素
+    std::push_heap(_timers.begin(), _timers.begin() + i + 1, TimerPtrComparor());
+    std::pop_heap(_timers.begin(), _timers.end(), TimerPtrComparor());
+    Timer* t = *_timers.rbegin();
     assert(NULL != t);
-    m_timers.pop_back();
+    _timers.pop_back();
 
     // 删除内存
     delete t;
@@ -84,9 +83,9 @@ bool TimerManager::cancel_timer(int id)
 
 void TimerManager::interupt()
 {
-    Guard<lock_type> g(&m_lock);
-    m_stopping = true;
-    m_cond.signal();
+    Guard<lock_type> g(&_lock);
+    _stopping = true;
+    _cond.signal();
 }
 
 /**
@@ -97,25 +96,25 @@ void TimerManager::run()
     // 允许的定时误差，防止定时线程抖动厉害
     const TimeVal min_interval(0, 10000);
 
-    Guard<lock_type> g(&m_lock);
-    m_stopping = false;
-    while (!m_stopping)
+    Guard<lock_type> g(&_lock);
+    _stopping = false;
+    while (!_stopping)
     {
         const TimeVal now = TimeVal::now();
-        if (m_timers.empty())
+        if (_timers.empty())
         {
-            m_cond.wait(&m_lock);
+            _cond.wait(&_lock);
         }
-        else if (m_timers[0]->time > now + min_interval)
+        else if (_timers[0]->time > now + min_interval)
         {
-            const TimeVal wait = m_timers[0]->time - now;
-            m_cond.timedwait(&m_lock, (unsigned) wait.sec, (unsigned) (wait.usec / 1000));
+            const TimeVal wait = _timers[0]->time - now;
+            _cond.timedwait(&_lock, (unsigned) wait.sec, (unsigned) (wait.usec / 1000));
         }
         else
         {
-            Timer *t = m_timers[0];
-            std::pop_heap(m_timers.begin(), m_timers.end(), TimerPtrComparor());
-            m_timers.pop_back();
+            Timer *t = _timers[0];
+            std::pop_heap(_timers.begin(), _timers.end(), TimerPtrComparor());
+            _timers.pop_back();
             t->func(t->id, t->arg); // 定时完成
             delete t;
         }

@@ -8,8 +8,8 @@ namespace nut
 template <typename T>
 class Guard
 {
-    T *m_lock;
-    bool m_need_unlock;
+    T *_lock = NULL;
+    bool _need_unlock = true;
 
 public :
     /**
@@ -21,16 +21,16 @@ public :
      *      whether need to unlock it
      */
     Guard(T *lock, bool need_lock = true, bool need_unlock = true)
-        : m_lock(lock), m_need_unlock(need_unlock)
+        : _lock(lock), _need_unlock(need_unlock)
     {
-        if (NULL != m_lock && need_lock)
-            m_lock->lock();
+        if (NULL != _lock && need_lock)
+            _lock->lock();
     }
 
     ~Guard()
     {
-        if (NULL != m_lock && m_need_unlock)
-            m_lock->unlock();
+        if (NULL != _lock && _need_unlock)
+            _lock->unlock();
     }
 };
 

@@ -21,11 +21,10 @@ class XmlElement
     class Comment
     {
     public:
-        size_t pos;
+        size_t pos = 0;
         std::string text;
 
         Comment()
-            : pos(0)
         {}
 
         Comment(size_t _pos, const std::string& _text)
@@ -33,12 +32,12 @@ class XmlElement
         {}
     };
 
-    std::string m_name, m_text;
+    std::string _name, _text;
     typedef std::map<std::string, std::string> attr_map_t;
-    attr_map_t m_attrs;
-    std::vector<rc_ptr<XmlElement> > m_children;
-    std::vector<Comment> m_comments; // sorted ascending
-    bool m_dirty;
+    attr_map_t _attrs;
+    std::vector<rc_ptr<XmlElement> > _children;
+    std::vector<Comment> _comments; // sorted ascending
+    bool _dirty = false;
 
 public:
     typedef attr_map_t::iterator attr_iter_t;
@@ -55,21 +54,21 @@ public:
 
     const std::string& get_name() const
     {
-        return m_name;
+        return _name;
     }
 
     void set_name(const std::string& name);
 
     const std::string& get_text() const
     {
-        return m_text;
+        return _text;
     }
 
     void set_text(const std::string& text);
 
     size_t get_children_count() const
     {
-        return m_children.size();
+        return _children.size();
     }
 
     rc_ptr<XmlElement> get_child(size_t i) const;

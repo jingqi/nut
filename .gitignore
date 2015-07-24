@@ -5,4 +5,5 @@
 .DS_Store
 *.tmp
 
+/.dir-locals.el
 /tmp

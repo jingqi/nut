@@ -13,19 +13,19 @@ namespace nut
 Mutex::Mutex()
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-    m_hmutex = ::CreateMutex(NULL, FALSE, NULL);
-    assert(NULL != m_hmutex);
+    _hmutex = ::CreateMutex(NULL, FALSE, NULL);
+    assert(NULL != _hmutex);
 #elif defined(NUT_PLATFORM_OS_MAC)
     ::pthread_mutexattr_t attr;
     ::pthread_mutexattr_init(&attr);
     ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE); /* make the mutex recursive */
-    const int rs = ::pthread_mutex_init(&m_mutex, &attr);
+    const int rs = ::pthread_mutex_init(&_mutex, &attr);
     assert(0 == rs);
 #else
     ::pthread_mutexattr_t attr;
     ::pthread_mutexattr_init(&attr);
     ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP); /* make the mutex recursive */
-    const int rs = ::pthread_mutex_init(&m_mutex, &attr);
+    const int rs = ::pthread_mutex_init(&_mutex, &attr);
     assert(0 == rs);
 #endif
 }
@@ -33,10 +33,10 @@ Mutex::Mutex()
 Mutex::~Mutex ()
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-    const BOOL rs = ::CloseHandle(m_hmutex);
+    const BOOL rs = ::CloseHandle(_hmutex);
     assert(FALSE != rs);
 #else
-    int rs = ::pthread_mutex_destroy(&m_mutex);
+    int rs = ::pthread_mutex_destroy(&_mutex);
     assert(0 == rs);
 #endif
 }
@@ -47,10 +47,10 @@ Mutex::~Mutex ()
 void Mutex::lock()
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-    const DWORD rs = ::WaitForSingleObject(m_hmutex, INFINITE);
+    const DWORD rs = ::WaitForSingleObject(_hmutex, INFINITE);
     assert(WAIT_OBJECT_0 == rs);
 #else
-    const int rs = ::pthread_mutex_lock(&m_mutex);
+    const int rs = ::pthread_mutex_lock(&_mutex);
     assert(0 == rs);
 #endif
 }
@@ -61,10 +61,10 @@ void Mutex::lock()
 void Mutex::unlock()
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-    const BOOL rs = ::ReleaseMutex(m_hmutex);
+    const BOOL rs = ::ReleaseMutex(_hmutex);
     assert(FALSE != rs);
 #else
-    const int rs = ::pthread_mutex_unlock(&m_mutex);
+    const int rs = ::pthread_mutex_unlock(&_mutex);
     assert(0 == rs);
 #endif
 }
@@ -77,9 +77,9 @@ void Mutex::unlock()
 bool Mutex::trylock()
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-    return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, 0);
+    return WAIT_OBJECT_0 == ::WaitForSingleObject(_hmutex, 0);
 #else
-    const int lock_result = ::pthread_mutex_trylock(&m_mutex);
+    const int lock_result = ::pthread_mutex_trylock(&_mutex);
     /** returned values :
      *  0, lock ok
      *  EBUSY, The mutex is already locked.
@@ -103,12 +103,12 @@ bool Mutex::timedlock(unsigned s, unsigned ms)
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
     const DWORD dw_milliseconds = s * 1000 + ms;
-    return WAIT_OBJECT_0 == ::WaitForSingleObject(m_hmutex, dw_milliseconds);
+    return WAIT_OBJECT_0 == ::WaitForSingleObject(_hmutex, dw_milliseconds);
 #elif defined(NUT_PLATFORM_OS_MAC)
 #   warning FIXME MAC 不支持pthread_mutex_timedlock()
     (void)s;
     (void)ms;
-    return 0 == ::pthread_mutex_trylock(&m_mutex); // TODO MAC 不支持 pthread_mutex_timedlock()
+    return 0 == ::pthread_mutex_trylock(&_mutex); // TODO MAC 不支持 pthread_mutex_timedlock()
 #else
     struct timespec abstime;
 #   if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
@@ -118,7 +118,7 @@ bool Mutex::timedlock(unsigned s, unsigned ms)
 #   endif
     abstime.tv_sec += s;
     abstime.tv_nsec += ((long)ms) * 1000 * 1000;
-    const int lock_result = ::pthread_mutex_timedlock(&m_mutex, &abstime);
+    const int lock_result = ::pthread_mutex_timedlock(&_mutex, &abstime);
     /** returned values :
      *  0, lock ok
      *  EAGAIN, The mutex couldn't be acquired because the maximum number of recursive locks for the mutex has been exceeded.

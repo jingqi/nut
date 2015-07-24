@@ -18,15 +18,15 @@ namespace nut
  */
 void ByteArray::copy_on_write()
 {
-    assert(m_array.is_not_null());
-    const int rc = m_array->get_ref();
+    assert(_array.is_not_null());
+    const int rc = _array->get_ref();
     assert(rc >= 1);
     if (rc > 1)
-        m_array = m_array->clone();
+        _array = _array->clone();
 }
 
 ByteArray::ByteArray(memory_allocator *ma)
-    : m_array(rca_new<rcarray_type>(ma, 0, ma))
+    : _array(rca_new<rcarray_type>(ma, 0, ma))
 {}
 
 /**
@@ -34,9 +34,9 @@ ByteArray::ByteArray(memory_allocator *ma)
  * @param fillv initial data filling
  */
 ByteArray::ByteArray(size_type len, uint8_t fillv, memory_allocator *ma)
-    : m_array(rca_new<rcarray_type>(ma, len, ma))
+    : _array(rca_new<rcarray_type>(ma, len, ma))
 {
-    m_array->resize(len, fillv);
+    _array->resize(len, fillv);
 }
 
 /**
@@ -44,11 +44,11 @@ ByteArray::ByteArray(size_type len, uint8_t fillv, memory_allocator *ma)
  * @param len initial data size
  */
 ByteArray::ByteArray(const void *buf, size_type len, memory_allocator *ma)
-    : m_array(rca_new<rcarray_type>(ma, len, ma))
+    : _array(rca_new<rcarray_type>(ma, len, ma))
 {
     assert(NULL != buf);
     if (NULL != buf)
-        m_array->insert(0, (const uint8_t*)buf, ((const uint8_t*)buf) + len);
+        _array->insert(0, (const uint8_t*)buf, ((const uint8_t*)buf) + len);
 }
 
 /**
@@ -56,12 +56,11 @@ ByteArray::ByteArray(const void *buf, size_type len, memory_allocator *ma)
  * @param include_term_byte if True, the 'term_byte' is part of initial data
  */
 ByteArray::ByteArray(const void *buf, unsigned char term_byte, bool include_term_byte, memory_allocator *ma)
-    : m_array(NULL)
 {
     assert(NULL != buf);
     if (NULL == buf)
     {
-        m_array = rca_new<rcarray_type>(ma, 0, ma);
+        _array = rca_new<rcarray_type>(ma, 0, ma);
         return;
     }
 
@@ -71,20 +70,20 @@ ByteArray::ByteArray(const void *buf, unsigned char term_byte, bool include_term
     if (include_term_byte)
         ++len;
 
-    m_array = rca_new<rcarray_type>(ma, len, ma);
-    m_array->insert(0, (const uint8_t*)buf, ((const uint8_t*)buf) + len);
+    _array = rca_new<rcarray_type>(ma, len, ma);
+    _array->insert(0, (const uint8_t*)buf, ((const uint8_t*)buf) + len);
 }
 
 ByteArray::ByteArray(const void *buf, size_type index, size_type size, memory_allocator *ma)
-    : m_array(rca_new<rcarray_type>(ma, size, ma))
+    : _array(rca_new<rcarray_type>(ma, size, ma))
 {
     assert(NULL != buf);
     if (NULL != buf)
-        m_array->insert(0, ((const uint8_t*)buf) + index, ((const uint8_t*)buf) + index + size);
+        _array->insert(0, ((const uint8_t*)buf) + index, ((const uint8_t*)buf) + index + size);
 }
 
 ByteArray::ByteArray(const self_type& x)
-    : m_array(x.m_array)
+    : _array(x._array)
 {}
 
 /**
@@ -92,16 +91,16 @@ ByteArray::ByteArray(const self_type& x)
  */
 void ByteArray::clear()
 {
-    const int rc = m_array->get_ref();
+    const int rc = _array->get_ref();
     if (rc > 1)
-        m_array = rca_new<rcarray_type>(m_array->allocator(), 0, m_array->allocator());
+        _array = rca_new<rcarray_type>(_array->allocator(), 0, _array->allocator());
     else
-        m_array->clear();
+        _array->clear();
 }
 
 ByteArray& ByteArray::operator=(const self_type& x)
 {
-    m_array = x.m_array;
+    _array = x._array;
     return *this;
 }
 
@@ -112,7 +111,7 @@ void ByteArray::append(const void *buf, size_t len)
         return;
 
     copy_on_write();
-    m_array->insert(size(), (const uint8_t*)buf, ((const uint8_t*)buf) + len);
+    _array->insert(size(), (const uint8_t*)buf, ((const uint8_t*)buf) + len);
 }
 
 void ByteArray::append(const void *buf, uint8_t term_byte, bool include_term_byte)
@@ -128,7 +127,6 @@ void ByteArray::append(const void *buf, uint8_t term_byte, bool include_term_byt
         ++len;
     append(buf, len);
 }
-
 
 /**
  * 将二进制 0x51 0x5e 0x30 转换为字符串 "515e30"

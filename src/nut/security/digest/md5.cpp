@@ -28,29 +28,33 @@
 
 #define __ROTATE_LEFT__(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
-#define __FF__(a, b, c, d, x, s, ac) { \
-    (a) += __F__((b), (c), (d)) + (x) + (uint32_t)(ac); \
-    (a) = __ROTATE_LEFT__((a), (s)); \
-    (a) += (b); \
- }
+#define __FF__(a, b, c, d, x, s, ac)                        \
+    {                                                       \
+        (a) += __F__((b), (c), (d)) + (x) + (uint32_t)(ac); \
+        (a) = __ROTATE_LEFT__((a), (s));                    \
+        (a) += (b);                                         \
+    }
 
-#define __GG__(a, b, c, d, x, s, ac) { \
-    (a) += __G__((b), (c), (d)) + (x) + (uint32_t)(ac); \
-    (a) = __ROTATE_LEFT__((a), (s)); \
-    (a) += (b); \
-}
+#define __GG__(a, b, c, d, x, s, ac)                        \
+    {                                                       \
+        (a) += __G__((b), (c), (d)) + (x) + (uint32_t)(ac); \
+        (a) = __ROTATE_LEFT__((a), (s));                    \
+        (a) += (b);                                         \
+    }
 
-#define __HH__(a, b, c, d, x, s, ac) { \
-    (a) += __H__((b), (c), (d)) + (x) + (uint32_t)(ac); \
-    (a) = __ROTATE_LEFT__((a), (s));                 \
-    (a) += (b);                                  \
-}
+#define __HH__(a, b, c, d, x, s, ac)                        \
+    {                                                       \
+        (a) += __H__((b), (c), (d)) + (x) + (uint32_t)(ac); \
+        (a) = __ROTATE_LEFT__((a), (s));                    \
+        (a) += (b);                                         \
+    }
 
-#define __II__(a, b, c, d, x, s, ac) { \
-    (a) += __I__((b), (c), (d)) + (x) + (uint32_t)(ac); \
-    (a) = __ROTATE_LEFT__((a), (s)); \
-    (a) += (b); \
-}
+#define __II__(a, b, c, d, x, s, ac)                        \
+    {                                                       \
+        (a) += __I__((b), (c), (d)) + (x) + (uint32_t)(ac); \
+        (a) = __ROTATE_LEFT__((a), (s));                    \
+        (a) += (b);                                         \
+    }
 
 namespace nut
 {
@@ -62,13 +66,13 @@ MD5::MD5()
 
 void MD5::reset()
 {
-    m_byteslen = 0;
+    _byteslen = 0;
 
     // load magic initialization constants
-    m_state[0] = 0x67452301;
-    m_state[1] = 0xefcdab89;
-    m_state[2] = 0x98badcfe;
-    m_state[3] = 0x10325476;
+    _state[0] = 0x67452301;
+    _state[1] = 0xefcdab89;
+    _state[2] = 0x98badcfe;
+    _state[3] = 0x10325476;
 }
 
 void MD5::update(uint8_t byte)
@@ -81,18 +85,18 @@ void MD5::update(const void *buf, size_t cb)
     assert(NULL != buf || 0 == cb);
 
     // compute number of bytes mod 64
-    uint32_t index = m_byteslen & 0x3F;
+    uint32_t index = _byteslen & 0x3F;
     uint32_t partlen = 64 - index;
 
     // update number of bits
-    m_byteslen += cb;
+    _byteslen += cb;
 
     // transform as many times as possible
     size_t i = 0;
     if (cb >= partlen)
     {
-        ::memcpy(m_buffer + index, buf, partlen);
-        transform512bits(m_buffer);
+        ::memcpy(_buffer + index, buf, partlen);
+        transform512bits(_buffer);
 
         for (i = partlen; i + 63 < cb; i += 64)
             transform512bits(((const uint8_t*)buf) + i);
@@ -105,16 +109,16 @@ void MD5::update(const void *buf, size_t cb)
     }
 
     /* Buffer remaining input */
-    ::memcpy(m_buffer + index, ((const uint8_t*)buf) + i, cb - i);
+    ::memcpy(_buffer + index, ((const uint8_t*)buf) + i, cb - i);
 }
 
 void MD5::digest()
 {
     /* Save number of bits */
-    const uint64_t bits = m_byteslen << 3;
+    const uint64_t bits = _byteslen << 3;
 
     /* Pad out to 56 mod 64. */
-    const size_t index = (size_t)(m_byteslen & 0x3f);
+    const size_t index = (size_t)(_byteslen & 0x3f);
     const size_t pad_len = (index < 56) ? (56 - index) : (120 - index);
     const uint8_t PADDING[64] = {
         0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -134,7 +138,7 @@ std::string MD5::get_string_result() const
     {
         for (int j = 0; j < 4; ++j)
         {
-            const uint8_t b = ((uint8_t*)(m_state + i))[j];
+            const uint8_t b = ((uint8_t*)(_state + i))[j];
             int n = (0xF0 & b) >> 4;
             if (n < 10)
                 ret += (char) ('0' + n);
@@ -154,14 +158,14 @@ std::string MD5::get_string_result() const
 void MD5::get_bytes_result(uint8_t *ret)
 {
     assert(NULL != ret);
-    ::memcpy(ret, m_state, 16);
+    ::memcpy(ret, _state, 16);
 }
 
 void MD5::transform512bits(const void *block)
 {
     assert(NULL != block);
 
-    uint32_t a = m_state[0], b = m_state[1], c = m_state[2], d = m_state[3];
+    uint32_t a = _state[0], b = _state[1], c = _state[2], d = _state[3];
     const uint32_t *x = (const uint32_t*) block;
 
     /* Round 1 */
@@ -236,10 +240,10 @@ void MD5::transform512bits(const void *block)
     __II__(c, d, a, b, x[ 2], __S43__, 0x2ad7d2bb); /* 63 */
     __II__(b, c, d, a, x[ 9], __S44__, 0xeb86d391); /* 64 */
 
-    m_state[0] += a;
-    m_state[1] += b;
-    m_state[2] += c;
-    m_state[3] += d;
+    _state[0] += a;
+    _state[1] += b;
+    _state[2] += c;
+    _state[3] += d;
 }
 
 }

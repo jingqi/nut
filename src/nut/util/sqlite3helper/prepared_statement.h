@@ -24,13 +24,12 @@ public:
         STRING
     };
 
-    ParamType type;
+    ParamType type = NONE;
     rc_ptr<enrc<std::string> > string_arg;
-    int int_arg;
+    int int_arg = 0;
 
 private:
     ParamWraper()
-        : type(NONE)
     {}
 
 public:
@@ -53,13 +52,12 @@ public:
     }
 };
 
-
 class PreparedStatement
 {
     NUT_REF_COUNTABLE
 
-    rc_ptr<SqliteStmt> m_stmt;
-    std::vector<rc_ptr<enrc<std::string> > > m_strings;
+    rc_ptr<SqliteStmt> _stmt;
+    std::vector<rc_ptr<enrc<std::string> > > _strings;
 
 public:
     PreparedStatement()
@@ -78,25 +76,25 @@ public:
         int rs = ::sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
         if (SQLITE_OK != rs || NULL == stmt)
             return false;
-        m_stmt = rc_new<SqliteStmt>(stmt);
+        _stmt = rc_new<SqliteStmt>(stmt);
         return true;
     }
 
     bool is_valid() const
     {
-        return !m_stmt.is_null();
+        return !_stmt.is_null();
     }
 
     rc_ptr<SqliteStmt> stmt()
     {
-        return m_stmt;
+        return _stmt;
     }
 
     bool reset()
     {
         assert(is_valid());
-        m_strings.clear();
-        return SQLITE_OK == ::sqlite3_reset(m_stmt->raw());
+        _strings.clear();
+        return SQLITE_OK == ::sqlite3_reset(_stmt->raw());
     }
 
     /**
@@ -108,13 +106,13 @@ public:
         switch (param.type)
         {
         case ParamWraper::INTEGER:
-            return SQLITE_OK == ::sqlite3_bind_int(m_stmt->raw(), pos, param.int_arg);
+            return SQLITE_OK == ::sqlite3_bind_int(_stmt->raw(), pos, param.int_arg);
 
         case ParamWraper::STRING:
             // sqlite3 只有在用到字符串时才会去取值，这里需要缓存一下字符串
             assert(!param.string_arg.is_null());
-            m_strings.push_back(param.string_arg);
-            return SQLITE_OK == ::sqlite3_bind_text(m_stmt->raw(), pos, param.string_arg->c_str(), -1, NULL);
+            _strings.push_back(param.string_arg);
+            return SQLITE_OK == ::sqlite3_bind_text(_stmt->raw(), pos, param.string_arg->c_str(), -1, NULL);
 
         default:
             return true;

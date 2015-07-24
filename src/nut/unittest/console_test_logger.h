@@ -12,15 +12,15 @@ namespace nut
 
 class ConsoleTestLogger : public ITestLogger
 {
-    std::vector<TestCaseFailureException> m_failures;
+    std::vector<TestCaseFailureException> _failures;
 
-    int m_count_of_fixtures;
-    int m_count_of_failed_fixtures;
-    bool m_current_fixture_failed;
+    int _count_of_fixtures = 0;
+    int _count_of_failed_fixtures = 0;
+    bool _current_fixture_failed = false;
 
-    int m_count_of_cases;
-    int m_count_of_failed_cases;
-    bool m_current_case_failed;
+    int _count_of_cases = 0;
+    int _count_of_failed_cases = 0;
+    bool _current_case_failed = false;
 
 public:
     virtual void start(const char *group_name, const char *fixture_name, const char *case_name) override;

@@ -51,41 +51,41 @@ rc_ptr<IniDom::Sector> IniDom::Sector::parse_sector_name(const std::string& line
     }
 
     rc_ptr<Sector> ret = rc_new<Sector>();
-    ret->m_space0 = line.substr(0, index1 - 0);
+    ret->_space0 = line.substr(0, index1 - 0);
 
     if (std::string::npos != index3)
-        ret->m_space3 = line.substr(index2 + 1, index3 - index2 - 1);
+        ret->_space3 = line.substr(index2 + 1, index3 - index2 - 1);
     else
-        ret->m_space3 = line.substr(index2 + 1);
+        ret->_space3 = line.substr(index2 + 1);
 
     if (std::string::npos != index3)
-        ret->m_comment = line.substr(index3);
+        ret->_comment = line.substr(index3);
     else
-        ret->m_comment.clear();
+        ret->_comment.clear();
 
-    ret->m_name = line.substr(index1 + 1, index2 - index1 - 1);
+    ret->_name = line.substr(index1 + 1, index2 - index1 - 1);
 
-    std::string::size_type index = ret->m_name.find_first_not_of(space_chars);
+    std::string::size_type index = ret->_name.find_first_not_of(space_chars);
     if (std::string::npos != index)
     {
-        ret->m_space1 = ret->m_name.substr(0, index - 0);
-        ret->m_name.erase(0, index - 0);
-        index = ret->m_name.find_last_not_of(space_chars);
+        ret->_space1 = ret->_name.substr(0, index - 0);
+        ret->_name.erase(0, index - 0);
+        index = ret->_name.find_last_not_of(space_chars);
         if (std::string::npos != index)
         {
-            ret->m_space2 = ret->m_name.substr(index + 1);
-            ret->m_name.erase(index + 1);
+            ret->_space2 = ret->_name.substr(index + 1);
+            ret->_name.erase(index + 1);
         }
         else
         {
-            ret->m_space2.clear();
+            ret->_space2.clear();
         }
     }
     else
     {
-        ret->m_space1 = ret->m_name;
-        ret->m_name.clear();
-        ret->m_space2.clear();
+        ret->_space1 = ret->_name;
+        ret->_name.clear();
+        ret->_space2.clear();
     }
     return ret;
 }
@@ -96,23 +96,22 @@ rc_ptr<IniDom::Sector> IniDom::Sector::parse_sector_name(const std::string& line
 void IniDom::Sector::serielize(std::string *appended, const char *le)
 {
     assert(NULL != appended);
-    *appended += m_space0;
+    *appended += _space0;
     appended->push_back('[');
-    *appended += m_space1;
-    *appended += m_name;
-    *appended += m_space2;
+    *appended += _space1;
+    *appended += _name;
+    *appended += _space2;
     appended->push_back(']');
-    *appended += m_space3;
-    *appended += m_comment;
-    for (size_t i = 0, sz = m_lines.size(); i < sz; ++i)
+    *appended += _space3;
+    *appended += _comment;
+    for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
         *appended += le;
-        m_lines.at(i)->serielize(appended);
+        _lines.at(i)->serielize(appended);
     }
 }
 
 IniDom::IniDom()
-    : m_dirty(false)
 {}
 
 /**
@@ -123,13 +122,13 @@ void IniDom::parse(const std::string& s, const char *line_comment_chars, const c
 {
     assert(NULL != line_comment_chars && NULL != space_chars);
 
-    m_global_lines.clear();
-    m_sectors.clear();
-    m_dirty = true;
+    _global_lines.clear();
+    _sectors.clear();
+    _dirty = true;
     if (s.empty())
         return;
 
-    std::vector<rc_ptr<Line> > *current_lines = &m_global_lines;
+    std::vector<rc_ptr<Line> > *current_lines = &_global_lines;
     size_t start = 0;
     while (std::string::npos != start)
     {
@@ -152,8 +151,8 @@ void IniDom::parse(const std::string& s, const char *line_comment_chars, const c
         rc_ptr<Sector> sector = Sector::parse_sector_name(ln, line_comment_chars, space_chars);
         if (sector.is_not_null())
         {
-            current_lines = &(sector->m_lines);
-            m_sectors.push_back(sector);
+            current_lines = &(sector->_lines);
+            _sectors.push_back(sector);
             continue;
         }
 
@@ -169,34 +168,34 @@ void IniDom::parse(const std::string& s, const char *line_comment_chars, const c
 void IniDom::serielize(std::string *appended, const char *le) const
 {
     // 全局数据
-    for (size_t i = 0, sz = m_global_lines.size(); i < sz; ++i)
+    for (size_t i = 0, sz = _global_lines.size(); i < sz; ++i)
     {
         if (0 != i)
             *appended += le;
-        m_global_lines.at(i)->serielize(appended);
+        _global_lines.at(i)->serielize(appended);
     }
 
     // 各个块
-    for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
+    for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
     {
-        if (0 != i || !m_global_lines.empty())
+        if (0 != i || !_global_lines.empty())
             *appended += le;
-        m_sectors.at(i)->serielize(appended, le);
+        _sectors.at(i)->serielize(appended, le);
     }
 }
 
 void IniDom::clear()
 {
-    m_global_lines.clear();
-    m_sectors.clear();
-    m_dirty = true;
+    _global_lines.clear();
+    _sectors.clear();
+    _dirty = true;
 }
 
 void IniDom::list_sectors(std::vector<std::string> *rs) const
 {
     assert(NULL != rs);
-    for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
-        rs->push_back(m_sectors.at(i)->m_name);
+    for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
+        rs->push_back(_sectors.at(i)->_name);
 }
 
 bool IniDom::has_sector(const char *sector) const
@@ -204,9 +203,9 @@ bool IniDom::has_sector(const char *sector) const
     if (NULL == sector)
         return true;
 
-    for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
+    for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
     {
-        if (m_sectors.at(i)->m_name == sector)
+        if (_sectors.at(i)->_name == sector)
             return true;
     }
     return false;
@@ -217,12 +216,12 @@ bool IniDom::remove_sector(const char *sector)
     if (NULL == sector)
         return false;
 
-    for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
+    for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
     {
-        if (m_sectors.at(i)->m_name == sector)
+        if (_sectors.at(i)->_name == sector)
         {
-            m_sectors.erase(m_sectors.begin() + i);
-            m_dirty = true;
+            _sectors.erase(_sectors.begin() + i);
+            _dirty = true;
             return true;
         }
     }
@@ -234,27 +233,27 @@ void IniDom::list_keys(const char *sector, std::vector<std::string> *rs) const
     assert(NULL != rs);
     if (NULL == sector)
     {
-        for (size_t i = 0, sz = m_global_lines.size(); i < sz; ++i)
+        for (size_t i = 0, sz = _global_lines.size(); i < sz; ++i)
         {
-            const rc_ptr<Line>& line = m_global_lines.at(i);
-            if (!line->m_equal_sign)
+            const rc_ptr<Line>& line = _global_lines.at(i);
+            if (!line->_equal_sign)
                 continue;
-            rs->push_back(line->m_key);
+            rs->push_back(line->_key);
         }
         return;
     }
 
-    for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
+    for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
     {
-        if (m_sectors.at(i)->m_name == sector)
+        if (_sectors.at(i)->_name == sector)
         {
-            const std::vector<rc_ptr<Line> >& lines = m_sectors.at(i)->m_lines;
+            const std::vector<rc_ptr<Line> >& lines = _sectors.at(i)->_lines;
             for (size_t j = 0, lsz = lines.size(); j < lsz; ++j)
             {
                 const rc_ptr<Line>& line = lines.at(j);
-                if (!line->m_equal_sign)
+                if (!line->_equal_sign)
                     continue;
-                rs->push_back(line->m_key);
+                rs->push_back(line->_key);
             }
             return;
         }
@@ -267,15 +266,15 @@ bool IniDom::has_key(const char *sector, const char *key) const
     const std::vector<rc_ptr<Line> > *lines = NULL;
     if (NULL == sector)
     {
-        lines = &m_global_lines;
+        lines = &_global_lines;
     }
     else
     {
-        for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
+        for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
         {
-            if (m_sectors.at(i)->m_name == sector)
+            if (_sectors.at(i)->_name == sector)
             {
-                lines = &(m_sectors.at(i)->m_lines);
+                lines = &(_sectors.at(i)->_lines);
                 break;
             }
         }
@@ -285,9 +284,9 @@ bool IniDom::has_key(const char *sector, const char *key) const
 
     for (size_t i = 0, sz = lines->size(); i < sz; ++i)
     {
-        if (!lines->at(i)->m_equal_sign)
+        if (!lines->at(i)->_equal_sign)
             continue;
-        if (lines->at(i)->m_key == key)
+        if (lines->at(i)->_key == key)
             return true;
     }
     return false;
@@ -299,15 +298,15 @@ bool IniDom::remove_key(const char *sector, const char *key)
     std::vector<rc_ptr<Line> > *lines = NULL;
     if (NULL == sector)
     {
-        lines = &m_global_lines;
+        lines = &_global_lines;
     }
     else
     {
-        for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
+        for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
         {
-            if (m_sectors.at(i)->m_name == sector)
+            if (_sectors.at(i)->_name == sector)
             {
-                lines = &(m_sectors.at(i)->m_lines);
+                lines = &(_sectors.at(i)->_lines);
                 break;
             }
         }
@@ -317,10 +316,10 @@ bool IniDom::remove_key(const char *sector, const char *key)
 
     for (size_t i = 0, sz = lines->size(); i < sz; ++i)
     {
-        if (lines->at(i)->m_key == key)
+        if (lines->at(i)->_key == key)
         {
             lines->erase(lines->begin() + i);
-            m_dirty = true;
+            _dirty = true;
             return true;
         }
     }
@@ -333,15 +332,15 @@ const char* IniDom::get_string(const char *sector, const char *key, const char *
     const std::vector<rc_ptr<Line> > *lines = NULL;
     if (NULL == sector)
     {
-        lines = &m_global_lines;
+        lines = &_global_lines;
     }
     else
     {
-        for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
+        for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
         {
-            if (m_sectors.at(i)->m_name == sector)
+            if (_sectors.at(i)->_name == sector)
             {
-                lines = &(m_sectors.at(i)->m_lines);
+                lines = &(_sectors.at(i)->_lines);
                 break;
             }
         }
@@ -351,8 +350,8 @@ const char* IniDom::get_string(const char *sector, const char *key, const char *
 
     for (size_t i = 0, sz = lines->size(); i < sz; ++i)
     {
-        if (lines->at(i)->m_key == key)
-            return lines->at(i)->m_value.c_str();
+        if (lines->at(i)->_key == key)
+            return lines->at(i)->_value.c_str();
     }
     return default_value;
 }
@@ -411,15 +410,15 @@ void IniDom::set_string(const char *sector, const char *key, const char *value)
     std::vector<rc_ptr<Line> > *lines = NULL;
     if (NULL == sector)
     {
-        lines = &m_global_lines;
+        lines = &_global_lines;
     }
     else
     {
-        for (size_t i = 0, sz = m_sectors.size(); i < sz; ++i)
+        for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
         {
-            if (m_sectors.at(i)->m_name == sector)
+            if (_sectors.at(i)->_name == sector)
             {
-                lines = &(m_sectors.at(i)->m_lines);
+                lines = &(_sectors.at(i)->_lines);
                 break;
             }
         }
@@ -427,26 +426,26 @@ void IniDom::set_string(const char *sector, const char *key, const char *value)
     if (NULL == lines)
     {
         rc_ptr<Sector> sec = rc_new<Sector>();
-        sec->m_name = sector;
-        lines = &(sec->m_lines);
-        m_sectors.push_back(sec);
+        sec->_name = sector;
+        lines = &(sec->_lines);
+        _sectors.push_back(sec);
     }
 
     for (size_t i = 0, sz = lines->size(); i < sz; ++i)
     {
-        if (lines->at(i)->m_key == key)
+        if (lines->at(i)->_key == key)
         {
-            lines->at(i)->m_value = value;
-            m_dirty = true;
+            lines->at(i)->_value = value;
+            _dirty = true;
             return;
         }
     }
     rc_ptr<Line> line = rc_new<Line>();
-    line->m_key = key;
-    line->m_equal_sign = true;
-    line->m_value = value;
+    line->_key = key;
+    line->_equal_sign = true;
+    line->_value = value;
     lines->push_back(line);
-    m_dirty = true;
+    _dirty = true;
 }
 
 void IniDom::set_bool(const char *sector, const char *key, bool value)

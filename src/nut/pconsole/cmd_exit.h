@@ -13,11 +13,11 @@ namespace nut
 
 class CmdExit : public ICommand
 {
-    IConsole *m_console;
+    IConsole *_console = NULL;
 
 public:
     CmdExit(IConsole *c)
-        : m_console(c)
+        : _console(c)
     {
         assert(NULL != c);
     }
@@ -41,7 +41,7 @@ public:
     {
         (void) command_line; // unused
         printf("exit\n");
-        m_console->exit(0);
+        _console->exit(0);
     }
 };
 

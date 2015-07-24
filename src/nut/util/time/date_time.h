@@ -12,102 +12,102 @@ namespace nut
 /**
  * 时刻
  */
-class Time
+class DateTime
 {
 protected:
-    time_t seconds;      /* 从1970年1月1日起算的时间(秒) */
-    struct tm time_info;   /* 时刻的细节 */
+    time_t _seconds;      /* 从1970年1月1日起算的时间(秒) */
+    struct tm _time_info;   /* 时刻的细节 */
 
 public:
     /**
      * 获取当前时间
      */
-    Time();
+    DateTime();
 
     /**
      * 从1970年1月1日起算的时间(秒)
      * @param s
      */
-    Time(time_t s);
+    DateTime(time_t s);
 
     /**
      * 使用具体时刻初始化
      */
-    Time(uint32_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec);
+    DateTime(uint32_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec);
 
     /**
      * 时刻比较
      */
-    bool operator==(const Time &another) const
+    bool operator==(const DateTime &another) const
     {
-        return seconds == another.seconds;
-    }
-
-    /**
-     * 时刻比较
-     */
-    bool operator!=(const Time &another) const
-    {
-        return seconds != another.seconds;
+        return _seconds == another._seconds;
     }
 
     /**
      * 时刻比较
      */
-    bool operator>(const Time &another) const
+    bool operator!=(const DateTime &another) const
     {
-        return seconds > another.seconds;
+        return _seconds != another._seconds;
     }
 
     /**
      * 时刻比较
      */
-    bool operator<(const Time &another) const
+    bool operator>(const DateTime &another) const
     {
-        return seconds < another.seconds;
+        return _seconds > another._seconds;
     }
 
     /**
      * 时刻比较
      */
-    bool operator>=(const Time &another) const
+    bool operator<(const DateTime &another) const
     {
-        return seconds >= another.seconds;
+        return _seconds < another._seconds;
     }
 
     /**
      * 时刻比较
      */
-    bool operator<=(const Time &another) const
+    bool operator>=(const DateTime &another) const
     {
-        return seconds <= another.seconds;
+        return _seconds >= another._seconds;
     }
 
-    Time operator+(time_t period) const
+    /**
+     * 时刻比较
+     */
+    bool operator<=(const DateTime &another) const
     {
-        return Time(seconds + period);
+        return _seconds <= another._seconds;
     }
 
-    Time operator-(time_t period) const
+    DateTime operator+(time_t period) const
     {
-        return Time(seconds - period);
+        return DateTime(_seconds + period);
     }
 
-    Time& operator+=(time_t period)
+    DateTime operator-(time_t period) const
     {
-        seconds += period;
+        return DateTime(_seconds - period);
+    }
+
+    DateTime& operator+=(time_t period)
+    {
+        _seconds += period;
         return *this;
     }
 
-    Time& operator-=(time_t period)
+    DateTime& operator-=(time_t period)
     {
-        seconds -= period;
+        _seconds -= period;
         return *this;
     }
 
-    time_t operator-(const Time &another) const
+    time_t operator-(const DateTime &another) const
     {
-        return seconds - another.seconds;
+        return _seconds - another._seconds;
     }
 
     /**
@@ -117,7 +117,7 @@ public:
 
     time_t get_ori_seconds() const
     {
-        return seconds;
+        return _seconds;
     }
 
     /**
@@ -126,7 +126,7 @@ public:
      */
     uint8_t get_second_of_minute() const
     {
-        return static_cast<uint8_t>(time_info.tm_sec);
+        return static_cast<uint8_t>(_time_info.tm_sec);
     }
 
     /**
@@ -135,7 +135,7 @@ public:
      */
     uint8_t get_minute_of_hour() const
     {
-        return static_cast<uint8_t>(time_info.tm_min);
+        return static_cast<uint8_t>(_time_info.tm_min);
     }
 
     /**
@@ -144,7 +144,7 @@ public:
      */
     uint8_t get_hour_of_day() const
     {
-        return static_cast<uint8_t>(time_info.tm_hour);
+        return static_cast<uint8_t>(_time_info.tm_hour);
     }
 
     /**
@@ -153,7 +153,7 @@ public:
      */
     uint8_t get_day_of_month() const
     {
-        return static_cast<uint8_t>(time_info.tm_mday);
+        return static_cast<uint8_t>(_time_info.tm_mday);
     }
 
     /**
@@ -162,7 +162,7 @@ public:
      */
     uint8_t get_month_of_year() const
     {
-        return static_cast<uint8_t>(time_info.tm_mon + 1);
+        return static_cast<uint8_t>(_time_info.tm_mon + 1);
     }
 
     /**
@@ -171,7 +171,7 @@ public:
      */
     uint32_t get_year() const
     {
-        return static_cast<uint32_t>(time_info.tm_year + 1900);
+        return static_cast<uint32_t>(_time_info.tm_year + 1900);
     }
 
     /**
@@ -180,7 +180,7 @@ public:
      */
     uint8_t get_day_of_week() const
     {
-        return static_cast<uint8_t>(time_info.tm_wday);
+        return static_cast<uint8_t>(_time_info.tm_wday);
     }
 
     /**
@@ -189,7 +189,7 @@ public:
      */
     uint16_t  get_day_of_year() const
     {
-        return static_cast<uint16_t>(time_info.tm_yday);
+        return static_cast<uint16_t>(_time_info.tm_yday);
     }
 
     /// for example : "12:34:45"

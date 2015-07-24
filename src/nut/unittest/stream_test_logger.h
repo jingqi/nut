@@ -13,16 +13,16 @@ namespace nut
 
 class StreamTestLogger : public ITestLogger
 {
-    std::ostream& m_ostream;
-    std::vector<TestCaseFailureException> m_failures;
+    std::ostream& _out_stream;
+    std::vector<TestCaseFailureException> _failures;
 
-    int m_count_of_fixtures;
-    int m_count_of_failed_fixtures;
-    bool m_current_fixture_failed;
+    int _count_of_fixtures = 0;
+    int _count_of_failed_fixtures = 0;
+    bool _current_fixture_failed = false;
 
-    int m_count_of_cases;
-    int m_count_of_failed_cases;
-    bool m_current_case_failed;
+    int _count_of_cases = 0;
+    int _count_of_failed_cases = 0;
+    bool _current_case_failed = false;
 
 public:
     StreamTestLogger(std::ostream& os);

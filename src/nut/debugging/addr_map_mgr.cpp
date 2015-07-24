@@ -15,37 +15,37 @@ namespace nut
 {
 
 AddrMapManager::AddrMapManager()
-    : m_destruct_tag(CONSTRUCTED_TAG)
+    : _destruct_tag(CONSTRUCTED_TAG)
 {
     char file_path[PATH_MAX + 1] = {0};
     ::sprintf(file_path, "/proc/%d/maps", getpid());
-    m_maps_path = file_path;
+    _maps_path = file_path;
 
     char link_path[PATH_MAX + 1] = {0};
     char actual_path[PATH_MAX + 1] = {0};
     ::sprintf(link_path, "/proc/%d/exe",getpid());
     ::readlink(link_path, actual_path, PATH_MAX);
-    m_exec_path = actual_path;
+    _exec_path = actual_path;
 
     load();
 
     // 程序本身
-    m_addr_map.insert(std::pair<std::string, addr_t>(m_exec_path, 0));
+    _addr_map.insert(std::pair<std::string, addr_t>(_exec_path, 0));
 }
 
 AddrMapManager::~AddrMapManager()
 {
-    m_destruct_tag = DESTRUCTED_TAG;
+    _destruct_tag = DESTRUCTED_TAG;
 }
 
 bool AddrMapManager::is_valid() const
 {
-    return NULL != this && m_destruct_tag == CONSTRUCTED_TAG;
+    return NULL != this && _destruct_tag == CONSTRUCTED_TAG;
 }
 
 void AddrMapManager::load(const std::string& path)
 {
-    std::ifstream inf(m_maps_path.c_str());
+    std::ifstream inf(_maps_path.c_str());
     if (!inf)
         return;
 
@@ -73,8 +73,8 @@ bool AddrMapManager::find(const std::string& path, addr_t *out_addr)
     assert(NULL != out_addr);
     *out_addr = 0;
 
-    addr_map_t::iterator iter = m_addr_map.find(path);
-    if (iter == m_addr_map.end())
+    addr_map_t::iterator iter = _addr_map.find(path);
+    if (iter == _addr_map.end())
         return false;
 
     *out_addr = iter->second;
@@ -105,10 +105,10 @@ bool AddrMapManager::parse_line(const std::string& str_line, bool fappoint_path,
     {
         char* pch_end = NULL;
         addr_t addr = ::strtoul(str_addr.c_str(), &pch_end, 16);
-        addr_map_t::iterator iter = m_addr_map.find(str_path);
+        addr_map_t::iterator iter = _addr_map.find(str_path);
         // 据观察，第一个地址是最小的，所以之后的地址不需要了
-        if (iter == m_addr_map.end())
-            m_addr_map.insert(make_pair(str_path, addr));
+        if (iter == _addr_map.end())
+            _addr_map.insert(make_pair(str_path, addr));
 
         return true;
     }

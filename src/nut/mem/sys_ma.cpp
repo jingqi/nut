@@ -13,28 +13,23 @@
 namespace nut
 {
 
-#ifndef NDEBUG
 sys_ma::sys_ma()
-    : m_left_tag(0), m_right_tag(0), m_alloc_count(0), m_free_count(0),
-      m_total_alloc_cb(0), m_total_free_cb(0)
 {
-    for (size_t i = 0; i < sizeof(m_left_tag); ++i)
-        reinterpret_cast<uint8_t*>(&m_left_tag)[i] = (uint8_t) ::rand();
-    for (size_t i = 0; i < sizeof(m_right_tag); ++i)
-        reinterpret_cast<uint8_t*>(&m_right_tag)[i] = (uint8_t) ::rand();
-}
-#else
-sys_ma::sys_ma()
-{}
+#ifndef NDEBUG
+    for (size_t i = 0; i < sizeof(_left_tag); ++i)
+        reinterpret_cast<uint8_t*>(&_left_tag)[i] = (uint8_t) ::rand();
+    for (size_t i = 0; i < sizeof(_right_tag); ++i)
+        reinterpret_cast<uint8_t*>(&_right_tag)[i] = (uint8_t) ::rand();
 #endif
+}
 
 #ifndef NDEBUG
 sys_ma::~sys_ma()
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
 
-    assert(m_alloc_count == m_free_count);
-    assert(m_total_alloc_cb == m_total_free_cb);
+    assert(_alloc_count == _free_count);
+    assert(_total_alloc_cb == _total_free_cb);
 }
 #endif
 
@@ -50,18 +45,18 @@ void* sys_ma::realloc(void *p, size_t cb)
         void* ret = ::realloc(NULL, total_cb);
         assert(NULL != ret);
         *(uint32_t*) ret = (uint32_t) cb;
-        ((uint32_t*) ret)[1] = m_left_tag;
-        *(uint32_t*) (((uint8_t*) ret) + sizeof(uint32_t) * 2 + cb) = m_right_tag;
+        ((uint32_t*) ret)[1] = _left_tag;
+        *(uint32_t*) (((uint8_t*) ret) + sizeof(uint32_t) * 2 + cb) = _right_tag;
         ::memset(((uint32_t*) ret) + 2, UNINIT_BYTE, cb);
-        ++m_alloc_count;
-        m_total_alloc_cb += cb;
+        ++_alloc_count;
+        _total_alloc_cb += cb;
         return ((uint32_t*) ret) + 2;
     }
     else
     {
         const size_t old_cb = ((uint32_t*) p)[-2];
-        assert(m_left_tag == ((uint32_t*) p)[-1]);
-        assert(m_right_tag == *(uint32_t*)(((uint8_t*) p) + old_cb));
+        assert(_left_tag == ((uint32_t*) p)[-1]);
+        assert(_right_tag == *(uint32_t*)(((uint8_t*) p) + old_cb));
         ((uint32_t*) p)[-1] = 0;
         *(uint32_t*)(((uint8_t*) p) + old_cb) = 0;
 
@@ -69,14 +64,14 @@ void* sys_ma::realloc(void *p, size_t cb)
         void *ret = ::realloc(((uint32_t*) p) - 2, total_cb);
         assert(NULL != ret);
         *(uint32_t*) ret = (uint32_t) cb;
-        ((uint32_t*) ret)[1] = m_left_tag;
-        *(uint32_t*) (((uint8_t*) ret) + sizeof(uint32_t) * 2 + cb) = m_right_tag;
+        ((uint32_t*) ret)[1] = _left_tag;
+        *(uint32_t*) (((uint8_t*) ret) + sizeof(uint32_t) * 2 + cb) = _right_tag;
         if (cb > old_cb)
             ::memset(((uint8_t*) ret) + sizeof(uint32_t) * 2 + old_cb, UNINIT_BYTE, cb - old_cb);
-        ++m_free_count;
-        ++m_alloc_count;
-        m_total_free_cb += old_cb;
-        m_total_alloc_cb += cb;
+        ++_free_count;
+        ++_alloc_count;
+        _total_free_cb += old_cb;
+        _total_alloc_cb += cb;
         return ((uint32_t*) ret) + 2;
     }
 #else
@@ -91,14 +86,14 @@ void sys_ma::free(void *p)
 
 #ifndef NDEBUG
     const size_t cb = ((uint32_t*) p)[-2];
-    assert(m_left_tag == ((uint32_t*) p)[-1]);
-    assert(m_right_tag == *(uint32_t*)(((uint8_t*) p) + cb));
+    assert(_left_tag == ((uint32_t*) p)[-1]);
+    assert(_right_tag == *(uint32_t*)(((uint8_t*) p) + cb));
     ((uint32_t*) p)[-1] = 0;
     *(uint32_t*)(((uint8_t*) p) + cb) = 0;
     ::memset(p, FREED_BYTE, cb);
     ::free(((uint32_t*) p) - 2);
-    ++m_free_count;
-    m_total_free_cb += cb;
+    ++_free_count;
+    _total_free_cb += cb;
 #else
     ::free(p);
 #endif
@@ -108,25 +103,25 @@ void sys_ma::free(void *p)
 size_t sys_ma::get_alloc_count() const
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    return m_alloc_count;
+    return _alloc_count;
 }
 
 size_t sys_ma::get_free_count() const
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    return m_free_count;
+    return _free_count;
 }
 
 size_t sys_ma::get_total_alloc_size() const
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    return m_total_alloc_cb;
+    return _total_alloc_cb;
 }
 
 size_t sys_ma::get_total_free_size() const
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    return m_total_free_cb;
+    return _total_free_cb;
 }
 #endif
 
