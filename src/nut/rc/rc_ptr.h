@@ -90,14 +90,15 @@ public:
     template <typename U>
     rc_ptr<T>& operator=(rc_ptr<U>&& p)
     {
-        if (_ptr != p._ptr)
-        {
-            T *tmp = _ptr;
-            _ptr = p._ptr;
-            p._ptr = NULL;
-            if (NULL != tmp)
-                tmp->release_ref();
-        }
+        if (_ptr == p._ptr)
+            return *this;
+
+        T *tmp = _ptr;
+        _ptr = p._ptr;
+        p._ptr = NULL;
+        if (NULL != tmp)
+            tmp->release_ref();
+
         return *this;
     }
 
@@ -143,15 +144,15 @@ public:
 public:
     void assign(T *p)
     {
-        if (_ptr != p)
-        {
-            // 先添加引用，以免先减少引用的话引发连锁反应
-            if (p != NULL)
-                p->add_ref();
-            if (_ptr != NULL)
-                _ptr->release_ref();
-            _ptr = p;
-        }
+        if (_ptr == p)
+            return;
+
+        // 先添加引用，以免先减少引用的话引发连锁反应
+        if (p != NULL)
+            p->add_ref();
+        if (_ptr != NULL)
+            _ptr->release_ref();
+        _ptr = p;
     }
 
     T* pointer() const

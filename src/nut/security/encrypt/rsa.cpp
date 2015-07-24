@@ -47,8 +47,8 @@ void RSA::gen_key(size_t bit_count, PublicKey *public_key, PrivateKey *private_k
     // 私钥(d, n)
     if (NULL != private_key)
     {
-        private_key->d = d;
-        private_key->n = n;
+        private_key->d = std::move(d);
+        private_key->n = std::move(n);
     }
 }
 

@@ -22,7 +22,7 @@ static void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, c
     size_t min_sig = (rlen + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
     if (t.significant_words_length() < min_sig)
         min_sig = t.significant_words_length();
-    BigInteger s(t.data(), min_sig, true, t.allocator());
+    BigInteger s(t.data(), min_sig, true, rs->allocator());
     s.limit_positive_bits_to(rlen);
 
     s.multiply_to_len(nn, rlen); // rs = (rs * nn) % r
@@ -33,7 +33,7 @@ static void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, c
     if (s >= n)
         s -= n;
 
-    *rs = s;
+    *rs = std::move(s);
 }
 
 #if OPTIMIZE_LEVEL == 1
@@ -43,19 +43,19 @@ static void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, c
  * 算法来源:
  *      王金荣，周赟，王红霞. Montgomery模平方算法及其应用[J]. 计算机工程，2007，33(24)：155 - 156
  */
-static void _montgomery2(const BigInteger& t, const BigInteger& n, BigInteger::word_type nn, BigInteger *_rs)
+static void _montgomery2(const BigInteger& t, const BigInteger& n, BigInteger::word_type nn, BigInteger *rs)
 {
-    assert(NULL != _rs);
+    assert(NULL != rs);
     assert(t.is_positive() && n.is_positive() && nn > 0);
     typedef BigInteger::word_type word_type;
     typedef BigInteger::dword_type dword_type;
 
     const size_t r_word_count = n.significant_words_length();
-    BigInteger rs(t);
-    rs.resize(r_word_count * 2 + 1);
+    BigInteger ret(t);
+    ret.resize(r_word_count * 2 + 1);
     for (size_t i = 0; i < r_word_count; ++i)
     {
-        const word_type op1 = static_cast<word_type>(rs.word_at(i) * nn);
+        const word_type op1 = static_cast<word_type>(ret.word_at(i) * nn);
         if (0 == op1)
             continue;
 
@@ -64,10 +64,10 @@ static void _montgomery2(const BigInteger& t, const BigInteger& n, BigInteger::w
         {
             dword_type op2 = n.word_at(j);
             op2 *= op1;
-            op2 += rs.word_at(i + j);
+            op2 += ret.word_at(i + j);
             op2 += carry;
 
-            rs.data()[i + j] = static_cast<word_type>(op2);
+            ret.data()[i + j] = static_cast<word_type>(op2);
             carry = static_cast<word_type>(op2 >> (8 * sizeof(word_type)));
         }
 
@@ -76,20 +76,20 @@ static void _montgomery2(const BigInteger& t, const BigInteger& n, BigInteger::w
             if (0 == carry)
                 break;
 
-            dword_type op = rs.word_at(j + r_word_count);
+            dword_type op = ret.word_at(j + r_word_count);
             op += carry;
 
-            rs.data()[j + r_word_count] = static_cast<word_type>(op);
+            ret.data()[j + r_word_count] = static_cast<word_type>(op);
             carry = static_cast<word_type>(op >> (8 * sizeof(word_type)));
         }
     }
 
-    rs >>= 8 * sizeof(word_type) * r_word_count;
+    ret >>= 8 * sizeof(word_type) * r_word_count;
 
-    while (rs >= n)
-        rs -= n;
+    while (ret >= n)
+        ret -= n;
 
-    *_rs = rs;
+    *rs = std::move(ret);
 }
 #endif
 
@@ -104,9 +104,9 @@ static void _montgomery2(const BigInteger& t, const BigInteger& n, BigInteger::w
  *
  * @return rr, nn 都为正数
  */
-static void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *_rr, BigInteger *_nn)
+static void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *rr, BigInteger *nn)
 {
-    assert(NULL != _rr || NULL != _nn);
+    assert(NULL != rr || NULL != nn);
 
     BigInteger r(1, n.allocator());
     r <<= rlen;
@@ -116,33 +116,33 @@ static void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *
      * (1) r * rr - n * nn = s
      * (2) r * n - n * r = 0
      * ->等式(1)用于变形，等式(2)用于加到等式(1)上以帮助其变形
-     * ->初始时 rr=n+1, nn=r, s=r
+     * ->初始时 rr = n + 1, nn = r, s = r
      */
-    BigInteger rr(n), nn(r);
-    ++rr;
+    BigInteger ret_rr(n), ret_nn(r);
+    ++ret_rr;
     size_t slen = rlen;
     while (slen > 0)
     {
-        const int lb = rr.lowest_bit();
+        const int lb = ret_rr.lowest_bit();
         assert(lb >= 0);
         if (lb > 0)
         {
             const int min_shift = (lb < (int) slen ? lb : (int) slen);
-            rr >>= min_shift;
-            nn >>= min_shift;
+            ret_rr >>= min_shift;
+            ret_nn >>= min_shift;
             slen -= min_shift;
         }
         else
         {
-            rr += n;
-            nn += r;
+            ret_rr += n;
+            ret_nn += r;
         }
     }
 
-    if (NULL != _rr)
-        *_rr = rr;
-    if (NULL != _nn)
-        *_nn = nn;
+    if (NULL != rr)
+        *rr = std::move(ret_rr);
+    if (NULL != nn)
+        *nn = std::move(ret_nn);
 }
 
 /**
@@ -403,7 +403,7 @@ static void _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p, BigIn
     assert(NULL != rs);
     assert(a.is_positive() && b.is_positive() && p > 0);
 
-    BigInteger ret(1, a.allocator());
+    BigInteger ret(1, rs->allocator());
     for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
     {
         ret.multiply_to_len(ret, p);
@@ -412,7 +412,7 @@ static void _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p, BigIn
             ret.multiply_to_len(a, p);
     }
 
-    *rs = ret;
+    *rs = std::move(ret);
 }
 
 /**
@@ -441,40 +441,40 @@ void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigI
     }
 
 #if (OPTIMIZE_LEVEL == 0)
-    BigInteger ret(1);
+    BigInteger ret(1, rs->allocator());
     for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
     {
         ret = (ret * ret) % n;
         if (0 != b.bit_at(i - 1))
             ret = (ret * a) % n;
     }
-    *rs = ret;
+    *rs = std::move(ret);
     return;
 #elif (OPTIMIZE_LEVEL == 1)
     const size_t bbc = b.bit_count();
      if (bbc > 400) // 400 是一个经验数据
     {
         ModMultiplyPreBuildTable<4> table(a % n, n); /// 经测试，预算表模板参数取4比较合适
-        BigInteger ret(1);
+        BigInteger ret(1, rs->allocator());
         for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
         {
             ret = (ret * ret) % n;
             if (0 != b.bit_at(i - 1))
                 mod_multiply(ret, n, table, &ret);
         }
-        *rs = ret;
+        *rs = std::move(ret);
         return;
     }
     else
     {
-        BigInteger ret(1);
+        BigInteger ret(1, rs->allocator());
         for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
         {
             ret = (ret * ret) % n;
             if (0 != b.bit_at(i - 1))
                 ret = (ret * a) % n;
         }
-        *rs = ret;
+        *rs = std::move(ret);
         return;
     }
 #else

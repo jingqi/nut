@@ -204,12 +204,13 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
         return;
     }
 
-    BigInteger xx, yy;
+    BigInteger xx(0, x->allocator()), yy(0, y->allocator());
     extended_euclid(b, a % b, d, &yy, &xx);
-    if (NULL != x)
-        *x = xx;
     if (NULL != y)
         *y = yy - a / b * xx;
+    if (NULL != x)
+        *x = std::move(xx);
+    return;
 #elif (OPTIMIZE_LEVEL == 1)
     /**
      * 推广的 Euclidean 算法
@@ -238,7 +239,7 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
     }
     else if (a.bit_at(0) == 0)
     {
-        BigInteger xx;
+        BigInteger xx(0, x->allocator());
         extended_euclid(b, a >> 1, d, y, &xx);
         if (xx.bit_at(0) == 0)
         {
@@ -260,7 +261,7 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
     }
     else if (b.bit_at(0) == 0)
     {
-        BigInteger yy;
+        BigInteger yy(0, y->allocator());
         extended_euclid(a, b >> 1, d, x, &yy);
         if (yy.bit_at(0) == 0)
         {
@@ -282,7 +283,7 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
     }
     else if (a > b)
     {
-        BigInteger xx;
+        BigInteger xx(0, x->allocator());
         extended_euclid(b, (a - b) >> 1, d, y, &xx);
         if (xx.bit_at(0) == 0)
         {
@@ -307,7 +308,7 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
     }
     else
     {
-        BigInteger yy;
+        BigInteger yy(0, y->allocator());
         extended_euclid(a, (b - a) >> 1, d, x, &yy);
         if (yy.bit_at(0) == 0)
         {
@@ -365,7 +366,7 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
     }
     else if (lb1 > 0)
     {
-        BigInteger xx;
+        BigInteger xx(0, x->allocator());
         extended_euclid(a >> lb1, b, d, &xx, y);
         int done = 0;
         while (done < lb1)
@@ -390,12 +391,12 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
             }
         }
         if (NULL != x)
-            *x = xx;
+            *x = std::move(xx);
         return;
     }
     else if (lb2 > 0)
     {
-        BigInteger yy;
+        BigInteger yy(0, y->allocator());
         extended_euclid(a, b >> lb2, d, x, &yy);
         int done = 0;
         while (done < lb2)
@@ -420,12 +421,12 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
             }
         }
         if (NULL != y)
-            *y = yy;
+            *y = std::move(yy);
         return;
     }
     else if (a > b)
     {
-        BigInteger xx;
+        BigInteger xx(0, x->allocator());
         extended_euclid((a - b) >> 1, b, d, &xx, y);
         if (xx.bit_at(0) == 0)
         {
@@ -450,7 +451,7 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
     }
     else
     {
-        BigInteger yy;
+        BigInteger yy(0, y->allocator());
         extended_euclid(a, (b - a) >> 1, d, x, &yy);
         if (yy.bit_at(0) == 0)
         {
@@ -492,7 +493,7 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
         if (NULL != d)
             *d = aa;
 
-        BigInteger xx(1, a.allocator()), yy(0, a.allocator());
+        BigInteger xx(1, x->allocator()), yy(0, y->allocator());
         while (!as.empty())
         {
             BigInteger::swap(&xx, &yy);
@@ -502,13 +503,13 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
             yy -= aa / bb * xx;
         }
         if (NULL != x)
-            *x = xx;
+            *x = std::move(xx);
         if (NULL != y)
-            *y = yy;
+            *y = std::move(yy);
         return;
     }
 
-    BigInteger aa(a), bb(b), xx(1, a.allocator()), yy(0, a.allocator());
+    BigInteger aa(a), bb(b), xx(1, x->allocator()), yy(0, y->allocator());
     size_t left_shift = 0;
     std::stack<int> lb1s, lb2s;
     while (true)
@@ -677,9 +678,10 @@ void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, Bi
         }
     }
     if (NULL != x)
-        *x = xx;
+        *x = std::move(xx);
     if (NULL != y)
-        *y = yy;
+        *y = std::move(yy);
+    return;
 #endif
 }
 
