@@ -5,14 +5,14 @@
 namespace nut
 {
 
-BitSieve BitSieve::s_small_sieve;
+BitSieve BitSieve::_small_sieve;
 
 /**
  * Given a bit index return unit index containing it.
  */
 static int unit_index(int bit_index)
 {
-    return (int)(((unsigned)bit_index) >> 6);
+    return (int) (((unsigned) bit_index) >> 6);
 }
 
 /**
@@ -20,7 +20,7 @@ static int unit_index(int bit_index)
  */
 static int64_t bit(int bit_index)
 {
-    return ((int64_t) 1) << (bit_index & ((1<<6) - 1));
+    return ((int64_t) 1) << (bit_index & ((1 << 6) - 1));
 }
 
 /**
@@ -36,10 +36,10 @@ static int64_t bit(int bit_index)
  */
 BitSieve::BitSieve()
 {
-    m_length = 150 * 64;
-    m_bits_cap = unit_index(m_length - 1) + 1;
-    m_bits = new int64_t[m_bits_cap];
-    ::memset(m_bits, 0, m_bits_cap * sizeof(int64_t));
+    _length = 150 * 64;
+    _bits_cap = unit_index(_length - 1) + 1;
+    _bits = (int64_t*) ::malloc(sizeof(int64_t) * _bits_cap);
+    ::memset(_bits, 0, sizeof(int64_t) * _bits_cap);
 
     // Mark 1 as composite
     set(0);
@@ -49,10 +49,10 @@ BitSieve::BitSieve()
     // Find primes and remove their multiples from sieve
     do
     {
-        sieve_single(m_length, next_index + next_prime, next_prime);
-        next_index = sieve_search(m_length, next_index + 1);
-        next_prime = 2*next_index + 1;
-    } while((next_index > 0) && (next_prime < m_length));
+        sieve_single(_length, next_index + next_prime, next_prime);
+        next_index = sieve_search(_length, next_index + 1);
+        next_prime = 2 * next_index + 1;
+    } while((next_index > 0) && (next_prime < _length));
 }
 
 /**
@@ -69,14 +69,14 @@ BitSieve::BitSieve(const BigInteger& base, int search_len)
      * are represented in the sieve (each bit in the sieve represents an
      * odd number).
      */
-    m_bits_cap = unit_index(search_len-1) + 1;
-    m_bits = new int64_t[m_bits_cap];
-    ::memset(m_bits, 0, m_bits_cap * sizeof(int64_t));
-    m_length = search_len;
+    _bits_cap = unit_index(search_len - 1) + 1;
+    _bits = (int64_t*) ::malloc(sizeof(int64_t) * _bits_cap);
+    ::memset(_bits, 0, _bits_cap * sizeof(int64_t));
+    _length = search_len;
     int start = 0;
 
-    int step = s_small_sieve.sieve_search(s_small_sieve.m_length, start);
-    int converted_step = (step *2) + 1;
+    int step = _small_sieve.sieve_search(_small_sieve._length, start);
+    int converted_step = (step * 2) + 1;
 
     // Construct the large sieve at an even offset specified by base
     do
@@ -86,22 +86,22 @@ BitSieve::BitSieve(const BigInteger& base, int search_len)
 
         // Take each multiple of step out of sieve
         start = converted_step - start;
-        if (start%2 == 0)
+        if (0 == start % 2)
             start += converted_step;
-        sieve_single(search_len, (start-1)/2, converted_step);
+        sieve_single(search_len, (start - 1) / 2, converted_step);
 
         // Find next prime from small sieve
-        step = s_small_sieve.sieve_search(s_small_sieve.m_length, step+1);
-        converted_step = (step *2) + 1;
+        step = _small_sieve.sieve_search(_small_sieve._length, step + 1);
+        converted_step = (step * 2) + 1;
     } while (step > 0);
 }
 
 BitSieve::~BitSieve()
 {
-    if (NULL != m_bits)
-        delete[] m_bits;
-    m_bits = NULL;
-    m_bits_cap = 0;
+    if (NULL != _bits)
+        ::free(_bits);
+    _bits = NULL;
+    _bits_cap = 0;
 }
 
 /**
@@ -110,7 +110,7 @@ BitSieve::~BitSieve()
 bool BitSieve::get(int bit_index)
 {
     int ui = unit_index(bit_index);
-    return ((m_bits[ui] & bit(bit_index)) != 0);
+    return ((_bits[ui] & bit(bit_index)) != 0);
 }
 
 /**
@@ -119,7 +119,7 @@ bool BitSieve::get(int bit_index)
 void BitSieve::set(int bit_index)
 {
     int ui = unit_index(bit_index);
-    m_bits[ui] |= bit(bit_index);
+    _bits[ui] |= bit(bit_index);
 }
 
 /**
@@ -138,7 +138,7 @@ int BitSieve::sieve_search(int limit, int start)
         if (!get(index))
             return index;
         index++;
-    } while(index < limit-1);
+    } while (index < limit - 1);
     return -1;
 }
 
@@ -149,7 +149,7 @@ int BitSieve::sieve_search(int limit, int start)
  */
 void BitSieve::sieve_single(int limit, int start, int step)
 {
-    while(start < limit)
+    while (start < limit)
     {
         set(start);
         start += step;
@@ -159,26 +159,27 @@ void BitSieve::sieve_single(int limit, int start, int step)
 /**
  * Test probable primes in the sieve and return successful candidates.
  */
-BigInteger BitSieve::retrieve(BigInteger init_value, int certainty)
+BigInteger BitSieve::retrieve(const BigInteger& init_value, int certainty)
 {
     // Examine the sieve one long at a time to find possible primes
-    int offset = 1;
-    for (int i = 0; i < m_bits_cap; ++i)
+    BigInteger candidate = init_value + 1;
+    for (int i = 0; i < _bits_cap; ++i)
     {
-        uint64_t next_long = ~m_bits[i];
+        uint64_t next_long = ~_bits[i];
         for (int j = 0; j < 64; ++j)
         {
             if ((next_long & 1) == 1)
             {
-                BigInteger candidate = init_value + offset;
                 if (miller_rabin(candidate, certainty))
                     return candidate;
             }
             next_long >>= 1;
-            offset += 2;
+            candidate += 2;
         }
     }
-    return BigInteger(0, init_value.allocator());
+
+    candidate.set_zero();
+    return candidate;
 }
 
 }

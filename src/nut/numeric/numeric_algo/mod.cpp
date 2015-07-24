@@ -22,7 +22,7 @@ static void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, c
     size_t min_sig = (rlen + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
     if (t.significant_words_length() < min_sig)
         min_sig = t.significant_words_length();
-    BigInteger s(t.data(), min_sig, true, rs->allocator());
+    BigInteger s(t.data(), min_sig, true, t.allocator());
     s.limit_positive_bits_to(rlen);
 
     s.multiply_to_len(nn, rlen); // rs = (rs * nn) % r
@@ -403,7 +403,7 @@ static void _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p, BigIn
     assert(NULL != rs);
     assert(a.is_positive() && b.is_positive() && p > 0);
 
-    BigInteger ret(1, rs->allocator());
+    BigInteger ret(1, a.allocator());
     for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
     {
         ret.multiply_to_len(ret, p);
@@ -441,7 +441,7 @@ void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigI
     }
 
 #if (OPTIMIZE_LEVEL == 0)
-    BigInteger ret(1, rs->allocator());
+    BigInteger ret(1, a.allocator());
     for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
     {
         ret = (ret * ret) % n;
@@ -455,7 +455,7 @@ void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigI
      if (bbc > 400) // 400 是一个经验数据
     {
         ModMultiplyPreBuildTable<4> table(a % n, n); /// 经测试，预算表模板参数取4比较合适
-        BigInteger ret(1, rs->allocator());
+        BigInteger ret(1, a.allocator());
         for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
         {
             ret = (ret * ret) % n;
@@ -467,7 +467,7 @@ void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigI
     }
     else
     {
-        BigInteger ret(1, rs->allocator());
+        BigInteger ret(1, a.allocator());
         for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
         {
             ret = (ret * ret) % n;

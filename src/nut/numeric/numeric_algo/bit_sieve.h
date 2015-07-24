@@ -32,19 +32,19 @@ class BitSieve
     /**
      * Stores the bits in this BitSieve.
      */
-    int64_t *m_bits;
-    int m_bits_cap;
+    int64_t *_bits;
+    int _bits_cap;
 
     /**
      * Length is how many bits this sieve holds.
      */
-    int m_length;
+    int _length;
 
     /**
      * A small sieve used to filter out multiples of small primes in a search
      * sieve.
      */
-    static BitSieve s_small_sieve;
+    static BitSieve _small_sieve;
 
     /**
      * Construct a "small sieve" with a base of 0.  This constructor is
@@ -98,7 +98,7 @@ public:
     /**
      * Test probable primes in the sieve and return successful candidates.
      */
-    BigInteger retrieve(BigInteger init_value, int certainty);
+    BigInteger retrieve(const BigInteger& init_value, int certainty);
 };
 
 }

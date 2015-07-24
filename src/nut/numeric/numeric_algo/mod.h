@@ -159,7 +159,7 @@ void mod_multiply(const BigInteger& b, const BigInteger& n, const ModMultiplyPre
     assert(NULL != rs);
     assert(b.is_positive() && n.is_positive() && b < n); // 一定要保证 b<n ,以便优化模加运算
 
-    BigInteger s(0, rs->allocator());
+    BigInteger s(0, b.allocator());
     size_t limit = (b.bit_length() + C - 1) / C;
     if (table.hight < limit)
         limit = table.hight;

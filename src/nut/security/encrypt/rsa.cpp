@@ -26,7 +26,7 @@ void RSA::gen_key(size_t bit_count, PublicKey *public_key, PrivateKey *private_k
     q = next_prime(q);
 
     // 选取小奇数 e，使得 e 与 gamma_n 互质
-    const BigInteger n(p * q), gamma_n = (p - 1) * (q - 1);
+    BigInteger n(p * q), gamma_n = (p - 1) * (q - 1);
     // NOTE:
     // 	e 常取 3 和 65537，比特位 bit1 少，利于提高计算速度
     unsigned e = 65537;
