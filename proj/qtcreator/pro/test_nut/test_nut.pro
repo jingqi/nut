@@ -35,7 +35,7 @@ CONFIG(debug, debug|release) {
 }
 
 # INCLUDE 路径
-SRC_ROOT = $$PWD/../../../../src/test
+SRC_ROOT = $$PWD/../../../../src/test_nut
 INCLUDEPATH += \
     $${SRC_ROOT}/.. \
     $${SRC_ROOT}

@@ -18,11 +18,11 @@ else
 endif
 
 PWD = $(shell pwd)
-DIRS = $(shell find ../../src/test -maxdepth 10 -type d)
+DIRS = $(shell find ../../src/test_nut -maxdepth 10 -type d)
 CPPS = $(foreach dir,$(DIRS),$(wildcard $(dir)/*.cpp))
 OBJS = $(patsubst %.cpp,%.o,$(CPPS))
 DEPS = $(patsubst %.cpp,%.d,$(CPPS))
-TARGET = $(PWD)/test
+TARGET = $(PWD)/test_nut
 
 all: $(TARGET)
 

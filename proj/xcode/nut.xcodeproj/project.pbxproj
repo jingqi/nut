@@ -7,44 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2E1927F01AD9023B00FDFFA6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1927EF1AD9023B00FDFFA6 /* main.cpp */; };
-		2E1927F31AD9024F00FDFFA6 /* test_delegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1927F21AD9024F00FDFFA6 /* test_delegate.cpp */; };
-		2E1927F71AD9026800FDFFA6 /* test_ini_dom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1927F51AD9026800FDFFA6 /* test_ini_dom.cpp */; };
-		2E1927F81AD9026800FDFFA6 /* test_property_dom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1927F61AD9026800FDFFA6 /* test_property_dom.cpp */; };
-		2E1927FD1AD9027900FDFFA6 /* test_xml_element.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1927FA1AD9027900FDFFA6 /* test_xml_element.cpp */; };
-		2E1927FE1AD9027900FDFFA6 /* test_xml_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1927FB1AD9027900FDFFA6 /* test_xml_parser.cpp */; };
-		2E1927FF1AD9027900FDFFA6 /* test_xml_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1927FC1AD9027900FDFFA6 /* test_xml_writer.cpp */; };
-		2E1928031AD902A700FDFFA6 /* test_kmp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928011AD902A700FDFFA6 /* test_kmp.cpp */; };
-		2E1928041AD902A700FDFFA6 /* test_stringutil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928021AD902A700FDFFA6 /* test_stringutil.cpp */; };
-		2E1928071AD902C600FDFFA6 /* test_threadpool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928061AD902C600FDFFA6 /* test_threadpool.cpp */; };
-		2E19280C1AD902D700FDFFA6 /* test_atomic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928091AD902D700FDFFA6 /* test_atomic.cpp */; };
-		2E19280D1AD902D700FDFFA6 /* test_queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E19280A1AD902D700FDFFA6 /* test_queue.cpp */; };
-		2E19280E1AD902D700FDFFA6 /* test_stack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E19280B1AD902D700FDFFA6 /* test_stack.cpp */; };
-		2E1928141AD9030500FDFFA6 /* test_aes_cbc_pkcs5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928111AD9030500FDFFA6 /* test_aes_cbc_pkcs5.cpp */; };
-		2E1928151AD9030500FDFFA6 /* test_aes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928121AD9030500FDFFA6 /* test_aes.cpp */; };
-		2E1928161AD9030500FDFFA6 /* test_rsa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928131AD9030500FDFFA6 /* test_rsa.cpp */; };
-		2E19281A1AD9031500FDFFA6 /* test_adler32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928181AD9031500FDFFA6 /* test_adler32.cpp */; };
-		2E19281B1AD9031500FDFFA6 /* test_md5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928191AD9031500FDFFA6 /* test_md5.cpp */; };
-		2E19281E1AD9032E00FDFFA6 /* test_rc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E19281D1AD9032E00FDFFA6 /* test_rc.cpp */; };
-		2E1928221AD9034000FDFFA6 /* test_os.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928201AD9034000FDFFA6 /* test_os.cpp */; };
-		2E1928231AD9034000FDFFA6 /* test_path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928211AD9034000FDFFA6 /* test_path.cpp */; };
-		2E1928261AD9035300FDFFA6 /* test_pconsole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928251AD9035300FDFFA6 /* test_pconsole.cpp */; };
-		2E19282A1AD9036300FDFFA6 /* test_biginteger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928281AD9036300FDFFA6 /* test_biginteger.cpp */; };
-		2E19282B1AD9036300FDFFA6 /* test_numeric_algo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928291AD9036300FDFFA6 /* test_numeric_algo.cpp */; };
-		2E19282F1AD9037300FDFFA6 /* test_lengthfixed_mp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E19282D1AD9037300FDFFA6 /* test_lengthfixed_mp.cpp */; };
-		2E1928301AD9037300FDFFA6 /* test_scoped_gc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E19282E1AD9037300FDFFA6 /* test_scoped_gc.cpp */; };
-		2E1928331AD9038200FDFFA6 /* test_logging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928321AD9038200FDFFA6 /* test_logging.cpp */; };
-		2E1928361AD9039700FDFFA6 /* test_backtrace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928351AD9039700FDFFA6 /* test_backtrace.cpp */; };
-		2E19283F1AD903AA00FDFFA6 /* test_array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928381AD903AA00FDFFA6 /* test_array.cpp */; };
-		2E1928401AD903AA00FDFFA6 /* test_bitstream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928391AD903AA00FDFFA6 /* test_bitstream.cpp */; };
-		2E1928411AD903AA00FDFFA6 /* test_bundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E19283A1AD903AA00FDFFA6 /* test_bundle.cpp */; };
-		2E1928421AD903AA00FDFFA6 /* test_bytearray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E19283B1AD903AA00FDFFA6 /* test_bytearray.cpp */; };
-		2E1928431AD903AA00FDFFA6 /* test_bytearraystream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E19283C1AD903AA00FDFFA6 /* test_bytearraystream.cpp */; };
-		2E1928441AD903AA00FDFFA6 /* test_lru_cache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E19283D1AD903AA00FDFFA6 /* test_lru_cache.cpp */; };
-		2E1928451AD903AA00FDFFA6 /* test_lru_data_cache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E19283E1AD903AA00FDFFA6 /* test_lru_data_cache.cpp */; };
-		2E1928481AD903BE00FDFFA6 /* test_bst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1928471AD903BE00FDFFA6 /* test_bst.cpp */; };
-		2E19284B1AD903D200FDFFA6 /* test_rtree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E19284A1AD903D200FDFFA6 /* test_rtree.cpp */; };
-		2E19284E1AD903EA00FDFFA6 /* test_skiplist.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E19284D1AD903EA00FDFFA6 /* test_skiplist.cpp */; };
 		2E19286C1AD90D1A00FDFFA6 /* aes_cbc_pkcs5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1927531AD900C400FDFFA6 /* aes_cbc_pkcs5.cpp */; };
 		2E19286D1AD90D1A00FDFFA6 /* aes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1927551AD900C400FDFFA6 /* aes.cpp */; };
 		2E19286E1AD90D1A00FDFFA6 /* rsa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1927571AD900C400FDFFA6 /* rsa.cpp */; };
@@ -176,6 +138,44 @@
 		2E1929081AD90DC200FDFFA6 /* console_util.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1927A51AD9013700FDFFA6 /* console_util.h */; };
 		2E1929091AD90DC200FDFFA6 /* delegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1927A61AD9013700FDFFA6 /* delegate.h */; };
 		2E19290A1AD90DCF00FDFFA6 /* libnut.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E1928681AD90CBF00FDFFA6 /* libnut.a */; };
+		2E50AAB11B6F2DD500AA2E58 /* test_rtree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAB01B6F2DD500AA2E58 /* test_rtree.cpp */; };
+		2E50AAB31B6F2DEB00AA2E58 /* test_skiplist.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAB21B6F2DEB00AA2E58 /* test_skiplist.cpp */; };
+		2E50AAB51B6F2E0800AA2E58 /* test_bst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAB41B6F2E0800AA2E58 /* test_bst.cpp */; };
+		2E50AABD1B6F2E3F00AA2E58 /* test_array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAB61B6F2E3F00AA2E58 /* test_array.cpp */; };
+		2E50AABE1B6F2E3F00AA2E58 /* test_bitstream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAB71B6F2E3F00AA2E58 /* test_bitstream.cpp */; };
+		2E50AABF1B6F2E3F00AA2E58 /* test_bundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAB81B6F2E3F00AA2E58 /* test_bundle.cpp */; };
+		2E50AAC01B6F2E3F00AA2E58 /* test_bytearray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAB91B6F2E3F00AA2E58 /* test_bytearray.cpp */; };
+		2E50AAC11B6F2E3F00AA2E58 /* test_bytearraystream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AABA1B6F2E3F00AA2E58 /* test_bytearraystream.cpp */; };
+		2E50AAC21B6F2E3F00AA2E58 /* test_lru_cache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AABB1B6F2E3F00AA2E58 /* test_lru_cache.cpp */; };
+		2E50AAC31B6F2E3F00AA2E58 /* test_lru_data_cache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AABC1B6F2E3F00AA2E58 /* test_lru_data_cache.cpp */; };
+		2E50AAC51B6F2E6100AA2E58 /* test_backtrace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAC41B6F2E6100AA2E58 /* test_backtrace.cpp */; };
+		2E50AAC71B6F2E6F00AA2E58 /* test_logging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAC61B6F2E6F00AA2E58 /* test_logging.cpp */; };
+		2E50AACA1B6F2E7E00AA2E58 /* test_lengthfixed_mp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAC81B6F2E7E00AA2E58 /* test_lengthfixed_mp.cpp */; };
+		2E50AACB1B6F2E7E00AA2E58 /* test_scoped_gc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAC91B6F2E7E00AA2E58 /* test_scoped_gc.cpp */; };
+		2E50AACE1B6F2E8D00AA2E58 /* test_biginteger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AACC1B6F2E8D00AA2E58 /* test_biginteger.cpp */; };
+		2E50AACF1B6F2E8D00AA2E58 /* test_numeric_algo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AACD1B6F2E8D00AA2E58 /* test_numeric_algo.cpp */; };
+		2E50AAD11B6F2E9B00AA2E58 /* test_pconsole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAD01B6F2E9B00AA2E58 /* test_pconsole.cpp */; };
+		2E50AAD41B6F2EA900AA2E58 /* test_os.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAD21B6F2EA900AA2E58 /* test_os.cpp */; };
+		2E50AAD51B6F2EA900AA2E58 /* test_path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAD31B6F2EA900AA2E58 /* test_path.cpp */; };
+		2E50AAD71B6F2EB800AA2E58 /* test_rc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAD61B6F2EB800AA2E58 /* test_rc.cpp */; };
+		2E50AADA1B6F2EC600AA2E58 /* test_adler32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAD81B6F2EC600AA2E58 /* test_adler32.cpp */; };
+		2E50AADB1B6F2EC600AA2E58 /* test_md5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAD91B6F2EC600AA2E58 /* test_md5.cpp */; };
+		2E50AADF1B6F2ED400AA2E58 /* test_aes_cbc_pkcs5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AADC1B6F2ED400AA2E58 /* test_aes_cbc_pkcs5.cpp */; };
+		2E50AAE01B6F2ED400AA2E58 /* test_aes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AADD1B6F2ED400AA2E58 /* test_aes.cpp */; };
+		2E50AAE11B6F2ED400AA2E58 /* test_rsa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AADE1B6F2ED400AA2E58 /* test_rsa.cpp */; };
+		2E50AAE51B6F2EE400AA2E58 /* test_atomic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAE21B6F2EE400AA2E58 /* test_atomic.cpp */; };
+		2E50AAE61B6F2EE400AA2E58 /* test_queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAE31B6F2EE400AA2E58 /* test_queue.cpp */; };
+		2E50AAE71B6F2EE400AA2E58 /* test_stack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAE41B6F2EE400AA2E58 /* test_stack.cpp */; };
+		2E50AAE91B6F2EF500AA2E58 /* test_threadpool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAE81B6F2EF500AA2E58 /* test_threadpool.cpp */; };
+		2E50AAEC1B6F2F0A00AA2E58 /* test_kmp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAEA1B6F2F0A00AA2E58 /* test_kmp.cpp */; };
+		2E50AAED1B6F2F0A00AA2E58 /* test_stringutil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAEB1B6F2F0A00AA2E58 /* test_stringutil.cpp */; };
+		2E50AAF11B6F2F1900AA2E58 /* test_xml_element.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAEE1B6F2F1900AA2E58 /* test_xml_element.cpp */; };
+		2E50AAF21B6F2F1900AA2E58 /* test_xml_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAEF1B6F2F1900AA2E58 /* test_xml_parser.cpp */; };
+		2E50AAF31B6F2F1900AA2E58 /* test_xml_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAF01B6F2F1900AA2E58 /* test_xml_writer.cpp */; };
+		2E50AAF61B6F2F2700AA2E58 /* test_ini_dom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAF41B6F2F2700AA2E58 /* test_ini_dom.cpp */; };
+		2E50AAF71B6F2F2700AA2E58 /* test_property_dom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAF51B6F2F2700AA2E58 /* test_property_dom.cpp */; };
+		2E50AAF91B6F2F3900AA2E58 /* test_delegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAF81B6F2F3900AA2E58 /* test_delegate.cpp */; };
+		2E50AAFB1B6F2F5600AA2E58 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAFA1B6F2F5600AA2E58 /* main.cpp */; };
 		2E91FDC81AECC58700223604 /* console_test_logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E91FDBC1AECC58700223604 /* console_test_logger.cpp */; };
 		2E91FDC91AECC58700223604 /* console_test_logger.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E91FDBD1AECC58700223604 /* console_test_logger.h */; };
 		2E91FDCA1AECC58700223604 /* stream_test_logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E91FDBE1AECC58700223604 /* stream_test_logger.cpp */; };
@@ -347,44 +347,6 @@
 		2E1927E21AD901BA00FDFFA6 /* xml_parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xml_parser.h; path = ../../src/nut/util/txtcfg/xml/xml_parser.h; sourceTree = "<group>"; };
 		2E1927E31AD901BA00FDFFA6 /* xml_writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xml_writer.cpp; path = ../../src/nut/util/txtcfg/xml/xml_writer.cpp; sourceTree = "<group>"; };
 		2E1927E41AD901BA00FDFFA6 /* xml_writer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xml_writer.h; path = ../../src/nut/util/txtcfg/xml/xml_writer.h; sourceTree = "<group>"; };
-		2E1927EF1AD9023B00FDFFA6 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../src/test/main.cpp; sourceTree = "<group>"; };
-		2E1927F21AD9024F00FDFFA6 /* test_delegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_delegate.cpp; path = ../../src/test/util/test_delegate.cpp; sourceTree = "<group>"; };
-		2E1927F51AD9026800FDFFA6 /* test_ini_dom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_ini_dom.cpp; path = ../../src/test/util/txtcfg/test_ini_dom.cpp; sourceTree = "<group>"; };
-		2E1927F61AD9026800FDFFA6 /* test_property_dom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_property_dom.cpp; path = ../../src/test/util/txtcfg/test_property_dom.cpp; sourceTree = "<group>"; };
-		2E1927FA1AD9027900FDFFA6 /* test_xml_element.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_xml_element.cpp; path = ../../src/test/util/txtcfg/xml/test_xml_element.cpp; sourceTree = "<group>"; };
-		2E1927FB1AD9027900FDFFA6 /* test_xml_parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_xml_parser.cpp; path = ../../src/test/util/txtcfg/xml/test_xml_parser.cpp; sourceTree = "<group>"; };
-		2E1927FC1AD9027900FDFFA6 /* test_xml_writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_xml_writer.cpp; path = ../../src/test/util/txtcfg/xml/test_xml_writer.cpp; sourceTree = "<group>"; };
-		2E1928011AD902A700FDFFA6 /* test_kmp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_kmp.cpp; path = ../../src/test/util/string/test_kmp.cpp; sourceTree = "<group>"; };
-		2E1928021AD902A700FDFFA6 /* test_stringutil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_stringutil.cpp; path = ../../src/test/util/string/test_stringutil.cpp; sourceTree = "<group>"; };
-		2E1928061AD902C600FDFFA6 /* test_threadpool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_threadpool.cpp; path = ../../src/test/threading/test_threadpool.cpp; sourceTree = "<group>"; };
-		2E1928091AD902D700FDFFA6 /* test_atomic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_atomic.cpp; path = ../../src/test/threading/lockfree/test_atomic.cpp; sourceTree = "<group>"; };
-		2E19280A1AD902D700FDFFA6 /* test_queue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_queue.cpp; path = ../../src/test/threading/lockfree/test_queue.cpp; sourceTree = "<group>"; };
-		2E19280B1AD902D700FDFFA6 /* test_stack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_stack.cpp; path = ../../src/test/threading/lockfree/test_stack.cpp; sourceTree = "<group>"; };
-		2E1928111AD9030500FDFFA6 /* test_aes_cbc_pkcs5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_aes_cbc_pkcs5.cpp; path = ../../src/test/security/encrypt/test_aes_cbc_pkcs5.cpp; sourceTree = "<group>"; };
-		2E1928121AD9030500FDFFA6 /* test_aes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_aes.cpp; path = ../../src/test/security/encrypt/test_aes.cpp; sourceTree = "<group>"; };
-		2E1928131AD9030500FDFFA6 /* test_rsa.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_rsa.cpp; path = ../../src/test/security/encrypt/test_rsa.cpp; sourceTree = "<group>"; };
-		2E1928181AD9031500FDFFA6 /* test_adler32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_adler32.cpp; path = ../../src/test/security/digest/test_adler32.cpp; sourceTree = "<group>"; };
-		2E1928191AD9031500FDFFA6 /* test_md5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_md5.cpp; path = ../../src/test/security/digest/test_md5.cpp; sourceTree = "<group>"; };
-		2E19281D1AD9032E00FDFFA6 /* test_rc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_rc.cpp; path = ../../src/test/rc/test_rc.cpp; sourceTree = "<group>"; };
-		2E1928201AD9034000FDFFA6 /* test_os.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_os.cpp; path = ../../src/test/platform/test_os.cpp; sourceTree = "<group>"; };
-		2E1928211AD9034000FDFFA6 /* test_path.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_path.cpp; path = ../../src/test/platform/test_path.cpp; sourceTree = "<group>"; };
-		2E1928251AD9035300FDFFA6 /* test_pconsole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_pconsole.cpp; path = ../../src/test/pconsole/test_pconsole.cpp; sourceTree = "<group>"; };
-		2E1928281AD9036300FDFFA6 /* test_biginteger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_biginteger.cpp; path = ../../src/test/numeric/test_biginteger.cpp; sourceTree = "<group>"; };
-		2E1928291AD9036300FDFFA6 /* test_numeric_algo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_numeric_algo.cpp; path = ../../src/test/numeric/test_numeric_algo.cpp; sourceTree = "<group>"; };
-		2E19282D1AD9037300FDFFA6 /* test_lengthfixed_mp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_lengthfixed_mp.cpp; path = ../../src/test/mem/test_lengthfixed_mp.cpp; sourceTree = "<group>"; };
-		2E19282E1AD9037300FDFFA6 /* test_scoped_gc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_scoped_gc.cpp; path = ../../src/test/mem/test_scoped_gc.cpp; sourceTree = "<group>"; };
-		2E1928321AD9038200FDFFA6 /* test_logging.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_logging.cpp; path = ../../src/test/logging/test_logging.cpp; sourceTree = "<group>"; };
-		2E1928351AD9039700FDFFA6 /* test_backtrace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_backtrace.cpp; path = ../../src/test/debugging/test_backtrace.cpp; sourceTree = "<group>"; };
-		2E1928381AD903AA00FDFFA6 /* test_array.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_array.cpp; path = ../../src/test/container/test_array.cpp; sourceTree = "<group>"; };
-		2E1928391AD903AA00FDFFA6 /* test_bitstream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_bitstream.cpp; path = ../../src/test/container/test_bitstream.cpp; sourceTree = "<group>"; };
-		2E19283A1AD903AA00FDFFA6 /* test_bundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_bundle.cpp; path = ../../src/test/container/test_bundle.cpp; sourceTree = "<group>"; };
-		2E19283B1AD903AA00FDFFA6 /* test_bytearray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_bytearray.cpp; path = ../../src/test/container/test_bytearray.cpp; sourceTree = "<group>"; };
-		2E19283C1AD903AA00FDFFA6 /* test_bytearraystream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_bytearraystream.cpp; path = ../../src/test/container/test_bytearraystream.cpp; sourceTree = "<group>"; };
-		2E19283D1AD903AA00FDFFA6 /* test_lru_cache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_lru_cache.cpp; path = ../../src/test/container/test_lru_cache.cpp; sourceTree = "<group>"; };
-		2E19283E1AD903AA00FDFFA6 /* test_lru_data_cache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_lru_data_cache.cpp; path = ../../src/test/container/test_lru_data_cache.cpp; sourceTree = "<group>"; };
-		2E1928471AD903BE00FDFFA6 /* test_bst.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_bst.cpp; path = ../../src/test/container/tree/test_bst.cpp; sourceTree = "<group>"; };
-		2E19284A1AD903D200FDFFA6 /* test_rtree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_rtree.cpp; path = ../../src/test/container/tree/rtree/test_rtree.cpp; sourceTree = "<group>"; };
-		2E19284D1AD903EA00FDFFA6 /* test_skiplist.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_skiplist.cpp; path = ../../src/test/container/skiplist/test_skiplist.cpp; sourceTree = "<group>"; };
 		2E19284F1AD905A500FDFFA6 /* stdint_traits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stdint_traits.h; path = ../../src/nut/platform/stdint_traits.h; sourceTree = "<group>"; };
 		2E1928501AD908D600FDFFA6 /* date_time.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = date_time.cpp; path = ../../src/nut/util/time/date_time.cpp; sourceTree = "<group>"; };
 		2E1928511AD908D600FDFFA6 /* date_time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = date_time.h; path = ../../src/nut/util/time/date_time.h; sourceTree = "<group>"; };
@@ -394,6 +356,44 @@
 		2E19285C1AD90A4200FDFFA6 /* sem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sem.cpp; path = ../../src/nut/threading/sync/sem.cpp; sourceTree = "<group>"; };
 		2E19285D1AD90A4200FDFFA6 /* sem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sem.h; path = ../../src/nut/threading/sync/sem.h; sourceTree = "<group>"; };
 		2E1928681AD90CBF00FDFFA6 /* libnut.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libnut.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2E50AAB01B6F2DD500AA2E58 /* test_rtree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_rtree.cpp; path = ../../src/test_nut/container/tree/rtree/test_rtree.cpp; sourceTree = "<group>"; };
+		2E50AAB21B6F2DEB00AA2E58 /* test_skiplist.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_skiplist.cpp; path = ../../src/test_nut/container/skiplist/test_skiplist.cpp; sourceTree = "<group>"; };
+		2E50AAB41B6F2E0800AA2E58 /* test_bst.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_bst.cpp; path = ../../src/test_nut/container/tree/test_bst.cpp; sourceTree = "<group>"; };
+		2E50AAB61B6F2E3F00AA2E58 /* test_array.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_array.cpp; path = ../../src/test_nut/container/test_array.cpp; sourceTree = "<group>"; };
+		2E50AAB71B6F2E3F00AA2E58 /* test_bitstream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_bitstream.cpp; path = ../../src/test_nut/container/test_bitstream.cpp; sourceTree = "<group>"; };
+		2E50AAB81B6F2E3F00AA2E58 /* test_bundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_bundle.cpp; path = ../../src/test_nut/container/test_bundle.cpp; sourceTree = "<group>"; };
+		2E50AAB91B6F2E3F00AA2E58 /* test_bytearray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_bytearray.cpp; path = ../../src/test_nut/container/test_bytearray.cpp; sourceTree = "<group>"; };
+		2E50AABA1B6F2E3F00AA2E58 /* test_bytearraystream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_bytearraystream.cpp; path = ../../src/test_nut/container/test_bytearraystream.cpp; sourceTree = "<group>"; };
+		2E50AABB1B6F2E3F00AA2E58 /* test_lru_cache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_lru_cache.cpp; path = ../../src/test_nut/container/test_lru_cache.cpp; sourceTree = "<group>"; };
+		2E50AABC1B6F2E3F00AA2E58 /* test_lru_data_cache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_lru_data_cache.cpp; path = ../../src/test_nut/container/test_lru_data_cache.cpp; sourceTree = "<group>"; };
+		2E50AAC41B6F2E6100AA2E58 /* test_backtrace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_backtrace.cpp; path = ../../src/test_nut/debugging/test_backtrace.cpp; sourceTree = "<group>"; };
+		2E50AAC61B6F2E6F00AA2E58 /* test_logging.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_logging.cpp; path = ../../src/test_nut/logging/test_logging.cpp; sourceTree = "<group>"; };
+		2E50AAC81B6F2E7E00AA2E58 /* test_lengthfixed_mp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_lengthfixed_mp.cpp; path = ../../src/test_nut/mem/test_lengthfixed_mp.cpp; sourceTree = "<group>"; };
+		2E50AAC91B6F2E7E00AA2E58 /* test_scoped_gc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_scoped_gc.cpp; path = ../../src/test_nut/mem/test_scoped_gc.cpp; sourceTree = "<group>"; };
+		2E50AACC1B6F2E8D00AA2E58 /* test_biginteger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_biginteger.cpp; path = ../../src/test_nut/numeric/test_biginteger.cpp; sourceTree = "<group>"; };
+		2E50AACD1B6F2E8D00AA2E58 /* test_numeric_algo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_numeric_algo.cpp; path = ../../src/test_nut/numeric/test_numeric_algo.cpp; sourceTree = "<group>"; };
+		2E50AAD01B6F2E9B00AA2E58 /* test_pconsole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_pconsole.cpp; path = ../../src/test_nut/pconsole/test_pconsole.cpp; sourceTree = "<group>"; };
+		2E50AAD21B6F2EA900AA2E58 /* test_os.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_os.cpp; path = ../../src/test_nut/platform/test_os.cpp; sourceTree = "<group>"; };
+		2E50AAD31B6F2EA900AA2E58 /* test_path.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_path.cpp; path = ../../src/test_nut/platform/test_path.cpp; sourceTree = "<group>"; };
+		2E50AAD61B6F2EB800AA2E58 /* test_rc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_rc.cpp; path = ../../src/test_nut/rc/test_rc.cpp; sourceTree = "<group>"; };
+		2E50AAD81B6F2EC600AA2E58 /* test_adler32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_adler32.cpp; path = ../../src/test_nut/security/digest/test_adler32.cpp; sourceTree = "<group>"; };
+		2E50AAD91B6F2EC600AA2E58 /* test_md5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_md5.cpp; path = ../../src/test_nut/security/digest/test_md5.cpp; sourceTree = "<group>"; };
+		2E50AADC1B6F2ED400AA2E58 /* test_aes_cbc_pkcs5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_aes_cbc_pkcs5.cpp; path = ../../src/test_nut/security/encrypt/test_aes_cbc_pkcs5.cpp; sourceTree = "<group>"; };
+		2E50AADD1B6F2ED400AA2E58 /* test_aes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_aes.cpp; path = ../../src/test_nut/security/encrypt/test_aes.cpp; sourceTree = "<group>"; };
+		2E50AADE1B6F2ED400AA2E58 /* test_rsa.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_rsa.cpp; path = ../../src/test_nut/security/encrypt/test_rsa.cpp; sourceTree = "<group>"; };
+		2E50AAE21B6F2EE400AA2E58 /* test_atomic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_atomic.cpp; path = ../../src/test_nut/threading/lockfree/test_atomic.cpp; sourceTree = "<group>"; };
+		2E50AAE31B6F2EE400AA2E58 /* test_queue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_queue.cpp; path = ../../src/test_nut/threading/lockfree/test_queue.cpp; sourceTree = "<group>"; };
+		2E50AAE41B6F2EE400AA2E58 /* test_stack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_stack.cpp; path = ../../src/test_nut/threading/lockfree/test_stack.cpp; sourceTree = "<group>"; };
+		2E50AAE81B6F2EF500AA2E58 /* test_threadpool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_threadpool.cpp; path = ../../src/test_nut/threading/test_threadpool.cpp; sourceTree = "<group>"; };
+		2E50AAEA1B6F2F0A00AA2E58 /* test_kmp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_kmp.cpp; path = ../../src/test_nut/util/string/test_kmp.cpp; sourceTree = "<group>"; };
+		2E50AAEB1B6F2F0A00AA2E58 /* test_stringutil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_stringutil.cpp; path = ../../src/test_nut/util/string/test_stringutil.cpp; sourceTree = "<group>"; };
+		2E50AAEE1B6F2F1900AA2E58 /* test_xml_element.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_xml_element.cpp; path = ../../src/test_nut/util/txtcfg/xml/test_xml_element.cpp; sourceTree = "<group>"; };
+		2E50AAEF1B6F2F1900AA2E58 /* test_xml_parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_xml_parser.cpp; path = ../../src/test_nut/util/txtcfg/xml/test_xml_parser.cpp; sourceTree = "<group>"; };
+		2E50AAF01B6F2F1900AA2E58 /* test_xml_writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_xml_writer.cpp; path = ../../src/test_nut/util/txtcfg/xml/test_xml_writer.cpp; sourceTree = "<group>"; };
+		2E50AAF41B6F2F2700AA2E58 /* test_ini_dom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_ini_dom.cpp; path = ../../src/test_nut/util/txtcfg/test_ini_dom.cpp; sourceTree = "<group>"; };
+		2E50AAF51B6F2F2700AA2E58 /* test_property_dom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_property_dom.cpp; path = ../../src/test_nut/util/txtcfg/test_property_dom.cpp; sourceTree = "<group>"; };
+		2E50AAF81B6F2F3900AA2E58 /* test_delegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_delegate.cpp; path = ../../src/test_nut/util/test_delegate.cpp; sourceTree = "<group>"; };
+		2E50AAFA1B6F2F5600AA2E58 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../src/test_nut/main.cpp; sourceTree = "<group>"; };
 		2E6429DD1A1F76760037E554 /* test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E91FDBC1AECC58700223604 /* console_test_logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = console_test_logger.cpp; path = ../../src/nut/unittest/console_test_logger.cpp; sourceTree = "<group>"; };
 		2E91FDBD1AECC58700223604 /* console_test_logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = console_test_logger.h; path = ../../src/nut/unittest/console_test_logger.h; sourceTree = "<group>"; };
@@ -812,7 +812,7 @@
 			children = (
 				2E1928001AD9028100FDFFA6 /* string */,
 				2E1927F41AD9025200FDFFA6 /* txtcfg */,
-				2E1927F21AD9024F00FDFFA6 /* test_delegate.cpp */,
+				2E50AAF81B6F2F3900AA2E58 /* test_delegate.cpp */,
 			);
 			name = util;
 			sourceTree = "<group>";
@@ -821,8 +821,8 @@
 			isa = PBXGroup;
 			children = (
 				2E1927F91AD9026A00FDFFA6 /* xml */,
-				2E1927F51AD9026800FDFFA6 /* test_ini_dom.cpp */,
-				2E1927F61AD9026800FDFFA6 /* test_property_dom.cpp */,
+				2E50AAF41B6F2F2700AA2E58 /* test_ini_dom.cpp */,
+				2E50AAF51B6F2F2700AA2E58 /* test_property_dom.cpp */,
 			);
 			name = txtcfg;
 			sourceTree = "<group>";
@@ -830,9 +830,9 @@
 		2E1927F91AD9026A00FDFFA6 /* xml */ = {
 			isa = PBXGroup;
 			children = (
-				2E1927FA1AD9027900FDFFA6 /* test_xml_element.cpp */,
-				2E1927FB1AD9027900FDFFA6 /* test_xml_parser.cpp */,
-				2E1927FC1AD9027900FDFFA6 /* test_xml_writer.cpp */,
+				2E50AAEE1B6F2F1900AA2E58 /* test_xml_element.cpp */,
+				2E50AAEF1B6F2F1900AA2E58 /* test_xml_parser.cpp */,
+				2E50AAF01B6F2F1900AA2E58 /* test_xml_writer.cpp */,
 			);
 			name = xml;
 			sourceTree = "<group>";
@@ -840,8 +840,8 @@
 		2E1928001AD9028100FDFFA6 /* string */ = {
 			isa = PBXGroup;
 			children = (
-				2E1928011AD902A700FDFFA6 /* test_kmp.cpp */,
-				2E1928021AD902A700FDFFA6 /* test_stringutil.cpp */,
+				2E50AAEA1B6F2F0A00AA2E58 /* test_kmp.cpp */,
+				2E50AAEB1B6F2F0A00AA2E58 /* test_stringutil.cpp */,
 			);
 			name = string;
 			sourceTree = "<group>";
@@ -850,7 +850,7 @@
 			isa = PBXGroup;
 			children = (
 				2E1928081AD902CA00FDFFA6 /* lockfree */,
-				2E1928061AD902C600FDFFA6 /* test_threadpool.cpp */,
+				2E50AAE81B6F2EF500AA2E58 /* test_threadpool.cpp */,
 			);
 			name = threading;
 			sourceTree = "<group>";
@@ -858,9 +858,9 @@
 		2E1928081AD902CA00FDFFA6 /* lockfree */ = {
 			isa = PBXGroup;
 			children = (
-				2E1928091AD902D700FDFFA6 /* test_atomic.cpp */,
-				2E19280A1AD902D700FDFFA6 /* test_queue.cpp */,
-				2E19280B1AD902D700FDFFA6 /* test_stack.cpp */,
+				2E50AAE21B6F2EE400AA2E58 /* test_atomic.cpp */,
+				2E50AAE31B6F2EE400AA2E58 /* test_queue.cpp */,
+				2E50AAE41B6F2EE400AA2E58 /* test_stack.cpp */,
 			);
 			name = lockfree;
 			sourceTree = "<group>";
@@ -877,9 +877,9 @@
 		2E1928101AD902F400FDFFA6 /* encrypt */ = {
 			isa = PBXGroup;
 			children = (
-				2E1928111AD9030500FDFFA6 /* test_aes_cbc_pkcs5.cpp */,
-				2E1928121AD9030500FDFFA6 /* test_aes.cpp */,
-				2E1928131AD9030500FDFFA6 /* test_rsa.cpp */,
+				2E50AADC1B6F2ED400AA2E58 /* test_aes_cbc_pkcs5.cpp */,
+				2E50AADD1B6F2ED400AA2E58 /* test_aes.cpp */,
+				2E50AADE1B6F2ED400AA2E58 /* test_rsa.cpp */,
 			);
 			name = encrypt;
 			sourceTree = "<group>";
@@ -887,8 +887,8 @@
 		2E1928171AD9030800FDFFA6 /* digest */ = {
 			isa = PBXGroup;
 			children = (
-				2E1928181AD9031500FDFFA6 /* test_adler32.cpp */,
-				2E1928191AD9031500FDFFA6 /* test_md5.cpp */,
+				2E50AAD81B6F2EC600AA2E58 /* test_adler32.cpp */,
+				2E50AAD91B6F2EC600AA2E58 /* test_md5.cpp */,
 			);
 			name = digest;
 			sourceTree = "<group>";
@@ -896,7 +896,7 @@
 		2E19281C1AD9032400FDFFA6 /* rc */ = {
 			isa = PBXGroup;
 			children = (
-				2E19281D1AD9032E00FDFFA6 /* test_rc.cpp */,
+				2E50AAD61B6F2EB800AA2E58 /* test_rc.cpp */,
 			);
 			name = rc;
 			sourceTree = "<group>";
@@ -904,8 +904,8 @@
 		2E19281F1AD9033400FDFFA6 /* platform */ = {
 			isa = PBXGroup;
 			children = (
-				2E1928201AD9034000FDFFA6 /* test_os.cpp */,
-				2E1928211AD9034000FDFFA6 /* test_path.cpp */,
+				2E50AAD21B6F2EA900AA2E58 /* test_os.cpp */,
+				2E50AAD31B6F2EA900AA2E58 /* test_path.cpp */,
 			);
 			name = platform;
 			sourceTree = "<group>";
@@ -913,7 +913,7 @@
 		2E1928241AD9034400FDFFA6 /* pconsole */ = {
 			isa = PBXGroup;
 			children = (
-				2E1928251AD9035300FDFFA6 /* test_pconsole.cpp */,
+				2E50AAD01B6F2E9B00AA2E58 /* test_pconsole.cpp */,
 			);
 			name = pconsole;
 			sourceTree = "<group>";
@@ -921,8 +921,8 @@
 		2E1928271AD9035500FDFFA6 /* numeric */ = {
 			isa = PBXGroup;
 			children = (
-				2E1928281AD9036300FDFFA6 /* test_biginteger.cpp */,
-				2E1928291AD9036300FDFFA6 /* test_numeric_algo.cpp */,
+				2E50AACC1B6F2E8D00AA2E58 /* test_biginteger.cpp */,
+				2E50AACD1B6F2E8D00AA2E58 /* test_numeric_algo.cpp */,
 			);
 			name = numeric;
 			sourceTree = "<group>";
@@ -930,8 +930,8 @@
 		2E19282C1AD9036500FDFFA6 /* mem */ = {
 			isa = PBXGroup;
 			children = (
-				2E19282D1AD9037300FDFFA6 /* test_lengthfixed_mp.cpp */,
-				2E19282E1AD9037300FDFFA6 /* test_scoped_gc.cpp */,
+				2E50AAC81B6F2E7E00AA2E58 /* test_lengthfixed_mp.cpp */,
+				2E50AAC91B6F2E7E00AA2E58 /* test_scoped_gc.cpp */,
 			);
 			name = mem;
 			sourceTree = "<group>";
@@ -939,7 +939,7 @@
 		2E1928311AD9037600FDFFA6 /* logging */ = {
 			isa = PBXGroup;
 			children = (
-				2E1928321AD9038200FDFFA6 /* test_logging.cpp */,
+				2E50AAC61B6F2E6F00AA2E58 /* test_logging.cpp */,
 			);
 			name = logging;
 			sourceTree = "<group>";
@@ -947,7 +947,7 @@
 		2E1928341AD9038800FDFFA6 /* debugging */ = {
 			isa = PBXGroup;
 			children = (
-				2E1928351AD9039700FDFFA6 /* test_backtrace.cpp */,
+				2E50AAC41B6F2E6100AA2E58 /* test_backtrace.cpp */,
 			);
 			name = debugging;
 			sourceTree = "<group>";
@@ -955,14 +955,15 @@
 		2E1928371AD9039A00FDFFA6 /* container */ = {
 			isa = PBXGroup;
 			children = (
+				2E19284C1AD903D500FDFFA6 /* skiplist */,
 				2E1928461AD903AD00FDFFA6 /* tree */,
-				2E1928381AD903AA00FDFFA6 /* test_array.cpp */,
-				2E1928391AD903AA00FDFFA6 /* test_bitstream.cpp */,
-				2E19283A1AD903AA00FDFFA6 /* test_bundle.cpp */,
-				2E19283B1AD903AA00FDFFA6 /* test_bytearray.cpp */,
-				2E19283C1AD903AA00FDFFA6 /* test_bytearraystream.cpp */,
-				2E19283D1AD903AA00FDFFA6 /* test_lru_cache.cpp */,
-				2E19283E1AD903AA00FDFFA6 /* test_lru_data_cache.cpp */,
+				2E50AAB61B6F2E3F00AA2E58 /* test_array.cpp */,
+				2E50AAB71B6F2E3F00AA2E58 /* test_bitstream.cpp */,
+				2E50AAB81B6F2E3F00AA2E58 /* test_bundle.cpp */,
+				2E50AAB91B6F2E3F00AA2E58 /* test_bytearray.cpp */,
+				2E50AABA1B6F2E3F00AA2E58 /* test_bytearraystream.cpp */,
+				2E50AABB1B6F2E3F00AA2E58 /* test_lru_cache.cpp */,
+				2E50AABC1B6F2E3F00AA2E58 /* test_lru_data_cache.cpp */,
 			);
 			name = container;
 			sourceTree = "<group>";
@@ -970,9 +971,8 @@
 		2E1928461AD903AD00FDFFA6 /* tree */ = {
 			isa = PBXGroup;
 			children = (
-				2E19284C1AD903D500FDFFA6 /* skiplist */,
 				2E1928491AD903C100FDFFA6 /* rtree */,
-				2E1928471AD903BE00FDFFA6 /* test_bst.cpp */,
+				2E50AAB41B6F2E0800AA2E58 /* test_bst.cpp */,
 			);
 			name = tree;
 			sourceTree = "<group>";
@@ -980,7 +980,7 @@
 		2E1928491AD903C100FDFFA6 /* rtree */ = {
 			isa = PBXGroup;
 			children = (
-				2E19284A1AD903D200FDFFA6 /* test_rtree.cpp */,
+				2E50AAB01B6F2DD500AA2E58 /* test_rtree.cpp */,
 			);
 			name = rtree;
 			sourceTree = "<group>";
@@ -988,7 +988,7 @@
 		2E19284C1AD903D500FDFFA6 /* skiplist */ = {
 			isa = PBXGroup;
 			children = (
-				2E19284D1AD903EA00FDFFA6 /* test_skiplist.cpp */,
+				2E50AAB21B6F2DEB00AA2E58 /* test_skiplist.cpp */,
 			);
 			name = skiplist;
 			sourceTree = "<group>";
@@ -997,7 +997,7 @@
 			isa = PBXGroup;
 			children = (
 				2E1926961AD8FE8400FDFFA6 /* nut */,
-				2E6429E51A1F76990037E554 /* test */,
+				2E6429E51A1F76990037E554 /* test_nut */,
 				2E6429CB1A1F762B0037E554 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -1011,7 +1011,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2E6429E51A1F76990037E554 /* test */ = {
+		2E6429E51A1F76990037E554 /* test_nut */ = {
 			isa = PBXGroup;
 			children = (
 				2E1928371AD9039A00FDFFA6 /* container */,
@@ -1025,9 +1025,9 @@
 				2E19280F1AD902E500FDFFA6 /* security */,
 				2E1928051AD902BA00FDFFA6 /* threading */,
 				2E1927F11AD9023E00FDFFA6 /* util */,
-				2E1927EF1AD9023B00FDFFA6 /* main.cpp */,
+				2E50AAFA1B6F2F5600AA2E58 /* main.cpp */,
 			);
-			name = test;
+			name = test_nut;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1159,9 +1159,9 @@
 			productReference = 2E1928681AD90CBF00FDFFA6 /* libnut.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		2E6429DC1A1F76760037E554 /* test */ = {
+		2E6429DC1A1F76760037E554 /* test_nut */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2E6429E11A1F76760037E554 /* Build configuration list for PBXNativeTarget "test" */;
+			buildConfigurationList = 2E6429E11A1F76760037E554 /* Build configuration list for PBXNativeTarget "test_nut" */;
 			buildPhases = (
 				2E6429D91A1F76760037E554 /* Sources */,
 				2E6429DA1A1F76760037E554 /* Frameworks */,
@@ -1172,7 +1172,7 @@
 			dependencies = (
 				2E19290C1AD90DDB00FDFFA6 /* PBXTargetDependency */,
 			);
-			name = test;
+			name = test_nut;
 			productName = test;
 			productReference = 2E6429DD1A1F76760037E554 /* test */;
 			productType = "com.apple.product-type.tool";
@@ -1207,7 +1207,7 @@
 			projectRoot = "";
 			targets = (
 				2E1928671AD90CBF00FDFFA6 /* nut */,
-				2E6429DC1A1F76760037E554 /* test */,
+				2E6429DC1A1F76760037E554 /* test_nut */,
 			);
 		};
 /* End PBXProject section */
@@ -1278,44 +1278,44 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2E1928261AD9035300FDFFA6 /* test_pconsole.cpp in Sources */,
-				2E19281B1AD9031500FDFFA6 /* test_md5.cpp in Sources */,
-				2E19282F1AD9037300FDFFA6 /* test_lengthfixed_mp.cpp in Sources */,
-				2E19282A1AD9036300FDFFA6 /* test_biginteger.cpp in Sources */,
-				2E1927F71AD9026800FDFFA6 /* test_ini_dom.cpp in Sources */,
-				2E1928141AD9030500FDFFA6 /* test_aes_cbc_pkcs5.cpp in Sources */,
-				2E1928161AD9030500FDFFA6 /* test_rsa.cpp in Sources */,
-				2E19280C1AD902D700FDFFA6 /* test_atomic.cpp in Sources */,
-				2E1927FF1AD9027900FDFFA6 /* test_xml_writer.cpp in Sources */,
-				2E1928481AD903BE00FDFFA6 /* test_bst.cpp in Sources */,
-				2E1928451AD903AA00FDFFA6 /* test_lru_data_cache.cpp in Sources */,
-				2E1928411AD903AA00FDFFA6 /* test_bundle.cpp in Sources */,
-				2E1928331AD9038200FDFFA6 /* test_logging.cpp in Sources */,
-				2E19281E1AD9032E00FDFFA6 /* test_rc.cpp in Sources */,
-				2E19280E1AD902D700FDFFA6 /* test_stack.cpp in Sources */,
-				2E1928041AD902A700FDFFA6 /* test_stringutil.cpp in Sources */,
-				2E1927F81AD9026800FDFFA6 /* test_property_dom.cpp in Sources */,
-				2E1928301AD9037300FDFFA6 /* test_scoped_gc.cpp in Sources */,
-				2E1928231AD9034000FDFFA6 /* test_path.cpp in Sources */,
-				2E1927FE1AD9027900FDFFA6 /* test_xml_parser.cpp in Sources */,
-				2E1928441AD903AA00FDFFA6 /* test_lru_cache.cpp in Sources */,
-				2E19284B1AD903D200FDFFA6 /* test_rtree.cpp in Sources */,
-				2E1928401AD903AA00FDFFA6 /* test_bitstream.cpp in Sources */,
-				2E1928031AD902A700FDFFA6 /* test_kmp.cpp in Sources */,
-				2E1928151AD9030500FDFFA6 /* test_aes.cpp in Sources */,
-				2E1928421AD903AA00FDFFA6 /* test_bytearray.cpp in Sources */,
-				2E1928221AD9034000FDFFA6 /* test_os.cpp in Sources */,
-				2E19281A1AD9031500FDFFA6 /* test_adler32.cpp in Sources */,
-				2E19282B1AD9036300FDFFA6 /* test_numeric_algo.cpp in Sources */,
-				2E19283F1AD903AA00FDFFA6 /* test_array.cpp in Sources */,
-				2E1928361AD9039700FDFFA6 /* test_backtrace.cpp in Sources */,
-				2E19280D1AD902D700FDFFA6 /* test_queue.cpp in Sources */,
-				2E1927F31AD9024F00FDFFA6 /* test_delegate.cpp in Sources */,
-				2E1928071AD902C600FDFFA6 /* test_threadpool.cpp in Sources */,
-				2E1927F01AD9023B00FDFFA6 /* main.cpp in Sources */,
-				2E1927FD1AD9027900FDFFA6 /* test_xml_element.cpp in Sources */,
-				2E19284E1AD903EA00FDFFA6 /* test_skiplist.cpp in Sources */,
-				2E1928431AD903AA00FDFFA6 /* test_bytearraystream.cpp in Sources */,
+				2E50AAF31B6F2F1900AA2E58 /* test_xml_writer.cpp in Sources */,
+				2E50AAF71B6F2F2700AA2E58 /* test_property_dom.cpp in Sources */,
+				2E50AAF21B6F2F1900AA2E58 /* test_xml_parser.cpp in Sources */,
+				2E50AAB31B6F2DEB00AA2E58 /* test_skiplist.cpp in Sources */,
+				2E50AACB1B6F2E7E00AA2E58 /* test_scoped_gc.cpp in Sources */,
+				2E50AAF91B6F2F3900AA2E58 /* test_delegate.cpp in Sources */,
+				2E50AAD51B6F2EA900AA2E58 /* test_path.cpp in Sources */,
+				2E50AAE61B6F2EE400AA2E58 /* test_queue.cpp in Sources */,
+				2E50AAC11B6F2E3F00AA2E58 /* test_bytearraystream.cpp in Sources */,
+				2E50AADA1B6F2EC600AA2E58 /* test_adler32.cpp in Sources */,
+				2E50AAD41B6F2EA900AA2E58 /* test_os.cpp in Sources */,
+				2E50AAC21B6F2E3F00AA2E58 /* test_lru_cache.cpp in Sources */,
+				2E50AAC71B6F2E6F00AA2E58 /* test_logging.cpp in Sources */,
+				2E50AAC01B6F2E3F00AA2E58 /* test_bytearray.cpp in Sources */,
+				2E50AABF1B6F2E3F00AA2E58 /* test_bundle.cpp in Sources */,
+				2E50AAE51B6F2EE400AA2E58 /* test_atomic.cpp in Sources */,
+				2E50AABD1B6F2E3F00AA2E58 /* test_array.cpp in Sources */,
+				2E50AACF1B6F2E8D00AA2E58 /* test_numeric_algo.cpp in Sources */,
+				2E50AAED1B6F2F0A00AA2E58 /* test_stringutil.cpp in Sources */,
+				2E50AAE11B6F2ED400AA2E58 /* test_rsa.cpp in Sources */,
+				2E50AACA1B6F2E7E00AA2E58 /* test_lengthfixed_mp.cpp in Sources */,
+				2E50AAE71B6F2EE400AA2E58 /* test_stack.cpp in Sources */,
+				2E50AAE91B6F2EF500AA2E58 /* test_threadpool.cpp in Sources */,
+				2E50AAFB1B6F2F5600AA2E58 /* main.cpp in Sources */,
+				2E50AAEC1B6F2F0A00AA2E58 /* test_kmp.cpp in Sources */,
+				2E50AAD11B6F2E9B00AA2E58 /* test_pconsole.cpp in Sources */,
+				2E50AAB11B6F2DD500AA2E58 /* test_rtree.cpp in Sources */,
+				2E50AAC31B6F2E3F00AA2E58 /* test_lru_data_cache.cpp in Sources */,
+				2E50AAF61B6F2F2700AA2E58 /* test_ini_dom.cpp in Sources */,
+				2E50AAD71B6F2EB800AA2E58 /* test_rc.cpp in Sources */,
+				2E50AAE01B6F2ED400AA2E58 /* test_aes.cpp in Sources */,
+				2E50AAB51B6F2E0800AA2E58 /* test_bst.cpp in Sources */,
+				2E50AACE1B6F2E8D00AA2E58 /* test_biginteger.cpp in Sources */,
+				2E50AAF11B6F2F1900AA2E58 /* test_xml_element.cpp in Sources */,
+				2E50AADB1B6F2EC600AA2E58 /* test_md5.cpp in Sources */,
+				2E50AAC51B6F2E6100AA2E58 /* test_backtrace.cpp in Sources */,
+				2E50AABE1B6F2E3F00AA2E58 /* test_bitstream.cpp in Sources */,
+				2E50AADF1B6F2ED400AA2E58 /* test_aes_cbc_pkcs5.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1480,7 +1480,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2E6429E11A1F76760037E554 /* Build configuration list for PBXNativeTarget "test" */ = {
+		2E6429E11A1F76760037E554 /* Build configuration list for PBXNativeTarget "test_nut" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2E6429E21A1F76760037E554 /* Debug */,

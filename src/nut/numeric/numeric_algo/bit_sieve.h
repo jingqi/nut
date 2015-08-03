@@ -32,13 +32,13 @@ class BitSieve
     /**
      * Stores the bits in this BitSieve.
      */
-    int64_t *_bits;
-    int _bits_cap;
+    int64_t *_bits = NULL;
+    int _bits_cap = 0;
 
     /**
      * Length is how many bits this sieve holds.
      */
-    int _length;
+    int _length = 0;
 
     /**
      * A small sieve used to filter out multiples of small primes in a search
