@@ -34,7 +34,7 @@ private:
     pthread_t _pthread;
 #endif
 
-    thread_process_type _thread_process;
+    thread_process_type _thread_process = NULL;
     void *_thread_arg = NULL;
     bool _has_started = false;
     bool mutable _has_finished = false;

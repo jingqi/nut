@@ -20,40 +20,40 @@ namespace nut
  */
 class PConsole : public IConsole
 {
-    char m_prompt_char;
-    std::string m_prompt_string;
-    std::string m_console_name;
-    std::vector<rc_ptr<ICommand> > m_commands;
-    bool m_exit;
-    int m_exit_value;
+    char _prompt_char = '>';
+    std::string _prompt_string;
+    std::string _console_name;
+    std::vector<rc_ptr<ICommand> > _commands;
+    bool _exit = false;
+    int _exit_value = 0;
 
 public:
     PConsole(const std::string& name = "PConsole");
 
     char get_prompt_char() const
     {
-        return m_prompt_char;
+        return _prompt_char;
     }
 
     void set_prompt_char(char c)
     {
-        m_prompt_char = c;
+        _prompt_char = c;
     }
 
     const std::string& get_prompt_string() const
     {
-        return m_prompt_string;
+        return _prompt_string;
     }
 
     void set_prompt_string(const std::string& s)
     {
-        m_prompt_string = s;
+        _prompt_string = s;
     }
 
     /** 添加一个命令 */
     void add_a_command(rc_ptr<ICommand> cmd)
     {
-        m_commands.push_back(cmd);
+        _commands.push_back(cmd);
     }
 
     /** 读取并执行一次 */
@@ -68,7 +68,7 @@ public:
     /** 获取命令列表 */
     virtual const std::vector<rc_ptr<ICommand> >& get_commands() const override
     {
-        return m_commands;
+        return _commands;
     }
 
     /** 设置退出标记 */

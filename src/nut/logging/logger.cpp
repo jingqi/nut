@@ -42,7 +42,7 @@ LogFilter& Logger::get_filter()
 {
 	NUT_DEBUGGING_ASSERT_ALIVE;
 
-	return m_filter;
+    return _filter;
 }
 
 void Logger::add_handler(LogHandler *handler)
@@ -51,7 +51,7 @@ void Logger::add_handler(LogHandler *handler)
 	NUT_DEBUGGING_ASSERT_ALIVE;
 
 	handler->add_ref();
-	m_handlers.push_back(handler);
+    _handlers.push_back(handler);
 }
 
 void Logger::remove_handler(LogHandler *handler)
@@ -59,11 +59,11 @@ void Logger::remove_handler(LogHandler *handler)
 	assert(NULL != handler);
 	NUT_DEBUGGING_ASSERT_ALIVE;
 
-	for (size_t i = 0, sz = m_handlers.size(); i < sz; ++i)
+    for (size_t i = 0, sz = _handlers.size(); i < sz; ++i)
 	{
-		if (m_handlers.at(i) == handler)
+        if (_handlers.at(i) == handler)
 		{
-			m_handlers.erase(m_handlers.begin() + i);
+            _handlers.erase(_handlers.begin() + i);
 			handler->release_ref();
 			return;
 		}
@@ -74,13 +74,13 @@ void Logger::clear_handlers()
 {
 	NUT_DEBUGGING_ASSERT_ALIVE;
 
-	for (size_t i = 0, sz = m_handlers.size(); i < sz; ++i)
+    for (size_t i = 0, sz = _handlers.size(); i < sz; ++i)
 	{
-		LogHandler *handler = m_handlers.at(i);
+        LogHandler *handler = _handlers.at(i);
 		assert(NULL != handler);
 		handler->release_ref();
 	}
-	m_handlers.clear();
+    _handlers.clear();
 }
 
 void Logger::log(LogLevel level, const char *tag, const char *file, int line, const char *func, const char *format, ...) const
@@ -88,10 +88,10 @@ void Logger::log(LogLevel level, const char *tag, const char *file, int line, co
     NUT_DEBUGGING_ASSERT_ALIVE;
     assert(NULL != format);
 
-    if (m_handlers.empty())
+    if (_handlers.empty())
         return;
 
-    if (m_filter.is_forbidden(tag, level))
+    if (_filter.is_forbidden(tag, level))
         return;
 
     size_t size = 32;
@@ -117,9 +117,9 @@ void Logger::log(LogLevel level, const char *tag, const char *file, int line, co
 		return;
 
 	LogRecord record(level, tag, file, line, func, buf); /* buf will be freed by LogRecord */
-    for (size_t i = 0, sz = m_handlers.size(); i < sz; ++i)
+    for (size_t i = 0, sz = _handlers.size(); i < sz; ++i)
     {
-        LogHandler *handler = m_handlers.at(i);
+        LogHandler *handler = _handlers.at(i);
         assert(NULL != handler);
         if (handler->get_filter().is_forbidden(tag, level))
             continue;
@@ -131,13 +131,13 @@ void Logger::load_config(const std::string& config)
 {
     class TagHandler : public XmlElementHandler
     {
-        LogFilter *m_filter;
-        std::string m_tag_name;
-        ll_mask_t m_forbid_mask;
+        LogFilter *_filter = NULL;
+        std::string _tag_name;
+        ll_mask_t _forbid_mask = 0;
 
     public:
         TagHandler(LogFilter *filter)
-            : m_filter(filter), m_forbid_mask(0)
+            : _filter(filter)
         {
             assert(NULL != filter);
         }
@@ -146,32 +146,32 @@ void Logger::load_config(const std::string& config)
         {
             if (name == "name")
             {
-                m_tag_name = value;
+                _tag_name = value;
             }
             else if (name == "forbids")
             {
                 std::vector<std::string> forbids;
                 chr_split(value, ',', &forbids, true);
 
-                m_forbid_mask = 0;
+                _forbid_mask = 0;
                 for (size_t i = 0, sz = forbids.size(); i < sz; ++i)
-                    m_forbid_mask |= str_to_log_level(forbids.at(i).c_str());
+                    _forbid_mask |= str_to_log_level(forbids.at(i).c_str());
             }
         }
 
         virtual void handle_finish() override
         {
-            m_filter->forbid(m_tag_name.c_str(), m_forbid_mask);
+            _filter->forbid(_tag_name.c_str(), _forbid_mask);
         }
     };
 
     class FilterHandler : public XmlElementHandler
     {
-        LogFilter *m_filter;
+        LogFilter *_filter = NULL;
 
     public:
         FilterHandler(LogFilter *filter)
-            : XmlElementHandler("filter"), m_filter(filter)
+            : XmlElementHandler("filter"), _filter(filter)
         {
             assert(NULL != filter);
         }
@@ -181,7 +181,7 @@ void Logger::load_config(const std::string& config)
             if (name == "Tag")
             {
                 TagHandler *handler = (TagHandler*) ::malloc(sizeof(TagHandler));
-                new (handler) TagHandler(m_filter);
+                new (handler) TagHandler(_filter);
                 return handler;
             }
             return NULL;
@@ -201,17 +201,16 @@ void Logger::load_config(const std::string& config)
 
     class HandlerHandler : public XmlElementHandler
     {
-        std::string m_type;
-        std::string m_file_path;
-        bool m_append, m_colored, m_close_syslog_on_exit;
-        int m_circle;
-        ll_mask_t m_flush_mask;
-        LogFilter m_filter;
+        std::string _type;
+        std::string _file_path;
+        bool _append = false, _colored = true, _close_syslog_on_exit = false;
+        int _circle = -1;
+        ll_mask_t _flush_mask = LL_FATAL;
+        LogFilter _filter;
 
     public:
         HandlerHandler()
-            : XmlElementHandler("handler"), m_append(false), m_colored(true),
-              m_close_syslog_on_exit(false), m_circle(-1), m_flush_mask(LL_FATAL)
+            : XmlElementHandler("handler")
         {}
 
         virtual XmlElementHandler* handle_child(const std::string& name) override
@@ -219,7 +218,7 @@ void Logger::load_config(const std::string& config)
             if (name == "Filter")
             {
                 FilterHandler *handler = (FilterHandler*) ::malloc(sizeof(FilterHandler));
-                new (handler) FilterHandler(&m_filter);
+                new (handler) FilterHandler(&_filter);
                 return handler;
             }
             return NULL;
@@ -229,36 +228,36 @@ void Logger::load_config(const std::string& config)
         {
             if (name == "type")
             {
-                m_type = value;
+                _type = value;
             }
             else if (name == "flushs")
             {
                 std::vector<std::string> flushs;
                 chr_split(value, ',', &flushs, true);
 
-                m_flush_mask = 0;
+                _flush_mask = 0;
                 for (size_t i = 0, sz = flushs.size(); i < sz; ++i)
-                    m_flush_mask |= str_to_log_level(flushs.at(i).c_str());
+                    _flush_mask |= str_to_log_level(flushs.at(i).c_str());
             }
             else if (name == "path")
             {
-                m_file_path = value;
+                _file_path = value;
             }
             else if (name == "append")
             {
-                m_append = (value == "true" || value == "1");
+                _append = (value == "true" || value == "1");
             }
             else if (name == "circle")
             {
-                m_circle = ::atoi(value.c_str());
+                _circle = ::atoi(value.c_str());
             }
             else if (name == "colored")
             {
-                m_colored = (value == "true" || value == "1");
+                _colored = (value == "true" || value == "1");
             }
             else if (name == "close_syslog_on_exit")
             {
-                m_close_syslog_on_exit = (value == "true" || value == "1");
+                _close_syslog_on_exit = (value == "true" || value == "1");
             }
         }
 
@@ -276,38 +275,38 @@ void Logger::load_config(const std::string& config)
 
         virtual void handle_finish() override
         {
-            if (m_type == "stdout")
+            if (_type == "stdout")
             {
                 rc_ptr<StreamLogHandler> handler = rc_new<StreamLogHandler>(std::cout);
-                handler->set_flush_mask(m_flush_mask);
-                handler->get_filter().swap(&m_filter);
+                handler->set_flush_mask(_flush_mask);
+                handler->get_filter().swap(&_filter);
                 Logger::get_instance()->add_handler(handler.pointer());
             }
-            else if (m_type == "stderr")
+            else if (_type == "stderr")
             {
                 rc_ptr<StreamLogHandler> handler = rc_new<StreamLogHandler>(std::cerr);
-                handler->set_flush_mask(m_flush_mask);
-                handler->get_filter().swap(&m_filter);
+                handler->set_flush_mask(_flush_mask);
+                handler->get_filter().swap(&_filter);
                 Logger::get_instance()->add_handler(handler.pointer());
             }
-            else if (m_type == "console")
+            else if (_type == "console")
             {
                 rc_ptr<ConsoleLogHandler> handler = rc_new<ConsoleLogHandler>();
-                handler->set_flush_mask(m_flush_mask);
-                handler->get_filter().swap(&m_filter);
-                handler->set_colored(m_colored);
+                handler->set_flush_mask(_flush_mask);
+                handler->get_filter().swap(&_filter);
+                handler->set_colored(_colored);
                 Logger::get_instance()->add_handler(handler.pointer());
             }
-            else if (m_type == "file")
+            else if (_type == "file")
             {
-                if (m_file_path.empty())
+                if (_file_path.empty())
                     return;
 
-                if (m_circle >= 0)
+                if (_circle >= 0)
                 {
                     // 找到相同目录下所有到日志文件
                     std::string dir_path;
-                    Path::split(m_file_path, &dir_path, NULL);
+                    Path::split(_file_path, &dir_path, NULL);
                     std::vector<std::string> files;
                     OS::list_dir(dir_path.c_str(), &files, false, true, true);
                     const std::string log_ext(".log");
@@ -321,10 +320,10 @@ void Logger::load_config(const std::string& config)
                     }
 
                     // 删除多余的日志文件
-                    if (files.size() > (size_t) m_circle)
+                    if (files.size() > (size_t) _circle)
                     {
                         std::sort(files.begin(), files.end());
-                        for (size_t i = 0, count = files.size() - m_circle; i < count; ++i)
+                        for (size_t i = 0, count = files.size() - _circle; i < count; ++i)
                         {
                             OS::remove_file(Path::join(dir_path, files.at(i)).c_str());
                             files.pop_back();
@@ -332,27 +331,27 @@ void Logger::load_config(const std::string& config)
                     }
 
                     // 给文件名添加附加标志符
-                    m_file_path += DateTime().format_time("%Y-%m-%d %H-%M-%S ");
+                    _file_path += DateTime().format_time("%Y-%m-%d %H-%M-%S ");
         #if defined(NUT_PLATFORM_OS_WINDOWS)
                     long pid = ::GetCurrentProcessId();
         #else
                     pid_t pid = ::getpid();
         #endif
-                    m_file_path += ll_to_str(pid);
-                    m_file_path += log_ext;
+                    _file_path += ll_to_str(pid);
+                    _file_path += log_ext;
                 }
 
-                rc_ptr<FileLogHandler> handler = rc_new<FileLogHandler>(m_file_path.c_str(), m_append);
-                handler->set_flush_mask(m_flush_mask);
-                handler->get_filter().swap(&m_filter);
+                rc_ptr<FileLogHandler> handler = rc_new<FileLogHandler>(_file_path.c_str(), _append);
+                handler->set_flush_mask(_flush_mask);
+                handler->get_filter().swap(&_filter);
                 Logger::get_instance()->add_handler(handler.pointer());
             }
 #if defined(NUT_PLATFORM_OS_LINUX)
-            else if (m_type == "syslog")
+            else if (_type == "syslog")
             {
-                rc_ptr<SyslogLogHandler> handler = rc_new<SyslogLogHandler>(m_close_syslog_on_exit);
-                handler->set_flush_mask(m_flush_mask);
-                handler->get_filter().swap(&m_filter);
+                rc_ptr<SyslogLogHandler> handler = rc_new<SyslogLogHandler>(_close_syslog_on_exit);
+                handler->set_flush_mask(_flush_mask);
+                handler->get_filter().swap(&_filter);
                 Logger::get_instance()->add_handler(handler.pointer());
             }
 #endif
@@ -430,7 +429,7 @@ void Logger::load_config(const std::string& config)
         }
     };
 
-    m_filter.clear_forbids();
+    _filter.clear_forbids();
     clear_handlers();
 
     RootHandler root;

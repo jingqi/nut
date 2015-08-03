@@ -34,10 +34,10 @@ public:
     // 定时器
     struct Timer
     {
-        int id;
+        int id = 0;
         TimeVal time;
-        void *arg;
-        timer_func_type func;
+        void *arg = NULL;
+        timer_func_type func = NULL;
     };
 
     // 用于维护小头堆

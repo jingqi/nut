@@ -13,8 +13,7 @@ namespace nut
 {
 
 PConsole::PConsole(const std::string& name)
-    : m_prompt_char('>'), m_prompt_string("PConsole"), m_console_name(name),
-      m_exit(false), m_exit_value(0)
+    : _prompt_string("PConsole"), _console_name(name)
 {
     // 内建命令
     add_a_command(rc_new<CmdExit>(this));
@@ -25,7 +24,7 @@ PConsole::PConsole(const std::string& name)
 void PConsole::read_and_execute()
 {
     // 打印命令提示符
-    printf("%s%c ", m_prompt_string.c_str(), m_prompt_char);
+    printf("%s%c ", _prompt_string.c_str(), _prompt_char);
 
     // 从命令行读取命令并执行
     std::string l;
@@ -43,20 +42,20 @@ void PConsole::read_and_execute()
 /** 执行直到用户输入exit命令 */
 int PConsole::execute()
 {
-    m_exit = false;
-    m_exit_value = 0;
-    while (!m_exit)
+    _exit = false;
+    _exit_value = 0;
+    while (!_exit)
         read_and_execute();
-    return m_exit_value;
+    return _exit_value;
 }
 
 /** 打印一般信息 */
 void PConsole::print_general_info() const
 {
-    printf("%s\n", m_console_name.c_str());
-    for (size_t i = 0, size = m_commands.size(); i < size; ++i)
+    printf("%s\n", _console_name.c_str());
+    for (size_t i = 0, size = _commands.size(); i < size; ++i)
     {
-        rc_ptr<ICommand> cmd = m_commands.at(i);
+        rc_ptr<ICommand> cmd = _commands.at(i);
         assert(!cmd.is_null());
         const char* cmd_name = cmd->get_command_name();
         const char* cmd_info = cmd->get_general_info();
@@ -67,8 +66,8 @@ void PConsole::print_general_info() const
 /** 设置退出标记 */
 void PConsole::exit(int e)
 {
-    m_exit_value = e;
-    m_exit = true;
+    _exit_value = e;
+    _exit = true;
 }
 
 void PConsole::execute_line(const char* l)
@@ -86,7 +85,7 @@ void PConsole::execute_line(const char* l)
     const std::string cmd_name(l + start, l + end);
 
     // 匹配命令
-    std::vector<rc_ptr<ICommand> > matched_cmds = match_commands(m_commands, cmd_name);
+    std::vector<rc_ptr<ICommand> > matched_cmds = match_commands(_commands, cmd_name);
 
     // 无匹配
     if (matched_cmds.size() == 0)

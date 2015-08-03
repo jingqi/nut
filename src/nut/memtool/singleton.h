@@ -19,20 +19,20 @@ class singleton
         {}
     };
 
-    static object_creator create_object;
+    static object_creator _create_object;
 
 public:
     typedef T object_type;
     static object_type& instance()
     {
         static object_type obj;
-        create_object.do_nothing();
+        _create_object.do_nothing();
         return obj;
     }
 };
 
 template <typename T>
-typename singleton<T>::object_creator singleton<T>::create_object;
+typename singleton<T>::object_creator singleton<T>::_create_object;
 
 }
 

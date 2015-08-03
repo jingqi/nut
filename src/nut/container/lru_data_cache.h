@@ -86,7 +86,7 @@ class LRUDataCache
     SpinLock _lock; // 注意，linux下自旋锁不可重入
 
 #ifndef NDEBUG
-    size_t m_hit_count = 0, m_hit_size = 0, _miss_count = 0;
+    size_t _hit_count = 0, _hit_size = 0, _miss_count = 0;
 #endif
 
     static Node* alloc_node()
@@ -263,8 +263,8 @@ public:
         push_list_head(p);
 
 #ifndef NDEBUG
-        ++m_hit_count;
-        m_hit_size += p->size;
+        ++_hit_count;
+        _hit_size += p->size;
 #endif
         return true;
     }
@@ -286,8 +286,8 @@ public:
         _bytes_size = 0;
 
 #ifndef NDEBUG
-        m_hit_count = 0;
-        m_hit_size = 0;
+        _hit_count = 0;
+        _hit_size = 0;
         _miss_count = 0;
 #endif
     }

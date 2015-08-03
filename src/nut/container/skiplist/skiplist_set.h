@@ -1,4 +1,4 @@
-
+﻿
 #ifndef ___HEADFILE_60C4D68A_A1D8_4B2C_A488_40E9A9FFE426_
 #define ___HEADFILE_60C4D68A_A1D8_4B2C_A488_40E9A9FFE426_
 
@@ -16,12 +16,12 @@ class SkipListSet
     class Node
     {
         T _key;
-        Node **_next;
-        int _level; // 0-based
+        Node **_next = NULL;
+        int _level = -1; // 0-based
 
     public:
         Node(const T& k)
-            : _key(k), _next(NULL), _level(-1)
+            : _key(k)
         {}
 
         ~Node()
@@ -74,9 +74,9 @@ class SkipListSet
         }
     };
 
-    int _level; // 0-based
-    Node **m_head;
-    size_t m_size;
+    int _level = -1; // 0-based
+    Node **_head = NULL;
+    size_t _size = 0;
 
 private:
     typedef SkipList<T,Node,SkipListSet<T> > algo_t;
@@ -90,55 +90,53 @@ private:
     void set_level(int lv)
     {
         assert(lv >= 0);
-        if (NULL != m_head)
+        if (NULL != _head)
         {
             assert(_level >= 0);
-            m_head = (Node**) ::realloc(m_head, sizeof(Node*) * (lv + 1));
+            _head = (Node**) ::realloc(_head, sizeof(Node*) * (lv + 1));
             if (lv > _level)
-                ::memset(m_head + _level + 1, 0, sizeof(Node*) * (lv - _level));
+                ::memset(_head + _level + 1, 0, sizeof(Node*) * (lv - _level));
         }
         else
         {
             assert(_level < 0);
-            m_head = (Node**) ::malloc(sizeof(Node*) * (lv + 1));
-            ::memset(m_head, 0, sizeof(Node*) * (lv + 1));
+            _head = (Node**) ::malloc(sizeof(Node*) * (lv + 1));
+            ::memset(_head, 0, sizeof(Node*) * (lv + 1));
         }
         _level = lv;
     }
 
     Node* get_head(int lv) const
     {
-        assert(NULL != m_head && 0 <= lv && lv <= _level);
-        return m_head[lv];
+        assert(NULL != _head && 0 <= lv && lv <= _level);
+        return _head[lv];
     }
 
     void set_head(int lv, Node *n)
     {
-        assert(NULL != m_head && 0 <= lv && lv <= _level);
-        m_head[lv] = n;
+        assert(NULL != _head && 0 <= lv && lv <= _level);
+        _head[lv] = n;
     }
 
 public:
     SkipListSet()
-        : _level(-1), m_head(NULL), m_size(0)
     {}
 
     SkipListSet(const SkipListSet<T>& x)
-        : _level(-1), m_head(NULL), m_size(0)
     {
-        if (x.m_size == 0)
+        if (x._size == 0)
             return;
-        assert(NULL != x.m_head && x._level >= 0);
+        assert(NULL != x._head && x._level >= 0);
 
         // initial attributes
         _level = x._level;
-        m_head = (Node**) ::malloc(sizeof(Node*) * (_level + 1));
-        ::memset(m_head, 0, sizeof(Node*) * (_level + 1));
+        _head = (Node**) ::malloc(sizeof(Node*) * (_level + 1));
+        ::memset(_head, 0, sizeof(Node*) * (_level + 1));
 
         // copy nodes
         Node **pre_lv = (Node**) ::malloc(sizeof(Node*) * (_level + 1));
         ::memset(pre_lv, 0, sizeof(Node*) * (_level + 1));
-        Node *n = x.m_head[0];
+        Node *n = x._head[0];
         while (NULL != n)
         {
             Node *c = (Node*) ::malloc(sizeof(Node));
@@ -152,15 +150,15 @@ public:
             n = n->_next[0];
         }
         ::free(pre_lv);
-        m_size = x.m_size;
+        _size = x._size;
     }
 
     ~SkipListSet()
     {
         clear();
-        if (NULL != m_head)
-            ::free(m_head);
-        m_head = NULL;
+        if (NULL != _head)
+            ::free(_head);
+        _head = NULL;
         _level = -1;
     }
 
@@ -171,28 +169,28 @@ public:
 
         // clear memory
         clear();
-        if (x.m_size == 0)
+        if (x._size == 0)
             return *this;
-        assert(NULL != x.m_head && x._level >= 0);
+        assert(NULL != x._head && x._level >= 0);
 
         // initial attributes
-        if (NULL != m_head)
+        if (NULL != _head)
         {
             assert(_level >= 0);
-            m_head = (Node**) ::realloc(m_head, sizeof(Node*) * (x._level + 1));
+            _head = (Node**) ::realloc(_head, sizeof(Node*) * (x._level + 1));
         }
         else
         {
             assert(_level < 0);
-            m_head = (Node**) ::malloc(sizeof(Node*) * (x._level + 1));
+            _head = (Node**) ::malloc(sizeof(Node*) * (x._level + 1));
         }
         _level = x._level;
-        ::memset(m_head, 0, sizeof(Node*) * (_level + 1));
+        ::memset(_head, 0, sizeof(Node*) * (_level + 1));
 
         // copy nodes
         Node **pre_lv = (Node**) ::malloc(sizeof(Node*) * (_level + 1));
         ::memset(pre_lv, 0, sizeof(Node*) * (_level + 1));
-        Node *n = x.m_head[0];
+        Node *n = x._head[0];
         while (NULL != n)
         {
             Node *c = (Node*) ::malloc(sizeof(Node));
@@ -206,7 +204,7 @@ public:
             n = n->_next[0];
         }
         ::free(pre_lv);
-        m_size = x.m_size;
+        _size = x._size;
 
         return *this;
     }
@@ -215,13 +213,13 @@ public:
     {
         if (this == &x)
             return true;
-        if (m_size != x.m_size)
+        if (_size != x._size)
             return false;
-        if (0 == m_size)
+        if (0 == _size)
             return true;
-        assert(NULL != m_head && _level >= 0 && NULL != x.m_head && x._level >= 0);
+        assert(NULL != _head && _level >= 0 && NULL != x._head && x._level >= 0);
 
-        Node *current1 = m_head[0], current2 = x.m_head[0];
+        Node *current1 = _head[0], current2 = x._head[0];
         while (NULL != current1)
         {
             assert(NULL != current2);
@@ -241,16 +239,16 @@ public:
 
     size_t size() const
     {
-        return m_size;
+        return _size;
     }
 
     void clear()
     {
-        if (0 == m_size)
+        if (0 == _size)
             return;
-        assert(NULL != m_head && _level >= 0);
+        assert(NULL != _head && _level >= 0);
 
-        Node *current = m_head[0];
+        Node *current = _head[0];
         while (NULL != current)
         {
             Node *next = current->get_next(0);
@@ -258,32 +256,32 @@ public:
             ::free(current);
             current = next;
         }
-        ::memset(m_head, 0, sizeof(Node*) * (_level + 1));
-        m_size = 0;
+        ::memset(_head, 0, sizeof(Node*) * (_level + 1));
+        _size = 0;
     }
 
     bool contains(const T& k) const
     {
-        if (0 == m_size)
+        if (0 == _size)
             return false;
-        assert(NULL != m_head && _level >= 0);
+        assert(NULL != _head && _level >= 0);
 
         return NULL != algo_t::search_node(k, *this, NULL);
     }
 
     bool add(const T& k)
     {
-        if (NULL == m_head)
+        if (NULL == _head)
         {
-            assert(_level < 0 && m_size == 0);
+            assert(_level < 0 && _size == 0);
             Node *n = (Node*) ::malloc(sizeof(Node));
             new (n) Node(k);
-            m_head = (Node**) ::malloc(sizeof(Node*) * 1);
+            _head = (Node**) ::malloc(sizeof(Node*) * 1);
             _level = 0;
-            m_head[0] = n;
+            _head[0] = n;
             n->set_level(0);
             n->set_next(0, NULL);
-            m_size = 1;
+            _size = 1;
             return true;
         }
         assert(_level >= 0);
@@ -302,15 +300,15 @@ public:
         new (n) Node(k);
         algo_t::insert_node(n, *this, pre_lv);
         ::free(pre_lv);
-        ++m_size;
+        ++_size;
         return true;
     }
 
     bool remove(const T& k)
     {
-        if (0 == m_size)
+        if (0 == _size)
             return false;
-        assert(NULL != m_head && _level >= 0);
+        assert(NULL != _head && _level >= 0);
 
         // search
         Node **pre_lv = (Node **) ::malloc(sizeof(Node*) * (_level + 1));
@@ -326,7 +324,7 @@ public:
         ::free(pre_lv);
         n->~Node();
         ::free(n);
-        --m_size;
+        --_size;
         return true;
     }
 };

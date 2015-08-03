@@ -20,11 +20,11 @@ struct ModMultiplyPreBuildTable
     const rc_ptr<memory_allocator> alloc;
 
 #if (OPTIMIZE_LEVEL == 0)
-    size_t hight, width;
-    BigInteger *table;
+    size_t hight = 0, width = 0;
+    BigInteger *table = NULL;
 
     ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n, memory_allocator *ma = NULL)
-        : alloc(ma), hight(0), width(0), table(NULL)
+        : alloc(ma)
     {
         assert(a.is_positive() && n.is_positive() && a < n); // 一定要保证 a<n ，以便进行模加运算
 
@@ -77,12 +77,12 @@ struct ModMultiplyPreBuildTable
         return table[i * width + j];
     }
 #else
-    size_t hight, width;
-    BigInteger **table;
+    size_t hight = 0, width = 0;
+    BigInteger **table = NULL;
     BigInteger mod;
 
     ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n)
-        : alloc(a.allocator()), hight(0), width(0), table(NULL)
+        : alloc(a.allocator())
     {
         assert(a.is_positive() && n.is_positive() && a < n); // 一定要保证 a<n ，以便进行模加运算
 

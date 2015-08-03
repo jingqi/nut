@@ -10,8 +10,7 @@ namespace nut
 {
 
 LogFilter::Node::Node(Node *p)
-    : forbid_mask(0), parent(p), children_hash(NULL), children(NULL),
-      children_size(0), children_cap(0)
+    : parent(p)
 {}
 
 LogFilter::Node::~Node()
@@ -142,7 +141,7 @@ void LogFilter::Node::clear()
 }
 
 LogFilter::LogFilter()
-    : m_root(NULL)
+    : _root(NULL)
 {}
 
 void LogFilter::swap(LogFilter *x)
@@ -151,7 +150,7 @@ void LogFilter::swap(LogFilter *x)
     if (this == x)
         return;
 
-    m_root.swap(&x->m_root);
+    _root.swap(&x->_root);
 }
 
 LogFilter::hash_t LogFilter::hash_to_dot(const char *s, int *char_accum)
@@ -180,12 +179,12 @@ void LogFilter::forbid(const char *tag, ll_mask_t mask)
     // root rule
     if (NULL == tag || 0 == tag[0])
     {
-        m_root.forbid_mask |= mask;
+        _root.forbid_mask |= mask;
         return;
     }
 
     // find the node
-    Node *current = &m_root;
+    Node *current = &_root;
     int i = 0;
     do
     {
@@ -226,12 +225,12 @@ void LogFilter::unforbid(const char *tag, ll_mask_t mask)
     // root rule
     if (NULL == tag || 0 == tag[0])
     {
-        m_root.forbid_mask &= ~mask;
+        _root.forbid_mask &= ~mask;
         return;
     }
 
     // find the node
-    Node *current = &m_root;
+    Node *current = &_root;
     int i = 0;
     do
     {
@@ -269,19 +268,19 @@ void LogFilter::unforbid(const char *tag, ll_mask_t mask)
 
 void LogFilter::clear_forbids()
 {
-    m_root.clear();
+    _root.clear();
 }
 
 bool LogFilter::is_forbidden(const char *tag, LogLevel level) const
 {
     // root rule
-    if (0 != (m_root.forbid_mask & level))
+    if (0 != (_root.forbid_mask & level))
         return true;
     if (NULL == tag || 0 == tag[0])
         return false;
 
     // find the node
-    const Node *current = &m_root;
+    const Node *current = &_root;
     int i = 0;
     do
     {

@@ -288,152 +288,152 @@ public:
     typedef typename rcarray_type::const_iterator const_iterator;
 
 private:
-    rc_ptr<rcarray_type> m_array;
+    rc_ptr<rcarray_type> _array;
 
     /**
      * 写时复制
      */
     void copy_on_write()
     {
-        assert(m_array.is_not_null());
-        const int rc = m_array->get_ref();
+        assert(_array.is_not_null());
+        const int rc = _array->get_ref();
         assert(rc >= 1);
         if (rc > 1)
-            m_array = m_array->clone();
+            _array = _array->clone();
     }
 
 public:
     Array(size_type init_cap = 16, memory_allocator *ma = NULL)
-        : m_array(rca_new<rcarray_type>(ma, init_cap, ma))
+        : _array(rca_new<rcarray_type>(ma, init_cap, ma))
     {}
 
     Array(const self_type& x)
-        : m_array(x.m_array)
+        : _array(x._array)
     {}
 
     self_type& operator=(const self_type& x)
     {
-        m_array = x.m_array;
+        _array = x._array;
         return *this;
     }
 
     bool operator==(const self_type& x) const
     {
-        return m_array->operator==(x.m_array);
+        return _array->operator==(x._array);
     }
 
     bool operator!=(const self_type& x) const
     {
-        return m_array->operator!=(x.m_array);
+        return _array->operator!=(x._array);
     }
 
     const T& operator[](size_type i) const
     {
-        return m_array->operator[](i);
+        return _array->operator[](i);
     }
 
     T& operator[](size_type i)
     {
         copy_on_write();
-        return m_array->operator[](i);
+        return _array->operator[](i);
     }
 
     const_iterator begin() const
     {
-        return m_array->begin();
+        return _array->begin();
     }
 
     iterator begin()
     {
         copy_on_write();
-        return m_array->begin();
+        return _array->begin();
     }
 
     const_iterator end() const
     {
-        return m_array->end();
+        return _array->end();
     }
 
     iterator end()
     {
         copy_on_write();
-        return m_array->end();
+        return _array->end();
     }
 
     size_type size() const
     {
-        return m_array->size();
+        return _array->size();
     }
 
     const T& at(size_type i) const
     {
-        return m_array->at(i);
+        return _array->at(i);
     }
 
     T& at(size_type i)
     {
         copy_on_write();
-        return m_array->at(i);
+        return _array->at(i);
     }
 
     void push_back(const T& e)
     {
         copy_on_write();
-        m_array->push_back(e);
+        _array->push_back(e);
     }
 
     void pop_back()
     {
         copy_on_write();
-        m_array->pop_back();
+        _array->pop_back();
     }
 
     void insert(size_type index, const T& e)
     {
         copy_on_write();
-        m_array->insert(index, e);
+        _array->insert(index, e);
     }
 
     template<typename Iter>
     void insert(size_type index, const Iter& b, const Iter& e)
     {
         copy_on_write();
-        m_array->insert(index, b, e);
+        _array->insert(index, b, e);
     }
 
     void erase(size_type index)
     {
         copy_on_write();
-        m_array->erase(index);
+        _array->erase(index);
     }
 
     void erase(size_type b, size_type e)
     {
         copy_on_write();
-        m_array->erase(b, e);
+        _array->erase(b, e);
     }
 
     void resize(size_type new_size, const T& fill = T())
     {
         copy_on_write();
-        m_array->resize(new_size, fill);
+        _array->resize(new_size, fill);
     }
 
     void clear()
     {
         copy_on_write();
-        m_array->clear();
+        _array->clear();
     }
 
     const T* data() const
     {
-        return m_array->data();
+        return _array->data();
     }
 
     T* data()
     {
         copy_on_write();
-        return m_array->data();
+        return _array->data();
     }
 };
 

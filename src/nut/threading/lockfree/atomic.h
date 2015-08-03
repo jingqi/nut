@@ -164,8 +164,8 @@ union TagedPtr
 
     struct
     {
-        T *ptr;
-        tag_type tag;
+        T *ptr = NULL;
+        tag_type tag = 0;
     };
 
     cas_type cas;

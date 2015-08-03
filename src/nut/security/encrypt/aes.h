@@ -14,7 +14,7 @@ class AES
     /** decryption round keys */
     uint32_t _drk[64];
     /** number of rounds */
-    int _nr;
+    int _nr = 10;
 
 public:
     AES();

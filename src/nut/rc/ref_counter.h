@@ -12,7 +12,7 @@ namespace nut
  */
 class SyncRefCounter
 {
-    int volatile _ref_count;
+    int volatile _ref_count = 0;
 
 public:
     SyncRefCounter(int c)

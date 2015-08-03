@@ -28,7 +28,7 @@ class lengthfixed_mp : public memory_allocator
 
     union FreeNode
     {
-        FreeNode *next;
+        FreeNode *next = NULL;
         uint8_t body[G];
     };
 

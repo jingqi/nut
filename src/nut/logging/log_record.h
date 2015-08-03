@@ -14,13 +14,13 @@ namespace nut
 class LogRecord
 {
 private:
-    DateTime m_time;
-    LogLevel m_level;
-	const char *m_tag; 			// can be NULL, which indicated a root tag
-    const char *m_file_path;
-    int m_line;
-	const char *m_func;			// can be NULL, when the source location is out of any function
-	char *m_message;
+    DateTime _time;
+    LogLevel _level = LL_DEBUG;
+    const char *_tag = NULL; 			// can be NULL, which indicated a root tag
+    const char *_file_path = NULL;
+    int _line = -1;
+    const char *_func = NULL;			// can be NULL, when the source location is out of any function
+    char *_message = NULL;
 
 private:
 	LogRecord(const LogRecord&);
@@ -32,34 +32,34 @@ public:
 
     const DateTime& get_time() const
     {
-        return m_time;
+        return _time;
     }
 
     LogLevel get_level() const
     {
-        return m_level;
+        return _level;
     }
 
 	const char* get_tag() const
 	{
-		return m_tag;
+        return _tag;
 	}
 
     const char* get_file_path() const
     {
-        return m_file_path;
+        return _file_path;
     }
 
 	const char* get_file_name() const;
 
     int get_line() const
     {
-        return m_line;
+        return _line;
     }
 
     const char* get_message() const
     {
-        return m_message;
+        return _message;
     }
 
     void to_string(std::string *appended) const;

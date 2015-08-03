@@ -154,7 +154,7 @@ public:
     {}
 #else
     RCAllocWrapper(memory_allocator *ma)
-        : T(), _m_alloc(ma)
+        : T(), _alloc(ma)
     {}
 
     template <typename Arg1>

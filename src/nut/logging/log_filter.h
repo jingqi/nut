@@ -18,12 +18,12 @@ class LogFilter
     class Node
     {
     public:
-        ll_mask_t forbid_mask;
+        ll_mask_t forbid_mask = 0;
 
-        Node *parent;
-        hash_t *children_hash; // 升序排列
-        Node **children;
-        int children_size, children_cap;
+        Node *parent = NULL;
+        hash_t *children_hash = NULL; // 升序排列
+        Node **children = NULL;
+        int children_size = 0, children_cap = 0;
 
     private:
         Node(const Node&);
@@ -51,7 +51,7 @@ class LogFilter
         void remove(Node *child);
         void clear();
     };
-    class Node m_root;
+    class Node _root;
 
 private:
     LogFilter(const LogFilter&);

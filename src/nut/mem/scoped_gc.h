@@ -35,7 +35,7 @@ class scoped_gc
 	/** 内存块 */
     struct Block
     {
-        Block *prev;
+        Block *prev = NULL;
         uint8_t body[DEFAULT_BLOCK_BODY_SIZE];
     };
     static_assert(sizeof(Block) == DEFAULT_BLOCK_LEN, "数据结构对齐问题");
@@ -46,8 +46,8 @@ class scoped_gc
 	/** 析构函数链表 */
     struct DestructorNode
     {
-        DestructorNode *prev;
-        destruct_func_type destruct_func;
+        DestructorNode *prev = NULL;
+        destruct_func_type destruct_func = NULL;
     };
 
     const rc_ptr<memory_allocator> _alloc;

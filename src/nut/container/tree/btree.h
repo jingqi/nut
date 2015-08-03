@@ -25,9 +25,9 @@ private:
      */
     class InorderTraversalIterator
     {
-        const NODE *_parent_of_sub_root;
-        NODE *_current;
-        bool _eof;
+        const NODE *_parent_of_sub_root = NULL;
+        NODE *_current = NULL;
+        bool _eof = false;
 
     public:
         typedef std::bidirectional_iterator_tag iterator_category;
@@ -186,9 +186,9 @@ private:
      */
     class PreorderTraversalIterator
     {
-        const NODE *_parent_of_sub_root;
-        NODE *_current;
-        bool _eof;
+        const NODE *_parent_of_sub_root = NULL;
+        NODE *_current = NULL;
+        bool _eof = false;
 
     public:
         typedef std::bidirectional_iterator_tag iterator_category;
@@ -351,9 +351,9 @@ private:
      */
     class PostorderTraversalIterator
     {
-        const NODE *_parent_of_sub_root;
-        NODE *_current;
-        bool _eof;
+        const NODE *_parent_of_sub_root = NULL;
+        NODE *_current = NULL;
+        bool _eof = false;
 
     public:
         typedef std::bidirectional_iterator_tag iterator_category;

@@ -19,19 +19,19 @@ namespace nut
 
 void StreamLogHandler::handle_log(const LogRecord &rec)
 {
-    m_os << "[" << rec.get_time().get_clock_str() << "] " <<
+    _os << "[" << rec.get_time().get_clock_str() << "] " <<
          log_level_to_str(rec.get_level()) << " (" <<
             rec.get_file_name() << ":" << rec.get_line() << ") " <<
             rec.get_message() << std::endl;
 
-    if (0 != (m_flush_mask & rec.get_level()))
-        m_os.flush();
+    if (0 != (_flush_mask & rec.get_level()))
+        _os.flush();
 }
 
 void ConsoleLogHandler::handle_log(const LogRecord &rec)
 {
     std::cout << "[" << rec.get_time().get_clock_str() << "] ";
-    if (m_colored)
+    if (_colored)
     {
         switch (rec.get_level())
         {
@@ -62,39 +62,39 @@ void ConsoleLogHandler::handle_log(const LogRecord &rec)
 
     std::cout << log_level_to_str(rec.get_level());
 
-    if (m_colored)
+    if (_colored)
         ConsoleUtil::set_text_color();
 
     std::cout << " (" << rec.get_file_name() << ":" << rec.get_line() <<
         ")  " << rec.get_message() << std::endl;
 
-    if (0 != (m_flush_mask & rec.get_level()))
+    if (0 != (_flush_mask & rec.get_level()))
         std::cout.flush();
 }
 
 FileLogHandler::FileLogHandler(const char *file, bool append)
-    : m_ofs(file, (append ? std::ios::app : std::ios::trunc))
+    : _ofs(file, (append ? std::ios::app : std::ios::trunc))
 {
     if (append)
-        m_ofs << "\n\n\n\n\n\n------------- ---------------- ---------------\n";
+        _ofs << "\n\n\n\n\n\n------------- ---------------- ---------------\n";
 }
 
 void FileLogHandler::handle_log(const LogRecord & rec)
 {
     std::string msg;
     rec.to_string(&msg);
-    m_ofs << msg << std::endl;
+    _ofs << msg << std::endl;
 
-    if (0 != (m_flush_mask & rec.get_level()))
-        m_ofs.flush();
+    if (0 != (_flush_mask & rec.get_level()))
+        _ofs.flush();
 }
 
 #if defined(NUT_PLATFORM_OS_LINUX)
 
 SyslogLogHandler::~SyslogLogHandler()
 {
-    if (m_close_syslog_on_exit)
-        closelog();  // the oposite way is openlog()
+    if (_close_syslog_on_exit)
+        ::closelog();  // the oposite way is openlog()
 }
 
 void SyslogLogHandler::handle_log(const LogRecord &rec)
@@ -127,7 +127,7 @@ void SyslogLogHandler::handle_log(const LogRecord &rec)
     }
     std::string msg;
     rec.to_string(&msg);
-    syslog(level, msg.c_str());
+    ::syslog(level, msg.c_str());
 }
 
 #endif

@@ -34,7 +34,7 @@ public:
 
 private:
     // 析构检查字段
-    uint32_t _destruct_tag;
+    uint32_t _destruct_tag = 0;
 
     /**
      * key 为动态链接库实际绝对路径（不是软链接，也不是相对路径）

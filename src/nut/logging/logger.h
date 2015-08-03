@@ -19,8 +19,8 @@ namespace nut
 
 class Logger
 {
-    LogFilter m_filter;
-    std::vector<LogHandler*> m_handlers;
+    LogFilter _filter;
+    std::vector<LogHandler*> _handlers;
 
     NUT_DEBUGGING_DESTROY_CHECKER
 

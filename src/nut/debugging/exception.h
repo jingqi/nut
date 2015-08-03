@@ -15,7 +15,7 @@ namespace nut
 template <typename StringT>
 class ExceptionBase : public std::exception
 {
-    long _code;                 // 错误码
+    long _code = 0;                 // 错误码
     StringT _message;           // 错误附带信息
     const char *_source_file = NULL;   // 源代码文件
     int _source_line = -1;           // 源代码行数
