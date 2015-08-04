@@ -5,17 +5,24 @@ LD = gcc
 AR = ar
 
 HOST = $(shell uname -s)
+
+# INC
 INC = -I../../src
+
+# LIB
 ifeq ($(HOST), Darwin)
-	LIB = -lstdc++ -L. -lnut
+	LIB = -lstdc++
 else
-	LIB = -lpthread -lrt -L. -lnut
+	LIB = -lpthread -lrt
 endif
-ifeq ($(HOST), Darwin)
-	CC_FLAGS = -Wall -g -std=c++11
-else
-	CC_FLAGS = -Wall -g -rdynamic -std=c++11
+LIB += -L. -lnut
+LIB_DEPS = ./libnut.a
+
+# CC_FLAGS
+ifneq ($(HOST), Darwin)
+	CC_FLAGS = -rdynamic
 endif
+CC_FLAGS += -Wall -g -std=c++11
 
 PWD = $(shell pwd)
 DIRS = $(shell find ../../src/test_nut -maxdepth 10 -type d)
@@ -49,7 +56,7 @@ valgrind: $(TARGET)
 	valgrind -v --leak-check=full $(TARGET)
 
 # NOTE: in linux, $(LIB) should be the last parameter
-$(TARGET): $(OBJS)
+$(TARGET): $(OBJS) $(LIB_DEPS)
 	$(CC) -o $@ $^ $(LIB)
 
 %.o: %.cpp

@@ -17,6 +17,10 @@ NUT_FIXTURE(TestStringUtil)
     NUT_CASE(test_trim)
     NUT_CASE(test_strieq)
     NUT_CASE(test_wstr)
+    NUT_CASE(test_xml_encoding)
+    NUT_CASE(test_url_encoding)
+    NUT_CASE(test_hex_encoding)
+    NUT_CASE(test_base64_encoding)
     NUT_CASES_END()
 
 
@@ -126,6 +130,73 @@ NUT_FIXTURE(TestStringUtil)
         wstr_to_ascii(b.c_str(), &a);
         NUT_TA(a == "c5&汉");
 #endif
+    }
+
+    void test_xml_encoding()
+    {
+        std::string s;
+        xml_encode("a\"b<c>d&ef", -1, &s);
+        NUT_TA(s == "a&quot;b&lt;c&gt;d&amp;ef");
+
+        s.clear();
+        xml_decode("a&quot;b&lt;c&gt;d&amp;ef", -1, &s);
+        NUT_TA(s == "a\"b<c>d&ef");
+    }
+
+    void test_url_encoding()
+    {
+        std::string s;
+        url_encode("abc#$^* m123", -1, &s);
+        NUT_TA(s == "abc%23%24%5E%2A%20m123");
+
+        s.clear();
+        url_decode("abc%23%24%5E%2A%20m123", -1, &s);
+        NUT_TA(s == "abc#$^* m123");
+    }
+
+    void test_hex_encoding()
+    {
+        std::string s;
+        hex_encode("\x03\xfA", 2, &s);
+        NUT_TA(s == "03FA");
+
+        std::vector<uint8_t> v;
+        hex_decode("03 FA\t", -1, &v);
+        NUT_TA(v.size() == 2);
+        NUT_TA(v[0] == 0x03);
+        NUT_TA(v[1] == 0xFA);
+    }
+
+    void test_base64_encoding()
+    {
+        // encode
+        std::string s;
+        base64_encode("abcdef", 6, &s);
+        NUT_TA(s == "YWJjZGVm");
+
+        s.clear();
+        base64_encode("abcdefg", 7, &s);
+        NUT_TA(s == "YWJjZGVmZw==");
+
+        s.clear();
+        base64_encode("abcdefgh", 8, &s);
+        NUT_TA(s == "YWJjZGVmZ2g=");
+
+        // decode
+        std::vector<uint8_t> v;
+        base64_decode("YW \n Jj \t ZGVm", -1, &v);
+        NUT_TA(v.size() == 6);
+        NUT_TA(0 == ::strncmp((const char*)&v[0], "abcdef", 6));
+
+        v.clear();
+        base64_decode("YWJjZGVmZw==", -1, &v);
+        NUT_TA(v.size() == 7);
+        NUT_TA(0 == ::strncmp((const char*)&v[0], "abcdefg", 7));
+
+        v.clear();
+        base64_decode("YWJjZGVmZ2g=", -1, &v);
+        NUT_TA(v.size() == 8);
+        NUT_TA(0 == ::strncmp((const char*)&v[0], "abcdefgh", 8));
     }
 };
 

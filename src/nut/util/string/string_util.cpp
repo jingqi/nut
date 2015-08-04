@@ -614,6 +614,301 @@ std::string wstr_to_utf8(const std::wstring& wstr)
     return wstr_to_utf8(wstr.c_str());
 }
 
+char int_to_hex_char(int i)
+{
+    const char *hex_chars = "0123456789ABCDEF";
+    if (0 <= i && i < 16)
+        return hex_chars[i];
+    return '\0';
+}
+
+int hex_char_to_int(char c)
+{
+    if ('0' <= c && c <= '9')
+        return c - '0';
+    else if ('a' <= c && c <= 'f')
+        return c - 'a' + 10;
+    else if ('A' <= c && c <= 'F')
+        return c - 'A' + 10;
+    return -1;
+}
+
+int xml_encode(const char *s, int len, std::string *appended)
+{
+    assert(NULL != s && NULL != appended);
+
+    int ret = 0;
+    for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
+    {
+        switch (s[i])
+        {
+        case '&':
+            *appended += "&amp;";
+            ret += 5;
+            break;
+
+        case '"':
+            *appended += "&quot;";
+            ret += 6;
+            break;
+
+        case '<':
+            *appended += "&lt;";
+            ret += 4;
+            break;
+
+        case '>':
+            *appended += "&gt;";
+            ret += 4;
+            break;
+
+        default:
+            appended->push_back(s[i]);
+            ++ret;
+            break;
+        }
+    }
+    return ret;
+}
+
+int xml_decode(const char *s, int len, std::string *appended)
+{
+    assert(NULL != s && NULL != appended);
+
+    int ret = 0;
+    for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
+    {
+        if ('&' == s[i])
+        {
+            if (0 == ::strncmp(s + i + 1, "amp;", 4))
+            {
+                appended->push_back('&');
+                i += 4;
+                ++ret;
+                continue;
+            }
+            else if (0 == ::strncmp(s + i + 1, "quot;", 5))
+            {
+                appended->push_back('"');
+                i += 5;
+                ++ret;
+                continue;
+            }
+            else if (0 == ::strncmp(s + i + 1, "lt;", 3))
+            {
+                appended->push_back('<');
+                i += 3;
+                ++ret;
+                continue;
+            }
+            else if (0 == ::strncmp(s + i + 1, "gt;", 3))
+            {
+                appended->push_back('>');
+                i += 3;
+                ++ret;
+                continue;
+            }
+        }
+
+        appended->push_back(s[i]);
+        ++ret;
+    }
+    return ret;
+}
+
+int url_encode(const char *s, int len, std::string *appended)
+{
+    assert(NULL != s && NULL != appended);
+
+    int ret = 0;
+    for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
+    {
+        const char c = s[i];
+        if (('0' <= c && c <= '9') || ('a' <= c && c <= 'z') ||
+                ('A' <= c && c <= 'Z'))
+        {
+            appended->push_back(c);
+            ++ret;
+            continue;
+        }
+
+        appended->push_back('%');
+        appended->push_back(int_to_hex_char((c >> 4) & 0x0F));
+        appended->push_back(int_to_hex_char(c & 0x0F));
+        ret += 3;
+    }
+    return ret;
+}
+
+int url_decode(const char *s, int len, std::string *appended)
+{
+    assert(NULL != s && NULL != appended);
+
+    int ret = 0;
+    for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
+    {
+        if ('%' == s[i] && (len < 0 || i + 2 < len))
+        {
+            const int high = hex_char_to_int(s[i + 1]), low = hex_char_to_int(s[i + 2]);
+            if (high >= 0 && low >= 0)
+            {
+                appended->push_back((char) ((high << 4) | low));
+                i += 2;
+                ret += 2;
+                continue;
+            }
+        }
+
+        appended->push_back(s[i]);
+        ++ret;
+    }
+    return ret;
+}
+
+int hex_encode(const void *data, size_t cb, std::string *appended)
+{
+    assert(NULL != data && NULL != appended);
+
+    for (size_t i = 0; i < cb; ++i)
+    {
+        const uint8_t b = ((const uint8_t*) data)[i];
+        appended->push_back(int_to_hex_char((b >> 4) & 0x0F));
+        appended->push_back(int_to_hex_char(b & 0x0F));
+    }
+    return (int) cb * 2;
+}
+
+int hex_decode(const char *s, int len, std::vector<uint8_t> *appended)
+{
+    assert(NULL != s && NULL != appended);
+
+    int ret = 0;
+    uint8_t v = 0;
+    bool one_byte = true;
+    for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
+    {
+        const int vv = hex_char_to_int(s[i]);
+        if (vv >= 0)
+        {
+            v <<= 4;
+            v |= vv;
+            one_byte = !one_byte;
+            if (one_byte)
+            {
+                appended->push_back(v);
+                ++ret;
+            }
+        }
+    }
+    return ret;
+}
+
+static char int_to_base64_char(int i)
+{
+    const char *base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    if (0 <= i && i < 64)
+        return base64_chars[i];
+    return '=';
+}
+
+static int base64_char_to_int(char c)
+{
+    if ('A' <= c && c <= 'Z')
+        return c - 'A';
+    else if ('a' <= c && c <= 'z')
+        return c - 'a' + 26;
+    else if ('0' <= c && c <= '9')
+        return c - '0' + 26 + 26;
+    else if ('+' == c)
+        return 62;
+    else if ('/' == c)
+        return 63;
+    else if ('=' == c)
+        return 64;
+    return -1;
+}
+
+int base64_encode(const void *data, size_t cb, std::string *appended)
+{
+    assert(NULL != data && NULL != appended);
+
+    const uint8_t *bytes = (const uint8_t*) data;
+    for (size_t i = 0; i < cb; i += 3)
+    {
+        // every 3 bytes convert to 4 bytes, 6bit per byte
+
+        // first 6 bit
+        appended->push_back(int_to_base64_char(bytes[i] >> 2));
+
+        // second 6 bit
+        if (i + 1 < cb)
+        {
+            appended->push_back(int_to_base64_char(((bytes[i] & 0x03) << 4) ^ (bytes[i + 1] >> 4)));
+        }
+        else
+        {
+            appended->push_back(int_to_base64_char(((bytes[i] & 0x03) << 4)));
+            appended->push_back('=');
+            appended->push_back('=');
+            break;
+        }
+
+        // third 6 bit
+        if (i + 2 < cb)
+        {
+            appended->push_back(int_to_base64_char(((bytes[i + 1] & 0x0f) << 2) ^ (bytes[i + 2] >> 6)));
+        }
+        else
+        {
+            appended->push_back(int_to_base64_char(((bytes[i + 1] & 0x0f) << 2)));
+            appended->push_back('=');
+            break;
+        }
+
+        // last 6 bit
+        appended->push_back(int_to_base64_char(bytes[i + 2] & 0x3f));
+    }
+    return (int) ((cb + 2) / 3) * 4;
+}
+
+int base64_decode(const char *s, int len, std::vector<uint8_t> *appended)
+{
+    assert(NULL != s && NULL != appended);
+
+    int ret = 0;
+    int buff[4], state = 0;
+    for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
+    {
+        const int v = base64_char_to_int(s[i]);
+        if (0 <= v and v <= 64)
+        {
+            buff[state++] = v;
+            if (4 == state)
+            {
+                // first byte
+                appended->push_back((uint8_t) ((buff[0] << 2) ^ ((buff[1] & 0x30) >> 4)));
+                ++ret;
+
+                // second byte
+                if (64 == buff[2])
+                    break;
+                appended->push_back((uint8_t) ((buff[1] << 4) ^ ((buff[2] & 0x3c) >> 2)));
+                ++ret;
+
+                // third byte
+                if (64 == buff[3])
+                    break;
+                appended->push_back((uint8_t) ((buff[2] << 6) ^ buff[3]));
+                ++ret;
+
+                // reset state
+                state = 0;
+            }
+        }
+    }
+    return ret;
+}
+
 }
 
 #if defined(NUT_PLATFORM_CC_VC)

@@ -5,17 +5,22 @@ LD = gcc
 AR = ar
 
 HOST = $(shell uname -s)
+
+# INC
 INC = -I../../src
+
+# LIB
 ifeq ($(HOST), Darwin)
 	LIB = -lstdc++
 else
 	LIB = -lpthread
 endif
-ifeq ($(HOST), Darwin)
-	CC_FLAGS = -Wall -g -std=c++11
-else
-	CC_FLAGS = -Wall -g -rdynamic -std=c++11
+
+# CC_FLAGS
+ifneq ($(HOST), Darwin)
+	CC_FLAGS = -rdynamic
 endif
+CC_FLAGS += -Wall -g -std=c++11
 
 PWD = $(shell pwd)
 DIRS = $(shell find ../../src/nut -maxdepth 10 -type d)

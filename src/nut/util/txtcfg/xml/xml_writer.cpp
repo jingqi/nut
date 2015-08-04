@@ -104,25 +104,25 @@ void XmlWriter::write_encode(const char *s, int len)
     {
         switch (s[i])
         {
-            case '&':
-                write("&amp;");
-                break;
+        case '&':
+            write("&amp;");
+            break;
 
-            case '"':
-                write("&quot;");
-                break;
+        case '"':
+            write("&quot;");
+            break;
 
-            case '<':
-                write("&lt;");
-                break;
+        case '<':
+            write("&lt;");
+            break;
 
-            case '>':
-                write("&gt;");
-                break;
+        case '>':
+            write("&gt;");
+            break;
 
-            default:
-                write(s + i, 1);
-                break;
+        default:
+            write(s + i, 1);
+            break;
         }
     }
 }

@@ -1,3 +1,4 @@
+#!/user/bin/env make
 
 all:
 	make -f nut_makefile

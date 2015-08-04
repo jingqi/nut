@@ -92,6 +92,28 @@ bool wstr_to_utf8(const std::wstring& wstr, std::string *appended);
 std::string wstr_to_utf8(const wchar_t *wstr);
 std::string wstr_to_utf8(const std::wstring& wstr);
 
+/**
+ * @return '\0' if invalid
+ */
+char int_to_hex_char(int i);
+
+/**
+ * @return -1 if invalid
+ */
+int hex_char_to_int(char c);
+
+int xml_encode(const char *s, int len, std::string *appended);
+int xml_decode(const char *s, int len, std::string *appended);
+
+int url_encode(const char *s, int len, std::string *appended);
+int url_decode(const char *s, int len, std::string *appended);
+
+int hex_encode(const void *data, size_t cb, std::string *appended);
+int hex_decode(const char *s, int len, std::vector<uint8_t> *appended);
+
+int base64_encode(const void *data, size_t cb, std::string *appended);
+int base64_decode(const char *s, int len, std::vector<uint8_t> *appended);
+
 }
 
 #endif /* head file guarder */
