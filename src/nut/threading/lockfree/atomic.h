@@ -164,14 +164,13 @@ union TagedPtr
 
     struct
     {
-        T *ptr = NULL;
-        tag_type tag = 0;
+        T *ptr; // union 内部无法和 cas 同时赋初值
+        tag_type tag;
     };
 
-    cas_type cas;
+    cas_type cas = 0;
 
     TagedPtr()
-        : cas(0)
     {}
 
     TagedPtr(T *p, tag_type t)
