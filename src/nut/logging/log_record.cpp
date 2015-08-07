@@ -53,7 +53,7 @@ void LogRecord::to_string(std::string *appended) const
     *appended += " (";
     *appended += get_file_name();
     *appended += ":";
-    *appended += i_to_str(_line);
+    *appended += int_to_str(_line);
     *appended += ")";
     if (NULL != _func)
 	{

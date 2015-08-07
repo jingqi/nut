@@ -1,4 +1,4 @@
-
+﻿
 #include <string.h> /* for strcmp() */
 
 #include <nut/util/string/to_string.h>
@@ -50,7 +50,7 @@ void SourceLocation::to_string(std::string *appended) const
 
 	*appended += get_file_name();
 	appended->push_back(':');
-	nut::i_to_str(_line, appended);
+    nut::int_to_str(_line, appended);
 	if (_func != NULL)
 	{
 		appended->push_back(' ');

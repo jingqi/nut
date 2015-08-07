@@ -1,20 +1,20 @@
 #!/user/bin/env make
 
 all:
-	make -f nut_makefile
-	make -f test_nut_makefile
+	make -f nut.mk
+	make -f test_nut.mk
 
 clean:
-	make -f nut_makefile clean
-	make -f test_nut_makefile clean
+	make -f nut.mk clean
+	make -f test_nut.mk clean
 
 rebuild: clean all
 
 run: all
-	make -f test_nut_makefile run
+	make -f test_nut.mk run
 
 cgdb: all
-	make -f test_nut_makefile cgdb
+	make -f test_nut.mk cgdb
 
 valgrind: all
-	make -f test_nut_makefile valgrind
+	make -f test_nut.mk valgrind

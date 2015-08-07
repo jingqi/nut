@@ -337,7 +337,7 @@ void Logger::load_config(const std::string& config)
         #else
                     pid_t pid = ::getpid();
         #endif
-                    _file_path += ll_to_str(pid);
+                    _file_path += llong_to_str(pid);
                     _file_path += log_ext;
                 }
 

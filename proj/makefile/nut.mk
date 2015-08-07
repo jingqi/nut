@@ -7,29 +7,28 @@ AR = ar
 HOST = $(shell uname -s)
 
 # INC
-INC = -I../../src
+INC += -I../../src
 
 # LIB
 ifeq ($(HOST), Darwin)
-	LIB = -lstdc++
+	LIB += -lstdc++
 else
-	LIB = -lpthread -lrt
+	LIB += -lpthread
 endif
-LIB += -L. -lnut
-LIB_DEPS = ./libnut.a
 
 # CC_FLAGS
 ifneq ($(HOST), Darwin)
-	CC_FLAGS = -rdynamic
+	CC_FLAGS += -rdynamic
 endif
 CC_FLAGS += -Wall -g -std=c++11
 
 PWD = $(shell pwd)
-DIRS = $(shell find ../../src/test_nut -maxdepth 10 -type d)
+DIRS = $(shell find ../../src/nut -maxdepth 10 -type d)
 CPPS = $(foreach dir,$(DIRS),$(wildcard $(dir)/*.cpp))
 OBJS = $(patsubst %.cpp,%.o,$(CPPS))
 DEPS = $(patsubst %.cpp,%.d,$(CPPS))
-TARGET = $(PWD)/test_nut
+
+TARGET = $(PWD)/libnut.a
 
 all: $(TARGET)
 
@@ -40,24 +39,8 @@ clean:
 
 rebuild: clean all
 
-run: $(TARGET)
-	$(TARGET)
-
-gdb: $(TARGET)
-	gdb $(TARGET)
-
-cgdb: $(TARGET)
-	cgdb $(TARGET)
-
-nemiver: $(TARGET)
-	nemiver $(TARGET)
-
-valgrind: $(TARGET)
-	valgrind -v --leak-check=full $(TARGET)
-
-# NOTE: in linux, $(LIB) should be the last parameter
-$(TARGET): $(OBJS) $(LIB_DEPS)
-	$(CC) -o $@ $^ $(LIB)
+$(TARGET): $(OBJS)
+	$(AR) cqs $@ $^
 
 %.o: %.cpp
 	$(CC) $(INC) $(DEF) $(CC_FLAGS) -c $< -o $@
