@@ -151,7 +151,7 @@ void Logger::load_config(const std::string& config)
             else if (name == "forbids")
             {
                 std::vector<std::string> forbids;
-                chr_split(value, ',', &forbids, true);
+                chr_split(value.c_str(), ',', &forbids, true);
 
                 _forbid_mask = 0;
                 for (size_t i = 0, sz = forbids.size(); i < sz; ++i)
@@ -233,7 +233,7 @@ void Logger::load_config(const std::string& config)
             else if (name == "flushs")
             {
                 std::vector<std::string> flushs;
-                chr_split(value, ',', &flushs, true);
+                chr_split(value.c_str(), ',', &flushs, true);
 
                 _flush_mask = 0;
                 for (size_t i = 0, sz = flushs.size(); i < sz; ++i)
@@ -306,13 +306,13 @@ void Logger::load_config(const std::string& config)
                 {
                     // 找到相同目录下所有到日志文件
                     std::string dir_path;
-                    Path::split(_file_path, &dir_path, NULL);
+                    Path::split(_file_path.c_str(), &dir_path, NULL);
                     std::vector<std::string> files;
                     OS::list_dir(dir_path.c_str(), &files, false, true, true);
                     const std::string log_ext(".log");
                     for (size_t i = 0; i < files.size(); ++i)
                     {
-                        if (!ends_with(files.at(i), log_ext))
+                        if (!ends_with(files.at(i).c_str(), log_ext.c_str()))
                         {
                             files.erase(files.begin() + i);
                             --i;
@@ -325,7 +325,9 @@ void Logger::load_config(const std::string& config)
                         std::sort(files.begin(), files.end());
                         for (size_t i = 0, count = files.size() - _circle; i < count; ++i)
                         {
-                            OS::remove_file(Path::join(dir_path, files.at(i)).c_str());
+                            std::string full;
+                            Path::join(dir_path.c_str(), files.at(i).c_str(), &full);
+                            OS::remove_file(full.c_str());
                             files.pop_back();
                         }
                     }

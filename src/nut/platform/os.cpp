@@ -135,7 +135,7 @@ void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *appended, bool
     for (size_t i = 0, size = dirs.size(); i < size; ++i)
     {
         s.clear();
-        ascii_to_wstr(dirs[i], &s);
+        ascii_to_wstr(dirs.at(i).c_str(), &s);
         appended->push_back(s);
     }
 #endif
@@ -175,11 +175,6 @@ bool OS::copy_file(const char *src, const char *dest)
 #endif
 }
 
-bool OS::copy_file(const std::string& src, const std::string& dest)
-{
-    return OS::copy_file(src.c_str(), dest.c_str());
-}
-
 bool OS::copy_file(const wchar_t *src, const wchar_t *dest)
 {
     assert(NULL != src && NULL != dest);
@@ -194,25 +189,16 @@ bool OS::copy_file(const wchar_t *src, const wchar_t *dest)
 #endif
 }
 
-bool OS::copy_file(const std::wstring& src, const std::wstring& dest)
-{
-    return OS::copy_file(src.c_str(), dest.c_str());
-}
-
 bool OS::remove_file(const char *path)
 {
     assert(NULL != path);
     return 0 == ::remove(path);
 }
 
-bool OS::remove_file(const std::string& path)
-{
-    return OS::remove_file(path.c_str());
-}
-
 bool OS::remove_file(const wchar_t *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return FALSE != ::DeleteFileW(path);
 #else
@@ -222,14 +208,10 @@ bool OS::remove_file(const wchar_t *path)
 #endif
 }
 
-bool OS::remove_file(const std::wstring& path)
-{
-    return OS::remove_file(path.c_str());
-}
-
 bool OS::mkdir(const char *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return FALSE != ::CreateDirectoryA(path, NULL);
 #else
@@ -237,14 +219,10 @@ bool OS::mkdir(const char *path)
 #endif
 }
 
-bool OS::mkdir(const std::string& path)
-{
-    return OS::mkdir(path.c_str());
-}
-
 bool OS::mkdir(const wchar_t *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return FALSE != ::CreateDirectoryW(path, NULL);
 #else
@@ -252,11 +230,6 @@ bool OS::mkdir(const wchar_t *path)
     wstr_to_ascii(path, &p);
     return OS::mkdir(p.c_str());
 #endif
-}
-
-bool OS::mkdir(const std::wstring& path)
-{
-    return OS::mkdir(path.c_str());
 }
 
 bool OS::mkdirs(const char *path)
@@ -271,32 +244,23 @@ bool OS::mkdirs(const char *path)
     std::string fullpath;
     Path::abs_path(path, &fullpath);
     std::string parent, name;
-    Path::split(fullpath, &parent, &name);
+    Path::split(fullpath.c_str(), &parent, &name);
     if (parent.length() == fullpath.length() || name.empty())
         return false; // 根目录是无法创建的
 
     // 递归创建
-    if (!Path::exists(parent) && !OS::mkdirs(parent))
+    if (!Path::exists(parent.c_str()) && !OS::mkdirs(parent.c_str()))
         return false;
     return OS::mkdir(path);
-}
-
-bool OS::mkdirs(const std::string &path)
-{
-    return OS::mkdirs(path.c_str());
 }
 
 bool OS::mkdirs(const wchar_t *path)
 {
     assert(NULL != path);
+
     std::string p;
     wstr_to_ascii(path, &p);
     return OS::mkdirs(p.c_str());
-}
-
-bool OS::mkdirs(const std::wstring &path)
-{
-    return OS::mkdirs(path.c_str());
 }
 
 /**
@@ -305,6 +269,7 @@ bool OS::mkdirs(const std::wstring &path)
 bool OS::rmdir(const char *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return FALSE != ::RemoveDirectoryA(path);
 #else
@@ -312,14 +277,10 @@ bool OS::rmdir(const char *path)
 #endif
 }
 
-bool OS::rmdir(const std::string& path)
-{
-    return OS::rmdir(path.c_str());
-}
-
 bool OS::rmdir(const wchar_t *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return FALSE != ::RemoveDirectoryW(path);
 #else
@@ -327,11 +288,6 @@ bool OS::rmdir(const wchar_t *path)
     wstr_to_ascii(path, &p);
     return OS::rmdir(p.c_str());
 #endif
-}
-
-bool OS::rmdir(const std::wstring& path)
-{
-    return OS::rmdir(path.c_str());
 }
 
 /**
@@ -420,14 +376,10 @@ bool OS::remove_tree(const char *path)
 #endif
 }
 
-bool OS::remove_tree(const std::string& path)
-{
-    return OS::remove_tree(path.c_str());
-}
-
 bool OS::remove_tree(const wchar_t *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     // 删除文件
     if (0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(path)))
@@ -476,14 +428,10 @@ bool OS::remove_tree(const wchar_t *path)
 #endif
 }
 
-bool OS::remove_tree(const std::wstring& path)
-{
-    return OS::remove_tree(path.c_str());
-}
-
 bool OS::read_link(const char *path, std::string *appended)
 {
     assert(NULL != path && NULL != appended);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return false; // windows 上没有软链接功能
 #else
@@ -498,14 +446,10 @@ bool OS::read_link(const char *path, std::string *appended)
 #endif
 }
 
-bool OS::read_link(const std::string &path, std::string *appended)
-{
-    return OS::read_link(path.c_str(), appended);
-}
-
 bool OS::read_link(const wchar_t *path, std::wstring *appended)
 {
     assert(NULL != path && NULL != appended);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return false; // windows 上没有软链接功能
 #else
@@ -514,19 +458,15 @@ bool OS::read_link(const wchar_t *path, std::wstring *appended)
     std::string lk;
     if (!OS::read_link(p.c_str(), &lk))
         return false;
-    ascii_to_wstr(lk, appended);
+    ascii_to_wstr(lk.c_str(), appended);
     return true;
 #endif
-}
-
-bool OS::read_link(const std::wstring &path, std::wstring *appended)
-{
-    return OS::read_link(path.c_str(), appended);
 }
 
 bool OS::symlink(const char *link, const char *path)
 {
     assert(NULL != link && NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return false; // windows 上没有软链接功能
 #else
@@ -534,14 +474,10 @@ bool OS::symlink(const char *link, const char *path)
 #endif
 }
 
-bool OS::symlink(const std::string &link, const std::string &path)
-{
-    return OS::symlink(link.c_str(), path.c_str());
-}
-
 bool OS::symlink(const wchar_t *link, const wchar_t *path)
 {
     assert(NULL != link && NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return false; // windows 上没有软链接功能
 #else
@@ -552,34 +488,20 @@ bool OS::symlink(const wchar_t *link, const wchar_t *path)
 #endif
 }
 
-bool OS::symlink(const std::wstring &link, const std::wstring &path)
-{
-    return OS::symlink(link.c_str(), path.c_str());
-}
-
 bool OS::rename(const char *from, const char *to)
 {
     assert(NULL != from && NULL != to);
     return 0 == ::rename(from, to);
 }
 
-bool OS::rename(const std::string &from, const std::string &to)
-{
-    return 0 == ::rename(from.c_str(), to.c_str());
-}
-
 bool OS::rename(const wchar_t *from, const wchar_t *to)
 {
     assert(NULL != from && NULL != to);
+
     std::string f, t;
     wstr_to_ascii(from, &f);
     wstr_to_ascii(to, &t);
     return 0 == ::rename(f.c_str(), t.c_str());
-}
-
-bool OS::rename(const std::wstring &from, const std::wstring &to)
-{
-    return OS::rename(from.c_str(), to.c_str());
 }
 
 }

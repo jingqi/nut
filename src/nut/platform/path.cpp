@@ -104,31 +104,18 @@ void Path::get_cwd(std::wstring *appended)
     ascii_to_wstr(buf, appended);
 }
 
-std::string Path::get_cwd()
+bool Path::is_abs(const char *path)
 {
-    std::string ret;
-    get_cwd(&ret);
-    return ret;
-}
-
-std::wstring Path::get_wcwd()
-{
-    std::wstring ret;
-    get_cwd(&ret);
-    return ret;
-}
-
-bool Path::is_abs(const std::string& p)
-{
-    if (p.empty())
+    assert(NULL != path);
+    if (0 == path[0])
         return false;
 
-    if (p.at(0) == '/' || p.at(0) == '~') // linux root
+    if ('/' == path[0] || '~' == path[0]) // linux root
         return true;
-    for (size_t i = 0, len = p.length(); i < len; ++i)
+    for (size_t i = 0; 0 != path[i]; ++i)
     {
-        const char c = p.at(i);
-        if (c == ':') // windows partion root
+        const char c = path[i];
+        if (':' == c) // windows partion root
             return true;
         else if (is_path_separator(c))
             return false;
@@ -136,17 +123,18 @@ bool Path::is_abs(const std::string& p)
     return false;
 }
 
-bool Path::is_abs(const std::wstring& p)
+bool Path::is_abs(const wchar_t *path)
 {
-    if (p.empty())
+    assert(NULL != path);
+    if (0 == path[0])
         return false;
 
-    if (p.at(0) == L'/' || p.at(0) == L'~') // linux root or linux home
+    if (L'/' == path[0] || L'~' == path[0]) // linux root or linux home
         return true;
-    for (size_t i = 0, len = p.length(); i < len; ++i)
+    for (size_t i = 0; 0 != path[i]; ++i)
     {
-        const wchar_t c = p.at(i);
-        if (c == L':') // windows partion root
+        const wchar_t c = path[i];
+        if (L':' == c) // windows partion root
             return true;
         else if (is_path_separator(c))
             return false;
@@ -154,10 +142,10 @@ bool Path::is_abs(const std::wstring& p)
     return false;
 }
 
-void Path::abs_path(const std::string& p, std::string *appended)
+void Path::abs_path(const char *path, std::string *appended)
 {
-    assert(NULL != appended);
-    if (p.empty())
+    assert(NULL != path && NULL != appended);
+    if (0 == path[0])
     {
         get_cwd(appended);
         return;
@@ -165,18 +153,18 @@ void Path::abs_path(const std::string& p, std::string *appended)
 
     // 探测是否从根路径开始
     const size_t mark = appended->length();
-    if (!is_abs(p))
+    if (!is_abs(path))
         get_cwd(appended);
 
     // 组装路径
     std::string part;
-    for (size_t i = 0, len = p.length(); i < len; ++i)
+    for (size_t i = 0; 0 != path[i]; ++i)
     {
-        const char c = p.at(i);
+        const char c = path[i];
         if (!is_path_separator(c))
         {
             part.push_back(c);
-            if (i != len - 1)
+            if (0 != path[i + 1])
                 continue;
         }
 
@@ -241,10 +229,10 @@ void Path::abs_path(const std::string& p, std::string *appended)
     }
 }
 
-void Path::abs_path(const std::wstring& p, std::wstring *appended)
+void Path::abs_path(const wchar_t *path, std::wstring *appended)
 {
-    assert(NULL != appended);
-    if (p.empty())
+    assert(NULL != path && NULL != appended);
+    if (0 == path[0])
     {
         get_cwd(appended);
         return;
@@ -252,18 +240,18 @@ void Path::abs_path(const std::wstring& p, std::wstring *appended)
 
     // 探测是否从根路径开始
     const size_t mark = appended->length();
-    if (!is_abs(p))
+    if (!is_abs(path))
         get_cwd(appended);
 
     // 组装路径
     std::wstring part;
-    for (size_t i = 0, len = p.length(); i < len; ++i)
+    for (size_t i = 0; 0 != path[i]; ++i)
     {
-        const wchar_t c = p.at(i);
+        const wchar_t c = path[i];
         if (!is_path_separator(c))
         {
             part.push_back(c);
-            if (i != len - 1)
+            if (0 != path[i + 1])
                 continue;
         }
 
@@ -328,20 +316,6 @@ void Path::abs_path(const std::wstring& p, std::wstring *appended)
     }
 }
 
-std::string Path::abs_path(const std::string& p)
-{
-    std::string ret;
-    abs_path(p, &ret);
-    return ret;
-}
-
-std::wstring Path::abs_path(const std::wstring& p)
-{
-    std::wstring ret;
-    abs_path(p, &ret);
-    return ret;
-}
-
 /**
  * 从路径中划分出父路径和 文件/文件夹 名
  *
@@ -350,79 +324,71 @@ std::wstring Path::abs_path(const std::wstring& p)
  * "/ab.txt" -> "/" "ab.txt"
  * "c:\\tmp" -> "c:\\" "tmp"
  */
-void Path::split(const std::string &path, std::string *parent_appended, std::string *child_appended)
+void Path::split(const char *path, std::string *parent_appended, std::string *child_appended)
 {
-    assert(NULL != parent_appended || NULL != child_appended);
+    assert(NULL != path && (NULL != parent_appended || NULL != child_appended));
 
     // 找到最后一个 '/'
-    std::string::size_type p1 = path.find_last_of('\\'), p2 = path.find_last_of('/');
-    if (std::string::npos == p1 && std::string::npos == p2)
+    ssize_t pos = -1;
+    for (ssize_t i = 0; 0 != path[i]; ++i)
+    {
+        if (is_path_separator(path[i]))
+            pos = i;
+    }
+    if (pos < 0)
     {
         if (NULL != child_appended)
             *child_appended += path;
         return;
     }
-    else if (std::string::npos != p1 && std::string::npos != p2)
-    {
-        p1 = (p1 > p2 ? p1 : p2);
-    }
-    else if (std::string::npos == p1)
-    {
-        p1 = p2;
-    }
 
-    assert(std::string::npos != p1);
-    if (0 == p1 || ':' == path[p1 - 1]) // 磁盘号 + 根目录
+    if (0 == pos || ':' == path[pos - 1]) // 磁盘号 + 根目录
     {
         if (NULL != parent_appended)
-            *parent_appended += path.substr(0, p1 + 1);
+            parent_appended->append(path, pos + 1);
         if (NULL != child_appended)
-            *child_appended += path.substr(p1 + 1);
+            child_appended->append(path + pos + 1);
     }
     else
     {
         if (NULL != parent_appended)
-            *parent_appended += path.substr(0, p1);
+            parent_appended->append(path, pos);
         if (NULL != child_appended)
-            *child_appended += path.substr(p1 + 1);
+            child_appended->append(path + pos + 1);
     }
 }
 
-void Path::split(const std::wstring& path, std::wstring *parent_appended, std::wstring *child_appended)
+void Path::split(const wchar_t *path, std::wstring *parent_appended, std::wstring *child_appended)
 {
-    assert(NULL != parent_appended || NULL != child_appended);
+    assert(NULL != path && (NULL != parent_appended || NULL != child_appended));
 
     // 找到最后一个 '/'
-    std::wstring::size_type p1 = path.find_last_of(L'\\'), p2 = path.find_last_of(L'/');
-    if (std::wstring::npos == p1 && std::wstring::npos == p2)
+    ssize_t pos = -1;
+    for (ssize_t i = 0; 0 != path[i]; ++i)
+    {
+        if (is_path_separator(path[i]))
+            pos = i;
+    }
+    if (pos < 0)
     {
         if (NULL != child_appended)
             *child_appended += path;
         return;
     }
-    else if (std::wstring::npos != p1 && std::wstring::npos != p2)
-    {
-        p1 = (p1 > p2 ? p1 : p2);
-    }
-    else if (std::wstring::npos == p1)
-    {
-        p1 = p2;
-    }
 
-    assert(std::wstring::npos != p1);
-    if (0 == p1 || L':' == path[p1 - 1]) // 磁盘号 + 根目录
+    if (0 == pos || L':' == path[pos - 1]) // 磁盘号 + 根目录
     {
         if (NULL != parent_appended)
-            *parent_appended += path.substr(0, p1 + 1);
+            parent_appended->append(path, pos + 1);
         if (NULL != child_appended)
-            *child_appended += path.substr(p1 + 1);
+            child_appended->append(path + pos + 1);
     }
     else
     {
         if (NULL != parent_appended)
-            *parent_appended += path.substr(0, p1);
+            parent_appended->append(path, pos);
         if (NULL != child_appended)
-            *child_appended += path.substr(p1 + 1);
+            child_appended->append(path + pos + 1);
     }
 }
 
@@ -433,14 +399,14 @@ void Path::split(const std::wstring& path, std::wstring *parent_appended, std::w
  * "c:\\mn\\p" -> "c:" "\\mn\\p"
  * "/mnt/sdcard" -> "" "/mnt/sdcard"
  */
-void Path::split_drive(const std::string& path, std::string *drive_appended, std::string *rest_appended)
+void Path::split_drive(const char *path, std::string *drive_appended, std::string *rest_appended)
 {
-    assert(NULL != drive_appended || NULL != rest_appended);
+    assert(NULL != path && (NULL != drive_appended || NULL != rest_appended));
 
-    int pos = -1;
-    for (int i = 0; '\0' != path[i]; ++i)
+    ssize_t pos = -1;
+    for (ssize_t i = 0; 0 != path[i]; ++i)
     {
-        if ('\\' == path[i] || '/' == path[i])
+        if (is_path_separator(path[i]))
             break;
         if (':' == path[i])
         {
@@ -455,19 +421,19 @@ void Path::split_drive(const std::string& path, std::string *drive_appended, std
         return;
     }
     if (NULL != drive_appended)
-        *drive_appended += path.substr(0, pos + 1);
+        drive_appended->append(path, pos + 1);
     if (NULL != rest_appended)
-        *rest_appended += path.substr(pos + 1);
+        rest_appended->append(path + pos + 1);
 }
 
-void Path::split_drive(const std::wstring& path, std::wstring *drive_appended, std::wstring *rest_appended)
+void Path::split_drive(const wchar_t *path, std::wstring *drive_appended, std::wstring *rest_appended)
 {
-    assert(NULL != drive_appended || NULL != rest_appended);
+    assert(NULL != path && (NULL != drive_appended || NULL != rest_appended));
 
-    int pos = -1;
-    for (int i = 0; L'\0' != path[i]; ++i)
+    ssize_t pos = -1;
+    for (ssize_t i = 0; 0 != path[i]; ++i)
     {
-        if (L'\\' == path[i] || L'/' == path[i])
+        if (is_path_separator(path[i]))
             break;
         if (L':' == path[i])
         {
@@ -482,9 +448,9 @@ void Path::split_drive(const std::wstring& path, std::wstring *drive_appended, s
         return;
     }
     if (NULL != drive_appended)
-        *drive_appended += path.substr(0, pos + 1);
+        drive_appended->append(path, pos + 1);
     if (NULL != rest_appended)
-        *rest_appended += path.substr(pos + 1);
+        rest_appended->append(path + pos + 1);
 }
 
 /**
@@ -493,19 +459,19 @@ void Path::split_drive(const std::wstring& path, std::wstring *drive_appended, s
  * 例如：
  * "a.txt" -> "a" ".txt"
  */
-void Path::split_ext(const std::string& path, std::string *prefix_appended, std::string *ext_appended)
+void Path::split_ext(const char *path, std::string *prefix_appended, std::string *ext_appended)
 {
-    assert(NULL != prefix_appended || NULL != ext_appended);
+    assert(NULL != path && (NULL != prefix_appended || NULL != ext_appended));
 
-    int pos = -1;
-    for (int i = (int) path.length() - 1; i >= 0; --i)
+    ssize_t pos = -1;
+    for (ssize_t i = ::strlen(path) - 1; i >= 0; --i)
     {
-        if ('\\' == path[i] || '/' == path[i])
+        if (is_path_separator(path[i]))
             break;
         if ('.' == path[i])
         {
             // 排除 "a/.abc" 的情况
-            if (i - 1 >= 0 && '\\' != path[i - 1] && '/' != path[i - 1])
+            if (i - 1 >= 0 && !is_path_separator(path[i - 1]))
                 pos = i;
             break;
         }
@@ -517,24 +483,24 @@ void Path::split_ext(const std::string& path, std::string *prefix_appended, std:
         return;
     }
     if (NULL != prefix_appended)
-        *prefix_appended += path.substr(0, pos);
+        prefix_appended->append(path, pos);
     if (NULL != ext_appended)
-        *ext_appended += path.substr(pos);
+        ext_appended->append(path + pos);
 }
 
-void Path::split_ext(const std::wstring& path, std::wstring *prefix_appended, std::wstring *ext_appended)
+void Path::split_ext(const wchar_t *path, std::wstring *prefix_appended, std::wstring *ext_appended)
 {
-    assert(NULL != prefix_appended || NULL != ext_appended);
+    assert(NULL != path && (NULL != prefix_appended || NULL != ext_appended));
 
-    int pos = -1;
-    for (int i = (int) path.length() - 1; i >= 0; --i)
+    ssize_t pos = -1;
+    for (ssize_t i = ::wcslen(path) - 1; i >= 0; --i)
     {
-        if (L'\\' == path[i] || L'/' == path[i])
+        if (is_path_separator(path[i]))
             break;
         if (L'.' == path[i])
         {
             // 排除 "a/.abc" 的情况
-            if (i - 1 >= 0 && L'\\' != path[i - 1] && L'/' != path[i - 1])
+            if (i - 1 >= 0 && !is_path_separator(path[i - 1]))
                 pos = i;
             break;
         }
@@ -546,14 +512,15 @@ void Path::split_ext(const std::wstring& path, std::wstring *prefix_appended, st
         return;
     }
     if (NULL != prefix_appended)
-        *prefix_appended += path.substr(0, pos);
+        prefix_appended->append(path, pos);
     if (NULL != ext_appended)
-        *ext_appended += path.substr(pos);
+        ext_appended->append(path + pos);
 }
 
 bool Path::lexists(const char *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return -1 != ::_access(path, 0);
 #elif defined(NUT_PLATFORM_OS_MAC) // mac 下 faccessat() 实现不支持 AT_SYMLINK_NOFOLLOW
@@ -570,14 +537,10 @@ bool Path::lexists(const char *path)
 #endif
 }
 
-bool Path::lexists(const std::string& path)
-{
-    return Path::lexists(path.c_str());
-}
-
 bool Path::lexists(const wchar_t *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return -1 != ::_waccess(path, 0);
 #else
@@ -587,14 +550,10 @@ bool Path::lexists(const wchar_t *path)
 #endif
 }
 
-bool Path::lexists(const std::wstring& path)
-{
-    return Path::lexists(path.c_str());
-}
-
 bool Path::exists(const char *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return -1 != ::_access(path, 0);
 #else
@@ -602,14 +561,10 @@ bool Path::exists(const char *path)
 #endif
 }
 
-bool Path::exists(const std::string& path)
-{
-    return Path::exists(path.c_str());
-}
-
 bool Path::exists(const wchar_t *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return -1 != ::_waccess(path, 0);
 #else
@@ -619,17 +574,13 @@ bool Path::exists(const wchar_t *path)
 #endif
 }
 
-bool Path::exists(const std::wstring& path)
-{
-    return Path::exists(path.c_str());
-}
-
 /**
  * last access time
  */
 time_t Path::get_atime(const char *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     struct _stat info;
     ::_stat(path, &info);
@@ -642,14 +593,10 @@ time_t Path::get_atime(const char *path)
 #endif
 }
 
-time_t Path::get_atime(const std::string& path)
-{
-    return Path::get_atime(path.c_str());
-}
-
 time_t Path::get_atime(const wchar_t *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     struct _stat info;
     ::_wstat(path, &info);
@@ -661,17 +608,13 @@ time_t Path::get_atime(const wchar_t *path)
 #endif
 }
 
-time_t Path::get_atime(const std::wstring& path)
-{
-    return Path::get_atime(path.c_str());
-}
-
 /**
  * last modified time
  */
 time_t Path::get_mtime(const char *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     struct _stat info;
     ::_stat(path, &info);
@@ -684,14 +627,10 @@ time_t Path::get_mtime(const char *path)
 #endif
 }
 
-time_t Path::get_mtime(const std::string& path)
-{
-    return Path::get_mtime(path.c_str());
-}
-
 time_t Path::get_mtime(const wchar_t *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     struct _stat info;
     ::_wstat(path, &info);
@@ -703,17 +642,13 @@ time_t Path::get_mtime(const wchar_t *path)
 #endif
 }
 
-time_t Path::get_mtime(const std::wstring& path)
-{
-    return Path::get_mtime(path.c_str());
-}
-
 /**
  * created time
  */
 time_t Path::get_ctime(const char *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     struct _stat info;
     ::_stat(path, &info);
@@ -726,14 +661,10 @@ time_t Path::get_ctime(const char *path)
 #endif
 }
 
-time_t Path::get_ctime(const std::string& path)
-{
-    return Path::get_ctime(path.c_str());
-}
-
 time_t Path::get_ctime(const wchar_t *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     struct _stat info;
     ::_wstat(path, &info);
@@ -745,17 +676,13 @@ time_t Path::get_ctime(const wchar_t *path)
 #endif
 }
 
-time_t Path::get_ctime(const std::wstring& path)
-{
-    return Path::get_ctime(path.c_str());
-}
-
 /**
  * 获取文件大小
  */
 long long Path::get_size(const char *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     struct _stat info;
     ::_stat(path, &info);
@@ -768,14 +695,10 @@ long long Path::get_size(const char *path)
 #endif
 }
 
-long long Path::get_size(const std::string& path)
-{
-    return Path::get_size(path.c_str());
-}
-
 long long Path::get_size(const wchar_t *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     struct _stat info;
     ::_wstat(path, &info);
@@ -787,14 +710,10 @@ long long Path::get_size(const wchar_t *path)
 #endif
 }
 
-long long Path::get_size(const std::wstring& path)
-{
-    return Path::get_size(path.c_str());
-}
-
 bool Path::is_dir(const char *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return 0 != (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesA(path));
 #else
@@ -805,14 +724,10 @@ bool Path::is_dir(const char *path)
 #endif
 }
 
-bool Path::is_dir(const std::string& path)
-{
-    return Path::is_dir(path.c_str());
-}
-
 bool Path::is_dir(const wchar_t *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return 0 != (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(path));
 #else
@@ -822,14 +737,10 @@ bool Path::is_dir(const wchar_t *path)
 #endif
 }
 
-bool Path::is_dir(const std::wstring& path)
-{
-    return Path::is_dir(path.c_str());
-}
-
 bool Path::is_file(const char *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return 0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesA(path));
 #else
@@ -840,14 +751,10 @@ bool Path::is_file(const char *path)
 #endif
 }
 
-bool Path::is_file(const std::string& path)
-{
-    return Path::is_file(path.c_str());
-}
-
 bool Path::is_file(const wchar_t *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return 0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(path));
 #else
@@ -857,14 +764,10 @@ bool Path::is_file(const wchar_t *path)
 #endif
 }
 
-bool Path::is_file(const std::wstring& path)
-{
-    return Path::is_file(path.c_str());
-}
-
 bool Path::is_link(const char *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return false;
 #else
@@ -875,14 +778,10 @@ bool Path::is_link(const char *path)
 #endif
 }
 
-bool Path::is_link(const std::string& path)
-{
-    return Path::is_link(path.c_str());
-}
-
 bool Path::is_link(const wchar_t *path)
 {
     assert(NULL != path);
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     return false;
 #else
@@ -892,9 +791,16 @@ bool Path::is_link(const wchar_t *path)
 #endif
 }
 
-bool Path::is_link(const std::wstring& path)
+template <typename C>
+static ssize_t str_find(const C *str, C c)
 {
-    return Path::is_link(path.c_str());
+    assert(NULL != str);
+    for (size_t i = 0; 0 != str[i]; ++i)
+    {
+        if (str[i] == c)
+            return i;
+    }
+    return -1;
 }
 
 /**
@@ -905,18 +811,19 @@ bool Path::is_link(const std::wstring& path)
  * "/" "sd" -> "/sd"
  * "c:" "\\tmp" -> "c:\\tmp"
  */
-void Path::join(const std::string& a, const std::string& b, std::string *appended)
+void Path::join(const char *a, const char *b, std::string *appended)
 {
-    assert(NULL != appended);
+    assert(NULL != a && NULL != b && NULL != appended);
 
-    if (a.length() == 0)
+    if (0 == a[0])
     {
         *appended += b;
         return;
     }
 
     // 处理磁盘号
-    if (':' == *a.rbegin())
+    const size_t a_len = ::strlen(a);
+    if (':' == a[a_len - 1])
     {
         *appended += a;
         *appended += b;
@@ -924,14 +831,14 @@ void Path::join(const std::string& a, const std::string& b, std::string *appende
     }
 
     // 处理根目录 '/', 'c:\\'
-    if (b.length() > 0 && (is_path_separator(*b.begin()) || std::string::npos != b.find_first_of(':')))
+    if (is_path_separator(b[0]) || str_find(b, ':') >= 0)
     {
         *appended += b;
         return;
     }
 
     // 连接
-    if (is_path_separator(*a.rbegin()))
+    if (is_path_separator(a[a_len - 1]))
     {
         *appended += a;
         *appended += b;
@@ -944,18 +851,19 @@ void Path::join(const std::string& a, const std::string& b, std::string *appende
     }
 }
 
-void Path::join(const std::wstring& a, const std::wstring& b, std::wstring *appended)
+void Path::join(const wchar_t *a, const wchar_t *b, std::wstring *appended)
 {
-    assert(NULL != appended);
+    assert(NULL != a && NULL != b && NULL != appended);
 
-    if (a.length() == 0)
+    if (0 == a[0])
     {
         *appended += b;
         return;
     }
 
     // 处理磁盘号
-    if (L':' == *a.rbegin())
+    const size_t a_len = ::wcslen(a);
+    if (L':' == a[a_len - 1])
     {
         *appended += a;
         *appended += b;
@@ -963,14 +871,14 @@ void Path::join(const std::wstring& a, const std::wstring& b, std::wstring *appe
     }
 
     // 处理根目录 '/', 'c:\\'
-    if (b.length() > 0 && (is_path_separator(*b.begin()) || std::wstring::npos != b.find_first_of(L':')))
+    if (is_path_separator(b[0]) || str_find(b, L':') >= 0)
     {
         *appended += b;
         return;
     }
 
     // 连接
-    if (is_path_separator(*a.rbegin()))
+    if (is_path_separator(a[a_len - 1]))
     {
         *appended += a;
         *appended += b;
@@ -983,38 +891,32 @@ void Path::join(const std::wstring& a, const std::wstring& b, std::wstring *appe
     }
 }
 
-std::string Path::join(const std::string& a, const std::string& b)
+void Path::join(const char *a, const char *b, const char *c, std::string *appended)
 {
-    std::string ret;
-    Path::join(a, b, &ret);
-    return ret;
+    std::string tmp;
+    join(a, b, &tmp);
+    join(tmp.c_str(), c, appended);
 }
 
-std::wstring Path::join(const std::wstring& a, const std::wstring& b)
+void Path::join(const wchar_t *a, const wchar_t *b, const wchar_t *c, std::wstring *appended)
 {
-    std::wstring ret;
-    Path::join(a, b, &ret);
-    return ret;
+    std::wstring tmp;
+    join(a, b, &tmp);
+    join(tmp.c_str(), c, appended);
 }
 
-std::string Path::join(const std::string& a, const std::string& b, const std::string& c)
+void Path::join(const char *a, const char *b, const char *c, const char *d, std::string *appended)
 {
-    return Path::join(Path::join(a, b), c);
+    std::string tmp;
+    join(a, b, c, &tmp);
+    join(tmp.c_str(), d, appended);
 }
 
-std::wstring Path::join(const std::wstring& a, const std::wstring& b, const std::wstring& c)
+void Path::join(const wchar_t *a, const wchar_t *b, const wchar_t *c, const wchar_t *d, std::wstring *appended)
 {
-    return Path::join(Path::join(a, b),c);
-}
-
-std::string Path::join(const std::string& a, const std::string& b, const std::string& c, const std::string& d)
-{
-    return Path::join(Path::join(a, b, c), d);
-}
-
-std::wstring Path::join(const std::wstring& a, const std::wstring& b, const std::wstring& c, const std::wstring& d)
-{
-    return Path::join(Path::join(a, b, c), d);
+    std::wstring tmp;
+    join(a, b, c, &tmp);
+    join(tmp.c_str(), d, appended);
 }
 
 }

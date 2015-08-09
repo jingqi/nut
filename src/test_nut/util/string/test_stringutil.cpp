@@ -15,7 +15,7 @@ NUT_FIXTURE(TestStringUtil)
     NUT_CASE(test_split)
     NUT_CASE(test_format)
     NUT_CASE(test_trim)
-    NUT_CASE(test_strieq)
+    NUT_CASE(test_stricmp)
     NUT_CASE(test_wstr)
     NUT_CASE(test_xml_encoding)
     NUT_CASE(test_url_encoding)
@@ -71,29 +71,42 @@ NUT_FIXTURE(TestStringUtil)
 
     void test_format()
     {
-        NUT_TA(format("%d,%s,%c,%f", 1, "am", 's', 1.23) == "1,am,s,1.230000");
+        std::string tmp;
+        format(&tmp, "%d,%s,%c,%f", 1, "am", 's', 1.23);
+        NUT_TA(tmp == "1,am,s,1.230000");
 
+        std::wstring wtmp;
         // wcout << format(L"%d,%S,%c,%f", 1, L"am", L's', 1.23) << endl;
 #if defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
-        NUT_TA(format(L"%d,%S,%C,%f", 1, L"am", L's', 1.23) == L"1,am,s,1.230000");
+        format(&wtmp, L"%d,%S,%C,%f", 1, L"am", L's', 1.23);
+        NUT_TA(wtmp == L"1,am,s,1.230000");
 #else
-		NUT_TA(format(L"%d,%s,%c,%f", 1, L"am", L's', 1.23) == L"1,am,s,1.230000");
+        format(&wtmp, L"%d,%s,%c,%f", 1, L"am", L's', 1.23);
+        NUT_TA(wtmp == L"1,am,s,1.230000");
 #endif
     }
 
     void test_trim()
     {
-        NUT_TA(trim(" ab\r\t") == "ab");
-        NUT_TA(ltrim(" ab\r\t") == "ab\r\t");
-        NUT_TA(rtrim(" ab\r\t") == " ab");
+        std::string tmp;
+        trim(" ab\r\t", &tmp);
+        NUT_TA(tmp == "ab");
+
+        tmp.clear();
+        ltrim(" ab\r\t", &tmp);
+        NUT_TA(tmp == "ab\r\t");
+
+        tmp.clear();
+        rtrim(" ab\r\t", &tmp);
+        NUT_TA(tmp == " ab");
     }
 
-    void test_strieq()
+    void test_stricmp()
     {
-        NUT_TA(!strieq("a", "ab"));
-        NUT_TA(!strieq("ac", "ab"));
-        NUT_TA(strieq("ab", "ab"));
-        NUT_TA(strieq("aB", "ab"));
+        NUT_TA(0 != stricmp("a", "ab"));
+        NUT_TA(0 != stricmp("ac", "ab"));
+        NUT_TA(0 == stricmp("ab", "ab"));
+        NUT_TA(0 == stricmp("aB", "ab"));
     }
 
     void test_wstr()

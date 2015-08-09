@@ -18,19 +18,21 @@ namespace nut
  */
 int kmp_search(const std::string& src, size_t start, const std::string& target)
 {
-    int *next = new int[target.length()];
+    int *next = (int*) ::malloc(sizeof(int) * target.length());
+    assert(NULL != next);
     kmp_build_next(target.c_str(), next, target.length());
     const int ret = kmp_search(src.c_str(), src.length(), start, target.c_str(), next, target.length());
-    delete[] next;
+    ::free(next);
     return ret;
 }
 
 int kmp_search(const std::wstring& src, size_t start, const std::wstring& target)
 {
-    int *next = new int[target.length()];
+    int *next = (int*) ::malloc(sizeof(int) * target.length());
+    assert(NULL != next);
     kmp_build_next(target.c_str(), next, target.length());
     const int ret = kmp_search(src.c_str(), src.length(), start, target.c_str(), next, target.length());
-    delete[] next;
+    ::free(next);
     return ret;
 }
 

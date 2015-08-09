@@ -27,7 +27,7 @@ std::vector<rc_ptr<ICommand> > IConsole::match_commands(const std::vector<rc_ptr
         }
 
         // 弱匹配
-        if (NULL != cmd->get_command_name() && starts_with(cmd->get_command_name(), to_match))
+        if (NULL != cmd->get_command_name() && starts_with(cmd->get_command_name(), to_match.c_str()))
         {
             matched_cmds.push_back(cmd);
         }

@@ -18,6 +18,7 @@ NUT_FIXTURE(TestPath)
     NUT_CASE(test_join)
     NUT_CASE(test_joinw)
     NUT_CASE(test_abspath)
+    NUT_CASE(test_abspathw)
     NUT_CASES_END()
 
     void set_up() {}
@@ -109,54 +110,163 @@ NUT_FIXTURE(TestPath)
 
     void test_join()
     {
+        std::string tmp;
+        Path::join("a", "b", &tmp);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        NUT_TA(Path::join("a", "b") == "a\\b");
+        NUT_TA(tmp == "a\\b");
 #else
-        NUT_TA(Path::join("a", "b") == "a/b");
+        NUT_TA(tmp == "a/b");
 #endif
 
-        NUT_TA(Path::join("/", "sd") == "/sd");
-        NUT_TA(Path::join("c:", "\\tmp") == "c:\\tmp");
+        tmp.clear();
+        Path::join("/", "sd", &tmp);
+        NUT_TA(tmp == "/sd");
+
+        tmp.clear();
+        Path::join("c:", "\\tmp", &tmp);
+        NUT_TA(tmp == "c:\\tmp");
     }
 
     void test_joinw()
     {
+        std::wstring tmp;
+        Path::join(L"a", L"b", &tmp);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        NUT_TA(Path::join(L"a", L"b") == L"a\\b");
+        NUT_TA(tmp == L"a\\b");
 #else
-        NUT_TA(Path::join(L"a", L"b") == L"a/b");
+        NUT_TA(tmp == L"a/b");
 #endif
 
-        NUT_TA(Path::join(L"/", L"sd") == L"/sd");
-        NUT_TA(Path::join(L"c:", L"\\tmp") == L"c:\\tmp");
+        tmp.clear();
+        Path::join(L"/", L"sd", &tmp);
+        NUT_TA(tmp == L"/sd");
+
+        tmp.clear();
+        Path::join(L"c:", L"\\tmp", &tmp);
+        NUT_TA(tmp == L"c:\\tmp");
     }
 
     void test_abspath()
     {
         // cout << Path::abspath("/a//c");
 
-        NUT_TA(Path::abs_path("e:\\") == "e:\\");
-        NUT_TA(Path::abs_path("e:") == "e:\\");
-        NUT_TA(Path::abs_path("e:\\..\\..") == "e:\\");
-        NUT_TA(Path::abs_path("e:\\..\\..\\a") == "e:\\a");
-        NUT_TA(Path::abs_path("e:\\b\\..\\.\\a") == "e:\\a");
+        std::string tmp;
+        Path::abs_path("e:\\", &tmp);
+        NUT_TA(tmp == "e:\\");
+
+        tmp.clear();
+        Path::abs_path("e:", &tmp);
+        NUT_TA(tmp == "e:\\");
+
+        tmp.clear();
+        Path::abs_path("e:\\..\\..", &tmp);
+        NUT_TA(tmp == "e:\\");
+
+        tmp.clear();
+        Path::abs_path("e:\\..\\..\\a", &tmp);
+        NUT_TA(tmp == "e:\\a");
+
+        tmp.clear();
+        Path::abs_path("e:\\b\\..\\.\\a", &tmp);
+        NUT_TA(tmp == "e:\\a");
+
+        tmp.clear();
+        Path::abs_path("e:\\b\\\\a", &tmp);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        NUT_TA(Path::abs_path("e:\\b\\\\a") == "e:\\b\\a");
+        NUT_TA(tmp == "e:\\b\\a");
 #else
-        NUT_TA(Path::abs_path("e:\\b\\\\a") == "e:\\b/a");
+        NUT_TA(tmp == "e:\\b/a");
 #endif
 
-        NUT_TA(Path::abs_path("/") == "/");
-        NUT_TA(Path::abs_path("/.") == "/");
-        NUT_TA(Path::abs_path("/../") == "/");
-        NUT_TA(Path::abs_path("/../../a") == "/a");
-        NUT_TA(Path::abs_path("/a/.././c") == "/c");
+        tmp.clear();
+        Path::abs_path("/", &tmp);
+        NUT_TA(tmp == "/");
+
+        tmp.clear();
+        Path::abs_path("/.", &tmp);
+        NUT_TA(tmp == "/");
+
+        tmp.clear();
+        Path::abs_path("/../", &tmp);
+        NUT_TA(tmp == "/");
+
+        tmp.clear();
+        Path::abs_path("/../../a", &tmp);
+        NUT_TA(tmp == "/a");
+
+        tmp.clear();
+        Path::abs_path("/a/.././c", &tmp);
+        NUT_TA(tmp == "/c");
+
+        tmp.clear();
+        Path::abs_path("/a//c", &tmp);
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-        NUT_TA(Path::abs_path("/a//c") == "/a\\c");
+        NUT_TA(tmp == "/a\\c");
 #else
-        NUT_TA(Path::abs_path("/a//c") == "/a/c");
+        NUT_TA(tmp == "/a/c");
+#endif
+    }
+
+
+    void test_abspathw()
+    {
+        // cout << Path::abspath("/a//c");
+
+        std::wstring tmp;
+        Path::abs_path(L"e:\\", &tmp);
+        NUT_TA(tmp == L"e:\\");
+
+        tmp.clear();
+        Path::abs_path(L"e:", &tmp);
+        NUT_TA(tmp == L"e:\\");
+
+        tmp.clear();
+        Path::abs_path(L"e:\\..\\..", &tmp);
+        NUT_TA(tmp == L"e:\\");
+
+        tmp.clear();
+        Path::abs_path(L"e:\\..\\..\\a", &tmp);
+        NUT_TA(tmp == L"e:\\a");
+
+        tmp.clear();
+        Path::abs_path(L"e:\\b\\..\\.\\a", &tmp);
+        NUT_TA(tmp == L"e:\\a");
+
+        tmp.clear();
+        Path::abs_path(L"e:\\b\\\\a", &tmp);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        NUT_TA(tmp == L"e:\\b\\a");
+#else
+        NUT_TA(tmp == L"e:\\b/a");
 #endif
 
+        tmp.clear();
+        Path::abs_path(L"/", &tmp);
+        NUT_TA(tmp == L"/");
+
+        tmp.clear();
+        Path::abs_path(L"/.", &tmp);
+        NUT_TA(tmp == L"/");
+
+        tmp.clear();
+        Path::abs_path(L"/../", &tmp);
+        NUT_TA(tmp == L"/");
+
+        tmp.clear();
+        Path::abs_path(L"/../../a", &tmp);
+        NUT_TA(tmp == L"/a");
+
+        tmp.clear();
+        Path::abs_path(L"/a/.././c", &tmp);
+        NUT_TA(tmp == L"/c");
+
+        tmp.clear();
+        Path::abs_path(L"/a//c", &tmp);
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        NUT_TA(tmp == L"/a\\c");
+#else
+        NUT_TA(tmp == L"/a/c");
+#endif
     }
 };
 

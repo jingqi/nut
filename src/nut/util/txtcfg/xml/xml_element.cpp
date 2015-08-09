@@ -283,7 +283,11 @@ void XmlElement::parse(const std::string& s, size_t start_index, bool ignore_tex
         virtual void handle_finish()
         {
             if (_ignore_text_blank)
-                _elem->_text = trim(_elem->_text);
+            {
+                std::string tmp;
+                trim(_elem->_text.c_str(), &tmp);
+                _elem->_text = std::move(tmp);
+            }
         }
     };
 
@@ -325,7 +329,8 @@ void XmlElement::serielize(XmlWriter &writer, int tab) const
     {
         if (tab >= 0)
         {
-            const std::string text = trim(_text);
+            std::string text;
+            trim(_text.c_str(), &text);
             if (!text.empty())
             {
                 writer.write_text("\n");

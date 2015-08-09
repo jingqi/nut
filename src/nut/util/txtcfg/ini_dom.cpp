@@ -359,10 +359,10 @@ const char* IniDom::get_string(const char *sector, const char *key, const char *
 bool IniDom::get_bool(const char *sector, const char *key, bool default_value) const
 {
     assert(NULL != key);
-    std::string s = get_string(sector, key);
-    if (s == "0" || strieq(s,"false") || strieq(s,"no"))
+    const char *s = get_string(sector, key);
+    if (0 == ::strcmp(s, "0") || 0 == stricmp(s, "false") || 0 == stricmp(s, "no"))
         return false;
-    if (s == "1" || strieq(s,"true") || strieq(s,"yes"))
+    if (0 == ::strcmp(s, "1") || 0 == stricmp(s, "true") || 0 == stricmp(s, "yes"))
         return true;
     return default_value;
 }

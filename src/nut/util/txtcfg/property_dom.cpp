@@ -247,10 +247,10 @@ const char* PropertyDom::get_string(const char *key, const char *default_value) 
 bool PropertyDom::get_bool(const char *key, bool default_value) const
 {
     assert(NULL != key);
-    std::string s = get_string(key);
-    if (s == "0" || strieq(s,"false") || strieq(s,"no"))
+    const char *s = get_string(key);
+    if (0 == ::strcmp(s, "0") || 0 == stricmp(s, "false") || 0 == stricmp(s, "no"))
         return false;
-    if (s == "1" || strieq(s,"true") || strieq(s,"yes"))
+    if (0 == ::strcmp(s, "1") || 0 == stricmp(s, "true") || 0 == stricmp(s, "yes"))
         return true;
     return default_value;
 }
