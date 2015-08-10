@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include <nut/container/array.h>
+
 namespace nut
 {
 
@@ -91,10 +93,10 @@ int url_encode(const char *s, int len, std::string *appended);
 int url_decode(const char *s, int len, std::string *appended);
 
 int hex_encode(const void *data, size_t cb, std::string *appended);
-int hex_decode(const char *s, int len, std::vector<uint8_t> *appended);
+int hex_decode(const char *s, int len, Array<uint8_t> *appended);
 
 int base64_encode(const void *data, size_t cb, std::string *appended);
-int base64_decode(const char *s, int len, std::vector<uint8_t> *appended);
+int base64_decode(const char *s, int len, Array<uint8_t> *appended);
 
 }
 

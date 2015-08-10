@@ -14,6 +14,7 @@
 
 #include "kmp.h"
 #include "to_string.h"
+#include "string_util.h"
 
 #if defined(NUT_PLATFORM_CC_VC)
 #   pragma warning(push)
@@ -637,7 +638,7 @@ int hex_encode(const void *data, size_t cb, std::string *appended)
     return (int) cb * 2;
 }
 
-int hex_decode(const char *s, int len, std::vector<uint8_t> *appended)
+int hex_decode(const char *s, int len, Array<uint8_t> *appended)
 {
     assert(NULL != s && NULL != appended);
 
@@ -730,7 +731,7 @@ int base64_encode(const void *data, size_t cb, std::string *appended)
     return (int) ((cb + 2) / 3) * 4;
 }
 
-int base64_decode(const char *s, int len, std::vector<uint8_t> *appended)
+int base64_decode(const char *s, int len, Array<uint8_t> *appended)
 {
     assert(NULL != s && NULL != appended);
 

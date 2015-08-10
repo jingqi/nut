@@ -8,35 +8,74 @@
 
 #include <nut/mem/sys_ma.h>
 #include <nut/rc/rc_new.h>
+#include <nut/rc/enrc.h>
 
 namespace nut
 {
 
 template <typename T>
-class RCArray
+class Array
 {
-    typedef RCArray<T> self_type;
+    typedef Array<T> self_type;
 
 public:
     typedef size_t size_type;
-    NUT_REF_COUNTABLE
 
 private:
-    const rc_ptr<memory_allocator> _alloc;
+    rc_ptr<memory_allocator> _alloc;
     T *_buf = NULL;
     size_type _size = 0, _cap = 0;
 
-private:
-    RCArray(const self_type&);
-
 public:
-    RCArray(size_type init_cap = 16, memory_allocator *ma = NULL)
+    Array(size_type init_cap = 16, memory_allocator *ma = NULL)
         : _alloc(ma)
     {
         ensure_cap(init_cap);
     }
 
-    ~RCArray()
+    Array(size_type sz, const T& fillv, memory_allocator *ma = NULL)
+        : _alloc(ma)
+    {
+        ensure_cap(sz);
+        std::uninitialized_fill(_buf, _buf + sz, fillv);
+        _size = sz;
+    }
+
+    Array(const T *data, size_type sz, memory_allocator *ma = NULL)
+        : _alloc(ma)
+    {
+        ensure_cap(sz);
+        std::uninitialized_copy(data, data + sz, _buf);
+        _size = sz;
+    }
+
+    template <typename Iter>
+    Array(const Iter& b, const Iter& e, memory_allocator *ma = NULL)
+        : _alloc(ma)
+    {
+        const size_t sz = e - b;
+        ensure_cap(sz);
+        std::uninitialized_copy(b, e, _buf);
+        _size = sz;
+    }
+
+    Array(const self_type& x)
+        : _alloc(x._alloc)
+    {
+        ensure_cap(x._size);
+        std::uninitialized_copy(x._buf, x._buf + x._size, _buf);
+        _size = x._size;
+    }
+
+    Array(self_type&& x)
+        : _alloc(x._alloc), _buf(x._buf), _size(x._size), _cap(x._cap)
+    {
+        x._buf = NULL;
+        x._size = 0;
+        x._cap = 0;
+    }
+
+    ~Array()
     {
         clear();
         if (NULL != _buf)
@@ -82,27 +121,18 @@ public:
     {
         if (this != &x)
         {
-            if (_alloc == x._alloc)
-            {
-                clear();
-                if (NULL != _buf)
-                    ma_free(_alloc.pointer(), _buf);
+            clear();
+            if (NULL != _buf)
+                ma_free(_alloc.pointer(), _buf);
 
-                _buf = x._buf;
-                _size = x._size;
-                _cap = x._cap;
+            _alloc = x._alloc;
+            _buf = x._buf;
+            _size = x._size;
+            _cap = x._cap;
 
-                x._buf = NULL;
-                x._size = 0;
-                x._cap = 0;
-            }
-            else
-            {
-                clear();
-                ensure_cap(x._size);
-                std::uninitialized_copy(x._buf, x._buf + x._size, _buf);
-                _size = x._size;
-            }
+            x._buf = NULL;
+            x._size = 0;
+            x._cap = 0;
         }
         return *this;
     }
@@ -163,14 +193,6 @@ public:
     }
 
 public:
-    rc_ptr<self_type> clone() const
-    {
-        rc_ptr<self_type> ret = rca_new<self_type,int>(_alloc.pointer(), _size, _alloc.pointer());
-        std::uninitialized_copy(_buf, _buf + _size, ret->_buf);
-		ret->_size = _size;
-        return ret;
-    }
-
     size_type size() const
     {
         return _size;
@@ -229,6 +251,12 @@ public:
         _size += len;
     }
 
+    template <typename Iter>
+    void append(const Iter& b, const Iter& e)
+    {
+        insert(size(), b, e);
+    }
+
     void erase(size_type index)
     {
         assert(index < _size);
@@ -276,16 +304,20 @@ public:
     }
 };
 
+/**
+ * copy-on-write array
+ */
 template <typename T>
-class Array
+class COWArray
 {
-    typedef Array<T> self_type;
-    typedef RCArray<T> rcarray_type;
+    typedef Array<T> array_type;
+    typedef enrc<array_type> rcarray_type;
+    typedef COWArray<T> self_type;
 
 public:
-    typedef typename rcarray_type::size_type size_type;
-    typedef typename rcarray_type::iterator iterator;
-    typedef typename rcarray_type::const_iterator const_iterator;
+    typedef typename array_type::size_type size_type;
+    typedef typename array_type::iterator iterator;
+    typedef typename array_type::const_iterator const_iterator;
 
 private:
     rc_ptr<rcarray_type> _array;
@@ -299,15 +331,28 @@ private:
         const int rc = _array->get_ref();
         assert(rc >= 1);
         if (rc > 1)
-            _array = _array->clone();
+            _array = rca_new<rcarray_type>(_array->allocator(), *_array);
     }
 
 public:
-    Array(size_type init_cap = 16, memory_allocator *ma = NULL)
+    COWArray(size_type init_cap = 16, memory_allocator *ma = NULL)
         : _array(rca_new<rcarray_type>(ma, init_cap, ma))
     {}
 
-    Array(const self_type& x)
+    COWArray(size_type sz, const T& fillv, memory_allocator *ma = NULL)
+        : _array(sz, fillv, ma)
+    {}
+
+    COWArray(const T *data, size_type sz, memory_allocator *ma = NULL)
+        : _array(data, sz, ma)
+    {}
+
+    template <typename Iter>
+    COWArray(const Iter& b, const Iter& e, memory_allocator *ma = NULL)
+        : _array(b, e, ma)
+    {}
+
+    COWArray(const self_type& x)
         : _array(x._array)
     {}
 
@@ -394,11 +439,18 @@ public:
         _array->insert(index, e);
     }
 
-    template<typename Iter>
+    template <typename Iter>
     void insert(size_type index, const Iter& b, const Iter& e)
     {
         copy_on_write();
         _array->insert(index, b, e);
+    }
+
+    template <typename Iter>
+    void append(const Iter& b, const Iter& e)
+    {
+        copy_on_write();
+        _array->append(b, e);
     }
 
     void erase(size_type index)
@@ -421,8 +473,12 @@ public:
 
     void clear()
     {
-        copy_on_write();
-        _array->clear();
+        const int rc = _array->get_ref();
+        assert(rc >= 1);
+        if (rc > 1)
+            _array = rca_new<rcarray_type>(_array->allocator(), 0, _array->allocator());
+        else
+            _array->clear();
     }
 
     const T* data() const

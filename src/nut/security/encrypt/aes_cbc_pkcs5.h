@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#include <nut/container/byte_array.h>
+#include <nut/container/array.h>
 
 #include "aes.h"
 
@@ -28,7 +28,7 @@ class AES_CBC_PKCS5
     } _state = READY;
     uint8_t _data_buf[16], _iv[16];
     size_t _data_buf_size = 0;
-    ByteArray _result;
+    COWArray<uint8_t> _result;
     AES _aes;
 
 public:
@@ -75,7 +75,7 @@ public:
     /**
      * 获取加密或者解密结果
      */
-    const ByteArray& get_result() const
+    COWArray<uint8_t> get_result() const
     {
         return _result;
     }

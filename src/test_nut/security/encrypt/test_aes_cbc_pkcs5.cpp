@@ -26,7 +26,7 @@ NUT_FIXTURE(TestAesCbcPkcs5)
             1,2,3,4,5,6,7,8,9,0,'a','b','c','d','e','f',
             1,2,3,4,5,6,7,8,9,0,'a','b','c','d','e','f'
         };
-        
+
         const uint8_t key[16] = {
             1, 3, 5, 6, 8, 9, 0xe, 0x1c, 7, 8, 11, 23, 36, 41, 15, 90
         };
@@ -39,7 +39,7 @@ NUT_FIXTURE(TestAesCbcPkcs5)
             acp.start_encrypt(key, sizeof(key) * 8, iv);
             acp.update_encrypt(data, 7);
             acp.finish_encrypt();
-            ByteArray ba = acp.get_result();
+            COWArray<uint8_t> ba = acp.get_result();
 
             acp.start_decrypt(key, sizeof(key) * 8, iv);
             acp.update_decrypt(ba.data(), ba.size());
@@ -53,7 +53,7 @@ NUT_FIXTURE(TestAesCbcPkcs5)
             acp.start_encrypt(key, sizeof(key) * 8, iv);
             acp.update_encrypt(data, 16);
             acp.finish_encrypt();
-            ByteArray ba = acp.get_result();
+            COWArray<uint8_t> ba = acp.get_result();
 
             acp.start_decrypt(key, sizeof(key) * 8, iv);
             acp.update_decrypt(ba.data(), ba.size());
@@ -62,13 +62,13 @@ NUT_FIXTURE(TestAesCbcPkcs5)
             NUT_TA(16 == ba.size());
             NUT_TA(0 == ::memcmp(ba.data(), data, 16));
         }
-        
+
         {
             acp.start_encrypt(key, sizeof(key) * 8, iv);
             acp.update_encrypt(data, 7);
             acp.update_encrypt(data + 7, 19);
             acp.finish_encrypt();
-            ByteArray ba = acp.get_result();
+            COWArray<uint8_t> ba = acp.get_result();
 
             acp.start_decrypt(key, sizeof(key) * 8, iv);
             acp.update_decrypt(ba.data(), ba.size());

@@ -18,9 +18,9 @@ namespace nut
 template <typename T>
 class enrc : public T
 {
+public:
     NUT_REF_COUNTABLE
 
-public :
 #ifndef _LIBCPP_HAS_NO_VARIADICS
     template <typename ...Args>
     enrc(Args&& ...args)

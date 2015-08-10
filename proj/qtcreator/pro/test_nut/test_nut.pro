@@ -44,6 +44,7 @@ INCLUDEPATH += \
 SOURCES +=\
     $$files($${SRC_ROOT}/*.c*) \
     $$files($${SRC_ROOT}/container/*.c*) \
+    $$files($${SRC_ROOT}/container/bytestream/*.c*) \
     $$files($${SRC_ROOT}/container/skiplist/*.c*) \
     $$files($${SRC_ROOT}/container/tree/*.c*) \
     $$files($${SRC_ROOT}/container/tree/rtree/*.c*) \

@@ -34,7 +34,7 @@ void AES_CBC_PKCS5::update_encrypt(const uint8_t *data, size_t data_len)
         ::memcpy(_data_buf + _data_buf_size, data, 16 - _data_buf_size);
         xor_buf(_iv, _data_buf, 16);
         _aes.encrypt(_iv, _iv);
-        _result.append(_iv, 16);
+        _result.append((const uint8_t*) _iv, (const uint8_t*) _iv + 16);
 
         data += 16 - _data_buf_size;
         data_len -= 16 - _data_buf_size;
@@ -46,7 +46,7 @@ void AES_CBC_PKCS5::update_encrypt(const uint8_t *data, size_t data_len)
     {
         xor_buf(_iv, data + i * 16, 16);
         _aes.encrypt(_iv, _iv);
-        _result.append(_iv, 16);
+        _result.append((const uint8_t*) _iv, (const uint8_t*) _iv + 16);
     }
 
     ::memcpy(_data_buf + _data_buf_size, data + i * 16, data_len - i * 16);
@@ -63,7 +63,7 @@ void AES_CBC_PKCS5::finish_encrypt()
     xor_buf(_iv, _data_buf, 16);
     _aes.encrypt(_iv, _iv);
 
-    _result.append(_iv, 16);
+    _result.append((const uint8_t*) _iv, (const uint8_t*) _iv + 16);
     _state = READY;
     _data_buf_size = 0;
 }
@@ -91,7 +91,7 @@ void AES_CBC_PKCS5::update_decrypt(const uint8_t *data, size_t data_len)
         ::memcpy(_data_buf + _data_buf_size, data, 16 - _data_buf_size);
         _aes.decrypt(_data_buf, buf);
         xor_buf(buf, _iv, 16);
-        _result.append(buf,16);
+        _result.append((const uint8_t*) buf, (const uint8_t*) buf + 16);
         ::memcpy(_iv, _data_buf, 16);
 
         data += 16 - _data_buf_size;
@@ -104,7 +104,7 @@ void AES_CBC_PKCS5::update_decrypt(const uint8_t *data, size_t data_len)
     {
         _aes.decrypt(data + i * 16, buf);
         xor_buf(buf, _iv, 16);
-        _result.append(buf, 16);
+        _result.append((const uint8_t*) buf, (const uint8_t*) buf + 16);
         ::memcpy(_iv, data + i * 16, 16);
     }
 

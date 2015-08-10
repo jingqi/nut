@@ -173,7 +173,7 @@ NUT_FIXTURE(TestStringUtil)
         hex_encode("\x03\xfA", 2, &s);
         NUT_TA(s == "03FA");
 
-        std::vector<uint8_t> v;
+        Array<uint8_t> v;
         hex_decode("03 FA\t", -1, &v);
         NUT_TA(v.size() == 2);
         NUT_TA(v[0] == 0x03);
@@ -196,7 +196,7 @@ NUT_FIXTURE(TestStringUtil)
         NUT_TA(s == "YWJjZGVmZ2g=");
 
         // decode
-        std::vector<uint8_t> v;
+        Array<uint8_t> v;
         base64_decode("YW \n Jj \t ZGVm", -1, &v);
         NUT_TA(v.size() == 6);
         NUT_TA(0 == ::strncmp((const char*)&v[0], "abcdef", 6));

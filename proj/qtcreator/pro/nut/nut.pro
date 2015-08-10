@@ -42,6 +42,7 @@ INCLUDEPATH += \
 HEADERS +=\
     $$files($${SRC_ROOT}/*.h*) \
     $$files($${SRC_ROOT}/container/*.h*) \
+    $$files($${SRC_ROOT}/container/bytestream/*.h*) \
     $$files($${SRC_ROOT}/container/skiplist/*.h*) \
     $$files($${SRC_ROOT}/container/tree/*.h*) \
     $$files($${SRC_ROOT}/container/tree/rtree/*.h*) \
@@ -72,6 +73,7 @@ HEADERS +=\
 SOURCES +=\
     $$files($${SRC_ROOT}/*.c*) \
     $$files($${SRC_ROOT}/container/*.c*) \
+    $$files($${SRC_ROOT}/container/bytestream/*.c*) \
     $$files($${SRC_ROOT}/container/skiplist/*.c*) \
     $$files($${SRC_ROOT}/container/tree/*.c*) \
     $$files($${SRC_ROOT}/container/tree/rtree/*.c*) \
