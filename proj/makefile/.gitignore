@@ -4,4 +4,5 @@
 /*.a
 /*.so
 /*.dylib
+/obj
 /test_nut

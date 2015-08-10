@@ -1,7 +1,4 @@
 *~
-*.o
-*.d
-*.d.$
 .DS_Store
 *.tmp
 
