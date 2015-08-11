@@ -38,9 +38,9 @@ TARGET = $(CURDIR)/libnut.a
 # mkdirs
 $(shell mkdir -p $(patsubst ${SRC_ROOT}%,${OBJ_ROOT}%,${DIRS}))
 
-.PHONY: all clean rebuild dirs
+.PHONY: all clean rebuild
 
-all: dirs ${TARGET}
+all: ${TARGET}
 
 clean:
 	rm -rf ${OBJS}
@@ -48,9 +48,6 @@ clean:
 	rm -rf ${TARGET}
 
 rebuild: clean all
-
-dirs:
-	@mkdir -p $(patsubst ${SRC_ROOT}%,${OBJ_ROOT}%,${DIRS})
 
 $(TARGET): ${OBJS} ${THIS}
 	$(AR) cqs $@ ${OBJS}

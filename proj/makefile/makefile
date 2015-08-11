@@ -1,7 +1,6 @@
 #!/user/bin/env make
 
 all:
-	make -f nut.mk
 	make -f test_nut.mk
 
 clean:

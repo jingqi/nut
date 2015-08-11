@@ -13,8 +13,9 @@ THIS = test_nut.mk
 INC += -I${SRC_ROOT}/..
 
 # LIB
-LIB_DEPS = ./libnut.a
 HOST = $(shell uname -s)
+LIB += -L. -lnut
+LIB_DEPS += ./libnut.a
 ifeq (${HOST}, Darwin)
 	LIB += -lstdc++
 else
@@ -39,9 +40,12 @@ TARGET = $(CURDIR)/test_nut
 # mkdirs
 $(shell mkdir -p $(patsubst ${SRC_ROOT}%,${OBJ_ROOT}%,${DIRS}))
 
-.PHONY: all clean rebuild run gdb cgdb nemiver valgrind dirs
+.PHONY: all others clean rebuild run gdb cgdb nemiver valgrind
 
-all: dirs ${TARGET}
+all: others ${TARGET}
+
+others:
+	make -f nut.mk
 
 clean:
 	rm -rf ${OBJS}
@@ -65,15 +69,9 @@ nemiver: ${TARGET}
 valgrind: ${TARGET}
 	valgrind -v --leak-check=full ${TARGET}
 
-dirs:
-	@mkdir -p $(patsubst ${SRC_ROOT}%,${OBJ_ROOT}%,${DIRS})
-
-./libnut.a:
-	make -f nut.mk
-
 # NOTE: in linux, $(LIB) should be the last parameter
 $(TARGET): ${OBJS} ${LIB_DEPS} ${THIS}
-	$(CC) -o $@ ${OBJS} ${LIB_DEPS} $(LIB)
+	$(CC) -o $@ ${OBJS} $(LIB)
 
 ${OBJ_ROOT}/%.o: ${SRC_ROOT}/%.cpp
 	$(CC) ${INC} ${DEF} ${CC_FLAGS} -c $< -o $@
