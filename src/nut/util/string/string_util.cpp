@@ -10,6 +10,7 @@
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <windows.h>
+typedef SSIZE_T ssize_t;
 #endif
 
 #include "kmp.h"
@@ -740,7 +741,7 @@ int base64_decode(const char *s, int len, Array<uint8_t> *appended)
     for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
     {
         const int v = base64_char_to_int(s[i]);
-        if (0 <= v and v <= 64)
+        if (0 <= v && v <= 64)
         {
             buff[state++] = v;
             if (4 == state)

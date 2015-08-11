@@ -328,7 +328,7 @@ bool OS::remove_tree(const char *path)
 #   else
         ::sprintf(full_path, "%s\\%s", path, wfd.cFileName);
 #   endif
-        ret = removetree(full_path);
+        ret = remove_tree(full_path);
     } while (ret && ::FindNextFileA(hfind, &wfd));
 
     // 关闭查找句柄
@@ -411,7 +411,7 @@ bool OS::remove_tree(const wchar_t *path)
 #   else
         ::swprintf(full_path, L"%s\\%s", path, wfd.cFileName);
 #   endif
-        ret = removetree(full_path);
+        ret = remove_tree(full_path);
     } while (ret && ::FindNextFileW(hfind, &wfd));
 
     // 关闭查找句柄

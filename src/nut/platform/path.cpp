@@ -8,6 +8,7 @@
 #   include<io.h> // for _access()
 #   include <sys/stat.h> // for stat()
 #   include <direct.h> // for getcwd()
+typedef SSIZE_T ssize_t;
 #else
 #   include <unistd.h> // for access(), getcwd()
 #   include <fcntl.h> // for AT_FDCWD, AT_SYMLINK_NOFOLLOW

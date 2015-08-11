@@ -83,6 +83,9 @@
     <Filter Include="nut\numeric\numeric_algo">
       <UniqueIdentifier>{9611da48-8e87-484f-bba4-1e1c17f77081}</UniqueIdentifier>
     </Filter>
+    <Filter Include="nut\container\bytestream">
+      <UniqueIdentifier>{8856b997-069e-4682-82c9-8c64ca05d7fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\nut\container\tree\rtree\mdarea.h">
@@ -116,12 +119,6 @@
       <Filter>nut\container</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\bundle.h">
-      <Filter>nut\container</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\container\byte_array.h">
-      <Filter>nut\container</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\container\byte_array_stream.h">
       <Filter>nut\container</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\lru_cache.h">
@@ -382,15 +379,24 @@
     <ClInclude Include="..\..\..\src\nut\unittest\unit_test.h">
       <Filter>nut\unittest</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\bytestream\byte_array.h">
+      <Filter>nut\container\bytestream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\bytestream\byte_array_stream.h">
+      <Filter>nut\container\bytestream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\bytestream\input_stream.h">
+      <Filter>nut\container\bytestream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\bytestream\output_stream.h">
+      <Filter>nut\container\bytestream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\bytestream\random_access_input_stream.h">
+      <Filter>nut\container\bytestream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">
-      <Filter>nut\container</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\container\byte_array.cpp">
-      <Filter>nut\container</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\container\byte_array_stream.cpp">
       <Filter>nut\container</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\debugging\addr_map_mgr.cpp">
@@ -545,6 +551,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\unittest\test_runner.cpp">
       <Filter>nut\unittest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\container\bytestream\byte_array_stream.cpp">
+      <Filter>nut\container\bytestream</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
