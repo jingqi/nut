@@ -41,9 +41,10 @@ static void split_groups(const char *groups, std::vector<std::string> *rs)
     const char GROUP_SPLITER = ','; // 分组分隔符
 
     std::string s;
-    for (int i = 0; '\0' != groups[i]; ++i)
+    for (size_t i = 0; 0 != groups[i]; ++i)
     {
-        if (GROUP_SPLITER == groups[i])
+        const char c = groups[i];
+        if (GROUP_SPLITER == c)
         {
             // 去除尾部空格
             s = trim_end(s);
@@ -55,9 +56,9 @@ static void split_groups(const char *groups, std::vector<std::string> *rs)
                 s.clear();
             }
         }
-        else if (s.length() > 0 || !is_blank(groups[i]))
+        else if (s.length() > 0 || !is_blank(c))
         {
-            s.push_back(groups[i]);
+            s.push_back(c);
         }
     }
     s = trim_end(s);

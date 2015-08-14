@@ -50,6 +50,7 @@ clean:
 rebuild: clean all
 
 $(TARGET): ${OBJS} ${THIS}
+	rm -f $@
 	$(AR) cqs $@ ${OBJS}
 
 ${OBJ_ROOT}/%.o: ${SRC_ROOT}/%.cpp

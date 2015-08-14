@@ -9,46 +9,37 @@
 namespace nut
 {
 
-void ConsoleTestLogger::start(const char *group_name, const char *fixture_name, const char *case_name)
+void ConsoleTestLogger::on_start(const char *group_name, const char *fixture_name, const char *case_name)
 {
-    _count_of_fixtures = 0;
-    _count_of_failed_fixtures = 0;
-    _current_fixture_failed = false;
-    _count_of_cases = 0;
-    _count_of_failed_cases = 0;
-    _current_case_failed = false;
-    _failures.clear();
-
+    std::cout << std::endl;
     if (NULL != group_name)
     {
         assert(NULL == fixture_name && NULL == case_name);
-        std::cout << std::endl << "> run group: ";
+        std::cout << "> run group: ";
         ConsoleUtil::set_text_color(ConsoleUtil::BLUE);
         std::cout << group_name;
         ConsoleUtil::set_text_color();
-        std::cout << std::endl << std::endl;
     }
     else if (NULL != case_name)
     {
         assert(NULL != fixture_name);
-        std::cout << std::endl << "> run case: ";
+        std::cout << "> run case: ";
         ConsoleUtil::set_text_color(ConsoleUtil::BLUE);
         std::cout << fixture_name << "::" << case_name << "()";
         ConsoleUtil::set_text_color();
-        std::cout << std::endl << std::endl;
     }
     else
     {
         assert(NULL != fixture_name);
-        std::cout << std::endl << "> run fixture: ";
+        std::cout << "> run fixture: ";
         ConsoleUtil::set_text_color(ConsoleUtil::BLUE);
         std::cout << fixture_name;
         ConsoleUtil::set_text_color();
-        std::cout << std::endl << std::endl;
     }
+    std::cout << std::endl << std::endl;
 }
 
-void ConsoleTestLogger::finish()
+void ConsoleTestLogger::on_finish()
 {
     std::cout << std::endl << "> total fixtures  : ";
     ConsoleUtil::set_text_color(ConsoleUtil::BLUE);
@@ -80,47 +71,43 @@ void ConsoleTestLogger::finish()
     {
         std::cout << "> failures are followed :" << std::endl << std::endl;
 
-        for (std::vector<TestCaseFailureException>::iterator i = _failures.begin(); i != _failures.end(); ++i)
+        for (size_t i = 0, sz = _failures.size(); i < sz; ++i)
         {
+            const TestCaseFailureException& failure = _failures.at(i);
             ConsoleUtil::set_text_color(ConsoleUtil::RED);
-            std::cout << i->get_description();
+            std::cout << failure.get_description();
             ConsoleUtil::set_text_color();
-            std::cout << std::endl << i->get_file() << " " << i->get_line() << std::endl << std::endl;
+            std::cout << std::endl << failure.get_file() << " " << failure.get_line() << std::endl << std::endl;
         }
     }
 
     std::cout << std::endl;
 }
 
-void ConsoleTestLogger::enter_fixture(const char *fixture_name)
+void ConsoleTestLogger::on_enter_fixture(const char *fixture_name)
 {
-    ++_count_of_fixtures;
-    _current_fixture_failed = false;
-
+    assert(NULL != fixture_name);
     std::cout << "  + " << fixture_name << std::endl;
 }
 
-void ConsoleTestLogger::leave_fixture()
+void ConsoleTestLogger::on_leave_fixture()
 {
-    if (_current_fixture_failed)
-        ++_count_of_failed_fixtures;
-
     std::cout << std::endl;
 }
 
-void ConsoleTestLogger::enter_case(const char *case_name)
+void ConsoleTestLogger::on_enter_case(const char *case_name)
 {
-    ++_count_of_cases;
-    _current_case_failed = false;
-
-    std::cout << "    - " << case_name << " ()";
+    assert(NULL != case_name);
+    std::cout << "    - " << case_name << "()";
 }
 
-void ConsoleTestLogger::leave_case()
+void ConsoleTestLogger::on_failed_case(const TestCaseFailureException&)
+{}
+
+void ConsoleTestLogger::on_leave_case()
 {
     if (_current_case_failed)
     {
-        ++_count_of_failed_cases;
         std::cout << "  ";
         ConsoleUtil::set_text_color(ConsoleUtil::RED);
         std::cout << "×";
@@ -135,14 +122,6 @@ void ConsoleTestLogger::leave_case()
         ConsoleUtil::set_text_color();
         std::cout << std::endl;
     }
-}
-
-void ConsoleTestLogger::failed_case(const TestCaseFailureException& e)
-{
-    _current_case_failed = true;
-    _current_fixture_failed = true;
-
-    _failures.push_back(e);
 }
 
 }

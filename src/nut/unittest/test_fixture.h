@@ -21,7 +21,7 @@ public:
 private:
     friend class TestRunner;
 
-    virtual int ___run_case(ITestLogger& logger, const int op, const char *case_name) = 0;
+    virtual int ___run_case(ITestLogger *logger, const int op, const char *case_name) = 0;
 };
 
 }

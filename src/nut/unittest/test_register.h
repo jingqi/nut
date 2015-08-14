@@ -12,7 +12,7 @@ DLL_API void** nut_get_register_header();
 #define NUT_UNITTEST_IMPL                           \
     DLL_API void** nut_get_register_header()        \
     {                                               \
-        static nut::TestRegister* header = NULL;    \
+        static ::nut::TestRegister* header = NULL;  \
         return (void**) &header;                    \
     }
 

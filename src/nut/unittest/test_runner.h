@@ -4,15 +4,19 @@
 
 #include "test_logger.h"
 
+/* magic number, do NOT change them */
+#define __NUT_UNITTEST_SUM_CASES_OP -2
+#define __NUT_UNITTEST_RUN_NAMED_CASE_OP -1
+
 namespace nut
 {
 
 class TestRunner
 {
-    ITestLogger& _logger;
+    ITestLogger *_logger = NULL;
 
 public:
-    TestRunner(ITestLogger& logger);
+    TestRunner(ITestLogger *logger);
 
     void run_group(const char *group_name);
     void run_fixture(const char *fixture_name);

@@ -197,7 +197,8 @@ int128_t atomic_add(int128_t volatile *addend, int128_t value)
     return InterlockedExchangeAdd128(addend, value);
 #else
     int128_t old;
-    do {
+    do
+    {
         old = *addend;
     } while (!(atomic_cas(addend, old, old + value)));
     return old;
@@ -231,7 +232,8 @@ int64_t atomic_add(int64_t volatile *addend, int64_t value)
     return InterlockedExchangeAdd64(addend, value);
 #else
     int64_t old;
-    do {
+    do
+    {
         old = *addend;
     } while (!atomic_cas(addend, old, old + value));
     return old;
@@ -266,7 +268,8 @@ int32_t atomic_add(int32_t volatile *addend, int32_t value)
     return static_cast<int32_t>(InterlockedExchangeAdd(reinterpret_cast<LONG volatile*>(addend), static_cast<LONG>(value)));
 #else
     uint32_t old;
-    do {
+    do
+    {
         old = *addend;
     } while (!atomic_cas(addend, old, old + value));
     return old;
@@ -296,7 +299,8 @@ int16_t atomic_add(int16_t volatile *addend, int16_t value)
     return __sync_fetch_and_add(addend, value);
 #else
     int16_t old;
-    do {
+    do
+    {
         old = *addend;
     } while (!atomic_cas(addend, old, old + value));
     return old;

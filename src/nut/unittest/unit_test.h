@@ -41,7 +41,9 @@ int main()
 
 /* *************************************************************************/
 
+#include <assert.h>
 #include <string.h> // for strcmp()
+#include <stdlib.h> // for malloc()
 
 #include "testcase_failure_exception.h"
 #include "test_logger.h"
@@ -55,25 +57,33 @@ class fixture_name : public ::nut::TestFixture
 
 /** cases begin */
 #define NUT_CASES_BEGIN()                                               \
-    virtual int ___run_case(::nut::ITestLogger& logger, const int op, const char *case_name) { \
+    virtual int ___run_case(::nut::ITestLogger *logger, const int op, const char *case_name) override \
+    {                                                                   \
+        assert(NULL != logger);                                         \
         int index = -1;
 
 /** case */
 #define NUT_CASE(case_func)                                             \
         ++index;                                                        \
-        if (op == index || ((-1 == op) && (0 == ::strcmp(#case_func, case_name)))) { \
-            logger.enter_case(#case_func);                              \
-            try {                                                       \
+        if (op == index || ((__NUT_UNITTEST_RUN_NAMED_CASE_OP == op) && (0 == ::strcmp(#case_func, case_name)))) \
+        {                                                               \
+            logger->enter_case(#case_func);                             \
+            try                                                         \
+            {                                                           \
                 set_up();                                               \
                 case_func();                                            \
                 tear_down();                                            \
-            } catch (::nut::TestCaseFailureException e) {               \
-                logger.failed_case(e);                                  \
-            } catch (...) {                                             \
-                ::nut::TestCaseFailureException e("Unhandled exception", __FILE__, __LINE__); \
-                logger.failed_case(e);                                  \
             }                                                           \
-            logger.leave_case();                                        \
+            catch (::nut::TestCaseFailureException& e)                  \
+            {                                                           \
+                logger->failed_case(e);                                 \
+            }                                                           \
+            catch (...)                                                 \
+            {                                                           \
+                ::nut::TestCaseFailureException e("Unhandled exception", __FILE__, __LINE__); \
+                logger->failed_case(e);                                 \
+            }                                                           \
+            logger->leave_case();                                       \
         }
 
 /** cases end */
@@ -86,8 +96,19 @@ class fixture_name : public ::nut::TestFixture
 
 /** fixture register */
 #define NUT_REGISTER_FIXTURE(fixture, groups)                           \
-    static ::nut::TestFixture* ___new##fixture() { return new fixture(); } \
-    static void ___delete##fixture(::nut::TestFixture *p) { delete p; } \
+    static ::nut::TestFixture* ___new##fixture()                        \
+    {                                                                   \
+        fixture *p = (fixture*) ::malloc(sizeof(fixture));              \
+        assert(NULL != p);                                              \
+        new (p) fixture();                                              \
+        return p;                                                       \
+    }                                                                   \
+    static void ___delete##fixture(::nut::TestFixture *p)               \
+    {                                                                   \
+        assert(NULL != p);                                              \
+        p->~TestFixture();                                              \
+        ::free(p);                                                      \
+    }                                                                   \
     static ::nut::TestRegister ___register##fixture(#fixture, groups, ___new##fixture, ___delete##fixture);
 
 

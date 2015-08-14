@@ -239,7 +239,7 @@ struct dynamic_rc_ptr_cast : public rc_ptr<typename RCPtrTraits<T>::plain_type>
     virtual int add_ref() = 0;                          \
     virtual int release_ref() = 0;                      \
     virtual int get_ref() const = 0;                    \
-    template <typename ___T> friend class nut::rc_ptr;
+    template <typename ___T> friend class ::nut::rc_ptr;
 
 
 #endif /* head file guarder */

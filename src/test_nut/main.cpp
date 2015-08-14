@@ -34,10 +34,10 @@ int main()
 #if defined(NUT_PLATFORM_CC_VC)
     ConsoleTestLogger l;
 #else
-    StreamTestLogger l(std::cout);
+    StreamTestLogger l(&std::cout);
 #endif
 
-    TestRunner trunner(l);
+    TestRunner trunner(&l);
 
     trunner.run_group("quiet");
 
@@ -50,7 +50,7 @@ int main()
     getch();
 #endif
 
-    return 0;
+    return l.get_count_of_failed_cases();
 }
 
 NUT_LOGGING_IMPL
