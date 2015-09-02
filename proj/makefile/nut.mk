@@ -14,9 +14,8 @@ INC += -I../../src
 
 # LIB
 HOST = $(shell uname -s)
-ifeq (${HOST}, Darwin)
-	LIB += -lstdc++
-else
+LIB += -lstdc++
+ifneq (${HOST}, Darwin)
 	LIB += -lpthread
 endif
 

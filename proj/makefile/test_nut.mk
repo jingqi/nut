@@ -14,11 +14,9 @@ INC += -I${SRC_ROOT}/..
 
 # LIB
 HOST = $(shell uname -s)
-LIB += -L. -lnut
+LIB += -lstdc++ -L. -lnut
 LIB_DEPS += ./libnut.a
-ifeq (${HOST}, Darwin)
-	LIB += -lstdc++
-else
+ifneq (${HOST}, Darwin)
 	LIB += -lpthread -lrt
 endif
 
