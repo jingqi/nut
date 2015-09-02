@@ -53,16 +53,17 @@ void AddrMapManager::load(const std::string& path)
     while (getline(inf, str_line))
     {
         // Linux下的getline没法处理"\r\n"
-        str_line = nut::trim(str_line, "\r\n");
+        std::string s;
+        nut::trim(str_line.c_str(), &s, "\r\n");
 
         if (!path.empty())
         {
-            if (parse_line(str_line, true, path))
+            if (parse_line(s, true, path))
                 break;
         }
         else // 只要是有效的，都装载
         {
-            parse_line(str_line);
+            parse_line(s);
         }
     }
     inf.close();
