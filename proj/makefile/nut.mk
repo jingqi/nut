@@ -24,7 +24,7 @@ endif
 ifneq (${HOST}, Darwin)
 	CC_FLAGS += -rdynamic
 endif
-CC_FLAGS += -Wall -g -std=c++11
+CC_FLAGS += -Wall -g -std=c++11 -fPIC
 
 # OBJS, DEPS
 DIRS = $(shell find ${SRC_ROOT} -maxdepth 10 -type d)
