@@ -20,6 +20,7 @@ NUT_FIXTURE(TestStringUtil)
     NUT_CASE(test_xml_encoding)
     NUT_CASE(test_url_encoding)
     NUT_CASE(test_hex_encoding)
+    NUT_CASE(test_cstyle_encoding)
     NUT_CASE(test_base64_encoding)
     NUT_CASES_END()
 
@@ -178,6 +179,18 @@ NUT_FIXTURE(TestStringUtil)
         NUT_TA(v.size() == 2);
         NUT_TA(v[0] == 0x03);
         NUT_TA(v[1] == 0xFA);
+    }
+
+    void test_cstyle_encoding()
+    {
+        std::string s;
+        cstyle_encode("abc\adef\b\f\n\r\t\v\\\"\'\xf9", -1, &s);
+        // std::cout << std::endl << s << std::endl;
+        NUT_TA(s == "abc\\adef\\b\\f\\n\\r\\t\\v\\\\\\\"\\\'\\xF9");
+
+        s.clear();
+        cstyle_decode("abc\\adef\\b\\f\\n\\r\\t\\v\\\\\\\"\\\'\\xF9", -1, &s);
+        NUT_TA(s == "abc\adef\b\f\n\r\t\v\\\"\'\xf9");
     }
 
     void test_base64_encoding()

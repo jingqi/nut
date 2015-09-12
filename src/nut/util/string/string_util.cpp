@@ -664,6 +664,217 @@ int hex_decode(const char *s, int len, Array<uint8_t> *appended)
     return ret;
 }
 
+int cstyle_encode(const char *s, int len, std::string *appended)
+{
+    assert(NULL != s && NULL != appended);
+
+    int ret = 0;
+    for (int i = 0; i < len || (len < 0 && 0 != s[i]); ++i)
+    {
+        const char c = s[i];
+        switch (c)
+        {
+        case '\a':
+            *appended += "\\a";
+            ret += 2;
+            break;
+
+        case '\b':
+            *appended += "\\b";
+            ret += 2;
+            break;
+
+        case '\f':
+            *appended += "\\f";
+            ret += 2;
+            break;
+
+        case '\n':
+            *appended += "\\n";
+            ret += 2;
+            break;
+
+        case '\r':
+            *appended += "\\r";
+            ret += 2;
+            break;
+
+        case '\t':
+            *appended += "\\t";
+            ret += 2;
+            break;
+
+        case '\v':
+            *appended += "\\v";
+            ret += 2;
+            break;
+
+        case '\\':
+            *appended += "\\\\";
+            ret += 2;
+            break;
+
+        case '\"':
+            *appended += "\\\"";
+            ret += 2;
+            break;
+
+        case '\'':
+            *appended += "\\\'";
+            ret += 2;
+            break;
+
+        default:
+            if (' ' <= c && c <= '~')
+            {
+                // 32 ~ 126 是可见字符
+                appended->push_back(c);
+                ++ret;
+            }
+            else
+            {
+                *appended += "\\x";
+                appended->push_back(int_to_hex_char((c >> 4) & 0x0f));
+                appended->push_back(int_to_hex_char(c & 0x0f));
+                ret += 4;
+            }
+        }
+    }
+    return ret;
+}
+
+int cstyle_decode(const char *s, int len, std::string *appended)
+{
+    assert(NULL != s && NULL != appended);
+
+    int ret = 0;
+    for (int i = 0; i < len || (len < 0 && 0 != s[i]); ++i)
+    {
+        char c = s[i];
+        if ('\\' != c || i + 1 == len || 0 == s[i + 1])
+        {
+            appended->push_back(c);
+            ++ret;
+            continue;
+        }
+
+        ++i;
+        c = s[i];
+        switch (c)
+        {
+        case 'a':
+            appended->push_back('\a');
+            ++ret;
+            break;
+
+        case 'b':
+            appended->push_back('\b');
+            ++ret;
+            break;
+
+        case 'f':
+            appended->push_back('\f');
+            ++ret;
+            break;
+
+        case 'n':
+            appended->push_back('\n');
+            ++ret;
+            break;
+
+        case 'r':
+            appended->push_back('\r');
+            ++ret;
+            break;
+
+        case 't':
+            appended->push_back('\t');
+            ++ret;
+            break;
+
+        case 'v':
+            appended->push_back('\v');
+            ++ret;
+            break;
+
+        case '\\':
+            appended->push_back('\\');
+            ++ret;
+            break;
+
+        case '\"':
+            appended->push_back('\"');
+            ++ret;
+            break;
+
+        case '\'':
+            appended->push_back('\'');
+            ++ret;
+            break;
+
+        case 'x': // 16进制转义
+            c = 0;
+            for (int j = 0; j < 2 && (i + 1 < len || (len < 0 && 0 != s[i + 1])); ++j)
+            {
+                const char cc = s[++i];
+                if ('0' <= cc && cc <= '9')
+                {
+                    c = (char) (c * 16 + cc - '0');
+                }
+                else if ('a' <= cc && cc <= 'f')
+                {
+                    c = (char) (c * 16 + cc - 'a' + 10);
+                }
+                else if ('A' <= cc && cc <= 'F')
+                {
+                    c = (char) (c * 16 + cc - 'A' + 10);
+                }
+                else
+                {
+                    --i;
+                    break;
+                }
+            }
+            appended->push_back(c);
+            ++ret;
+            break;
+
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+            c -= '0';
+            for (size_t j = 0; j < 2 && (i + 1 < len || (len < 0 && 0 != s[i + 1])); ++j)
+            {
+                const char cc = s[++i];
+                if ('0' <= cc && cc <= '7')
+                {
+                    c = (char) (c * 8 + cc - '0');
+                }
+                else
+                {
+                    --i;
+                    break;
+                }
+            }
+            appended->push_back(c);
+            ++ret;
+            break;
+
+        default:
+            appended->push_back('\\');
+            appended->push_back(c);
+            ret += 2;
+            break;
+        }
+    }
+    return ret;
+}
+
 static char int_to_base64_char(int i)
 {
     const char *base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

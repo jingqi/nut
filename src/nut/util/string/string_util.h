@@ -95,6 +95,9 @@ int url_decode(const char *s, int len, std::string *appended);
 int hex_encode(const void *data, size_t cb, std::string *appended);
 int hex_decode(const char *s, int len, Array<uint8_t> *appended);
 
+int cstyle_encode(const char *s, int len, std::string *appended);
+int cstyle_decode(const char *s, int len, std::string *appended);
+
 int base64_encode(const void *data, size_t cb, std::string *appended);
 int base64_decode(const char *s, int len, Array<uint8_t> *appended);
 
