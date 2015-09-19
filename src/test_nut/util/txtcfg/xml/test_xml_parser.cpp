@@ -69,12 +69,10 @@ NUT_FIXTURE(TestXmlParser)
     NUT_CASE(test_smoke)
     NUT_CASES_END()
 
-    void set_up()
+    virtual void set_up() override
     {
         tag.clear();
     }
-
-    void tear_down() {}
 
     void test_smoke()
     {

@@ -28,9 +28,6 @@ NUT_FIXTURE(TestNumericAlgo)
     NUT_CASE(test_karatsuba_multiply)
 	NUT_CASES_END()
 
-    void set_up() {}
-    void tear_down() {}
-
     void test_bugs()
 	{
         {

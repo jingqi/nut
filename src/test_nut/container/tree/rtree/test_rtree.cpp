@@ -19,12 +19,6 @@ NUT_FIXTURE(TestRTree)
     NUT_CASE(test_simple)
     NUT_CASES_END()
 
-    void set_up()
-    {}
-
-    void tear_down()
-    {}
-
     static Area mkrect(int x1, int x2, int y1, int y2)
     {
         Area ret;

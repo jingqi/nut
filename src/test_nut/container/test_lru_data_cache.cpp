@@ -13,9 +13,6 @@ NUT_FIXTURE(TestLRUDataCache)
     NUT_CASE(test_smoking)
     NUT_CASES_END()
 
-    void set_up() {}
-    void tear_down() {}
-
     void test_smoking()
     {
         LRUDataCache<int> c(7); // capacity in bytes

@@ -16,9 +16,6 @@ NUT_FIXTURE(TestXmlElement)
     NUT_CASE(test_read)
     NUT_CASES_END()
 
-    void set_up() {}
-    void tear_down() {}
-
     void test_write()
     {
         rc_ptr<XmlElement> r = rc_new<XmlElement>("root");

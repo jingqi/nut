@@ -19,9 +19,6 @@ NUT_FIXTURE(TestThreading)
     NUT_CASE(test_manual)
     NUT_CASES_END()
 
-    void set_up() {}
-    void tear_down() {}
-
     static void custom(void *p)
     {
         int c = (int) (reinterpret_cast<char*>(p) - (char*)NULL);

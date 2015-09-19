@@ -26,9 +26,6 @@ NUT_FIXTURE(TestGC)
         ~A() { --obj_count; }
     };
 
-    void set_up() {}
-    void tear_down() {}
-
     void test_smoking()
     {
         NUT_TA(0 == obj_count);

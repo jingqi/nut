@@ -14,10 +14,6 @@ NUT_FIXTURE(TestXmlWriter)
     NUT_CASE(test_smoke)
     NUT_CASES_END()
 
-    void set_up() {}
-
-    void tear_down() {}
-    
     void test_smoke()
     {
         string s;

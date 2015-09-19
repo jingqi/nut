@@ -14,9 +14,6 @@ NUT_FIXTURE(TestLogging)
     NUT_CASE(test_config)
     NUT_CASES_END()
 
-    void set_up() {}
-    void tear_down() {}
-
     void test_smoking()
     {
         Logger *l = Logger::get_instance();

@@ -17,9 +17,6 @@ NUT_FIXTURE(TestRSA)
     NUT_CASE(test_bugs)
     NUT_CASES_END()
 
-    void set_up() {}
-    void tear_down() {}
-
     void test_smoking()
     {
         // 性能测试

@@ -17,10 +17,6 @@ NUT_FIXTURE(TestArray)
     NUT_CASE(test_cowarray)
     NUT_CASES_END()
 
-    void set_up() {}
-
-    void tear_down() {}
-
     void test_array_smoking()
     {
         Array<int> a;

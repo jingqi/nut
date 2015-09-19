@@ -21,9 +21,6 @@ NUT_FIXTURE(TestPath)
     NUT_CASE(test_abspathw)
     NUT_CASES_END()
 
-    void set_up() {}
-    void tear_down() {}
-
     void test_split()
 	{
         string p, c;

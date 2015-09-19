@@ -17,7 +17,7 @@ NUT_FIXTURE(TestPropertyDom)
 
     rc_ptr<PropertyDom> pf;
 
-    void set_up()
+    virtual void set_up() override
     {
         pf = rc_new<PropertyDom>();
         const char *all =
@@ -33,8 +33,6 @@ NUT_FIXTURE(TestPropertyDom)
             "b=value\n";
 		pf->parse(all);
     }
-
-    void tear_down() {}
 
     void test_read_string()
     {

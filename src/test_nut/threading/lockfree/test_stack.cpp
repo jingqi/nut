@@ -17,9 +17,6 @@ NUT_FIXTURE(TestConcurrentStack)
     NUT_CASE(test_smoking)
     NUT_CASES_END()
 
-    void set_up() {}
-    void tear_down() {}
-
     void test_smoking()
     {
         ConcurrentStack<int> s;

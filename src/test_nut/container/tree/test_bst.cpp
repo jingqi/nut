@@ -48,7 +48,7 @@ NUT_FIXTURE(TestBSTree)
 
     Node *root;
     
-    void set_up()
+    virtual void set_up() override
     {
         /*
          构建这样一颗树
@@ -64,7 +64,7 @@ NUT_FIXTURE(TestBSTree)
             root = BSTree<int,Node>::insert(root, new Node(nodes[i]));
     }
 
-    void tear_down()
+    virtual void tear_down() override
     {
         root->destroy();
         root = NULL;

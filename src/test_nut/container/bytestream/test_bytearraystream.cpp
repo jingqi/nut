@@ -13,10 +13,6 @@ NUT_FIXTURE(TestByteArrayStream)
     NUT_CASE(test_big_endian)
     NUT_CASES_END()
 
-    void set_up() {}
-
-    void tear_down() {}
-
     void test_little_endian()
     {
         rc_ptr<ByteArrayStream> bas = rc_new<ByteArrayStream>();

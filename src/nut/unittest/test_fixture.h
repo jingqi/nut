@@ -14,9 +14,11 @@ public:
     virtual ~TestFixture()
     {}
 
-    virtual void set_up() = 0;
+    virtual void set_up()
+    {}
 
-    virtual void tear_down() = 0;
+    virtual void tear_down()
+    {}
 
 private:
     friend class TestRunner;

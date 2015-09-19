@@ -17,9 +17,6 @@ NUT_FIXTURE(TestLengthFixedMP)
         int a;
     };
 
-    void set_up() {}
-    void tear_down() {}
-
     void test_smoking()
 	{
         rc_ptr<lengthfixed_mp<sizeof(A)> > mp = rc_new<lengthfixed_mp<sizeof(A)> >();

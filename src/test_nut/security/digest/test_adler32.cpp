@@ -11,9 +11,6 @@ NUT_FIXTURE(TestAdler32)
     NUT_CASE(test_rolling_adler32)
     NUT_CASES_END()
 
-    void set_up() {}
-    void tear_down() {}
-
     void check_adler32(const char *msg, uint32_t expected)
     {
         nut::Adler32 ad;

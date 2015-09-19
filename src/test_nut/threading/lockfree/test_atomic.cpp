@@ -12,9 +12,6 @@ NUT_FIXTURE(TestAtomic)
     NUT_CASE(test_bug1)
     NUT_CASES_END()
 
-    void set_up() {}
-    void tear_down() {}
-
     /**
      * bug:
      * 处理

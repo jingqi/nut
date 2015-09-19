@@ -22,10 +22,6 @@ NUT_FIXTURE(TestDelegate)
     NUT_CASE(test_copy_and_const)
     NUT_CASES_END()
 
-
-    void set_up() {}
-    void tear_down() {}
-
     int tm(int a)
     {
         g_t += 10;

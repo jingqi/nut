@@ -24,10 +24,6 @@ NUT_FIXTURE(TestStringUtil)
     NUT_CASE(test_base64_encoding)
     NUT_CASES_END()
 
-
-    void set_up() {}
-    void tear_down() {}
-
     void test_to_string()
     {
         NUT_TA(char_to_str('m') == "109");

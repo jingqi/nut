@@ -27,9 +27,6 @@ NUT_FIXTURE(TestBigInteger)
     NUT_CASE(test_value_of)
 	NUT_CASES_END()
 
-    void set_up() {}
-    void tear_down() {}
-
     void test_smoking()
 	{
 		// +

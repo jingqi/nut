@@ -10,15 +10,15 @@ using namespace nut;
 NUT_FIXTURE(TestIniDom)
 {
     NUT_CASES_BEGIN()
-        NUT_CASE(test_read_string)
-        NUT_CASE(test_read_num)
-        NUT_CASE(test_read_list)
-        NUT_CASE(test_set_string)
+    NUT_CASE(test_read_string)
+    NUT_CASE(test_read_num)
+    NUT_CASE(test_read_list)
+    NUT_CASE(test_set_string)
     NUT_CASES_END()
 
     rc_ptr<IniDom> pf;
 
-    void set_up()
+    virtual void set_up() override
     {
         pf = rc_new<IniDom>();
         const char *all =
@@ -34,8 +34,6 @@ NUT_FIXTURE(TestIniDom)
             "b=value\n";
 		pf->parse(all);
     }
-
-    void tear_down() {}
 
     void test_read_string()
     {

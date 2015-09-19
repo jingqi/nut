@@ -13,9 +13,6 @@ NUT_FIXTURE(TestLRUCache)
     NUT_CASE(test_smoking)
     NUT_CASES_END()
 
-    void set_up() {}
-    void tear_down() {}
-
     void test_smoking()
     {
         LRUCache<int,int> c(2);

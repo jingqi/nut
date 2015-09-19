@@ -15,9 +15,6 @@ NUT_FIXTURE(TestSkipList)
     NUT_CASE(test_map)
     NUT_CASES_END()
 
-    void set_up() {}
-    void tear_down() {}
-
     void test_set()
     {
         SkipListSet<int> sl;

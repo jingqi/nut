@@ -14,9 +14,6 @@ NUT_FIXTURE(TestKMP)
     NUT_CASE(test_kmp_searchw)
     NUT_CASES_END()
 
-    void set_up() {}
-    void tear_down() {}
-
     void test_kmp_search()
     {
         const char *example = "abcabdabcabc";
