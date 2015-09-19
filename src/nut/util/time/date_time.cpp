@@ -40,18 +40,17 @@ DateTime::DateTime(time_t s)
  */
 DateTime::DateTime(uint32_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec)
 {
+    ::memset(&_time_info, 0, sizeof(_time_info));
     _time_info.tm_year = year - 1900;
     _time_info.tm_mon = month - 1;
     _time_info.tm_mday = day;
     _time_info.tm_hour = hour;
     _time_info.tm_min = min;
     _time_info.tm_sec = sec;
-    _seconds = mktime(&_time_info);
+    _seconds = mktime(&_time_info); /* '_time_info' is normalized also */
 
     /* 检查处理输入的结果 */
     assert(-1 != _seconds); /* 输入的数据有错误! */
-
-    _time_info = *localtime(&_seconds);
 }
 
 /**

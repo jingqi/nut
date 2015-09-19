@@ -41,7 +41,7 @@ int main()
 
     trunner.run_group("quiet");
 
-    //trunner.run_fixture("TestLogging");
+    //trunner.run_fixture("TestDateTime");
 
     //trunner.run_case("TestNumericAlgo", "test_karatsuba_multiply");
 

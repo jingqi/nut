@@ -63,7 +63,8 @@ SOURCES +=\
     $$files($${SRC_ROOT}/util/*.c*) \
     $$files($${SRC_ROOT}/util/string/*.c*) \
     $$files($${SRC_ROOT}/util/txtcfg/*.c*) \
-    $$files($${SRC_ROOT}/util/txtcfg/xml/*.c*)
+    $$files($${SRC_ROOT}/util/txtcfg/xml/*.c*) \
+    $$files($${SRC_ROOT}/util/time/*.c*)
 
 # 连接库
 unix {
