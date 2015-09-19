@@ -29,7 +29,7 @@ class ResultSet
         {
             const char *n = ::sqlite3_column_name(_stmt->raw(), i);
             assert(NULL != n);
-            if (strieq(n, column_name))
+            if (0 == stricmp(n, column_name))
                 return i;
         }
         return -1;
