@@ -104,6 +104,10 @@ NUT_FIXTURE(TestStringUtil)
         NUT_TA(0 != stricmp("ac", "ab"));
         NUT_TA(0 == stricmp("ab", "ab"));
         NUT_TA(0 == stricmp("aB", "ab"));
+
+        // bug
+        NUT_TA(0 != stricmp("`", "@")); // 0x60, 0x40
+        NUT_TA(0 != stricmp("a \0", "a\0\0")); // 0x20, 0x00
     }
 
     void test_wstr()
