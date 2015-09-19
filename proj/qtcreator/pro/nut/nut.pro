@@ -63,7 +63,7 @@ HEADERS +=\
     $$files($${SRC_ROOT}/threading/sync/*.h*) \
     $$files($${SRC_ROOT}/unittest/*.h*) \
     $$files($${SRC_ROOT}/util/*.h*) \
-    $$files($${SRC_ROOT}/util/sqlite3helper/*.h*) \
+    $$files($${SRC_ROOT}/util/sqlite_helper/*.h*) \
     $$files($${SRC_ROOT}/util/string/*.h*) \
     $$files($${SRC_ROOT}/util/time/*.h*) \
     $$files($${SRC_ROOT}/util/txtcfg/*.h*) \
@@ -94,7 +94,7 @@ SOURCES +=\
     $$files($${SRC_ROOT}/threading/sync/*.c*) \
     $$files($${SRC_ROOT}/unittest/*.c*) \
     $$files($${SRC_ROOT}/util/*.c*) \
-    $$files($${SRC_ROOT}/util/sqlite3helper/*.c*) \
+    $$files($${SRC_ROOT}/util/sqlite_helper/*.c*) \
     $$files($${SRC_ROOT}/util/string/*.c*) \
     $$files($${SRC_ROOT}/util/time/*.c*) \
     $$files($${SRC_ROOT}/util/txtcfg/*.c*) \

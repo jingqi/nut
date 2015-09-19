@@ -9,13 +9,14 @@
 #include <nut/rc/rc_ptr.h>
 #include <nut/debugging/exception.h>
 
-#include "prepared_statement.h"
-#include "result_set.h"
+#include "sqlite_param.h"
+#include "sqlite_statement.h"
+#include "sqlite_result_set.h"
 
 namespace nut
 {
 
-class Connection
+class SqliteConnection
 {
     NUT_REF_COUNTABLE
 
@@ -61,10 +62,10 @@ class Connection
     }
 
 public:
-    Connection()
+    SqliteConnection()
     {}
 
-    Connection(sqlite3 *db)
+    SqliteConnection(sqlite3 *db)
         : _sqlite(db)
     {
         assert(NULL != db);
@@ -73,29 +74,31 @@ public:
     /**
      * @param dbfilepath File path encoded in UTF-8
      */
-    Connection(const char *dbfilepath)
+    SqliteConnection(const char *db_file)
     {
-        assert(NULL != dbfilepath);
-        open(dbfilepath);
+        assert(NULL != db_file);
+        open(db_file);
     }
 
-    ~Connection()
+    ~SqliteConnection()
     {
         bool rs = close();
         assert(rs);
+        (void) rs;
     }
 
-    bool open(const char *dbfilepath)
+    bool open(const char *db_file)
     {
-        assert(NULL != dbfilepath);
+        assert(NULL != db_file);
 
         if (is_valid())
         {
             bool rs = close();
             assert(rs);
+            (void) rs;
         }
 
-        int rs = ::sqlite3_open(dbfilepath, &_sqlite);
+        int rs = ::sqlite3_open(db_file, &_sqlite);
         if (SQLITE_OK != rs)
         {
             _sqlite = NULL;
@@ -231,20 +234,20 @@ public:
         return true;
     }
 
-    bool execute_update(const char *sql, const ParamWraper& arg1,
-        const ParamWraper& arg2 = ParamWraper::none(),
-        const ParamWraper& arg3 = ParamWraper::none(),
-        const ParamWraper& arg4 = ParamWraper::none(),
-        const ParamWraper& arg5 = ParamWraper::none(),
-        const ParamWraper& arg6 = ParamWraper::none(),
-        const ParamWraper& arg7 = ParamWraper::none(),
-        const ParamWraper& arg8 = ParamWraper::none(),
-        const ParamWraper& arg9 = ParamWraper::none())
+    bool execute_update(const char *sql, const SqliteParam& arg1,
+        const SqliteParam& arg2 = SqliteParam::none(),
+        const SqliteParam& arg3 = SqliteParam::none(),
+        const SqliteParam& arg4 = SqliteParam::none(),
+        const SqliteParam& arg5 = SqliteParam::none(),
+        const SqliteParam& arg6 = SqliteParam::none(),
+        const SqliteParam& arg7 = SqliteParam::none(),
+        const SqliteParam& arg8 = SqliteParam::none(),
+        const SqliteParam& arg9 = SqliteParam::none())
     {
         assert(NULL != sql && is_valid());
 
         // 预编译
-        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(_sqlite, sql);
+        rc_ptr<SqliteStatement> stmt = rc_new<SqliteStatement>(_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);
@@ -282,7 +285,7 @@ public:
         // 执行
         if (_auto_commit)
             start();
-        int irs = ::sqlite3_step(stmt->stmt()->raw());
+        int irs = ::sqlite3_step(stmt->get_raw_stmt());
         if (SQLITE_DONE != irs)
         {
             if (_auto_commit)
@@ -295,12 +298,12 @@ public:
         return true;
     }
 
-    bool execute_update(const char *sql, const std::vector<ParamWraper>& args)
+    bool execute_update(const char *sql, const std::vector<SqliteParam>& args)
     {
         assert(NULL != sql && is_valid());
 
         // 预编译
-        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(_sqlite, sql);
+        rc_ptr<SqliteStatement> stmt = rc_new<SqliteStatement>(_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);
@@ -326,7 +329,7 @@ public:
             // 执行
         if (_auto_commit)
              start();
-        int irs = ::sqlite3_step(stmt->stmt()->raw());
+        int irs = ::sqlite3_step(stmt->get_raw_stmt());
         if (SQLITE_DONE != irs)
         {
             if (_auto_commit)
@@ -339,25 +342,25 @@ public:
         return true;
     }
 
-    rc_ptr<ResultSet> execute_query(const char *sql,
-        const ParamWraper& arg1 = ParamWraper::none(),
-        const ParamWraper& arg2 = ParamWraper::none(),
-        const ParamWraper& arg3 = ParamWraper::none(),
-        const ParamWraper& arg4 = ParamWraper::none(),
-        const ParamWraper& arg5 = ParamWraper::none(),
-        const ParamWraper& arg6 = ParamWraper::none(),
-        const ParamWraper& arg7 = ParamWraper::none(),
-        const ParamWraper& arg8 = ParamWraper::none(),
-        const ParamWraper& arg9 = ParamWraper::none())
+    rc_ptr<SqliteResultSet> execute_query(const char *sql,
+        const SqliteParam& arg1 = SqliteParam::none(),
+        const SqliteParam& arg2 = SqliteParam::none(),
+        const SqliteParam& arg3 = SqliteParam::none(),
+        const SqliteParam& arg4 = SqliteParam::none(),
+        const SqliteParam& arg5 = SqliteParam::none(),
+        const SqliteParam& arg6 = SqliteParam::none(),
+        const SqliteParam& arg7 = SqliteParam::none(),
+        const SqliteParam& arg8 = SqliteParam::none(),
+        const SqliteParam& arg9 = SqliteParam::none())
     {
         assert(NULL != sql && is_valid());
 
         // 预编译
-        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(_sqlite, sql);
+        rc_ptr<SqliteStatement> stmt = rc_new<SqliteStatement>(_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);
-            return rc_new<ResultSet>();
+            return rc_new<SqliteResultSet>();
         }
 
         // 绑定参数
@@ -365,7 +368,7 @@ public:
         if (!rs)
         {
             on_error(SQLITE_ERROR);
-            return rc_new<ResultSet>();
+            return rc_new<SqliteResultSet>();
         }
 
 #define __BIND(i) \
@@ -373,7 +376,7 @@ public:
         if (!rs) \
         { \
             on_error(SQLITE_ERROR); \
-            return rc_new<ResultSet>(); \
+            return rc_new<SqliteResultSet>(); \
         }
 
         __BIND(1)
@@ -389,19 +392,19 @@ public:
 #undef __BIND
 
         // 执行
-        return rc_new<ResultSet>(stmt->stmt());
+        return rc_new<SqliteResultSet>(stmt);
     }
 
-    rc_ptr<ResultSet> execute_query(const char *sql, const std::vector<ParamWraper> args)
+    rc_ptr<SqliteResultSet> execute_query(const char *sql, const std::vector<SqliteParam>& args)
     {
         assert(NULL != sql && is_valid());
 
         // 预编译
-        rc_ptr<PreparedStatement> stmt = rc_new<PreparedStatement>(_sqlite, sql);
+        rc_ptr<SqliteStatement> stmt = rc_new<SqliteStatement>(_sqlite, sql);
         if (!stmt->is_valid())
         {
             on_error(SQLITE_ERROR);
-            return rc_new<ResultSet>();
+            return rc_new<SqliteResultSet>();
         }
 
         // 绑定参数
@@ -409,7 +412,7 @@ public:
         if (!rs)
         {
             on_error(SQLITE_ERROR);
-            return rc_new<ResultSet>();
+            return rc_new<SqliteResultSet>();
         }
         for (size_t i = 0, size = args.size(); i < size; ++i)
         {
@@ -417,12 +420,12 @@ public:
             if (!rs)
             {
                 on_error(SQLITE_ERROR);
-                return rc_new<ResultSet>();
+                return rc_new<SqliteResultSet>();
             }
         }
 
         // 执行
-        return rc_new<ResultSet>(stmt->stmt());
+        return rc_new<SqliteResultSet>(stmt);
     }
 };
 
