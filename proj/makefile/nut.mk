@@ -12,18 +12,21 @@ THIS = nut.mk
 # INC
 INC += -I../../src
 
-# LIB
-HOST = $(shell uname -s)
-LIB += -lstdc++
-ifneq (${HOST}, Darwin)
-	LIB += -lpthread
-endif
-
 # CC_FLAGS
-ifneq (${HOST}, Darwin)
+HOST = $(shell uname -s)
+CC_FLAGS += -Wall -g -fPIC -std=c++11
+ifeq (${HOST}, Darwin)
+	CC_FLAGS += -stdlib=libc++
+else
 	CC_FLAGS += -rdynamic
 endif
-CC_FLAGS += -Wall -g -std=c++11 -fPIC
+
+# LIB
+ifeq (${HOST}, Darwin)
+	LIB += -lc++
+else
+	LIB += -lpthread
+endif
 
 # OBJS, DEPS
 DIRS = $(shell find ${SRC_ROOT} -maxdepth 10 -type d)

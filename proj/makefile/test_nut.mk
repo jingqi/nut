@@ -12,19 +12,23 @@ THIS = test_nut.mk
 # INC
 INC += -I${SRC_ROOT}/..
 
-# LIB
+# CC_FLAGS
 HOST = $(shell uname -s)
-LIB += -lstdc++ -L. -lnut
-LIB_DEPS += ./libnut.a
-ifneq (${HOST}, Darwin)
-	LIB += -lpthread -lrt
+CC_FLAGS += -Wall -g -std=c++11
+ifeq (${HOST}, Darwin)
+	CC_FLAGS += -stdlib=libc++
+else
+	CC_FLAGS += -rdynamic
 endif
 
-# CC_FLAGS
-ifneq (${HOST}, Darwin)
-	CC_FLAGS = -rdynamic
+# LIB
+LIB += -L. -lnut
+LIB_DEPS += ./libnut.a
+ifeq (${HOST}, Darwin)
+	LIB += -lc++
+else
+	LIB += -lpthread
 endif
-CC_FLAGS += -Wall -g -std=c++11
 
 # OBJS, DEPS
 DIRS = $(shell find ${SRC_ROOT} -maxdepth 10 -type d)

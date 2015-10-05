@@ -24,7 +24,9 @@ message("DESTDIR: "$${DESTDIR})
 
 # C++11 支持
 QMAKE_CXXFLAGS += -std=c++11
-QMAKE_CFLAGS += -std=c++11
+mac {
+    QMAKE_CXXFLAGS += -stdlib=libc++
+}
 
 # 这里貌似是qmake的一个bug，不会主动添加 _DEBUG/NDEBUG 宏
 CONFIG(debug, debug|release) {
@@ -101,6 +103,10 @@ SOURCES +=\
     $$files($${SRC_ROOT}/util/txtcfg/xml/*.c*)
 
 # 连接库
-!unix {
+mac {
+    LIBS += -lc++
+} else: unix {
+    LIBS += -lrt
+} else {
     LIBS += -lpthread
 }
