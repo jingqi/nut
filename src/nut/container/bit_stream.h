@@ -43,35 +43,19 @@ public:
 
     bool operator==(const BitStream& x) const;
 
-    bool operator!=(const BitStream& x) const
-    {
-        return !(*this == x);
-    }
+    bool operator!=(const BitStream& x) const;
 
     BitStream operator+(const BitStream& x) const;
 
-    BitStream& operator+=(const BitStream& x)
-    {
-        append(x);
-        return *this;
-    }
+    BitStream& operator+=(const BitStream& x);
 
-    bool operator[](size_t i) const
-    {
-        return bit_at(i);
-    }
+    bool operator[](size_t i) const;
 
-    size_t size() const
-    {
-        return _bit_size;
-    }
+    size_t size() const;
 
     void resize(size_t new_bit_size, bool fill_setb = false);
 
-    void clear()
-    {
-        _bit_size = 0;
-    }
+    void clear();
 
     bool bit_at(size_t i) const;
 
@@ -93,10 +77,7 @@ public:
 public:
     size_t bit1_count();
 
-    size_t bit0_count()
-    {
-        return _bit_size - bit1_count();
-    }
+    size_t bit0_count();
 
     void to_string(std::string *appended);
 

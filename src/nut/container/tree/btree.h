@@ -140,7 +140,9 @@ public:
     typedef InorderTraversalIterator inorder_iterator;
     typedef std::reverse_iterator<inorder_iterator> inorder_reverse_iterator;
 
-    /** 中序遍历的起始迭代器 */
+    /**
+     * 中序遍历的起始迭代器
+     */
     static inorder_iterator inorder_traversal_begin(NODE *sub_root)
     {
         if (NULL == sub_root)
@@ -152,7 +154,9 @@ public:
         return inorder_iterator(parent_of_sub_root, sub_root, false);
     }
 
-    /** 中序遍历的终止迭代器 */
+    /**
+     * 中序遍历的终止迭代器
+     */
     static inorder_iterator inorder_traversal_end(NODE *sub_root)
     {
         if (NULL == sub_root)
@@ -164,13 +168,17 @@ public:
         return inorder_iterator(parent_of_sub_root, sub_root, true);
     }
 
-    /** 逆中序遍历的终止迭代器 */
+    /**
+     * 逆中序遍历的终止迭代器
+     */
     static inorder_reverse_iterator inorder_traversal_rbegin(NODE *sub_root)
     {
         return inorder_reverse_iterator(inorder_traversal_end(sub_root));
     }
 
-    /** 逆中序遍历的终止迭代器 */
+    /**
+     * 逆中序遍历的终止迭代器
+     */
     static inorder_reverse_iterator inorder_traversal_rend(NODE *sub_root)
     {
         return inorder_reverse_iterator(inorder_traversal_begin(sub_root));
@@ -309,7 +317,9 @@ public:
     typedef PreorderTraversalIterator preorder_iterator;
     typedef std::reverse_iterator<preorder_iterator> preorder_reverse_iterator;
 
-    /** 前序遍历的起始迭代器 */
+    /**
+     * 前序遍历的起始迭代器
+     */
     static preorder_iterator preorder_traversal_begin(NODE *sub_root)
     {
         if (NULL == sub_root)
@@ -317,7 +327,9 @@ public:
         return preorder_iterator(sub_root->get_parent(), sub_root, false);
     }
 
-    /** 前序遍历的终止迭代器 */
+    /**
+     * 前序遍历的终止迭代器
+     */
     static preorder_iterator preorder_traversal_end(NODE *sub_root)
     {
         if (NULL == sub_root)
@@ -329,13 +341,17 @@ public:
         return preorder_iterator(parent_of_sub_root, sub_root, true);
     }
 
-    /** 逆前序遍历的终止迭代器 */
+    /**
+     * 逆前序遍历的终止迭代器
+     */
     static preorder_reverse_iterator preorder_traversal_rbegin(NODE *sub_root)
     {
         return preorder_reverse_iterator(preorder_traversal_end(sub_root));
     }
 
-    /** 逆前序遍历的终止迭代器 */
+    /**
+     * 逆前序遍历的终止迭代器
+     */
     static preorder_reverse_iterator preorder_traversal_rend(NODE *sub_root)
     {
         return preorder_reverse_iterator(preorder_traversal_begin(sub_root));
@@ -473,7 +489,9 @@ public:
     typedef PostorderTraversalIterator postorder_iterator;
     typedef std::reverse_iterator<postorder_iterator> postorder_reverse_iterator;
 
-    /** 后序遍历的起始迭代器 */
+    /**
+     * 后序遍历的起始迭代器
+     */
     static postorder_iterator postorder_traversal_begin(NODE *sub_root)
     {
         if (NULL == sub_root)
@@ -485,7 +503,9 @@ public:
         return postorder_iterator(parent_of_sub_root, sub_root, false);
     }
 
-    /** 后序遍历的终止迭代器 */
+    /**
+     * 后序遍历的终止迭代器
+     */
     static postorder_iterator postorder_traversal_end(NODE *sub_root)
     {
         if (NULL == sub_root)
@@ -493,13 +513,17 @@ public:
         return postorder_iterator(sub_root->get_parent(), sub_root, true);
     }
 
-    /** 逆后序遍历的起始迭代器 */
+    /**
+     * 逆后序遍历的起始迭代器
+     */
     static postorder_reverse_iterator postorder_traversal_rbegin(NODE *sub_root)
     {
         return postorder_reverse_iterator(postorder_traversal_end(sub_root));
     }
 
-    /** 逆后序遍历的终止迭代器 */
+    /**
+     * 逆后序遍历的终止迭代器
+     */
     static postorder_reverse_iterator postorder_traversal_rend(NODE *sub_root)
     {
         return postorder_reverse_iterator(postorder_traversal_begin(sub_root));

@@ -28,39 +28,22 @@ private:
 public:
     LogRecord(LogLevel level, const char *tag, const char *file_path, int line,
 		const char *func, char *message);
+
 	~LogRecord();
 
-    const DateTime& get_time() const
-    {
-        return _time;
-    }
+    const DateTime& get_time() const;
 
-    LogLevel get_level() const
-    {
-        return _level;
-    }
+    LogLevel get_level() const;
 
-	const char* get_tag() const
-	{
-        return _tag;
-	}
+	const char* get_tag() const;
 
-    const char* get_file_path() const
-    {
-        return _file_path;
-    }
+    const char* get_file_path() const;
 
 	const char* get_file_name() const;
 
-    int get_line() const
-    {
-        return _line;
-    }
+    int get_line() const;
 
-    const char* get_message() const
-    {
-        return _message;
-    }
+    const char* get_message() const;
 
     void to_string(std::string *appended) const;
 };

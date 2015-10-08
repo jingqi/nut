@@ -16,33 +16,15 @@ class CmdExit : public ICommand
     IConsole *_console = NULL;
 
 public:
-    CmdExit(IConsole *c)
-        : _console(c)
-    {
-        assert(NULL != c);
-    }
+    CmdExit(IConsole *c);
 
-    virtual const char* get_command_name() const override
-    {
-        return "exit";
-    }
+    virtual const char* get_command_name() const override;
 
-    virtual const char* get_general_info() const override
-    {
-        return "exit current pconsole";
-    }
+    virtual const char* get_general_info() const override;
 
-    virtual const char* get_detail_info() const override
-    {
-        return "exit\neg.:\n\texit";
-    }
+    virtual const char* get_detail_info() const override;
 
-    virtual void execute(const char* command_line) override
-    {
-        (void) command_line; // unused
-        printf("exit\n");
-        _console->exit(0);
-    }
+    virtual void execute(const char* command_line) override;
 };
 
 }

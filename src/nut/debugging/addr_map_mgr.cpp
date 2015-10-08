@@ -43,6 +43,11 @@ bool AddrMapManager::is_valid() const
     return NULL != this && _destruct_tag == CONSTRUCTED_TAG;
 }
 
+const std::string& AddrMapManager::get_exec_path() const
+{
+    return _exec_path;
+}
+
 void AddrMapManager::load(const std::string& path)
 {
     std::ifstream inf(_maps_path.c_str());

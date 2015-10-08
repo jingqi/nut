@@ -74,6 +74,7 @@ void Mutex::unlock()
 
 /**
  * try lock the mutex
+ *
  * @return
  *      true, if lock successed
  */
@@ -108,7 +109,7 @@ static int _pthread_mutex_timedlock(pthread_mutex_t *mutex, const struct timeval
         if (EBUSY != result)
             return result;
 
-        /* Sleep for 10,000,000 nanoseconds before trying again. */
+        // Sleep for 10,000,000 nanoseconds before trying again
         struct timespec ts;
         ts.tv_sec = 0;
         ts.tv_nsec = 10000000;
@@ -118,7 +119,7 @@ static int _pthread_mutex_timedlock(pthread_mutex_t *mutex, const struct timeval
         if (0 != abs_timeout->tv_sec || 0 != abs_timeout->tv_usec) // 0 for infinitive
         {
             struct timeval now;
-            ::gettimeofday(&now, NULL); // MAC 支持 clock_gettime()
+            ::gettimeofday(&now, NULL); // MAC 不支持 clock_gettime()
             const long long v = (((long long) now.tv_sec) - abs_timeout->tv_sec) * 1000 * 1000 +
                 (now.tv_usec - abs_timeout->tv_usec);
             if (v >= 0) // timeout
@@ -130,6 +131,7 @@ static int _pthread_mutex_timedlock(pthread_mutex_t *mutex, const struct timeval
 
 /**
  * try lock the mutex in given time
+ *
  * @param s
  *      The timeout value in seconds
  * @param ms

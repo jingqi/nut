@@ -184,6 +184,16 @@ void IniDom::serielize(std::string *appended, const char *le) const
     }
 }
 
+bool IniDom::is_dirty() const
+{
+    return _dirty;
+}
+
+void IniDom::set_dirty(bool dirty)
+{
+    _dirty = dirty;
+}
+
 void IniDom::clear()
 {
     _global_lines.clear();

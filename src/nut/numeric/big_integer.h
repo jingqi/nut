@@ -83,192 +83,75 @@ public:
 
     bool operator==(long long v) const;
 
-    bool operator!=(const self_type& x) const
-    {
-        return !(*this == x);
-    }
+    bool operator!=(const self_type& x) const;
 
-    bool operator!=(long long v) const
-    {
-        return !(*this == v);
-    }
+    bool operator!=(long long v) const;
 
     bool operator<(const self_type& x) const;
 
     bool operator<(long long v) const;
 
-    bool operator>(const self_type& x) const
-    {
-        return x < *this;
-    }
+    bool operator>(const self_type& x) const;
 
     bool operator>(long long v) const;
 
-    bool operator<=(const self_type& x) const
-    {
-        return !(x < *this);
-    }
+    bool operator<=(const self_type& x) const;
 
-    bool operator<=(long long v) const
-    {
-        return !(*this > v);
-    }
+    bool operator<=(long long v) const;
 
-    bool operator>=(const self_type& x) const
-    {
-        return !(*this < x);
-    }
+    bool operator>=(const self_type& x) const;
 
-    bool operator>=(long long v) const
-    {
-        return !(*this < v);
-    }
+    bool operator>=(long long v) const;
 
-    self_type operator+(const self_type& x) const
-    {
-        self_type ret(0, _alloc.pointer());
-        self_type::add(*this, x, &ret);
-        return ret;
-    }
+    self_type operator+(const self_type& x) const;
 
-    self_type operator+(long long v) const
-    {
-        self_type ret(0, _alloc.pointer());
-        self_type::add(*this, v, &ret);
-        return ret;
-    }
+    self_type operator+(long long v) const;
 
-    self_type operator-(const self_type& x) const
-    {
-        self_type ret(0, _alloc.pointer());
-        self_type::sub(*this, x, &ret);
-        return ret;
-    }
+    self_type operator-(const self_type& x) const;
 
-    self_type operator-(long long v) const
-    {
-        self_type ret(0, _alloc.pointer());
-        self_type::sub(*this, v, &ret);
-        return ret;
-    }
+    self_type operator-(long long v) const;
 
-    self_type operator-() const
-    {
-        self_type ret(0, _alloc.pointer());
-        self_type::negate(*this, &ret);
-        return ret;
-    }
+    self_type operator-() const;
 
-    self_type operator*(const self_type& x) const
-    {
-        self_type ret(0, _alloc.pointer());
-        self_type::multiply(*this, x, &ret);
-        return ret;
-    }
+    self_type operator*(const self_type& x) const;
 
-    self_type operator*(long long v) const
-    {
-        self_type ret(0, _alloc.pointer());
-        self_type::multiply(*this, v, &ret);
-        return ret;
-    }
+    self_type operator*(long long v) const;
 
-    self_type operator/(const self_type& x) const
-    {
-        self_type ret(0, _alloc.pointer());
-        self_type::divide(*this, x, &ret, NULL);
-        return ret;
-    }
+    self_type operator/(const self_type& x) const;
 
-    self_type operator/(long long v) const
-    {
-        self_type divider(v, _alloc.pointer()), ret(0, _alloc.pointer());
-        self_type::divide(*this, divider, &ret, NULL);
-        return ret;
-    }
+    self_type operator/(long long v) const;
 
     self_type operator%(const self_type& x) const;
 
     self_type operator%(long long v) const;
 
-    self_type& operator+=(const self_type& x)
-    {
-        self_type::add(*this, x, this);
-        return *this;
-    }
+    self_type& operator+=(const self_type& x);
 
-    self_type& operator+=(long long v)
-    {
-        self_type::add(*this, v, this);
-        return *this;
-    }
+    self_type& operator+=(long long v);
 
-    self_type& operator-=(const self_type& x)
-    {
-        self_type::sub(*this, x, this);
-        return *this;
-    }
+    self_type& operator-=(const self_type& x);
 
-    self_type& operator-=(long long v)
-    {
-        self_type::sub(*this, v, this);
-        return *this;
-    }
+    self_type& operator-=(long long v);
 
-    self_type& operator*=(const self_type& x)
-    {
-        self_type::multiply(*this, x, this);
-        return *this;
-    }
+    self_type& operator*=(const self_type& x);
 
-    self_type& operator*=(long long v)
-    {
-        self_type::multiply(*this, v, this);
-        return *this;
-    }
+    self_type& operator*=(long long v);
 
-    self_type& operator/=(const self_type& x)
-    {
-        self_type::divide(*this, x, this, NULL);
-        return *this;
-    }
+    self_type& operator/=(const self_type& x);
 
-    self_type& operator/=(long long v)
-    {
-        self_type divider(v, _alloc.pointer());
-        self_type::divide(*this, divider, this, NULL);
-        return *this;
-    }
+    self_type& operator/=(long long v);
 
     self_type& operator%=(const self_type& x);
 
     self_type& operator%=(long long v);
 
-    self_type& operator++()
-    {
-        self_type::increase(this);
-        return *this;
-    }
+    self_type& operator++();
 
-    self_type operator++(int)
-    {
-        self_type ret(*this);
-        ++*this;
-        return ret;
-    }
+    self_type operator++(int);
 
-    self_type& operator--()
-    {
-        self_type::decrease(this);
-        return *this;
-    }
+    self_type& operator--();
 
-    self_type operator--(int)
-    {
-        self_type ret(*this);
-        --*this;
-        return ret;
-    }
+    self_type operator--(int);
 
     self_type operator<<(size_type count) const;
 
@@ -342,25 +225,13 @@ public:
     /**
      * 以word_type为单位计算有效字长度
      */
-    size_type significant_words_length() const
-    {
-        return _significant_len;
-    }
+    size_type significant_words_length() const;
 
-    memory_allocator* allocator() const
-    {
-        return _alloc.pointer();
-    }
+    memory_allocator* allocator() const;
 
-    const word_type* data() const
-    {
-        return _data;
-    }
+    const word_type* data() const;
 
-    word_type* data()
-    {
-        return const_cast<word_type*>(static_cast<const self_type&>(*this).data());
-    }
+    word_type* data();
 
     /**
      * 返回比特位

@@ -49,6 +49,7 @@ class LogFilter
         void insert(int pos, hash_t hash);
 
         void remove(Node *child);
+
         void clear();
     };
     class Node _root;

@@ -17,6 +17,25 @@
 namespace nut
 {
 
+LogHandler::LogHandler()
+{}
+
+void LogHandler::set_flush_mask(ll_mask_t mask)
+{
+    _flush_mask = mask;
+}
+
+LogFilter& LogHandler::get_filter()
+{
+    return _filter;
+}
+
+// -----------------------------------------------------------------------------
+
+StreamLogHandler::StreamLogHandler(std::ostream &os)
+    : _os(os)
+{}
+
 void StreamLogHandler::handle_log(const LogRecord &rec)
 {
     _os << "[" << rec.get_time().get_clock_str() << "] " <<
@@ -26,6 +45,17 @@ void StreamLogHandler::handle_log(const LogRecord &rec)
 
     if (0 != (_flush_mask & rec.get_level()))
         _os.flush();
+}
+
+// -----------------------------------------------------------------------------
+
+ConsoleLogHandler::ConsoleLogHandler(bool colored)
+    : _colored(colored)
+{}
+
+void ConsoleLogHandler::set_colored(bool colored)
+{
+    _colored = colored;
 }
 
 void ConsoleLogHandler::handle_log(const LogRecord &rec)
@@ -72,6 +102,8 @@ void ConsoleLogHandler::handle_log(const LogRecord &rec)
         std::cout.flush();
 }
 
+// -----------------------------------------------------------------------------
+
 FileLogHandler::FileLogHandler(const char *file, bool append)
     : _ofs(file, (append ? std::ios::app : std::ios::trunc))
 {
@@ -89,12 +121,23 @@ void FileLogHandler::handle_log(const LogRecord & rec)
         _ofs.flush();
 }
 
+// -----------------------------------------------------------------------------
+
 #if defined(NUT_PLATFORM_OS_LINUX)
+
+SyslogLogHandler::SyslogLogHandler(bool close_syslog_on_exit)
+    : _close_syslog_on_exit(close_syslog_on_exit)
+{}
 
 SyslogLogHandler::~SyslogLogHandler()
 {
     if (_close_syslog_on_exit)
         ::closelog();  // the oposite way is openlog()
+}
+
+void SyslogLogHandler::set_close_syslog_on_exit(bool close_on_exit)
+{
+    _close_syslog_on_exit = close_on_exit;
 }
 
 void SyslogLogHandler::handle_log(const LogRecord &rec)

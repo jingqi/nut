@@ -189,6 +189,16 @@ void PropertyDom::serielize(std::string *appended, const char *le) const
     }
 }
 
+bool PropertyDom::is_dirty() const
+{
+    return _dirty;
+}
+
+void PropertyDom::set_dirty(bool dirty)
+{
+    _dirty = dirty;
+}
+
 void PropertyDom::clear()
 {
     _lines.clear();

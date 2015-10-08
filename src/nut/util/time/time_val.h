@@ -44,70 +44,27 @@ public:
     void normalize();
 
 public:
-    bool operator==(const TimeVal& x) const
-    {
-        return sec == x.sec && usec == x.usec;
-    }
+    bool operator==(const TimeVal& x) const;
 
-    bool operator!=(const TimeVal& x) const
-    {
-        return !(*this == x);
-    }
+    bool operator!=(const TimeVal& x) const;
 
-    bool operator<(const TimeVal& x) const
-    {
-        if (sec < x.sec)
-            return true;
-        else if (sec == x.sec && usec < x.usec)
-            return true;
-        return false;
-    }
+    bool operator<(const TimeVal& x) const;
 
-    bool operator>(const TimeVal& x) const
-    {
-        return x < *this;
-    }
+    bool operator>(const TimeVal& x) const;
 
-    bool operator<=(const TimeVal& x) const
-    {
-        return !(x < *this);
-    }
+    bool operator<=(const TimeVal& x) const;
 
-    bool operator>=(const TimeVal& x) const
-    {
-        return !(*this < x);
-    }
+    bool operator>=(const TimeVal& x) const;
 
-    TimeVal operator+(const TimeVal& x) const
-    {
-        return TimeVal(sec + x.sec, usec + x.usec);
-    }
+    TimeVal operator+(const TimeVal& x) const;
 
-    TimeVal operator-(const TimeVal& x) const
-    {
-        return TimeVal(sec - x.sec, usec - x.usec);
-    }
+    TimeVal operator-(const TimeVal& x) const;
 
-    TimeVal operator-() const
-    {
-        return TimeVal(-sec, -usec);
-    }
+    TimeVal operator-() const;
 
-    TimeVal& operator+=(const TimeVal& x)
-    {
-        sec += x.sec;
-        usec += x.usec;
-        normalize();
-        return *this;
-    }
+    TimeVal& operator+=(const TimeVal& x);
 
-    TimeVal& operator-=(const TimeVal& x)
-    {
-        sec -= x.sec;
-        usec -= x.usec;
-        normalize();
-        return *this;
-    }
+    TimeVal& operator-=(const TimeVal& x);
 };
 
 /**

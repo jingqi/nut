@@ -102,6 +102,71 @@ void TimeVal::normalize()
     }
 }
 
+bool TimeVal::operator==(const TimeVal& x) const
+{
+    return sec == x.sec && usec == x.usec;
+}
+
+bool TimeVal::operator!=(const TimeVal& x) const
+{
+    return !(*this == x);
+}
+
+bool TimeVal::operator<(const TimeVal& x) const
+{
+    if (sec < x.sec)
+        return true;
+    else if (sec == x.sec && usec < x.usec)
+        return true;
+    return false;
+}
+
+bool TimeVal::operator>(const TimeVal& x) const
+{
+    return x < *this;
+}
+
+bool TimeVal::operator<=(const TimeVal& x) const
+{
+    return !(x < *this);
+}
+
+bool TimeVal::operator>=(const TimeVal& x) const
+{
+    return !(*this < x);
+}
+
+TimeVal TimeVal::operator+(const TimeVal& x) const
+{
+    return TimeVal(sec + x.sec, usec + x.usec);
+}
+
+TimeVal TimeVal::operator-(const TimeVal& x) const
+{
+    return TimeVal(sec - x.sec, usec - x.usec);
+}
+
+TimeVal TimeVal::operator-() const
+{
+    return TimeVal(-sec, -usec);
+}
+
+TimeVal& TimeVal::operator+=(const TimeVal& x)
+{
+    sec += x.sec;
+    usec += x.usec;
+    normalize();
+    return *this;
+}
+
+TimeVal& TimeVal::operator-=(const TimeVal& x)
+{
+    sec -= x.sec;
+    usec -= x.usec;
+    normalize();
+    return *this;
+}
+
 
 #if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
 #   define PTW32_TIMESPEC_TO_FILETIME_OFFSET (LONGLONG)((((LONGLONG) 27111902LL << 32)+(LONGLONG) 3577643008LL ))

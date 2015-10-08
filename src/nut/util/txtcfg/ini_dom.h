@@ -67,15 +67,9 @@ public:
 	 */
     void serielize(std::string *appended, const char *le = "\n") const;
 
-	bool is_dirty() const
-	{
-		return _dirty;
-	}
+	bool is_dirty() const;
 
-    void set_dirty(bool dirty = true)
-    {
-        _dirty = dirty;
-    }
+    void set_dirty(bool dirty = true);
 
     void clear();
 

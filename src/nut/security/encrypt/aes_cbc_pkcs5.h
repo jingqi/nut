@@ -75,10 +75,7 @@ public:
     /**
      * 获取加密或者解密结果
      */
-    COWArray<uint8_t> get_result() const
-    {
-        return _result;
-    }
+    COWArray<uint8_t> get_result() const;
 };
 
 }

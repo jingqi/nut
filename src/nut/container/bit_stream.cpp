@@ -161,6 +161,11 @@ bool BitStream::operator==(const BitStream& x) const
     return true;
 }
 
+bool BitStream::operator!=(const BitStream& x) const
+{
+    return !(*this == x);
+}
+
 BitStream BitStream::operator+(const BitStream& x) const
 {
     BitStream ret;
@@ -168,6 +173,22 @@ BitStream BitStream::operator+(const BitStream& x) const
     ret.append(*this);
     ret.append(x);
     return ret;
+}
+
+BitStream& BitStream::operator+=(const BitStream& x)
+{
+    append(x);
+    return *this;
+}
+
+bool BitStream::operator[](size_t i) const
+{
+    return bit_at(i);
+}
+
+size_t BitStream::size() const
+{
+    return _bit_size;
 }
 
 void BitStream::resize(size_t new_bit_size, bool fill_setb)
@@ -182,6 +203,11 @@ void BitStream::resize(size_t new_bit_size, bool fill_setb)
     const size_t old_bit_size = _bit_size;
     _bit_size = new_bit_size;
     fill_bits(old_bit_size, new_bit_size - old_bit_size, fill_setb);
+}
+
+void BitStream::clear()
+{
+    _bit_size = 0;
 }
 
 bool BitStream::bit_at(size_t i) const
@@ -255,6 +281,11 @@ size_t BitStream::bit1_count()
     for (size_t i = word_count * (sizeof(word_type) * 8); i < _bit_size; ++i)
         ret += (bit_at(i) ? 1 : 0);
     return ret;
+}
+
+size_t BitStream::bit0_count()
+{
+    return _bit_size - bit1_count();
 }
 
 void BitStream::to_string(std::string *appended)

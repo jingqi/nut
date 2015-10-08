@@ -131,4 +131,9 @@ bool AES_CBC_PKCS5::finish_decrypt()
     return true;
 }
 
+COWArray<uint8_t> AES_CBC_PKCS5::get_result() const
+{
+    return _result;
+}
+
 }

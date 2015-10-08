@@ -64,10 +64,7 @@ public:
     /**
      * 获取应用程序绝对路径
      */
-    const std::string& get_exec_path() const
-    {
-        return _exec_path;
-    }
+    const std::string& get_exec_path() const;
 
 	/**
      * 从文件 _maps_path 中加载地址的映射，path为空表示加载所有。

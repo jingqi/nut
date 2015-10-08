@@ -13,20 +13,13 @@ class Adler32
     uint32_t _result = 1;
 
 public:
-    Adler32()
-    {}
+    Adler32();
 
-    void reset()
-    {
-        _result = 1;
-    }
+    void reset();
 
     void update(const void *buf, size_t len);
 
-    uint32_t digest() const
-    {
-        return _result;
-    }
+    uint32_t digest() const;
 };
 
 /**
@@ -47,10 +40,7 @@ public:
 
     void update(const void *buf, size_t len);
 
-    uint32_t get_result() const
-    {
-        return _result;
-    }
+    uint32_t get_result() const;
 };
 
 }

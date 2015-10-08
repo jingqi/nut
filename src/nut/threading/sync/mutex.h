@@ -52,6 +52,7 @@ public :
 
     /**
      * try lock the mutex
+     *
      * @return
      *      true, if lock successed
      */
@@ -59,6 +60,7 @@ public :
 
     /**
      * try lock the mutex in given time
+     *
      * @param s
      *      The timeout value in seconds
      * @param ms

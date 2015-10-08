@@ -93,6 +93,16 @@ bool TestRegister::match_group(const char *group_name) const
     return false;
 }
 
+const char* TestRegister::get_fixture_name() const
+{
+    return _fixture_name;
+}
+
+TestRegister* TestRegister::get_next_register() const
+{
+    return _pnext;
+}
+
 TestFixture* TestRegister::new_fixture() const
 {
     assert(NULL != _new_func);

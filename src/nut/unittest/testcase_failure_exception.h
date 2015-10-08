@@ -17,24 +17,13 @@ class TestCaseFailureException
     int _line = -1;
 
 public:
-    TestCaseFailureException(const char *des, const char *file, int line)
-        : _description(des), _file(file), _line(line)
-    {}
+    TestCaseFailureException(const char *des, const char *file, int line);
 
-    const char* get_description() const
-    {
-        return _description;
-    }
+    const char* get_description() const;
 
-    const char* get_file() const
-    {
-        return _file;
-    }
+    const char* get_file() const;
 
-    int get_line() const
-    {
-        return _line;
-    }
+    int get_line() const;
 };
 
 }

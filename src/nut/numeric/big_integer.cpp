@@ -170,6 +170,16 @@ bool BigInteger::operator==(long long v) const
     return signed_equals(_data, _significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
 }
 
+bool BigInteger::operator!=(const self_type& x) const
+{
+    return !(*this == x);
+}
+
+bool BigInteger::operator!=(long long v) const
+{
+    return !(*this == v);
+}
+
 bool BigInteger::operator<(const self_type& x) const
 {
     return signed_less_than(_data, _significant_len, x._data, x._significant_len);
@@ -182,11 +192,99 @@ bool BigInteger::operator<(long long v) const
     return signed_less_than(_data, _significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
 }
 
+bool BigInteger::operator>(const self_type& x) const
+{
+    return x < *this;
+}
+
 bool BigInteger::operator>(long long v) const
 {
     static_assert(sizeof(v) % sizeof(word_type) == 0, "整数长度对齐问题");
 
     return signed_less_than((word_type*)&v, sizeof(v) / sizeof(word_type), _data, _significant_len);
+}
+
+bool BigInteger::operator<=(const self_type& x) const
+{
+    return !(x < *this);
+}
+
+bool BigInteger::operator<=(long long v) const
+{
+    return !(*this > v);
+}
+
+bool BigInteger::operator>=(const self_type& x) const
+{
+    return !(*this < x);
+}
+
+bool BigInteger::operator>=(long long v) const
+{
+    return !(*this < v);
+}
+
+BigInteger BigInteger::operator+(const self_type& x) const
+{
+    self_type ret(0, _alloc.pointer());
+    self_type::add(*this, x, &ret);
+    return ret;
+}
+
+BigInteger BigInteger::operator+(long long v) const
+{
+    self_type ret(0, _alloc.pointer());
+    self_type::add(*this, v, &ret);
+    return ret;
+}
+
+BigInteger BigInteger::operator-(const self_type& x) const
+{
+    self_type ret(0, _alloc.pointer());
+    self_type::sub(*this, x, &ret);
+    return ret;
+}
+
+BigInteger BigInteger::operator-(long long v) const
+{
+    self_type ret(0, _alloc.pointer());
+    self_type::sub(*this, v, &ret);
+    return ret;
+}
+
+BigInteger BigInteger::operator-() const
+{
+    self_type ret(0, _alloc.pointer());
+    self_type::negate(*this, &ret);
+    return ret;
+}
+
+BigInteger BigInteger::operator*(const self_type& x) const
+{
+    self_type ret(0, _alloc.pointer());
+    self_type::multiply(*this, x, &ret);
+    return ret;
+}
+
+BigInteger BigInteger::operator*(long long v) const
+{
+    self_type ret(0, _alloc.pointer());
+    self_type::multiply(*this, v, &ret);
+    return ret;
+}
+
+BigInteger BigInteger::operator/(const self_type& x) const
+{
+    self_type ret(0, _alloc.pointer());
+    self_type::divide(*this, x, &ret, NULL);
+    return ret;
+}
+
+BigInteger BigInteger::operator/(long long v) const
+{
+    self_type divider(v, _alloc.pointer()), ret(0, _alloc.pointer());
+    self_type::divide(*this, divider, &ret, NULL);
+    return ret;
 }
 
 BigInteger BigInteger::operator%(const self_type& x) const
@@ -217,6 +315,55 @@ BigInteger BigInteger::operator%(long long v) const
     return ret;
 }
 
+BigInteger& BigInteger::operator+=(const self_type& x)
+{
+    self_type::add(*this, x, this);
+    return *this;
+}
+
+BigInteger& BigInteger::operator+=(long long v)
+{
+    self_type::add(*this, v, this);
+    return *this;
+}
+
+BigInteger& BigInteger::operator-=(const self_type& x)
+{
+    self_type::sub(*this, x, this);
+    return *this;
+}
+
+BigInteger& BigInteger::operator-=(long long v)
+{
+    self_type::sub(*this, v, this);
+    return *this;
+}
+
+BigInteger& BigInteger::operator*=(const self_type& x)
+{
+    self_type::multiply(*this, x, this);
+    return *this;
+}
+
+BigInteger& BigInteger::operator*=(long long v)
+{
+    self_type::multiply(*this, v, this);
+    return *this;
+}
+
+BigInteger& BigInteger::operator/=(const self_type& x)
+{
+    self_type::divide(*this, x, this, NULL);
+    return *this;
+}
+
+BigInteger& BigInteger::operator/=(long long v)
+{
+    self_type divider(v, _alloc.pointer());
+    self_type::divide(*this, divider, this, NULL);
+    return *this;
+}
+
 BigInteger& BigInteger::operator%=(const self_type& x)
 {
     assert(!x.is_zero());
@@ -241,6 +388,32 @@ BigInteger& BigInteger::operator%=(long long v)
     self_type divider(v, _alloc.pointer());
     self_type::divide(*this, divider, NULL, this);
     return *this;
+}
+
+BigInteger& BigInteger::operator++()
+{
+    self_type::increase(this);
+    return *this;
+}
+
+BigInteger BigInteger::operator++(int)
+{
+    self_type ret(*this);
+    ++*this;
+    return ret;
+}
+
+BigInteger& BigInteger::operator--()
+{
+    self_type::decrease(this);
+    return *this;
+}
+
+BigInteger BigInteger::operator--(int)
+{
+    self_type ret(*this);
+    --*this;
+    return ret;
 }
 
 BigInteger BigInteger::operator<<(size_type count) const
@@ -547,6 +720,29 @@ void BigInteger::multiply_to_len(const self_type& a, size_type bit_len)
     signed_multiply(_data, _significant_len, a._data, a._significant_len, _data, words_len, _alloc.pointer());
     _significant_len = words_len;
     limit_positive_bits_to(bit_len);
+}
+
+/**
+ * 以word_type为单位计算有效字长度
+ */
+BigInteger::size_type BigInteger::significant_words_length() const
+{
+    return _significant_len;
+}
+
+memory_allocator* BigInteger::allocator() const
+{
+    return _alloc.pointer();
+}
+
+const BigInteger::word_type* BigInteger::data() const
+{
+    return _data;
+}
+
+BigInteger::word_type* BigInteger::data()
+{
+    return const_cast<word_type*>(static_cast<const self_type&>(*this).data());
 }
 
 /**

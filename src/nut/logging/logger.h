@@ -32,7 +32,9 @@ public:
     LogFilter& get_filter();
 
     void add_handler(LogHandler *handler);
+
     void remove_handler(LogHandler *handler);
+
     void clear_handlers();
 
     void log(LogLevel level, const char *tag, const char *file, int line,

@@ -14,6 +14,30 @@
 namespace nut
 {
 
+Thread::Thread(thread_process_type process, void *arg)
+    : _thread_process(process), _thread_arg(arg)
+{}
+
+Thread::~Thread()
+{
+    // 避免回收资源导致内存异常
+    if (_has_started)
+    {
+        join();
+#if defined(NUT_PLATFORM_OS_WINDOWS)
+        ::CloseHandle(_handle);
+#else
+        ::pthread_detach(_pthread);
+#endif
+    }
+}
+
+void Thread::run(void *arg)
+{
+    // default do nothing
+    (void)arg;
+}
+
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 DWORD WINAPI Thread::thread_entry(LPVOID p)
 #else
@@ -35,22 +59,19 @@ void* Thread::thread_entry(void *p)
 #endif
 }
 
-Thread::Thread(thread_process_type process, void *arg)
-    : _thread_process(process), _thread_arg(arg)
-{}
-
-Thread::~Thread()
+void Thread::set_thread_process(thread_process_type process)
 {
-    // 避免回收资源导致内存异常
-    if (_has_started)
-    {
-        join();
-#if defined(NUT_PLATFORM_OS_WINDOWS)
-        ::CloseHandle(_handle);
-#else
-        ::pthread_detach(_pthread);
-#endif
-    }
+    _thread_process = process;
+}
+
+void Thread::set_thread_arg(void *arg)
+{
+    _thread_arg = arg;
+}
+
+bool Thread::has_started() const
+{
+    return _has_started;
 }
 
 bool Thread::has_finished() const

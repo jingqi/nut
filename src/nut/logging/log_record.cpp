@@ -24,6 +24,26 @@ LogRecord::~LogRecord()
     _message = NULL;
 }
 
+const DateTime& LogRecord::get_time() const
+{
+    return _time;
+}
+
+LogLevel LogRecord::get_level() const
+{
+    return _level;
+}
+
+const char* LogRecord::get_tag() const
+{
+    return _tag;
+}
+
+const char* LogRecord::get_file_path() const
+{
+    return _file_path;
+}
+
 const char* LogRecord::get_file_name() const
 {
     assert(NULL != _file_path);
@@ -35,6 +55,16 @@ const char* LogRecord::get_file_name() const
 			ret = tmp + 1;
 	}
 	return ret;
+}
+
+int LogRecord::get_line() const
+{
+    return _line;
+}
+
+const char* LogRecord::get_message() const
+{
+    return _message;
 }
 
 void LogRecord::to_string(std::string *appended) const

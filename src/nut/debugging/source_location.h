@@ -17,39 +17,23 @@ class SourceLocation
     int _line = -1;            // source file line
     const char *_func = NULL;    // source function
 
-public :
-    SourceLocation(const char *file, int line, const char *func)
-        : _path(file), _line(line), _func(func)
-    {
-        assert(NULL != file && line >= 0);
-    }
+public:
+    SourceLocation(const char *file, int line, const char *func);
 
     bool operator==(const SourceLocation& x) const;
 
-    bool operator!=(const SourceLocation& x) const
-    {
-        return !(*this == x);
-    }
+    bool operator!=(const SourceLocation& x) const;
 
-    const char* get_file_path() const
-    {
-        return _path;
-    }
+    const char* get_file_path() const;
 
     const char* get_file_name() const;
 
-    int get_line_number() const
-    {
-        return _line;
-    }
+    int get_line_number() const;
 
     /**
      * @return This method may return NULL if the location is not in any function
      */
-    const char* get_function_name() const
-    {
-        return _func;
-    }
+    const char* get_function_name() const;
 
     void to_string(std::string *appended) const;
 };

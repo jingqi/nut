@@ -16,7 +16,7 @@ namespace nut
 class RwLock
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
-    /** windows下的共享锁是在Windows Vista/Server 2008极其以后的版本中提供的 */
+    /** NOTE windows 下的共享锁是在 Windows Vista/Server 2008 及其以后的版本中提供的 */
     SRWLOCK _rwlock;
 #else
     pthread_rwlock_t _rwlock;

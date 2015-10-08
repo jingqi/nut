@@ -21,10 +21,8 @@ class Thread
 public:
     typedef void (*thread_process_type)(void*);
 
-    virtual void run(void *arg)
-    {
-        (void)arg;
-    }
+    // should be override by subclass
+    virtual void run(void *arg);
 
 private:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
@@ -39,6 +37,7 @@ private:
     bool _has_started = false;
     bool mutable _has_finished = false;
 
+private:
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     static DWORD WINAPI thread_entry(LPVOID p);
 #else
@@ -53,21 +52,10 @@ public:
     Thread(thread_process_type process = NULL, void *arg = NULL);
     virtual ~Thread();
 
-    void set_thread_process(thread_process_type process)
-    {
-        _thread_process = process;
-    }
+    void set_thread_process(thread_process_type process);
+    void set_thread_arg(void *arg);
 
-    void set_thread_arg(void *arg)
-    {
-        _thread_arg = arg;
-    }
-
-    bool has_started() const
-    {
-        return _has_started;
-    }
-
+    bool has_started() const;
     bool has_finished() const;
 
 public:

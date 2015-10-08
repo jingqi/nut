@@ -11,7 +11,9 @@ class RandomAccessInputStream : public InputStream
 {
 public:
     virtual size_t tell() const = 0;
+
     virtual size_t length() const = 0;
+
     virtual void seek(size_t pos) = 0;
 };
 

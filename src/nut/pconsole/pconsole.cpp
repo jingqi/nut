@@ -20,7 +20,32 @@ PConsole::PConsole(const std::string& name)
     add_a_command(rc_new<CmdHelp>(this));
 }
 
-/** 读取并执行一次 */
+char PConsole::get_prompt_char() const
+{
+    return _prompt_char;
+}
+
+void PConsole::set_prompt_char(char c)
+{
+    _prompt_char = c;
+}
+
+const std::string& PConsole::get_prompt_string() const
+{
+    return _prompt_string;
+}
+
+void PConsole::set_prompt_string(const std::string& s)
+{
+    _prompt_string = s;
+}
+
+void PConsole::add_a_command(rc_ptr<ICommand> cmd)
+{
+    _commands.push_back(cmd);
+}
+
+// 读取并执行一次
 void PConsole::read_and_execute()
 {
     // 打印命令提示符
@@ -39,7 +64,7 @@ void PConsole::read_and_execute()
     execute_line(l.c_str());
 }
 
-/** 执行直到用户输入exit命令 */
+// 执行直到用户输入exit命令
 int PConsole::execute()
 {
     _exit = false;
@@ -49,7 +74,7 @@ int PConsole::execute()
     return _exit_value;
 }
 
-/** 打印一般信息 */
+// 打印一般信息
 void PConsole::print_general_info() const
 {
     printf("%s\n", _console_name.c_str());
@@ -63,7 +88,13 @@ void PConsole::print_general_info() const
     }
 }
 
-/** 设置退出标记 */
+// 获取命令列表
+const std::vector<rc_ptr<ICommand> >& PConsole::get_commands() const
+{
+    return _commands;
+}
+
+// 设置退出标记
 void PConsole::exit(int e)
 {
     _exit_value = e;

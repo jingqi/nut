@@ -30,48 +30,30 @@ class PConsole : public IConsole
 public:
     PConsole(const std::string& name = "PConsole");
 
-    char get_prompt_char() const
-    {
-        return _prompt_char;
-    }
+    char get_prompt_char() const;
 
-    void set_prompt_char(char c)
-    {
-        _prompt_char = c;
-    }
+    void set_prompt_char(char c);
 
-    const std::string& get_prompt_string() const
-    {
-        return _prompt_string;
-    }
+    const std::string& get_prompt_string() const;
 
-    void set_prompt_string(const std::string& s)
-    {
-        _prompt_string = s;
-    }
+    void set_prompt_string(const std::string& s);
 
-    /** 添加一个命令 */
-    void add_a_command(rc_ptr<ICommand> cmd)
-    {
-        _commands.push_back(cmd);
-    }
+    // 添加一个命令
+    void add_a_command(rc_ptr<ICommand> cmd);
 
-    /** 读取并执行一次 */
+    // 读取并执行一次
     void read_and_execute();
 
-    /** 执行直到用户输入exit命令 */
+    // 执行直到用户输入exit命令
     int execute();
 
-    /** 打印一般信息 */
+    // 打印一般信息
     virtual void print_general_info() const override;
 
-    /** 获取命令列表 */
-    virtual const std::vector<rc_ptr<ICommand> >& get_commands() const override
-    {
-        return _commands;
-    }
+    // 获取命令列表
+    virtual const std::vector<rc_ptr<ICommand> >& get_commands() const override;
 
-    /** 设置退出标记 */
+    // 设置退出标记
     virtual void exit(int e) override;
 
 private:

@@ -10,6 +10,14 @@
 namespace nut
 {
 
+Adler32::Adler32()
+{}
+
+void Adler32::reset()
+{
+    _result = 1;
+}
+
 void Adler32::update(const void *buf, size_t len)
 {
     assert(NULL != buf || len <= 0);
@@ -22,6 +30,13 @@ void Adler32::update(const void *buf, size_t len)
         *b = (((uint32_t) *b) + *a) % MOD_ADLER;
     }
 }
+
+uint32_t Adler32::digest() const
+{
+    return _result;
+}
+
+// -----------------------------------------------------------------------------
 
 RollingAdler32::RollingAdler32(size_t window)
     : _window_size(window)
@@ -62,6 +77,11 @@ void RollingAdler32::update(const void *buf, size_t len)
         _buf[_count % _window_size] = d;
         ++_count;
     }
+}
+
+uint32_t RollingAdler32::get_result() const
+{
+    return _result;
 }
 
 }

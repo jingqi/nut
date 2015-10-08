@@ -40,16 +40,6 @@ public:
         timer_func_type func = NULL;
     };
 
-    // 用于维护小头堆
-    struct TimerPtrComparor
-    {
-        bool operator()(const Timer *t1, const Timer *t2)
-        {
-            assert(NULL != t1 && NULL != t2);
-            return t1->time > t2->time; // 用于小头堆算法，故使用">"
-        }
-    };
-
     int volatile _next_id = 1;  // 用于生成不重复的 timer id
     std::vector<Timer*> _timers; // 小头堆
     Condition _cond;

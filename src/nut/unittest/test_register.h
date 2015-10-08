@@ -38,15 +38,9 @@ public:
 
     bool match_group(const char *group_name) const;
 
-    const char* get_fixture_name() const
-    {
-        return _fixture_name;
-    }
+    const char* get_fixture_name() const;
 
-    TestRegister* get_next_register() const
-    {
-        return _pnext;
-    }
+    TestRegister* get_next_register() const;
 
     TestFixture* new_fixture() const;
 
