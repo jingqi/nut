@@ -4,6 +4,9 @@
 #include <nut/platform/platform.h>
 #include <nut/util/time/time_val.h>
 
+#if defined(NUT_PLATFORM_OS_MAC)
+#   include <errno.h>
+#endif
 
 #include "mutex.h"
 
@@ -90,6 +93,41 @@ bool Mutex::trylock()
 #endif
 }
 
+#if defined(NUT_PLATFORM_OS_MAC)
+/**
+ * MAC 不支持 pthread_mutex_timedlock()
+ * see http://lists.apple.com/archives/xcode-users/2007/Apr/msg00331.html
+ */
+static int _pthread_mutex_timedlock(pthread_mutex_t *mutex, const struct timeval *abs_timeout)
+{
+    assert(NULL != mutex && NULL != abs_timeout);
+
+    while (true)
+    {
+        const int result = ::pthread_mutex_trylock(mutex);
+        if (EBUSY != result)
+            return result;
+
+        /* Sleep for 10,000,000 nanoseconds before trying again. */
+        struct timespec ts;
+        ts.tv_sec = 0;
+        ts.tv_nsec = 10000000;
+        while (-1 == ::nanosleep(&ts, &ts))
+        {}
+
+        if (0 != abs_timeout->tv_sec || 0 != abs_timeout->tv_usec) // 0 for infinitive
+        {
+            struct timeval now;
+            ::gettimeofday(&now, NULL); // MAC 支持 clock_gettime()
+            const long long v = (((long long) now.tv_sec) - abs_timeout->tv_sec) * 1000 * 1000 +
+                (now.tv_usec - abs_timeout->tv_usec);
+            if (v >= 0) // timeout
+                return result;
+        }
+    }
+}
+#endif
+
 /**
  * try lock the mutex in given time
  * @param s
@@ -105,10 +143,11 @@ bool Mutex::timedlock(unsigned s, unsigned ms)
     const DWORD dw_milliseconds = s * 1000 + ms;
     return WAIT_OBJECT_0 == ::WaitForSingleObject(_hmutex, dw_milliseconds);
 #elif defined(NUT_PLATFORM_OS_MAC)
-#   warning FIXME MAC 不支持pthread_mutex_timedlock()
-    (void)s;
-    (void)ms;
-    return 0 == ::pthread_mutex_trylock(&_mutex); // TODO MAC 不支持 pthread_mutex_timedlock()
+    struct timeval abstime;
+    ::gettimeofday(&abstime, NULL);
+    abstime.tv_sec += s;
+    abstime.tv_usec += ((long)ms) * 1000;
+    return 0 == _pthread_mutex_timedlock(&_mutex, &abstime);
 #else
     struct timespec abstime;
 #   if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
