@@ -16,7 +16,7 @@ namespace nut
  */
 class ByteArrayStream : public RandomAccessInputStream, public OutputStream
 {
-    NUT_REF_COUNTABLE
+    NUT_REF_COUNTABLE_OVERRIDE
 
     typedef Array<uint8_t> byte_array_type;
     typedef enrc<byte_array_type> byte_rcarray_type;
