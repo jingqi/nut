@@ -21,13 +21,6 @@ else
 	CC_FLAGS += -rdynamic
 endif
 
-# LIB
-ifeq (${HOST}, Darwin)
-	LIB += -lc++
-else
-	LIB += -lpthread
-endif
-
 # OBJS, DEPS
 DIRS = $(shell find ${SRC_ROOT} -maxdepth 10 -type d)
 CPPS = $(foreach dir,${DIRS},$(wildcard $(dir)/*.cpp))
