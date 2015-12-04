@@ -11,6 +11,12 @@ ByteArrayStream::ByteArrayStream(memory_allocator *ma)
     _data = rca_new<byte_rcarray_type>(ma, 16, ma);
 }
 
+ByteArrayStream::ByteArrayStream(byte_rcarray_type *arr)
+    : _data(arr)
+{
+    assert(NULL != arr);
+}
+
 size_t ByteArrayStream::size() const
 {
     return _data->size();
