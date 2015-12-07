@@ -21,7 +21,7 @@ void uchar_to_str(unsigned char i, std::string *appended);
 std::string uchar_to_str(unsigned char i);
 
 // short
-void short_to_str(short i, std::string *rs);
+void short_to_str(short i, std::string *appended);
 std::string short_to_str(short i);
 
 // unsigned short

@@ -105,6 +105,20 @@ void Path::get_cwd(std::wstring *appended)
     ascii_to_wstr(buf, appended);
 }
 
+std::string Path::get_cwd()
+{
+    std::string ret;
+    Path::get_cwd(&ret);
+    return ret;
+}
+
+std::wstring Path::get_wcwd()
+{
+    std::wstring ret;
+    Path::get_cwd(&ret);
+    return ret;
+}
+
 bool Path::is_abs(const char *path)
 {
     assert(NULL != path);
@@ -141,6 +155,16 @@ bool Path::is_abs(const wchar_t *path)
             return false;
     }
     return false;
+}
+
+bool Path::is_abs(const std::string& path)
+{
+    return Path::is_abs(path.c_str());
+}
+
+bool Path::is_abs(const std::wstring& path)
+{
+    return Path::is_abs(path.c_str());
 }
 
 void Path::abs_path(const char *path, std::string *appended)
@@ -317,6 +341,44 @@ void Path::abs_path(const wchar_t *path, std::wstring *appended)
     }
 }
 
+void Path::abs_path(const std::string& path, std::string *appended)
+{
+    Path::abs_path(path.c_str(), appended);
+}
+
+void Path::abs_path(const std::wstring& path, std::wstring *appended)
+{
+    Path::abs_path(path.c_str(), appended);
+}
+
+std::string Path::abs_path(const char *path)
+{
+    std::string ret;
+    Path::abs_path(path, &ret);
+    return ret;
+}
+
+std::wstring Path::abs_path(const wchar_t *path)
+{
+    std::wstring ret;
+    Path::abs_path(path, &ret);
+    return ret;
+}
+
+std::string Path::abs_path(const std::string& path)
+{
+    std::string ret;
+    Path::abs_path(path.c_str(), &ret);
+    return ret;
+}
+
+std::wstring Path::abs_path(const std::wstring& path)
+{
+    std::wstring ret;
+    Path::abs_path(path.c_str(), &ret);
+    return ret;
+}
+
 /**
  * 从路径中划分出父路径和 文件/文件夹 名
  *
@@ -393,6 +455,16 @@ void Path::split(const wchar_t *path, std::wstring *parent_appended, std::wstrin
     }
 }
 
+void Path::split(const std::string& path, std::string *parent_appended, std::string *child_appended)
+{
+    Path::split(path.c_str(), parent_appended, child_appended);
+}
+
+void Path::split(const std::wstring& path, std::wstring *parent_appended, std::wstring *child_appended)
+{
+    Path::split(path.c_str(), parent_appended, child_appended);
+}
+
 /**
  * 从路径中划分出磁盘号和路径(linux路径的磁盘号假定为"")
  *
@@ -452,6 +524,16 @@ void Path::split_drive(const wchar_t *path, std::wstring *drive_appended, std::w
         drive_appended->append(path, pos + 1);
     if (NULL != rest_appended)
         rest_appended->append(path + pos + 1);
+}
+
+void Path::split_drive(const std::string& path, std::string *drive_appended, std::string *rest_appended)
+{
+    Path::split_drive(path.c_str(), drive_appended, rest_appended);
+}
+
+void Path::split_drive(const std::wstring& path, std::wstring *drive_appended, std::wstring *rest_appended)
+{
+    Path::split_drive(path.c_str(), drive_appended, rest_appended);
 }
 
 /**
@@ -518,6 +600,16 @@ void Path::split_ext(const wchar_t *path, std::wstring *prefix_appended, std::ws
         ext_appended->append(path + pos);
 }
 
+void Path::split_ext(const std::string& path, std::string *prefix_appended, std::string *ext_appended)
+{
+    Path::split_ext(path.c_str(), prefix_appended, ext_appended);
+}
+
+void Path::split_ext(const std::wstring& path, std::wstring *prefix_appended, std::wstring *ext_appended)
+{
+    Path::split_ext(path.c_str(), prefix_appended, ext_appended);
+}
+
 bool Path::lexists(const char *path)
 {
     assert(NULL != path);
@@ -551,6 +643,16 @@ bool Path::lexists(const wchar_t *path)
 #endif
 }
 
+bool Path::lexists(const std::string& path)
+{
+    return Path::lexists(path.c_str());
+}
+
+bool Path::lexists(const std::wstring& path)
+{
+    return Path::lexists(path.c_str());
+}
+
 bool Path::exists(const char *path)
 {
     assert(NULL != path);
@@ -573,6 +675,16 @@ bool Path::exists(const wchar_t *path)
     wstr_to_ascii(path, &p);
     return Path::exists(p.c_str());
 #endif
+}
+
+bool Path::exists(const std::string& path)
+{
+    return Path::exists(path.c_str());
+}
+
+bool Path::exists(const std::wstring& path)
+{
+    return Path::exists(path.c_str());
 }
 
 /**
@@ -609,6 +721,16 @@ time_t Path::get_atime(const wchar_t *path)
 #endif
 }
 
+time_t Path::get_atime(const std::string& path)
+{
+    return Path::get_atime(path.c_str());
+}
+
+time_t Path::get_atime(const std::wstring& path)
+{
+    return Path::get_atime(path.c_str());
+}
+
 /**
  * last modified time
  */
@@ -641,6 +763,16 @@ time_t Path::get_mtime(const wchar_t *path)
     wstr_to_ascii(path, &p);
     return Path::get_mtime(p.c_str());
 #endif
+}
+
+time_t Path::get_mtime(const std::string& path)
+{
+    return Path::get_mtime(path.c_str());
+}
+
+time_t Path::get_mtime(const std::wstring& path)
+{
+    return Path::get_mtime(path.c_str());
 }
 
 /**
@@ -677,6 +809,16 @@ time_t Path::get_ctime(const wchar_t *path)
 #endif
 }
 
+time_t Path::get_ctime(const std::string& path)
+{
+    return Path::get_ctime(path.c_str());
+}
+
+time_t Path::get_ctime(const std::wstring& path)
+{
+    return Path::get_ctime(path.c_str());
+}
+
 /**
  * 获取文件大小
  */
@@ -711,6 +853,16 @@ long long Path::get_size(const wchar_t *path)
 #endif
 }
 
+long long Path::get_size(const std::string& path)
+{
+    return Path::get_size(path.c_str());
+}
+
+long long Path::get_size(const std::wstring& path)
+{
+    return Path::get_size(path.c_str());
+}
+
 bool Path::is_dir(const char *path)
 {
     assert(NULL != path);
@@ -736,6 +888,16 @@ bool Path::is_dir(const wchar_t *path)
     wstr_to_ascii(path, &p);
     return Path::is_dir(p.c_str());
 #endif
+}
+
+bool Path::is_dir(const std::string& path)
+{
+    return Path::is_dir(path.c_str());
+}
+
+bool Path::is_dir(const std::wstring& path)
+{
+    return Path::is_dir(path.c_str());
 }
 
 bool Path::is_file(const char *path)
@@ -765,6 +927,16 @@ bool Path::is_file(const wchar_t *path)
 #endif
 }
 
+bool Path::is_file(const std::string& path)
+{
+    return Path::is_file(path.c_str());
+}
+
+bool Path::is_file(const std::wstring& path)
+{
+    return Path::is_file(path.c_str());
+}
+
 bool Path::is_link(const char *path)
 {
     assert(NULL != path);
@@ -790,6 +962,16 @@ bool Path::is_link(const wchar_t *path)
     wstr_to_ascii(path, &p);
     return Path::is_link(p.c_str());
 #endif
+}
+
+bool Path::is_link(const std::string& path)
+{
+    return Path::is_link(path.c_str());
+}
+
+bool Path::is_link(const std::wstring& path)
+{
+    return Path::is_link(path.c_str());
 }
 
 template <typename C>
@@ -892,18 +1074,87 @@ void Path::join(const wchar_t *a, const wchar_t *b, std::wstring *appended)
     }
 }
 
+void Path::join(const std::string& a, const std::string& b, std::string *appended)
+{
+    Path::join(a.c_str(), b.c_str(), appended);
+}
+
+void Path::join(const std::wstring& a, const std::wstring& b, std::wstring *appended)
+{
+    Path::join(a.c_str(), b.c_str(), appended);
+}
+
+std::string Path::join(const char *a, const char *b)
+{
+    std::string ret;
+    Path::join(a, b, &ret);
+    return ret;
+}
+
+std::wstring Path::join(const wchar_t *a, const wchar_t *b)
+{
+    std::wstring ret;
+    Path::join(a, b, &ret);
+    return ret;
+}
+
+std::string Path::join(const std::string& a, const std::string& b)
+{
+    std::string ret;
+    Path::join(a, b, &ret);
+    return ret;
+}
+
 void Path::join(const char *a, const char *b, const char *c, std::string *appended)
 {
     std::string tmp;
-    join(a, b, &tmp);
-    join(tmp.c_str(), c, appended);
+    Path::join(a, b, &tmp);
+    Path::join(tmp.c_str(), c, appended);
 }
 
 void Path::join(const wchar_t *a, const wchar_t *b, const wchar_t *c, std::wstring *appended)
 {
     std::wstring tmp;
-    join(a, b, &tmp);
-    join(tmp.c_str(), c, appended);
+    Path::join(a, b, &tmp);
+    Path::join(tmp.c_str(), c, appended);
+}
+
+void Path::join(const std::string& a, const std::string& b, const std::string& c, std::string *appended)
+{
+    Path::join(a.c_str(), b.c_str(), c.c_str(), appended);
+}
+
+void Path::join(const std::wstring& a, const std::wstring& b, const std::wstring& c, std::wstring *appended)
+{
+    Path::join(a.c_str(), b.c_str(), c.c_str(), appended);
+}
+
+std::string Path::join(const char *a, const char *b, const char *c)
+{
+    std::string ret;
+    Path::join(a, b, c, &ret);
+    return ret;
+}
+
+std::wstring Path::join(const wchar_t *a, const wchar_t *b, const wchar_t *c)
+{
+    std::wstring ret;
+    Path::join(a, b, c, &ret);
+    return ret;
+}
+
+std::string Path::join(const std::string& a, const std::string& b, const std::string& c)
+{
+    std::string ret;
+    Path::join(a.c_str(), b.c_str(), c.c_str(), &ret);
+    return ret;
+}
+
+std::wstring Path::join(const std::wstring& a, const std::wstring& b, const std::wstring& c)
+{
+    std::wstring ret;
+    Path::join(a.c_str(), b.c_str(), c.c_str(), &ret);
+    return ret;
 }
 
 void Path::join(const char *a, const char *b, const char *c, const char *d, std::string *appended)
@@ -918,6 +1169,44 @@ void Path::join(const wchar_t *a, const wchar_t *b, const wchar_t *c, const wcha
     std::wstring tmp;
     join(a, b, c, &tmp);
     join(tmp.c_str(), d, appended);
+}
+
+void Path::join(const std::string& a, const std::string& b, const std::string& c, const std::string& d, std::string *appended)
+{
+    Path::join(a.c_str(), b.c_str(), c.c_str(), d.c_str(), appended);
+}
+
+void Path::join(const std::wstring& a, const std::wstring& b, const std::wstring& c, const std::wstring& d, std::wstring *appended)
+{
+    Path::join(a.c_str(), b.c_str(), c.c_str(), d.c_str(), appended);
+}
+
+std::string Path::join(const char *a, const char *b, const char *c, const char *d)
+{
+    std::string ret;
+    Path::join(a, b, c, d, &ret);
+    return ret;
+}
+
+std::wstring Path::join(const wchar_t *a, const wchar_t *b, const wchar_t *c, const wchar_t *d)
+{
+    std::wstring ret;
+    Path::join(a, b, c, d, &ret);
+    return ret;
+}
+
+std::string Path::join(const std::string& a, const std::string& b, const std::string& c, const std::string& d)
+{
+    std::string ret;
+    Path::join(a.c_str(), b.c_str(), c.c_str(), d.c_str(), &ret);
+    return ret;
+}
+
+std::wstring Path::join(const std::wstring& a, const std::wstring& b, const std::wstring& c, const std::wstring& d)
+{
+    std::wstring ret;
+    Path::join(a.c_str(), b.c_str(), c.c_str(), d.c_str(), &ret);
+    return ret;
 }
 
 }

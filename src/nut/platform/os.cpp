@@ -141,21 +141,33 @@ void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *appended, bool
 #endif
 }
 
+void OS::list_dir(const std::string& path, std::vector<std::string> *appended, bool exclude_file,
+                  bool exclude_dir, bool exclude_initial_dot)
+{
+    OS::list_dir(path.c_str(), appended, exclude_file, exclude_dir, exclude_initial_dot);
+}
+
+void OS::list_dir(const std::wstring& path, std::vector<std::wstring> *appended, bool exclude_file,
+                  bool exclude_dir, bool exclude_initial_dot)
+{
+    OS::list_dir(path.c_str(), appended, exclude_file, exclude_dir, exclude_initial_dot);
+}
+
 /**
  * 复制文件
  */
-bool OS::copy_file(const char *src, const char *dest)
+bool OS::copy_file(const char *src, const char *dst)
 {
-    assert(NULL != src && NULL != dest);
+    assert(NULL != src && NULL != dst);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-    return FALSE != ::CopyFileA(src, dest, TRUE);
+    return FALSE != ::CopyFileA(src, dst, TRUE);
 #else
     FILE *in_file = ::fopen(src, "rb");
     if (NULL == in_file)
         return false;
 
-    FILE *out_file = ::fopen(dest, "wb+");
+    FILE *out_file = ::fopen(dst, "wb+");
     if (NULL == out_file)
     {
         ::fclose(in_file);
@@ -175,18 +187,28 @@ bool OS::copy_file(const char *src, const char *dest)
 #endif
 }
 
-bool OS::copy_file(const wchar_t *src, const wchar_t *dest)
+bool OS::copy_file(const wchar_t *src, const wchar_t *dst)
 {
-    assert(NULL != src && NULL != dest);
+    assert(NULL != src && NULL != dst);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
-    return FALSE != ::CopyFileW(src, dest, TRUE);
+    return FALSE != ::CopyFileW(src, dst, TRUE);
 #else
     std::string s, d;
     wstr_to_ascii(src, &s);
-    wstr_to_ascii(dest, &d);
+    wstr_to_ascii(dst, &d);
     return OS::copy_file(s.c_str(), d.c_str());
 #endif
+}
+
+bool OS::copy_file(const std::string& src, const std::string& dst)
+{
+    return OS::copy_file(src.c_str(), dst.c_str());
+}
+
+bool OS::copy_file(const std::wstring& src, const std::wstring& dst)
+{
+    return OS::copy_file(src.c_str(), dst.c_str());
 }
 
 bool OS::remove_file(const char *path)
@@ -206,6 +228,16 @@ bool OS::remove_file(const wchar_t *path)
     wstr_to_ascii(path, &p);
     return OS::remove_file(p.c_str());
 #endif
+}
+
+bool OS::remove_file(const std::string& path)
+{
+    return OS::remove_file(path.c_str());
+}
+
+bool OS::remove_file(const std::wstring& path)
+{
+    return OS::remove_file(path.c_str());
 }
 
 bool OS::mkdir(const char *path)
@@ -230,6 +262,16 @@ bool OS::mkdir(const wchar_t *path)
     wstr_to_ascii(path, &p);
     return OS::mkdir(p.c_str());
 #endif
+}
+
+bool OS::mkdir(const std::string& path)
+{
+    return OS::mkdir(path.c_str());
+}
+
+bool OS::mkdir(const std::wstring& path)
+{
+    return OS::mkdir(path.c_str());
 }
 
 bool OS::mkdirs(const char *path)
@@ -263,6 +305,16 @@ bool OS::mkdirs(const wchar_t *path)
     return OS::mkdirs(p.c_str());
 }
 
+bool OS::mkdirs(const std::string& path)
+{
+    return OS::mkdirs(path.c_str());
+}
+
+bool OS::mkdirs(const std::wstring& path)
+{
+    return OS::mkdirs(path.c_str());
+}
+
 /**
  * 删除空目录
  */
@@ -288,6 +340,16 @@ bool OS::rmdir(const wchar_t *path)
     wstr_to_ascii(path, &p);
     return OS::rmdir(p.c_str());
 #endif
+}
+
+bool OS::rmdir(const std::string& path)
+{
+    return OS::rmdir(path.c_str());
+}
+
+bool OS::rmdir(const std::wstring& path)
+{
+    return OS::rmdir(path.c_str());
 }
 
 /**
@@ -428,6 +490,16 @@ bool OS::remove_tree(const wchar_t *path)
 #endif
 }
 
+bool OS::remove_tree(const std::string& path)
+{
+    return OS::remove_tree(path.c_str());
+}
+
+bool OS::remove_tree(const std::wstring& path)
+{
+    return OS::remove_tree(path.c_str());
+}
+
 bool OS::read_link(const char *path, std::string *appended)
 {
     assert(NULL != path && NULL != appended);
@@ -463,6 +535,16 @@ bool OS::read_link(const wchar_t *path, std::wstring *appended)
 #endif
 }
 
+bool OS::read_link(const std::string& path, std::string *appended)
+{
+    return OS::read_link(path.c_str(), appended);
+}
+
+bool OS::read_link(const std::wstring& path, std::wstring *appended)
+{
+    return OS::read_link(path.c_str(), appended);
+}
+
 bool OS::symlink(const char *link, const char *path)
 {
     assert(NULL != link && NULL != path);
@@ -488,6 +570,16 @@ bool OS::symlink(const wchar_t *link, const wchar_t *path)
 #endif
 }
 
+bool OS::symlink(const std::string& link, const std::string& path)
+{
+    return OS::symlink(link.c_str(), path.c_str());
+}
+
+bool OS::symlink(const std::wstring& link, const std::wstring& path)
+{
+    return OS::symlink(link.c_str(), path.c_str());
+}
+
 bool OS::rename(const char *from, const char *to)
 {
     assert(NULL != from && NULL != to);
@@ -502,6 +594,16 @@ bool OS::rename(const wchar_t *from, const wchar_t *to)
     wstr_to_ascii(from, &f);
     wstr_to_ascii(to, &t);
     return 0 == ::rename(f.c_str(), t.c_str());
+}
+
+bool OS::rename(const std::string& from, const std::string& to)
+{
+    return OS::rename(from.c_str(), to.c_str());
+}
+
+bool OS::rename(const std::wstring& from, const std::wstring& to)
+{
+    return OS::rename(from.c_str(), to.c_str());
 }
 
 }
