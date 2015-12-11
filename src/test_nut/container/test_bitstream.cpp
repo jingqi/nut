@@ -11,6 +11,7 @@ NUT_FIXTURE(TestBitStream)
 {
     NUT_CASES_BEGIN()
     NUT_CASE(test_smoking)
+    NUT_CASE(test_bug1)
     NUT_CASES_END()
 
     void test_smoking()
@@ -33,6 +34,15 @@ NUT_FIXTURE(TestBitStream)
         NUT_TA(s == "101010001101010001");
 
         NUT_TA(bs.bit1_count() == 8 && bs.bit0_count() == 10);
+    }
+
+    void test_bug1()
+    {
+        BitStream bs;
+        bs.resize(2, true);
+        std::string s;
+        bs.to_string(&s);
+        NUT_TA(s == "11");
     }
 };
 

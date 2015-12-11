@@ -65,6 +65,9 @@ gdb: ${TARGET}
 cgdb: ${TARGET}
 	cgdb ${TARGET}
 
+lldb: ${TARGET}
+	lldb ${TARGET}
+
 nemiver: ${TARGET}
 	nemiver ${TARGET}
 

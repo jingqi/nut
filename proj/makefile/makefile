@@ -15,5 +15,8 @@ run: all
 cgdb: all
 	make -f test_nut.mk cgdb
 
+lldb: all
+	make -f test_nut.mk lldb
+
 valgrind: all
 	make -f test_nut.mk valgrind
