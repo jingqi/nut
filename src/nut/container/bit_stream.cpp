@@ -229,15 +229,23 @@ void BitStream::fill_bits(size_t i, size_t nbit, bool setb)
 {
     assert(i + nbit <= _bit_size);
     const size_t end = i + nbit;
-    const size_t fw = (i + sizeof(word_type) * 8 - 1) / (sizeof(word_type) * 8),
-        le = end / (sizeof(word_type) * 8);
-    const word_type fill = (setb ? ~(word_type)0 : 0);
-    for (size_t wi = fw; wi < le; ++wi)
-        _buf[wi] = fill;
-    for (ssize_t k = fw * sizeof(word_type) * 8 - 1; k >= (ssize_t) i; --k)
-        set_bit(k, setb);
-    for (size_t k = le * sizeof(word_type) * 8; k < end; ++k)
-        set_bit(k, setb);
+    const size_t wb = (i + sizeof(word_type) * 8 - 1) / (sizeof(word_type) * 8),
+        we = end / (sizeof(word_type) * 8);
+    if (wb < we)
+    {
+        const word_type fill = (setb ? ~(word_type)0 : 0);
+        for (size_t k = wb; k < we; ++k)
+            _buf[k] = fill;
+        for (ssize_t k = wb * sizeof(word_type) * 8 - 1; k >= (ssize_t) i; --k)
+            set_bit(k, setb);
+        for (size_t k = we * sizeof(word_type) * 8; k < end; ++k)
+            set_bit(k, setb);
+    }
+    else
+    {
+        for (size_t k = i; k < end; ++k)
+            set_bit(k, setb);
+    }
 }
 
 /**
