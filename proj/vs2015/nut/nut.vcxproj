@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -18,13 +18,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -69,11 +69,11 @@
     <ClInclude Include="..\..\..\src\nut\container\array.h" />
     <ClInclude Include="..\..\..\src\nut\container\bit_stream.h" />
     <ClInclude Include="..\..\..\src\nut\container\bundle.h" />
-    <ClInclude Include="..\..\..\src\nut\container\bytestream\byte_array.h" />
     <ClInclude Include="..\..\..\src\nut\container\bytestream\byte_array_stream.h" />
     <ClInclude Include="..\..\..\src\nut\container\bytestream\input_stream.h" />
     <ClInclude Include="..\..\..\src\nut\container\bytestream\output_stream.h" />
     <ClInclude Include="..\..\..\src\nut\container\bytestream\random_access_input_stream.h" />
+    <ClInclude Include="..\..\..\src\nut\container\integer_set.h" />
     <ClInclude Include="..\..\..\src\nut\container\lru_cache.h" />
     <ClInclude Include="..\..\..\src\nut\container\lru_data_cache.h" />
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist.h" />
@@ -172,8 +172,11 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp" />
     <ClCompile Include="..\..\..\src\nut\container\bytestream\byte_array_stream.cpp" />
+    <ClCompile Include="..\..\..\src\nut\container\bytestream\input_stream.cpp" />
+    <ClCompile Include="..\..\..\src\nut\container\bytestream\output_stream.cpp" />
     <ClCompile Include="..\..\..\src\nut\debugging\addr_map_mgr.cpp" />
     <ClCompile Include="..\..\..\src\nut\debugging\backtrace.cpp" />
+    <ClCompile Include="..\..\..\src\nut\debugging\source_location.cpp" />
     <ClCompile Include="..\..\..\src\nut\logging\logger.cpp" />
     <ClCompile Include="..\..\..\src\nut\logging\log_filter.cpp" />
     <ClCompile Include="..\..\..\src\nut\logging\log_handler.cpp" />
@@ -186,6 +189,7 @@
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\gcd.cpp" />
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\mod.cpp" />
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\prime.cpp" />
+    <ClCompile Include="..\..\..\src\nut\pconsole\cmd_exit.cpp" />
     <ClCompile Include="..\..\..\src\nut\pconsole\cmd_help.cpp" />
     <ClCompile Include="..\..\..\src\nut\pconsole\icommand.cpp" />
     <ClCompile Include="..\..\..\src\nut\pconsole\iconsole.cpp" />
@@ -207,6 +211,8 @@
     <ClCompile Include="..\..\..\src\nut\threading\thread_pool.cpp" />
     <ClCompile Include="..\..\..\src\nut\unittest\console_test_logger.cpp" />
     <ClCompile Include="..\..\..\src\nut\unittest\stream_test_logger.cpp" />
+    <ClCompile Include="..\..\..\src\nut\unittest\testcase_failure_exception.cpp" />
+    <ClCompile Include="..\..\..\src\nut\unittest\test_logger.cpp" />
     <ClCompile Include="..\..\..\src\nut\unittest\test_register.cpp" />
     <ClCompile Include="..\..\..\src\nut\unittest\test_runner.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\console_util.cpp" />

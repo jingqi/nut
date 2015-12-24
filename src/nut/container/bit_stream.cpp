@@ -5,6 +5,7 @@
 #include <string>
 
 #include <nut/numeric/word_array_integer.h>
+#include <nut/platform/stdint_traits.h> // for ssize_t in windows VC
 
 #include "bit_stream.h"
 

@@ -281,7 +281,7 @@ int stricmp(const char *str1, const char *str2)
     return charicmp(str1[i], str2[i]);
 }
 
-int stricmp(const wchar_t *str1, const char *str2)
+int stricmp(const wchar_t *str1, const wchar_t *str2)
 {
     assert(NULL != str1 && NULL != str2);
     size_t i = 0;

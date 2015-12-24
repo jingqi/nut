@@ -884,7 +884,7 @@ static bool is_valid_radix(size_t radix)
 static char num2char(size_t n)
 {
     assert(n < 36);
-    return (n < 10 ? '0' + n : 'A' + n - 10);
+    return (char) (n < 10 ? '0' + n : 'A' + n - 10);
 }
 
 static wchar_t num2wchar(size_t n)

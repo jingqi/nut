@@ -59,7 +59,7 @@ void AES_CBC_PKCS5::finish_encrypt()
     assert(IN_ENCRYPT == _state && _data_buf_size < 16);
     /* PKCS5 填充 */
     for (size_t i = _data_buf_size; i < 16; ++i)
-        _data_buf[i] = 16 - _data_buf_size;
+        _data_buf[i] = 16 - (uint8_t) _data_buf_size;
     xor_buf(_iv, _data_buf, 16);
     _aes.encrypt(_iv, _iv);
 

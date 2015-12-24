@@ -1,4 +1,4 @@
-
+﻿
 #ifndef ___HEADFILE_C24BA2B9_EF7B_4DD5_A131_C61E1FC45B87_
 #define ___HEADFILE_C24BA2B9_EF7B_4DD5_A131_C61E1FC45B87_
 
@@ -6,6 +6,9 @@
 #include <stddef.h> // for ptrdiff_t
 #include <vector>
 #include <iterator>
+#include <algorithm> // for std::min() and so on
+
+#include <nut/platform/stdint_traits.h> // for ssize_t in windows VC
 
 namespace nut
 {

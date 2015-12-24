@@ -4,6 +4,7 @@
 *.suo
 *.user
 *.opensdf
+*.opendb
 *.sdf
 
 /Debug

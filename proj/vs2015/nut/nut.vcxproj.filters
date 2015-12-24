@@ -379,9 +379,6 @@
     <ClInclude Include="..\..\..\src\nut\unittest\unit_test.h">
       <Filter>nut\unittest</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\container\bytestream\byte_array.h">
-      <Filter>nut\container\bytestream</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\bytestream\byte_array_stream.h">
       <Filter>nut\container\bytestream</Filter>
     </ClInclude>
@@ -393,6 +390,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\bytestream\random_access_input_stream.h">
       <Filter>nut\container\bytestream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\integer_set.h">
+      <Filter>nut\container</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -554,6 +554,24 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\container\bytestream\byte_array_stream.cpp">
       <Filter>nut\container\bytestream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\container\bytestream\input_stream.cpp">
+      <Filter>nut\container\bytestream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\container\bytestream\output_stream.cpp">
+      <Filter>nut\container\bytestream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\debugging\source_location.cpp">
+      <Filter>nut\debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\pconsole\cmd_exit.cpp">
+      <Filter>nut\pconsole</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\unittest\test_logger.cpp">
+      <Filter>nut\unittest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\unittest\testcase_failure_exception.cpp">
+      <Filter>nut\unittest</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

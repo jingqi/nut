@@ -6,6 +6,11 @@
 
 #include <stdint.h>
 
+#if defined(NUT_PLATFORM_CC_VC)
+#   include <basetsd.h>
+typedef SSIZE_T ssize_t;
+#endif
+
 #if defined(NUT_PLATFORM_BITS_64)
 #   if defined(NUT_PLATFORM_OS_WINDOWS)
 typedef unsigned __int128 uint128_t;

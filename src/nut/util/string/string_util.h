@@ -47,7 +47,7 @@ void rtrim(const wchar_t *str, std::wstring *appended, const wchar_t *blanks = L
 
 /** 忽略大小写的字符串比较 */
 int stricmp(const char *str1, const char *str2);
-int stricmp(const wchar_t *str1, const char *str2);
+int stricmp(const wchar_t *str1, const wchar_t *str2);
 
 int strincmp(const char *str1, const char *str2, size_t n);
 int strincmp(const wchar_t *str1, const wchar_t *str2, size_t n);

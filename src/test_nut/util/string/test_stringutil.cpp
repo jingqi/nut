@@ -100,14 +100,14 @@ NUT_FIXTURE(TestStringUtil)
 
     void test_stricmp()
     {
-        NUT_TA(0 != stricmp("a", "ab"));
-        NUT_TA(0 != stricmp("ac", "ab"));
-        NUT_TA(0 == stricmp("ab", "ab"));
-        NUT_TA(0 == stricmp("aB", "ab"));
+        NUT_TA(0 != nut::stricmp((const char*)"a", (const char*)"ab"));
+        NUT_TA(0 != nut::stricmp("ac", "ab"));
+        NUT_TA(0 == nut::stricmp("ab", "ab"));
+        NUT_TA(0 == nut::stricmp("aB", "ab"));
 
         // bug
-        NUT_TA(0 != stricmp("`", "@")); // 0x60, 0x40
-        NUT_TA(0 != stricmp("a \0", "a\0\0")); // 0x20, 0x00
+        NUT_TA(0 != nut::stricmp("`", "@")); // 0x60, 0x40
+        NUT_TA(0 != nut::stricmp("a \0", "a\0\0")); // 0x20, 0x00
     }
 
     void test_wstr()
