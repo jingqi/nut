@@ -32,6 +32,8 @@ void chr_split(const wchar_t *str, wchar_t c, std::vector<std::wstring> *appende
 
 void format(std::string *appended, const char *fmt, ...);
 void format(std::wstring *appended, const wchar_t *fmt, ...);
+std::string format(const char *fmt, ...);
+std::wstring format(const wchar_t *fmt, ...);
 
 /* 去除首尾空白 */
 void trim(const char *str, std::string *appended, const char *blanks = " \t\r\n");

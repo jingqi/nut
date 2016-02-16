@@ -203,6 +203,84 @@ void format(std::wstring *appended, const wchar_t *fmt, ...)
     }
 }
 
+std::string format(const char *fmt, ...)
+{
+    assert(NULL != fmt);
+
+    size_t size = 100;
+    char *buf = (char*) ::malloc(size);
+    assert(NULL != buf);
+
+    va_list ap;
+    while (NULL != buf)
+    {
+        va_start(ap, fmt);
+        int n = ::vsnprintf(buf, size, fmt, ap);
+        va_end(ap);
+        if (n > -1 && n < (int)size)
+            break;
+
+        if (n > -1)
+            size = n + 1; /* glibc 2.1 */
+        else
+            size *= 2;  /* glib 2.0 */
+
+        char *np = (char*) ::realloc(buf, size);
+        assert(NULL != np);
+        if (NULL != np)
+            buf = np;
+    }
+    std::string ret;
+    if (NULL != buf)
+    {
+        ret = buf;
+        ::free(buf); /* include the case of success of realloc() and failure of realloc() */
+    }
+    return ret;
+}
+
+std::wstring format(const wchar_t *fmt, ...)
+{
+    assert(NULL != fmt);
+
+    size_t size = 100;
+    wchar_t *buf = (wchar_t*) ::malloc(size * sizeof(wchar_t));
+    assert(NULL != buf);
+
+    va_list ap;
+    while (NULL != buf)
+    {
+        va_start(ap, fmt);
+#if defined(NUT_PLATFORM_CC_VC)
+        int n = ::_vsnwprintf(buf, size, fmt, ap);
+#elif defined(NUT_PLATFORM_OS_MAC) || defined(NUT_PLATFORM_OS_LINUX)
+        int n = ::vswprintf(buf, size, fmt, ap);
+#else
+        int n = ::vsnwprintf(buf, size, fmt, ap);
+#endif
+        va_end(ap);
+        if (n > -1 && n < (int)size)
+            break;
+
+        if (n > -1)
+            size = n + 1; /* glibc 2.1 */
+        else
+            size *= 2;  /* glib 2.0 */
+
+        wchar_t *np = (wchar_t*) ::realloc(buf, size);
+        assert(NULL != np);
+        if (NULL != np)
+            buf = np;
+    }
+    std::wstring ret;
+    if (NULL != buf)
+    {
+        ret = buf;
+        ::free(buf); /* include the case of success of realloc() and failure of realloc() */
+    }
+    return ret;
+}
+
 /* 去除首尾空白 */
 void trim(const char *str_, std::string *appended, const char *blanks)
 {
