@@ -272,7 +272,7 @@ void XmlElement::parse(const std::string& s, size_t start_index, bool ignore_tex
         {
             rc_ptr<XmlElement> c = rc_new<XmlElement>(name);
             _elem->append_child(c);
-            return new Handler(c.pointer(), _ignore_text_blank);
+            return new Handler(c, _ignore_text_blank);
         }
 
         virtual void handle_child_finish(XmlElementHandler *child)

@@ -24,7 +24,7 @@ void* scoped_gc::raw_alloc(size_t cb)
     {
         if (cb >= DEFAULT_BLOCK_BODY_SIZE)
         {
-            Block *const new_blk = (Block*) ma_realloc(_alloc.pointer(), NULL, BLOCK_HEADER_SIZE + cb);
+            Block *const new_blk = (Block*) ma_realloc(_alloc, NULL, BLOCK_HEADER_SIZE + cb);
             assert(NULL != new_blk);
 
             if (NULL != _current_block)
@@ -42,7 +42,7 @@ void* scoped_gc::raw_alloc(size_t cb)
         }
         else
         {
-            Block *new_blk = (Block*) ma_realloc(_alloc.pointer(), NULL, DEFAULT_BLOCK_LEN);
+            Block *new_blk = (Block*) ma_realloc(_alloc, NULL, DEFAULT_BLOCK_LEN);
             assert(NULL != new_blk);
 
             new_blk->prev = _current_block;
@@ -90,7 +90,7 @@ void scoped_gc::clear()
     while (NULL != _current_block)
     {
         Block *prev = _current_block->prev;
-        ma_free(_alloc.pointer(), _current_block);
+        ma_free(_alloc, _current_block);
         _current_block = prev;
     }
     _end = NULL;

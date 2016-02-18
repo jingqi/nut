@@ -59,7 +59,7 @@ public:
         while (NULL != p)
         {
             FreeNode *next = p->next;
-            ma_free(_alloc.pointer(), p);
+            ma_free(_alloc, p);
             p = next;
         }
         _head.ptr = NULL;
@@ -74,7 +74,7 @@ public:
             const TagedPtr<FreeNode> old_head(_head.cas);
 
             if (NULL == old_head.ptr)
-                return ma_realloc(_alloc.pointer(), NULL, sizeof(FreeNode));
+                return ma_realloc(_alloc, NULL, sizeof(FreeNode));
 
             const TagedPtr<FreeNode> new_head(old_head.ptr->next, old_head.tag + 1);
             if (atomic_cas(&(_head.cas), old_head.cas, new_head.cas))
@@ -104,7 +104,7 @@ public:
         {
             if (_free_num >= (int) MAX_FREE_BLOCKS)
             {
-                ma_free(_alloc.pointer(), p);
+                ma_free(_alloc, p);
                 return;
             }
 

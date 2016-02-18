@@ -65,7 +65,7 @@ public:
     {
         map_t::const_iterator iter = _values.find(key);
         assert(iter != _values.end());
-        _BundleElementBase *e = iter->second.pointer();
+        _BundleElementBase *e = iter->second;
         assert(NULL != e);
         _BundleElement<T> *be = dynamic_cast<_BundleElement<T>*>(e);
         assert(NULL != be);
@@ -75,13 +75,13 @@ public:
     template <typename T>
     void set_value(const std::string& key, const T& value)
     {
-        _values[key] = rca_new<_BundleElement<T> >(_alloc.pointer(), value);
+        _values[key] = rca_new<_BundleElement<T> >(_alloc, value);
     }
 
     template <typename T>
     void set_value(const std::string& key, T&& value)
     {
-        _values[key] = rca_new<_BundleElement<T> >(_alloc.pointer(), std::forward<T>(value));
+        _values[key] = rca_new<_BundleElement<T> >(_alloc, std::forward<T>(value));
     }
 
     void clear()

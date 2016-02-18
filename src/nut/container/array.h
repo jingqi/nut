@@ -79,14 +79,14 @@ public:
     {
         clear();
         if (NULL != _buf)
-            ma_free(_alloc.pointer(), _buf);
+            ma_free(_alloc, _buf);
         _buf = NULL;
         _cap = 0;
     }
 
     memory_allocator* allocator() const
     {
-        return _alloc.pointer();
+        return _alloc;
     }
 
 private:
@@ -99,7 +99,7 @@ private:
         if (new_cap < new_size)
             new_cap = new_size;
 
-        _buf = (T*) ma_realloc(_alloc.pointer(), _buf, sizeof(T) * new_cap);
+        _buf = (T*) ma_realloc(_alloc, _buf, sizeof(T) * new_cap);
         assert(NULL != _buf);
         _cap = new_cap;
     }
@@ -123,7 +123,7 @@ public:
         {
             clear();
             if (NULL != _buf)
-                ma_free(_alloc.pointer(), _buf);
+                ma_free(_alloc, _buf);
 
             _alloc = x._alloc;
             _buf = x._buf;

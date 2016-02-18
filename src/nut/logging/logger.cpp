@@ -280,14 +280,14 @@ void Logger::load_config(const std::string& config)
                 rc_ptr<StreamLogHandler> handler = rc_new<StreamLogHandler>(std::cout);
                 handler->set_flush_mask(_flush_mask);
                 handler->get_filter().swap(&_filter);
-                Logger::get_instance()->add_handler(handler.pointer());
+                Logger::get_instance()->add_handler(handler);
             }
             else if (_type == "stderr")
             {
                 rc_ptr<StreamLogHandler> handler = rc_new<StreamLogHandler>(std::cerr);
                 handler->set_flush_mask(_flush_mask);
                 handler->get_filter().swap(&_filter);
-                Logger::get_instance()->add_handler(handler.pointer());
+                Logger::get_instance()->add_handler(handler);
             }
             else if (_type == "console")
             {
@@ -295,7 +295,7 @@ void Logger::load_config(const std::string& config)
                 handler->set_flush_mask(_flush_mask);
                 handler->get_filter().swap(&_filter);
                 handler->set_colored(_colored);
-                Logger::get_instance()->add_handler(handler.pointer());
+                Logger::get_instance()->add_handler(handler);
             }
             else if (_type == "file")
             {
@@ -346,7 +346,7 @@ void Logger::load_config(const std::string& config)
                 rc_ptr<FileLogHandler> handler = rc_new<FileLogHandler>(_file_path.c_str(), _append);
                 handler->set_flush_mask(_flush_mask);
                 handler->get_filter().swap(&_filter);
-                Logger::get_instance()->add_handler(handler.pointer());
+                Logger::get_instance()->add_handler(handler);
             }
 #if defined(NUT_PLATFORM_OS_LINUX)
             else if (_type == "syslog")
@@ -354,7 +354,7 @@ void Logger::load_config(const std::string& config)
                 rc_ptr<SyslogLogHandler> handler = rc_new<SyslogLogHandler>(_close_syslog_on_exit);
                 handler->set_flush_mask(_flush_mask);
                 handler->get_filter().swap(&_filter);
-                Logger::get_instance()->add_handler(handler.pointer());
+                Logger::get_instance()->add_handler(handler;
             }
 #endif
         }
