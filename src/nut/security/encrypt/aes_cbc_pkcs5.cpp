@@ -1,6 +1,8 @@
 ﻿
 #include <assert.h>
 
+#include <nut/platform/platform.h>
+
 #include "aes_cbc_pkcs5.h"
 
 namespace nut
@@ -21,6 +23,7 @@ void AES_CBC_PKCS5::start_encrypt(const uint8_t* key, int key_bits, const uint8_
     _result.resize(0);
     bool rs = _aes.set_key(key, key_bits);
     assert(rs);
+    UNUSED(rs);
     ::memcpy(_iv, iv, 16);
 }
 
@@ -76,6 +79,7 @@ void AES_CBC_PKCS5::start_decrypt(const uint8_t *key, int key_bits, const uint8_
     _result.resize(0);
     bool rs = _aes.set_key(key, key_bits);
     assert(rs);
+    UNUSED(rs);
     ::memcpy(_iv, iv, 16);
 }
 

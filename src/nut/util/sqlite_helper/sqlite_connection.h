@@ -6,6 +6,7 @@
 #include <sqlite3.h>
 #include <vector>
 
+#include <nut/platform/platform.h>
 #include <nut/rc/rc_ptr.h>
 #include <nut/debugging/exception.h>
 
@@ -84,7 +85,7 @@ public:
     {
         bool rs = close();
         assert(rs);
-        (void) rs;
+        UNUSED(rs);
     }
 
     bool open(const char *db_file)
@@ -95,7 +96,7 @@ public:
         {
             bool rs = close();
             assert(rs);
-            (void) rs;
+            UNUSED(rs);
         }
 
         int rs = ::sqlite3_open(db_file, &_sqlite);

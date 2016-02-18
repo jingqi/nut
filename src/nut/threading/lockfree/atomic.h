@@ -164,7 +164,7 @@ union TagedPtr
 
     struct
     {
-        T *ptr; // union 内部无法和 cas 同时赋初值
+        T *ptr; // union 内部无法重复赋初值(字段 cas 已经初始化)
         tag_type tag;
     };
 

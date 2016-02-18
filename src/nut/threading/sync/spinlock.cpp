@@ -17,9 +17,11 @@ SpinLock::SpinLock()
     ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE); /* make the mutex recursive */
     const int rs = ::pthread_mutex_init(&_spinlock, &attr);
     assert(0 == rs);
+    UNUSED(rs);
 #else
     const int rs = ::pthread_spin_init(&_spinlock, PTHREAD_PROCESS_PRIVATE);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 
@@ -30,9 +32,11 @@ SpinLock::~SpinLock()
 #elif defined(NUT_PLATFORM_OS_MAC)
     const int rs = ::pthread_mutex_destroy(&_spinlock);
     assert(0 == rs);
+    UNUSED(rs);
 #else
     const int rs = ::pthread_spin_destroy(&_spinlock);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 
@@ -43,9 +47,11 @@ void SpinLock::lock()
 #elif defined(NUT_PLATFORM_OS_MAC)
     const int rs = ::pthread_mutex_lock(&_spinlock);
     assert(0 == rs);
+    UNUSED(rs);
 #else
     const int rs = ::pthread_spin_lock(&_spinlock);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 
@@ -67,9 +73,11 @@ void SpinLock::unlock()
 #elif defined(NUT_PLATFORM_OS_MAC)
     const int rs = ::pthread_mutex_unlock(&_spinlock);
     assert(0 == rs);
+    UNUSED(rs);
 #else
     const int rs = ::pthread_spin_unlock(&_spinlock);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 

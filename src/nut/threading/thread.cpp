@@ -35,7 +35,7 @@ Thread::~Thread()
 void Thread::run(void *arg)
 {
     // default do nothing
-    (void)arg;
+    UNUSED(arg);
 }
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)

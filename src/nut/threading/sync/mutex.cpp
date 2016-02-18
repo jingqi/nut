@@ -24,12 +24,14 @@ Mutex::Mutex()
     ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE); /* make the mutex recursive */
     const int rs = ::pthread_mutex_init(&_mutex, &attr);
     assert(0 == rs);
+    UNUSED(rs);
 #else
     ::pthread_mutexattr_t attr;
     ::pthread_mutexattr_init(&attr);
     ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP); /* make the mutex recursive */
     const int rs = ::pthread_mutex_init(&_mutex, &attr);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 
@@ -38,9 +40,11 @@ Mutex::~Mutex ()
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
     const BOOL rs = ::CloseHandle(_hmutex);
     assert(FALSE != rs);
+    UNUSED(rs);
 #else
     int rs = ::pthread_mutex_destroy(&_mutex);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 
@@ -52,9 +56,11 @@ void Mutex::lock()
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
     const DWORD rs = ::WaitForSingleObject(_hmutex, INFINITE);
     assert(WAIT_OBJECT_0 == rs);
+    UNUSED(rs);
 #else
     const int rs = ::pthread_mutex_lock(&_mutex);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 
@@ -66,9 +72,11 @@ void Mutex::unlock()
 #if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
     const BOOL rs = ::ReleaseMutex(_hmutex);
     assert(FALSE != rs);
+    UNUSED(rs);
 #else
     const int rs = ::pthread_mutex_unlock(&_mutex);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 

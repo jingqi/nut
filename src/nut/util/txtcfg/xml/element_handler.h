@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <string>
 
+#include <nut/platform/platform.h>
+
 namespace nut
 {
 
@@ -34,31 +36,31 @@ public:
 
     virtual void handle_attribute(const std::string& name, const std::string& value)
     {
-        (void) name;
-        (void) value;
+        UNUSED(name);
+        UNUSED(value);
     }
 
     virtual void handle_text(const std::string& text)
     {
-        (void) text;
+        UNUSED(text);
     }
 
     virtual void handle_comment(const std::string& comment)
     {
-        (void) comment;
+        UNUSED(comment);
     }
 
     // 返回新的 handler
     virtual XmlElementHandler* handle_child(const std::string& name)
     {
-        (void) name;
+        UNUSED(name);
         return NULL;
     }
 
     // 回收旧的 handler
     virtual void handle_child_finish(XmlElementHandler *child)
     {
-        (void) child;
+        UNUSED(child);
     }
 
     virtual void handle_finish()

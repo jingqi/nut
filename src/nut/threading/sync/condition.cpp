@@ -30,6 +30,7 @@ Condition::Condition()
 #else
     const int rs = ::pthread_cond_init(&_cond, NULL);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 
@@ -40,6 +41,7 @@ Condition::~Condition()
 #else
     const int rs = ::pthread_cond_destroy(&_cond);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 

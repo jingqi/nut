@@ -6,6 +6,7 @@
 #include <string>
 #include <sqlite3.h>
 
+#include <nut/platform/platform.h>
 #include <nut/rc/rc_new.h>
 #include <nut/rc/enrc.h>
 
@@ -65,7 +66,7 @@ public:
         {
             const int rs = ::sqlite3_finalize(_stmt);
             assert(SQLITE_OK == rs);
-            (void) rs;
+            UNUSED(rs);
             _stmt = NULL;
         }
     }

@@ -79,7 +79,7 @@ void ConsoleUtil::set_text_color(ConsoleColor forecolor, ConsoleColor backcolor)
 #endif
 }
 
-void ConsoleUtil::set_back_ground_color(ConsoleColor forecolor, ConsoleColor bkcolor)
+void ConsoleUtil::set_back_ground_color(ConsoleColor forecolor, ConsoleColor backcolor)
 {
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     const char fgtable[9] =
@@ -91,13 +91,13 @@ void ConsoleUtil::set_back_ground_color(ConsoleColor forecolor, ConsoleColor bkc
         '0', '0', '4', '2', '1', '6', 'D', 'B', 'F'
     };
     char buf[9] = {'c', 'o', 'l', 'o', 'r', ' ', 0, 0, 0};
-    buf[6] = bgtable[bkcolor];
+    buf[6] = bgtable[backcolor];
     buf[7] = fgtable[forecolor];
     ::system(buf);
 #else
+    UNUSED(forecolor);
+    UNUSED(backcolor);
     /* not supported now */
-    (void) forecolor;
-    (void) bkcolor;
 #endif
 }
 

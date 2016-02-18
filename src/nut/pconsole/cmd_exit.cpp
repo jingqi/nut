@@ -1,3 +1,5 @@
+﻿
+#include <nut/platform/platform.h>
 
 #include "cmd_exit.h"
 
@@ -27,7 +29,8 @@ const char* CmdExit::get_detail_info() const
 
 void CmdExit::execute(const char* command_line)
 {
-    (void) command_line; // unused
+    UNUSED(command_line);
+
     printf("exit\n");
     _console->exit(0);
 }

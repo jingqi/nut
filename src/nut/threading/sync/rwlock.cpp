@@ -1,5 +1,6 @@
 ﻿
 #include <assert.h>
+
 #include <nut/platform/platform.h>
 
 #include "rwlock.h"
@@ -14,6 +15,7 @@ RwLock::RwLock()
 #else
     const int rs = ::pthread_rwlock_init(&_rwlock, NULL);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 
@@ -24,6 +26,7 @@ RwLock::~RwLock()
 #else
     const int rs = ::pthread_rwlock_destroy(&_rwlock);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 
@@ -34,6 +37,7 @@ void RwLock::lock_read()
 #else
     const int rs = ::pthread_rwlock_rdlock(&_rwlock);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 
@@ -53,6 +57,7 @@ void RwLock::lock_write()
 #else
     const int rs = pthread_rwlock_wrlock(&_rwlock);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 
@@ -72,6 +77,7 @@ void RwLock::unlock_read()
 #else
     const int rs = pthread_rwlock_unlock(&_rwlock);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 
@@ -82,6 +88,7 @@ void RwLock::unlock_write()
 #else
     const int rs = pthread_rwlock_unlock(&_rwlock);
     assert(0 == rs);
+    UNUSED(rs);
 #endif
 }
 

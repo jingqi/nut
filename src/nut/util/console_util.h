@@ -25,7 +25,7 @@ public :
 
     static void set_text_color(ConsoleColor forecolor = DEFAULT, ConsoleColor backcolor = DEFAULT);
 
-    static void set_back_ground_color(ConsoleColor forecolor = DEFAULT, ConsoleColor bkcolor = DEFAULT);
+    static void set_back_ground_color(ConsoleColor forecolor = DEFAULT, ConsoleColor backcolor = DEFAULT);
 
     static void pause();
 

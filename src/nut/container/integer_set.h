@@ -348,14 +348,14 @@ public:
 		int_type operator*() const
 		{
 			assert(NULL != _container);
-			assert(0 <= _index && _index < _container->_ranges.size());
+            assert(0 <= _index && _index < (ssize_t) _container->_ranges.size());
 			return _value;
 		}
 		
 		const_iterator& operator++()
 		{
 			assert(NULL != _container);
-			assert(0 <= _index && _index < _container->_ranges.size());
+            assert(0 <= _index && _index < (ssize_t) _container->_ranges.size());
 
 			const Range& rg = _container->_ranges.at(_index);
 			if (_value < rg.last)
@@ -365,7 +365,7 @@ public:
 			else
 			{
 				++_index;
-				if (_index < _container->_ranges.size())
+                if (_index < (ssize_t) _container->_ranges.size())
 					_value = _container->_ranges.at(_index).first;
 			}
 			return *this;
@@ -374,7 +374,7 @@ public:
 		const_iterator& operator--()
 		{
 			assert(NULL != _container);
-			assert(0 <= _index && _index < _container->_ranges.size());
+            assert(0 <= _index && _index < (ssize_t) _container->_ranges.size());
 			
 			const Range& rg = _container->_ranges.at(_index);
 			if (_value > rg.first)
@@ -409,7 +409,7 @@ public:
 			assert(NULL != _container && _container == x._container);
 			if (_index != x._index)
 				return false;
-			if (0 <= _index && _index < _container->_ranges.size())
+            if (0 <= _index && _index < (ssize_t) _container->_ranges.size())
 				return _value == x._value;
 			return true;
 		}
@@ -455,7 +455,7 @@ public:
 			}
 		}
 		const ssize_t first_range_index = right;
-		if (first_range_index < _ranges.size())
+        if (first_range_index < (ssize_t) _ranges.size())
 		{
 			const Range& rg = _ranges.at(first_range_index);
 			if (value < rg.first)
