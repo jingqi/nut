@@ -270,14 +270,14 @@ void BitStream::append(const BitStream& x)
         set_bit(i, x.bit_at(i - old_bit_size));
 }
 
-BitStream BitStream::substeam(size_t i, size_t nbit)
+BitStream BitStream::substream(size_t i, size_t nbit)
 {
     assert(i + nbit < _bit_size);
     BitStream ret;
     ret._ensure_cap(nbit);
     ret._bit_size = nbit;
     for (size_t k = 0; k < nbit; ++k)
-        ret.set_bit(k, bit_at(k + nbit));
+        ret.set_bit(k, bit_at(i + k));
     return ret;
 }
 

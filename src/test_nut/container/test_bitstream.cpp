@@ -13,6 +13,7 @@ NUT_FIXTURE(TestBitStream)
     NUT_CASE(test_smoking)
     NUT_CASE(test_bug1)
     NUT_CASE(test_bug2)
+    NUT_CASE(test_substream)
     NUT_CASES_END()
 
     void test_smoking()
@@ -54,6 +55,14 @@ NUT_FIXTURE(TestBitStream)
         std::string s;
         bs.to_string(&s);
         NUT_TA(s == "011");
+    }
+
+    void test_substream()
+    {
+        BitStream bs("1100");
+        std::string s;
+        bs.substream(1,2).to_string(&s);
+        NUT_TA(s == "10");
     }
 };
 

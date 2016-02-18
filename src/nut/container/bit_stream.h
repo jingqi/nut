@@ -72,7 +72,7 @@ public:
 
     void append(const BitStream& x);
 
-    BitStream substeam(size_t i, size_t nbit);
+    BitStream substream(size_t i, size_t nbit);
 
 public:
     size_t bit1_count();
