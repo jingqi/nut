@@ -70,19 +70,18 @@ const char* SourceLocation::get_function_name() const
     return _func;
 }
 
-void SourceLocation::to_string(std::string *appended) const
+std::string SourceLocation::to_string() const
 {
-	assert(NULL != appended);
-
-	*appended += get_file_name();
-	appended->push_back(':');
-    nut::int_to_str(_line, appended);
+    std::string s = get_file_name();
+    s.push_back(':');
+    s += nut::int_to_str(_line);
 	if (_func != NULL)
 	{
-		appended->push_back(' ');
-		*appended += _func;
-		*appended += "()";
+        s.push_back(' ');
+        s += _func;
+        s += "()";
 	}
+    return s;
 }
 
 }

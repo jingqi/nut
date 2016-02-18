@@ -45,7 +45,7 @@ public:
 
     const char* get_message() const;
 
-    void to_string(std::string *appended) const;
+    std::string to_string() const;
 };
 
 }

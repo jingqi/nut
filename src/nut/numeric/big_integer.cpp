@@ -893,48 +893,52 @@ static wchar_t num2wchar(size_t n)
     return (wchar_t) (n < 10 ? L'0' + n : L'A' + n - 10);
 }
 
-void BigInteger::to_string(std::string *appended, size_type radix) const
+std::string BigInteger::to_string(size_type radix) const
 {
-    assert(NULL != appended && is_valid_radix(radix));
+    assert(is_valid_radix(radix));
+
     self_type tmp(*this);
     const bool positive = tmp.is_positive();
     if (!positive)
         self_type::negate(tmp, &tmp);
 
+    std::string s;
     const self_type RADIX(radix);
-    const size_t mark = appended->length();
     do
     {
         const size_type n = (size_t) (tmp % RADIX).llong_value();
-        appended->push_back(num2char(n));
+        s.push_back(num2char(n));
 
         tmp /= RADIX;
     } while (!tmp.is_zero());
     if (!positive)
-        appended->push_back('-');
-    std::reverse(appended->begin() + mark, appended->end());
+        s.push_back('-');
+    std::reverse(s.begin(), s.end());
+    return s;
 }
 
-void BigInteger::to_string(std::wstring *appended, size_type radix) const
+std::wstring BigInteger::to_wstring(size_type radix) const
 {
-    assert(NULL != appended && is_valid_radix(radix));
+    assert(is_valid_radix(radix));
+
     self_type tmp(*this);
     const bool positive = tmp.is_positive();
     if (!positive)
         self_type::negate(tmp, &tmp);
 
+    std::wstring s;
     const self_type RADIX(radix, _alloc.pointer());
-    const size_t mark = appended->length();
     do
     {
         const size_type n = (size_t) (tmp % RADIX).llong_value();
-        appended->push_back(num2wchar(n));
+        s.push_back(num2wchar(n));
 
         tmp /= RADIX;
     } while (!tmp.is_zero());
     if (!positive)
-        appended->push_back(L'-');
-    std::reverse(appended->begin() + mark, appended->end());
+        s.push_back(L'-');
+    std::reverse(s.begin(), s.end());
+    return s;
 }
 
 static bool is_blank(char c)
@@ -968,7 +972,8 @@ static bool is_valid_char(char c, size_t radix)
         return '0' <= c && c <= '0' + (int) radix - 1;
     if ('0' <= c && c <= '9')
         return true;
-    return 'a' <= (c | 0x20) && (c | 0x20) <= 'a' + (int) radix - 10 - 1;
+    c |= 0x20;
+    return 'a' <= c && c <= 'a' + (int) radix - 10 - 1;
 }
 
 static bool is_valid_char(wchar_t c, size_t radix)
@@ -978,7 +983,8 @@ static bool is_valid_char(wchar_t c, size_t radix)
         return L'0' <= c && c <= L'0' + (int) radix - 1;
     if (L'0' <= c && c <= L'9')
         return true;
-    return L'a' <= (c | 0x20) && (c | 0x20) <= L'a' + (int) radix - 10 - 1;
+    c |= 0x20;
+    return L'a' <= c && c <= L'a' + (int) radix - 10 - 1;
 }
 
 static size_t char2num(char c)

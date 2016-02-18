@@ -19,21 +19,15 @@ NUT_FIXTURE(TestBitStream)
     void test_smoking()
     {
         BitStream bs("1010100");
-        std::string s;
-        bs.to_string(&s);
-        NUT_TA(s == "1010100");
-        bs.append(false);
-        bs.append(true);
-        s.clear();
-        bs.to_string(&s);
-        NUT_TA(s == "101010001");
+        NUT_TA(bs.to_string() == "1010100");
+        bs.append_bit(0);
+        bs.append_bit(1);
+        NUT_TA(bs.to_string() == "101010001");
 
-        NUT_TA(bs.bit_at(2) && ! bs.bit_at(5));
+        NUT_TA(1 == bs.bit_at(2) && 0 == bs.bit_at(5));
 
         bs.append(bs);
-        s.clear();
-        bs.to_string(&s);
-        NUT_TA(s == "101010001101010001");
+        NUT_TA(bs.to_string() == "101010001101010001");
 
         NUT_TA(bs.bit1_count() == 8 && bs.bit0_count() == 10);
     }
@@ -41,28 +35,22 @@ NUT_FIXTURE(TestBitStream)
     void test_bug1()
     {
         BitStream bs;
-        bs.resize(2, true);
-        std::string s;
-        bs.to_string(&s);
-        NUT_TA(s == "11");
+        bs.resize(2, 1);
+        NUT_TA(bs.to_string() == "11");
     }
 
     void test_bug2()
     {
         BitStream bs;
-        bs.append(false);
-        bs.resize(3, true);
-        std::string s;
-        bs.to_string(&s);
-        NUT_TA(s == "011");
+        bs.append_bit(0);
+        bs.resize(3, 1);
+        NUT_TA(bs.to_string() == "011");
     }
 
     void test_substream()
     {
         BitStream bs("1100");
-        std::string s;
-        bs.substream(1,2).to_string(&s);
-        NUT_TA(s == "10");
+        NUT_TA(bs.substream(1,2).to_string() == "10");
     }
 };
 

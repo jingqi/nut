@@ -35,7 +35,7 @@ public:
      */
     const char* get_function_name() const;
 
-    void to_string(std::string *appended) const;
+    std::string to_string() const;
 };
 
 }

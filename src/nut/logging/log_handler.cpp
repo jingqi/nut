@@ -113,9 +113,7 @@ FileLogHandler::FileLogHandler(const char *file, bool append)
 
 void FileLogHandler::handle_log(const LogRecord & rec)
 {
-    std::string msg;
-    rec.to_string(&msg);
-    _ofs << msg << std::endl;
+    _ofs << rec.to_string() << std::endl;
 
     if (0 != (_flush_mask & rec.get_level()))
         _ofs.flush();
@@ -168,8 +166,7 @@ void SyslogLogHandler::handle_log(const LogRecord &rec)
     default:
         level = LOG_ERR;
     }
-    std::string msg;
-    rec.to_string(&msg);
+    std::string msg = rec.to_string();
     ::syslog(level, msg.c_str());
 }
 

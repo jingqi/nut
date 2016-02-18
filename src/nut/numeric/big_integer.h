@@ -274,8 +274,8 @@ public:
     static void swap(self_type *a, self_type *b);
 
 public:
-    void to_string(std::string *appended, size_type radix = 10) const;
-    void to_string(std::wstring *appended, size_type radix = 10) const;
+    std::string to_string(size_type radix = 10) const;
+    std::wstring to_wstring(size_type radix = 10) const;
 
     static self_type value_of(const std::string& s, size_type radix = 10);
     static self_type value_of(const std::wstring& s, size_type radix = 10);

@@ -23,11 +23,15 @@ private:
     void _ensure_cap(size_t new_bit_size);
 
 public:
-    BitStream();
+    BitStream()
+    {}
 
-    explicit BitStream(size_t nbits, bool setb = false);
+    /**
+     * @param fill_bit 填充比特值，只能为 1 或者 0
+     */
+    explicit BitStream(size_t bit_size, int fill_bit = 0);
 
-    BitStream(const void *buf, size_t nbits);
+    BitStream(const void *buf, size_t bit_size);
 
     explicit BitStream(const std::string& s);
 
@@ -43,32 +47,63 @@ public:
 
     bool operator==(const BitStream& x) const;
 
-    bool operator!=(const BitStream& x) const;
+    bool operator!=(const BitStream& x) const
+    {
+        return !(*this == x);
+    }
 
     BitStream operator+(const BitStream& x) const;
 
-    BitStream& operator+=(const BitStream& x);
+    BitStream& operator+=(const BitStream& x)
+    {
+        append(x);
+        return *this;
+    }
 
-    bool operator[](size_t i) const;
+    /**
+     * @return 1 或者 0
+     */
+    int operator[](size_t i) const
+    {
+        return bit_at(i);
+    }
 
-    size_t size() const;
+    size_t size() const
+    {
+        return _bit_size;
+    }
 
-    void resize(size_t new_bit_size, bool fill_setb = false);
+    /**
+     * @param fill_bit 填充比特值，只能是 1 或者 0
+     */
+    void resize(size_t new_bit_size, int fill_bit = 0);
 
-    void clear();
+    void clear()
+    {
+        _bit_size = 0;
+    }
 
-    bool bit_at(size_t i) const;
+    /**
+     * @return 1 或者 0
+     */
+    int bit_at(size_t i) const;
 
-    void set_bit(size_t i, bool setb = true);
+    /**
+     * @param bit 比特值，只能是 1 或者 0
+     */
+    void set_bit(size_t i, int bit = 1);
 
-    void fill_bits(size_t i, size_t nbit, bool setb = true);
+    /**
+     * @param bit 比特值，只能是 1 或者 0
+     */
+    void fill_bits(size_t i, size_t nbit, int bit = 1);
 
     /**
      * 添加一个bit
      *
-     * @param b  true, 添加一个1; false, 添加一个0.
+     * @param bit 比特值，只能是 1 或者 0
      */
-    void append(bool b);
+    void append_bit(int bit);
 
     void append(const BitStream& x);
 
@@ -77,11 +112,13 @@ public:
 public:
     size_t bit1_count();
 
-    size_t bit0_count();
+    size_t bit0_count()
+    {
+        return _bit_size - bit1_count();
+    }
 
-    void to_string(std::string *appended);
-
-    void to_string(std::wstring *appended);
+    std::string to_string();
+    std::wstring to_wstring();
 };
 
 }

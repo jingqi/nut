@@ -67,32 +67,31 @@ const char* LogRecord::get_message() const
     return _message;
 }
 
-void LogRecord::to_string(std::string *appended) const
+std::string LogRecord::to_string() const
 {
-    assert(NULL != appended);
-
-    *appended += "[";
-    *appended += _time.to_string();
-    *appended += "] ";
-    *appended += log_level_to_str(_level);
+    std::string s = "[";
+    s += _time.to_string();
+    s += "] ";
+    s += log_level_to_str(_level);
     if (NULL != _tag)
 	{
-        *appended += " ";
-        *appended += _tag;
+        s.push_back(' ');
+        s += _tag;
 	}
-    *appended += " (";
-    *appended += get_file_name();
-    *appended += ":";
-    *appended += int_to_str(_line);
-    *appended += ")";
+    s += " (";
+    s += get_file_name();
+    s.push_back(':');
+    s += int_to_str(_line);
+    s.push_back(')');
     if (NULL != _func)
 	{
-		*appended += " ";
-        *appended += _func;
-		*appended += "()";
+        s.push_back(' ');
+        s += _func;
+        s += "()";
 	}
-	*appended += " ";
-    *appended += _message;
+    s.push_back(' ');
+    s += _message;
+    return s;
 }
 
 }
