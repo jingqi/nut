@@ -21,6 +21,14 @@ class BitStream
 
 private:
     void _ensure_cap(size_t new_bit_size);
+	
+	size_t _word_size() const
+	{
+		return (_bit_size + sizeof(word_type) * 8 - 1) / (sizeof(word_type) * 8);
+	}
+
+	// 使最后一个有效的 word 空位为 0
+	void _normalize_tail();
 
 public:
     BitStream()
@@ -59,6 +67,15 @@ public:
         append(x);
         return *this;
     }
+	
+	BitStream operator&(const BitStream& x) const;
+	BitStream& operator&=(const BitStream& x);
+	
+	BitStream operator|(const BitStream& x) const;
+	BitStream& operator|=(const BitStream& x);
+	
+	BitStream operator^(const BitStream& x) const;
+	BitStream& operator^=(const BitStream& x);
 
     /**
      * @return 1 或者 0
