@@ -1,8 +1,5 @@
 *.pyc
 *.prop
 
-/*.a
-/*.so
-/*.dylib
-/obj
-/test_nut
+/debug
+/release

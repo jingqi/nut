@@ -1,20 +1,32 @@
 #!/user/bin/env make
 
+DEBUG ?= 0
+
 CC = g++
 LD = gcc
 AR = ar
 
 # variables
 SRC_ROOT = ../../src/nut
-OBJ_ROOT = obj/nut
+ifeq (${DEBUG}, 1)
+	OUT_DIR = $(CURDIR)/debug
+else
+	OUT_DIR = $(CURDIR)/release
+endif
+OBJ_ROOT = ${OUT_DIR}/obj/nut
 THIS = nut.mk
 
 # INC
-INC += -I../../src
+INC += -I${SRC_ROOT}/..
 
 # CC_FLAGS
 HOST = $(shell uname -s)
-CC_FLAGS += -Wall -g -fPIC -std=c++11
+CC_FLAGS += -Wall -fPIC -std=c++11
+ifeq (${DEBUG}, 1)
+	CC_FLAGS += -DDEBUG -g
+else
+	CC_FLAGS += -DNDEBUG -o2
+endif
 ifeq (${HOST}, Darwin)
 	CC_FLAGS += -stdlib=libc++
 else
@@ -28,7 +40,7 @@ OBJS = $(patsubst ${SRC_ROOT}%.cpp,${OBJ_ROOT}%.o,${CPPS})
 DEPS = ${OBJS:.o=.d}
 
 # TARGET
-TARGET = $(CURDIR)/libnut.a
+TARGET = ${OUT_DIR}/libnut.a
 
 # mkdirs
 $(shell mkdir -p $(patsubst ${SRC_ROOT}%,${OBJ_ROOT}%,${DIRS}))
