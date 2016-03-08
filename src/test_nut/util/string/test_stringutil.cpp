@@ -17,6 +17,7 @@ NUT_FIXTURE(TestStringUtil)
     NUT_CASE(test_trim)
     NUT_CASE(test_stricmp)
     NUT_CASE(test_wstr)
+    NUT_CASE(test_utf8_ascii_convert)
     NUT_CASE(test_xml_encoding)
     NUT_CASE(test_url_encoding)
     NUT_CASE(test_hex_encoding)
@@ -122,15 +123,15 @@ NUT_FIXTURE(TestStringUtil)
 		std::wstring b;
 
 #if !defined(NUT_PLATFORM_OS_MAC) // mac 下目前对 wchar_t 常量字符串转换有问题
-        wstr_to_ascii(L"c5&汉", &a);
-        ascii_to_wstr(a.c_str(), &b);
+        NUT_TA(wstr_to_ascii(L"c5&汉", &a));
+        NUT_TA(ascii_to_wstr(a.c_str(), &b));
         //wcout << endl << b << endl;
         NUT_TA(b == L"c5&汉");
 
 		a.clear();
 		b.clear();
-        wstr_to_utf8(L"c5&汉", &a);
-        utf8_to_wstr(a.c_str(), &b);
+        NUT_TA(wstr_to_utf8(L"c5&汉", &a));
+        NUT_TA(utf8_to_wstr(a.c_str(), &b));
         //wcout << endl << b << endl;
         NUT_TA(b == L"c5&汉");
 #endif
@@ -139,17 +140,25 @@ NUT_FIXTURE(TestStringUtil)
         // gcc 或直接取源码的编码并遗留到运行时编码中，目前源码的编码为 utf8
 		a.clear();
 		b.clear();
-        utf8_to_wstr("c5&汉", &b);
-        wstr_to_utf8(b.c_str(), &a);
+        NUT_TA(utf8_to_wstr("c5&汉", &b));
+        NUT_TA(wstr_to_utf8(b.c_str(), &a));
         NUT_TA(a == "c5&汉");
 #elif defined(NUT_PLATFORM_CC_VC)
         // vc 会将c字符串转编码为 ascii，所以运行时全部为 ascii
 		a.clear();
 		b.clear();
-        ascii_to_wstr("c5&汉", &b);
-        wstr_to_ascii(b.c_str(), &a);
+        NUT_TA(ascii_to_wstr("c5&汉", &b));
+        NUT_TA(wstr_to_ascii(b.c_str(), &a));
         NUT_TA(a == "c5&汉");
 #endif
+    }
+
+    void test_utf8_ascii_convert()
+    {
+        std::string a = "abcd中文", b, c;
+        NUT_TA(nut::ascii_to_utf8(a.c_str(), &b));
+        NUT_TA(nut::utf8_to_ascii(b.c_str(), &c));
+        NUT_TA(c == a);
     }
 
     void test_xml_encoding()
