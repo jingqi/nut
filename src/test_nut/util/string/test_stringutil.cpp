@@ -11,7 +11,6 @@ using namespace nut;
 NUT_FIXTURE(TestStringUtil)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(test_to_string)
     NUT_CASE(test_split)
     NUT_CASE(test_format)
     NUT_CASE(test_trim)
@@ -24,29 +23,6 @@ NUT_FIXTURE(TestStringUtil)
     NUT_CASE(test_cstyle_encoding)
     NUT_CASE(test_base64_encoding)
     NUT_CASES_END()
-
-    void test_to_string()
-    {
-        NUT_TA(char_to_str('m') == "109");
-
-        NUT_TA(long_to_str((long)12) == "12");
-        NUT_TA(uchar_to_str((unsigned char)13) == "13");
-        NUT_TA(short_to_str((short)14) == "14");
-        NUT_TA(ushort_to_str((unsigned short)15) == "15");
-        NUT_TA(int_to_str((int)-16) == "-16");
-        NUT_TA(uint_to_str((unsigned int)17) == "17");
-        NUT_TA(ulong_to_str((unsigned long)18) == "18");
-
-        NUT_TA(bool_to_str(false) == "false");
-        NUT_TA(bool_to_str(true) == "true");
-
-        NUT_TA(double_to_str((double)12.34) == "12.340000");
-        NUT_TA(float_to_str((float)-45.67) == "-45.669998");
-
-        string s = ptr_to_str((void*)0x122e);
-        // cout << s << endl;
-        NUT_TA(s == "0x0000122E" || s == "0x122e" || s == "0x0000122e");
-    }
 
     void test_split()
     {

@@ -285,6 +285,14 @@ long str_to_long(const std::string& s)
     return ret;
 }
 
+/// string to double
+double str_to_double(const std::string& s)
+{
+    double ret = 0.0;
+    ::sscanf(s.c_str(), "%lf", &ret);
+    return ret;
+}
+
 }
 
 #if defined(NUT_PLATFORM_CC_VC)

@@ -78,6 +78,7 @@ std::string sub_cstr(const char *str, size_t len, const char *fill_nil = "\\0");
 
 // string to long
 long str_to_long(const std::string& s);
+double str_to_double(const std::string& s);
 
 }
 

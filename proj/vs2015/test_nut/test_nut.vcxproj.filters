@@ -189,5 +189,8 @@
     <ClCompile Include="..\..\..\src\test_nut\main.cpp">
       <Filter>test</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\util\string\test_tostring.cpp">
+      <Filter>test\util\string</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

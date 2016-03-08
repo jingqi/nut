@@ -107,6 +107,7 @@
     <ClCompile Include="..\..\..\src\test_nut\threading\test_threadpool.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\string\test_kmp.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\string\test_stringutil.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\util\string\test_tostring.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\test_delegate.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\time\test_date_time.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\test_ini_dom.cpp" />
