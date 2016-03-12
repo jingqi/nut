@@ -25,7 +25,7 @@ CC_FLAGS += -Wall -std=c++11
 ifeq (${DEBUG}, 1)
 	CC_FLAGS += -DDEBUG -g
 else
-	CC_FLAGS += -DNDEBUG -o2
+	CC_FLAGS += -DNDEBUG -O2
 endif
 ifeq (${HOST}, Darwin)
 	CC_FLAGS += -stdlib=libc++
