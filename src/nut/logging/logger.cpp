@@ -354,7 +354,7 @@ void Logger::load_config(const std::string& config)
                 rc_ptr<SyslogLogHandler> handler = rc_new<SyslogLogHandler>(_close_syslog_on_exit);
                 handler->set_flush_mask(_flush_mask);
                 handler->get_filter().swap(&_filter);
-                Logger::get_instance()->add_handler(handler;
+                Logger::get_instance()->add_handler(handler);
             }
 #endif
         }
