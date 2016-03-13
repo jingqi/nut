@@ -56,12 +56,12 @@ clean:
 
 rebuild: clean all
 
-$(TARGET): ${OBJS} ${THIS}
+${TARGET}: ${OBJS} ${THIS}
 	rm -f $@
-	$(AR) cqs $@ ${OBJS}
+	${AR} cqs $@ ${OBJS}
 
 ${OBJ_ROOT}/%.o: ${SRC_ROOT}/%.cpp ${THIS}
-	$(CC) ${INC} ${DEF} ${CC_FLAGS} -c $< -o $@
+	${CC} ${INC} ${DEF} ${CC_FLAGS} -c $< -o $@
 
 ## 动态生成依赖关系
 # %.d: %.cpp
@@ -70,7 +70,7 @@ ${OBJ_ROOT}/%.d:${SRC_ROOT}/%.cpp ${THIS}
 	@# 向 *.d.$ 中写入 "xx/xx/*.d xx/xx/*.o:\" 这样一个字符串
 	@echo '$@ $@.o:\\' | sed 's/[.]d[.]o/.o/g' > $@.$$
 	@# 向 *.d.$$ 中写入用 gcc -MM 生成的初始依赖关系
-	$(CC) ${INC} ${DEF} -MM $< > $@.$$.$$
+	${CC} ${INC} ${DEF} -MM $< > $@.$$.$$
 	@# 将 *.d.$$ 中内容去除冒号前的内容，剩余内容写入 *.d.$ 中
 	@sed 's/^.*[:]//g' < $@.$$.$$ >> $@.$$
 	@# 空行

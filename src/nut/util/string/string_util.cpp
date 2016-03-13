@@ -304,6 +304,22 @@ void trim(const wchar_t *str_, std::wstring *appended, const wchar_t *blanks)
         *appended += str.substr(begin, end - begin + 1);
 }
 
+std::string trim(const char *str, const char *blanks)
+{
+    assert(NULL != str && NULL != blanks);
+    std::string ret;
+    trim(str, &ret, blanks);
+    return ret;
+}
+
+std::wstring trim(const wchar_t *str, const wchar_t *blanks)
+{
+    assert(NULL != str && NULL != blanks);
+    std::wstring ret;
+    trim(str, &ret, blanks);
+    return ret;
+}
+
 /** 去除左边空白 */
 void ltrim(const char *str_, std::string *appended, const char *blanks)
 {
@@ -319,6 +335,22 @@ void ltrim(const wchar_t *str_, std::wstring *appended, const wchar_t *blanks)
     const std::wstring str(str_);
     const std::wstring::size_type begin = str.find_first_not_of(blanks);
     *appended += str.substr(begin);
+}
+
+std::string ltrim(const char *str, const char *blanks)
+{
+    assert(NULL != str && NULL != blanks);
+    std::string ret;
+    ltrim(str, &ret, blanks);
+    return ret;
+}
+
+std::wstring ltrim(const wchar_t *str, const wchar_t *blanks)
+{
+    assert(NULL != str && NULL != blanks);
+    std::wstring ret;
+    ltrim(str, &ret, blanks);
+    return ret;
 }
 
 /** 去除右边空白 */
@@ -338,6 +370,22 @@ void rtrim(const wchar_t *str_, std::wstring *appended, const wchar_t *blanks)
     const std::wstring::size_type end = str.find_last_not_of(blanks);
     if (std::wstring::npos != end)
         *appended += str.substr(0, end + 1);
+}
+
+std::string rtrim(const char *str, const char *blanks)
+{
+    assert(NULL != str && NULL != blanks);
+    std::string ret;
+    rtrim(str, &ret, blanks);
+    return ret;
+}
+
+std::wstring rtrim(const wchar_t *str, const wchar_t *blanks)
+{
+    assert(NULL != str && NULL != blanks);
+    std::wstring ret;
+    rtrim(str, &ret, blanks);
+    return ret;
 }
 
 static int charicmp(int c1, int c2)

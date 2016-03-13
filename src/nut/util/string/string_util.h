@@ -8,6 +8,9 @@
 
 #include <nut/container/array.h>
 
+#define __NUT_DEFAULT_BLANKS " \t\r\n"
+#define __NUT_DEFAULT_BLANKSW L" \t\r\n"
+
 namespace nut
 {
 
@@ -35,17 +38,23 @@ void format(std::wstring *appended, const wchar_t *fmt, ...);
 std::string format(const char *fmt, ...);
 std::wstring format(const wchar_t *fmt, ...);
 
-/* 去除首尾空白 */
-void trim(const char *str, std::string *appended, const char *blanks = " \t\r\n");
-void trim(const wchar_t *str, std::wstring *appended, const wchar_t *blanks = L" \t\r\n");
+/** 去除首尾空白 */
+void trim(const char *str, std::string *appended, const char *blanks = __NUT_DEFAULT_BLANKS);
+void trim(const wchar_t *str, std::wstring *appended, const wchar_t *blanks = __NUT_DEFAULT_BLANKSW);
+std::string trim(const char *str, const char *blanks = __NUT_DEFAULT_BLANKS);
+std::wstring trim(const wchar_t *str, const wchar_t *blanks = __NUT_DEFAULT_BLANKSW);
 
 /** 去除左边空白 */
-void ltrim(const char *str, std::string *appended, const char *blanks = " \t\r\n");
-void ltrim(const wchar_t *str, std::wstring *appended, const wchar_t *blanks = L" \t\r\n");
+void ltrim(const char *str, std::string *appended, const char *blanks = __NUT_DEFAULT_BLANKS);
+void ltrim(const wchar_t *str, std::wstring *appended, const wchar_t *blanks = __NUT_DEFAULT_BLANKSW);
+std::string ltrim(const char *str, const char *blanks = __NUT_DEFAULT_BLANKS);
+std::wstring ltrim(const wchar_t *str, const wchar_t *blanks = __NUT_DEFAULT_BLANKSW);
 
 /** 去除右边空白 */
-void rtrim(const char *str, std::string *appended, const char *blanks = " \t\r\n");
-void rtrim(const wchar_t *str, std::wstring *appended, const wchar_t *blanks = L" \t\r\n");
+void rtrim(const char *str, std::string *appended, const char *blanks = __NUT_DEFAULT_BLANKS);
+void rtrim(const wchar_t *str, std::wstring *appended, const wchar_t *blanks = __NUT_DEFAULT_BLANKSW);
+std::string rtrim(const char *str, const char *blanks = __NUT_DEFAULT_BLANKS);
+std::wstring rtrim(const wchar_t *str, const wchar_t *blanks = __NUT_DEFAULT_BLANKSW);
 
 /** 忽略大小写的字符串比较 */
 int stricmp(const char *str1, const char *str2);
