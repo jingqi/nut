@@ -7,10 +7,10 @@
 #include <wchar.h>
 
 #include <nut/platform/platform.h>
+#include <nut/platform/stdint_traits.h> // for ssize_t
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <windows.h>
-typedef SSIZE_T ssize_t;
 #endif
 
 #include "kmp.h"

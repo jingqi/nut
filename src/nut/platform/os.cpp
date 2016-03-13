@@ -505,6 +505,8 @@ bool OS::read_link(const char *path, std::string *appended)
     assert(NULL != path && NULL != appended);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+    UNUSED(path);
+    UNUSED(appended);
     return false; // windows 上没有软链接功能
 #else
     const size_t buf_len = 1024;
@@ -523,6 +525,8 @@ bool OS::read_link(const wchar_t *path, std::wstring *appended)
     assert(NULL != path && NULL != appended);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+    UNUSED(path);
+    UNUSED(appended);
     return false; // windows 上没有软链接功能
 #else
     std::string p;
@@ -550,6 +554,8 @@ bool OS::symlink(const char *link, const char *path)
     assert(NULL != link && NULL != path);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+    UNUSED(link);
+    UNUSED(path);
     return false; // windows 上没有软链接功能
 #else
     return 0 == ::symlink(link, path);
@@ -561,6 +567,8 @@ bool OS::symlink(const wchar_t *link, const wchar_t *path)
     assert(NULL != link && NULL != path);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+    UNUSED(link);
+    UNUSED(path);
     return false; // windows 上没有软链接功能
 #else
     std::string l, p;

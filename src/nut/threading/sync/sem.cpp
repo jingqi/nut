@@ -30,6 +30,7 @@ Semaphore::~Semaphore()
 #if defined(NUT_PLATFORM_OS_WINDOWS)
     const BOOL rs = ::CloseHandle(_sem);
     assert(FALSE != rs);
+    UNUSED(rs);
 #else
     int rs = ::sem_destroy(&_sem);
     assert(0 == rs);

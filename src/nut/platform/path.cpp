@@ -2,13 +2,13 @@
 #include <assert.h>
 
 #include "platform.h"
+#include "stdint_traits.h" // for ssize_t
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
 #   include <windows.h>
 #   include<io.h> // for _access()
 #   include <sys/stat.h> // for stat()
 #   include <direct.h> // for getcwd()
-typedef SSIZE_T ssize_t;
 #else
 #   include <unistd.h> // for access(), getcwd()
 #   include <fcntl.h> // for AT_FDCWD, AT_SYMLINK_NOFOLLOW
@@ -942,6 +942,7 @@ bool Path::is_link(const char *path)
     assert(NULL != path);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+    UNUSED(path);
     return false;
 #else
     struct stat info;
@@ -956,6 +957,7 @@ bool Path::is_link(const wchar_t *path)
     assert(NULL != path);
 
 #if defined(NUT_PLATFORM_OS_WINDOWS)
+    UNUSED(path);
     return false;
 #else
     std::string p;
