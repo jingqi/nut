@@ -20,7 +20,7 @@ void BigInteger::ensure_cap(size_type new_size)
     if (new_cap < new_size)
         new_cap = new_size;
 
-    _data = (word_type*) ma_realloc(_alloc, _data, sizeof(word_type) * new_cap);
+    _data = (word_type*) ::realloc(_data, sizeof(word_type) * new_cap);
     assert(NULL != _data);
     _capacity = new_cap;
 }
@@ -39,8 +39,7 @@ void BigInteger::ensure_significant_len(size_type siglen)
     _significant_len = siglen;
 }
 
-BigInteger::BigInteger(long long v, memory_allocator *ma)
-    : _alloc(ma)
+BigInteger::BigInteger(long long v)
 {
     static_assert(sizeof(v) % sizeof(word_type) == 0, "整数长度对齐问题");
 
@@ -50,8 +49,7 @@ BigInteger::BigInteger(long long v, memory_allocator *ma)
     minimize_significant_len();
 }
 
-BigInteger::BigInteger(const word_type *buf, size_type len, bool with_sign, memory_allocator *ma)
-    : _alloc(ma)
+BigInteger::BigInteger(const word_type *buf, size_type len, bool with_sign)
 {
     assert(NULL != buf && len > 0);
 
@@ -72,7 +70,6 @@ BigInteger::BigInteger(const word_type *buf, size_type len, bool with_sign, memo
 }
 
 BigInteger::BigInteger(const self_type& x)
-    : _alloc(x._alloc)
 {
     ensure_cap(x._significant_len);
     ::memcpy(_data, x._data, sizeof(word_type) * x._significant_len);
@@ -80,7 +77,6 @@ BigInteger::BigInteger(const self_type& x)
 }
 
 BigInteger::BigInteger(self_type&& x)
-    : _alloc(x._alloc)
 {
     _data = x._data;
     _capacity = x._capacity;
@@ -94,7 +90,7 @@ BigInteger::BigInteger(self_type&& x)
 BigInteger::~BigInteger()
 {
     if (NULL != _data)
-        ma_free(_alloc, _data);
+        ::free(_data);
     _data = NULL;
     _capacity = 0;
     _significant_len = 0;
@@ -116,23 +112,14 @@ BigInteger& BigInteger::operator=(self_type&& x)
     if (this == &x)
         return *this;
 
-    if (_alloc == x._alloc)
-    {
-        if (NULL != _data)
-            ma_free(_alloc, _data);
-        _data = x._data;
-        _capacity = x._capacity;
-        _significant_len = x._significant_len;
-        x._data = NULL;
-        x._capacity = 0;
-        x._significant_len = 0;
-    }
-    else
-    {
-        ensure_cap(x._significant_len);
-        ::memcpy(_data, x._data, sizeof(word_type) * x._significant_len);
-        _significant_len = x._significant_len;
-    }
+    if (NULL != _data)
+        ::free(_data);
+    _data = x._data;
+    _capacity = x._capacity;
+    _significant_len = x._significant_len;
+    x._data = NULL;
+    x._capacity = 0;
+    x._significant_len = 0;
     return *this;
 }
 
@@ -161,7 +148,7 @@ BigInteger BigInteger::operator%(const self_type& x) const
             return *this - x;
     }
 
-    self_type ret(0, _alloc);
+    self_type ret(0);
     self_type::divide(*this, x, NULL, &ret);
     return ret;
 }
@@ -230,7 +217,7 @@ void BigInteger::add(const self_type& a, const self_type& b, self_type *x)
 
     const size_type max_len = (a._significant_len > b._significant_len ? a._significant_len : b._significant_len);
     x->ensure_cap(max_len + 1);
-    signed_add(a._data, a._significant_len, b._data, b._significant_len, x->_data, max_len + 1, a._alloc);
+    signed_add(a._data, a._significant_len, b._data, b._significant_len, x->_data, max_len + 1);
     x->_significant_len = max_len + 1;
     x->minimize_significant_len();
 }
@@ -242,7 +229,7 @@ void BigInteger::add(const self_type& a, long long b, self_type *x)
 
     const size_type max_len = (a._significant_len > sizeof(b) / sizeof(word_type) ? a._significant_len : sizeof(b) / sizeof(word_type));
     x->ensure_cap(max_len + 1);
-    signed_add(a._data, a._significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->_data, max_len + 1, a._alloc);
+    signed_add(a._data, a._significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->_data, max_len + 1);
     x->_significant_len = max_len + 1;
     x->minimize_significant_len();
 }
@@ -254,7 +241,7 @@ void BigInteger::add(long long a, const self_type& b, self_type *x)
 
     const size_type max_len = (sizeof(a) / sizeof(word_type) > b._significant_len ? sizeof(a) / sizeof(word_type) : b._significant_len);
     x->ensure_cap(max_len + 1);
-    signed_add((word_type*)&a, sizeof(a) / sizeof(word_type), b._data, b._significant_len, x->_data, max_len + 1, b._alloc);
+    signed_add((word_type*)&a, sizeof(a) / sizeof(word_type), b._data, b._significant_len, x->_data, max_len + 1);
     x->_significant_len = max_len + 1;
     x->minimize_significant_len();
 }
@@ -265,7 +252,7 @@ void BigInteger::sub(const self_type& a, const self_type& b, self_type *x)
 
     const size_type max_len = (a._significant_len > b._significant_len ? a._significant_len : b._significant_len);
     x->ensure_cap(max_len + 1);
-    signed_sub(a._data, a._significant_len, b._data, b._significant_len, x->_data, max_len + 1, a._alloc);
+    signed_sub(a._data, a._significant_len, b._data, b._significant_len, x->_data, max_len + 1);
     x->_significant_len = max_len + 1;
     x->minimize_significant_len();
 }
@@ -277,7 +264,7 @@ void BigInteger::sub(const self_type& a, long long b, self_type *x)
 
     const size_type max_len = (a._significant_len > sizeof(b) / sizeof(word_type) ? a._significant_len : sizeof(b) / sizeof(word_type));
     x->ensure_cap(max_len + 1);
-    signed_sub(a._data, a._significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->_data, max_len + 1, a._alloc);
+    signed_sub(a._data, a._significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->_data, max_len + 1);
     x->_significant_len = max_len + 1;
     x->minimize_significant_len();
 }
@@ -289,7 +276,7 @@ void BigInteger::sub(long long a, const self_type& b, self_type *x)
 
     const size_type max_len = (sizeof(a) / sizeof(word_type) > b._significant_len ? sizeof(a) / sizeof(word_type) : b._significant_len);
     x->ensure_cap(max_len + 1);
-    signed_sub((word_type*)&a, sizeof(a) / sizeof(word_type), b._data, b._significant_len, x->_data, max_len + 1, b._alloc);
+    signed_sub((word_type*)&a, sizeof(a) / sizeof(word_type), b._data, b._significant_len, x->_data, max_len + 1);
     x->_significant_len = max_len + 1;
     x->minimize_significant_len();
 }
@@ -299,7 +286,7 @@ void BigInteger::negate(const self_type &a, self_type *x)
     assert(NULL != x);
 
     x->ensure_cap(a._significant_len + 1);
-    signed_negate(a._data, a._significant_len, x->_data, a._significant_len + 1, a._alloc);
+    signed_negate(a._data, a._significant_len, x->_data, a._significant_len + 1);
     x->_significant_len = a._significant_len + 1;
     x->minimize_significant_len();
 }
@@ -326,7 +313,7 @@ void BigInteger::multiply(const self_type& a, const self_type& b, self_type *x)
 
     x->ensure_cap(a._significant_len + b._significant_len);
     signed_multiply(a._data, a._significant_len, b._data, b._significant_len,
-        x->_data, a._significant_len + b._significant_len, a._alloc);
+        x->_data, a._significant_len + b._significant_len);
     x->_significant_len = a._significant_len + b._significant_len;
     x->minimize_significant_len();
 }
@@ -338,7 +325,7 @@ void BigInteger::multiply(const self_type& a, long long b, self_type *x)
 
     x->ensure_cap(a._significant_len + sizeof(b) / sizeof(word_type));
     signed_multiply(a._data, a._significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type),
-        x->_data, a._significant_len + sizeof(b) / sizeof(word_type), a._alloc);
+        x->_data, a._significant_len + sizeof(b) / sizeof(word_type));
     x->_significant_len = a._significant_len + sizeof(b) / sizeof(word_type);
     x->minimize_significant_len();
 }
@@ -350,7 +337,7 @@ void BigInteger::multiply(long long a, const self_type& b, self_type *x)
 
     x->ensure_cap(sizeof(a) / sizeof(word_type) + b._significant_len);
     signed_multiply((word_type*)&a, sizeof(a) / sizeof(word_type), b._data, b._significant_len,
-        x->_data, sizeof(a) / sizeof(word_type) + b._significant_len, b._alloc);
+        x->_data, sizeof(a) / sizeof(word_type) + b._significant_len);
     x->_significant_len = sizeof(a) / sizeof(word_type) + b._significant_len;
     x->minimize_significant_len();
 }
@@ -371,8 +358,7 @@ void BigInteger::divide(const self_type& a, const self_type& b, self_type *resul
 
     signed_divide(a._data, a._significant_len, b._data, b._significant_len,
            (NULL == result ? NULL : result->_data), a._significant_len,
-           (NULL == remainder ? NULL : remainder->_data), b._significant_len,
-           a._alloc);
+           (NULL == remainder ? NULL : remainder->_data), b._significant_len);
 
     if (NULL != result)
     {
@@ -461,7 +447,7 @@ void BigInteger::multiply_to_len(const self_type& a, size_type bit_len)
 {
     const size_type words_len = (bit_len + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
     ensure_cap(words_len);
-    signed_multiply(_data, _significant_len, a._data, a._significant_len, _data, words_len, _alloc);
+    signed_multiply(_data, _significant_len, a._data, a._significant_len, _data, words_len);
     _significant_len = words_len;
     limit_positive_bits_to(bit_len);
 }
@@ -541,7 +527,7 @@ BigInteger BigInteger::rand_between(const self_type& a, const self_type& b)
     const self_type n = (a_is_bigger ? a - b : b - a);
     assert(n.is_positive());
 
-    self_type ret(0, a.allocator());
+    self_type ret(0);
     ret.ensure_cap(n._significant_len + 1);
     for (size_type i = 0; i < n._significant_len; ++i)
     {
@@ -578,7 +564,7 @@ void BigInteger::swap(self_type *a, self_type *b)
     ::memcpy(b->_data, tmp, sizeof(word_type) * tmp_sig);
     b->_significant_len = tmp_sig;
 
-    ma_free(a->_alloc, tmp);
+    ::free(tmp);
 }
 
 static bool is_valid_radix(size_t radix)
@@ -632,7 +618,7 @@ std::wstring BigInteger::to_wstring(size_type radix) const
         self_type::negate(tmp, &tmp);
 
     std::wstring s;
-    const self_type RADIX(radix, _alloc);
+    const self_type RADIX(radix);
     do
     {
         const size_type n = (size_t) (tmp % RADIX).llong_value();

@@ -6,9 +6,9 @@
 namespace nut
 {
 
-ByteArrayStream::ByteArrayStream(memory_allocator *ma)
+ByteArrayStream::ByteArrayStream()
 {
-    _data = rca_new<byte_rcarray_type>(ma, 16, ma);
+    _data = rc_new<byte_rcarray_type>(16);
 }
 
 ByteArrayStream::ByteArrayStream(byte_rcarray_type *arr)

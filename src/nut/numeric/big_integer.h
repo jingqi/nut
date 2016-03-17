@@ -7,7 +7,6 @@
 #include <string>
 
 #include <nut/platform/stdint_traits.h>
-#include <nut/mem/sys_ma.h>
 
 #include "word_array_integer.h"
 
@@ -27,7 +26,6 @@ public:
     typedef StdInt<word_type>::double_unsigned_type dword_type;
 
 private:
-    const rc_ptr<memory_allocator> _alloc;
     word_type *_data = NULL; // 缓冲区, little-endian, 带符号
     size_type _capacity = 0;
     size_type _significant_len = 0; // 有效字长度
@@ -49,11 +47,10 @@ private:
     }
 
 public:
-    explicit BigInteger(long long v = 0, memory_allocator *ma = NULL);
+    explicit BigInteger(long long v = 0);
 
     template <typename U>
-    BigInteger(const U *buf, size_type len, bool with_sign, memory_allocator *ma = NULL)
-        : _alloc(ma)
+    BigInteger(const U *buf, size_type len, bool with_sign)
     {
         assert(NULL != buf && len > 0);
 
@@ -67,7 +64,7 @@ public:
     }
 
     // 上述模板函数的一个特化
-    BigInteger(const word_type *buf, size_type len, bool with_sign, memory_allocator *ma = NULL);
+    BigInteger(const word_type *buf, size_type len, bool with_sign);
 
     BigInteger(const self_type& x);
 
@@ -149,63 +146,63 @@ public:
 
     self_type operator+(const self_type& x) const
     {
-        self_type ret(0, _alloc);
+        self_type ret(0);
         self_type::add(*this, x, &ret);
         return ret;
     }
 
     self_type operator+(long long v) const
     {
-        self_type ret(0, _alloc);
+        self_type ret(0);
         self_type::add(*this, v, &ret);
         return ret;
     }
 
     self_type operator-(const self_type& x) const
     {
-        self_type ret(0, _alloc);
+        self_type ret(0);
         self_type::sub(*this, x, &ret);
         return ret;
     }
 
     self_type operator-(long long v) const
     {
-        self_type ret(0, _alloc);
+        self_type ret(0);
         self_type::sub(*this, v, &ret);
         return ret;
     }
 
     self_type operator-() const
     {
-        self_type ret(0, _alloc);
+        self_type ret(0);
         self_type::negate(*this, &ret);
         return ret;
     }
 
     self_type operator*(const self_type& x) const
     {
-        self_type ret(0, _alloc);
+        self_type ret(0);
         self_type::multiply(*this, x, &ret);
         return ret;
     }
 
     self_type operator*(long long v) const
     {
-        self_type ret(0, _alloc);
+        self_type ret(0);
         self_type::multiply(*this, v, &ret);
         return ret;
     }
 
     self_type operator/(const self_type& x) const
     {
-        self_type ret(0, _alloc);
+        self_type ret(0);
         self_type::divide(*this, x, &ret, NULL);
         return ret;
     }
 
     self_type operator/(long long v) const
     {
-        self_type divider(v, _alloc), ret(0, _alloc);
+        self_type divider(v), ret(0);
         self_type::divide(*this, divider, &ret, NULL);
         return ret;
     }
@@ -217,7 +214,7 @@ public:
         static_assert(sizeof(v) % sizeof(word_type) == 0, "整数长度对齐问题");
         assert(0 != v);
 
-        self_type divider(v, _alloc), ret(0, _alloc);
+        self_type divider(v), ret(0);
         self_type::divide(*this, divider, NULL, &ret);
         return ret;
     }
@@ -266,7 +263,7 @@ public:
 
     self_type& operator/=(long long v)
     {
-        self_type divider(v, _alloc);
+        self_type divider(v);
         self_type::divide(*this, divider, this, NULL);
         return *this;
     }
@@ -276,7 +273,7 @@ public:
     self_type& operator%=(long long v)
     {
         assert(0 != v);
-        self_type divider(v, _alloc);
+        self_type divider(v);
         self_type::divide(*this, divider, NULL, this);
         return *this;
     }
@@ -397,11 +394,6 @@ public:
     size_type significant_words_length() const
     {
         return _significant_len;
-    }
-
-    memory_allocator* allocator() const
-    {
-        return _alloc;
     }
 
     const word_type* data() const

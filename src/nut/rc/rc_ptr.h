@@ -114,9 +114,9 @@ public:
 
     template <typename U>
     bool operator==(const rc_ptr<U>& p) const
-	{
-		return _ptr == p._ptr;
-	}
+    {
+        return _ptr == p._ptr;
+    }
 
     bool operator!=(const T *p) const
     {
@@ -125,9 +125,9 @@ public:
 
     template <typename U>
     bool operator!=(const rc_ptr<U>& p) const
-	{
-		return _ptr != p._ptr;
-	}
+    {
+        return _ptr != p._ptr;
+    }
 
     T* operator->() const
     {

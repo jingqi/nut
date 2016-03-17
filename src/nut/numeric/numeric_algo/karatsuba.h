@@ -16,7 +16,7 @@ namespace nut
  * 该算式中乘法总体规模变小了
  */
 template <typename T>
-void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma)
+void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
 
@@ -34,7 +34,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
 
     if (M < LIMIT || N < LIMIT || P < LIMIT)
     {
-        unsigned_multiply(a, M, b, N, x, P, ma);
+        unsigned_multiply(a, M, b, N, x, P);
         return;
     }
 
@@ -78,47 +78,47 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     //        = min(b_len + 1, P - base_len)
     // since, a_len <= b_len
     const size_t ab_len = (std::min)(b_len + 1, P - base_len);
-    T *AB = (T*) ma_realloc(ma, NULL, sizeof(T) * ab_len);
-    unsigned_add(A, a_len, B, b_len, AB, ab_len, ma);
+    T *AB = (T*) ::malloc(sizeof(T) * ab_len);
+    unsigned_add(A, a_len, B, b_len, AB, ab_len);
 
     // cd_len = min(max(c_len, d_len) + 1, P - base_len)
     //        = min(d_len + 1, P - base_len)
     // since, c_len <= d_len
     const size_t cd_len = (std::min)(d_len + 1, P - base_len);
-    T *CD = (T*) ma_realloc(ma, NULL, sizeof(T) * cd_len);
-    unsigned_add(C, c_len, D, d_len, CD, cd_len, ma);
+    T *CD = (T*) ::malloc(sizeof(T) * cd_len);
+    unsigned_add(C, c_len, D, d_len, CD, cd_len);
 
     // abcd_len = min(ab_len + cd_len, P - base_len)
     //          = min(b_len + d_len + 1, P - base_len)
     const size_t abcd_len = (std::min)(b_len + d_len + 1, P - base_len);
-    T *ABCD = (T*) ma_realloc(ma, NULL, sizeof(T) * abcd_len);
-    unsigned_karatsuba_multiply(AB, ab_len, CD, cd_len, ABCD, abcd_len, ma);
-    ma_free(ma, AB);
-    ma_free(ma, CD);
+    T *ABCD = (T*) ::malloc(sizeof(T) * abcd_len);
+    unsigned_karatsuba_multiply(AB, ab_len, CD, cd_len, ABCD, abcd_len);
+    ::free(AB);
+    ::free(CD);
 
     // ac_len = min(a_len + c_len, max(0, P - base_len))
     //        = min(a_len + c_len, P - base_len)
     // since, P - base_len >= max(M,N) - base_len > 0
     const size_t ac_len = (std::min)(a_len + c_len, P - base_len);
-    T *AC = (T*) ma_realloc(ma, NULL, sizeof(T) * ac_len);
-    unsigned_karatsuba_multiply(A, a_len, C, c_len, AC, ac_len, ma);
+    T *AC = (T*) ::malloc(sizeof(T) * ac_len);
+    unsigned_karatsuba_multiply(A, a_len, C, c_len, AC, ac_len);
 
     // bd_len = min(b_len + d_len, P)
     const size_t bd_len = (std::min)(b_len + d_len, P);
     T *BD = x; // 为了避免传入的参数 a, b 被破坏(a、b、x可能有交叉区域)，BD要放在后面算
-    unsigned_karatsuba_multiply(B, b_len, D, d_len, BD, bd_len, ma);
+    unsigned_karatsuba_multiply(B, b_len, D, d_len, BD, bd_len);
 
-    unsigned_sub(ABCD, abcd_len, AC, ac_len, ABCD, abcd_len, ma);
-    unsigned_sub(ABCD, abcd_len, BD, bd_len, ABCD, abcd_len, ma);
+    unsigned_sub(ABCD, abcd_len, AC, ac_len, ABCD, abcd_len);
+    unsigned_sub(ABCD, abcd_len, BD, bd_len, ABCD, abcd_len);
 
     // 生成最终结果
     if (bd_len < P)
         ::memset(x + bd_len, 0, sizeof(T) * (P - bd_len));
-    unsigned_add(x + base_len, P - base_len, ABCD, abcd_len, x + base_len, P - base_len, ma);
-    ma_free(ma, ABCD);
+    unsigned_add(x + base_len, P - base_len, ABCD, abcd_len, x + base_len, P - base_len);
+    ::free(ABCD);
     if (P > base_len * 2)
-        unsigned_add(x + base_len * 2, P - base_len * 2, AC, ac_len, x + base_len * 2, P - base_len * 2, ma);
-    ma_free(ma, AC);
+        unsigned_add(x + base_len * 2, P - base_len * 2, AC, ac_len, x + base_len * 2, P - base_len * 2);
+    ::free(AC);
 }
 
 /**
@@ -130,7 +130,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
  * 该算式中乘法总体规模变小了
  */
 template <typename T>
-void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma = NULL)
+void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 {
     assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
 
@@ -141,28 +141,28 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
     if (!is_positive(a, M))
     {
         ++MM;
-        aa = (T*) ma_realloc(ma, NULL, sizeof(T) * MM);
-        signed_negate(a, M, aa, MM, ma);
+        aa = (T*) ::malloc(sizeof(T) * MM);
+        signed_negate(a, M, aa, MM);
         neg = !neg;
     }
     if (!is_positive(b, N))
     {
         ++NN;
-        bb = (T*) ma_realloc(ma, NULL, sizeof(T) * NN);
-        signed_negate(b, N, bb, NN, ma);
+        bb = (T*) ::malloc(sizeof(T) * NN);
+        signed_negate(b, N, bb, NN);
         neg = !neg;
     }
 
     // 调用 karatsuba 算法
-    unsigned_karatsuba_multiply(aa, MM, bb, NN, x, P, ma);
+    unsigned_karatsuba_multiply(aa, MM, bb, NN, x, P);
     if (aa != a)
-        ma_free(ma, aa);
+        ::free(aa);
     if (bb != b)
-        ma_free(ma, bb);
+        ::free(bb);
 
     // 还原符号
     if (neg)
-        signed_negate(x, P, x, P, ma);
+        signed_negate(x, P, x, P);
 }
 
 }

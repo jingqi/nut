@@ -6,7 +6,6 @@
 #include <memory>
 #include <algorithm>
 
-#include <nut/mem/sys_ma.h>
 #include <nut/rc/rc_new.h>
 #include <nut/rc/enrc.h>
 
@@ -22,27 +21,23 @@ public:
     typedef size_t size_type;
 
 private:
-    rc_ptr<memory_allocator> _alloc;
     T *_buf = NULL;
     size_type _size = 0, _cap = 0;
 
 public:
-    Array(size_type init_cap = 16, memory_allocator *ma = NULL)
-        : _alloc(ma)
+    Array(size_type init_cap = 16)
     {
         ensure_cap(init_cap);
     }
 
-    Array(size_type sz, const T& fillv, memory_allocator *ma = NULL)
-        : _alloc(ma)
+    Array(size_type sz, const T& fillv)
     {
         ensure_cap(sz);
         std::uninitialized_fill(_buf, _buf + sz, fillv);
         _size = sz;
     }
 
-    Array(const T *data, size_type sz, memory_allocator *ma = NULL)
-        : _alloc(ma)
+    Array(const T *data, size_type sz)
     {
         ensure_cap(sz);
         std::uninitialized_copy(data, data + sz, _buf);
@@ -50,8 +45,7 @@ public:
     }
 
     template <typename Iter>
-    Array(const Iter& b, const Iter& e, memory_allocator *ma = NULL)
-        : _alloc(ma)
+    Array(const Iter& b, const Iter& e)
     {
         const size_t sz = e - b;
         ensure_cap(sz);
@@ -60,7 +54,6 @@ public:
     }
 
     Array(const self_type& x)
-        : _alloc(x._alloc)
     {
         ensure_cap(x._size);
         std::uninitialized_copy(x._buf, x._buf + x._size, _buf);
@@ -68,7 +61,7 @@ public:
     }
 
     Array(self_type&& x)
-        : _alloc(x._alloc), _buf(x._buf), _size(x._size), _cap(x._cap)
+        : _buf(x._buf), _size(x._size), _cap(x._cap)
     {
         x._buf = NULL;
         x._size = 0;
@@ -79,14 +72,9 @@ public:
     {
         clear();
         if (NULL != _buf)
-            ma_free(_alloc, _buf);
+            ::free(_buf);
         _buf = NULL;
         _cap = 0;
-    }
-
-    memory_allocator* allocator() const
-    {
-        return _alloc;
     }
 
 private:
@@ -99,7 +87,7 @@ private:
         if (new_cap < new_size)
             new_cap = new_size;
 
-        _buf = (T*) ma_realloc(_alloc, _buf, sizeof(T) * new_cap);
+        _buf = (T*) ::realloc(_buf, sizeof(T) * new_cap);
         assert(NULL != _buf);
         _cap = new_cap;
     }
@@ -123,9 +111,8 @@ public:
         {
             clear();
             if (NULL != _buf)
-                ma_free(_alloc, _buf);
+                ::free(_buf);
 
-            _alloc = x._alloc;
             _buf = x._buf;
             _size = x._size;
             _cap = x._cap;
@@ -331,25 +318,25 @@ private:
         const int rc = _array->get_ref();
         assert(rc >= 1);
         if (rc > 1)
-            _array = rca_new<rcarray_type>(_array->allocator(), *_array);
+            _array = rc_new<rcarray_type>(*_array);
     }
 
 public:
-    COWArray(size_type init_cap = 16, memory_allocator *ma = NULL)
-        : _array(rca_new<rcarray_type>(ma, init_cap, ma))
+    COWArray(size_type init_cap = 16)
+        : _array(rc_new<rcarray_type>(init_cap))
     {}
 
-    COWArray(size_type sz, const T& fillv, memory_allocator *ma = NULL)
-        : _array(sz, fillv, ma)
+    COWArray(size_type sz, const T& fillv)
+        : _array(rc_new<rcarray_type>(sz, fillv))
     {}
 
-    COWArray(const T *data, size_type sz, memory_allocator *ma = NULL)
-        : _array(data, sz, ma)
+    COWArray(const T *data, size_type sz)
+        : _array(rc_new<rcarray_type>(data, sz))
     {}
 
     template <typename Iter>
-    COWArray(const Iter& b, const Iter& e, memory_allocator *ma = NULL)
-        : _array(b, e, ma)
+    COWArray(const Iter& b, const Iter& e)
+        : _array(rc_new<rcarray_type>(b, e))
     {}
 
     COWArray(const self_type& x)
@@ -364,12 +351,12 @@ public:
 
     bool operator==(const self_type& x) const
     {
-        return _array->operator==(x._array);
+        return _array->operator==(*x._array);
     }
 
     bool operator!=(const self_type& x) const
     {
-        return _array->operator!=(x._array);
+        return _array->operator!=(*x._array);
     }
 
     const T& operator[](size_type i) const
@@ -476,7 +463,7 @@ public:
         const int rc = _array->get_ref();
         assert(rc >= 1);
         if (rc > 1)
-            _array = rca_new<rcarray_type>(_array->allocator(), 0, _array->allocator());
+            _array = rc_new<rcarray_type>(0);
         else
             _array->clear();
     }

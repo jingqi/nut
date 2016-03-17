@@ -13,7 +13,6 @@ NUT_FIXTURE(TestArray)
     NUT_CASES_BEGIN()
     NUT_CASE(test_array_smoking)
     NUT_CASE(test_array_insert_erase)
-    NUT_CASE(test_array_ma)
     NUT_CASE(test_cowarray)
     NUT_CASES_END()
 
@@ -93,18 +92,6 @@ NUT_FIXTURE(TestArray)
         NUT_TA(a.at(1) == 21);
         NUT_TA(a.at(2) == 22);
         NUT_TA(a.at(3) == 12);
-    }
-
-    void test_array_ma()
-    {
-        rc_ptr<sys_ma> ma = rc_new<sys_ma>();
-        {
-            Array<int> a(0, ma);
-            NUT_TA(ma->get_ref() == 2);
-            a.push_back(45);
-            a.push_back(46);
-        }
-        NUT_TA(ma->get_ref() == 1);
     }
 
     void test_cowarray() // copy on write

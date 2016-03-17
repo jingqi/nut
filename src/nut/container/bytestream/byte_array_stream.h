@@ -27,7 +27,7 @@ class ByteArrayStream : public RandomAccessInputStream, public OutputStream
     bool _little_endian = true;
 
 public:
-    ByteArrayStream(memory_allocator *ma = NULL);
+    ByteArrayStream();
     ByteArrayStream(byte_rcarray_type *arr);
 
     size_t size() const;

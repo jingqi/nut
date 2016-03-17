@@ -42,7 +42,7 @@ void* sys_ma::realloc(void *p, size_t cb)
     if (NULL == p)
     {
         const size_t total_cb = cb + sizeof(uint32_t) * 3;
-        void* ret = ::realloc(NULL, total_cb);
+        void* ret = ::malloc(total_cb);
         assert(NULL != ret);
         *(uint32_t*) ret = (uint32_t) cb;
         ((uint32_t*) ret)[1] = _left_tag;

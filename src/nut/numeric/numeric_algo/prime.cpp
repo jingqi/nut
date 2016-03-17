@@ -15,8 +15,8 @@ namespace nut
  */
 bool psedoprime(const BigInteger& n)
 {
-    BigInteger mp(0, n.allocator());
-    mod_pow(BigInteger(2, n.allocator()), n - 1, n, &mp);
+    BigInteger mp(0);
+    mod_pow(BigInteger(2), n - 1, n, &mp);
     if (mp != 1)
         return false; // 一定是合数
     return true; // 可能是素数
@@ -25,7 +25,7 @@ bool psedoprime(const BigInteger& n)
 #if OPTIMIZE_LEVEL == 0
 static bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n)
 {
-    BigInteger d(1, a.allocator()), b(n);
+    BigInteger d(1), b(n);
     --b;
     for (size_t i = b.bit_length(); i > 0; --i)
     {
@@ -58,7 +58,7 @@ bool miller_rabin(const BigInteger& n, unsigned s)
      * 米勒-拉宾(Miller-Rabin)素数测试
      * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P584
      */
-    const BigInteger ONE(1, n.alloctor());
+    const BigInteger ONE(1);
     for (size_t i = 0; i < s; ++i)
     {
         const BigInteger a = BigInteger::rand_between(ONE, n); // rand in [1, n)
@@ -71,7 +71,7 @@ bool miller_rabin(const BigInteger& n, unsigned s)
      * Miller-Rabin 素数测试
      * 参见java语言BigInteger.passesMillerRabin()实现
      */
-    const BigInteger ONE(1, n.allocator()), TWO(2, n.allocator());
+    const BigInteger ONE(1), TWO(2);
 
     // Find a and m such that m is odd and n == 1 + 2**a * m
     BigInteger this_minus_one(n);
@@ -87,7 +87,7 @@ bool miller_rabin(const BigInteger& n, unsigned s)
         const BigInteger b = BigInteger::rand_between(ONE, n); // _rand_1_n(n);
 
         int j = 0;
-        BigInteger z(0, n.allocator());
+        BigInteger z(0);
         mod_pow(b, m, n, &z);
         while (!((j == 0 && z == ONE) || z == this_minus_one))
         {
@@ -107,12 +107,12 @@ bool miller_rabin(const BigInteger& n, unsigned s)
 BigInteger next_prime(const BigInteger& n)
 {
     if (n <= 1)
-        return BigInteger(2, n.allocator());
+        return BigInteger(2);
 
     const size_t SMALL_PRIME_THRESHOLD = 95;
     const size_t DEFAULT_PRIME_CERTAINTY = 2;
     const BigInteger SMALL_PRIME_PRODUCT(((uint64_t) 3) * 5 * 7 * 11 * 13 * 17 * 19 *
-            23 * 29 * 31 * 37 * 41, n.allocator());
+            23 * 29 * 31 * 37 * 41);
 
     BigInteger result(n);
     ++result;

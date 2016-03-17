@@ -22,7 +22,7 @@ static void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, c
     size_t min_sig = (rlen + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
     if (t.significant_words_length() < min_sig)
         min_sig = t.significant_words_length();
-    BigInteger s(t.data(), min_sig, true, t.allocator());
+    BigInteger s(t.data(), min_sig, true);
     s.limit_positive_bits_to(rlen);
 
     s.multiply_to_len(nn, rlen); // rs = (rs * nn) % r
@@ -108,7 +108,7 @@ static void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *
 {
     assert(NULL != rr || NULL != nn);
 
-    BigInteger r(1, n.allocator());
+    BigInteger r(1);
     r <<= rlen;
 
     /**
@@ -150,29 +150,28 @@ static void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *
  */
 struct MontgomeryPreBuildTable
 {
-    const rc_ptr<memory_allocator> alloc;
     BigInteger **table;
     size_t size;
 
     MontgomeryPreBuildTable(size_t wnd_sz, const BigInteger& m, size_t rlen,
-            const BigInteger& n, const BigInteger& nn, memory_allocator *ma = NULL)
-        : alloc(ma), table(NULL), size(0)
+            const BigInteger& n, const BigInteger& nn)
+        : table(NULL), size(0)
     {
         assert(0 < wnd_sz && wnd_sz < 16);
 
         size = 1 << (wnd_sz - 1);
-        table = (BigInteger**) ma_realloc(alloc, NULL, sizeof(BigInteger*) * size);
+        table = (BigInteger**) ::malloc(sizeof(BigInteger*) * size);
         assert(NULL != table);
         ::memset(table, 0, sizeof(BigInteger*) * size);
 
-        table[0] = (BigInteger*) ma_realloc(alloc, NULL, sizeof(BigInteger));
+        table[0] = (BigInteger*) ::malloc(sizeof(BigInteger));
         new (table[0]) BigInteger(m);
-        BigInteger mm(0, m.allocator());
+        BigInteger mm(0);
         _montgomery(m * m, rlen, n, nn, &mm);
         for (size_t i = 1; i < size; ++i)
         {
-            table[i] = (BigInteger*) ma_realloc(alloc, NULL, sizeof(BigInteger));
-            new (table[i]) BigInteger(0, m.allocator());
+            table[i] = (BigInteger*) ::malloc(sizeof(BigInteger));
+            new (table[i]) BigInteger(0);
             _montgomery(*table[i - 1] * mm, rlen, n, nn, table[i]);
         }
     }
@@ -186,11 +185,11 @@ struct MontgomeryPreBuildTable
                 if (NULL != table[i])
                 {
                     table[i]->~BigInteger();
-                    ma_free(alloc, table[i]);
+                    ::free(table[i]);
                     table[i] = NULL;
                 }
             }
-            ma_free(alloc, table);
+            ::free(table);
             table = NULL;
             size = 0;
         }
@@ -327,7 +326,7 @@ static void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
 
     // 准备蒙哥马利相关变量
     const size_t rlen = n.bit_length();
-    BigInteger nn(0, a.allocator());
+    BigInteger nn(0);
     _mont_extended_euclid(rlen, n, NULL, &nn);
     nn.limit_positive_bits_to(rlen);
 
@@ -337,7 +336,7 @@ static void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
     const size_t wnd_size = _best_wnd(bits_left); // 滑动窗口大小
     const uint32_t WND_MASK = ~(((uint32_t) 1) << wnd_size);
     const BigInteger m = (a << rlen) % n;
-    const MontgomeryPreBuildTable tbl(wnd_size, m, rlen, n, nn, n.allocator());
+    const MontgomeryPreBuildTable tbl(wnd_size, m, rlen, n, nn);
 
     // 计算过程
     BigInteger ret(m);
@@ -403,7 +402,7 @@ static void _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p, BigIn
     assert(NULL != rs);
     assert(a.is_positive() && b.is_positive() && p > 0);
 
-    BigInteger ret(1, a.allocator());
+    BigInteger ret(1);
     for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
     {
         ret.multiply_to_len(ret, p);
@@ -441,7 +440,7 @@ void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigI
     }
 
 #if (OPTIMIZE_LEVEL == 0)
-    BigInteger ret(1, a.allocator());
+    BigInteger ret(1);
     for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
     {
         ret = (ret * ret) % n;
@@ -455,7 +454,7 @@ void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigI
      if (bbc > 400) // 400 是一个经验数据
     {
         ModMultiplyPreBuildTable<4> table(a % n, n); /// 经测试，预算表模板参数取4比较合适
-        BigInteger ret(1, a.allocator());
+        BigInteger ret(1);
         for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
         {
             ret = (ret * ret) % n;
@@ -467,7 +466,7 @@ void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigI
     }
     else
     {
-        BigInteger ret(1, a.allocator());
+        BigInteger ret(1);
         for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
         {
             ret = (ret * ret) % n;
@@ -487,18 +486,18 @@ void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigI
 
     // 模是偶数，应用中国余数定理
     const size_t p = n.lowest_bit();
-    BigInteger n1(n), n2(1, a.allocator());
+    BigInteger n1(n), n2(1);
     n1 >>= p;
     n2 <<= p;
 
-    BigInteger a1(0, a.allocator());
+    BigInteger a1(0);
     if (n1 != 1)
         _odd_mod_pow(a % n1, b, n1, &a1);
 
-    BigInteger a2(0, a.allocator());
+    BigInteger a2(0);
     _mod_pow_2((a < n ? a : a % n), b, p, &a2);
 
-    BigInteger y1(0, a.allocator());
+    BigInteger y1(0);
     extended_euclid(n2, n1, NULL, &y1, NULL);
     if (y1 < 0)
     {
@@ -506,7 +505,7 @@ void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigI
         y1 %= n1;
         y1 += n1;
     }
-    BigInteger y2(0,a.allocator());
+    BigInteger y2(0);
     extended_euclid(n1, n2, NULL, &y2, NULL);
     if (y2 < 0)
     {

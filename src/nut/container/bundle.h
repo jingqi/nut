@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <utility>
 
-#include <nut/mem/sys_ma.h>
 #include <nut/rc/rc_new.h>
 
 namespace nut
@@ -36,8 +35,6 @@ public:
 
 class Bundle
 {
-    const rc_ptr<memory_allocator> _alloc;
-
     typedef std::map<std::string, rc_ptr<_BundleElementBase> > map_t;
     map_t _values;
 
@@ -48,8 +45,7 @@ private:
 public:
     NUT_REF_COUNTABLE
 
-    Bundle(memory_allocator *ma = NULL)
-        : _alloc(ma)
+    Bundle()
     {}
 
     bool has_key(const std::string& key) const
@@ -75,13 +71,13 @@ public:
     template <typename T>
     void set_value(const std::string& key, const T& value)
     {
-        _values[key] = rca_new<_BundleElement<T> >(_alloc, value);
+        _values[key] = rc_new<_BundleElement<T> >(value);
     }
 
     template <typename T>
     void set_value(const std::string& key, T&& value)
     {
-        _values[key] = rca_new<_BundleElement<T> >(_alloc, std::forward<T>(value));
+        _values[key] = rc_new<_BundleElement<T> >(std::forward<T>(value));
     }
 
     void clear()

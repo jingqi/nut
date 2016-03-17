@@ -200,11 +200,10 @@ NUT_FIXTURE(TestNumericAlgo)
         ::memset(x, 0, sizeof(word_type) * x_len);
         ::memset(y, 0, sizeof(word_type) * x_len);
 
-        rc_ptr<sys_ma> ma = rc_new<sys_ma>();
         clock_t s = clock();
         signed_multiply<word_type>(a, a_len, b, b_len, x, x_len);
         clock_t f1 = clock();
-        signed_karatsuba_multiply<word_type>(a, a_len, b, b_len, y, x_len, ma);
+        signed_karatsuba_multiply<word_type>(a, a_len, b, b_len, y, x_len);
         clock_t f2 = clock();
         printf(" %ld ms(orgin %ld ms)", (f2 - f1) * 1000 / CLOCKS_PER_SEC, (f1 - s) * 1000 / CLOCKS_PER_SEC);
         NUT_TA(0 == ::memcmp(x, y, sizeof(word_type) * x_len));

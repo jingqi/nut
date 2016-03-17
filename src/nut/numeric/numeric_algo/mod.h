@@ -17,14 +17,11 @@ namespace nut
 template <size_t C>
 struct ModMultiplyPreBuildTable
 {
-    const rc_ptr<memory_allocator> alloc;
-
 #if (OPTIMIZE_LEVEL == 0)
     size_t hight = 0, width = 0;
     BigInteger *table = NULL;
 
-    ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n, memory_allocator *ma = NULL)
-        : alloc(ma)
+    ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n)
     {
         assert(a.is_positive() && n.is_positive() && a < n); // 一定要保证 a<n ，以便进行模加运算
 
@@ -32,7 +29,7 @@ struct ModMultiplyPreBuildTable
         width = (1 << C) - 1;
 
         const size_t count = hight * width;
-        table = (BigInteger*) ma_realloc(alloc, NULL, sizeof(BigInteger) * count);
+        table = (BigInteger*) ::malloc(sizeof(BigInteger) * count);
         assert(NULL != table);
 
         // 填充第一行
@@ -66,7 +63,7 @@ struct ModMultiplyPreBuildTable
         {
             for (size_t i = 0, count = hight * width; i < count; ++i)
                 (table + i)->~BigInteger();
-            ma_free(alloc, table);
+            ::free(table);
             table = NULL;
         }
     }
@@ -82,7 +79,6 @@ struct ModMultiplyPreBuildTable
     BigInteger mod;
 
     ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n)
-        : alloc(a.allocator())
     {
         assert(a.is_positive() && n.is_positive() && a < n); // 一定要保证 a<n ，以便进行模加运算
 
@@ -90,11 +86,11 @@ struct ModMultiplyPreBuildTable
         width = (1 << C) - 1;
 
         const size_t count = hight * width;
-        table = (BigInteger**) ma_realloc(alloc, NULL, sizeof(BigInteger*) * count);
+        table = (BigInteger**) ::malloc(sizeof(BigInteger*) * count);
         assert(NULL != table);
         ::memset(table, 0, sizeof(BigInteger*) * count);
 
-        table[0] = (BigInteger*) ma_realloc(alloc, NULL, sizeof(BigInteger));
+        table[0] = (BigInteger*) ::malloc(sizeof(BigInteger));
         new (table[0]) BigInteger(a);
         mod = n;
     }
@@ -110,12 +106,12 @@ struct ModMultiplyPreBuildTable
                     if (NULL != table[i * width + j])
                     {
                         table[i * width + j]->~BigInteger();
-                        ma_free(alloc, table[i * width + j]);
+                        ::free(table[i * width + j]);
                         table[i * width + j] = NULL;
                     }
                 }
             }
-            ma_free(alloc, table);
+            ::free(table);
             table = NULL;
         }
     }
@@ -129,12 +125,12 @@ struct ModMultiplyPreBuildTable
         {
             if (j == 0)
             {
-                table[base_off] = (BigInteger*) ma_realloc(alloc, NULL, sizeof(BigInteger));
+                table[base_off] = (BigInteger*) ::malloc(sizeof(BigInteger));
                 new (table[base_off]) BigInteger(at(i - 1, 0) + at(i - 1, width - 1));
             }
             else
             {
-                table[base_off + j] = (BigInteger*) ma_realloc(alloc, NULL, sizeof(BigInteger));
+                table[base_off + j] = (BigInteger*) ::malloc(sizeof(BigInteger));
                 new (table[base_off + j]) BigInteger(at(i, 0) + at(i, j - 1));
             }
 
@@ -159,7 +155,7 @@ void mod_multiply(const BigInteger& b, const BigInteger& n, const ModMultiplyPre
     assert(NULL != rs);
     assert(b.is_positive() && n.is_positive() && b < n); // 一定要保证 b<n ,以便优化模加运算
 
-    BigInteger s(0, b.allocator());
+    BigInteger s(0);
     size_t limit = (b.bit_length() + C - 1) / C;
     if (table.hight < limit)
         limit = table.hight;

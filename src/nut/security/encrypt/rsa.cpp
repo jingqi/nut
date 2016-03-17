@@ -32,8 +32,8 @@ void RSA::gen_key(size_t bit_count, PublicKey *public_key, PrivateKey *private_k
     unsigned e = 65537;
 
     // d 为 e 对模 gamma_n 的乘法逆元
-    BigInteger d(0, n.allocator());
-    extended_euclid(BigInteger(e, n.allocator()), gamma_n, NULL, &d, NULL);
+    BigInteger d(0);
+    extended_euclid(BigInteger(e), gamma_n, NULL, &d, NULL);
     if (d < 0)
         d = gamma_n + (d % gamma_n); // % 运算符号与被除数一致
 
