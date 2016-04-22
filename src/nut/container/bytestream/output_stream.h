@@ -16,6 +16,23 @@ class OutputStream
     NUT_REF_COUNTABLE
 
 public:
+    OutputStream& operator<<(uint8_t v);
+    OutputStream& operator<<(int8_t v);
+
+    OutputStream& operator<<(uint16_t v);
+    OutputStream& operator<<(int16_t v);
+
+    OutputStream& operator<<(uint32_t v);
+    OutputStream& operator<<(int32_t v);
+
+    OutputStream& operator<<(uint64_t v);
+    OutputStream& operator<<(int64_t v);
+
+    OutputStream& operator<<(float v);
+
+    OutputStream& operator<<(double v);
+
+public:
     virtual bool is_little_endian() const = 0;
 
     virtual void set_little_endian(bool le) = 0;

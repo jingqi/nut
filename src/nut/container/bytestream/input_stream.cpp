@@ -4,6 +4,66 @@
 namespace nut
 {
 
+InputStream& InputStream::operator>>(uint8_t& v)
+{
+    v = read_uint8();
+    return *this;
+}
+
+InputStream& InputStream::operator>>(int8_t& v)
+{
+    v = read_int8();
+    return *this;
+}
+
+InputStream& InputStream::operator>>(uint16_t& v)
+{
+    v = read_uint16();
+    return *this;
+}
+
+InputStream& InputStream::operator>>(int16_t& v)
+{
+    v = read_int16();
+    return *this;
+}
+
+InputStream& InputStream::operator>>(uint32_t& v)
+{
+    v = read_uint32();
+    return *this;
+}
+
+InputStream& InputStream::operator>>(int32_t& v)
+{
+    v = read_int32();
+    return *this;
+}
+
+InputStream& InputStream::operator>>(uint64_t& v)
+{
+    v = read_uint64();
+    return *this;
+}
+
+InputStream& InputStream::operator>>(int64_t& v)
+{
+    v = read_int64();
+    return *this;
+}
+
+InputStream& InputStream::operator>>(float& v)
+{
+    v = read_float();
+    return *this;
+}
+
+InputStream& InputStream::operator>>(double& v)
+{
+    v = read_double();
+    return *this;
+}
+
 void InputStream::skip(size_t cb)
 {
     assert(available() >= cb);

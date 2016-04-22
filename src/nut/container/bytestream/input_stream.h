@@ -16,8 +16,24 @@ class InputStream
     NUT_REF_COUNTABLE
 
 public:
-    virtual bool is_little_endian() const = 0;
+    InputStream& operator>>(uint8_t& v);
+    InputStream& operator>>(int8_t& v);
 
+    InputStream& operator>>(uint16_t& v);
+    InputStream& operator>>(int16_t& v);
+
+    InputStream& operator>>(uint32_t& v);
+    InputStream& operator>>(int32_t& v);
+
+    InputStream& operator>>(uint64_t& v);
+    InputStream& operator>>(int64_t& v);
+
+    InputStream& operator>>(float& v);
+
+    InputStream& operator>>(double& v);
+
+public:
+    virtual bool is_little_endian() const = 0;
     virtual void set_little_endian(bool le) = 0;
 
     virtual size_t available() const = 0;
@@ -25,19 +41,15 @@ public:
     virtual void skip(size_t cb);
 
     virtual uint8_t read_uint8() = 0;
-
     int8_t read_int8();
 
     virtual uint16_t read_uint16();
-
     int16_t read_int16();
 
     virtual uint32_t read_uint32();
-
     int32_t read_int32();
 
     virtual uint64_t read_uint64();
-
     int64_t read_int64();
 
     // IEEE-754 浮点数

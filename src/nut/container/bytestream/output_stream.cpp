@@ -4,6 +4,66 @@
 namespace nut
 {
 
+OutputStream& OutputStream::operator<<(uint8_t v)
+{
+    write_uint8(v);
+    return *this;
+}
+
+OutputStream& OutputStream::operator<<(int8_t v)
+{
+    write_int8(v);
+    return *this;
+}
+
+OutputStream& OutputStream::operator<<(uint16_t v)
+{
+    write_uint16(v);
+    return *this;
+}
+
+OutputStream& OutputStream::operator<<(int16_t v)
+{
+    write_int16(v);
+    return *this;
+}
+
+OutputStream& OutputStream::operator<<(uint32_t v)
+{
+    write_uint32(v);
+    return *this;
+}
+
+OutputStream& OutputStream::operator<<(int32_t v)
+{
+    write_int32(v);
+    return *this;
+}
+
+OutputStream& OutputStream::operator<<(uint64_t v)
+{
+    write_uint64(v);
+    return *this;
+}
+
+OutputStream& OutputStream::operator<<(int64_t v)
+{
+    write_int64(v);
+    return *this;
+}
+
+OutputStream& OutputStream::operator<<(float v)
+{
+    write_float(v);
+    return *this;
+}
+
+OutputStream& OutputStream::operator<<(double v)
+{
+    write_double(v);
+    return *this;
+}
+
 void OutputStream::write_int8(int8_t v)
 {
     write_uint8((uint8_t) v);
