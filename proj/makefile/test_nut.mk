@@ -98,7 +98,7 @@ ${OBJ_ROOT}/%.o: ${SRC_ROOT}/%.cpp ${THIS}
 ${OBJ_ROOT}/%.d:${SRC_ROOT}/%.cpp ${THIS}
 	@rm -f $@
 	@# 向 *.d.$ 中写入 "xx/xx/*.d xx/xx/*.o:\" 这样一个字符串
-	@echo '$@ $@.o:\\' | sed 's/[.]d[.]o/.o/g' > $@.$$
+	@echo '$@ $@.o:\' | sed 's/[.]d[.]o/.o/g' > $@.$$
 	@# 向 *.d.$$ 中写入用 gcc -MM 生成的初始依赖关系
 	${CC} ${INC} ${DEF} ${CC_FLAGS} -MM $< > $@.$$.$$
 	@# 将 *.d.$$ 中内容去除冒号前的内容，剩余内容写入 *.d.$ 中
