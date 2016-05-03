@@ -1,7 +1,7 @@
 ﻿
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 #   include <conio.h>
 #endif
 
@@ -16,22 +16,61 @@
 using namespace std;
 using namespace nut;
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   pragma warning(disable: 4996 4190)
 #endif
 
+static void print_platform()
+{
+	printf("\nOS: %s, Bits: %s, Compiler: %s\n",
+		// OS
+#if NUT_PLATFORM_OS_WINDOWS
+		"Windows"
+#elif NUT_PLATFORM_OS_MAC
+		"Mac"
+#elif NUT_PLATFORM_OS_LINUX
+		"Linux"
+#else
+		"Unknown"
+#endif
+		,
+
+		// Bits
+#if NUT_PLATFORM_BITS_16
+		"16"
+#elif NUT_PLATFORM_BITS_32
+		"32"
+#elif NUT_PLATFORM_BITS_64
+		"64"
+#else
+		"Unknown"
+#endif
+		,
+
+		// Compiler
+#if NUT_PLATFORM_CC_VC
+		"VC"
+#elif NUT_PLATFORM_CC_MINGW
+		"MINGW"
+#elif NUT_PLATFORM_CC_GCC
+		"GCC"
+#else
+		"Unknown"
+#endif
+	);
+}
+
 int main()
 {
-#if defined(NUT_PLATFORM_OS_LINUX)
-    // 解决 wcout 无法显示中文以及 char/wchar_t 相互转换问题
+#if NUT_PLATFORM_OS_LINUX
+    // 解决 std::wcout 无法显示中文以及 char/wchar_t 相互转换问题
     setlocale(LC_ALL, "zh_CN.UTF8");
 #endif
 
-    srand((unsigned) time(NULL));
+    ::srand((unsigned) ::time(NULL));
+	print_platform();
 
-    printf("\n%s\n", NUT_PLATFORM_STR);
-
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
     ConsoleTestLogger l;
 #else
     StreamTestLogger l(&std::cout);
@@ -43,10 +82,10 @@ int main()
 
     // trunner.run_fixture("TestIntegerSet");
 
-    //trunner.run_case("TestNumericAlgo", "test_karatsuba_multiply");
+    // trunner.run_case("TestNumericAlgo", "test_karatsuba_multiply");
 
     printf("press any key to continue...");
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     getch();
 #endif
 

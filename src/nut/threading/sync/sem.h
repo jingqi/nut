@@ -4,7 +4,7 @@
 
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #else
 #   include <semaphore.h>
@@ -15,7 +15,7 @@ namespace nut
 
 class Semaphore
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     HANDLE _sem = NULL;
 #else
     sem_t _sem;

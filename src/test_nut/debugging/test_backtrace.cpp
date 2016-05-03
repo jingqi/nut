@@ -7,7 +7,7 @@
 using namespace nut;
 using namespace std;
 
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if NUT_PLATFORM_OS_LINUX
 
 NUT_FIXTURE(TestBacktrace)
 {

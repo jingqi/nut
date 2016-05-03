@@ -6,13 +6,13 @@
 
 #include <stdint.h>
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   include <basetsd.h>
 typedef SSIZE_T ssize_t;
 #endif
 
-#if defined(NUT_PLATFORM_BITS_64)
-#   if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_BITS_64
+#   if NUT_PLATFORM_OS_WINDOWS
 typedef unsigned __int128 uint128_t;
 typedef signed __int128 int128_t;
 #   else
@@ -127,7 +127,7 @@ struct StdInt<uint64_t>
     typedef uint64_t unsigned_type;
     typedef int64_t signed_type;
 
-#if defined(NUT_PLATFORM_BITS_64)
+#if NUT_PLATFORM_BITS_64
     typedef uint128_t double_type;
     typedef uint128_t double_unsigned_type;
     typedef int128_t double_signed_type;
@@ -145,14 +145,14 @@ struct StdInt<int64_t>
     typedef uint64_t unsigned_type;
     typedef int64_t signed_type;
 
-#if defined(NUT_PLATFORM_BITS_64)
+#if NUT_PLATFORM_BITS_64
     typedef int128_t double_type;
     typedef uint128_t double_unsigned_type;
     typedef int128_t double_signed_type;
 #endif
 };
 
-#if defined(NUT_PLATFORM_BITS_64)
+#if NUT_PLATFORM_BITS_64
 template <>
 struct StdInt<uint128_t>
 {

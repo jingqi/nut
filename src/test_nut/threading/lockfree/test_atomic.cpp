@@ -30,7 +30,7 @@ NUT_FIXTURE(TestAtomic)
             NUT_TA(p == p1);
         }
 
-#if defined(NUT_PLATFORM_BITS_64)
+#if NUT_PLATFORM_BITS_64
         {
             volatile int128_t d = 0;
             int128_t d1 = 0, d2 = 45;

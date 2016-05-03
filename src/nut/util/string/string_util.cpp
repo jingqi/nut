@@ -9,7 +9,7 @@
 #include <nut/platform/platform.h>
 #include <nut/platform/stdint_traits.h> // for ssize_t
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #endif
 
@@ -17,7 +17,7 @@
 #include "to_string.h"
 #include "string_util.h"
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   pragma warning(push)
 #   pragma warning(disable: 4996)
 #endif
@@ -175,9 +175,9 @@ void format(std::wstring *appended, const wchar_t *fmt, ...)
     while (NULL != buf)
     {
         va_start(ap, fmt);
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
         int n = ::_vsnwprintf(buf, size, fmt, ap);
-#elif defined(NUT_PLATFORM_OS_MAC) || defined(NUT_PLATFORM_OS_LINUX)
+#elif NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
         int n = ::vswprintf(buf, size, fmt, ap);
 #else
         int n = ::vsnwprintf(buf, size, fmt, ap);
@@ -251,9 +251,9 @@ std::wstring format(const wchar_t *fmt, ...)
     while (NULL != buf)
     {
         va_start(ap, fmt);
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
         int n = ::_vsnwprintf(buf, size, fmt, ap);
-#elif defined(NUT_PLATFORM_OS_MAC) || defined(NUT_PLATFORM_OS_LINUX)
+#elif NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
         int n = ::vswprintf(buf, size, fmt, ap);
 #else
         int n = ::vsnwprintf(buf, size, fmt, ap);
@@ -498,7 +498,7 @@ bool ascii_to_wstr(const char *str, std::wstring *appended)
 {
     assert(NULL != str && NULL != appended);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     const int n = ::MultiByteToWideChar(CP_ACP, 0 /* flags */, str, -1 /* 字符串以'\0'结束 */, NULL, 0); // 返回值包含了 '\0'
     if (n <= 0)
         return false;
@@ -523,7 +523,7 @@ bool wstr_to_ascii(const wchar_t *wstr, std::string *appended)
 {
     assert(NULL != wstr && NULL != appended);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     const int n = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
     if (n <= 0)
         return false;
@@ -548,7 +548,7 @@ bool utf8_to_wstr(const char *str, std::wstring *appended)
 {
     assert(NULL != str && NULL != appended);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     const int n = ::MultiByteToWideChar(CP_UTF8, 0 /* flags */, str, -1 /* 字符串以'\0'结束 */, NULL, 0);
     if (n <= 0)
         return false;
@@ -566,7 +566,7 @@ bool wstr_to_utf8(const wchar_t *wstr, std::string *appended)
 {
     assert(NULL != wstr && NULL != appended);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     const int n = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
     if (n <= 0)
         return false;
@@ -584,7 +584,7 @@ bool ascii_to_utf8(const char *str, std::string *appended)
 {
     assert(NULL != str && NULL != appended);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     std::wstring tmp;
     if (!ascii_to_wstr(str, &tmp))
         return false;
@@ -599,7 +599,7 @@ bool utf8_to_ascii(const char *str, std::string *appended)
 {
     assert(NULL != str && NULL != appended);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     std::wstring tmp;
     if (!utf8_to_wstr(str, &tmp))
         return false;
@@ -1118,6 +1118,6 @@ int base64_decode(const char *s, int len, Array<uint8_t> *appended)
 
 }
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   pragma warning(pop)
 #endif

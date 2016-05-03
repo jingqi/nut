@@ -2,7 +2,7 @@
 
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if NUT_PLATFORM_OS_LINUX
 #   include <unistd.h>
 #endif
 

@@ -1,9 +1,9 @@
 ﻿
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_OS_MAC)
+#if NUT_PLATFORM_OS_MAC
 #   include <unistd.h> // for getpid()
-#elif defined(NUT_PLATFORM_OS_LINUX)
+#elif NUT_PLATFORM_OS_LINUX
 #   include <unistd.h> // for getpid()
 #   include <syslog.h>
 #endif
@@ -121,7 +121,7 @@ void FileLogHandler::handle_log(const LogRecord & rec)
 
 // -----------------------------------------------------------------------------
 
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if NUT_PLATFORM_OS_LINUX
 
 SyslogLogHandler::SyslogLogHandler(bool close_syslog_on_exit)
     : _close_syslog_on_exit(close_syslog_on_exit)

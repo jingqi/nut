@@ -20,7 +20,7 @@ namespace nut
 bool atomic_cas(void * volatile *dest, void *oldval, void *newval);
 
 
-#if defined(NUT_PLATFORM_BITS_64)
+#if NUT_PLATFORM_BITS_64
 
 /**
  * 128位CAS操作
@@ -82,7 +82,7 @@ bool atomic_cas(int16_t volatile *dest, int16_t oldval, int16_t newval);
 bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newval);
 
 
-#if defined(NUT_PLATFORM_BITS_64)
+#if NUT_PLATFORM_BITS_64
 
 /**
  * 128位原子加
@@ -149,13 +149,13 @@ template <typename T>
 union TagedPtr
 {
     /** 整体对应的CAS操作数类型 */
-#if defined(NUT_PLATFORM_BITS_64)
+#if NUT_PLATFORM_BITS_64
     typedef uint64_t tag_type;
     typedef uint128_t cas_type;
-#elif defined(NUT_PLATFORM_BITS_32)
+#elif NUT_PLATFORM_BITS_32
     typedef uint32_t tag_type;
     typedef uint64_t cas_type;
-#elif defined(NUT_PLATFORM_BITS_16)
+#elif NUT_PLATFORM_BITS_16
     typedef uint16_t tag_type;
     typedef uint32_t cas_type;
 #else

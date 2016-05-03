@@ -7,7 +7,7 @@
 #include <nut/threading/sync/guard.h>
 #include <nut/threading/thread.h>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #else
 #   include <sys/time.h>

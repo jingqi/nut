@@ -1,7 +1,7 @@
 ﻿
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
+#if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
 #   include <unistd.h>
 #endif
 
@@ -30,7 +30,7 @@ NUT_FIXTURE(TestThreading)
         rc_ptr<ThreadPool> tp = rc_new<ThreadPool>(2);
         tp->start();
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
         Sleep(1000);
 #else
         sleep(1);
@@ -43,7 +43,7 @@ NUT_FIXTURE(TestThreading)
         printf("c");
         tp->add_task(custom, (void*)'C');
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
         Sleep(2000);
 #else
         sleep(2);

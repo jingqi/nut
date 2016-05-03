@@ -3,7 +3,7 @@
 
 #include "addr_map_mgr.h"
 
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if NUT_PLATFORM_OS_LINUX
 
 // 构造后的 tag
 #define CONSTRUCTED_TAG 0xA5A55A5A

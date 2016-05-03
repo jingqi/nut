@@ -4,7 +4,7 @@
 
 #include "platform.h"
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #   include <io.h>    // for mkdir()
 #else
@@ -35,9 +35,9 @@ void OS::list_dir(const char *path, std::vector<std::string> *appended, bool exc
 {
     assert(NULL != path && NULL != appended);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     char search_path[MAX_PATH];
-#   if defined(NUT_PLATFORM_CC_VC)
+#   if NUT_PLATFORM_CC_VC
     ::sprintf_s(search_path, MAX_PATH, "%s\\*", path);
 #   else
     ::sprintf(search_path, "%s\\*", path); /* 加上通配符 */
@@ -99,9 +99,9 @@ void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *appended, bool
 {
     assert(NULL != path && NULL != appended);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     wchar_t search_path[MAX_PATH];
-#   if defined(NUT_PLATFORM_CC_VC)
+#   if NUT_PLATFORM_CC_VC
     ::swprintf_s(search_path, MAX_PATH, L"%s\\*", path);
 #   else
     ::swprintf(search_path, L"%s\\*", path); /* 加上通配符 */
@@ -160,7 +160,7 @@ bool OS::copy_file(const char *src, const char *dst)
 {
     assert(NULL != src && NULL != dst);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::CopyFileA(src, dst, TRUE);
 #else
     FILE *in_file = ::fopen(src, "rb");
@@ -191,7 +191,7 @@ bool OS::copy_file(const wchar_t *src, const wchar_t *dst)
 {
     assert(NULL != src && NULL != dst);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::CopyFileW(src, dst, TRUE);
 #else
     std::string s, d;
@@ -221,7 +221,7 @@ bool OS::remove_file(const wchar_t *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::DeleteFileW(path);
 #else
     std::string p;
@@ -244,7 +244,7 @@ bool OS::mkdir(const char *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::CreateDirectoryA(path, NULL);
 #else
     return 0 == ::mkdir(path, S_IREAD | S_IWRITE | S_IEXEC);
@@ -255,7 +255,7 @@ bool OS::mkdir(const wchar_t *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::CreateDirectoryW(path, NULL);
 #else
     std::string p;
@@ -322,7 +322,7 @@ bool OS::rmdir(const char *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::RemoveDirectoryA(path);
 #else
     return 0 == ::rmdir(path);
@@ -333,7 +333,7 @@ bool OS::rmdir(const wchar_t *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::RemoveDirectoryW(path);
 #else
     std::string p;
@@ -359,14 +359,14 @@ bool OS::remove_tree(const char *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     // 删除文件
     if (0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesA(path)))
         return FALSE != ::DeleteFileA(path);
 
     // 遍历文件夹
     char full_path[MAX_PATH];
-#   if defined(NUT_PLATFORM_CC_VC)
+#   if NUT_PLATFORM_CC_VC
     ::sprintf_s(full_path, MAX_PATH, "%s\\*", path);
 #   else
     ::sprintf(full_path, "%s\\*", path); /* 加上通配符 */
@@ -385,7 +385,7 @@ bool OS::remove_tree(const char *path)
             ('.' == wfd.cFileName[0] && '.' == wfd.cFileName[1] && '\0' == wfd.cFileName[2]))
             continue;
 
-#   if defined(NUT_PLATFORM_CC_VC)
+#   if NUT_PLATFORM_CC_VC
         ::sprintf_s(full_path, MAX_PATH, "%s\\%s", path, wfd.cFileName);
 #   else
         ::sprintf(full_path, "%s\\%s", path, wfd.cFileName);
@@ -442,14 +442,14 @@ bool OS::remove_tree(const wchar_t *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     // 删除文件
     if (0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(path)))
         return FALSE != ::DeleteFileW(path);
 
     // 遍历文件夹
     wchar_t full_path[MAX_PATH];
-#   if defined(NUT_PLATFORM_CC_VC)
+#   if NUT_PLATFORM_CC_VC
     ::swprintf_s(full_path, MAX_PATH, L"%s\\*", path);
 #   else
     ::swprintf(full_path, L"%s\\*", path); /* 加上通配符 */
@@ -468,7 +468,7 @@ bool OS::remove_tree(const wchar_t *path)
             (L'.' == wfd.cFileName[0] && L'.' == wfd.cFileName[1] && L'\0' == wfd.cFileName[2]))
             continue;
 
-#   if defined(NUT_PLATFORM_CC_VC)
+#   if NUT_PLATFORM_CC_VC
         ::swprintf_s(full_path, MAX_PATH, L"%s\\%s", path, wfd.cFileName);
 #   else
         ::swprintf(full_path, L"%s\\%s", path, wfd.cFileName);
@@ -504,7 +504,7 @@ bool OS::read_link(const char *path, std::string *appended)
 {
     assert(NULL != path && NULL != appended);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
     UNUSED(appended);
     return false; // windows 上没有软链接功能
@@ -524,7 +524,7 @@ bool OS::read_link(const wchar_t *path, std::wstring *appended)
 {
     assert(NULL != path && NULL != appended);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
     UNUSED(appended);
     return false; // windows 上没有软链接功能
@@ -553,7 +553,7 @@ bool OS::symlink(const char *link, const char *path)
 {
     assert(NULL != link && NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     UNUSED(link);
     UNUSED(path);
     return false; // windows 上没有软链接功能
@@ -566,7 +566,7 @@ bool OS::symlink(const wchar_t *link, const wchar_t *path)
 {
     assert(NULL != link && NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     UNUSED(link);
     UNUSED(path);
     return false; // windows 上没有软链接功能

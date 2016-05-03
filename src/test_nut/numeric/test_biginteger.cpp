@@ -8,7 +8,7 @@
 using namespace std;
 using namespace nut;
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   pragma warning(disable: 4307)
 #endif
 
@@ -42,7 +42,7 @@ NUT_FIXTURE(TestBigInteger)
 		// *
 		NUT_TA((BigInteger(12) * BigInteger(1)).llong_value() == 12 * 1);
 		NUT_TA((BigInteger(12) * BigInteger(24)).llong_value() == 12 * 24);
-		NUT_TA(((BigInteger(0x12345LL) * BigInteger(0x12345LL)).llong_value() & 0xFFFFFFLL) == 
+		NUT_TA(((BigInteger(0x12345LL) * BigInteger(0x12345LL)).llong_value() & 0xFFFFFFLL) ==
 			((0x12345LL * 0x12345LL) & 0xFFFFFFLL));
 
 		// /

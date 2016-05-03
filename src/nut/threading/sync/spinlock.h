@@ -4,7 +4,7 @@
 
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
 #   include <windows.h>
 #else
 #   include <pthread.h>
@@ -15,9 +15,9 @@ namespace nut
 
 class SpinLock
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     CRITICAL_SECTION _critical_section;
-#elif defined(NUT_PLATFORM_OS_MAC)
+#elif NUT_PLATFORM_OS_MAC
     pthread_mutex_t _spinlock; // TODO mac 系统没有spinlock
 #else
     pthread_spinlock_t _spinlock;
@@ -28,12 +28,12 @@ public:
 
     ~SpinLock();
 
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     CRITICAL_SECTION* inner_mutex()
     {
         return &_critical_section;
     }
-#elif defined(NUT_PLATFORM_OS_MAC)
+#elif NUT_PLATFORM_OS_MAC
     pthread_mutex_t* inner_mutex()
     {
         return &_spinlock;

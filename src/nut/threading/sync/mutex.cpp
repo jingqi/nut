@@ -4,7 +4,7 @@
 #include <nut/platform/platform.h>
 #include <nut/util/time/time_val.h>
 
-#if defined(NUT_PLATFORM_OS_MAC)
+#if NUT_PLATFORM_OS_MAC
 #   include <errno.h>
 #endif
 
@@ -15,10 +15,10 @@ namespace nut
 
 Mutex::Mutex()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     _hmutex = ::CreateMutex(NULL, FALSE, NULL);
     assert(NULL != _hmutex);
-#elif defined(NUT_PLATFORM_OS_MAC)
+#elif NUT_PLATFORM_OS_MAC
     ::pthread_mutexattr_t attr;
     ::pthread_mutexattr_init(&attr);
     ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE); /* make the mutex recursive */
@@ -37,7 +37,7 @@ Mutex::Mutex()
 
 Mutex::~Mutex ()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     const BOOL rs = ::CloseHandle(_hmutex);
     assert(FALSE != rs);
     UNUSED(rs);
@@ -53,7 +53,7 @@ Mutex::~Mutex ()
  */
 void Mutex::lock()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     const DWORD rs = ::WaitForSingleObject(_hmutex, INFINITE);
     assert(WAIT_OBJECT_0 == rs);
     UNUSED(rs);
@@ -69,7 +69,7 @@ void Mutex::lock()
  */
 void Mutex::unlock()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     const BOOL rs = ::ReleaseMutex(_hmutex);
     assert(FALSE != rs);
     UNUSED(rs);
@@ -88,7 +88,7 @@ void Mutex::unlock()
  */
 bool Mutex::trylock()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     return WAIT_OBJECT_0 == ::WaitForSingleObject(_hmutex, 0);
 #else
     const int lock_result = ::pthread_mutex_trylock(&_mutex);
@@ -102,7 +102,7 @@ bool Mutex::trylock()
 #endif
 }
 
-#if defined(NUT_PLATFORM_OS_MAC)
+#if NUT_PLATFORM_OS_MAC
 /**
  * MAC 不支持 pthread_mutex_timedlock()
  * see http://lists.apple.com/archives/xcode-users/2007/Apr/msg00331.html
@@ -149,10 +149,10 @@ static int _pthread_mutex_timedlock(pthread_mutex_t *mutex, const struct timeval
  */
 bool Mutex::timedlock(unsigned s, unsigned ms)
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     const DWORD dw_milliseconds = s * 1000 + ms;
     return WAIT_OBJECT_0 == ::WaitForSingleObject(_hmutex, dw_milliseconds);
-#elif defined(NUT_PLATFORM_OS_MAC)
+#elif NUT_PLATFORM_OS_MAC
     struct timeval abstime;
     ::gettimeofday(&abstime, NULL);
     abstime.tv_sec += s;
@@ -160,7 +160,7 @@ bool Mutex::timedlock(unsigned s, unsigned ms)
     return 0 == _pthread_mutex_timedlock(&_mutex, &abstime);
 #else
     struct timespec abstime;
-#   if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
+#   if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_MINGW
     clock_getrealtime(&abstime);
 #   else
     ::clock_gettime(CLOCK_REALTIME, &abstime);

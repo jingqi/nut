@@ -4,7 +4,7 @@
 
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #else
 #   include <sys/time.h>
@@ -33,7 +33,7 @@ void TimeVal::set(time_t s, long us)
     normalize();
 }
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 void TimeVal::set(const SYSTEMTIME& wtm)
 {
     struct tm tm;
@@ -62,7 +62,7 @@ void TimeVal::set(const struct timespec& tv)
 TimeVal TimeVal::now()
 {
     TimeVal ret;
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     SYSTEMTIME wtm;
     ::GetLocalTime(&wtm);
     ret.set(wtm);
@@ -168,7 +168,7 @@ TimeVal& TimeVal::operator-=(const TimeVal& x)
 }
 
 
-#if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_MINGW
 #   define PTW32_TIMESPEC_TO_FILETIME_OFFSET (LONGLONG)((((LONGLONG) 27111902LL << 32)+(LONGLONG) 3577643008LL ))
 void clock_getrealtime(struct timespec *ts)
 {

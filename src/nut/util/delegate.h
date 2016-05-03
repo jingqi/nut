@@ -12,7 +12,7 @@ namespace nut
 
 template <typename T> class delegate;
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   define __THISCALL __thiscall
 #else
 #   define __THISCALL

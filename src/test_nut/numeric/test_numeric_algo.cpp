@@ -12,7 +12,7 @@
 
 using namespace nut;
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   pragma warning(disable: 4307)
 #endif
 

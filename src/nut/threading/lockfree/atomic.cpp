@@ -4,7 +4,7 @@
 
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #endif
 
@@ -21,9 +21,9 @@ namespace nut
 bool atomic_cas(void * volatile *dest, void *oldval, void *newval)
 {
     assert(NULL != dest);
-#if defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
+#if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
     return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
-#elif defined(NUT_PLATFORM_OS_WINDOWS)
+#elif NUT_PLATFORM_OS_WINDOWS
     return InterlockedCompareExchangePointer(dest, newval, oldval) == oldval;
 #else
 #   error platform not supported!
@@ -31,7 +31,7 @@ bool atomic_cas(void * volatile *dest, void *oldval, void *newval)
 }
 
 
-#if defined(NUT_PLATFORM_BITS_64)
+#if NUT_PLATFORM_BITS_64
 
 /**
  * 128位CAS操作
@@ -41,7 +41,7 @@ bool atomic_cas(void * volatile *dest, void *oldval, void *newval)
 bool atomic_cas(int128_t volatile *dest, int128_t oldval, int128_t newval)
 {
     assert(NULL != dest);
-#if defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
+#if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
     /** __sync_val_compare_and_swap() does not support 128 bits, so we get it by ourself */
     uint64_t old_low = (uint64_t)oldval, old_high = (uint64_t)(oldval >> 64);
     uint64_t new_low = (uint64_t)newval, new_high = (uint64_t)(newval >> 64);
@@ -52,7 +52,7 @@ bool atomic_cas(int128_t volatile *dest, int128_t oldval, int128_t newval)
         :"=m"(ret),"+m" (*dest)
         :"a" (old_low), "d" (old_high), "b" (new_low), "c" (new_high));
     return ret;
-#elif defined(NUT_PLATFORM_OS_WINDOWS)
+#elif NUT_PLATFORM_OS_WINDOWS
     return InterlockedCompareExchange128(dest, newval, oldval) == oldval;
 #else
 #   error platform not supported!
@@ -80,11 +80,11 @@ bool atomic_cas(uint128_t volatile *dest, uint128_t oldval, uint128_t newval)
 bool atomic_cas(int64_t volatile *dest, int64_t oldval, int64_t newval)
 {
     assert(NULL != dest);
-#if defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
+#if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
     return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
-#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
+#elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_VC
     return InterlockedCompareExchange64(dest, newval, oldval) == oldval;
-#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_GCC)
+#elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_GCC
 
     // 以下这个宏逻辑摘自 mingw 下 InterlockedCompareExchange64() 的头文件声明位置
 #   if defined(__MINGW_INTRIN_INLINE) && (defined(__GNUC__) && (__MINGW_GNUC_PREREQ(4, 9) || (__MINGW_GNUC_PREREQ(4, 8) && __GNUC_PATCHLEVEL__ >= 2)))
@@ -123,11 +123,11 @@ bool atomic_cas(uint64_t volatile *dest, uint64_t oldval, uint64_t newval)
 bool atomic_cas(int32_t volatile *dest, int32_t oldval, int32_t newval)
 {
     assert(NULL != dest);
-#if defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
+#if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
     return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
-#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
+#elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_VC
     return InterlockedCompareExchange(reinterpret_cast<uint32_t volatile*>(dest), static_cast<uint32_t>(newval), static_cast<uint32_t>(oldval)) == oldval;
-#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_GCC)
+#elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_GCC
     static_assert(sizeof(int32_t) == sizeof(LONG), "atomic_cas() 匹配API问题");
     return InterlockedCompareExchange(reinterpret_cast<LONG volatile*>(dest), static_cast<LONG>(newval), static_cast<LONG>(oldval)) == oldval;
 #else
@@ -154,11 +154,11 @@ bool atomic_cas(uint32_t volatile *dest, uint32_t oldval, uint32_t newval)
 bool atomic_cas(int16_t volatile *dest, int16_t oldval, int16_t newval)
 {
     assert(NULL != dest);
-#if defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
+#if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
     return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
-#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
+#elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_VC
     return InterlockedCompareExchange16(dest, newval, oldval) == oldval;
-#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_GCC)
+#elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_GCC
     int16_t prev;
     __asm__ __volatile__(
         "lock ; cmpxchgw %w1,%2"
@@ -183,7 +183,7 @@ bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newval)
 }
 
 
-#if defined(NUT_PLATFORM_BITS_64)
+#if NUT_PLATFORM_BITS_64
 
 /**
  * 128位原子加
@@ -193,7 +193,7 @@ bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newval)
 int128_t atomic_add(int128_t volatile *addend, int128_t value)
 {
     assert(NULL != addend);
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return InterlockedExchangeAdd128(addend, value);
 #else
     int128_t old;
@@ -226,9 +226,9 @@ uint128_t atomic_add(uint128_t volatile *addend, uint128_t value)
 int64_t atomic_add(int64_t volatile *addend, int64_t value)
 {
     assert(NULL != addend);
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if NUT_PLATFORM_OS_LINUX
     return __sync_fetch_and_add(addend, value);
-#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
+#elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_VC
     return InterlockedExchangeAdd64(addend, value);
 #else
     int64_t old;
@@ -259,11 +259,11 @@ uint64_t atomic_add(uint64_t volatile *addend, uint64_t value)
 int32_t atomic_add(int32_t volatile *addend, int32_t value)
 {
     assert(NULL != addend);
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if NUT_PLATFORM_OS_LINUX
     return __sync_fetch_and_add(addend, value);
-#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_VC)
+#elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_VC
     return static_cast<int32_t>(InterlockedExchangeAdd(reinterpret_cast<uint32_t volatile*>(addend), static_cast<uint32_t>(value)));
-#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_GCC)
+#elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_GCC
     static_assert(sizeof(int32_t) == sizeof(LONG), "atomic_add() 匹配API问题");
     return static_cast<int32_t>(InterlockedExchangeAdd(reinterpret_cast<LONG volatile*>(addend), static_cast<LONG>(value)));
 #else
@@ -295,7 +295,7 @@ uint32_t atomic_add(uint32_t volatile *addend, uint32_t value)
 int16_t atomic_add(int16_t volatile *addend, int16_t value)
 {
     assert(NULL != addend);
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if NUT_PLATFORM_OS_LINUX
     return __sync_fetch_and_add(addend, value);
 #else
     int16_t old;

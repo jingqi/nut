@@ -14,7 +14,7 @@
 #include <nut/util/string/string_util.h>
 #include <nut/util/string/to_string.h>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #else
 #   include <unistd.h>
@@ -334,7 +334,7 @@ void Logger::load_config(const std::string& config)
 
                     // 给文件名添加附加标志符
                     _file_path += DateTime().format_time("%Y-%m-%d %H-%M-%S ");
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
                     long pid = ::GetCurrentProcessId();
 #else
                     pid_t pid = ::getpid();
@@ -348,7 +348,7 @@ void Logger::load_config(const std::string& config)
                 handler->get_filter().swap(&_filter);
                 Logger::get_instance()->add_handler(handler);
             }
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if NUT_PLATFORM_OS_LINUX
             else if (_type == "syslog")
             {
                 rc_ptr<SyslogLogHandler> handler = rc_new<SyslogLogHandler>(_close_syslog_on_exit);

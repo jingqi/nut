@@ -10,7 +10,7 @@
 
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   include <allocators>
 #   include <xutility>
 #endif

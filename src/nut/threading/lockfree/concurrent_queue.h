@@ -8,14 +8,14 @@
 #include <string.h> // for memcpy()
 #include <stdlib.h> // for rand()
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   include <allocators>
 #endif
 
 #include <nut/debugging/source_location.h>
 #include <nut/debugging/exception.h>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #endif
 
@@ -310,9 +310,9 @@ private:
             return false;
 
         // 等待一段时间
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
         ::Sleep(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS);
-#elif defined(NUT_PLATFORM_OS_LINUX)
+#elif NUT_PLATFORM_OS_LINUX
         usleep(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS);
 #endif
 

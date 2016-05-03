@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #else
 #   include <pthread.h>
@@ -24,7 +24,7 @@ Thread::~Thread()
     if (_has_started)
     {
         join();
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
         ::CloseHandle(_handle);
 #else
         ::pthread_detach(_pthread);
@@ -38,7 +38,7 @@ void Thread::run(void *arg)
     UNUSED(arg);
 }
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 DWORD WINAPI Thread::thread_entry(LPVOID p)
 #else
 void* Thread::thread_entry(void *p)
@@ -52,7 +52,7 @@ void* Thread::thread_entry(void *p)
         pthis->run(pthis->_thread_arg);
     pthis->_has_finished = true;
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return 0;
 #else
     return NULL;
@@ -81,7 +81,7 @@ bool Thread::has_finished() const
     if (_has_finished)
         return true;
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     DWORD exit_code = 0;
     ::GetExitCodeThread(_handle, &exit_code);
     if (exit_code != STILL_ACTIVE)
@@ -100,7 +100,7 @@ bool Thread::start()
         return false;
     _has_started = true;
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     _handle = ::CreateThread(NULL, // default security attributes
                               0, // use default stack size
                               thread_entry, // thread function
@@ -130,7 +130,7 @@ void Thread::join()
     if (_has_finished)
         return;
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     ::WaitForSingleObject(_handle, INFINITE);
 #else
     ::pthread_join(_pthread, NULL);
@@ -143,7 +143,7 @@ void Thread::terminate()
     if (_has_finished)
         return;
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     ::TerminateThread(_handle, 0);
 #else
     ::pthread_cancel(_pthread);

@@ -67,7 +67,7 @@ public:
     virtual void handle_log(const LogRecord & rec) override;
 };
 
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if NUT_PLATFORM_OS_LINUX
 class SyslogLogHandler : public LogHandler
 {
     bool _close_syslog_on_exit = false;

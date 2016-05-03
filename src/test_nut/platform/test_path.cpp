@@ -109,7 +109,7 @@ NUT_FIXTURE(TestPath)
     {
         std::string tmp;
         Path::join("a", "b", &tmp);
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "a\\b");
 #else
         NUT_TA(tmp == "a/b");
@@ -128,7 +128,7 @@ NUT_FIXTURE(TestPath)
     {
         std::wstring tmp;
         Path::join(L"a", L"b", &tmp);
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"a\\b");
 #else
         NUT_TA(tmp == L"a/b");
@@ -169,7 +169,7 @@ NUT_FIXTURE(TestPath)
 
         tmp.clear();
         Path::abs_path("e:\\b\\\\a", &tmp);
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "e:\\b\\a");
 #else
         NUT_TA(tmp == "e:\\b/a");
@@ -197,7 +197,7 @@ NUT_FIXTURE(TestPath)
 
         tmp.clear();
         Path::abs_path("/a//c", &tmp);
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "/a\\c");
 #else
         NUT_TA(tmp == "/a/c");
@@ -231,7 +231,7 @@ NUT_FIXTURE(TestPath)
 
         tmp.clear();
         Path::abs_path(L"e:\\b\\\\a", &tmp);
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"e:\\b\\a");
 #else
         NUT_TA(tmp == L"e:\\b/a");
@@ -259,7 +259,7 @@ NUT_FIXTURE(TestPath)
 
         tmp.clear();
         Path::abs_path(L"/a//c", &tmp);
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"/a\\c");
 #else
         NUT_TA(tmp == L"/a/c");

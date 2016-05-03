@@ -6,7 +6,7 @@
 
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   pragma warning(push)
 #   pragma warning(disable: 4996)
 #endif
@@ -239,6 +239,6 @@ std::string DateTime::format_time(const char *format) const
 
 }
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   pragma warning(pop)
 #endif

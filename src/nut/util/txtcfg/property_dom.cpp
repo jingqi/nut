@@ -9,7 +9,7 @@
 #include "property_dom.h"
 #include "../string/string_util.h"
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   pragma warning(push)
 #   pragma warning(disable: 4996)
 #endif
@@ -336,7 +336,7 @@ void PropertyDom::set_num(const char *key, long value)
     const int BUF_LEN = 30;
     char buf[BUF_LEN];
     ::memset(buf, 0, BUF_LEN);
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     ::ltoa(value, buf, 10);
 #else
     ::sprintf(buf, "%ld", value);
@@ -370,6 +370,6 @@ void PropertyDom::set_list(const char *key, const std::vector<std::string>& valu
 
 }
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   pragma warning(pop)
 #endif

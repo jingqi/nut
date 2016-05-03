@@ -4,7 +4,7 @@
 #include "platform.h"
 #include "stdint_traits.h" // for ssize_t
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #   include<io.h> // for _access()
 #   include <sys/stat.h> // for stat()
@@ -28,7 +28,7 @@ namespace nut
  */
 char Path::seperator()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return '\\';
 #else
     return '/';
@@ -37,7 +37,7 @@ char Path::seperator()
 
 wchar_t Path::wseperator()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return L'\\';
 #else
     return L'/';
@@ -61,15 +61,15 @@ void Path::get_cwd(std::string *appended)
 {
     assert(NULL != appended);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
-#   if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_OS_WINDOWS
+#   if NUT_PLATFORM_CC_VC
 #       pragma warning(push)
 #       pragma warning(disable: 4996)
 #   endif
     char buf[MAX_PATH + 1];
     buf[0] = 0;
     getcwd(buf, MAX_PATH + 1);
-#   if defined(NUT_PLATFORM_CC_VC)
+#   if NUT_PLATFORM_CC_VC
 #       pragma warning(pop)
 #   endif
 #else
@@ -85,15 +85,15 @@ void Path::get_cwd(std::wstring *appended)
 {
     assert(NULL != appended);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
-#   if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_OS_WINDOWS
+#   if NUT_PLATFORM_CC_VC
 #       pragma warning(push)
 #       pragma warning(disable: 4996)
 #   endif
     char buf[MAX_PATH + 1];
     buf[0] = 0;
     getcwd(buf, MAX_PATH + 1);
-#   if defined(NUT_PLATFORM_CC_VC)
+#   if NUT_PLATFORM_CC_VC
 #       pragma warning(pop)
 #   endif
 #else
@@ -202,7 +202,7 @@ void Path::abs_path(const char *path, std::string *appended)
                 appended->push_back('/');
                 continue;
             }
-#if !defined(NUT_PLATFORM_OS_WINDOWS)
+#if !NUT_PLATFORM_OS_WINDOWS
             else if (part == "~")
             {
                 *appended += ::getenv("HOME");
@@ -289,7 +289,7 @@ void Path::abs_path(const wchar_t *path, std::wstring *appended)
                 appended->push_back(L'/');
                 continue;
             }
-#if !defined(NUT_PLATFORM_OS_WINDOWS)
+#if !NUT_PLATFORM_OS_WINDOWS
             else if (part == L"~")
             {
                 ascii_to_wstr(::getenv("HOME"), appended);
@@ -614,9 +614,9 @@ bool Path::lexists(const char *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return -1 != ::_access(path, 0);
-#elif defined(NUT_PLATFORM_OS_MAC) // mac 下 faccessat() 实现不支持 AT_SYMLINK_NOFOLLOW
+#elif NUT_PLATFORM_OS_MAC // mac 下 faccessat() 实现不支持 AT_SYMLINK_NOFOLLOW
     // 对符号链接做特殊处理
     struct stat info;
     if (0 != ::lstat(path, &info))
@@ -634,7 +634,7 @@ bool Path::lexists(const wchar_t *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return -1 != ::_waccess(path, 0);
 #else
     std::string p;
@@ -657,7 +657,7 @@ bool Path::exists(const char *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return -1 != ::_access(path, 0);
 #else
     return 0 == ::access(path, F_OK); // F_OK 检查存在性
@@ -668,7 +668,7 @@ bool Path::exists(const wchar_t *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return -1 != ::_waccess(path, 0);
 #else
     std::string p;
@@ -694,7 +694,7 @@ time_t Path::get_atime(const char *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
     ::_stat(path, &info);
     return info.st_atime;
@@ -710,7 +710,7 @@ time_t Path::get_atime(const wchar_t *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
     ::_wstat(path, &info);
     return info.st_atime;
@@ -738,7 +738,7 @@ time_t Path::get_mtime(const char *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
     ::_stat(path, &info);
     return info.st_mtime;
@@ -754,7 +754,7 @@ time_t Path::get_mtime(const wchar_t *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
     ::_wstat(path, &info);
     return info.st_mtime;
@@ -782,7 +782,7 @@ time_t Path::get_ctime(const char *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
     ::_stat(path, &info);
     return info.st_ctime;
@@ -798,7 +798,7 @@ time_t Path::get_ctime(const wchar_t *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
     ::_wstat(path, &info);
     return info.st_ctime;
@@ -826,7 +826,7 @@ long long Path::get_size(const char *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
     ::_stat(path, &info);
     return info.st_size;
@@ -842,7 +842,7 @@ long long Path::get_size(const wchar_t *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
     ::_wstat(path, &info);
     return info.st_size;
@@ -867,7 +867,7 @@ bool Path::is_dir(const char *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return 0 != (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesA(path));
 #else
     struct stat info;
@@ -881,7 +881,7 @@ bool Path::is_dir(const wchar_t *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return 0 != (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(path));
 #else
     std::string p;
@@ -904,7 +904,7 @@ bool Path::is_file(const char *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return 0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesA(path));
 #else
     struct stat info;
@@ -918,7 +918,7 @@ bool Path::is_file(const wchar_t *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return 0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(path));
 #else
     std::string p;
@@ -941,7 +941,7 @@ bool Path::is_link(const char *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
     return false;
 #else
@@ -956,7 +956,7 @@ bool Path::is_link(const wchar_t *path)
 {
     assert(NULL != path);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
     return false;
 #else

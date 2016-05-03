@@ -4,7 +4,7 @@
 
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 #   include <conio.h>
 #   include <windows.h>
 #else
@@ -13,7 +13,7 @@
 
 #include "console_util.h"
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   pragma warning(push)
 #   pragma warning(disable: 4996)
 #endif
@@ -23,7 +23,7 @@ namespace nut
 
 void ConsoleUtil::set_text_color(ConsoleColor forecolor, ConsoleColor backcolor)
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     const unsigned fgtable[9] =
     {
         FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE,                         /* 默认 */
@@ -81,7 +81,7 @@ void ConsoleUtil::set_text_color(ConsoleColor forecolor, ConsoleColor backcolor)
 
 void ConsoleUtil::set_back_ground_color(ConsoleColor forecolor, ConsoleColor backcolor)
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     const char fgtable[9] =
     {
         '7', '0', '4', '2', '1', '6', 'D', 'B', 'F'
@@ -103,7 +103,7 @@ void ConsoleUtil::set_back_ground_color(ConsoleColor forecolor, ConsoleColor bac
 
 void ConsoleUtil::pause()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     ::getch();
 #else
     ::fflush(stdin);
@@ -114,7 +114,7 @@ void ConsoleUtil::pause()
 
 std::string ConsoleUtil::get_password()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     std::string ret;
     int c = 0;
     do
@@ -147,6 +147,6 @@ std::string ConsoleUtil::get_password()
 
 }
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   pragma warning(pop)
 #endif

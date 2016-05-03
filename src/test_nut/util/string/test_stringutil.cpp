@@ -53,7 +53,7 @@ NUT_FIXTURE(TestStringUtil)
 
         std::wstring wtmp;
         // wcout << format(L"%d,%S,%c,%f", 1, L"am", L's', 1.23) << endl;
-#if defined(NUT_PLATFORM_OS_LINUX) || defined(NUT_PLATFORM_OS_MAC)
+#if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
         format(&wtmp, L"%d,%S,%C,%f", 1, L"am", L's', 1.23);
         NUT_TA(wtmp == L"1,am,s,1.230000");
 
@@ -98,7 +98,7 @@ NUT_FIXTURE(TestStringUtil)
 		std::string a;
 		std::wstring b;
 
-#if !defined(NUT_PLATFORM_OS_MAC) // mac 下目前对 wchar_t 常量字符串转换有问题
+#if !NUT_PLATFORM_OS_MAC // mac 下目前对 wchar_t 常量字符串转换有问题
         NUT_TA(wstr_to_ascii(L"c5&汉", &a));
         NUT_TA(ascii_to_wstr(a.c_str(), &b));
         //wcout << endl << b << endl;
@@ -112,14 +112,14 @@ NUT_FIXTURE(TestStringUtil)
         NUT_TA(b == L"c5&汉");
 #endif
 
-#if defined(NUT_PLATFORM_CC_GCC) || defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
         // gcc 或直接取源码的编码并遗留到运行时编码中，目前源码的编码为 utf8
 		a.clear();
 		b.clear();
         NUT_TA(utf8_to_wstr("c5&汉", &b));
         NUT_TA(wstr_to_utf8(b.c_str(), &a));
         NUT_TA(a == "c5&汉");
-#elif defined(NUT_PLATFORM_CC_VC)
+#elif NUT_PLATFORM_CC_VC
         // vc 会将c字符串转编码为 ascii，所以运行时全部为 ascii
 		a.clear();
 		b.clear();

@@ -11,7 +11,7 @@ namespace nut
 
 Semaphore::Semaphore(int init_value)
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     _sem = ::CreateSemaphoreA(
         NULL, // security attributes
         init_value, // initial count
@@ -27,7 +27,7 @@ Semaphore::Semaphore(int init_value)
 
 Semaphore::~Semaphore()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     const BOOL rs = ::CloseHandle(_sem);
     assert(FALSE != rs);
     UNUSED(rs);
@@ -40,7 +40,7 @@ Semaphore::~Semaphore()
 
 void Semaphore::wait()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     const DWORD rs = ::WaitForSingleObject(_sem, INFINITE);
     assert(WAIT_OBJECT_0 == rs);
     UNUSED(rs);
@@ -53,7 +53,7 @@ void Semaphore::wait()
 
 void Semaphore::post()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     const BOOL rs = ::ReleaseSemaphore(_sem, 1, NULL);
     assert(FALSE != rs);
     UNUSED(rs);
@@ -66,7 +66,7 @@ void Semaphore::post()
 
 bool Semaphore::trywait()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     return WAIT_OBJECT_0 == ::WaitForSingleObject(_sem, 0);
 #else
     return 0 == ::sem_trywait(&_sem);
@@ -75,10 +75,10 @@ bool Semaphore::trywait()
 
 bool Semaphore::timedwait(unsigned s, unsigned ms)
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     const DWORD dw_milliseconds = s * 1000 + ms;
     return WAIT_OBJECT_0 == ::WaitForSingleObject(_sem, dw_milliseconds);
-#elif defined(NUT_PLATFORM_OS_MAC)
+#elif NUT_PLATFORM_OS_MAC
     UNUSED(s);
     UNUSED(ms);
 #   warning FIXME MAC 不支持sem_timedwait()

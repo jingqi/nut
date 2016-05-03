@@ -9,7 +9,7 @@
 
 #include "to_string.h"
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   pragma warning(push)
 #   pragma warning(disable: 4996)
 #endif
@@ -117,7 +117,7 @@ void llong_to_str(long long i, std::string *appended)
     // for VS2003 or ealier, "%lld" was not supported
     ::sprintf(buf, "%I64d", i);
     // ::ltoa(i, buf, 10);
-#elif defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
+#elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_MINGW
     assert(sizeof(long long) == 8);
     ::sprintf(buf, "%I64d", i);
 #else
@@ -203,7 +203,7 @@ void ptr_to_str(const void *p, std::string *appended)
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
     ::memset(buf, 0, BUF_SIZE);
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     ::sprintf(buf,"0x%p",p);    // windows: 0x002E459F
 #else
     ::sprintf(buf,"%p",p);      // linux: 0x2e459f
@@ -295,6 +295,6 @@ double str_to_double(const std::string& s)
 
 }
 
-#if defined(NUT_PLATFORM_CC_VC)
+#if NUT_PLATFORM_CC_VC
 #   pragma warning(pop)
 #endif

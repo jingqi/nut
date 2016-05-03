@@ -10,7 +10,7 @@ namespace nut
 
 RwLock::RwLock()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::InitializeSRWLock(&_rwlock);
 #else
     const int rs = ::pthread_rwlock_init(&_rwlock, NULL);
@@ -21,7 +21,7 @@ RwLock::RwLock()
 
 RwLock::~RwLock()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     /** SRWLock 无需删除或销毁，系统自动执行清理工作 */
 #else
     const int rs = ::pthread_rwlock_destroy(&_rwlock);
@@ -32,7 +32,7 @@ RwLock::~RwLock()
 
 void RwLock::lock_read()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::AcquireSRWLockShared(&_rwlock);
 #else
     const int rs = ::pthread_rwlock_rdlock(&_rwlock);
@@ -43,7 +43,7 @@ void RwLock::lock_read()
 
 bool RwLock::try_lock_read()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     return FALSE != ::TryAcquireSRWLockShared(&_rwlock);
 #else
     return 0 == ::pthread_rwlock_tryrdlock(&_rwlock);
@@ -52,7 +52,7 @@ bool RwLock::try_lock_read()
 
 void RwLock::lock_write()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::AcquireSRWLockExclusive(&_rwlock);
 #else
     const int rs = pthread_rwlock_wrlock(&_rwlock);
@@ -63,7 +63,7 @@ void RwLock::lock_write()
 
 bool RwLock::try_lock_write()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     return FALSE != ::TryAcquireSRWLockExclusive(&_rwlock);
 #else
     return 0 == pthread_rwlock_trywrlock(&_rwlock);
@@ -72,7 +72,7 @@ bool RwLock::try_lock_write()
 
 void RwLock::unlock_read()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::ReleaseSRWLockShared(&_rwlock);
 #else
     const int rs = pthread_rwlock_unlock(&_rwlock);
@@ -83,7 +83,7 @@ void RwLock::unlock_read()
 
 void RwLock::unlock_write()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::ReleaseSRWLockExclusive(&_rwlock);
 #else
     const int rs = pthread_rwlock_unlock(&_rwlock);

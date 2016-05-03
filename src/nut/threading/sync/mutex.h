@@ -4,11 +4,11 @@
 
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 #  include <windows.h>
 #endif
 
-#if !defined(NUT_PLATFORM_OS_WINDOWS) || defined(NUT_PLATFORM_CC_MINGW)
+#if !NUT_PLATFORM_OS_WINDOWS || NUT_PLATFORM_CC_MINGW
 #  include <pthread.h>
 #endif
 
@@ -17,7 +17,7 @@ namespace nut
 
 class Mutex
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     HANDLE _hmutex = NULL;
 #else
     pthread_mutex_t _mutex;
@@ -28,7 +28,7 @@ public :
 
     ~Mutex();
 
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     HANDLE inner_mutex()
     {
         return _hmutex;

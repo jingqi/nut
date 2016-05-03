@@ -3,7 +3,7 @@
 
 #include "backtrace.h"
 
-#if defined(NUT_PLATFORM_OS_LINUX)
+#if NUT_PLATFORM_OS_LINUX
 
 
 // 是否使用 AddrMapManager 获取更详细的信息

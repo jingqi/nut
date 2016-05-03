@@ -6,7 +6,7 @@
 
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #else
 #   include <sys/time.h>
@@ -29,7 +29,7 @@ public:
 
     void set(time_t s = 0, long us = 0);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     void set(const SYSTEMTIME& wtm);
 #else
     void set(const struct timeval& tv);
@@ -73,7 +73,7 @@ public:
  * mingw 没有定义clock_gettime(), 这里参考其pthread_mutex_timedlock.c ptw32_relmillisecs.c 的实现
  * 相当于 ::clock_gettime(CLOCK_REALTIME, &ts);
  */
-#if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_MINGW
 void clock_getrealtime(struct timespec *ts);
 #endif
 

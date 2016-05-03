@@ -4,10 +4,10 @@
 
 #include <nut/platform/platform.h>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
 #   include <windows.h>
 #   include "spinlock.h"
-#elif defined(NUT_PLATFORM_OS_MAC)
+#elif NUT_PLATFORM_OS_MAC
 #   include <time.h>
 #   include <sys/time.h>
 #   include <mach/clock.h>
@@ -25,7 +25,7 @@ namespace nut
 
 Condition::Condition()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::InitializeConditionVariable(&_cond);
 #else
     const int rs = ::pthread_cond_init(&_cond, NULL);
@@ -36,7 +36,7 @@ Condition::Condition()
 
 Condition::~Condition()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     /* no need to destroy in windows */
 #else
     const int rs = ::pthread_cond_destroy(&_cond);
@@ -47,7 +47,7 @@ Condition::~Condition()
 
 bool Condition::signal()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::WakeConditionVariable(&_cond);
     return true;
 #else
@@ -57,7 +57,7 @@ bool Condition::signal()
 
 bool Condition::broadcast()
 {
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::WakeAllConditionVariable(&_cond);
     return true;
 #else
@@ -72,7 +72,7 @@ bool Condition::wait(condition_lock_type *mutex)
 {
     assert(NULL != mutex);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     return FALSE != ::SleepConditionVariableCS(&_cond, mutex->inner_mutex(), INFINITE);
 #else
     return 0 == ::pthread_cond_wait(&_cond, mutex->inner_mutex());
@@ -86,14 +86,14 @@ bool Condition::timedwait(condition_lock_type *mutex, unsigned s, unsigned ms)
 {
     assert(NULL != mutex);
 
-#if defined(NUT_PLATFORM_OS_WINDOWS) && !defined(NUT_PLATFORM_CC_MINGW)
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     const DWORD milli_seconds = s * 1000 + ms;
     return FALSE != ::SleepConditionVariableCS(&_cond, mutex->inner_mutex(), milli_seconds);
 #else
     struct timespec abstime;
-#   if defined(NUT_PLATFORM_OS_WINDOWS) && defined(NUT_PLATFORM_CC_MINGW)
+#   if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_MINGW
     clock_getrealtime(&abstime);
-#   elif defined(NUT_PLATFORM_OS_MAC)
+#   elif NUT_PLATFORM_OS_MAC
     // OS X does not have clock_gettime(), use clock_get_time()
     clock_serv_t cclock;
     mach_timespec_t mts;

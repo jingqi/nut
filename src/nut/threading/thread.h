@@ -5,7 +5,7 @@
 #include <nut/platform/platform.h>
 #include <nut/rc/rc_ptr.h>
 
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #else
 #   include <pthread.h>
@@ -25,7 +25,7 @@ public:
     virtual void run(void *arg);
 
 private:
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     HANDLE _handle = NULL;
     DWORD _tid = 0;
 #else
@@ -38,7 +38,7 @@ private:
     bool mutable _has_finished = false;
 
 private:
-#if defined(NUT_PLATFORM_OS_WINDOWS)
+#if NUT_PLATFORM_OS_WINDOWS
     static DWORD WINAPI thread_entry(LPVOID p);
 #else
     static void* thread_entry(void *p);
