@@ -1,104 +1,95 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import os,sys
+import os,sys,errno
 
-qtsdk_win32_root = 'D:/data/app/win/develop/QtSDK'
-cd_cmd = 'cd "' + os.path.abspath(os.path.join(sys.argv[0], '../build')) + '"'
-pro_path = '../pro/nut.pro'
+win32_qtsdk_root = 'D:/data/app/win/develop/QtSDK'
+pro_path = os.path.abspath(os.path.join(os.path.split(sys.argv[0])[0], 'pro/nut.pro'))
+
+platform_config = {
+	'win32' : {
+		'arch' : 'x86',
+		'cmd_sep' : '&&',
+		'qmake' : 'qmake',
+		'qmake_flags' : '-r -spec win32-g++',
+		'make' : 'mingw32-make',
+	},
+	'darwin' : {
+		'arch' : 'x86_64',
+		'cmd_sep' : ';',
+		'qmake' : 'qmake',
+		'qmake_flags' : '-r -spec macx-clang CONFIG+=x86_64',
+		'make' : 'make',
+	},
+	'linux2' : {
+		'arch' : 'x86_64',
+		'cmd_sep' : ';',
+		'qmake' : 'qmake',
+		'qmake_flags' : '-r -spec linux-g++-64',
+		'make' : 'make',
+	},
+}
 
 def _setup_path():
 	if sys.platform == 'win32':
 		path = os.environ['path']
-		path = path + ';' + os.path.abspath(os.path.join(qtsdk_win32_root, '5.3/mingw482_32/bin'))
-		path = path + ';' + os.path.abspath(os.path.join(qtsdk_win32_root, 'Tools/mingw482_32/bin'))
+		path = path + ';' + os.path.abspath(os.path.join(win32_qtsdk_root, '5.3/mingw482_32/bin'))
+		path = path + ';' + os.path.abspath(os.path.join(win32_qtsdk_root, 'Tools/mingw482_32/bin'))
 		print(path)
 		os.environ['path'] = path
 
-def build_win32(debug):
+def build(debug):
+	# make dirs
+	cfg = platform_config[sys.platform]
+	build_path = os.path.abspath(os.path.join(os.path.split(sys.argv[0])[0], 'build/%s/%s/%s' % (sys.platform, cfg['arch'], 'debug' if debug else 'release')))
+	try:
+		os.makedirs(build_path)
+	except OSError as exc:
+		if exc.errno != errno.EEXIST:
+			raise
+
 	# qmake
-	cmd = cd_cmd + ' && qmake ' + pro_path + ' -r -spec win32-g++'
+	cd_cmd = 'cd "' + build_path + '"'
+	cmd = '%s %s %s %s %s' % (cd_cmd, cfg['cmd_sep'], cfg['qmake'], pro_path, cfg['qmake_flags'])
 	if debug:
-		cmd = cmd + ' CONFIG+=debug'
+		cmd += ' CONFIG+=debug'
 	print(cmd)
 	if 0 != os.system(cmd):
 		raise Exception('qmake failed')
 
 	# make
-	cmd = cd_cmd + ' && mingw32-make'
+	cmd = "%s %s %s" % (cd_cmd, cfg['cmd_sep'], cfg['make'])
 	print(cmd)
 	if 0 != os.system(cmd):
 		raise Exception('make failed')
 
-def clean_win():
-	# make clean
-	cmd = cd_cmd + ' && mingw32-make clean'
+def clean(debug):
+	cfg = platform_config[sys.platform]
+	build_path = os.path.abspath(os.path.join(os.path.split(sys.argv[0])[0], 'build/%s/%s/%s' % (sys.platform, cfg['arch'], 'debug' if debug else 'release')))
+	cd_cmd = 'cd "' + build_path + '"'
+	cmd = '%s %s %s clean' % (cd_cmd, cfg['cmd_sep'], cfg['make'])
 	print(cmd)
 	if 0 != os.system(cmd):
-		raise Exception('make failed')
-
-def build_mac64(debug):
-	# qmake
-	cmd = cd_cmd + ' ; qmake ' + pro_path + ' -r -spec macx-clang CONFIG+=x86_64'
-	if debug:
-		cmd = cmd + ' CONFIG+=debug'
-	print(cmd)
-	if 0 != os.system(cmd):
-		raise Exception('qmake failed')
-
-	# make
-	cmd = cd_cmd + ' ; make'
-	print(cmd)
-	if 0 != os.system(cmd):
-		raise Exception('make failed')
-
-def clean_mac():
-	# make clean
-	cmd = cd_cmd + ' ; make clean'
-	print(cmd)
-	if 0 != os.system(cmd):
-		raise Exception('make failed')
-
-def build_linux64(debug):
-	# qmake
-	cmd = cd_cmd + ' ; qmake ' + pro_path + ' -r -spec linux-g++-64'
-	if debug:
-		cmd = cmd + ' CONFIG+=debug'
-	print(cmd)
-	if 0 != os.system(cmd):
-		raise Exception('qmake failed')
-
-	# make
-	cmd = cd_cmd + ' ; make'
-	print(cmd)
-	if 0 != os.system(cmd):
-		raise Exception('make failed')
-
-def clean_linux():
-	# make clean
-	cmd = cd_cmd + ' ; make clean'
-	print(cmd)
-	if 0 != os.system(cmd):
-		raise Exception('make failed')
+		raise Exception('make clean failed')
 
 def main():
 	# 处理参数
-	clean = False
-	build = True
+	need_clean = False
+	need_build = True
 	debug = True
 	for i in range(1, len(sys.argv)):
 		if sys.argv[i] == 'help':
 			print('build [debug|release] [help|build|clean|rebuild]')
 			return
 		elif sys.argv[i] == 'build':
-			clean = False
-			build = True
+			need_clean = False
+			need_build = True
 		elif sys.argv[i] == 'clean':
-			clean = True
-			build = False
+			need_clean = True
+			need_build = False
 		elif sys.argv[i] == 'rebuild':
-			clean = True
-			build = True
+			need_clean = True
+			need_build = True
 		elif sys.argv[i] == 'debug':
 			debug = True
 		elif sys.argv[i] == 'release':
@@ -108,25 +99,11 @@ def main():
 
 	_setup_path()
 
-	if clean:
-		if sys.platform == 'win32':
-			clean_win()
-		elif sys.platform == 'darwin':
-			clean_mac()
-		elif sys.platform == 'linux2':
-			clean_linux()
-		else:
-			raise Exception('Unknown platform: ' + sys.platform)
+	if need_clean:
+		clean()
 
-	if build:
-		if sys.platform == 'win32':
-			build_win32(debug)
-		elif sys.platform == 'darwin':
-			build_mac64(debug)
-		elif sys.platform == 'linux2':
-			build_linux64(debug)
-		else:
-			raise Exception('Unknown platform: ' + sys.platform)
+	if need_build:
+		build(debug)
 
 if __name__ == '__main__':
 	main()
