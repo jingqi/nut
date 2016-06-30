@@ -25,8 +25,9 @@ public:
     typedef Thread::thread_process_type thread_process_type;
 
 private:
-    struct Task
+    class Task
     {
+    public:
         thread_process_type process = NULL;
         void *arg = NULL;
 

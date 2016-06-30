@@ -23,7 +23,7 @@ namespace nut
 template <size_t G, size_t MAX_FREE_BLOCKS = 50>
 class lengthfixed_mp : public memory_allocator
 {
-    static_assert(G > 0, "模板参数问题");
+    static_assert(G > 0, "Size of memory block should bigger than 0");
     typedef lengthfixed_mp<G,MAX_FREE_BLOCKS> self_type;
 
     union FreeNode
@@ -55,26 +55,29 @@ public:
     void clear()
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
+
         FreeNode *p = _head.ptr;
         while (NULL != p)
         {
             FreeNode *next = p->next;
-            ma_free(_alloc, p);
+            ma_free(_alloc, p, sizeof(FreeNode));
             p = next;
         }
         _head.ptr = NULL;
         _free_num = 0;
     }
 
-    void* alloc()
+    virtual void* alloc(size_t sz) override
     {
+        assert(G == sz);
         NUT_DEBUGGING_ASSERT_ALIVE;
+
         while (true)
         {
             const TagedPtr<FreeNode> old_head(_head.cas);
 
             if (NULL == old_head.ptr)
-                return ma_realloc(_alloc, NULL, sizeof(FreeNode));
+                return ma_alloc(_alloc, sizeof(FreeNode));
 
             const TagedPtr<FreeNode> new_head(old_head.ptr->next, old_head.tag + 1);
             if (atomic_cas(&(_head.cas), old_head.cas, new_head.cas))
@@ -85,26 +88,23 @@ public:
         }
     }
 
-    virtual void* realloc(void *p, size_t cb) override
+    virtual void* realloc(void *p, size_t old_sz, size_t new_sz) override
     {
-        assert(NULL == p && G == cb);
+        assert(NULL != p && G == old_sz && G == new_sz);
         NUT_DEBUGGING_ASSERT_ALIVE;
-        if (NULL != p)
-            self_type::free(p);
-        if (G == cb)
-            return self_type::alloc();
-        return NULL;
+        return p;
     }
 
-    virtual void free(void *p) override
+    virtual void free(void *p, size_t sz) override
     {
-        assert(NULL != p);
+        assert(NULL != p && G == sz);
         NUT_DEBUGGING_ASSERT_ALIVE;
+
         while(true)
         {
             if (_free_num >= (int) MAX_FREE_BLOCKS)
             {
-                ma_free(_alloc, p);
+                ma_free(_alloc, p, sizeof(FreeNode));
                 return;
             }
 

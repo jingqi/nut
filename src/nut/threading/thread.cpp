@@ -32,12 +32,6 @@ Thread::~Thread()
     }
 }
 
-void Thread::run(void *arg)
-{
-    // default do nothing
-    UNUSED(arg);
-}
-
 #if NUT_PLATFORM_OS_WINDOWS
 DWORD WINAPI Thread::thread_entry(LPVOID p)
 #else
@@ -102,11 +96,11 @@ bool Thread::start()
 
 #if NUT_PLATFORM_OS_WINDOWS
     _handle = ::CreateThread(NULL, // default security attributes
-                              0, // use default stack size
-                              thread_entry, // thread function
-                              this, // argument to thread
-                              0, // use default cration flags
-                              &_tid); // thread identifier
+                             0, // use default stack size
+                             thread_entry, // thread function
+                             this, // argument to thread
+                             0, // use default cration flags
+                             &_tid); // thread identifier
     if (_handle == NULL)
     {
         _has_finished = true;

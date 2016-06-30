@@ -21,7 +21,7 @@ class sys_ma : public memory_allocator
 #ifndef NDEBUG
     uint32_t _left_tag = 0, _right_tag = 0;
     size_t _alloc_count = 0, _free_count = 0;
-    size_t _total_alloc_cb = 0, _total_free_cb = 0;
+    size_t _total_alloc_sz = 0, _total_free_sz = 0;
     NUT_DEBUGGING_DESTROY_CHECKER
 #endif
 
@@ -37,17 +37,15 @@ public:
 #endif
 
 public:
-    virtual void* realloc(void *p, size_t cb) override;
-
-    virtual void free(void *p) override;
+    virtual void* alloc(size_t sz) override;
+    virtual void* realloc(void *p, size_t old_sz, size_t new_sz) override;
+    virtual void free(void *p, size_t sz) override;
 
 #ifndef NDEBUG
     size_t get_alloc_count() const;
-
     size_t get_free_count() const;
 
     size_t get_total_alloc_size() const;
-
     size_t get_total_free_size() const;
 #endif
 };

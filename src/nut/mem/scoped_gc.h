@@ -6,9 +6,8 @@
 #include <stdint.h>
 #include <utility>
 
+#include <nut/rc/rc_ptr.h>
 #include <nut/debugging/destroy_checker.h>
-
-#include "sys_ma.h"
 
 namespace nut
 {
@@ -50,7 +49,6 @@ class scoped_gc
         destruct_func_type destruct_func = NULL;
     };
 
-    const rc_ptr<memory_allocator> _alloc;
 	Block *_current_block = NULL;
 	uint8_t *_end = NULL;
     DestructorNode *_destruct_chain = NULL;
@@ -61,7 +59,7 @@ private:
     self_type& operator=(const self_type&);
 
 public:
-    scoped_gc(memory_allocator *ma = NULL);
+    scoped_gc();
     ~scoped_gc();
 
 private:
@@ -85,16 +83,16 @@ private:
         }
     }
 
-    void* raw_alloc(size_t cb);
+    void* raw_alloc(size_t sz);
 
-    void* alloc(size_t cb, destruct_func_type func);
+    void* alloc(size_t sz, destruct_func_type func);
 
-    void* alloc(size_t cb, size_t count, destruct_func_type func);
+    void* alloc(size_t sz, size_t count, destruct_func_type func);
 
 public:
     void clear();
 
-    void* gc_alloc(size_t cb);
+    void* gc_alloc(size_t sz);
 
 #ifndef _LIBCPP_HAS_NO_VARIADICS
     template <typename T, typename ...Args>

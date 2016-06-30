@@ -7,8 +7,7 @@
 namespace nut
 {
 
-scoped_gc::scoped_gc(memory_allocator *ma)
-    : _alloc(ma)
+scoped_gc::scoped_gc()
 {}
 
 scoped_gc::~scoped_gc()
@@ -17,14 +16,14 @@ scoped_gc::~scoped_gc()
     clear();
 }
 
-void* scoped_gc::raw_alloc(size_t cb)
+void* scoped_gc::raw_alloc(size_t sz)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    if (_current_block->body + cb > _end)
+    if (_current_block->body + sz > _end)
     {
-        if (cb >= DEFAULT_BLOCK_BODY_SIZE)
+        if (sz >= DEFAULT_BLOCK_BODY_SIZE)
         {
-            Block *const new_blk = (Block*) ma_realloc(_alloc, NULL, BLOCK_HEADER_SIZE + cb);
+            Block *const new_blk = (Block*) ::malloc(BLOCK_HEADER_SIZE + sz);
             assert(NULL != new_blk);
 
             if (NULL != _current_block)
@@ -42,7 +41,7 @@ void* scoped_gc::raw_alloc(size_t cb)
         }
         else
         {
-            Block *new_blk = (Block*) ma_realloc(_alloc, NULL, DEFAULT_BLOCK_LEN);
+            Block *new_blk = (Block*) ::malloc(DEFAULT_BLOCK_LEN);
             assert(NULL != new_blk);
 
             new_blk->prev = _current_block;
@@ -50,14 +49,14 @@ void* scoped_gc::raw_alloc(size_t cb)
             _end = _current_block->body + DEFAULT_BLOCK_BODY_SIZE;
         }
     }
-    _end -= cb;
+    _end -= sz;
     return _end;
 }
 
-void* scoped_gc::alloc(size_t cb, destruct_func_type func)
+void* scoped_gc::alloc(size_t sz, destruct_func_type func)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    DestructorNode *dn = (DestructorNode*) raw_alloc(sizeof(DestructorNode) + cb);
+    DestructorNode *dn = (DestructorNode*) raw_alloc(sizeof(DestructorNode) + sz);
     assert(NULL != dn);
     dn->destruct_func = func;
     dn->prev = _destruct_chain;
@@ -65,10 +64,10 @@ void* scoped_gc::alloc(size_t cb, destruct_func_type func)
     return dn + 1;
 }
 
-void* scoped_gc::alloc(size_t cb, size_t count, destruct_func_type func)
+void* scoped_gc::alloc(size_t sz, size_t count, destruct_func_type func)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    DestructorNode *dn = (DestructorNode*) raw_alloc(sizeof(DestructorNode) + sizeof(size_t) + cb * count);
+    DestructorNode *dn = (DestructorNode*) raw_alloc(sizeof(DestructorNode) + sizeof(size_t) + sz * count);
     assert(NULL != dn);
     dn->destruct_func = func;
     *(size_t*)(dn + 1) = count;
@@ -90,16 +89,16 @@ void scoped_gc::clear()
     while (NULL != _current_block)
     {
         Block *prev = _current_block->prev;
-        ma_free(_alloc, _current_block);
+        ::free(_current_block);
         _current_block = prev;
     }
     _end = NULL;
 }
 
-void* scoped_gc::gc_alloc(size_t cb)
+void* scoped_gc::gc_alloc(size_t sz)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    void* ret = raw_alloc(cb);
+    void* ret = raw_alloc(sz);
     assert(NULL != ret);
     return ret;
 }

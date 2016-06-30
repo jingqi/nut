@@ -57,21 +57,6 @@ NUT_FIXTURE(TestScopedGC)
         D(int) {}
         D(int, int) {}
     };
-
-    // 测试可变参数宏
-    void test_var_macro()
-    {
-        rc_ptr<C> p = rc_new<C>();
-        p = rc_new<C>(1);
-        p = rc_new<C>(1, 2);
-
-        D *pp = ma_new<D>(NULL);
-        ma_delete(NULL, pp);
-        pp = ma_new<D>(NULL, 1);
-        ma_delete(NULL, pp);
-        pp = ma_new<D>(NULL, 1, 2);
-        ma_delete(NULL, pp);
-    }
 };
 
 NUT_REGISTER_FIXTURE(TestScopedGC, "mem, quiet")

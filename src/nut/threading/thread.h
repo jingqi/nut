@@ -22,7 +22,11 @@ public:
     typedef void (*thread_process_type)(void*);
 
     // should be override by subclass
-    virtual void run(void *arg);
+    virtual void run(void *arg)
+    {
+        UNUSED(arg);
+        // default do nothing
+    }
 
 private:
 #if NUT_PLATFORM_OS_WINDOWS
