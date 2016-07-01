@@ -11,6 +11,7 @@ NUT_FIXTURE(TestSegmentsMP)
 {
 	NUT_CASES_BEGIN()
     NUT_CASE(test_smoking)
+    NUT_CASE(test_profile)
 	NUT_CASES_END()
 
     void test_smoking()
@@ -34,6 +35,38 @@ NUT_FIXTURE(TestSegmentsMP)
         mp->free(p3, 8);
         mp->free(p4, 24);
 	}
+
+    void test_profile()
+    {
+        clock_t start = clock();
+        const int ROUND = 20000, MAX_SZ = 8 * 128;
+        {
+            rc_ptr<segments_mp> mp = rc_new<segments_mp>();
+            // rc_ptr<sys_ma> mp = rc_new<sys_ma>();
+            for (size_t i = 0; i < ROUND; ++i)
+            {
+                for (size_t j = 1; j < MAX_SZ; ++j)
+                {
+                    void *p = mp->alloc(j);
+                    mp->free(p, j);
+                }
+            }
+        }
+        clock_t middle = clock();
+        {
+            for (size_t i = 0; i < ROUND; ++i)
+            {
+                for (size_t j = 1; j < MAX_SZ; ++j)
+                {
+                    void *p = ::malloc(j);
+                    ::free(p);
+                }
+            }
+        }
+        clock_t finish = clock();
+        printf(" %ld ms(origin %ld ms)", (middle - start) * 1000 / CLOCKS_PER_SEC,
+               (finish - middle) * 1000 / CLOCKS_PER_SEC);
+    }
 };
 
 NUT_REGISTER_FIXTURE(TestSegmentsMP, "mem, quiet")

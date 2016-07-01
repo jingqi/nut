@@ -69,22 +69,22 @@ clean:
 rebuild: clean all
 
 run: ${TARGET}
-	${TARGET}
+	(cd ${OUT_DIR} ; ./test_nut)
 
 gdb: ${TARGET}
-	gdb ${TARGET}
+	(cd ${OUT_DIR} ; gdb ./test_nut)
 
 cgdb: ${TARGET}
-	cgdb ${TARGET}
+	(cd ${OUT_DIR} ; cgdb ./test_nut)
 
 lldb: ${TARGET}
-	lldb ${TARGET}
+	(cd ${OUT_DIR} ; lldb ./test_nut)
 
 nemiver: ${TARGET}
-	nemiver ${TARGET}
+	(cd ${OUT_DIR} ; nemiver ./test_nut)
 
 valgrind: ${TARGET}
-	valgrind -v --leak-check=full ${TARGET}
+	(cd ${OUT_DIR} ; valgrind -v --leak-check=full ./test_nut)
 
 # NOTE: in linux, ${LIB} should be the last parameter
 ${TARGET}: ${OBJS} ${LIB_DEPS} ${MAKEFILE}
