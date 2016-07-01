@@ -100,6 +100,7 @@
     <ClInclude Include="..\..\..\src\nut\mem\lengthfixed_mp.h" />
     <ClInclude Include="..\..\..\src\nut\mem\memory_allocator.h" />
     <ClInclude Include="..\..\..\src\nut\mem\scoped_gc.h" />
+    <ClInclude Include="..\..\..\src\nut\mem\segments_mp.h" />
     <ClInclude Include="..\..\..\src\nut\mem\sys_ma.h" />
     <ClInclude Include="..\..\..\src\nut\numeric\big_integer.h" />
     <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\bit_sieve.h" />
@@ -182,7 +183,9 @@
     <ClCompile Include="..\..\..\src\nut\logging\log_handler.cpp" />
     <ClCompile Include="..\..\..\src\nut\logging\log_level.cpp" />
     <ClCompile Include="..\..\..\src\nut\logging\log_record.cpp" />
+    <ClCompile Include="..\..\..\src\nut\mem\lengthfixed_mp.cpp" />
     <ClCompile Include="..\..\..\src\nut\mem\scoped_gc.cpp" />
+    <ClCompile Include="..\..\..\src\nut\mem\segments_mp.cpp" />
     <ClCompile Include="..\..\..\src\nut\mem\sys_ma.cpp" />
     <ClCompile Include="..\..\..\src\nut\numeric\big_integer.cpp" />
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\bit_sieve.cpp" />

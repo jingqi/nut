@@ -394,6 +394,9 @@
     <ClInclude Include="..\..\..\src\nut\container\integer_set.h">
       <Filter>nut\container</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\mem\segments_mp.h">
+      <Filter>nut\mem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">
@@ -572,6 +575,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\unittest\testcase_failure_exception.cpp">
       <Filter>nut\unittest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\mem\lengthfixed_mp.cpp">
+      <Filter>nut\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\mem\segments_mp.cpp">
+      <Filter>nut\mem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
