@@ -5,7 +5,7 @@
 #include <nut/debugging/destroy_checker.h>
 #include <nut/threading/lockfree/atomic.h>
 
-#include "memory_allocator.h"
+#include "lengthfixed_mp.h"
 
 namespace nut
 {
@@ -21,19 +21,11 @@ class segments_mp : public memory_allocator
         GRANULARITY = 8,
         // free list 数
         FREE_LIST_COUNT = 128,
-        // 最大 free list 长度
-        MAX_FREE_LIST_LENGTH = 50,
     };
     static_assert(GRANULARITY >= sizeof(void*), "Granularity should greater then or equal to a pointer");
-    
-    typedef struct
-    {
-        TagedPtr<void> head;
-        uint16_t volatile length = 0;
-    } FreeList;
 
     const rc_ptr<memory_allocator> _alloc;
-    FreeList _freelist[FREE_LIST_COUNT];
+    rc_ptr<lengthfixed_mp> _freelists[FREE_LIST_COUNT];
     NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
