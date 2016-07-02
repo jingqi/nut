@@ -579,8 +579,5 @@
     <ClCompile Include="..\..\..\src\nut\mem\lengthfixed_mp.cpp">
       <Filter>nut\mem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\mem\segments_mp.cpp">
-      <Filter>nut\mem</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

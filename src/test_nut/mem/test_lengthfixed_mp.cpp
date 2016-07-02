@@ -9,7 +9,8 @@ using namespace nut;
 NUT_FIXTURE(TestLengthFixedMP)
 {
 	NUT_CASES_BEGIN()
-    NUT_CASE(test_smoking)
+    NUT_CASE(test_smoking<lengthfixed_stmp>)
+    NUT_CASE(test_smoking<lengthfixed_mtmp>)
 	NUT_CASES_END()
 
 	struct A
@@ -17,9 +18,10 @@ NUT_FIXTURE(TestLengthFixedMP)
         int a;
     };
 
+	template <typename mp_type>
     void test_smoking()
 	{
-        rc_ptr<lengthfixed_mp> mp = rc_new<lengthfixed_mp>(sizeof(A));
+        rc_ptr<mp_type> mp = rc_new<mp_type>(sizeof(A));
         A *p1 = (A*) mp->alloc(sizeof(A));
 		NUT_TA(NULL != p1);
         p1->a = 0x12345678;

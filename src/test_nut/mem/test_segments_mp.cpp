@@ -1,4 +1,6 @@
 
+#include <time.h>
+
 #include <nut/unittest/unit_test.h>
 
 #include <nut/mem/segments_mp.h>
@@ -10,14 +12,17 @@ using namespace nut;
 NUT_FIXTURE(TestSegmentsMP)
 {
 	NUT_CASES_BEGIN()
-    NUT_CASE(test_smoking)
-    NUT_CASE(test_profile)
+    NUT_CASE(test_smoking<segments_stmp>)
+    NUT_CASE(test_smoking<segments_mtmp>)
+    NUT_CASE(test_profile<segments_stmp>)
+    NUT_CASE(test_profile<segments_mtmp>)
 	NUT_CASES_END()
 
+	template <typename mp_type>
     void test_smoking()
 	{
 		rc_ptr<sys_ma> sma = rc_new<sys_ma>();
-        rc_ptr<segments_mp> mp = rc_new<segments_mp>(sma);
+        rc_ptr<mp_type> mp = rc_new<mp_type>(sma);
         void *p1 = mp->alloc(1);
 		NUT_TA(NULL != p1);
 
@@ -36,12 +41,13 @@ NUT_FIXTURE(TestSegmentsMP)
         mp->free(p4, 24);
 	}
 
+	template <typename mp_type>
     void test_profile()
     {
         clock_t start = clock();
         const int ROUND = 20000, MAX_SZ = 8 * 128;
         {
-            rc_ptr<segments_mp> mp = rc_new<segments_mp>();
+            rc_ptr<mp_type> mp = rc_new<mp_type>();
             // rc_ptr<sys_ma> mp = rc_new<sys_ma>();
             for (size_t i = 0; i < ROUND; ++i)
             {
@@ -64,7 +70,7 @@ NUT_FIXTURE(TestSegmentsMP)
             }
         }
         clock_t finish = clock();
-        printf(" %ld ms(origin %ld ms)", (middle - start) * 1000 / CLOCKS_PER_SEC,
+        printf(" %ld ms(sys %ld ms)", (middle - start) * 1000 / CLOCKS_PER_SEC,
                (finish - middle) * 1000 / CLOCKS_PER_SEC);
     }
 };

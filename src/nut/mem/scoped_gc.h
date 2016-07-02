@@ -14,6 +14,7 @@ namespace nut
 
 /**
  * 由该分配器生成的对象将统一由该分配器的clear()函数进行清理
+ * 仅用于单线程环境下
  */
 class scoped_gc
 {

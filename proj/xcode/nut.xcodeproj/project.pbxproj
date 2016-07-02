@@ -137,7 +137,6 @@
 		2E1929091AD90DC200FDFFA6 /* delegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1927A61AD9013700FDFFA6 /* delegate.h */; };
 		2E19290A1AD90DCF00FDFFA6 /* libnut.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E1928681AD90CBF00FDFFA6 /* libnut.a */; };
 		2E1BABB41D268A97005E25C9 /* lengthfixed_mp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1BABB21D268A97005E25C9 /* lengthfixed_mp.cpp */; };
-		2E1BABB51D268A97005E25C9 /* segments_mp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1BABB31D268A97005E25C9 /* segments_mp.cpp */; };
 		2E1BABB71D268ABB005E25C9 /* test_segments_mp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1BABB61D268ABB005E25C9 /* test_segments_mp.cpp */; };
 		2E1BABB91D268B3C005E25C9 /* test_tostring.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1BABB81D268B3C005E25C9 /* test_tostring.cpp */; };
 		2E50AAB11B6F2DD500AA2E58 /* test_rtree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAB01B6F2DD500AA2E58 /* test_rtree.cpp */; };
@@ -370,7 +369,6 @@
 		2E19285D1AD90A4200FDFFA6 /* sem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sem.h; path = ../../src/nut/threading/sync/sem.h; sourceTree = "<group>"; };
 		2E1928681AD90CBF00FDFFA6 /* libnut.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libnut.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E1BABB21D268A97005E25C9 /* lengthfixed_mp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lengthfixed_mp.cpp; path = ../../src/nut/mem/lengthfixed_mp.cpp; sourceTree = "<group>"; };
-		2E1BABB31D268A97005E25C9 /* segments_mp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = segments_mp.cpp; path = ../../src/nut/mem/segments_mp.cpp; sourceTree = "<group>"; };
 		2E1BABB61D268ABB005E25C9 /* test_segments_mp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_segments_mp.cpp; path = ../../src/test_nut/mem/test_segments_mp.cpp; sourceTree = "<group>"; };
 		2E1BABB81D268B3C005E25C9 /* test_tostring.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_tostring.cpp; path = ../../src/test_nut/util/string/test_tostring.cpp; sourceTree = "<group>"; };
 		2E50AAB01B6F2DD500AA2E58 /* test_rtree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_rtree.cpp; path = ../../src/test_nut/container/tree/rtree/test_rtree.cpp; sourceTree = "<group>"; };
@@ -593,7 +591,6 @@
 			isa = PBXGroup;
 			children = (
 				2E1BABB21D268A97005E25C9 /* lengthfixed_mp.cpp */,
-				2E1BABB31D268A97005E25C9 /* segments_mp.cpp */,
 				2E1926F01AD8FFDB00FDFFA6 /* lengthfixed_mp.h */,
 				2E1926F11AD8FFDB00FDFFA6 /* memory_allocator.h */,
 				2E1926F21AD8FFDB00FDFFA6 /* scoped_gc.cpp */,
@@ -1342,7 +1339,6 @@
 				2EEDA8D71C2C3D990022BE4E /* source_location.cpp in Sources */,
 				2E1928741AD90D1A00FDFFA6 /* icommand.cpp in Sources */,
 				2E1928751AD90D1A00FDFFA6 /* iconsole.cpp in Sources */,
-				2E1BABB51D268A97005E25C9 /* segments_mp.cpp in Sources */,
 				2E91FDDE1AECC5AC00223604 /* log_filter.cpp in Sources */,
 				2EEDA8DA1C2C3DEE0022BE4E /* test_logger.cpp in Sources */,
 				2E1928761AD90D1A00FDFFA6 /* pconsole.cpp in Sources */,

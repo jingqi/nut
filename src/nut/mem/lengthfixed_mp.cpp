@@ -1,22 +1,93 @@
 ﻿
 #include <algorithm>
 
+#include <nut/platform/platform.h>
+
 #include "lengthfixed_mp.h"
 
 namespace nut
 {
 
-lengthfixed_mp::lengthfixed_mp(size_t granularity, memory_allocator *ma)
+lengthfixed_stmp::lengthfixed_stmp(size_t granularity, memory_allocator *ma)
     : _alloc(ma), _granularity(std::max(granularity, sizeof(void*)))
 {}
 
-lengthfixed_mp::~lengthfixed_mp()
+lengthfixed_stmp::~lengthfixed_stmp()
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     clear();
 }
 
-void lengthfixed_mp::clear()
+void lengthfixed_stmp::clear()
+{
+    NUT_DEBUGGING_ASSERT_ALIVE;
+
+    void *p = _head;
+    while (NULL != p)
+    {
+        void *next = *reinterpret_cast<void**>(p);
+        ma_free(_alloc, p, _granularity);
+        p = next;
+    }
+    _head = NULL;
+    _free_num = 0;
+}
+
+void* lengthfixed_stmp::alloc(size_t sz)
+{
+    NUT_DEBUGGING_ASSERT_ALIVE;
+    assert(_granularity == std::max(sz, sizeof(void*)));
+
+	if (NULL == _head)
+		return ma_alloc(_alloc, _granularity);
+
+	void *p = _head;
+	_head = *reinterpret_cast<void**>(_head);
+	--_free_num;
+	return p;
+}
+
+void* lengthfixed_stmp::realloc(void *p, size_t old_sz, size_t new_sz)
+{
+    NUT_DEBUGGING_ASSERT_ALIVE;
+    assert(NULL != p && _granularity == old_sz && _granularity == new_sz);
+	UNUSED(old_sz);
+	UNUSED(new_sz);
+    return p;
+}
+
+void lengthfixed_stmp::free(void *p, size_t sz)
+{
+    NUT_DEBUGGING_ASSERT_ALIVE;
+    assert(NULL != p && _granularity == std::max(sz, sizeof(void*)));
+
+	if (_free_num >= (int) MAX_FREE_NUM)
+	{
+		ma_free(_alloc, p, _granularity);
+		return;
+	}
+
+	*reinterpret_cast<void**>(p) = _head;
+	_head = p;
+	++_free_num;
+}
+
+}
+
+namespace nut
+{
+
+lengthfixed_mtmp::lengthfixed_mtmp(size_t granularity, memory_allocator *ma)
+    : _alloc(ma), _granularity(std::max(granularity, sizeof(void*)))
+{}
+
+lengthfixed_mtmp::~lengthfixed_mtmp()
+{
+    NUT_DEBUGGING_ASSERT_ALIVE;
+    clear();
+}
+
+void lengthfixed_mtmp::clear()
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
 
@@ -31,7 +102,7 @@ void lengthfixed_mp::clear()
     _free_num = 0;
 }
 
-void* lengthfixed_mp::alloc(size_t sz)
+void* lengthfixed_mtmp::alloc(size_t sz)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     assert(_granularity == std::max(sz, sizeof(void*)));
@@ -53,14 +124,16 @@ void* lengthfixed_mp::alloc(size_t sz)
     }
 }
 
-void* lengthfixed_mp::realloc(void *p, size_t old_sz, size_t new_sz)
+void* lengthfixed_mtmp::realloc(void *p, size_t old_sz, size_t new_sz)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     assert(NULL != p && _granularity == old_sz && _granularity == new_sz);
+	UNUSED(old_sz);
+	UNUSED(new_sz);
     return p;
 }
 
-void lengthfixed_mp::free(void *p, size_t sz)
+void lengthfixed_mtmp::free(void *p, size_t sz)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     assert(NULL != p && _granularity == std::max(sz, sizeof(void*)));
