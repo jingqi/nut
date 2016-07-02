@@ -47,7 +47,7 @@ void* lengthfixed_mp::alloc(size_t sz)
         const TagedPtr<void> new_head(next, old_head.tag + 1);
         if (atomic_cas(&(_head.cas), old_head.cas, new_head.cas))
         {
-            atomic_add(&_free_num, -1);
+			_free_num = std::max(0, _free_num - 1); // NOTE _free_num 在多线程下并不可靠
             return old_head.ptr;
         }
     }
@@ -67,7 +67,7 @@ void lengthfixed_mp::free(void *p, size_t sz)
 
     while(true)
     {
-        if (_free_num >= (int) MAX_FREE_NUM)
+        if (_free_num >= (int) MAX_FREE_NUM) // NOTE _free_num 只起参考作用
         {
             ma_free(_alloc, p, _granularity);
             return;
@@ -78,7 +78,11 @@ void lengthfixed_mp::free(void *p, size_t sz)
         const TagedPtr<void> new_head(p, old_head.tag + 1);
         if (atomic_cas(&(_head.cas), old_head.cas, new_head.cas))
         {
-            atomic_add(&_free_num, 1);
+			// NOTE _free_num 在多线程下并不可靠
+			if (NULL == old_head.ptr)
+				_free_num = 1;
+			else
+				++_free_num;
             return;
         }
     }

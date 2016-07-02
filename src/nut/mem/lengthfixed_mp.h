@@ -31,9 +31,8 @@ class lengthfixed_mp : public memory_allocator
     NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
-    typedef lengthfixed_mp self_type;
-    explicit lengthfixed_mp(const self_type&);
-    self_type& operator=(const self_type&);
+    explicit lengthfixed_mp(const lengthfixed_mp&);
+    lengthfixed_mp& operator=(const lengthfixed_mp&);
 
 public:
     lengthfixed_mp(size_t granularity, memory_allocator *ma = NULL);
