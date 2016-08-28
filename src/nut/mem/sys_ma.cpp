@@ -61,7 +61,7 @@ void* sys_ma::realloc(void *p, size_t old_sz, size_t new_sz)
 
 #ifndef NDEBUG
     const size_t rec_old_sz = ((uint32_t*) p)[-2];
-	assert(rec_old_sz == old_sz);
+    assert(rec_old_sz == old_sz);
     assert(_left_tag == ((uint32_t*) p)[-1]);
     assert(_right_tag == *(uint32_t*)(((uint8_t*) p) + old_sz));
     ((uint32_t*) p)[-1] = 0;
@@ -92,7 +92,7 @@ void sys_ma::free(void *p, size_t sz)
 
 #ifndef NDEBUG
     const size_t rec_sz = ((uint32_t*) p)[-2];
-	assert(rec_sz == sz);
+    assert(rec_sz == sz);
     assert(_left_tag == ((uint32_t*) p)[-1]);
     assert(_right_tag == *(uint32_t*)(((uint8_t*) p) + sz));
     ((uint32_t*) p)[-1] = 0;

@@ -37,15 +37,15 @@ class IniDom
         std::string _comment;
         std::vector<rc_ptr<Line> > _lines;
 
-		/**
-		 * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
-		 * @param space_chars 空白字符，其中出现的字符将被视为空白
-		 */
+        /**
+         * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
+         * @param space_chars 空白字符，其中出现的字符将被视为空白
+         */
         static rc_ptr<Sector> parse_sector_name(const std::string& line, const char *line_comment_chars = ";#", const char *space_chars = " \t");
 
-		/**
-		 * @param le 换行符
-		 */
+        /**
+         * @param le 换行符
+         */
         void serielize(std::string *appended, const char *le = "\n");
     };
 
@@ -56,18 +56,18 @@ class IniDom
 public:
     IniDom();
 
-	/**
-	 * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
-	 * @param space_chars 空白字符，其中出现的字符将被视为空白
-	 */
+    /**
+     * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
+     * @param space_chars 空白字符，其中出现的字符将被视为空白
+     */
     void parse(const std::string& s, const char *line_comment_chars = ";#", const char *space_chars = " \t");
 
-	/**
-	 * @param le 换行符
-	 */
+    /**
+     * @param le 换行符
+     */
     void serielize(std::string *appended, const char *le = "\n") const;
 
-	bool is_dirty() const;
+    bool is_dirty() const;
 
     void set_dirty(bool dirty = true);
 

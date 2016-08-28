@@ -116,12 +116,12 @@ BitStream::~BitStream()
 
 void BitStream::_normalize_tail()
 {
-	const size_t tail_bitlen = _bit_size % (sizeof(word_type) * 8);
-	if (0 != tail_bitlen)
-	{
-		const size_t last_index = _word_size() - 1;
-		_buf[last_index] &= ~((~(word_type)0) << tail_bitlen);
-	}
+    const size_t tail_bitlen = _bit_size % (sizeof(word_type) * 8);
+    if (0 != tail_bitlen)
+    {
+        const size_t last_index = _word_size() - 1;
+        _buf[last_index] &= ~((~(word_type)0) << tail_bitlen);
+    }
 }
 
 BitStream& BitStream::operator=(const BitStream& x)
@@ -183,155 +183,155 @@ BitStream BitStream::operator+(const BitStream& x) const
 
 BitStream BitStream::operator&(const BitStream& x) const
 {
-	BitStream rs;
-	const size_t new_bit_size = std::max(_bit_size, x._bit_size);
-	rs._ensure_cap(new_bit_size);
+    BitStream rs;
+    const size_t new_bit_size = std::max(_bit_size, x._bit_size);
+    rs._ensure_cap(new_bit_size);
 
-	const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
-		new_word_size = std::max(word_size1, word_size2),
-		tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
-		tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
-	for (size_t i = 0; i < new_word_size; ++i)
-	{
-		word_type w1 = (i < word_size1 ? _buf[i] : 0);
-		if (0 != tail_bitlen1 && i + 1 == word_size1)
-			w1 &= ~((~(word_type)0) << tail_bitlen1);
-		
-		word_type w2 = (i < word_size2 ? x._buf[i] : 0);
-		if (0 != tail_bitlen2 && i + 1 == word_size2)
-			w2 &= ~((~(word_type)0) << tail_bitlen2);
-		
-		rs._buf[i] = w1 & w2;
-	}
-	rs._bit_size = new_bit_size;
-	return rs;
+    const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
+        new_word_size = std::max(word_size1, word_size2),
+        tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
+        tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
+    for (size_t i = 0; i < new_word_size; ++i)
+    {
+        word_type w1 = (i < word_size1 ? _buf[i] : 0);
+        if (0 != tail_bitlen1 && i + 1 == word_size1)
+            w1 &= ~((~(word_type)0) << tail_bitlen1);
+
+        word_type w2 = (i < word_size2 ? x._buf[i] : 0);
+        if (0 != tail_bitlen2 && i + 1 == word_size2)
+            w2 &= ~((~(word_type)0) << tail_bitlen2);
+
+        rs._buf[i] = w1 & w2;
+    }
+    rs._bit_size = new_bit_size;
+    return rs;
 }
 
 BitStream& BitStream::operator&=(const BitStream& x)
 {
-	const size_t new_bit_size = std::max(_bit_size, x._bit_size);
-	_ensure_cap(new_bit_size);
+    const size_t new_bit_size = std::max(_bit_size, x._bit_size);
+    _ensure_cap(new_bit_size);
 
-	const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
-		new_word_size = std::max(word_size1, word_size2),
-		tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
-		tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
-	for (size_t i = 0; i < new_word_size; ++i)
-	{
-		word_type w1 = (i < word_size1 ? _buf[i] : 0);
-		if (0 != tail_bitlen1 && i + 1 == word_size1)
-			w1 &= ~((~(word_type)0) << tail_bitlen1);
-		
-		word_type w2 = (i < word_size2 ? x._buf[i] : 0);
-		if (0 != tail_bitlen2 && i + 1 == word_size2)
-			w2 &= ~((~(word_type)0) << tail_bitlen2);
-		
-		_buf[i] = w1 & w2;
-	}
-	_bit_size = new_bit_size;
-	return *this;
+    const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
+        new_word_size = std::max(word_size1, word_size2),
+        tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
+        tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
+    for (size_t i = 0; i < new_word_size; ++i)
+    {
+        word_type w1 = (i < word_size1 ? _buf[i] : 0);
+        if (0 != tail_bitlen1 && i + 1 == word_size1)
+            w1 &= ~((~(word_type)0) << tail_bitlen1);
+
+        word_type w2 = (i < word_size2 ? x._buf[i] : 0);
+        if (0 != tail_bitlen2 && i + 1 == word_size2)
+            w2 &= ~((~(word_type)0) << tail_bitlen2);
+
+        _buf[i] = w1 & w2;
+    }
+    _bit_size = new_bit_size;
+    return *this;
 }
 
 BitStream BitStream::operator|(const BitStream& x) const
 {
-	BitStream rs;
-	const size_t new_bit_size = std::max(_bit_size, x._bit_size);
-	rs._ensure_cap(new_bit_size);
+    BitStream rs;
+    const size_t new_bit_size = std::max(_bit_size, x._bit_size);
+    rs._ensure_cap(new_bit_size);
 
-	const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
-		new_word_size = std::max(word_size1, word_size2),
-		tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
-		tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
-	for (size_t i = 0; i < new_word_size; ++i)
-	{
-		word_type w1 = (i < word_size1 ? _buf[i] : 0);
-		if (0 != tail_bitlen1 && i + 1 == word_size1)
-			w1 &= ~((~(word_type)0) << tail_bitlen1);
-		
-		word_type w2 = (i < word_size2 ? x._buf[i] : 0);
-		if (0 != tail_bitlen2 && i + 1 == word_size2)
-			w2 &= ~((~(word_type)0) << tail_bitlen2);
-		
-		rs._buf[i] = w1 | w2;
-	}
-	rs._bit_size = new_bit_size;
-	return rs;
+    const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
+        new_word_size = std::max(word_size1, word_size2),
+        tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
+        tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
+    for (size_t i = 0; i < new_word_size; ++i)
+    {
+        word_type w1 = (i < word_size1 ? _buf[i] : 0);
+        if (0 != tail_bitlen1 && i + 1 == word_size1)
+            w1 &= ~((~(word_type)0) << tail_bitlen1);
+
+        word_type w2 = (i < word_size2 ? x._buf[i] : 0);
+        if (0 != tail_bitlen2 && i + 1 == word_size2)
+            w2 &= ~((~(word_type)0) << tail_bitlen2);
+
+        rs._buf[i] = w1 | w2;
+    }
+    rs._bit_size = new_bit_size;
+    return rs;
 }
 
 BitStream& BitStream::operator|=(const BitStream& x)
 {
-	const size_t new_bit_size = std::max(_bit_size, x._bit_size);
-	_ensure_cap(new_bit_size);
+    const size_t new_bit_size = std::max(_bit_size, x._bit_size);
+    _ensure_cap(new_bit_size);
 
-	const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
-		new_word_size = std::max(word_size1, word_size2),
-		tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
-		tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
-	for (size_t i = 0; i < new_word_size; ++i)
-	{
-		word_type w1 = (i < word_size1 ? _buf[i] : 0);
-		if (0 != tail_bitlen1 && i + 1 == word_size1)
-			w1 &= ~((~(word_type)0) << tail_bitlen1);
-		
-		word_type w2 = (i < word_size2 ? x._buf[i] : 0);
-		if (0 != tail_bitlen2 && i + 1 == word_size2)
-			w2 &= ~((~(word_type)0) << tail_bitlen2);
-		
-		_buf[i] = w1 | w2;
-	}
-	_bit_size = new_bit_size;
-	return *this;
+    const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
+        new_word_size = std::max(word_size1, word_size2),
+        tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
+        tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
+    for (size_t i = 0; i < new_word_size; ++i)
+    {
+        word_type w1 = (i < word_size1 ? _buf[i] : 0);
+        if (0 != tail_bitlen1 && i + 1 == word_size1)
+            w1 &= ~((~(word_type)0) << tail_bitlen1);
+
+        word_type w2 = (i < word_size2 ? x._buf[i] : 0);
+        if (0 != tail_bitlen2 && i + 1 == word_size2)
+            w2 &= ~((~(word_type)0) << tail_bitlen2);
+
+        _buf[i] = w1 | w2;
+    }
+    _bit_size = new_bit_size;
+    return *this;
 }
 
 BitStream BitStream::operator^(const BitStream& x) const
 {
-	BitStream rs;
-	const size_t new_bit_size = std::max(_bit_size, x._bit_size);
-	rs._ensure_cap(new_bit_size);
+    BitStream rs;
+    const size_t new_bit_size = std::max(_bit_size, x._bit_size);
+    rs._ensure_cap(new_bit_size);
 
-	const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
-		new_word_size = std::max(word_size1, word_size2),
-		tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
-		tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
-	for (size_t i = 0; i < new_word_size; ++i)
-	{
-		word_type w1 = (i < word_size1 ? _buf[i] : 0);
-		if (0 != tail_bitlen1 && i + 1 == word_size1)
-			w1 &= ~((~(word_type)0) << tail_bitlen1);
-		
-		word_type w2 = (i < word_size2 ? x._buf[i] : 0);
-		if (0 != tail_bitlen2 && i + 1 == word_size2)
-			w2 &= ~((~(word_type)0) << tail_bitlen2);
-		
-		rs._buf[i] = w1 ^ w2;
-	}
-	rs._bit_size = new_bit_size;
-	return rs;
+    const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
+        new_word_size = std::max(word_size1, word_size2),
+        tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
+        tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
+    for (size_t i = 0; i < new_word_size; ++i)
+    {
+        word_type w1 = (i < word_size1 ? _buf[i] : 0);
+        if (0 != tail_bitlen1 && i + 1 == word_size1)
+            w1 &= ~((~(word_type)0) << tail_bitlen1);
+
+        word_type w2 = (i < word_size2 ? x._buf[i] : 0);
+        if (0 != tail_bitlen2 && i + 1 == word_size2)
+            w2 &= ~((~(word_type)0) << tail_bitlen2);
+
+        rs._buf[i] = w1 ^ w2;
+    }
+    rs._bit_size = new_bit_size;
+    return rs;
 }
 
 BitStream& BitStream::operator^=(const BitStream& x)
 {
-	const size_t new_bit_size = std::max(_bit_size, x._bit_size);
-	_ensure_cap(new_bit_size);
+    const size_t new_bit_size = std::max(_bit_size, x._bit_size);
+    _ensure_cap(new_bit_size);
 
-	const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
-		new_word_size = std::max(word_size1, word_size2),
-		tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
-		tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
-	for (size_t i = 0; i < new_word_size; ++i)
-	{
-		word_type w1 = (i < word_size1 ? _buf[i] : 0);
-		if (0 != tail_bitlen1 && i + 1 == word_size1)
-			w1 &= ~((~(word_type)0) << tail_bitlen1);
-		
-		word_type w2 = (i < word_size2 ? x._buf[i] : 0);
-		if (0 != tail_bitlen2 && i + 1 == word_size2)
-			w2 &= ~((~(word_type)0) << tail_bitlen2);
-		
-		_buf[i] = w1 ^ w2;
-	}
-	_bit_size = new_bit_size;
-	return *this;
+    const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
+        new_word_size = std::max(word_size1, word_size2),
+        tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
+        tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
+    for (size_t i = 0; i < new_word_size; ++i)
+    {
+        word_type w1 = (i < word_size1 ? _buf[i] : 0);
+        if (0 != tail_bitlen1 && i + 1 == word_size1)
+            w1 &= ~((~(word_type)0) << tail_bitlen1);
+
+        word_type w2 = (i < word_size2 ? x._buf[i] : 0);
+        if (0 != tail_bitlen2 && i + 1 == word_size2)
+            w2 &= ~((~(word_type)0) << tail_bitlen2);
+
+        _buf[i] = w1 ^ w2;
+    }
+    _bit_size = new_bit_size;
+    return *this;
 }
 
 void BitStream::resize(size_t new_bit_size, int fill_bit)
@@ -374,7 +374,7 @@ void BitStream::fill_bits(size_t i, size_t nbit, int bit)
     if (wb < we)
     {
         const uint8_t fill = (0 == bit ? 0 : 0xff);
-		::memset(_buf + wb, fill, (we - wb) * sizeof(word_type));
+        ::memset(_buf + wb, fill, (we - wb) * sizeof(word_type));
         for (ssize_t k = wb * sizeof(word_type) * 8 - 1; k >= (ssize_t) i; --k)
             set_bit(k, bit);
         for (size_t k = we * sizeof(word_type) * 8; k < end; ++k)

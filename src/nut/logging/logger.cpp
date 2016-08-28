@@ -27,59 +27,59 @@ namespace nut
 
 Logger::~Logger()
 {
-	NUT_DEBUGGING_ASSERT_ALIVE;
+    NUT_DEBUGGING_ASSERT_ALIVE;
 
-	clear_handlers();
+    clear_handlers();
 }
 
 Logger* Logger::get_instance()
 {
-	// 跨动态链接库的单例实现
-	return (Logger*) nut_get_logger();
+    // 跨动态链接库的单例实现
+    return (Logger*) nut_get_logger();
 }
 
 LogFilter& Logger::get_filter()
 {
-	NUT_DEBUGGING_ASSERT_ALIVE;
+    NUT_DEBUGGING_ASSERT_ALIVE;
 
     return _filter;
 }
 
 void Logger::add_handler(LogHandler *handler)
 {
-	assert(NULL != handler);
-	NUT_DEBUGGING_ASSERT_ALIVE;
+    assert(NULL != handler);
+    NUT_DEBUGGING_ASSERT_ALIVE;
 
-	handler->add_ref();
+    handler->add_ref();
     _handlers.push_back(handler);
 }
 
 void Logger::remove_handler(LogHandler *handler)
 {
-	assert(NULL != handler);
-	NUT_DEBUGGING_ASSERT_ALIVE;
+    assert(NULL != handler);
+    NUT_DEBUGGING_ASSERT_ALIVE;
 
     for (size_t i = 0, sz = _handlers.size(); i < sz; ++i)
-	{
+    {
         if (_handlers.at(i) == handler)
-		{
+        {
             _handlers.erase(_handlers.begin() + i);
-			handler->release_ref();
-			return;
-		}
-	}
+            handler->release_ref();
+            return;
+        }
+    }
 }
 
 void Logger::clear_handlers()
 {
-	NUT_DEBUGGING_ASSERT_ALIVE;
+    NUT_DEBUGGING_ASSERT_ALIVE;
 
     for (size_t i = 0, sz = _handlers.size(); i < sz; ++i)
-	{
+    {
         LogHandler *handler = _handlers.at(i);
-		assert(NULL != handler);
-		handler->release_ref();
-	}
+        assert(NULL != handler);
+        handler->release_ref();
+    }
     _handlers.clear();
 }
 
@@ -113,10 +113,10 @@ void Logger::log(LogLevel level, const char *tag, const char *file, int line, co
 
         buf = (char*) ::realloc(buf, size);
     }
-	if (NULL == buf)
-		return;
+    if (NULL == buf)
+        return;
 
-	LogRecord record(level, tag, file, line, func, buf); /* buf will be freed by LogRecord */
+    LogRecord record(level, tag, file, line, func, buf); /* buf will be freed by LogRecord */
     for (size_t i = 0, sz = _handlers.size(); i < sz; ++i)
     {
         LogHandler *handler = _handlers.at(i);

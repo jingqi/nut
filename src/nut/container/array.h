@@ -234,7 +234,7 @@ public:
         ensure_cap(_size + len);
         if (index < _size)
             ::memmove(_buf + index + len, _buf + index, sizeof(T) * (_size - index));
-		std::uninitialized_copy(b, e, _buf + index);
+        std::uninitialized_copy(b, e, _buf + index);
         _size += len;
     }
 
@@ -268,8 +268,8 @@ public:
         ensure_cap(new_size);
         for (size_type i = new_size; i < _size; ++i)
             (_buf + i)->~T();
-		if (_size < new_size)
-			std::uninitialized_fill_n(_buf + _size, new_size - _size, fill);
+        if (_size < new_size)
+            std::uninitialized_fill_n(_buf + _size, new_size - _size, fill);
         _size = new_size;
     }
 

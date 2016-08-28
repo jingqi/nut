@@ -36,16 +36,16 @@ class PropertyDom
 
         void clear();
 
-		/**
-		 * @param line 单行字符串，不包含回车换行
-		 * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
-		 * @param space_chars 空白字符，其中出现的字符将被视为空白
-		 */
+        /**
+         * @param line 单行字符串，不包含回车换行
+         * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
+         * @param space_chars 空白字符，其中出现的字符将被视为空白
+         */
         void parse(const std::string& line, const char *line_comment_chars = ";#", const char *space_chars = " \t");
 
-		/**
-		 * 序列化，不包含尾部的 '\n'
-		 */
+        /**
+         * 序列化，不包含尾部的 '\n'
+         */
         void serielize(std::string *appended);
     };
     friend class IniDom;
@@ -56,18 +56,18 @@ class PropertyDom
 public:
     PropertyDom();
 
-	/**
-	 * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
-	 * @param space_chars 空白字符，其中出现的字符将被视为空白
-	 */
+    /**
+     * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
+     * @param space_chars 空白字符，其中出现的字符将被视为空白
+     */
     void parse(const std::string& s, const char *line_comment_chars = ";#", const char *space_chars = " \t");
 
-	/**
-	 * @param le 换行符
-	 */
+    /**
+     * @param le 换行符
+     */
     void serielize(std::string *appended, const char *le = "\n") const;
 
-	bool is_dirty() const;
+    bool is_dirty() const;
 
     void set_dirty(bool dirty = true);
 

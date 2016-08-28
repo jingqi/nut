@@ -16,25 +16,25 @@ SourceLocation::SourceLocation(const char *file, int line, const char *func)
 
 bool SourceLocation::operator==(const SourceLocation& x) const
 {
-	if (_line != x._line)
-		return false;
+    if (_line != x._line)
+        return false;
 
-	if (_path != x._path)
-	{
-		assert(NULL != _path && NULL != x._path);
-		if (0 != ::strcmp(_path, x._path))
-			return false;
-	}
+    if (_path != x._path)
+    {
+        assert(NULL != _path && NULL != x._path);
+        if (0 != ::strcmp(_path, x._path))
+            return false;
+    }
 
-	if (_func != x._func)
-	{
-		if (NULL == _func || NULL == x._func)
-			return false;
-		if (0 != ::strcmp(_func, x._func))
-			return false;
-	}
+    if (_func != x._func)
+    {
+        if (NULL == _func || NULL == x._func)
+            return false;
+        if (0 != ::strcmp(_func, x._func))
+            return false;
+    }
 
-	return true;
+    return true;
 }
 
 bool SourceLocation::operator!=(const SourceLocation& x) const
@@ -49,15 +49,15 @@ const char* SourceLocation::get_file_path() const
 
 const char* SourceLocation::get_file_name() const
 {
-	assert(NULL != _path);
+    assert(NULL != _path);
 
-	const char *ret = _path;
-	for (const char *tmp = _path; 0 != *tmp; ++tmp)
-	{
-		if ('\\' == *tmp || '/' == *tmp)
-			ret = tmp + 1;
-	}
-	return ret;
+    const char *ret = _path;
+    for (const char *tmp = _path; 0 != *tmp; ++tmp)
+    {
+        if ('\\' == *tmp || '/' == *tmp)
+            ret = tmp + 1;
+    }
+    return ret;
 }
 
 int SourceLocation::get_line_number() const
@@ -75,12 +75,12 @@ std::string SourceLocation::to_string() const
     std::string s = get_file_name();
     s.push_back(':');
     s += nut::int_to_str(_line);
-	if (_func != NULL)
-	{
+    if (_func != NULL)
+    {
         s.push_back(' ');
         s += _func;
         s += "()";
-	}
+    }
     return s;
 }
 

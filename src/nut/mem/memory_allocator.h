@@ -20,7 +20,7 @@ public:
     NUT_REF_COUNTABLE
 
     memory_allocator() {}
-	virtual ~memory_allocator() {}
+    virtual ~memory_allocator() {}
 
     /**
      * @param sz Should greater than 0

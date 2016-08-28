@@ -23,16 +23,16 @@ class scoped_gc
     typedef scoped_gc self_type;
 
     enum
-	{
-		/** 默认内存块大小，可根据需要调整 */
-		DEFAULT_BLOCK_LEN = 2048,
-		/** 内存块头部大小 */
-		BLOCK_HEADER_SIZE = sizeof(void*),
-		/** 内存块数据部分大小 */
-		DEFAULT_BLOCK_BODY_SIZE = DEFAULT_BLOCK_LEN - BLOCK_HEADER_SIZE,
-	};
+    {
+        /** 默认内存块大小，可根据需要调整 */
+        DEFAULT_BLOCK_LEN = 2048,
+        /** 内存块头部大小 */
+        BLOCK_HEADER_SIZE = sizeof(void*),
+        /** 内存块数据部分大小 */
+        DEFAULT_BLOCK_BODY_SIZE = DEFAULT_BLOCK_LEN - BLOCK_HEADER_SIZE,
+    };
 
-	/** 内存块 */
+    /** 内存块 */
     struct Block
     {
         Block *prev = NULL;
@@ -40,18 +40,18 @@ class scoped_gc
     };
     static_assert(sizeof(Block) == DEFAULT_BLOCK_LEN, "数据结构对齐问题");
 
-	/** 析构函数 */
+    /** 析构函数 */
     typedef void (*destruct_func_type)(void*);
 
-	/** 析构函数链表 */
+    /** 析构函数链表 */
     struct DestructorNode
     {
         DestructorNode *prev = NULL;
         destruct_func_type destruct_func = NULL;
     };
 
-	Block *_current_block = NULL;
-	uint8_t *_end = NULL;
+    Block *_current_block = NULL;
+    uint8_t *_end = NULL;
     DestructorNode *_destruct_chain = NULL;
     NUT_DEBUGGING_DESTROY_CHECKER
 
@@ -114,7 +114,7 @@ public:
         assert(NULL != p);
         new (p) T;
         return p;
-	}
+    }
 
     template <typename T, typename Arg1>
     T* gc_new(Arg1&& arg1)
@@ -124,7 +124,7 @@ public:
         assert(NULL != p);
         new (p) T(std::forward<Arg1>(arg1));
         return p;
-	}
+    }
 
     template <typename T, typename Arg1, typename Arg2>
     T* gc_new(Arg1&& arg1, Arg2&& arg2)
@@ -134,7 +134,7 @@ public:
         assert(NULL != p);
         new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2));
         return p;
-	}
+    }
 
     template <typename T, typename Arg1, typename Arg2, typename Arg3>
     T* gc_new(Arg1&& arg1, Arg2&& arg2, Arg3&& arg3)
@@ -232,16 +232,16 @@ public:
     }
 #endif
 
-	template <typename T>
-	T* gc_new_array(size_t count)
-	{
+    template <typename T>
+    T* gc_new_array(size_t count)
+    {
         NUT_DEBUGGING_ASSERT_ALIVE;
-		T *ret = (T*) alloc(sizeof(T), count, destruct_array<T>);
-		assert(NULL != ret);
-		for (size_t i = 0; i < count; ++i)
-			new (ret + i) T;
-		return ret;
-	}
+        T *ret = (T*) alloc(sizeof(T), count, destruct_array<T>);
+        assert(NULL != ret);
+        for (size_t i = 0; i < count; ++i)
+            new (ret + i) T;
+        return ret;
+    }
 };
 
 }

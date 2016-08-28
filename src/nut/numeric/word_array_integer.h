@@ -880,12 +880,12 @@ inline size_t _bit_count(uint64_t a)
 
 inline size_t _bit_count(uint32_t a)
 {
-	a -= (a >> 1) & 0x55555555;
-	a = (a & 0x33333333) + ((a >> 2) & 0x33333333);
-	a = (a + (a >> 4)) & 0x0f0f0f0f;
-	a += a >> 8;
-	a += a >> 16;
-	return a & 0x3f;
+    a -= (a >> 1) & 0x55555555;
+    a = (a & 0x33333333) + ((a >> 2) & 0x33333333);
+    a = (a + (a >> 4)) & 0x0f0f0f0f;
+    a += a >> 8;
+    a += a >> 16;
+    return a & 0x3f;
 }
 
 inline size_t _bit_count(uint16_t a)
@@ -900,8 +900,8 @@ inline size_t _bit_count(uint16_t a)
 inline size_t _bit_count(uint8_t a)
 {
     a -= (a >> 1) & 0x55;
-	a = (a & 0x33) + ((a >> 2) & 0x33);
-	a = (a + (a >> 4)) & 0x0f;
+    a = (a & 0x33) + ((a >> 2) & 0x33);
+    a = (a + (a >> 4)) & 0x0f;
     return a & 0x0f;
 }
 

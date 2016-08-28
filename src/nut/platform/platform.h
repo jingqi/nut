@@ -64,22 +64,22 @@
  *  NUT_PLATFORM_CC_GCC
  */
 #if defined(_MSC_VER)
-#	define NUT_PLATFORM_CC_VC    1
-#	define NUT_PLATFORM_CC_MINGW 0
-#	define NUT_PLATFORM_CC_GCC   0
+#   define NUT_PLATFORM_CC_VC    1
+#   define NUT_PLATFORM_CC_MINGW 0
+#   define NUT_PLATFORM_CC_GCC   0
 #elif defined(__MINGW32__) || defined(__MINGW64__)
-#	define NUT_PLATFORM_CC_VC    0
-#	define NUT_PLATFORM_CC_MINGW 1
-#	define NUT_PLATFORM_CC_GCC   1
+#   define NUT_PLATFORM_CC_VC    0
+#   define NUT_PLATFORM_CC_MINGW 1
+#   define NUT_PLATFORM_CC_GCC   1
 #elif defined(__GNUG__) || defined(__GNUC__)
-#	define NUT_PLATFORM_CC_VC    0
-#	define NUT_PLATFORM_CC_MINGW 0
-#	define NUT_PLATFORM_CC_GCC   1
+#   define NUT_PLATFORM_CC_VC    0
+#   define NUT_PLATFORM_CC_MINGW 0
+#   define NUT_PLATFORM_CC_GCC   1
 #else
 #   error unknown compiler
 #endif
 
-/** 模块API定义工具 */
+/** 模块 API 定义工具 */
 #if NUT_PLATFORM_OS_WINDOWS
 #   define DLL_API extern "C" __declspec(dllexport)
 #else

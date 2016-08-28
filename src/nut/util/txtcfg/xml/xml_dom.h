@@ -20,7 +20,7 @@ class XmlDom
     std::string _version;
     std::string _encoding;
     rc_ptr<XmlElement> _root;
-	bool _dirty = false;
+    bool _dirty = false;
 
 public:
     XmlDom();

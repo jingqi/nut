@@ -8,7 +8,7 @@
 #include <stdlib.h> // for rand()
 
 #if NUT_PLATFORM_OS_WINDOWS
-#	include <windows.h>
+#   include <windows.h>
 #endif
 #if NUT_PLATFORM_CC_VC
 #   include <allocators>

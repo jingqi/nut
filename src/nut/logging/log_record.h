@@ -16,30 +16,30 @@ class LogRecord
 private:
     DateTime _time;
     LogLevel _level = LL_DEBUG;
-    const char *_tag = NULL; 			// can be NULL, which indicated a root tag
+    const char *_tag = NULL;            // can be NULL, which indicated a root tag
     const char *_file_path = NULL;
     int _line = -1;
-    const char *_func = NULL;			// can be NULL, when the source location is out of any function
+    const char *_func = NULL;           // can be NULL, when the source location is out of any function
     char *_message = NULL;
 
 private:
-	LogRecord(const LogRecord&);
+    LogRecord(const LogRecord&);
 
 public:
     LogRecord(LogLevel level, const char *tag, const char *file_path, int line,
-		const char *func, char *message);
+        const char *func, char *message);
 
-	~LogRecord();
+    ~LogRecord();
 
     const DateTime& get_time() const;
 
     LogLevel get_level() const;
 
-	const char* get_tag() const;
+    const char* get_tag() const;
 
     const char* get_file_path() const;
 
-	const char* get_file_name() const;
+    const char* get_file_name() const;
 
     int get_line() const;
 

@@ -17,10 +17,10 @@ public:
         : _ptr(p)
     {}
 
-	void* get() const
-	{
-		return _ptr;
-	}
+    void* get() const
+    {
+        return _ptr;
+    }
 
     void set(void *p)
     {
@@ -32,16 +32,16 @@ public:
         _ptr = NULL;
     }
 
-	void release()
-	{
-		if (NULL != _ptr)
-			::free(_ptr);
-		_ptr = NULL;
-	}
+    void release()
+    {
+        if (NULL != _ptr)
+            ::free(_ptr);
+        _ptr = NULL;
+    }
 
     ~FreeGuard()
     {
-		release();
+        release();
     }
 };
 
@@ -55,10 +55,10 @@ public:
         : _ptr(p)
     {}
 
-	T* get() const
-	{
-		return _ptr;
-	}
+    T* get() const
+    {
+        return _ptr;
+    }
 
     void set(T *p)
     {
@@ -70,16 +70,16 @@ public:
         _ptr = NULL;
     }
 
-	void release()
-	{
-		if (NULL != _ptr)
-			delete _ptr;
-		_ptr = NULL;
-	}
+    void release()
+    {
+        if (NULL != _ptr)
+            delete _ptr;
+        _ptr = NULL;
+    }
 
     ~DeleteGuard()
     {
-		release();
+        release();
     }
 };
 

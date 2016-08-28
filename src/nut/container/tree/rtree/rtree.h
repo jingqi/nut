@@ -72,9 +72,9 @@ private:
         {}
 
         bool is_tree_node() const
-		{
-			return tree_node;
-		}
+        {
+            return tree_node;
+        }
     };
 
     /**
