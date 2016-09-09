@@ -4,10 +4,12 @@
 
 #include <string>
 
+#include <nut/nut_config.h>
+
 namespace nut
 {
 
-class ConsoleUtil
+class NUT_API ConsoleUtil
 {
 public :
     enum ConsoleColor

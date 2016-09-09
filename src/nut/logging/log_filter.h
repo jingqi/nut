@@ -2,6 +2,8 @@
 #ifndef ___HEADFILE_96AEB548_0516_4970_A913_AF51AAC6E02C_
 #define ___HEADFILE_96AEB548_0516_4970_A913_AF51AAC6E02C_
 
+#include <nut/nut_config.h>
+
 #include "log_level.h"
 
 namespace nut
@@ -10,12 +12,12 @@ namespace nut
 /**
  * 日志筛选器
  */
-class LogFilter
+class NUT_API LogFilter
 {
     typedef unsigned hash_t;
 
     // 字典树节点
-    class Node
+    class NUT_API Node
     {
     public:
         ll_mask_t forbid_mask = 0;

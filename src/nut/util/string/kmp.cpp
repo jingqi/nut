@@ -16,7 +16,7 @@ namespace nut
  * @param start 搜索开始的位置
  * @param target 要搜索的字符串子串
  */
-int kmp_search(const std::string& src, size_t start, const std::string& target)
+NUT_API int kmp_search(const std::string& src, size_t start, const std::string& target)
 {
     int *next = (int*) ::malloc(sizeof(int) * target.length());
     assert(NULL != next);
@@ -26,7 +26,7 @@ int kmp_search(const std::string& src, size_t start, const std::string& target)
     return ret;
 }
 
-int kmp_search(const std::wstring& src, size_t start, const std::wstring& target)
+NUT_API int kmp_search(const std::wstring& src, size_t start, const std::wstring& target)
 {
     int *next = (int*) ::malloc(sizeof(int) * target.length());
     assert(NULL != next);

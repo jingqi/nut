@@ -4,10 +4,12 @@
 
 #include <stdint.h>
 
+#include <nut/nut_config.h>
+
 namespace nut
 {
 
-class AES
+class NUT_API AES
 {
     /** encryption round keys */
     uint32_t _erk[64];

@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <string>
 
+#include <nut/nut_config.h>
 #include <nut/platform/stdint_traits.h>
 
 #include "word_array_integer.h"
@@ -16,7 +17,7 @@ namespace nut
 /**
  * 无限大整数
  */
-class BigInteger
+class NUT_API BigInteger
 {
     typedef BigInteger self_type;
 

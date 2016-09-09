@@ -6,12 +6,14 @@
 #include <string>
 #include <vector>
 
+#include <nut/nut_config.h>
+
 #include "element_handler.h"
 
 namespace nut
 {
 
-class XmlParser
+class NUT_API XmlParser
 {
     struct ElementInfo
     {

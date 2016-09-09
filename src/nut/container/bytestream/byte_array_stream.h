@@ -4,6 +4,8 @@
 
 #include <assert.h>
 
+#include <nut/nut_config.h>
+
 #include "../array.h"
 #include "random_access_input_stream.h"
 #include "output_stream.h"
@@ -14,7 +16,7 @@ namespace nut
 /**
  * 处理字节数组流中的大端(Big-Endian)和小端(Little-Endian)字节序读写
  */
-class ByteArrayStream : public RandomAccessInputStream, public OutputStream
+class NUT_API ByteArrayStream : public RandomAccessInputStream, public OutputStream
 {
     NUT_REF_COUNTABLE_OVERRIDE
 

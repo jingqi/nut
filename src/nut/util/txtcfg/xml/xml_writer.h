@@ -6,12 +6,14 @@
 #include <string>
 #include <vector>
 
+#include <nut/nut_config.h>
+
 #include "string_writer.h"
 
 namespace nut
 {
 
-class XmlWriter
+class NUT_API XmlWriter
 {
     struct ElemState
     {

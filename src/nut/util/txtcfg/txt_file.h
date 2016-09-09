@@ -4,10 +4,12 @@
 
 #include <string>
 
+#include <nut/nut_config.h>
+
 namespace nut
 {
 
-class TxtFile
+class NUT_API TxtFile
 {
     // invalid methods
     TxtFile();

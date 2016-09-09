@@ -104,7 +104,7 @@ bool miller_rabin(const BigInteger& n, unsigned s)
  * 取下一个可能的素数
  * 参见java语言BigInteger.nextProbablePrime()实现
  */
-BigInteger next_prime(const BigInteger& n)
+NUT_API BigInteger next_prime(const BigInteger& n)
 {
     if (n <= 1)
         return BigInteger(2);

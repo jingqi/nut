@@ -19,6 +19,9 @@ MAKEFILE = nut.mk
 # INC
 INC += -I${SRC_ROOT}/..
 
+# DEF
+DEF += -DBUILDING_NUT_DLL
+
 # CC_FLAGS
 HOST = $(shell uname -s)
 CC_FLAGS += -Wall -fPIC -std=c++11
@@ -33,6 +36,14 @@ else
 	CC_FLAGS += -rdynamic
 endif
 
+# LIB
+LIB_DEPS +=
+ifeq (${HOST}, Darwin)
+	LIB += -lc++
+else
+	LIB += -lpthread -ldl
+endif
+
 # OBJS, DEPS
 DIRS = $(shell find ${SRC_ROOT} -maxdepth 10 -type d)
 CPPS = $(foreach dir,${DIRS},$(wildcard $(dir)/*.cpp))
@@ -40,7 +51,11 @@ OBJS = $(patsubst ${SRC_ROOT}%.cpp,${OBJ_ROOT}%.o,${CPPS})
 DEPS = ${OBJS:.o=.d}
 
 # TARGET
-TARGET = ${OUT_DIR}/libnut.a
+ifeq (${HOST}, Darwin)
+	TARGET = ${OUT_DIR}/libnut.dylib
+else
+	TARGET = ${OUT_DIR}/libnut.so
+endif
 
 # mkdirs
 $(shell mkdir -p $(patsubst ${SRC_ROOT}%,${OBJ_ROOT}%,${DIRS}))
@@ -56,9 +71,8 @@ clean:
 
 rebuild: clean all
 
-${TARGET}: ${OBJS} ${MAKEFILE}
-	rm -f $@
-	${AR} cqs $@ ${OBJS}
+${TARGET}: ${OBJS} ${LIB_DEPS} ${MAKEFILE}
+	${LD} ${OBJS} ${LIB} -shared -o $@
 
 ${OBJ_ROOT}/%.o: ${SRC_ROOT}/%.cpp ${MAKEFILE}
 	${CC} ${INC} ${DEF} ${CC_FLAGS} -c $< -o $@

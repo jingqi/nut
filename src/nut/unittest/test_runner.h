@@ -2,6 +2,8 @@
 #ifndef ___HEADFILE___C163E413_5234_4AC7_B0E6_1D85282E4D59_
 #define ___HEADFILE___C163E413_5234_4AC7_B0E6_1D85282E4D59_
 
+#include <nut/nut_config.h>
+
 #include "test_logger.h"
 
 /* magic number, do NOT change them */
@@ -11,7 +13,7 @@
 namespace nut
 {
 
-class TestRunner
+class NUT_API TestRunner
 {
     ITestLogger *_logger = NULL;
 

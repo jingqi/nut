@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <stdint.h>
 
+#include <nut/nut_config.h>
 #include <nut/debugging/destroy_checker.h>
 
 #include "memory_allocator.h"
@@ -15,7 +16,7 @@ namespace nut
 /**
  * 系统内存分配器(system memory allocator)
  */
-class sys_ma : public memory_allocator
+class NUT_API sys_ma : public memory_allocator
 {
 
 #ifndef NDEBUG

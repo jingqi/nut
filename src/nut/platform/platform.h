@@ -82,18 +82,20 @@
 #endif
 
 /** 模块 API 定义工具 */
+#define EXTERN_C extern "C"
+
 #if NUT_PLATFORM_OS_WINDOWS
-#   define DLL_IMPORT extern "C" __declspec(dllimport)
-#   define DLL_EXPORT extern "C" __declspec(dllexport)
+#   define DLL_IMPORT __declspec(dllimport)
+#   define DLL_EXPORT __declspec(dllexport)
 #   define DLL_LOCAL
 #else
 #   if defined(__GNUC__) && __GNUC__ >= 4
-#       define DLL_IMPORT extern "C" __attribute__((visibility("default")))
-#       define DLL_EXPORT extern "C" __attribute__((visibility("default")))
+#       define DLL_IMPORT __attribute__((visibility("default")))
+#       define DLL_EXPORT __attribute__((visibility("default")))
 #       define DLL_LOCAL  __attribute__((visibility("hidden")))
 #   else
-#       define DLL_IMPORT extern "C"
-#       define DLL_EXPORT extern "C"
+#       define DLL_IMPORT
+#       define DLL_EXPORT
 #       define DLL_LOCAL
 #   endif
 #endif

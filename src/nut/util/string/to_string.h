@@ -9,76 +9,78 @@
 #include <string>
 #include <vector>
 
+#include <nut/nut_config.h>
+
 namespace nut
 {
 
 // char
-void char_to_str(char i, std::string *appended);
-std::string char_to_str(char i);
+NUT_API void char_to_str(char i, std::string *appended);
+NUT_API std::string char_to_str(char i);
 
 // unsigned char
-void uchar_to_str(unsigned char i, std::string *appended);
-std::string uchar_to_str(unsigned char i);
+NUT_API void uchar_to_str(unsigned char i, std::string *appended);
+NUT_API std::string uchar_to_str(unsigned char i);
 
 // short
-void short_to_str(short i, std::string *appended);
-std::string short_to_str(short i);
+NUT_API void short_to_str(short i, std::string *appended);
+NUT_API std::string short_to_str(short i);
 
 // unsigned short
-void ushort_to_str(unsigned short i, std::string *appended);
-std::string ushort_to_str(unsigned short i);
+NUT_API void ushort_to_str(unsigned short i, std::string *appended);
+NUT_API std::string ushort_to_str(unsigned short i);
 
 // int
-void int_to_str(int i, std::string *appended);
-std::string int_to_str(int i);
+NUT_API void int_to_str(int i, std::string *appended);
+NUT_API std::string int_to_str(int i);
 
 // unsigned int
-void uint_to_str(unsigned int i, std::string *appended);
-std::string uint_to_str(unsigned int i);
+NUT_API void uint_to_str(unsigned int i, std::string *appended);
+NUT_API std::string uint_to_str(unsigned int i);
 
 // long
-void long_to_str(long i, std::string *appended);
-std::string long_to_str(long i);
+NUT_API void long_to_str(long i, std::string *appended);
+NUT_API std::string long_to_str(long i);
 
 // unsigned long
-void ulong_to_str(unsigned long i, std::string *appended);
-std::string ulong_to_str(unsigned long i);
+NUT_API void ulong_to_str(unsigned long i, std::string *appended);
+NUT_API std::string ulong_to_str(unsigned long i);
 
 // long long
-void llong_to_str(long long i, std::string *appended);
-std::string llong_to_str(long long i);
+NUT_API void llong_to_str(long long i, std::string *appended);
+NUT_API std::string llong_to_str(long long i);
 
 // unsigned long long
-void ullong_to_str(unsigned long long i, std::string *appended);
-std::string ullong_to_str(unsigned long long i);
+NUT_API void ullong_to_str(unsigned long long i, std::string *appended);
+NUT_API std::string ullong_to_str(unsigned long long i);
 
 // bool
-void bool_to_str(bool b, std::string *appended);
-std::string bool_to_str(bool b);
+NUT_API void bool_to_str(bool b, std::string *appended);
+NUT_API std::string bool_to_str(bool b);
 
 // double
-void double_to_str(double d, std::string *appended);
-std::string double_to_str(double d);
+NUT_API void double_to_str(double d, std::string *appended);
+NUT_API std::string double_to_str(double d);
 
 // float
-void float_to_str(float f, std::string *appended);
-std::string float_to_str(float f);
+NUT_API void float_to_str(float f, std::string *appended);
+NUT_API std::string float_to_str(float f);
 
 // pointer
-void ptr_to_str(const void *p, std::string *appended);
-std::string ptr_to_str(const void *p);
+NUT_API void ptr_to_str(const void *p, std::string *appended);
+NUT_API std::string ptr_to_str(const void *p);
 
 // memory block
-void mem_to_str(const void *p, size_t align, size_t count, std::string *appended);
-std::string mem_to_str(const void *p, size_t align, size_t count);
+NUT_API void mem_to_str(const void *p, size_t align, size_t count, std::string *appended);
+NUT_API std::string mem_to_str(const void *p, size_t align, size_t count);
 
 // n-size string
-void sub_cstr(const char *str, size_t len, std::string *appended, const char *fill_nil = "\\0");
-std::string sub_cstr(const char *str, size_t len, const char *fill_nil = "\\0");
+NUT_API void sub_cstr(const char *str, size_t len, std::string *appended, const char *fill_nil = "\\0");
+NUT_API std::string sub_cstr(const char *str, size_t len, const char *fill_nil = "\\0");
 
 // string to long
-long str_to_long(const std::string& s);
-double str_to_double(const std::string& s);
+NUT_API long str_to_long(const std::string& s);
+NUT_API double str_to_double(const std::string& s);
 
 }
 

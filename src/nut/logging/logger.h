@@ -9,6 +9,8 @@
 #include <nut/debugging/destroy_checker.h>
 #include <nut/debugging/source_location.h>
 
+#include <nut/nut_config.h>
+
 #include "log_level.h"
 #include "log_record.h"
 #include "log_filter.h"
@@ -17,7 +19,7 @@
 namespace nut
 {
 
-class Logger
+class NUT_API Logger
 {
     LogFilter _filter;
     std::vector<LogHandler*> _handlers;

@@ -2,6 +2,7 @@
 #ifndef ___HEADFILE_409C4713_58BB_467B_A1CB_A8BC6EDA6CFE_
 #define ___HEADFILE_409C4713_58BB_467B_A1CB_A8BC6EDA6CFE_
 
+#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
@@ -13,7 +14,7 @@
 namespace nut
 {
 
-class RwLock
+class NUT_API RwLock
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     /** NOTE windows 下的共享锁是在 Windows Vista/Server 2008 及其以后的版本中提供的 */

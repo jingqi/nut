@@ -4,13 +4,15 @@
 
 #include <stdlib.h> // for NULL
 
+#include <nut/nut_config.h>
+
 namespace nut
 {
 
 /**
  * 单元测试失败时所抛出的异常
  */
-class TestCaseFailureException
+class NUT_API TestCaseFailureException
 {
     const char *_description = NULL;
     const char *_file = NULL;

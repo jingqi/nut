@@ -7,12 +7,13 @@
 #include <memory.h>
 #include <string>
 
+#include <nut/nut_config.h>
 #include <nut/numeric/word_array_integer.h>
 
 namespace nut
 {
 
-class BitStream
+class NUT_API BitStream
 {
     typedef unsigned int word_type;
     word_type *_buf = NULL; // 缓冲区

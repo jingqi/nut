@@ -2,6 +2,7 @@
 #ifndef ___HEADFILE_D7B6E0B3_59D4_458E_A8EB_0878F6F42145_
 #define ___HEADFILE_D7B6E0B3_59D4_458E_A8EB_0878F6F42145_
 
+#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
@@ -13,7 +14,7 @@
 namespace nut
 {
 
-class SpinLock
+class NUT_API SpinLock
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     CRITICAL_SECTION _critical_section;

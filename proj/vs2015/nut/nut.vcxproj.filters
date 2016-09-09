@@ -397,6 +397,9 @@
     <ClInclude Include="..\..\..\src\nut\mem\segments_mp.h">
       <Filter>nut\mem</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\nut_config.h">
+      <Filter>nut</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">

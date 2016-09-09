@@ -6,6 +6,7 @@
 #include <string>
 #include <map>
 
+#include <nut/nut_config.h>
 #include <nut/rc/rc_new.h>
 
 #include "xml_element.h"
@@ -13,7 +14,7 @@
 namespace nut
 {
 
-class XmlDom
+class NUT_API XmlDom
 {
     NUT_REF_COUNTABLE
 

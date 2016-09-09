@@ -5,10 +5,12 @@
 #include <stdint.h>
 #include <string>
 
+#include <nut/nut_config.h>
+
 namespace nut
 {
 
-class MD5
+class NUT_API MD5
 {
     uint32_t _state[4]; // state ABCD
     uint8_t _buffer[64];

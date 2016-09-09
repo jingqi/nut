@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <utility>
 
+#include <nut/nut_config.h>
 #include <nut/rc/rc_ptr.h>
 #include <nut/debugging/destroy_checker.h>
 
@@ -16,7 +17,7 @@ namespace nut
  * 由该分配器生成的对象将统一由该分配器的clear()函数进行清理
  * 仅用于单线程环境下
  */
-class scoped_gc
+class NUT_API scoped_gc
 {
     NUT_REF_COUNTABLE
 

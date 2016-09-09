@@ -6,6 +6,7 @@
 #include <vector>
 #include <time.h>
 
+#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 #include <nut/threading/sync/condition.h>
 #include <nut/threading/thread.h>
@@ -24,7 +25,7 @@ namespace nut
 /**
  * 不太精确的用户级定时器
  */
-class TimerManager
+class NUT_API TimerManager
 {
 public:
     // 定时器回调函数类型

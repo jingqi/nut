@@ -4,12 +4,14 @@
 
 #include <vector>
 
+#include <nut/nut_config.h>
+
 #include "testcase_failure_exception.h"
 
 namespace nut
 {
 
-class ITestLogger
+class NUT_API ITestLogger
 {
 protected:
     size_t _count_of_fixtures = 0;

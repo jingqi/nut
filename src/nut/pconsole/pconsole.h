@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include <nut/nut_config.h>
 #include <nut/rc/rc_new.h>
 #include <nut/util/string/string_util.h>
 
@@ -18,7 +19,7 @@ namespace nut
 /**
  * Pseudo console
  */
-class PConsole : public IConsole
+class NUT_API PConsole : public IConsole
 {
     char _prompt_char = '>';
     std::string _prompt_string;

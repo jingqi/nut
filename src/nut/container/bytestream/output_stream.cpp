@@ -1,4 +1,4 @@
-
+﻿
 #include "output_stream.h"
 
 namespace nut

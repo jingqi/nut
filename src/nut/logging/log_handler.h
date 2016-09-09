@@ -8,6 +8,7 @@
 
 #include <nut/platform/platform.h>
 
+#include <nut/nut_config.h>
 #include <nut/rc/rc_new.h>
 
 #include "log_record.h"
@@ -16,7 +17,7 @@
 namespace nut
 {
 
-class LogHandler
+class NUT_API LogHandler
 {
     LogFilter _filter;     // 过滤器
 
@@ -35,7 +36,7 @@ public:
     virtual void handle_log(const LogRecord &rec) = 0;
 };
 
-class StreamLogHandler : public LogHandler
+class NUT_API StreamLogHandler : public LogHandler
 {
     std::ostream &_os;
 
@@ -45,7 +46,7 @@ public:
     virtual void handle_log(const LogRecord &rec) override;
 };
 
-class ConsoleLogHandler : public LogHandler
+class NUT_API ConsoleLogHandler : public LogHandler
 {
     bool _colored = true;
 
@@ -57,7 +58,7 @@ public:
     virtual void handle_log(const LogRecord &l) override;
 };
 
-class FileLogHandler : public LogHandler
+class NUT_API FileLogHandler : public LogHandler
 {
     std::ofstream _ofs;
 
@@ -68,7 +69,7 @@ public:
 };
 
 #if NUT_PLATFORM_OS_LINUX
-class SyslogLogHandler : public LogHandler
+class NUT_API SyslogLogHandler : public LogHandler
 {
     bool _close_syslog_on_exit = false;
 

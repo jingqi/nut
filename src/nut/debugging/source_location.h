@@ -5,13 +5,15 @@
 #include <assert.h>
 #include <string>
 
+#include <nut/nut_config.h>
+
 namespace nut
 {
 
 /**
  * C/C++ 源码位置
  */
-class SourceLocation
+class NUT_API SourceLocation
 {
     const char *_path = NULL;    // source file path
     int _line = -1;            // source file line

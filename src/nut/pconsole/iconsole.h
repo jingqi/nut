@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include <nut/nut_config.h>
 #include <nut/rc/rc_ptr.h>
 
 #include "icommand.h"
@@ -12,7 +13,7 @@
 namespace nut
 {
 
-class IConsole
+class NUT_API IConsole
 {
     NUT_REF_COUNTABLE
 

@@ -5,10 +5,12 @@
 #include <string>
 #include <vector>
 
+#include <nut/nut_config.h>
+
 namespace nut
 {
 
-class OS
+class NUT_API OS
 {
 private:
     OS(); // invalid

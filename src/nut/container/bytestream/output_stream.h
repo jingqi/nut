@@ -6,12 +6,13 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include <nut/nut_config.h>
 #include <nut/rc/rc_ptr.h>
 
 namespace nut
 {
 
-class OutputStream
+class NUT_API OutputStream
 {
     NUT_REF_COUNTABLE
 

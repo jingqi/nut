@@ -5,10 +5,12 @@
 #include <stdint.h>
 #include <string.h> /* for size_t */
 
+#include <nut/nut_config.h>
+
 namespace nut
 {
 
-class Adler32
+class NUT_API Adler32
 {
     uint32_t _result = 1;
 
@@ -25,7 +27,7 @@ public:
 /**
  * 滚动hash
  */
-class RollingAdler32
+class NUT_API RollingAdler32
 {
     uint32_t _result = 1;
     const size_t _window_size = 16;

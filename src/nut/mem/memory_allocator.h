@@ -6,12 +6,13 @@
 #include <stdlib.h>
 #include <utility>
 
+#include <nut/nut_config.h>
 #include <nut/rc/rc_ptr.h>
 
 namespace nut
 {
 
-class memory_allocator
+class NUT_API memory_allocator
 {
     memory_allocator(const memory_allocator&);
     memory_allocator& operator=(const memory_allocator&);

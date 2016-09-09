@@ -418,7 +418,7 @@ static void _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p, BigIn
  * 求(a**b)%n，即a的b次方(模n)
  * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P576
  */
-void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigInteger *rs)
+NUT_API void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigInteger *rs)
 {
     assert(NULL != rs);
     assert(a.is_positive() && b.is_positive() && n.is_positive());

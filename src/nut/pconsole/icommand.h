@@ -5,12 +5,13 @@
 #include <string>
 #include <vector>
 
+#include <nut/nut_config.h>
 #include <nut/rc/rc_ptr.h>
 
 namespace nut
 {
 
-class ICommand
+class NUT_API ICommand
 {
     NUT_REF_COUNTABLE
 

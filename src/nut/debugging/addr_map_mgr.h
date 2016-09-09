@@ -2,6 +2,7 @@
 #ifndef ___HEADFILE_95CF1F75_72F1_454A_AA4C_B0D8DD34F14A_
 #define ___HEADFILE_95CF1F75_72F1_454A_AA4C_B0D8DD34F14A_
 
+#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_OS_LINUX
@@ -27,7 +28,7 @@ namespace nut
 /**
  * 负责记录动态链接库在进程空间的加载地址
  */
-class AddrMapManager
+class NUT_API AddrMapManager
 {
 public:
     typedef unsigned int addr_t;

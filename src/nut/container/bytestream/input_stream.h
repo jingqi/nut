@@ -6,12 +6,13 @@
 #include <stdint.h>
 #include <stddef.h> // for size_t and so on
 
+#include <nut/nut_config.h>
 #include <nut/rc/rc_ptr.h>
 
 namespace nut
 {
 
-class InputStream
+class NUT_API InputStream
 {
     NUT_REF_COUNTABLE
 

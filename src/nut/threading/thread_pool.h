@@ -6,6 +6,7 @@
 #include <vector>
 #include <queue>
 
+#include <nut/nut_config.h>
 #include <nut/rc/rc_new.h>
 
 #include "thread.h"
@@ -17,7 +18,7 @@ namespace nut
 /**
  * 线程池
  */
-class ThreadPool
+class NUT_API ThreadPool
 {
     NUT_REF_COUNTABLE
 

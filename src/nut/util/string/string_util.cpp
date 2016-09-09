@@ -28,7 +28,7 @@ namespace nut
 /**
  * 用整个字符串来分割字符串
  */
-void str_split(const char *str, const char *sep_str, std::vector<std::string> *appended, bool ignore_empty)
+NUT_API void str_split(const char *str, const char *sep_str, std::vector<std::string> *appended, bool ignore_empty)
 {
     assert(NULL != str && NULL != sep_str && 0 != sep_str[0] && NULL != appended);
 
@@ -51,7 +51,7 @@ void str_split(const char *str, const char *sep_str, std::vector<std::string> *a
     ::free(next);
 }
 
-void str_split(const wchar_t *str, const wchar_t *sep_str, std::vector<std::wstring> *appended, bool ignore_empty)
+NUT_API void str_split(const wchar_t *str, const wchar_t *sep_str, std::vector<std::wstring> *appended, bool ignore_empty)
 {
     assert(NULL != str && NULL != sep_str && 0 != sep_str[0] && NULL != appended);
 
@@ -78,7 +78,7 @@ void str_split(const wchar_t *str, const wchar_t *sep_str, std::vector<std::wstr
  * @param sep_chars
  *      该字符串中的每一个字符都是分割字符
  */
-void chr_split(const char *str_, const char *sep_chars, std::vector<std::string> *appended, bool ignore_empty)
+NUT_API void chr_split(const char *str_, const char *sep_chars, std::vector<std::string> *appended, bool ignore_empty)
 {
     assert(NULL != str_ && NULL != sep_chars && 0 != sep_chars[0] && NULL != appended);
 
@@ -95,7 +95,7 @@ void chr_split(const char *str_, const char *sep_chars, std::vector<std::string>
         appended->push_back(str.substr(begin));
 }
 
-void chr_split(const wchar_t *str_, const wchar_t *sep_chars, std::vector<std::wstring> *appended, bool ignore_empty)
+NUT_API void chr_split(const wchar_t *str_, const wchar_t *sep_chars, std::vector<std::wstring> *appended, bool ignore_empty)
 {
     assert(NULL != str_ && NULL != sep_chars && 0 != sep_chars[0] && NULL != appended);
 
@@ -115,21 +115,21 @@ void chr_split(const wchar_t *str_, const wchar_t *sep_chars, std::vector<std::w
 /**
  * split the string
  */
-void chr_split(const char *str, char c, std::vector<std::string> *appended, bool ignore_empty)
+NUT_API void chr_split(const char *str, char c, std::vector<std::string> *appended, bool ignore_empty)
 {
     assert(NULL != str && NULL != appended);
     char seps[2] = {c, 0};
     chr_split(str, seps, appended, ignore_empty);
 }
 
-void chr_split(const wchar_t *str, wchar_t c, std::vector<std::wstring> *appended, bool ignore_empty)
+NUT_API void chr_split(const wchar_t *str, wchar_t c, std::vector<std::wstring> *appended, bool ignore_empty)
 {
     assert(NULL != appended);
     wchar_t seps[2] = {c, 0};
     chr_split(str, seps, appended, ignore_empty);
 }
 
-void format(std::string *appended, const char *fmt, ...)
+NUT_API void format(std::string *appended, const char *fmt, ...)
 {
     assert(NULL != appended && NULL != fmt);
 
@@ -163,7 +163,7 @@ void format(std::string *appended, const char *fmt, ...)
     }
 }
 
-void format(std::wstring *appended, const wchar_t *fmt, ...)
+NUT_API void format(std::wstring *appended, const wchar_t *fmt, ...)
 {
     assert(NULL != appended && NULL != fmt);
 
@@ -203,7 +203,7 @@ void format(std::wstring *appended, const wchar_t *fmt, ...)
     }
 }
 
-std::string format(const char *fmt, ...)
+NUT_API std::string format(const char *fmt, ...)
 {
     assert(NULL != fmt);
 
@@ -239,7 +239,7 @@ std::string format(const char *fmt, ...)
     return ret;
 }
 
-std::wstring format(const wchar_t *fmt, ...)
+NUT_API std::wstring format(const wchar_t *fmt, ...)
 {
     assert(NULL != fmt);
 
@@ -282,7 +282,7 @@ std::wstring format(const wchar_t *fmt, ...)
 }
 
 /* 去除首尾空白 */
-void trim(const char *str_, std::string *appended, const char *blanks)
+NUT_API void trim(const char *str_, std::string *appended, const char *blanks)
 {
     assert(NULL != str_ && NULL != appended && NULL != blanks);
 
@@ -293,7 +293,7 @@ void trim(const char *str_, std::string *appended, const char *blanks)
         *appended += str.substr(begin, end - begin + 1);
 }
 
-void trim(const wchar_t *str_, std::wstring *appended, const wchar_t *blanks)
+NUT_API void trim(const wchar_t *str_, std::wstring *appended, const wchar_t *blanks)
 {
     assert(NULL != str_ && NULL != appended && NULL != blanks);
 
@@ -304,7 +304,7 @@ void trim(const wchar_t *str_, std::wstring *appended, const wchar_t *blanks)
         *appended += str.substr(begin, end - begin + 1);
 }
 
-std::string trim(const char *str, const char *blanks)
+NUT_API std::string trim(const char *str, const char *blanks)
 {
     assert(NULL != str && NULL != blanks);
     std::string ret;
@@ -312,7 +312,7 @@ std::string trim(const char *str, const char *blanks)
     return ret;
 }
 
-std::wstring trim(const wchar_t *str, const wchar_t *blanks)
+NUT_API std::wstring trim(const wchar_t *str, const wchar_t *blanks)
 {
     assert(NULL != str && NULL != blanks);
     std::wstring ret;
@@ -321,7 +321,7 @@ std::wstring trim(const wchar_t *str, const wchar_t *blanks)
 }
 
 /** 去除左边空白 */
-void ltrim(const char *str_, std::string *appended, const char *blanks)
+NUT_API void ltrim(const char *str_, std::string *appended, const char *blanks)
 {
     assert(NULL != str_ && NULL != appended && NULL != blanks);
     const std::string str(str_);
@@ -329,7 +329,7 @@ void ltrim(const char *str_, std::string *appended, const char *blanks)
     *appended += str.substr(begin);
 }
 
-void ltrim(const wchar_t *str_, std::wstring *appended, const wchar_t *blanks)
+NUT_API void ltrim(const wchar_t *str_, std::wstring *appended, const wchar_t *blanks)
 {
     assert(NULL != str_ && NULL != appended && NULL != blanks);
     const std::wstring str(str_);
@@ -337,7 +337,7 @@ void ltrim(const wchar_t *str_, std::wstring *appended, const wchar_t *blanks)
     *appended += str.substr(begin);
 }
 
-std::string ltrim(const char *str, const char *blanks)
+NUT_API std::string ltrim(const char *str, const char *blanks)
 {
     assert(NULL != str && NULL != blanks);
     std::string ret;
@@ -345,7 +345,7 @@ std::string ltrim(const char *str, const char *blanks)
     return ret;
 }
 
-std::wstring ltrim(const wchar_t *str, const wchar_t *blanks)
+NUT_API std::wstring ltrim(const wchar_t *str, const wchar_t *blanks)
 {
     assert(NULL != str && NULL != blanks);
     std::wstring ret;
@@ -354,7 +354,7 @@ std::wstring ltrim(const wchar_t *str, const wchar_t *blanks)
 }
 
 /** 去除右边空白 */
-void rtrim(const char *str_, std::string *appended, const char *blanks)
+NUT_API void rtrim(const char *str_, std::string *appended, const char *blanks)
 {
     assert(NULL != str_ && NULL != appended && NULL != blanks);
     const std::string str(str_);
@@ -363,7 +363,7 @@ void rtrim(const char *str_, std::string *appended, const char *blanks)
         *appended += str.substr(0, end + 1);
 }
 
-void rtrim(const wchar_t *str_, std::wstring *appended, const wchar_t *blanks)
+NUT_API void rtrim(const wchar_t *str_, std::wstring *appended, const wchar_t *blanks)
 {
     assert(NULL != str_ && NULL != appended && NULL != blanks);
     const std::wstring str(str_);
@@ -372,7 +372,7 @@ void rtrim(const wchar_t *str_, std::wstring *appended, const wchar_t *blanks)
         *appended += str.substr(0, end + 1);
 }
 
-std::string rtrim(const char *str, const char *blanks)
+NUT_API std::string rtrim(const char *str, const char *blanks)
 {
     assert(NULL != str && NULL != blanks);
     std::string ret;
@@ -380,7 +380,7 @@ std::string rtrim(const char *str, const char *blanks)
     return ret;
 }
 
-std::wstring rtrim(const wchar_t *str, const wchar_t *blanks)
+NUT_API std::wstring rtrim(const wchar_t *str, const wchar_t *blanks)
 {
     assert(NULL != str && NULL != blanks);
     std::wstring ret;
@@ -398,7 +398,7 @@ static int charicmp(int c1, int c2)
 }
 
 /** 忽略大小写的字符串比较 */
-int stricmp(const char *str1, const char *str2)
+NUT_API int stricmp(const char *str1, const char *str2)
 {
     assert(NULL != str1 && NULL != str2);
     size_t i = 0;
@@ -407,7 +407,7 @@ int stricmp(const char *str1, const char *str2)
     return charicmp(str1[i], str2[i]);
 }
 
-int stricmp(const wchar_t *str1, const wchar_t *str2)
+NUT_API int stricmp(const wchar_t *str1, const wchar_t *str2)
 {
     assert(NULL != str1 && NULL != str2);
     size_t i = 0;
@@ -416,7 +416,7 @@ int stricmp(const wchar_t *str1, const wchar_t *str2)
     return charicmp(str1[i], str2[i]);
 }
 
-int strincmp(const char *str1, const char *str2, size_t n)
+NUT_API int strincmp(const char *str1, const char *str2, size_t n)
 {
     assert(NULL != str1 && NULL != str2);
     size_t i = 0;
@@ -427,7 +427,7 @@ int strincmp(const char *str1, const char *str2, size_t n)
     return charicmp(str1[i], str2[i]);
 }
 
-int strincmp(const wchar_t *str1, const wchar_t *str2, size_t n)
+NUT_API int strincmp(const wchar_t *str1, const wchar_t *str2, size_t n)
 {
     assert(NULL != str1 && NULL != str2);
     size_t i = 0;
@@ -441,7 +441,7 @@ int strincmp(const wchar_t *str1, const wchar_t *str2, size_t n)
 /**
  * 匹配字符串的开头
  */
-bool starts_with(const char *s, const char *head)
+NUT_API bool starts_with(const char *s, const char *head)
 {
     assert(NULL != s && NULL != head);
     for (size_t i = 0; 0 != head[i]; ++i)
@@ -452,7 +452,7 @@ bool starts_with(const char *s, const char *head)
     return true;
 }
 
-bool starts_with(const wchar_t *s, const wchar_t *head)
+NUT_API bool starts_with(const wchar_t *s, const wchar_t *head)
 {
     assert(NULL != s && NULL != head);
     for (size_t i = 0; 0 != head[i]; ++i)
@@ -466,7 +466,7 @@ bool starts_with(const wchar_t *s, const wchar_t *head)
 /**
  * 匹配字符串的结尾
  */
-bool ends_with(const char *s, const char *tail)
+NUT_API bool ends_with(const char *s, const char *tail)
 {
     assert(NULL != s && NULL != tail);
     const size_t s_len = ::strlen(s), tail_len = ::strlen(tail);
@@ -480,7 +480,7 @@ bool ends_with(const char *s, const char *tail)
     return true;
 }
 
-bool ends_with(const wchar_t *s, const wchar_t *tail)
+NUT_API bool ends_with(const wchar_t *s, const wchar_t *tail)
 {
     assert(NULL != s && NULL != tail);
     const size_t s_len = ::wcslen(s), tail_len = ::wcslen(tail);
@@ -494,7 +494,7 @@ bool ends_with(const wchar_t *s, const wchar_t *tail)
     return true;
 }
 
-bool ascii_to_wstr(const char *str, std::wstring *appended)
+NUT_API bool ascii_to_wstr(const char *str, std::wstring *appended)
 {
     assert(NULL != str && NULL != appended);
 
@@ -519,7 +519,7 @@ bool ascii_to_wstr(const char *str, std::wstring *appended)
 #endif
 }
 
-bool wstr_to_ascii(const wchar_t *wstr, std::string *appended)
+NUT_API bool wstr_to_ascii(const wchar_t *wstr, std::string *appended)
 {
     assert(NULL != wstr && NULL != appended);
 
@@ -544,7 +544,7 @@ bool wstr_to_ascii(const wchar_t *wstr, std::string *appended)
 #endif
 }
 
-bool utf8_to_wstr(const char *str, std::wstring *appended)
+NUT_API bool utf8_to_wstr(const char *str, std::wstring *appended)
 {
     assert(NULL != str && NULL != appended);
 
@@ -562,7 +562,7 @@ bool utf8_to_wstr(const char *str, std::wstring *appended)
 #endif
 }
 
-bool wstr_to_utf8(const wchar_t *wstr, std::string *appended)
+NUT_API bool wstr_to_utf8(const wchar_t *wstr, std::string *appended)
 {
     assert(NULL != wstr && NULL != appended);
 
@@ -580,7 +580,7 @@ bool wstr_to_utf8(const wchar_t *wstr, std::string *appended)
 #endif
 }
 
-bool ascii_to_utf8(const char *str, std::string *appended)
+NUT_API bool ascii_to_utf8(const char *str, std::string *appended)
 {
     assert(NULL != str && NULL != appended);
 
@@ -595,7 +595,7 @@ bool ascii_to_utf8(const char *str, std::string *appended)
 #endif
 }
 
-bool utf8_to_ascii(const char *str, std::string *appended)
+NUT_API bool utf8_to_ascii(const char *str, std::string *appended)
 {
     assert(NULL != str && NULL != appended);
 
@@ -610,7 +610,7 @@ bool utf8_to_ascii(const char *str, std::string *appended)
 #endif
 }
 
-char int_to_hex_char(int i)
+NUT_API char int_to_hex_char(int i)
 {
     const char *hex_chars = "0123456789ABCDEF";
     if (0 <= i && i < 16)
@@ -618,7 +618,7 @@ char int_to_hex_char(int i)
     return '\0';
 }
 
-int hex_char_to_int(char c)
+NUT_API int hex_char_to_int(char c)
 {
     if ('0' <= c && c <= '9')
         return c - '0';
@@ -629,7 +629,7 @@ int hex_char_to_int(char c)
     return -1;
 }
 
-int xml_encode(const char *s, int len, std::string *appended)
+NUT_API int xml_encode(const char *s, int len, std::string *appended)
 {
     assert(NULL != s && NULL != appended);
 
@@ -667,7 +667,7 @@ int xml_encode(const char *s, int len, std::string *appended)
     return ret;
 }
 
-int xml_decode(const char *s, int len, std::string *appended)
+NUT_API int xml_decode(const char *s, int len, std::string *appended)
 {
     assert(NULL != s && NULL != appended);
 
@@ -712,7 +712,7 @@ int xml_decode(const char *s, int len, std::string *appended)
     return ret;
 }
 
-int url_encode(const char *s, int len, std::string *appended)
+NUT_API int url_encode(const char *s, int len, std::string *appended)
 {
     assert(NULL != s && NULL != appended);
 
@@ -736,7 +736,7 @@ int url_encode(const char *s, int len, std::string *appended)
     return ret;
 }
 
-int url_decode(const char *s, int len, std::string *appended)
+NUT_API int url_decode(const char *s, int len, std::string *appended)
 {
     assert(NULL != s && NULL != appended);
 
@@ -761,7 +761,7 @@ int url_decode(const char *s, int len, std::string *appended)
     return ret;
 }
 
-int hex_encode(const void *data, size_t cb, std::string *appended)
+NUT_API int hex_encode(const void *data, size_t cb, std::string *appended)
 {
     assert(NULL != data && NULL != appended);
 
@@ -774,7 +774,7 @@ int hex_encode(const void *data, size_t cb, std::string *appended)
     return (int) cb * 2;
 }
 
-int hex_decode(const char *s, int len, Array<uint8_t> *appended)
+NUT_API int hex_decode(const char *s, int len, Array<uint8_t> *appended)
 {
     assert(NULL != s && NULL != appended);
 
@@ -799,7 +799,7 @@ int hex_decode(const char *s, int len, Array<uint8_t> *appended)
     return ret;
 }
 
-int cstyle_encode(const char *s, int len, std::string *appended)
+NUT_API int cstyle_encode(const char *s, int len, std::string *appended)
 {
     assert(NULL != s && NULL != appended);
 
@@ -878,7 +878,7 @@ int cstyle_encode(const char *s, int len, std::string *appended)
     return ret;
 }
 
-int cstyle_decode(const char *s, int len, std::string *appended)
+NUT_API int cstyle_decode(const char *s, int len, std::string *appended)
 {
     assert(NULL != s && NULL != appended);
 
@@ -1035,7 +1035,7 @@ static int base64_char_to_int(char c)
     return -1;
 }
 
-int base64_encode(const void *data, size_t cb, std::string *appended)
+NUT_API int base64_encode(const void *data, size_t cb, std::string *appended)
 {
     assert(NULL != data && NULL != appended);
 
@@ -1078,7 +1078,7 @@ int base64_encode(const void *data, size_t cb, std::string *appended)
     return (int) ((cb + 2) / 3) * 4;
 }
 
-int base64_decode(const char *s, int len, Array<uint8_t> *appended)
+NUT_API int base64_decode(const char *s, int len, Array<uint8_t> *appended)
 {
     assert(NULL != s && NULL != appended);
 

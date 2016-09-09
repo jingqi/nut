@@ -35,11 +35,12 @@ endif
 
 # LIB
 LIB += -L${OUT_DIR} -lnut
-LIB_DEPS += ${OUT_DIR}/libnut.a
 ifeq (${HOST}, Darwin)
 	LIB += -lc++
+	LIB_DEPS += ${OUT_DIR}/libnut.dylib
 else
 	LIB += -lpthread
+	LIB_DEPS += ${OUT_DIR}/libnut.so
 endif
 
 # OBJS, DEPS

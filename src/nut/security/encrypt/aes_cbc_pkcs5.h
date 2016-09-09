@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <nut/nut_config.h>
 #include <nut/container/array.h>
 
 #include "aes.h"
@@ -18,7 +19,7 @@ namespace nut
  * 分组方式：CBC
  * 填充方式：PKCS5
  */
-class AES_CBC_PKCS5
+class NUT_API AES_CBC_PKCS5
 {
     enum
     {

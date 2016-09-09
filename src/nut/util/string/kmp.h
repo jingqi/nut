@@ -5,6 +5,8 @@
 #include <assert.h>
 #include <string>
 
+#include <nut/nut_config.h>
+
 namespace nut
 {
 
@@ -88,8 +90,8 @@ int kmp_search(const T *src, size_t len_src, size_t start, const T *target, cons
  * @param start 搜索开始的位置
  * @param target 要搜索的字符串子串
  */
-int kmp_search(const std::string& src, size_t start, const std::string& target);
-int kmp_search(const std::wstring& src, size_t start, const std::wstring& target);
+NUT_API int kmp_search(const std::string& src, size_t start, const std::string& target);
+NUT_API int kmp_search(const std::wstring& src, size_t start, const std::wstring& target);
 
 }
 

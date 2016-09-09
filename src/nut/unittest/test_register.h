@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 
 namespace nut
@@ -12,7 +13,7 @@ namespace nut
 
 class TestFixture;
 
-class TestRegister
+class NUT_API TestRegister
 {
     typedef TestFixture* (*new_fixture_func)();
     typedef void (*delete_fixture_func)(TestFixture*);

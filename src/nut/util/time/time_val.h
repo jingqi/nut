@@ -4,6 +4,7 @@
 
 #include <time.h>
 
+#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_OS_WINDOWS
@@ -18,7 +19,7 @@ namespace nut
 /**
  * 秒、微妙
  */
-class TimeVal
+class NUT_API TimeVal
 {
 public:
     time_t sec = 0;

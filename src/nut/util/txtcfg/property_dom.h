@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include <nut/nut_config.h>
 #include <nut/rc/rc_new.h>
 
 namespace nut
@@ -13,7 +14,7 @@ namespace nut
 /**
  * .property 文件 DOM 结构
  */
-class PropertyDom
+class NUT_API PropertyDom
 {
     NUT_REF_COUNTABLE
 

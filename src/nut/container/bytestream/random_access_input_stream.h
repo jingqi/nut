@@ -7,7 +7,7 @@
 namespace nut
 {
 
-class RandomAccessInputStream : public InputStream
+class NUT_API RandomAccessInputStream : public InputStream
 {
 public:
     virtual size_t tell() const = 0;

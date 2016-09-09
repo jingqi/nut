@@ -4,13 +4,15 @@
 
 #include <vector>
 
+#include <nut/nut_config.h>
+
 #include "test_logger.h"
 #include "testcase_failure_exception.h"
 
 namespace nut
 {
 
-class ConsoleTestLogger : public ITestLogger
+class NUT_API ConsoleTestLogger : public ITestLogger
 {
 public:
     virtual void on_start(const char *group_name, const char *fixture_name, const char *case_name) override;

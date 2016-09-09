@@ -6,12 +6,14 @@
 #include <ostream>
 #include <vector>
 
+#include <nut/nut_config.h>
+
 #include "test_logger.h"
 
 namespace nut
 {
 
-class StreamTestLogger : public ITestLogger
+class NUT_API StreamTestLogger : public ITestLogger
 {
     std::ostream *_out_stream = NULL;
 

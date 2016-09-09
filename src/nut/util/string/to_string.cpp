@@ -18,95 +18,95 @@ namespace nut
 {
 
 /// char
-void char_to_str(char i, std::string *appended)
+NUT_API void char_to_str(char i, std::string *appended)
 {
     llong_to_str((long long) i, appended);
 }
 
-std::string char_to_str(char i)
+NUT_API std::string char_to_str(char i)
 {
     return llong_to_str((long long) i);
 }
 
 /// unsigned char
-void uchar_to_str(unsigned char i, std::string *appended)
+NUT_API void uchar_to_str(unsigned char i, std::string *appended)
 {
     llong_to_str((long long) i, appended);
 }
 
-std::string uchar_to_str(unsigned char i)
+NUT_API std::string uchar_to_str(unsigned char i)
 {
     return llong_to_str((long long) i);
 }
 
 /// short
-void short_to_str(short i, std::string *appended)
+NUT_API void short_to_str(short i, std::string *appended)
 {
     llong_to_str((long long) i, appended);
 }
 
-std::string short_to_str(short i)
+NUT_API std::string short_to_str(short i)
 {
     return llong_to_str((long long) i);
 }
 
 /// unsigned short
-void ushort_to_str(unsigned short i, std::string *appended)
+NUT_API void ushort_to_str(unsigned short i, std::string *appended)
 {
     llong_to_str((long long) i, appended);
 }
 
-std::string ushort_to_str(unsigned short i)
+NUT_API std::string ushort_to_str(unsigned short i)
 {
     return llong_to_str((long long) i);
 }
 
 /// int
-void int_to_str(int i, std::string *appended)
+NUT_API void int_to_str(int i, std::string *appended)
 {
     llong_to_str((long long) i, appended);
 }
 
-std::string int_to_str(int i)
+NUT_API std::string int_to_str(int i)
 {
     return llong_to_str((long long) i);
 }
 
 /// unsigned int
-void uint_to_str(unsigned int i, std::string *appended)
+NUT_API void uint_to_str(unsigned int i, std::string *appended)
 {
     llong_to_str((long long) i, appended);
 }
 
-std::string uint_to_str(unsigned int i)
+NUT_API std::string uint_to_str(unsigned int i)
 {
     return llong_to_str((long long) i);
 }
 
 /// long
-void long_to_str(long i, std::string *appended)
+NUT_API void long_to_str(long i, std::string *appended)
 {
     llong_to_str((long long) i, appended);
 }
 
-std::string long_to_str(long i)
+NUT_API std::string long_to_str(long i)
 {
     return llong_to_str((long long) i);
 }
 
 /// unsigned long
-void ulong_to_str(unsigned long i, std::string *appended)
+NUT_API void ulong_to_str(unsigned long i, std::string *appended)
 {
     llong_to_str((long long) i, appended);
 }
 
-std::string ulong_to_str(unsigned long i)
+NUT_API std::string ulong_to_str(unsigned long i)
 {
     return llong_to_str((long long) i);
 }
 
 /// long long
-void llong_to_str(long long i, std::string *appended)
+NUT_API void llong_to_str(long long i, std::string *appended)
 {
     assert(NULL != appended);
 
@@ -127,7 +127,7 @@ void llong_to_str(long long i, std::string *appended)
     *appended += buf;
 }
 
-std::string llong_to_str(long long i)
+NUT_API std::string llong_to_str(long long i)
 {
     std::string ret;
     llong_to_str(i, &ret);
@@ -135,30 +135,30 @@ std::string llong_to_str(long long i)
 }
 
 /// unsigned long long
-void ullong_to_str(unsigned long long i, std::string *appended)
+NUT_API void ullong_to_str(unsigned long long i, std::string *appended)
 {
     llong_to_str((long long) i, appended);
 }
 
-std::string ullong_to_str(unsigned long long i)
+NUT_API std::string ullong_to_str(unsigned long long i)
 {
     return llong_to_str((long long) i);
 }
 
 /// bool
-void bool_to_str(bool b, std::string *appended)
+NUT_API void bool_to_str(bool b, std::string *appended)
 {
     assert(NULL != appended);
     *appended += (b ? "true" : "false");
 }
 
-std::string bool_to_str(bool b)
+NUT_API std::string bool_to_str(bool b)
 {
     return (b ? "true" : "false");
 }
 
 /// double
-void double_to_str(double d, std::string *appended)
+NUT_API void double_to_str(double d, std::string *appended)
 {
     assert(NULL != appended);
 
@@ -169,7 +169,7 @@ void double_to_str(double d, std::string *appended)
     *appended += buf;
 }
 
-std::string double_to_str(double d)
+NUT_API std::string double_to_str(double d)
 {
     std::string ret;
     double_to_str(d, &ret);
@@ -177,7 +177,7 @@ std::string double_to_str(double d)
 }
 
 /// float
-void float_to_str(float f, std::string *appended)
+NUT_API void float_to_str(float f, std::string *appended)
 {
     assert(NULL != appended);
 
@@ -188,7 +188,7 @@ void float_to_str(float f, std::string *appended)
     *appended += buf;
 }
 
-std::string float_to_str(float f)
+NUT_API std::string float_to_str(float f)
 {
     std::string ret;
     float_to_str(f, &ret);
@@ -196,7 +196,7 @@ std::string float_to_str(float f)
 }
 
 /// pointer
-void ptr_to_str(const void *p, std::string *appended)
+NUT_API void ptr_to_str(const void *p, std::string *appended)
 {
     assert(NULL != appended);
 
@@ -212,7 +212,7 @@ void ptr_to_str(const void *p, std::string *appended)
     *appended += buf;
 }
 
-std::string ptr_to_str(const void *p)
+NUT_API std::string ptr_to_str(const void *p)
 {
     std::string ret;
     ptr_to_str(p, &ret);
@@ -220,7 +220,7 @@ std::string ptr_to_str(const void *p)
 }
 
 /// memory block
-void mem_to_str(const void *p, size_t align, size_t count, std::string *appended)
+NUT_API void mem_to_str(const void *p, size_t align, size_t count, std::string *appended)
 {
     assert(NULL != p && align > 0 && count > 0 && NULL != appended);
 
@@ -249,7 +249,7 @@ void mem_to_str(const void *p, size_t align, size_t count, std::string *appended
     }
 }
 
-std::string mem_to_str(const void *p, size_t align, size_t count)
+NUT_API std::string mem_to_str(const void *p, size_t align, size_t count)
 {
     std::string ret;
     mem_to_str(p, align, count, &ret);
@@ -257,7 +257,7 @@ std::string mem_to_str(const void *p, size_t align, size_t count)
 }
 
 /// n-size string
-void sub_cstr(const char *str, size_t len, std::string *appended, const char *fill_nil)
+NUT_API void sub_cstr(const char *str, size_t len, std::string *appended, const char *fill_nil)
 {
     assert(NULL != str && NULL != appended && NULL != fill_nil);
 
@@ -270,7 +270,7 @@ void sub_cstr(const char *str, size_t len, std::string *appended, const char *fi
     }
 }
 
-std::string sub_cstr(const char *str, size_t len, const char *fill_nil)
+NUT_API std::string sub_cstr(const char *str, size_t len, const char *fill_nil)
 {
     std::string ret;
     sub_cstr(str, len, &ret, fill_nil);
@@ -278,7 +278,7 @@ std::string sub_cstr(const char *str, size_t len, const char *fill_nil)
 }
 
 /// string to long
-long str_to_long(const std::string& s)
+NUT_API long str_to_long(const std::string& s)
 {
     long ret = 0;
     ::sscanf(s.c_str(), "%ld", &ret);
@@ -286,7 +286,7 @@ long str_to_long(const std::string& s)
 }
 
 /// string to double
-double str_to_double(const std::string& s)
+NUT_API double str_to_double(const std::string& s)
 {
     double ret = 0.0;
     ::sscanf(s.c_str(), "%lf", &ret);

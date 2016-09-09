@@ -6,13 +6,15 @@
 #include <string>
 #include <stdint.h>
 
+#include <nut/nut_config.h>
+
 namespace nut
 {
 
 /**
  * 时刻
  */
-class DateTime
+class NUT_API DateTime
 {
 protected:
     time_t _seconds;      /* 从1970年1月1日起算的时间(秒) */

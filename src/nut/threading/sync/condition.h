@@ -2,6 +2,7 @@
 #ifndef ___HEADFILE___B926495D_967A_45A2_8F56_4FFB10F2E34B_
 #define ___HEADFILE___B926495D_967A_45A2_8F56_4FFB10F2E34B_
 
+#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
@@ -22,7 +23,7 @@
 namespace nut
 {
 
-class Condition
+class NUT_API Condition
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     CONDITION_VARIABLE _cond;

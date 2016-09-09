@@ -5,13 +5,15 @@
 #include <assert.h>
 #include <stdio.h>
 
+#include <nut/nut_config.h>
+
 #include "icommand.h"
 #include "iconsole.h"
 
 namespace nut
 {
 
-class CmdExit : public ICommand
+class NUT_API CmdExit : public ICommand
 {
     IConsole *_console = NULL;
 

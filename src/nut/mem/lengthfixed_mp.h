@@ -5,6 +5,8 @@
 #include <nut/threading/lockfree/atomic.h>
 #include <nut/debugging/destroy_checker.h>
 
+#include <nut/nut_config.h>
+
 #include "memory_allocator.h"
 
 namespace nut
@@ -13,7 +15,7 @@ namespace nut
 /**
  * 定长内存池(length fixed granularity single thread memory pool)
  */
-class lengthfixed_stmp : public memory_allocator
+class NUT_API lengthfixed_stmp : public memory_allocator
 {
     enum
     {
@@ -51,7 +53,7 @@ public:
 /**
  * 定长内存池(length fixed granularity memory pool)
  */
-class lengthfixed_mtmp : public memory_allocator
+class NUT_API lengthfixed_mtmp : public memory_allocator
 {
     enum
     {

@@ -4,10 +4,12 @@
 
 #include <string>
 
+#include <nut/nut_config.h>
+
 namespace nut
 {
 
-class Path
+class NUT_API Path
 {
 private:
     Path(); // invalid
