@@ -7,15 +7,6 @@
 
 #include <nut/platform/platform.h>
 
-DLL_API void** nut_get_register_header();
-
-#define NUT_UNITTEST_IMPL                           \
-    DLL_API void** nut_get_register_header()        \
-    {                                               \
-        static ::nut::TestRegister* header = NULL;  \
-        return (void**) &header;                    \
-    }
-
 namespace nut
 {
 
@@ -35,6 +26,8 @@ class TestRegister
 public:
     TestRegister(const char *fixture_name, const char *groups,
                  new_fixture_func n, delete_fixture_func d);
+
+    static TestRegister** get_link_header();
 
     bool match_group(const char *group_name) const;
 

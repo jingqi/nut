@@ -34,8 +34,8 @@ Logger::~Logger()
 
 Logger* Logger::get_instance()
 {
-    // 跨动态链接库的单例实现
-    return (Logger*) nut_get_logger();
+    static Logger instance;
+    return &instance;
 }
 
 LogFilter& Logger::get_filter()
@@ -83,7 +83,8 @@ void Logger::clear_handlers()
     _handlers.clear();
 }
 
-void Logger::log(LogLevel level, const char *tag, const char *file, int line, const char *func, const char *format, ...) const
+void Logger::log(LogLevel level, const char *tag, const char *file, int line,
+                 const char *func, const char *format, ...) const
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     assert(NULL != format);
@@ -116,7 +117,7 @@ void Logger::log(LogLevel level, const char *tag, const char *file, int line, co
     if (NULL == buf)
         return;
 
-    LogRecord record(level, tag, file, line, func, buf); /* buf will be freed by LogRecord */
+    LogRecord record(level, tag, file, line, func, buf); // 'buf' will be freed by LogRecord
     for (size_t i = 0, sz = _handlers.size(); i < sz; ++i)
     {
         LogHandler *handler = _handlers.at(i);

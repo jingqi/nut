@@ -3,7 +3,6 @@ TARGET = nut
 TEMPLATE = lib
 
 QT -= core gui
-CONFIG += staticlib
 
 # 配置输出目录
 DESTDIR = $$PWD/../..
@@ -34,6 +33,7 @@ CONFIG(debug, debug|release) {
 } else {
     DEFINES += NDEBUG
 }
+DEFINES += BUILDING_NUT_DLL
 
 # INCLUDE 路径
 SRC_ROOT = $$PWD/../../../../src/nut

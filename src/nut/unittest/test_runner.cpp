@@ -21,7 +21,7 @@ void TestRunner::run_group(const char *group_name)
 
     _logger->start(group_name, NULL, NULL);
 
-    TestRegister *pregister = *(TestRegister**)nut_get_register_header();
+    TestRegister *pregister = *TestRegister::get_link_header();
     while (NULL != pregister)
     {
         if (pregister->match_group(group_name))
@@ -57,7 +57,7 @@ void TestRunner::run_fixture(const char *fixture_name)
 
     _logger->start(NULL, fixture_name, NULL);
 
-    TestRegister *pregister = *(TestRegister**)nut_get_register_header();
+    TestRegister *pregister = *TestRegister::get_link_header();
     while (NULL != pregister)
     {
         if (0 == ::strcmp(fixture_name, pregister->get_fixture_name()))
@@ -94,7 +94,7 @@ void TestRunner::run_case(const char *fixture_name, const char *case_name)
 
     _logger->start(NULL, fixture_name, case_name);
 
-    TestRegister *pregister = *(TestRegister**)nut_get_register_header();
+    TestRegister *pregister = *TestRegister::get_link_header();
     while (NULL != pregister)
     {
         if (0 == ::strcmp(fixture_name, pregister->get_fixture_name()))

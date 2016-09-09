@@ -66,7 +66,8 @@ static void split_groups(const char *groups, std::vector<std::string> *rs)
         rs->push_back(s);
 }
 
-TestRegister::TestRegister(const char *fixture_name, const char *groups, new_fixture_func n, delete_fixture_func d)
+TestRegister::TestRegister(const char *fixture_name, const char *groups,
+                           new_fixture_func n, delete_fixture_func d)
     : _new_func(n), _delete_func(d), _fixture_name(fixture_name)
 {
     assert(NULL != fixture_name);
@@ -78,14 +79,21 @@ TestRegister::TestRegister(const char *fixture_name, const char *groups, new_fix
     split_groups(groups, &_groups);
 
     // 将实例添加到链表中
-    _pnext = *(TestRegister**)nut_get_register_header();
-    *(TestRegister**)nut_get_register_header() = this;
+    _pnext = *get_link_header();
+    *get_link_header() = this;
+}
+
+TestRegister** TestRegister::get_link_header()
+{
+    static TestRegister *header = NULL;
+    return &header;
 }
 
 bool TestRegister::match_group(const char *group_name) const
 {
     assert(NULL != group_name);
-    for (std::vector<std::string>::const_iterator iter = _groups.begin(); iter != _groups.end(); ++iter)
+    for (std::vector<std::string>::const_iterator iter = _groups.begin();
+         iter != _groups.end(); ++iter)
     {
         if (0 == ::strcmp(iter->c_str(), group_name))
             return true;

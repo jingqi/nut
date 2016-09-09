@@ -91,6 +91,3 @@ int main()
 
     return l.get_count_of_failed_cases();
 }
-
-NUT_LOGGING_IMPL
-NUT_UNITTEST_IMPL

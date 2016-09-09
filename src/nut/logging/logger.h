@@ -38,7 +38,7 @@ public:
     void clear_handlers();
 
     void log(LogLevel level, const char *tag, const char *file, int line,
-        const char *func, const char *fmt, ...) const;
+             const char *func, const char *fmt, ...) const;
 
     /**
      * 加载配置文件
@@ -48,19 +48,39 @@ public:
 
 }
 
-DLL_API void* nut_get_logger();
+#define NUT_LOG_D(tag, fmt, ...)                                        \
+    do                                                                  \
+    {                                                                   \
+        ::nut::Logger::get_instance()->log(nut::LL_DEBUG, (tag), NUT_SOURCE_LOCATION_ARGS, \
+                                           (fmt), ##__VA_ARGS__);       \
+    } while (false)
 
-#define NUT_LOGGING_IMPL \
-DLL_API void* nut_get_logger() \
-{ \
-    static ::nut::Logger logger; \
-    return &logger; \
-}
+#define NUT_LOG_I(tag, fmt, ...)                                        \
+    do                                                                  \
+    {                                                                   \
+        ::nut::Logger::get_instance()->log(nut::LL_INFO, (tag), NUT_SOURCE_LOCATION_ARGS, \
+                                           (fmt), ##__VA_ARGS__);       \
+    } while (false)
 
-#define NUT_LOG_D(tag, fmt, ...) do { ::nut::Logger::get_instance()->log(nut::LL_DEBUG, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), ##__VA_ARGS__); } while (false)
-#define NUT_LOG_I(tag, fmt, ...) do { ::nut::Logger::get_instance()->log(nut::LL_INFO, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), ##__VA_ARGS__); } while (false)
-#define NUT_LOG_W(tag, fmt, ...) do { ::nut::Logger::get_instance()->log(nut::LL_WARN, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), ##__VA_ARGS__); } while (false)
-#define NUT_LOG_E(tag, fmt, ...) do { ::nut::Logger::get_instance()->log(nut::LL_ERROR, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), ##__VA_ARGS__); } while (false)
-#define NUT_LOG_F(tag, fmt, ...) do { ::nut::Logger::get_instance()->log(nut::LL_FATAL, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), ##__VA_ARGS__); } while (false)
+#define NUT_LOG_W(tag, fmt, ...)                                        \
+    do                                                                  \
+    {                                                                   \
+        ::nut::Logger::get_instance()->log(nut::LL_WARN, (tag), NUT_SOURCE_LOCATION_ARGS, \
+                                           (fmt), ##__VA_ARGS__);       \
+    } while (false)
+
+#define NUT_LOG_E(tag, fmt, ...)                                        \
+    do                                                                  \
+    {                                                                   \
+        ::nut::Logger::get_instance()->log(nut::LL_ERROR, (tag), NUT_SOURCE_LOCATION_ARGS, \
+                                           (fmt), ##__VA_ARGS__);       \
+    } while (false)
+
+#define NUT_LOG_F(tag, fmt, ...)                                        \
+    do                                                                  \
+    {                                                                   \
+        ::nut::Logger::get_instance()->log(nut::LL_FATAL, (tag), NUT_SOURCE_LOCATION_ARGS, \
+                                           (fmt), ##__VA_ARGS__);       \
+    } while (false)
 
 #endif
