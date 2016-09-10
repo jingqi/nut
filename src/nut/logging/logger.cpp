@@ -128,7 +128,7 @@ void Logger::log(LogLevel level, const char *tag, const char *file, int line,
     }
 }
 
-void Logger::load_config(const std::string& config)
+void Logger::load_xml_config(const std::string& config)
 {
     class TagHandler : public XmlElementHandler
     {
@@ -137,10 +137,10 @@ void Logger::load_config(const std::string& config)
         ll_mask_t _forbid_mask = 0;
 
     public:
-        TagHandler(LogFilter *filter)
-            : _filter(filter)
+        void reset(LogFilter *filter)
         {
             assert(NULL != filter);
+            _filter = filter;
         }
 
         virtual void handle_attribute(const std::string& name, const std::string& value) override
@@ -164,63 +164,66 @@ void Logger::load_config(const std::string& config)
         {
             _filter->forbid(_tag_name.c_str(), _forbid_mask);
         }
-    };
+    } tag_xml_handler;
 
     class FilterHandler : public XmlElementHandler
     {
+        TagHandler *_tag_xml_handler = NULL;
         LogFilter *_filter = NULL;
 
     public:
-        FilterHandler(LogFilter *filter)
-            : XmlElementHandler("filter"), _filter(filter)
+        FilterHandler(TagHandler *tag_xml_handler)
+            : XmlElementHandler("Filter"), _tag_xml_handler(tag_xml_handler)
+        {
+            assert(NULL != tag_xml_handler);
+        }
+
+        void reset(LogFilter *filter)
         {
             assert(NULL != filter);
+            _filter = filter;
         }
 
         virtual XmlElementHandler* handle_child(const std::string& name) override
         {
             if (name == "Tag")
             {
-                TagHandler *handler = (TagHandler*) ::malloc(sizeof(TagHandler));
-                new (handler) TagHandler(_filter);
-                return handler;
+                _tag_xml_handler->reset(_filter);
+                return _tag_xml_handler;
             }
             return NULL;
         }
-
-        virtual void handle_child_finish(XmlElementHandler *child) override
-        {
-            if (NULL == child)
-                return;
-            TagHandler *handler = dynamic_cast<TagHandler*>(child);
-            if (NULL == handler)
-                return;
-            handler->~TagHandler();
-            ::free(handler);
-        }
-    };
+    } filter_xml_handler(&tag_xml_handler);
 
     class HandlerHandler : public XmlElementHandler
     {
+        FilterHandler *_filter_xml_handler = NULL;
+
         std::string _type;
-        std::string _file_path;
-        bool _append = false, _colored = true, _close_syslog_on_exit = false;
-        int _circle = -1;
+        std::string _path;
+        std::string _file_prefix;
+        bool _append = false;
+        bool _colored = true;
+        bool _close_syslog_on_exit = false;
+        bool _cross_file = true;
+        size_t _circle = 10;
+        long _max_file_size = 1 * 1024 * 1024;
         ll_mask_t _flush_mask = LL_FATAL;
         LogFilter _filter;
 
     public:
-        HandlerHandler()
-            : XmlElementHandler("handler")
-        {}
+        HandlerHandler(FilterHandler *filter_xml_handler)
+            : XmlElementHandler("Handler"), _filter_xml_handler(filter_xml_handler)
+        {
+            assert(NULL != filter_xml_handler);
+        }
 
         virtual XmlElementHandler* handle_child(const std::string& name) override
         {
             if (name == "Filter")
             {
-                FilterHandler *handler = (FilterHandler*) ::malloc(sizeof(FilterHandler));
-                new (handler) FilterHandler(&_filter);
-                return handler;
+                _filter_xml_handler->reset(&_filter);
+                return _filter_xml_handler;
             }
             return NULL;
         }
@@ -242,7 +245,7 @@ void Logger::load_config(const std::string& config)
             }
             else if (name == "path")
             {
-                _file_path = value;
+                _path = value;
             }
             else if (name == "append")
             {
@@ -250,7 +253,19 @@ void Logger::load_config(const std::string& config)
             }
             else if (name == "circle")
             {
-                _circle = ::atoi(value.c_str());
+                _circle = str_to_long(value);
+            }
+            else if (name == "file_prefix")
+            {
+                _file_prefix = value;
+            }
+            else if (name == "max_file_size")
+            {
+                _max_file_size = str_to_long(value);
+            }
+            else if (name == "cross_file")
+            {
+                _cross_file = (value == "true" || value == "1");
             }
             else if (name == "colored")
             {
@@ -259,18 +274,6 @@ void Logger::load_config(const std::string& config)
             else if (name == "close_syslog_on_exit")
             {
                 _close_syslog_on_exit = (value == "true" || value == "1");
-            }
-        }
-
-        virtual void handle_child_finish(XmlElementHandler *child) override
-        {
-            if (NULL == child)
-                return;
-            FilterHandler *handler = dynamic_cast<FilterHandler*>(child);
-            if (NULL != handler)
-            {
-                handler->~FilterHandler();
-                ::free(handler);
             }
         }
 
@@ -300,56 +303,34 @@ void Logger::load_config(const std::string& config)
             }
             else if (_type == "file")
             {
-                if (_file_path.empty())
+                if (_path.empty())
                     return;
-
-                if (_circle >= 0)
-                {
-                    // 找到相同目录下所有的日志文件
-                    std::string dir_path;
-                    Path::split(_file_path, &dir_path, NULL);
-                    std::vector<std::string> file_names, logfile_names;
-                    OS::list_dir(dir_path, &file_names, false, true, true);
-                    const std::string log_suffix(".log");
-                    for (size_t i = 0, sz = file_names.size(); i < sz; ++i)
-                    {
-                        const std::string& name = file_names.at(i);
-                        if (!ends_with(name, log_suffix))
-                            continue;
-                        logfile_names.push_back(name);
-                    }
-
-                    // 删除多余的日志文件
-                    if (logfile_names.size() > (size_t) _circle)
-                    {
-                        std::sort(logfile_names.begin(), logfile_names.end());
-                        for (size_t i = 0, count = logfile_names.size() - _circle;
-                             i < count; ++i)
-                        {
-                            std::string full;
-                            Path::join(dir_path, logfile_names.at(i), &full);
-                            OS::remove_file(full);
-                            logfile_names.pop_back();
-                        }
-                    }
-
-                    // 给文件名添加附加标志符
-                    _file_path += DateTime().format_time("%Y-%m-%d %H-%M-%S ");
-#if NUT_PLATFORM_OS_WINDOWS
-                    long pid = ::GetCurrentProcessId();
-#else
-                    pid_t pid = ::getpid();
-#endif
-                    _file_path += llong_to_str(pid);
-                    _file_path += log_suffix;
-                }
-
-                rc_ptr<FileLogHandler> handler = rc_new<FileLogHandler>(_file_path.c_str(), _append);
+                rc_ptr<FileLogHandler> handler = rc_new<FileLogHandler>(_path.c_str(), _append);
                 handler->set_flush_mask(_flush_mask);
                 handler->get_filter().swap(&_filter);
                 Logger::get_instance()->add_handler(handler);
             }
-#if NUT_PLATFORM_OS_LINUX
+            else if (_type == "cicle_file_by_size")
+            {
+                if (_path.empty())
+                    return;
+                rc_ptr<CircleFileBySizeLogHandler> handler = rc_new<CircleFileBySizeLogHandler>(
+                            _path, _file_prefix, _circle, _max_file_size, _cross_file);
+                handler->set_flush_mask(_flush_mask);
+                handler->get_filter().swap(&_filter);
+                Logger::get_instance()->add_handler(handler);
+            }
+            else if (_type == "file_cicle_by_time")
+            {
+                if (_path.empty())
+                    return;
+                rc_ptr<CircleFileByTimeLogHandler> handler = rc_new<CircleFileByTimeLogHandler>(
+                            _path, _file_prefix, _circle);
+                handler->set_flush_mask(_flush_mask);
+                handler->get_filter().swap(&_filter);
+                Logger::get_instance()->add_handler(handler);
+            }
+#if NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
             else if (_type == "syslog")
             {
                 rc_ptr<SyslogLogHandler> handler = rc_new<SyslogLogHandler>(_close_syslog_on_exit);
@@ -359,84 +340,58 @@ void Logger::load_config(const std::string& config)
             }
 #endif
         }
-    };
+    } handler_xml_handler(&filter_xml_handler);
 
     class LoggerHandler : public XmlElementHandler
     {
+        FilterHandler *_filter_xml_handler = NULL;
+        HandlerHandler *_handler_xml_handler = NULL;
+
+    public:
+        LoggerHandler(FilterHandler *filter_xml_handler, HandlerHandler *handler_xml_handler)
+            : _filter_xml_handler(filter_xml_handler), _handler_xml_handler(handler_xml_handler)
+        {
+            assert(NULL != filter_xml_handler && NULL != handler_xml_handler);
+        }
+
         virtual XmlElementHandler* handle_child(const std::string& name) override
         {
             if (name == "Filter")
             {
-                FilterHandler *handler = (FilterHandler*) ::malloc(sizeof(FilterHandler));
-                new (handler) FilterHandler(&Logger::get_instance()->get_filter());
-                return handler;
+                _filter_xml_handler->reset(&Logger::get_instance()->get_filter());
+                return _filter_xml_handler;
             }
             else if (name == "Handler")
             {
-                HandlerHandler *handler = (HandlerHandler*) ::malloc(sizeof(HandlerHandler));
-                new (handler) HandlerHandler;
-                return handler;
+                return _handler_xml_handler;
             }
             return NULL;
         }
-
-        virtual void handle_child_finish(XmlElementHandler *child) override
-        {
-            if (NULL == child)
-                return;
-            if (0 == ::strcmp(child->name, "filter"))
-            {
-                FilterHandler *handler = dynamic_cast<FilterHandler*>(child);
-                if (NULL != handler)
-                {
-                    handler->~FilterHandler();
-                    ::free(handler);
-                }
-            }
-            else
-            {
-                assert(0 == ::strcmp(child->name, "handler"));
-                HandlerHandler *handler = dynamic_cast<HandlerHandler*>(child);
-                if (NULL != handler)
-                {
-                    handler->~HandlerHandler();
-                    ::free(handler);
-                }
-            }
-        }
-    };
+    } logger_xml_handler(&filter_xml_handler, &handler_xml_handler);
 
     class RootHandler : public XmlElementHandler
     {
+        LoggerHandler *_logger_xml_handler = NULL;
+
+    public:
+        RootHandler(LoggerHandler *logger_xml_handler)
+            : _logger_xml_handler(logger_xml_handler)
+        {
+            assert(NULL != logger_xml_handler);
+        }
+
         virtual XmlElementHandler* handle_child(const std::string& name)
         {
             if (name == "Logger")
-            {
-                LoggerHandler *handler = (LoggerHandler*) ::malloc(sizeof(LoggerHandler));
-                new (handler) LoggerHandler;
-                return handler;
-            }
+                return _logger_xml_handler;
             return NULL;
         }
-
-        virtual void handle_child_finish(XmlElementHandler *child)
-        {
-            if (NULL == child)
-                return;
-            LoggerHandler *handler = dynamic_cast<LoggerHandler*>(child);
-            if (NULL != handler)
-            {
-                handler->~LoggerHandler();
-                ::free(handler);
-            }
-        }
-    };
+    } root_handler(&logger_xml_handler);
 
     _filter.clear_forbids();
     clear_handlers();
 
-    RootHandler root;
-    XmlParser parser(&root);
+    XmlParser parser(&root_handler);
     parser.input(config.c_str());
     parser.finish();
 }

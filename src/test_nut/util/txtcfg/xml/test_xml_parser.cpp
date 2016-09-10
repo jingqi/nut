@@ -44,14 +44,17 @@ public:
         //printf("child %s\n", name.c_str());
         if (name == "ch")
             tag += "h";
-        return this;
+        return new Handle;
     }
 
     virtual void handle_child_finish(XmlElementHandler *child)
     {
         //printf("fin child\n");
-        if (child == this)
+        if (NULL != child)
+        {
             tag += "x";
+            delete child;
+        }
     }
 
     virtual void handle_finish()

@@ -12,7 +12,7 @@ NUT_FIXTURE(TestLogging)
     NUT_CASES_BEGIN()
     NUT_CASE(test_smoking)
     NUT_CASE(test_filter)
-    NUT_CASE(test_config)
+    NUT_CASE(test_xml_config)
     NUT_CASES_END()
 
     void test_smoking()
@@ -58,7 +58,7 @@ NUT_FIXTURE(TestLogging)
         NUT_LOG_F("a.b.c.m", "fatal should NOT show---------");
     }
 
-    void test_config()
+    void test_xml_config()
     {
         const char *config =
                 "<Logger>"
@@ -77,7 +77,7 @@ NUT_FIXTURE(TestLogging)
                         "</Filter>"
                     "</Handler>"
                 "</Logger>";
-        Logger::get_instance()->load_config(config);
+        Logger::get_instance()->load_xml_config(config);
 
         NUT_LOG_D("a", "debug should show");
         NUT_LOG_I("a.b", "info should NOT show----------");

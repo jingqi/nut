@@ -53,7 +53,7 @@ public:
     /**
      * 加载配置文件
      */
-    void load_config(const std::string& config);
+    void load_xml_config(const std::string& config);
 };
 
 }

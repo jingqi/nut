@@ -560,7 +560,7 @@ bool XmlParser::should_handle_child() const
     const ElementInfo& current_elem = _elem_path.at(_elem_path.size() - 1);
     if (NULL == current_elem.handler)
         return false;
-    return 0 != (current_elem.handler->handle_mask & XmlElementHandler::HANDLE_CHILD);
+    return 0 != (current_elem.handler->get_handle_mask() & XmlElementHandler::HANDLE_CHILD);
 }
 
 bool XmlParser::should_handle_attribute() const
@@ -570,7 +570,7 @@ bool XmlParser::should_handle_attribute() const
     const ElementInfo& current_elem = _elem_path.at(_elem_path.size() - 1);
     if (NULL == current_elem.handler)
         return false;
-    return 0 != (current_elem.handler->handle_mask & XmlElementHandler::HANDLE_ATTRIBUTE);
+    return 0 != (current_elem.handler->get_handle_mask() & XmlElementHandler::HANDLE_ATTRIBUTE);
 }
 
 bool XmlParser::should_handle_text() const
@@ -580,7 +580,7 @@ bool XmlParser::should_handle_text() const
     const ElementInfo& current_elem = _elem_path.at(_elem_path.size() - 1);
     if (NULL == current_elem.handler)
         return false;
-    return 0 != (current_elem.handler->handle_mask & XmlElementHandler::HANDLE_TEXT);
+    return 0 != (current_elem.handler->get_handle_mask() & XmlElementHandler::HANDLE_TEXT);
 }
 
 bool XmlParser::should_handle_comment() const
@@ -590,15 +590,24 @@ bool XmlParser::should_handle_comment() const
     const ElementInfo& current_elem = _elem_path.at(_elem_path.size() - 1);
     if (NULL == current_elem.handler)
         return false;
-    return 0 != (current_elem.handler->handle_mask & XmlElementHandler::HANDLE_COMMENT);
+    return 0 != (current_elem.handler->get_handle_mask() & XmlElementHandler::HANDLE_COMMENT);
 }
 
 void XmlParser::handle_child()
 {
+    // Create child handler
     XmlElementHandler *child = NULL;
     if (should_handle_child())
         child = _elem_path.at(_elem_path.size() - 1).handler->handle_child(_tmp_name);
 
+    // Set busy
+    if (NULL != child)
+    {
+        assert(!child->is_busy()); // Should not be used this moment
+        child->set_busy(true);
+    }
+
+    // Push stack
     _elem_path.push_back(ElementInfo(_tmp_name, child));
     _tmp_name.clear();
 }
@@ -640,11 +649,21 @@ void XmlParser::handle_finish()
 {
     if (_elem_path.empty())
         return;
+
+    // Pop stack
     XmlElementHandler *handler = _elem_path.at(_elem_path.size() - 1).handler;
     if (NULL != handler)
         handler->handle_finish();
     _elem_path.pop_back();
 
+    // Set not-busy
+    if (NULL != handler)
+    {
+        assert(handler->is_busy());
+        handler->set_busy(false);
+    }
+
+    // Notify it's parent
     if (_elem_path.empty())
         return;
     XmlElementHandler *parent = _elem_path.at(_elem_path.size() - 1).handler;

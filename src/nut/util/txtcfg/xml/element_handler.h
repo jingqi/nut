@@ -16,6 +16,7 @@ namespace nut
 class XmlElementHandler
 {
 public:
+    // 控制处理哪些子元素
     enum HANDLE_MASK
     {
         HANDLE_ATTRIBUTE = 0x01,
@@ -24,16 +25,45 @@ public:
         HANDLE_CHILD = 0x08
     };
 
-    const char *name = NULL;
-    const uint8_t handle_mask = 0xFF;
+private:
+    // 名称
+    const std::string _name;
 
-    XmlElementHandler(const char *n = NULL, uint8_t mask = 0xFF)
-        : name(n), handle_mask(mask)
+    // 控制处理哪些子元素
+    const uint8_t _handle_mask = 0xFF;
+
+    // 防止递归路径上的重复使用
+    bool _busy = false;
+
+public:
+    XmlElementHandler(const char *name = "", uint8_t mask = 0xFF)
+        : _name(name), _handle_mask(mask)
     {}
 
     virtual ~XmlElementHandler()
     {}
 
+    const std::string& get_name() const
+    {
+        return _name;
+    }
+
+    uint8_t get_handle_mask() const
+    {
+        return _handle_mask;
+    }
+
+    void set_busy(bool busy)
+    {
+        _busy = busy;
+    }
+
+    bool is_busy() const
+    {
+        return _busy;
+    }
+
+public:
     virtual void handle_attribute(const std::string& name, const std::string& value)
     {
         UNUSED(name);

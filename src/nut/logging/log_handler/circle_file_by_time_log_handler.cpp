@@ -33,9 +33,9 @@ CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(const std::string& dir_pa
         const std::string& name = file_names.at(i);
 
         // 前缀、后缀
-        if (!ends_with(name, log_suffix))
-            continue;
         if (!starts_with(name, prefix))
+            continue;
+        if (!ends_with(name, log_suffix))
             continue;
 
         logfile_names.push_back(name);
