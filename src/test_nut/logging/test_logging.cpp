@@ -1,6 +1,7 @@
 ﻿
 #include <nut/unittest/unit_test.h>
 
+#include <nut/rc/rc_new.h>
 #include <nut/logging/logger.h>
 
 using namespace nut;

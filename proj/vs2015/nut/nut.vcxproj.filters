@@ -86,6 +86,9 @@
     <Filter Include="nut\container\bytestream">
       <UniqueIdentifier>{8856b997-069e-4682-82c9-8c64ca05d7fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="nut\logging\log_handler">
+      <UniqueIdentifier>{1ba278c3-3f25-4ec4-a551-584d5667f0a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\nut\container\tree\rtree\mdarea.h">
@@ -343,9 +346,6 @@
     <ClInclude Include="..\..\..\src\nut\logging\log_filter.h">
       <Filter>nut\logging</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\log_handler.h">
-      <Filter>nut\logging</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\logging\log_level.h">
       <Filter>nut\logging</Filter>
     </ClInclude>
@@ -399,6 +399,27 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\nut_config.h">
       <Filter>nut</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_handler\circle_file_by_size_log_handler.h">
+      <Filter>nut\logging\log_handler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_handler\circle_file_by_time_log_handler.h">
+      <Filter>nut\logging\log_handler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_handler\console_log_handler.h">
+      <Filter>nut\logging\log_handler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_handler\file_log_handler.h">
+      <Filter>nut\logging\log_handler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_handler\log_handler.h">
+      <Filter>nut\logging\log_handler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_handler\stream_log_handler.h">
+      <Filter>nut\logging\log_handler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_handler\syslog_log_handler.h">
+      <Filter>nut\logging\log_handler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -531,9 +552,6 @@
     <ClCompile Include="..\..\..\src\nut\logging\log_filter.cpp">
       <Filter>nut\logging</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\logging\log_handler.cpp">
-      <Filter>nut\logging</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\nut\logging\log_level.cpp">
       <Filter>nut\logging</Filter>
     </ClCompile>
@@ -581,6 +599,24 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\mem\lengthfixed_mp.cpp">
       <Filter>nut\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_handler\circle_file_by_size_log_handler.cpp">
+      <Filter>nut\logging\log_handler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_handler\circle_file_by_time_log_handler.cpp">
+      <Filter>nut\logging\log_handler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_handler\console_log_handler.cpp">
+      <Filter>nut\logging\log_handler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_handler\file_log_handler.cpp">
+      <Filter>nut\logging\log_handler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_handler\stream_log_handler.cpp">
+      <Filter>nut\logging\log_handler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_handler\syslog_log_handler.cpp">
+      <Filter>nut\logging\log_handler</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

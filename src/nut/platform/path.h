@@ -30,8 +30,8 @@ public:
     /**
      * 获取当前工作目录路径
      */
-    static void get_cwd(std::string *appended);
-    static void get_cwd(std::wstring *appended);
+    static void get_cwd(std::string *result);
+    static void get_cwd(std::wstring *result);
     static std::string get_cwd();
     static std::wstring get_wcwd();
 
@@ -46,10 +46,10 @@ public:
     /**
      * 将相对路径转换为绝对路径
      */
-    static void abs_path(const char *path, std::string *appended);
-    static void abs_path(const wchar_t *path, std::wstring *appended);
-    static void abs_path(const std::string& path, std::string *appended);
-    static void abs_path(const std::wstring& path, std::wstring *appended);
+    static void abs_path(const char *path, std::string *result);
+    static void abs_path(const wchar_t *path, std::wstring *result);
+    static void abs_path(const std::string& path, std::string *result);
+    static void abs_path(const std::wstring& path, std::wstring *result);
     static std::string abs_path(const char *path);
     static std::wstring abs_path(const wchar_t *path);
     static std::string abs_path(const std::string& path);
@@ -66,10 +66,10 @@ public:
      * "/ab.txt" -> "/" "ab.txt"
      * "c:\\tmp" -> "c:\\" "tmp"
      */
-    static void split(const char *path, std::string *parent_appended, std::string *child_appended);
-    static void split(const wchar_t *path, std::wstring *parent_appended, std::wstring *child_appended);
-    static void split(const std::string& path, std::string *parent_appended, std::string *child_appended);
-    static void split(const std::wstring& path, std::wstring *parent_appended, std::wstring *child_appended);
+    static void split(const char *path, std::string *parent_result, std::string *child_result);
+    static void split(const wchar_t *path, std::wstring *parent_result, std::wstring *child_result);
+    static void split(const std::string& path, std::string *parent_result, std::string *child_result);
+    static void split(const std::wstring& path, std::wstring *parent_result, std::wstring *child_result);
 
     /**
      * 从路径中划分出磁盘号和路径(linux路径的磁盘号假定为"")
@@ -78,10 +78,10 @@ public:
      * "c:\\mn\\p" -> "c:" "\\mn\\p"
      * "/mnt/sdcard" -> "" "/mnt/sdcard"
      */
-    static void split_drive(const char *path, std::string *drive_appended, std::string *rest_appended);
-    static void split_drive(const wchar_t *path, std::wstring *drive_appended, std::wstring *rest_appended);
-    static void split_drive(const std::string& path, std::string *drive_appended, std::string *rest_appended);
-    static void split_drive(const std::wstring& path, std::wstring *drive_appended, std::wstring *rest_appended);
+    static void split_drive(const char *path, std::string *drive_result, std::string *rest_result);
+    static void split_drive(const wchar_t *path, std::wstring *drive_result, std::wstring *rest_result);
+    static void split_drive(const std::string& path, std::string *drive_result, std::string *rest_result);
+    static void split_drive(const std::wstring& path, std::wstring *drive_result, std::wstring *rest_result);
 
     /**
      * 从路径或者文件名中分离出后缀名
@@ -89,10 +89,10 @@ public:
      * 例如：
      * "a.txt" -> "a" ".txt"
      */
-    static void split_ext(const char *path, std::string *prefix_appended, std::string *ext_appended);
-    static void split_ext(const wchar_t *path, std::wstring *prefix_appended, std::wstring *ext_appended);
-    static void split_ext(const std::string& path, std::string *prefix_appended, std::string *ext_appended);
-    static void split_ext(const std::wstring& path, std::wstring *prefix_appended, std::wstring *ext_appended);
+    static void split_ext(const char *path, std::string *prefix_result, std::string *ext_result);
+    static void split_ext(const wchar_t *path, std::wstring *prefix_result, std::wstring *ext_result);
+    static void split_ext(const std::string& path, std::string *prefix_result, std::string *ext_result);
+    static void split_ext(const std::wstring& path, std::wstring *prefix_result, std::wstring *ext_result);
 
     // TODO static void splitunc() {}
 
@@ -169,28 +169,28 @@ public:
      * "/" "sd" -> "/sd"
      * "c:" "\\tmp" -> "c:\\tmp"
      */
-    static void join(const char *a, const char *b, std::string *appended);
-    static void join(const wchar_t *a, const wchar_t *b, std::wstring *appended);
-    static void join(const std::string& a, const std::string& b, std::string *appended);
-    static void join(const std::wstring& a, const std::wstring& b, std::wstring *appended);
+    static void join(const char *a, const char *b, std::string *result);
+    static void join(const wchar_t *a, const wchar_t *b, std::wstring *result);
+    static void join(const std::string& a, const std::string& b, std::string *result);
+    static void join(const std::wstring& a, const std::wstring& b, std::wstring *result);
     static std::string join(const char *a, const char *b);
     static std::wstring join(const wchar_t *a, const wchar_t *b);
     static std::string join(const std::string& a, const std::string& b);
     static std::wstring join(const std::wstring& a, const std::wstring& b);
 
-    static void join(const char *a, const char *b, const char *c, std::string *appended);
-    static void join(const wchar_t *a, const wchar_t *b, const wchar_t *c, std::wstring *appended);
-    static void join(const std::string& a, const std::string& b, const std::string& c, std::string *appended);
-    static void join(const std::wstring& a, const std::wstring& b, const std::wstring& c, std::wstring *appended);
+    static void join(const char *a, const char *b, const char *c, std::string *result);
+    static void join(const wchar_t *a, const wchar_t *b, const wchar_t *c, std::wstring *result);
+    static void join(const std::string& a, const std::string& b, const std::string& c, std::string *result);
+    static void join(const std::wstring& a, const std::wstring& b, const std::wstring& c, std::wstring *result);
     static std::string join(const char *a, const char *b, const char *c);
     static std::wstring join(const wchar_t *a, const wchar_t *b, const wchar_t *c);
     static std::string join(const std::string& a, const std::string& b, const std::string& c);
     static std::wstring join(const std::wstring& a, const std::wstring& b, const std::wstring& c);
 
-    static void join(const char *a, const char *b, const char *c, const char *d, std::string *appended);
-    static void join(const wchar_t *a, const wchar_t *b, const wchar_t *c, const wchar_t *d, std::wstring *appended);
-    static void join(const std::string& a, const std::string& b, const std::string& c, const std::string& d, std::string *appended);
-    static void join(const std::wstring& a, const std::wstring& b, const std::wstring& c, const std::wstring& d, std::wstring *appended);
+    static void join(const char *a, const char *b, const char *c, const char *d, std::string *result);
+    static void join(const wchar_t *a, const wchar_t *b, const wchar_t *c, const wchar_t *d, std::wstring *result);
+    static void join(const std::string& a, const std::string& b, const std::string& c, const std::string& d, std::string *result);
+    static void join(const std::wstring& a, const std::wstring& b, const std::wstring& c, const std::wstring& d, std::wstring *result);
     static std::string join(const char *a, const char *b, const char *c, const char *d);
     static std::wstring join(const wchar_t *a, const wchar_t *b, const wchar_t *c, const wchar_t *d);
     static std::string join(const std::string& a, const std::string& b, const std::string& c, const std::string& d);

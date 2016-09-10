@@ -1,0 +1,41 @@
+﻿
+#ifndef ___HEADFILE_D9A34E39_AC0F_446F_AEAA_B316EFC64AEA_
+#define ___HEADFILE_D9A34E39_AC0F_446F_AEAA_B316EFC64AEA_
+
+#include <nut/nut_config.h>
+#include <nut/rc/rc_ptr.h>
+
+#include "../log_record.h"
+#include "../log_filter.h"
+
+namespace nut
+{
+
+class NUT_API LogHandler
+{
+    // 日志过滤器
+    LogFilter _filter;
+
+protected:
+    // 控制哪些日志触发立即刷新到磁盘
+    ll_mask_t _flush_mask = LL_FATAL;
+
+public:
+    NUT_REF_COUNTABLE
+
+    void set_flush_mask(ll_mask_t mask)
+    {
+        _flush_mask = mask;
+    }
+
+    LogFilter& get_filter()
+    {
+        return _filter;
+    }
+
+    virtual void handle_log(const LogRecord& rec) = 0;
+};
+
+}
+
+#endif

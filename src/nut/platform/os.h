@@ -23,14 +23,18 @@ public:
      * @parma exclude_dir 如果传入true, 则返回值不会包含文件夹
      * @parma exclude_initial_dot 如果传入true, 则返回值不会包含以'.'开头的文件/文件夹
      */
-    static void list_dir(const char *path, std::vector<std::string> *appended, bool exclude_file = false,
-            bool exclude_dir = false, bool exclude_initial_dot = false);
-    static void list_dir(const wchar_t *path, std::vector<std::wstring> *appended, bool exclude_file = false,
-            bool exclude_dir = false, bool exclude_initial_dot = false);
-    static void list_dir(const std::string& path, std::vector<std::string> *appended, bool exclude_file = false,
-            bool exclude_dir = false, bool exclude_initial_dot = false);
-    static void list_dir(const std::wstring& path, std::vector<std::wstring> *appended, bool exclude_file = false,
-            bool exclude_dir = false, bool exclude_initial_dot = false);
+    static void list_dir(const char *path, std::vector<std::string> *result,
+                         bool exclude_file = false, bool exclude_dir = false,
+                         bool exclude_initial_dot = false);
+    static void list_dir(const wchar_t *path, std::vector<std::wstring> *result,
+                         bool exclude_file = false, bool exclude_dir = false,
+                         bool exclude_initial_dot = false);
+    static void list_dir(const std::string& path, std::vector<std::string> *result,
+                         bool exclude_file = false, bool exclude_dir = false,
+                         bool exclude_initial_dot = false);
+    static void list_dir(const std::wstring& path, std::vector<std::wstring> *result,
+                         bool exclude_file = false, bool exclude_dir = false,
+                         bool exclude_initial_dot = false);
 
     /**
      * 复制文件
@@ -83,10 +87,10 @@ public:
     /**
      * 读取符号链接地址
      */
-    static bool read_link(const char *path, std::string *appended);
-    static bool read_link(const wchar_t *path, std::wstring *appended);
-    static bool read_link(const std::string& path, std::string *appended);
-    static bool read_link(const std::wstring& path, std::wstring *appended);
+    static bool read_link(const char *path, std::string *result);
+    static bool read_link(const wchar_t *path, std::wstring *result);
+    static bool read_link(const std::string& path, std::string *result);
+    static bool read_link(const std::wstring& path, std::wstring *result);
 
     /**
      * 创建符号链接

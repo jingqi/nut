@@ -30,10 +30,10 @@ namespace nut
  * @parma exclude_dir 如果传入true, 则返回值不会包含文件夹
  * @parma exclude_initial_dot 如果传入true, 则返回值不会包含以'.'开头的文件/文件夹
  */
-void OS::list_dir(const char *path, std::vector<std::string> *appended, bool exclude_file,
-        bool exclude_dir, bool exclude_initial_dot)
+void OS::list_dir(const char *path, std::vector<std::string> *result,
+                  bool exclude_file, bool exclude_dir, bool exclude_initial_dot)
 {
-    assert(NULL != path && NULL != appended);
+    assert(NULL != path && NULL != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
     char search_path[MAX_PATH];
@@ -57,7 +57,7 @@ void OS::list_dir(const char *path, std::vector<std::string> *appended, bool exc
         if (exclude_dir && (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
             continue;
 
-        appended->push_back(wfd.cFileName);
+        result->push_back(wfd.cFileName);
     } while (::FindNextFileA(hfind, &wfd));
 
     // 关闭查找句柄
@@ -86,7 +86,7 @@ void OS::list_dir(const char *path, std::vector<std::string> *appended, bool exc
                 continue;
         }
 
-        appended->push_back(dirp->d_name);
+        result->push_back(dirp->d_name);
     }
 
     // 释放DIR (struct dirent是由DIR维护的，无需额外释放)
@@ -94,10 +94,10 @@ void OS::list_dir(const char *path, std::vector<std::string> *appended, bool exc
 #endif
 }
 
-void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *appended, bool exclude_file,
-    bool exclude_dir, bool exclude_initial_dot)
+void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *result,
+                  bool exclude_file, bool exclude_dir, bool exclude_initial_dot)
 {
-    assert(NULL != path && NULL != appended);
+    assert(NULL != path && NULL != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
     wchar_t search_path[MAX_PATH];
@@ -121,7 +121,7 @@ void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *appended, bool
         if (exclude_dir && (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
             continue;
 
-        appended->push_back(wfd.cFileName);
+        result->push_back(wfd.cFileName);
     } while (::FindNextFileW(hfind, &wfd));
 
     // 关闭查找句柄
@@ -136,21 +136,21 @@ void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *appended, bool
     {
         s.clear();
         ascii_to_wstr(dirs.at(i).c_str(), &s);
-        appended->push_back(s);
+        result->push_back(s);
     }
 #endif
 }
 
-void OS::list_dir(const std::string& path, std::vector<std::string> *appended, bool exclude_file,
-                  bool exclude_dir, bool exclude_initial_dot)
+void OS::list_dir(const std::string& path, std::vector<std::string> *result,
+                  bool exclude_file, bool exclude_dir, bool exclude_initial_dot)
 {
-    OS::list_dir(path.c_str(), appended, exclude_file, exclude_dir, exclude_initial_dot);
+    OS::list_dir(path.c_str(), result, exclude_file, exclude_dir, exclude_initial_dot);
 }
 
-void OS::list_dir(const std::wstring& path, std::vector<std::wstring> *appended, bool exclude_file,
-                  bool exclude_dir, bool exclude_initial_dot)
+void OS::list_dir(const std::wstring& path, std::vector<std::wstring> *result,
+                  bool exclude_file, bool exclude_dir, bool exclude_initial_dot)
 {
-    OS::list_dir(path.c_str(), appended, exclude_file, exclude_dir, exclude_initial_dot);
+    OS::list_dir(path.c_str(), result, exclude_file, exclude_dir, exclude_initial_dot);
 }
 
 /**
@@ -500,13 +500,13 @@ bool OS::remove_tree(const std::wstring& path)
     return OS::remove_tree(path.c_str());
 }
 
-bool OS::read_link(const char *path, std::string *appended)
+bool OS::read_link(const char *path, std::string *result)
 {
-    assert(NULL != path && NULL != appended);
+    assert(NULL != path && NULL != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
-    UNUSED(appended);
+    UNUSED(result);
     return false; // windows 上没有软链接功能
 #else
     const size_t buf_len = 1024;
@@ -515,18 +515,18 @@ bool OS::read_link(const char *path, std::string *appended)
     if (rs < 0)
         return false;
     buf[rs] = 0;
-    *appended += buf;
+    *result += buf;
     return true;
 #endif
 }
 
-bool OS::read_link(const wchar_t *path, std::wstring *appended)
+bool OS::read_link(const wchar_t *path, std::wstring *result)
 {
-    assert(NULL != path && NULL != appended);
+    assert(NULL != path && NULL != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
-    UNUSED(appended);
+    UNUSED(result);
     return false; // windows 上没有软链接功能
 #else
     std::string p;
@@ -534,19 +534,19 @@ bool OS::read_link(const wchar_t *path, std::wstring *appended)
     std::string lk;
     if (!OS::read_link(p.c_str(), &lk))
         return false;
-    ascii_to_wstr(lk.c_str(), appended);
+    ascii_to_wstr(lk.c_str(), result);
     return true;
 #endif
 }
 
-bool OS::read_link(const std::string& path, std::string *appended)
+bool OS::read_link(const std::string& path, std::string *result)
 {
-    return OS::read_link(path.c_str(), appended);
+    return OS::read_link(path.c_str(), result);
 }
 
-bool OS::read_link(const std::wstring& path, std::wstring *appended)
+bool OS::read_link(const std::wstring& path, std::wstring *result)
 {
-    return OS::read_link(path.c_str(), appended);
+    return OS::read_link(path.c_str(), result);
 }
 
 bool OS::symlink(const char *link, const char *path)

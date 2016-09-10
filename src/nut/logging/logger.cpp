@@ -305,31 +305,31 @@ void Logger::load_config(const std::string& config)
 
                 if (_circle >= 0)
                 {
-                    // 找到相同目录下所有到日志文件
+                    // 找到相同目录下所有的日志文件
                     std::string dir_path;
-                    Path::split(_file_path.c_str(), &dir_path, NULL);
-                    std::vector<std::string> files;
-                    OS::list_dir(dir_path.c_str(), &files, false, true, true);
-                    const std::string log_ext(".log");
-                    for (size_t i = 0; i < files.size(); ++i)
+                    Path::split(_file_path, &dir_path, NULL);
+                    std::vector<std::string> file_names, logfile_names;
+                    OS::list_dir(dir_path, &file_names, false, true, true);
+                    const std::string log_suffix(".log");
+                    for (size_t i = 0, sz = file_names.size(); i < sz; ++i)
                     {
-                        if (!ends_with(files.at(i).c_str(), log_ext.c_str()))
-                        {
-                            files.erase(files.begin() + i);
-                            --i;
-                        }
+                        const std::string& name = file_names.at(i);
+                        if (!ends_with(name, log_suffix))
+                            continue;
+                        logfile_names.push_back(name);
                     }
 
                     // 删除多余的日志文件
-                    if (files.size() > (size_t) _circle)
+                    if (logfile_names.size() > (size_t) _circle)
                     {
-                        std::sort(files.begin(), files.end());
-                        for (size_t i = 0, count = files.size() - _circle; i < count; ++i)
+                        std::sort(logfile_names.begin(), logfile_names.end());
+                        for (size_t i = 0, count = logfile_names.size() - _circle;
+                             i < count; ++i)
                         {
                             std::string full;
-                            Path::join(dir_path.c_str(), files.at(i).c_str(), &full);
-                            OS::remove_file(full.c_str());
-                            files.pop_back();
+                            Path::join(dir_path, logfile_names.at(i), &full);
+                            OS::remove_file(full);
+                            logfile_names.pop_back();
                         }
                     }
 
@@ -341,7 +341,7 @@ void Logger::load_config(const std::string& config)
                     pid_t pid = ::getpid();
 #endif
                     _file_path += llong_to_str(pid);
-                    _file_path += log_ext;
+                    _file_path += log_suffix;
                 }
 
                 rc_ptr<FileLogHandler> handler = rc_new<FileLogHandler>(_file_path.c_str(), _append);
