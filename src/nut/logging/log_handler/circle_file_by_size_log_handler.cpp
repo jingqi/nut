@@ -93,7 +93,6 @@ void CircleFileBySizeLogHandler::circle_once()
     {
         const std::string& last_name = *logfile_names.rbegin();
         next_seq = str_to_long(last_name.substr(prefix_len, SEQ_NUM_LENGTH)) + 1;
-        next_seq %= SEQ_ROUND;
 
         const long long filesz = Path::get_size(Path::join(_dir_path, last_name));
         if (filesz < _max_file_size)
@@ -102,13 +101,19 @@ void CircleFileBySizeLogHandler::circle_once()
 
     // 删除多余的日志文件
     size_t keep_count = _circle_size - (next_file_name.empty() ? 1 : 0);
+    if (next_seq >= SEQ_ROUND)
+    {
+        // 超过了最大数目，全部清空
+        keep_count = 0;
+        next_seq = 0;
+    }
     if (logfile_names.size() > keep_count)
     {
         for (size_t i = 0, del_count = logfile_names.size() - keep_count;
              i < del_count; ++i)
         {
             std::string full_path;
-            Path::join(_dir_path, logfile_names.at(i));
+            Path::join(_dir_path, logfile_names.at(i), &full_path);
             OS::remove_file(full_path);
         }
     }
@@ -126,7 +131,7 @@ void CircleFileBySizeLogHandler::circle_once()
 
     // 打开日志文件
     std::string full_path;
-    Path::join(_dir_path, next_file_name);
+    Path::join(_dir_path, next_file_name, &full_path);
     reopen(full_path.c_str());
 }
 

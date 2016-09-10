@@ -48,9 +48,9 @@ CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(const std::string& dir_pa
         for (size_t i = 0, del_count = logfile_names.size() - circle_size + 1;
              i < del_count; ++i)
         {
-            std::string full;
-            Path::join(dir_path, logfile_names.at(i), &full);
-            OS::remove_file(full);
+            std::string full_path;
+            Path::join(dir_path, logfile_names.at(i), &full_path);
+            OS::remove_file(full_path);
         }
     }
 
@@ -66,7 +66,7 @@ CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(const std::string& dir_pa
     file_name += log_suffix;
 
     std::string full_path;
-    Path::join(dir_path, file_name);
+    Path::join(dir_path, file_name, &full_path);
     _ofs.open(full_path.c_str(), std::ios::trunc);
 }
 
