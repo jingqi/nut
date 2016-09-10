@@ -176,9 +176,13 @@ union TagedPtr
         tag_type tag;
     };
 
-    cas_type cas = 0;
+    // FIXME 在 Windows 系统上的 MinGW 编译器有个bug: 会忽略 union 内的 "就地初始化"
+    //       (c++11新特性，直接在成员后加 "=" 号来初始化)。
+    //       虽然在编译时没有报错，但是会导致该成员在运行时处于未初始化状态
+    cas_type cas;
 
     TagedPtr()
+        : cas(0) // NOTE 使用构造函数的初始化列表来避免上述"就地初始化"问题
     {}
 
     TagedPtr(T *p, tag_type t)
