@@ -1,5 +1,6 @@
 ﻿
 #include <assert.h>
+#include <sstream>
 
 #include <nut/platform/path.h>
 
@@ -147,9 +148,10 @@ void XmlDom::serielize(std::string *appended, bool format) const
         appended->push_back('\n');
 
     // xml elements
-    StdStringWriter sw(appended);
-    XmlWriter w(&sw);
+    std::stringstream ss;
+    XmlWriter w(&ss);
     _root->serielize(w, format ? 0 : -1);
+    *appended += ss.str();
 }
 
 }

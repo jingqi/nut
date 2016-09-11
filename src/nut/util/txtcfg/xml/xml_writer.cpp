@@ -6,8 +6,8 @@
 namespace nut
 {
 
-XmlWriter::XmlWriter(StringWriter *writer)
-    : _writer(writer)
+XmlWriter::XmlWriter(std::ostream *os)
+    : _os(os)
 {}
 
 void XmlWriter::start_element(const char *name)
@@ -93,9 +93,14 @@ void XmlWriter::write_comment(const char *comment)
 
 void XmlWriter::write(const char *s, int len)
 {
-    if (NULL == _writer)
+    if (NULL == _os)
         return;
-    _writer->write(s, len);
+    if (NULL == s || 0 == len)
+        return;
+    if (len < 0)
+        *_os << s;
+    for (int i = 0; i < len && '\0' != s[i]; ++i)
+        *_os << s[i];
 }
 
 void XmlWriter::write_encode(const char *s, int len)

@@ -1,5 +1,6 @@
 ﻿
 #include <assert.h>
+#include <sstream>
 
 #include <nut/util/string/string_util.h>
 
@@ -304,9 +305,10 @@ void XmlElement::parse(const std::string& s, size_t start_index, bool ignore_tex
 void XmlElement::serielize(std::string *appended, bool format) const
 {
     assert(NULL != appended);
-    StdStringWriter sw(appended);
-    XmlWriter w(&sw);
+    std::stringstream ss;
+    XmlWriter w(&ss);
     serielize(w, format ? 0 : -1);
+    *appended += ss.str();
 }
 
 void XmlElement::serielize(XmlWriter &writer, int tab) const

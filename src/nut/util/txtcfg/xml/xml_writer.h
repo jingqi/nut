@@ -5,10 +5,9 @@
 #include <assert.h>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include <nut/nut_config.h>
-
-#include "string_writer.h"
 
 namespace nut
 {
@@ -25,20 +24,20 @@ class NUT_API XmlWriter
         {}
     };
 
-    StringWriter *_writer = NULL;
+    std::ostream *_os = NULL;
     std::vector<ElemState> _elem_path;
 
 public:
-    XmlWriter(StringWriter *writer = NULL);
+    XmlWriter(std::ostream *os = NULL);
 
-    StringWriter* get_writer() const
+    std::ostream* get_output_stream() const
     {
-        return _writer;
+        return _os;
     }
 
-    void set_writer(StringWriter *writer)
+    void set_output_stream(std::ostream *os)
     {
-        _writer = writer;
+        _os = os;
     }
 
     void start_element(const char *name);

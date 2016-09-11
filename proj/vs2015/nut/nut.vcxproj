@@ -174,7 +174,6 @@
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\property_dom.h" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\txt_file.h" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\element_handler.h" />
-    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\string_writer.h" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_dom.h" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_element.h" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_parser.h" />

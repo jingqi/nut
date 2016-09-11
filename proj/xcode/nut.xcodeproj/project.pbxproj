@@ -258,7 +258,6 @@
 		2E1927D21AD901A800FDFFA6 /* txt_file.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = txt_file.cpp; path = ../../src/nut/util/txtcfg/txt_file.cpp; sourceTree = "<group>"; };
 		2E1927D31AD901A800FDFFA6 /* txt_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = txt_file.h; path = ../../src/nut/util/txtcfg/txt_file.h; sourceTree = "<group>"; };
 		2E1927DB1AD901BA00FDFFA6 /* element_handler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = element_handler.h; path = ../../src/nut/util/txtcfg/xml/element_handler.h; sourceTree = "<group>"; };
-		2E1927DC1AD901BA00FDFFA6 /* string_writer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = string_writer.h; path = ../../src/nut/util/txtcfg/xml/string_writer.h; sourceTree = "<group>"; };
 		2E1927DD1AD901BA00FDFFA6 /* xml_dom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xml_dom.cpp; path = ../../src/nut/util/txtcfg/xml/xml_dom.cpp; sourceTree = "<group>"; };
 		2E1927DE1AD901BA00FDFFA6 /* xml_dom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xml_dom.h; path = ../../src/nut/util/txtcfg/xml/xml_dom.h; sourceTree = "<group>"; };
 		2E1927DF1AD901BA00FDFFA6 /* xml_element.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xml_element.cpp; path = ../../src/nut/util/txtcfg/xml/xml_element.cpp; sourceTree = "<group>"; };
@@ -765,7 +764,6 @@
 			isa = PBXGroup;
 			children = (
 				2E1927DB1AD901BA00FDFFA6 /* element_handler.h */,
-				2E1927DC1AD901BA00FDFFA6 /* string_writer.h */,
 				2E1927DD1AD901BA00FDFFA6 /* xml_dom.cpp */,
 				2E1927DE1AD901BA00FDFFA6 /* xml_dom.h */,
 				2E1927DF1AD901BA00FDFFA6 /* xml_element.cpp */,

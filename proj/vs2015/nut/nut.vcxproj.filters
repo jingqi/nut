@@ -169,9 +169,6 @@
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\element_handler.h">
       <Filter>nut\util\txtcfg\xml</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\string_writer.h">
-      <Filter>nut\util\txtcfg\xml</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_dom.h">
       <Filter>nut\util\txtcfg\xml</Filter>
     </ClInclude>

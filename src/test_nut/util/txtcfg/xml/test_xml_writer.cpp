@@ -1,4 +1,6 @@
 ﻿
+#include <sstream>
+
 #include <nut/unittest/unit_test.h>
 
 #include <nut/util/txtcfg/xml/xml_writer.h>
@@ -16,9 +18,8 @@ NUT_FIXTURE(TestXmlWriter)
 
     void test_smoke()
     {
-        string s;
-        StdStringWriter sw(&s);
-        XmlWriter w(&sw);
+        std::stringstream ss;
+        XmlWriter w(&ss);
         w.start_element("a");
         w.write_attribute("b","c&");
         w.write_attribute("c","\"");
@@ -33,13 +34,13 @@ NUT_FIXTURE(TestXmlWriter)
         w.end_element();
         
         //printf("%s", s.c_str());
-        const char *ss =
+        const char *s =
 			"<a b=\"c&amp;\" c=\"&quot;\">"
 				"<d e=\"&lt;\" />"
 				"<!--efg-->"
 				"h&gt;i"
 			"</a>";
-        NUT_TA(s == ss);
+        NUT_TA(ss.str() == s);
     }
 };
 
