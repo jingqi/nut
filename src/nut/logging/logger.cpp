@@ -138,7 +138,7 @@ void Logger::load_xml_config(const std::string& config)
 
     public:
         TagHandler()
-            : XmlElementHandler("", HANDLE_ATTRIBUTE)
+            : XmlElementHandler(HANDLE_ATTRIBUTE)
         {}
 
         void reset(LogFilter *filter)
@@ -177,7 +177,7 @@ void Logger::load_xml_config(const std::string& config)
 
     public:
         FilterHandler(TagHandler *tag_xml_handler)
-            : XmlElementHandler("Filter", HANDLE_CHILD), _tag_xml_handler(tag_xml_handler)
+            : XmlElementHandler(HANDLE_CHILD), _tag_xml_handler(tag_xml_handler)
         {
             assert(NULL != tag_xml_handler);
         }
@@ -217,7 +217,7 @@ void Logger::load_xml_config(const std::string& config)
 
     public:
         HandlerHandler(FilterHandler *filter_xml_handler)
-            : XmlElementHandler("Handler", HANDLE_ATTRIBUTE | HANDLE_CHILD),
+            : XmlElementHandler(HANDLE_ATTRIBUTE | HANDLE_CHILD),
               _filter_xml_handler(filter_xml_handler)
         {
             assert(NULL != filter_xml_handler);
@@ -354,7 +354,7 @@ void Logger::load_xml_config(const std::string& config)
 
     public:
         LoggerHandler(FilterHandler *filter_xml_handler, HandlerHandler *handler_xml_handler)
-            : XmlElementHandler("", HANDLE_CHILD), _filter_xml_handler(filter_xml_handler),
+            : XmlElementHandler(HANDLE_CHILD), _filter_xml_handler(filter_xml_handler),
             _handler_xml_handler(handler_xml_handler)
         {
             assert(NULL != filter_xml_handler && NULL != handler_xml_handler);
@@ -381,7 +381,7 @@ void Logger::load_xml_config(const std::string& config)
 
     public:
         RootHandler(LoggerHandler *logger_xml_handler)
-            : XmlElementHandler("", HANDLE_CHILD), _logger_xml_handler(logger_xml_handler)
+            : XmlElementHandler(HANDLE_CHILD), _logger_xml_handler(logger_xml_handler)
         {
             assert(NULL != logger_xml_handler);
         }

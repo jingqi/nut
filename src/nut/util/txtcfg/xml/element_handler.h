@@ -27,7 +27,7 @@ public:
 
 private:
     // 名称
-    const std::string _name;
+    std::string _name;
 
     // 控制处理哪些子元素
     const uint8_t _handle_mask = 0xFF;
@@ -36,12 +36,17 @@ private:
     bool _busy = false;
 
 public:
-    XmlElementHandler(const char *name = "", uint8_t mask = 0xFF)
-        : _name(name), _handle_mask(mask)
+    XmlElementHandler(uint8_t mask = 0xFF)
+        : _handle_mask(mask)
     {}
 
     virtual ~XmlElementHandler()
     {}
+
+    void set_name(const std::string& name)
+    {
+        _name = name;
+    }
 
     const std::string& get_name() const
     {

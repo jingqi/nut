@@ -604,6 +604,7 @@ void XmlParser::handle_child()
     if (NULL != child)
     {
         assert(!child->is_busy()); // Should not be used this moment
+        child->set_name(_tmp_name);
         child->set_busy(true);
     }
 
