@@ -54,3 +54,10 @@ mac {
 } else {
     LIBS += -lpthread
 }
+
+# dylib 安装路径
+mac:contains(TEMPLATE, lib):!contains(CONFIG, staticlib) {
+    QMAKE_POST_LINK = install_name_tool -id @rpath/lib$${TARGET}.dylib \
+        $${DESTDIR}/lib$${TARGET}.dylib$$escape_expand(\n\t)
+}
+
