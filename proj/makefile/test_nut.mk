@@ -2,19 +2,20 @@
 
 DEBUG ?= 0
 
+TARGET_NAME = test_nut
+
 CC = g++
 LD = gcc
 AR = ar
 
 # variables
-SRC_ROOT = ../../src/test_nut
+SRC_ROOT = ../../src/${TARGET_NAME}
 ifeq (${DEBUG}, 1)
 	OUT_DIR = $(CURDIR)/debug
 else
 	OUT_DIR = $(CURDIR)/release
 endif
-OBJ_ROOT = ${OUT_DIR}/obj/test_nut
-MAKEFILE = test_nut.mk
+OBJ_ROOT = ${OUT_DIR}/obj/${TARGET_NAME}
 
 # INC
 INC += -I${SRC_ROOT}/..
@@ -43,6 +44,13 @@ else
 	LIB_DEPS += ${OUT_DIR}/libnut.so
 endif
 
+# LD_FLAGS
+ifeq (${HOST},Darwin)
+	# 指定 rpath
+	LD_FLAGS += -Wl,-rpath,@executable_path
+	LD_FLAGS += -Wl,-rpath,@executable_path/../Frameworks
+endif
+
 # OBJS, DEPS
 DIRS = $(shell find ${SRC_ROOT} -maxdepth 10 -type d)
 CPPS = $(foreach dir,${DIRS},$(wildcard $(dir)/*.cpp))
@@ -50,7 +58,7 @@ OBJS = $(patsubst ${SRC_ROOT}%.cpp,${OBJ_ROOT}%.o,${CPPS})
 DEPS = ${OBJS:.o=.d}
 
 # TARGET
-TARGET = ${OUT_DIR}/test_nut
+TARGET = ${OUT_DIR}/${TARGET_NAME}
 
 # mkdirs
 $(shell mkdir -p $(patsubst ${SRC_ROOT}%,${OBJ_ROOT}%,${DIRS}))
@@ -70,33 +78,34 @@ clean:
 rebuild: clean all
 
 run: ${TARGET}
-	(cd ${OUT_DIR} ; ./test_nut)
+	(cd ${OUT_DIR} ; ./${TARGET_NAME})
 
 gdb: ${TARGET}
-	(cd ${OUT_DIR} ; gdb ./test_nut)
+	(cd ${OUT_DIR} ; gdb ./${TARGET_NAME})
 
 cgdb: ${TARGET}
-	(cd ${OUT_DIR} ; cgdb ./test_nut)
+	(cd ${OUT_DIR} ; cgdb ./${TARGET_NAME})
 
 lldb: ${TARGET}
-	(cd ${OUT_DIR} ; lldb ./test_nut)
+	(cd ${OUT_DIR} ; lldb ./${TARGET_NAME})
 
 nemiver: ${TARGET}
-	(cd ${OUT_DIR} ; nemiver ./test_nut)
+	(cd ${OUT_DIR} ; nemiver ./${TARGET_NAME})
 
 valgrind: ${TARGET}
-	(cd ${OUT_DIR} ; valgrind -v --leak-check=full ./test_nut)
+	(cd ${OUT_DIR} ; valgrind -v --leak-check=full ./${TARGET_NAME})
 
 # NOTE: in linux, ${LIB} should be the last parameter
-${TARGET}: ${OBJS} ${LIB_DEPS} ${MAKEFILE}
-	${CC} -o $@ ${OBJS} ${LIB}
+THIS_MAKEFILE = $(abspath $(firstword $(MAKEFILE_LIST)))
+${TARGET}: ${OBJS} ${LIB_DEPS} ${THIS_MAKEFILE}
+	${LD} ${OBJS} ${LIB} ${LD_FLAGS} -o $@
 
-${OBJ_ROOT}/%.o: ${SRC_ROOT}/%.cpp ${MAKEFILE}
+${OBJ_ROOT}/%.o: ${SRC_ROOT}/%.cpp ${THIS_MAKEFILE}
 	${CC} ${INC} ${DEF} ${CC_FLAGS} -c $< -o $@
 
 ## 动态生成依赖关系
 # %.d: %.cpp
-${OBJ_ROOT}/%.d: ${SRC_ROOT}/%.cpp ${MAKEFILE}
+${OBJ_ROOT}/%.d: ${SRC_ROOT}/%.cpp ${THIS_MAKEFILE}
 	@rm -f $@
 	@# 向 *.d.$ 中写入 "xx/xx/*.d xx/xx/*.o:\" 这样一个字符串
 	@echo '$@ $@.o:\' | sed 's/[.]d[.]o/.o/g' > $@.$$

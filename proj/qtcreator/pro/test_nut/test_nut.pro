@@ -54,3 +54,9 @@ mac {
     LIBS += -lpthread
 }
 LIBS += -L$${DESTDIR} -lnut
+
+# dylib 安装路径
+mac:contains(TEMPLATE, app) {
+    QMAKE_LFLAGS += -Wl,-rpath,@executable_path -Wl,-rpath,@executable_path/../Frameworks
+    QMAKE_LFLAGS_RPATH =
+}

@@ -2,19 +2,20 @@
 
 DEBUG ?= 0
 
+TARGET_NAME = nut
+
 CC = g++
 LD = gcc
 AR = ar
 
 # variables
-SRC_ROOT = ../../src/nut
+SRC_ROOT = ../../src/${TARGET_NAME}
 ifeq (${DEBUG}, 1)
 	OUT_DIR = $(CURDIR)/debug
 else
 	OUT_DIR = $(CURDIR)/release
 endif
-OBJ_ROOT = ${OUT_DIR}/obj/nut
-MAKEFILE = nut.mk
+OBJ_ROOT = ${OUT_DIR}/obj/${TARGET_NAME}
 
 # INC
 INC += -I${SRC_ROOT}/..
@@ -44,6 +45,12 @@ else
 	LIB += -lpthread -ldl
 endif
 
+# LD_FLAGS
+ifeq (${HOST}, Darwin)
+	# 相当于执行 `install_name_tool -id @rpath/lib${TARGET_NAME}.dylib ${TARGET}`
+	LD_FLAGS += -install_name @rpath/lib${TARGET_NAME}.dylib
+endif
+
 # OBJS, DEPS
 DIRS = $(shell find ${SRC_ROOT} -maxdepth 10 -type d)
 CPPS = $(foreach dir,${DIRS},$(wildcard $(dir)/*.cpp))
@@ -52,9 +59,9 @@ DEPS = ${OBJS:.o=.d}
 
 # TARGET
 ifeq (${HOST}, Darwin)
-	TARGET = ${OUT_DIR}/libnut.dylib
+	TARGET = ${OUT_DIR}/lib${TARGET_NAME}.dylib
 else
-	TARGET = ${OUT_DIR}/libnut.so
+	TARGET = ${OUT_DIR}/lib${TARGET_NAME}.so
 endif
 
 # mkdirs
@@ -71,15 +78,16 @@ clean:
 
 rebuild: clean all
 
-${TARGET}: ${OBJS} ${LIB_DEPS} ${MAKEFILE}
-	${LD} ${OBJS} ${LIB} -shared -o $@
+THIS_MAKEFILE = $(abspath $(firstword $(MAKEFILE_LIST)))
+${TARGET}: ${OBJS} ${LIB_DEPS} ${THIS_MAKEFILE}
+	${LD} ${OBJS} ${LIB} ${LD_FLAGS} -shared -o $@
 
-${OBJ_ROOT}/%.o: ${SRC_ROOT}/%.cpp ${MAKEFILE}
+${OBJ_ROOT}/%.o: ${SRC_ROOT}/%.cpp ${THIS_MAKEFILE}
 	${CC} ${INC} ${DEF} ${CC_FLAGS} -c $< -o $@
 
 ## 动态生成依赖关系
 # %.d: %.cpp
-${OBJ_ROOT}/%.d: ${SRC_ROOT}/%.cpp ${MAKEFILE}
+${OBJ_ROOT}/%.d: ${SRC_ROOT}/%.cpp ${THIS_MAKEFILE}
 	@rm -f $@
 	@# 向 *.d.$ 中写入 "xx/xx/*.d xx/xx/*.o:\" 这样一个字符串
 	@echo '$@ $@.o:\' | sed 's/[.]d[.]o/.o/g' > $@.$$
