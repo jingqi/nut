@@ -36,6 +36,12 @@ public:
     static std::wstring get_wcwd();
 
     /**
+     * 设置当前工作路径
+     */
+    static void chdir(const char *cwd);
+    static void chdir(const std::string& cwd);
+
+    /**
      * 查看指定路径是否为绝对路径
      */
     static bool is_abs(const char *path);

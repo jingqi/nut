@@ -119,6 +119,21 @@ std::wstring Path::get_wcwd()
     return ret;
 }
 
+void Path::chdir(const char *cwd)
+{
+    assert(NULL != cwd);
+#if NUT_PLATFORM_OS_WINDOWS
+    ::_chdir(cwd);
+#else
+    ::chdir(cwd);
+#endif
+}
+
+void Path::chdir(const std::string& cwd)
+{
+    Path::chdir(cwd.c_str());
+}
+
 bool Path::is_abs(const char *path)
 {
     assert(NULL != path);
