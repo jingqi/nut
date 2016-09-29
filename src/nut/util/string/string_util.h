@@ -100,6 +100,7 @@ NUT_API std::wstring rtrim(const wchar_t *str, const wchar_t *blanks = __NUT_DEF
 NUT_API std::wstring rtrim(const std::wstring& str, const std::wstring& blanks = __NUT_DEFAULT_BLANKSW);
 
 /** 忽略大小写的字符串比较 */
+NUT_API int chricmp(int c1, int c2);
 NUT_API int stricmp(const char *str1, const char *str2);
 NUT_API int stricmp(const std::string& str1, const std::string& str2);
 NUT_API int stricmp(const wchar_t *str1, const wchar_t *str2);

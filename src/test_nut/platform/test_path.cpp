@@ -277,16 +277,24 @@ NUT_FIXTURE(TestPath)
         NUT_TA(tmp == (c));
 
 #if NUT_PLATFORM_OS_WINDOWS
-        _H("/a/m/n", "/a/b/c", "..\\..\\m/n");
-        _H("/a/m/n/", "/a/b/c", "..\\..\\m/n");
-        _H("/a/m/n", "/a/b/c/", "..\\..\\m/n");
-        _H("/a/m/n/", "/a/b/c/", "..\\..\\m/n/");
-        _H("//a//m//n//", "/a/b/c/", "..\\..\\m/n/");
+        _H("/a/m/n", "/a/b/c", "..\\..\\m\\n");
+        _H("/a/m/n/", "/a/b/c", "..\\..\\m\\n");
+        _H("/a/m/n", "/a/b/c/", "..\\..\\m\\n");
+        _H("/a/m/n/", "/a/b/c/", "..\\..\\m\\n");
+        _H("//a//m//n//", "/a/b/c/", "..\\..\\m\\n");
+
+        _H("/A/m/n", "/a/b/c", "..\\..\\m\\n");
 
         _H("/a", "/a/b/c", "..\\..");
         _H("/a/", "/a/b/c", "..\\..");
         _H("/a", "/a/b/c/", "..\\..");
         _H("/a/", "/a/b/c/", "..\\..");
+
+        _H("/a/m/n", "/a", "m\\n");
+        _H("/a/m/n/", "/a", "m\\n");
+        _H("/a/m/n", "/a/", "m\\n");
+        _H("/a/m/n/", "/a/", "m\\n");
+        _H("/a//m/n", "/a", "m\\n");
 #else
         _H("/a/m/n", "/a/b/c", "../../m/n");
         _H("/a/m/n/", "/a/b/c", "../../m/n");
@@ -298,13 +306,14 @@ NUT_FIXTURE(TestPath)
         _H("/a/", "/a/b/c", "../..");
         _H("/a", "/a/b/c/", "../..");
         _H("/a/", "/a/b/c/", "../..");
-#endif
 
         _H("/a/m/n", "/a", "m/n");
         _H("/a/m/n/", "/a", "m/n");
         _H("/a/m/n", "/a/", "m/n");
         _H("/a/m/n/", "/a/", "m/n");
         _H("/a//m/n", "/a", "m/n");
+#endif
+
 
         _H("/a/m/n", "/a/m/n/", ".");
 
@@ -321,16 +330,22 @@ NUT_FIXTURE(TestPath)
         NUT_TA(tmp == (c));
 
 #if NUT_PLATFORM_OS_WINDOWS
-        _H(L"/a/m/n", L"/a/b/c", L"..\\..\\m/n");
-        _H(L"/a/m/n/", L"/a/b/c", L"..\\..\\m/n");
-        _H(L"/a/m/n", L"/a/b/c/", L"..\\..\\m/n");
-        _H(L"/a/m/n/", L"/a/b/c/", L"..\\..\\m/n/");
-        _H(L"//a//m//n//", L"/a/b/c/", L"..\\..\\m/n/");
+        _H(L"/a/m/n", L"/a/b/c", L"..\\..\\m\\n");
+        _H(L"/a/m/n/", L"/a/b/c", L"..\\..\\m\\n");
+        _H(L"/a/m/n", L"/a/b/c/", L"..\\..\\m\\n");
+        _H(L"/a/m/n/", L"/a/b/c/", L"..\\..\\m\\n");
+        _H(L"//a//m//n//", L"/a/b/c/", L"..\\..\\m\\n");
 
         _H(L"/a", L"/a/b/c", L"..\\..");
         _H(L"/a/", L"/a/b/c", L"..\\..");
         _H(L"/a", L"/a/b/c/", L"..\\..");
         _H(L"/a/", L"/a/b/c/", L"..\\..");
+
+        _H(L"/a/m/n", L"/a", L"m\\n");
+        _H(L"/a/m/n/", L"/a", L"m\\n");
+        _H(L"/a/m/n", L"/a/", L"m\\n");
+        _H(L"/a/m/n/", L"/a/", L"m\\n");
+        _H(L"/a//m/n", L"/a", L"m\\n");
 #else
         _H(L"/a/m/n", L"/a/b/c", L"../../m/n");
         _H(L"/a/m/n/", L"/a/b/c", L"../../m/n");
@@ -342,13 +357,13 @@ NUT_FIXTURE(TestPath)
         _H(L"/a/", L"/a/b/c", L"../..");
         _H(L"/a", L"/a/b/c/", L"../..");
         _H(L"/a/", L"/a/b/c/", L"../..");
-#endif
 
         _H(L"/a/m/n", L"/a", L"m/n");
         _H(L"/a/m/n/", L"/a", L"m/n");
         _H(L"/a/m/n", L"/a/", L"m/n");
         _H(L"/a/m/n/", L"/a/", L"m/n");
         _H(L"/a//m/n", L"/a", L"m/n");
+#endif
 
         _H(L"/a/m/n", L"/a/m/n/", L".");
 

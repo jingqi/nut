@@ -501,8 +501,11 @@ NUT_API std::wstring rtrim(const std::wstring& str, const std::wstring& blanks)
     return rtrim(str.c_str(), blanks.c_str());
 }
 
-static int charicmp(int c1, int c2)
+NUT_API int chricmp(int c1, int c2)
 {
+    static_assert(((int) 'A') == ((int) L'A') && ((int) 'Z') == ((int) L'Z') &&
+                  ((int) 'a') == ((int) L'a') && ((int) 'z') == ((int) L'z'),
+                  "wchar_t ASCII 字符编码问题");
     if ('A' <= c1 && c1 <= 'Z')
         c1 |= 0x20;
     if ('A' <= c2 && c2 <= 'Z')
@@ -515,9 +518,9 @@ NUT_API int stricmp(const char *str1, const char *str2)
 {
     assert(NULL != str1 && NULL != str2);
     size_t i = 0;
-    while (0 != str1[i] && 0 == charicmp(str1[i], str2[i]))
+    while (0 != str1[i] && 0 == chricmp(str1[i], str2[i]))
         ++i;
-    return charicmp(str1[i], str2[i]);
+    return chricmp(str1[i], str2[i]);
 }
 
 NUT_API int stricmp(const std::string& str1, const std::string& str2)
@@ -529,9 +532,9 @@ NUT_API int stricmp(const wchar_t *str1, const wchar_t *str2)
 {
     assert(NULL != str1 && NULL != str2);
     size_t i = 0;
-    while (0 != str1[i] && 0 == charicmp(str1[i], str2[i]))
+    while (0 != str1[i] && 0 == chricmp(str1[i], str2[i]))
         ++i;
-    return charicmp(str1[i], str2[i]);
+    return chricmp(str1[i], str2[i]);
 }
 
 NUT_API int stricmp(const std::wstring& str1, const std::wstring& str2)
@@ -543,11 +546,11 @@ NUT_API int strincmp(const char *str1, const char *str2, size_t n)
 {
     assert(NULL != str1 && NULL != str2);
     size_t i = 0;
-    while (i < n && 0 == charicmp(str1[i], str2[i]))
+    while (i < n && 0 == chricmp(str1[i], str2[i]))
         ++i;
     if (i >= n)
         return 0;
-    return charicmp(str1[i], str2[i]);
+    return chricmp(str1[i], str2[i]);
 }
 
 NUT_API int strincmp(const std::string& str1, const std::string& str2, size_t n)
@@ -559,11 +562,11 @@ NUT_API int strincmp(const wchar_t *str1, const wchar_t *str2, size_t n)
 {
     assert(NULL != str1 && NULL != str2);
     size_t i = 0;
-    while (i < n && 0 == charicmp(str1[i], str2[i]))
+    while (i < n && 0 == chricmp(str1[i], str2[i]))
         ++i;
     if (i >= n)
         return 0;
-    return charicmp(str1[i], str2[i]);
+    return chricmp(str1[i], str2[i]);
 }
 
 NUT_API int strincmp(const std::wstring& str1, const std::wstring& str2, size_t n)

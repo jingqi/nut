@@ -422,8 +422,13 @@ void Path::relative_path(const char *input_path, const char *ref_path, std::stri
         const char c1 = (i < input_length ? abs_input_path.at(i) : seperator()),
             c2 = (i < ref_length ? abs_ref_path.at(i) : seperator());
         const bool s1 = is_path_separator(c1), s2 = is_path_separator(c2);
+#if NUT_PLATFORM_OS_WINDOWS
+        if (0 != chricmp(c1, c2) && !(s1 && s2))
+            break;
+#else
         if (c1 != c2 && !(s1 && s2))
             break;
+#endif
         if (s1)
             common_length = i + 1;
     }
@@ -496,8 +501,13 @@ void Path::relative_path(const wchar_t *input_path, const wchar_t *ref_path, std
         const wchar_t c1 = (i < input_length ? abs_input_path.at(i) : wseperator()),
             c2 = (i < ref_length ? abs_ref_path.at(i) : wseperator());
         const bool s1 = is_path_separator(c1), s2 = is_path_separator(c2);
+#if NUT_PLATFORM_OS_WINDOWS
+        if (0 != chricmp(c1, c2) && !(s1 && s2))
+            break;
+#else
         if (c1 != c2 && !(s1 && s2))
             break;
+#endif
         if (s1)
             common_length = i + 1;
     }
