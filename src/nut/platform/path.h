@@ -61,7 +61,22 @@ public:
     static std::string abs_path(const std::string& path);
     static std::wstring abs_path(const std::wstring& path);
 
-    // TODO static std::string relative_path() {}
+    /**
+     * 将路径转换为相对路径
+     */
+    static void relative_path(const char *input_path, const char *ref_path,
+                              std::string *result);
+    static void relative_path(const wchar_t *input_path, const wchar_t *ref_path,
+                              std::wstring *result);
+    static void relative_path(const std::string& input_path, const std::string& ref_path,
+                              std::string *result);
+    static void relative_path(const std::wstring& input_path, const std::wstring& ref_path,
+                              std::wstring *result);
+    static std::string relative_path(const char *input_path, const char *ref_path);
+    static std::wstring relative_path(const wchar_t *input_path, const wchar_t *ref_path);
+    static std::string relative_path(const std::string& input_path, const std::string& ref_path);
+    static std::wstring relative_path(const std::wstring& input_path, const std::wstring& ref_path);
+
     // TODO static std::string real_path() {}
 
     /**

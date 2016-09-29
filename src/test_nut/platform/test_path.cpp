@@ -17,8 +17,10 @@ NUT_FIXTURE(TestPath)
     NUT_CASE(test_split_extw)
     NUT_CASE(test_join)
     NUT_CASE(test_joinw)
-    NUT_CASE(test_abspath)
-    NUT_CASE(test_abspathw)
+    NUT_CASE(test_abs_path)
+    NUT_CASE(test_abs_pathw)
+    NUT_CASE(test_relative_path)
+    NUT_CASE(test_relative_pathw)
     NUT_CASES_END()
 
     void test_split()
@@ -143,7 +145,7 @@ NUT_FIXTURE(TestPath)
         NUT_TA(tmp == L"c:\\tmp");
     }
 
-    void test_abspath()
+    void test_abs_path()
     {
         // cout << Path::abspath("/a//c");
 
@@ -204,8 +206,7 @@ NUT_FIXTURE(TestPath)
 #endif
     }
 
-
-    void test_abspathw()
+    void test_abs_pathw()
     {
         // cout << Path::abspath("/a//c");
 
@@ -264,6 +265,94 @@ NUT_FIXTURE(TestPath)
 #else
         NUT_TA(tmp == L"/a/c");
 #endif
+    }
+
+    void test_relative_path()
+    {
+        std::string tmp;
+
+#define _H(a, b, c)                             \
+        tmp.clear();                            \
+        Path::relative_path((a), (b), &tmp);    \
+        NUT_TA(tmp == (c));
+
+#if NUT_PLATFORM_OS_WINDOWS
+        _H("/a/m/n", "/a/b/c", "..\\..\\m/n");
+        _H("/a/m/n/", "/a/b/c", "..\\..\\m/n");
+        _H("/a/m/n", "/a/b/c/", "..\\..\\m/n");
+        _H("/a/m/n/", "/a/b/c/", "..\\..\\m/n/");
+        _H("//a//m//n//", "/a/b/c/", "..\\..\\m/n/");
+
+        _H("/a", "/a/b/c", "..\\..");
+        _H("/a/", "/a/b/c", "..\\..");
+        _H("/a", "/a/b/c/", "..\\..");
+        _H("/a/", "/a/b/c/", "..\\..");
+#else
+        _H("/a/m/n", "/a/b/c", "../../m/n");
+        _H("/a/m/n/", "/a/b/c", "../../m/n");
+        _H("/a/m/n", "/a/b/c/", "../../m/n");
+        _H("/a/m/n/", "/a/b/c/", "../../m/n");
+        _H("//a//m//n//", "/a/b/c/", "../../m/n");
+
+        _H("/a", "/a/b/c", "../..");
+        _H("/a/", "/a/b/c", "../..");
+        _H("/a", "/a/b/c/", "../..");
+        _H("/a/", "/a/b/c/", "../..");
+#endif
+
+        _H("/a/m/n", "/a", "m/n");
+        _H("/a/m/n/", "/a", "m/n");
+        _H("/a/m/n", "/a/", "m/n");
+        _H("/a/m/n/", "/a/", "m/n");
+        _H("/a//m/n", "/a", "m/n");
+
+        _H("/a/m/n", "/a/m/n/", ".");
+
+#undef _H
+    }
+
+    void test_relative_pathw()
+    {
+        std::wstring tmp;
+
+#define _H(a, b, c)                             \
+        tmp.clear();                            \
+        Path::relative_path((a), (b), &tmp);    \
+        NUT_TA(tmp == (c));
+
+#if NUT_PLATFORM_OS_WINDOWS
+        _H(L"/a/m/n", L"/a/b/c", L"..\\..\\m/n");
+        _H(L"/a/m/n/", L"/a/b/c", L"..\\..\\m/n");
+        _H(L"/a/m/n", L"/a/b/c/", L"..\\..\\m/n");
+        _H(L"/a/m/n/", L"/a/b/c/", L"..\\..\\m/n/");
+        _H(L"//a//m//n//", L"/a/b/c/", L"..\\..\\m/n/");
+
+        _H(L"/a", L"/a/b/c", L"..\\..");
+        _H(L"/a/", L"/a/b/c", L"..\\..");
+        _H(L"/a", L"/a/b/c/", L"..\\..");
+        _H(L"/a/", L"/a/b/c/", L"..\\..");
+#else
+        _H(L"/a/m/n", L"/a/b/c", L"../../m/n");
+        _H(L"/a/m/n/", L"/a/b/c", L"../../m/n");
+        _H(L"/a/m/n", L"/a/b/c/", L"../../m/n");
+        _H(L"/a/m/n/", L"/a/b/c/", L"../../m/n");
+        _H(L"//a//m//n//", L"/a/b/c/", L"../../m/n");
+
+        _H(L"/a", L"/a/b/c", L"../..");
+        _H(L"/a/", L"/a/b/c", L"../..");
+        _H(L"/a", L"/a/b/c/", L"../..");
+        _H(L"/a/", L"/a/b/c/", L"../..");
+#endif
+
+        _H(L"/a/m/n", L"/a", L"m/n");
+        _H(L"/a/m/n/", L"/a", L"m/n");
+        _H(L"/a/m/n", L"/a/", L"m/n");
+        _H(L"/a/m/n/", L"/a/", L"m/n");
+        _H(L"/a//m/n", L"/a", L"m/n");
+
+        _H(L"/a/m/n", L"/a/m/n/", L".");
+
+#undef _H
     }
 };
 

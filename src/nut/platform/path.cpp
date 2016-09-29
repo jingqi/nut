@@ -404,6 +404,196 @@ std::wstring Path::abs_path(const std::wstring& path)
     return ret;
 }
 
+void Path::relative_path(const char *input_path, const char *ref_path, std::string *result)
+{
+    assert(NULL != input_path && NULL != ref_path && NULL != result);
+
+    std::string abs_input_path;
+    abs_path(input_path, &abs_input_path);
+    std::string abs_ref_path;
+    abs_path(ref_path, &abs_ref_path);
+
+    // 查找公共父目录
+    const size_t input_length = abs_input_path.length(),
+        ref_length = abs_ref_path.length();
+    size_t common_length = 0;
+    for (size_t i = 0; i <= input_length && i <= ref_length; ++i)
+    {
+        const char c1 = (i < input_length ? abs_input_path.at(i) : seperator()),
+            c2 = (i < ref_length ? abs_ref_path.at(i) : seperator());
+        const bool s1 = is_path_separator(c1), s2 = is_path_separator(c2);
+        if (c1 != c2 && !(s1 && s2))
+            break;
+        if (s1)
+            common_length = i + 1;
+    }
+
+    // Windows 下磁盘号不同，无法求得相对路径
+    if (0 == common_length)
+    {
+        *result += abs_input_path;
+        return;
+    }
+
+    // 参考路径距离公共父目录的层数
+    size_t parent_level = 0, name_length = 0;
+    for (size_t i = common_length; i < ref_length; ++i)
+    {
+        const char c = abs_ref_path.at(i);
+        if (is_path_separator(c))
+        {
+            if (name_length > 0)
+                ++parent_level;
+            name_length = 0;
+        }
+        else
+        {
+            ++name_length;
+        }
+    }
+    if (name_length > 0)
+        ++parent_level;
+
+    // 拼接最终结果
+    size_t tail_start = common_length;
+    while (tail_start < input_length &&
+           is_path_separator(abs_input_path.at(tail_start)))
+        ++tail_start;
+    if (0 == parent_level && tail_start >= input_length)
+    {
+        *result += '.';
+        return;
+    }
+    for (size_t i = 0; i < parent_level; ++i)
+    {
+        if (0 != i)
+            result->push_back(seperator());
+        *result += "..";
+    }
+    if (tail_start < input_length)
+    {
+        if (parent_level > 0)
+            result->push_back(seperator());
+        *result += abs_input_path.c_str() + tail_start;
+    }
+}
+
+void Path::relative_path(const wchar_t *input_path, const wchar_t *ref_path, std::wstring *result)
+{
+    assert(NULL != input_path && NULL != ref_path && NULL != result);
+
+    std::wstring abs_input_path;
+    abs_path(input_path, &abs_input_path);
+    std::wstring abs_ref_path;
+    abs_path(ref_path, &abs_ref_path);
+
+    // 查找公共父目录
+    const size_t input_length = abs_input_path.length(),
+        ref_length = abs_ref_path.length();
+    size_t common_length = 0;
+    for (size_t i = 0; i <= input_length && i <= ref_length; ++i)
+    {
+        const wchar_t c1 = (i < input_length ? abs_input_path.at(i) : wseperator()),
+            c2 = (i < ref_length ? abs_ref_path.at(i) : wseperator());
+        const bool s1 = is_path_separator(c1), s2 = is_path_separator(c2);
+        if (c1 != c2 && !(s1 && s2))
+            break;
+        if (s1)
+            common_length = i + 1;
+    }
+
+    // Windows 下磁盘号不同，无法求得相对路径
+    if (0 == common_length)
+    {
+        *result += abs_input_path;
+        return;
+    }
+
+    // 参考路径距离公共父目录的层数
+    size_t parent_level = 0, name_length = 0;
+    for (size_t i = common_length; i < ref_length; ++i)
+    {
+        const wchar_t c = abs_ref_path.at(i);
+        if (is_path_separator(c))
+        {
+            if (name_length > 0)
+                ++parent_level;
+            name_length = 0;
+        }
+        else
+        {
+            ++name_length;
+        }
+    }
+    if (name_length > 0)
+        ++parent_level;
+
+    // 拼接最终结果
+    size_t tail_start = common_length;
+    while (tail_start < input_length &&
+           is_path_separator(abs_input_path.at(tail_start)))
+        ++tail_start;
+    if (0 == parent_level && tail_start >= input_length)
+    {
+        *result += L'.';
+        return;
+    }
+    for (size_t i = 0; i < parent_level; ++i)
+    {
+        if (0 != i)
+            result->push_back(wseperator());
+        *result += L"..";
+    }
+    if (tail_start < input_length)
+    {
+        if (parent_level > 0)
+            result->push_back(wseperator());
+        *result += abs_input_path.c_str() + tail_start;
+    }
+}
+
+void Path::relative_path(const std::string& input_path, const std::string& ref_path, std::string *result)
+{
+    assert(NULL != result);
+    relative_path(input_path.c_str(), ref_path.c_str(), result);
+}
+
+void Path::relative_path(const std::wstring& input_path, const std::wstring& ref_path, std::wstring *result)
+{
+    assert(NULL != result);
+    relative_path(input_path.c_str(), ref_path.c_str(), result);
+}
+
+std::string Path::relative_path(const char *input_path, const char *ref_path)
+{
+    assert(NULL != input_path && NULL != ref_path);
+    std::string result;
+    relative_path(input_path, ref_path, &result);
+    return result;
+}
+
+std::wstring Path::relative_path(const wchar_t *input_path, const wchar_t *ref_path)
+{
+    assert(NULL != input_path && NULL != ref_path);
+    std::wstring result;
+    relative_path(input_path, ref_path, &result);
+    return result;
+}
+
+std::string Path::relative_path(const std::string& input_path, const std::string& ref_path)
+{
+    std::string result;
+    relative_path(input_path.c_str(), ref_path.c_str(), &result);
+    return result;
+}
+
+std::wstring Path::relative_path(const std::wstring& input_path, const std::wstring& ref_path)
+{
+    std::wstring result;
+    relative_path(input_path.c_str(), ref_path.c_str(), &result);
+    return result;
+}
+
 /**
  * 从路径中划分出父路径和 文件/文件夹 名
  *
