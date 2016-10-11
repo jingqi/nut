@@ -40,7 +40,7 @@ ifeq (${HOST}, Darwin)
 	LIB += -lc++
 	LIB_DEPS += ${OUT_DIR}/libnut.dylib
 else
-	LIB += -lpthread
+	LIB += -lstdc++ -lpthread
 	LIB_DEPS += ${OUT_DIR}/libnut.so
 endif
 
@@ -78,6 +78,7 @@ clean:
 rebuild: clean all
 
 run: ${TARGET}
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${OUT_DIR} ;\
 	(cd ${OUT_DIR} ; ./${TARGET_NAME})
 
 gdb: ${TARGET}
