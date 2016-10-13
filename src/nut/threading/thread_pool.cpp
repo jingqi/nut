@@ -41,7 +41,7 @@ void ThreadPool::start()
     }
 }
 
-void ThreadPool::interupt()
+void ThreadPool::interrupt()
 {
     _interrupt = true;
     _condition.broadcast();

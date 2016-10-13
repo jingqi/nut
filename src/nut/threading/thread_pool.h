@@ -53,7 +53,7 @@ public:
 
     void start();
 
-    void interupt();
+    void interrupt();
 
     void join();
 

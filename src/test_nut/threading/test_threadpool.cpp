@@ -55,7 +55,7 @@ NUT_FIXTURE(TestThreading)
         printf("z");
         tp->add_task(custom, (void*)'Z');
 
-        tp->interupt();
+        tp->interrupt();
 
         printf("i");
         tp->add_task(custom, (void*)'I');
