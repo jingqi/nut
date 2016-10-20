@@ -21,9 +21,12 @@ else
 	LIB += -lstdc++
 endif
 
+# phony target used to mark force executing
+.PHONY: FORCE
+
 ## *.cpp -> *.o
 ${OBJ_ROOT}/%.o: ${SRC_ROOT}/%.cpp
-	${CXX} ${INC} ${DEF} ${CXX_FLAGS} -c $< -o $@
+	$(CXX) ${INC} ${DEF} ${CXX_FLAGS} -c $< -o $@
 
 ## automatically make dependence rules
 # %.d %.o: %.cpp
@@ -32,7 +35,7 @@ ${OBJ_ROOT}/%.d: ${SRC_ROOT}/%.cpp
 	@# 向 *.d.$ 中写入 "xx/xx/*.d xx/xx/*.o:\" 这样一个字符串
 	@echo '$@ $@.o:\' | sed 's/[.]d[.]o/.o/g' > $@.$$
 	@# 向 *.d.$.$ 中写入用 gcc -MM 生成的初始依赖关系
-	${CXX} ${INC} ${DEF} ${CXX_FLAGS} -MM $< > $@.$$.$$
+	$(CXX) ${INC} ${DEF} ${CXX_FLAGS} -MM $< > $@.$$.$$
 	@# 将 *.d.$.$ 中内容去除冒号前的内容，剩余内容写入 *.d.$ 中
 	@sed 's/^.*[:]//g' < $@.$$.$$ >> $@.$$
 	@# 空行

@@ -31,7 +31,7 @@ else
 	TARGET = ${OUT_DIR}/lib${TARGET_NAME}.so
 endif
 
-.PHONY: all clean
+.PHONY: all clean rebuild
 
 all: ${TARGET}
 
@@ -42,8 +42,8 @@ clean:
 
 rebuild:
 	# 顺序执行，不会并行
-	make -f nut.mk clean
-	make -f nut.mk all
+	$(MAKE) -f nut.mk clean
+	$(MAKE) -f nut.mk all
 
 # rules
 include common_rules.mk

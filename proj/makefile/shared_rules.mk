@@ -10,4 +10,4 @@ endif
 
 # TARGET
 ${TARGET}: ${OBJS} ${LIB_DEPS}
-	${CXX} ${OBJS} ${LIB} ${LD_FLAGS} -shared -o $@
+	$(CXX) ${OBJS} ${LIB} ${LD_FLAGS} -shared -o $@

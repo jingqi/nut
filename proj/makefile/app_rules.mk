@@ -30,4 +30,4 @@ valgrind: ${TARGET}
 
 # NOTE: in linux, ${LIB} should be the last parameter of ${CXX}
 ${TARGET}: ${OBJS} ${LIB_DEPS}
-	${CXX} ${OBJS} ${LIB} ${LD_FLAGS} -o $@
+	$(CXX) ${OBJS} ${LIB} ${LD_FLAGS} -o $@

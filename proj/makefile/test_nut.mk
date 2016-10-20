@@ -36,18 +36,18 @@ TARGET = ${OUT_DIR}/${TARGET_NAME}
 all: ${TARGET}
 
 clean:
-	make -f nut.mk clean
+	$(MAKE) -f nut.mk clean
 	rm -rf ${OBJS}
 	rm -rf ${DEPS}
 	rm -rf ${TARGET}
 
 rebuild:
 	# 顺序执行，不会并行
-	make -f test_nut.mk clean
-	make -f test_nut.mk all
+	$(MAKE) -f test_nut.mk clean
+	$(MAKE) -f test_nut.mk all
 
-${LIB_NUT}:
-	make -f nut.mk
+${LIB_NUT}: FORCE
+	$(MAKE) -f nut.mk
 
 # rules
 include common_rules.mk

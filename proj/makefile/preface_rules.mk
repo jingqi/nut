@@ -2,6 +2,7 @@
 # built-in variables
 DEBUG ?= 0
 
+MAKE ?= make
 CC ?= gcc
 CXX ?= g++
 AR ?= ar
