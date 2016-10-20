@@ -1,12 +1,20 @@
 
+## 预定义变量和规则
+
 # built-in variables
 DEBUG ?= 0
 
 MAKE ?= make
+
 CC ?= gcc
 CXX ?= g++
+
 AR ?= ar
 LD ?= ld
+
+BISON ?= bison
+FLEX ?= flex
+RAGEL ?= ragel
 
 # predefined variables
 HOST = $(shell uname -s)
@@ -20,7 +28,7 @@ endif
 OBJ_ROOT = ${OUT_DIR}/obj/${TARGET_NAME}
 
 # OBJS, DEPS
-DIRS = $(shell find ${SRC_ROOT} -maxdepth 10 -type d)
+DIRS = $(shell find ${SRC_ROOT} -maxdepth 100 -type d)
 CPPS = $(foreach dir,${DIRS},$(wildcard $(dir)/*.cpp))
 OBJS = $(patsubst ${SRC_ROOT}%.cpp,${OBJ_ROOT}%.o,${CPPS})
 DEPS = ${OBJS:.o=.d}

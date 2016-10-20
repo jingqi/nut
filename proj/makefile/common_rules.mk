@@ -1,4 +1,6 @@
 
+## 通用规则
+
 # CXX_FLAGS
 CXX_FLAGS += -Wall
 ifeq (${DEBUG}, 1)

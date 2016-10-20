@@ -1,4 +1,6 @@
 
+## 生成可执行文件规则
+
 # LD_FLAGS
 ifeq (${HOST},Darwin)
 	# 指定 rpath
