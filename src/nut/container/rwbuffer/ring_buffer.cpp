@@ -149,6 +149,8 @@ size_t RingBuffer::skip_read(size_t len)
 size_t RingBuffer::readable_pointers(const void **buf_ptr1, size_t *len_ptr1,
                                      const void **buf_ptr2, size_t *len_ptr2) const
 {
+    VALIDATE_MEMBERS();
+
     if (_write_index == _read_index)
         return 0;
 
@@ -217,6 +219,8 @@ size_t RingBuffer::skip_write(size_t len)
 size_t RingBuffer::writable_pointers(void **buf_ptr1, size_t *len_ptr1,
                                   void **buf_ptr2, size_t *len_ptr2)
 {
+    VALIDATE_MEMBERS();
+
     if (writable_size() == 0)
         return 0;
 

@@ -1,4 +1,6 @@
 ﻿
+#include <iostream>
+
 #include <nut/unittest/unit_test.h>
 
 #include <nut/container/rwbuffer/ring_buffer.h>
@@ -25,7 +27,7 @@ NUT_FIXTURE(TestRingBuffer)
 
         void *wbufs[2];
         NUT_TA(rb.writable_pointers(wbufs, lens, wbufs + 1, lens + 1) == 0);
-        
+
         uint8_t buf[10];
         rb.write(buf, 10);
         NUT_TA(rb.readable_size() == 10);
@@ -37,9 +39,9 @@ NUT_FIXTURE(TestRingBuffer)
         NUT_TA(rb.readable_size() == 8);
         NUT_TA(rb.writable_size() == wsize + 2);
         NUT_TA(rb.readable_pointers(rbufs, lens, rbufs + 1, lens + 1) == 1);
-        NUT_TA(lens[0] == 8 && 0 == ::memcmp(rbufs[0], buf, 8));
+        NUT_TA(lens[0] == 8 && 0 == ::memcmp(rbufs[0], buf + 2, 8));
     }
-    
+
     void test_wrap_write()
     {
         // test half wrap
