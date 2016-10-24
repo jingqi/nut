@@ -76,6 +76,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\test_nut\container\bytestream\test_bytearraystream.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\container\rwbuffer\test_fragment_buffer.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\container\rwbuffer\test_ring_buffer.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\container\skiplist\test_skiplist.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\container\test_array.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\container\test_bitstream.cpp" />

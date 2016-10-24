@@ -79,6 +79,8 @@
     <ClInclude Include="..\..\..\src\nut\container\integer_set.h" />
     <ClInclude Include="..\..\..\src\nut\container\lru_cache.h" />
     <ClInclude Include="..\..\..\src\nut\container\lru_data_cache.h" />
+    <ClInclude Include="..\..\..\src\nut\container\rwbuffer\fragment_buffer.h" />
+    <ClInclude Include="..\..\..\src\nut\container\rwbuffer\ring_buffer.h" />
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist.h" />
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist_map.h" />
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist_set.h" />
@@ -184,6 +186,8 @@
     <ClCompile Include="..\..\..\src\nut\container\bytestream\byte_array_stream.cpp" />
     <ClCompile Include="..\..\..\src\nut\container\bytestream\input_stream.cpp" />
     <ClCompile Include="..\..\..\src\nut\container\bytestream\output_stream.cpp" />
+    <ClCompile Include="..\..\..\src\nut\container\rwbuffer\fragment_buffer.cpp" />
+    <ClCompile Include="..\..\..\src\nut\container\rwbuffer\ring_buffer.cpp" />
     <ClCompile Include="..\..\..\src\nut\debugging\addr_map_mgr.cpp" />
     <ClCompile Include="..\..\..\src\nut\debugging\backtrace.cpp" />
     <ClCompile Include="..\..\..\src\nut\debugging\source_location.cpp" />

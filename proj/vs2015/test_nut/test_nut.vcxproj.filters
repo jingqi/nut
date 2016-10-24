@@ -70,6 +70,9 @@
     <Filter Include="test\util\string">
       <UniqueIdentifier>{e315eb3c-fb74-4c53-acae-5c9df16c0eb4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="test\container\rwbuffer">
+      <UniqueIdentifier>{dd0c6153-fbf8-4f93-99cd-93e509e0e8ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\test_nut\container\bytestream\test_bytearraystream.cpp">
@@ -194,6 +197,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\test_nut\mem\test_segments_mp.cpp">
       <Filter>test\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\rwbuffer\test_fragment_buffer.cpp">
+      <Filter>test\container\rwbuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\rwbuffer\test_ring_buffer.cpp">
+      <Filter>test\container\rwbuffer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
