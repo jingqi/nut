@@ -13,7 +13,7 @@
 
 using namespace nut;
 
-NUT_FIXTURE(TestThreading)
+NUT_FIXTURE(TestThreadpool)
 {
     NUT_CASES_BEGIN()
     NUT_CASE(test_manual)
@@ -62,4 +62,4 @@ NUT_FIXTURE(TestThreading)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestThreading, "threading")
+NUT_REGISTER_FIXTURE(TestThreadpool, "threading")

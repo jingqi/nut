@@ -60,7 +60,13 @@ static void print_platform()
 	);
 }
 
-int main()
+static void print_help()
+{
+    std::cout << "test_nut [-h] [-g GROUP] [-f FIXTURE] [-c CASE_FIXTURE CASE_NAME]" <<
+        std::endl;
+}
+
+int main(int argc, char *argv[])
 {
 #if NUT_PLATFORM_OS_LINUX
     // 解决 std::wcout 无法显示中文以及 char/wchar_t 相互转换问题
@@ -76,16 +82,72 @@ int main()
     StreamTestLogger l(&std::cout);
 #endif
 
-    TestRunner trunner(&l);
+    TestRunner runner(&l);
+    if (argc <= 1)
+    {
+        // default action
+        runner.run_group("quiet");
+    }
+    else
+    {
+        for (int i = 1; i < argc; ++i)
+        {
+            const char *arg = argv[i];
+            if (0 == ::strcmp(arg, "-h"))
+            {
+                print_help();
+            }
+            else if (0 == ::strcmp(arg, "-g"))
+            {
+                if (i + 1 < argc)
+                {
+                    runner.run_group(argv[i + 1]);
+                }
+                else
+                {
+                    std::cerr << "need group name!" << std::endl;
+                    print_help();
+                }
+                i += 1;
+            }
+            else if (0 == ::strcmp(arg, "-f"))
+            {
+                if (i + 1 < argc)
+                {
+                    runner.run_fixture(argv[i + 1]);
+                }
+                else
+                {
+                    std::cerr << "need fixture name!" << std::endl;
+                    print_help();
+                }
+                i += 1;
+            }
+            else if (0 == ::strcmp(arg, "-c"))
+            {
+                if (i + 2 < argc)
+                {
+                    runner.run_case(argv[i + 1], argv[i + 2]);
+                }
+                else
+                {
+                    std::cerr << "need fixture name of case, and case name!" <<
+                        std::endl;
+                    print_help();
+                }
+                i += 2;
+            }
+            else
+            {
+                std::cerr << "unknown option: " << arg << std::endl;
+                print_help();
+                return -1;
+            }
+        }
+    }
 
-    trunner.run_group("quiet");
-
-    // trunner.run_fixture("TestIntegerSet");
-
-    // trunner.run_case("TestNumericAlgo", "test_karatsuba_multiply");
-
-    printf("press any key to continue...");
 #if NUT_PLATFORM_OS_WINDOWS
+    printf("press any key to continue...");
     getch();
 #endif
 
