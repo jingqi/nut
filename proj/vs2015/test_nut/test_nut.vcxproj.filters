@@ -204,5 +204,8 @@
     <ClCompile Include="..\..\..\src\test_nut\container\rwbuffer\test_ring_buffer.cpp">
       <Filter>test\container\rwbuffer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\util\time\test_timer_wheel.cpp">
+      <Filter>test\util\time</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

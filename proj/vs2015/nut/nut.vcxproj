@@ -172,6 +172,7 @@
     <ClInclude Include="..\..\..\src\nut\util\time\date_time.h" />
     <ClInclude Include="..\..\..\src\nut\util\time\timer_manager.h" />
     <ClInclude Include="..\..\..\src\nut\util\time\time_val.h" />
+    <ClInclude Include="..\..\..\src\nut\util\time\time_wheel.h" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\ini_dom.h" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\property_dom.h" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\txt_file.h" />
@@ -242,6 +243,7 @@
     <ClCompile Include="..\..\..\src\nut\util\time\date_time.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\time\timer_manager.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\time\time_val.cpp" />
+    <ClCompile Include="..\..\..\src\nut\util\time\time_wheel.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\txtcfg\ini_dom.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\txtcfg\property_dom.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\txtcfg\txt_file.cpp" />

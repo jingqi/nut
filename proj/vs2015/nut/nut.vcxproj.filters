@@ -427,6 +427,9 @@
     <ClInclude Include="..\..\..\src\nut\container\rwbuffer\ring_buffer.h">
       <Filter>nut\container\rwbuffer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\time\time_wheel.h">
+      <Filter>nut\util\time</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">
@@ -629,6 +632,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\container\rwbuffer\ring_buffer.cpp">
       <Filter>nut\container\rwbuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\time\time_wheel.cpp">
+      <Filter>nut\util\time</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
