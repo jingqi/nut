@@ -11,10 +11,17 @@
 
 #define VALID_MASK 0x5011de5a
 
-// ms -> clock
-#define MS_TO_CLOCK(ms) ((ms) * CLOCKS_PER_SEC / 1000)
-// clock -> ms
-#define CLOCK_TO_MS(c) ((c) * 1000 / CLOCKS_PER_SEC)
+#if NUT_PLATFORM_OS_WINDOWS
+#   define CLOCK_IS_ZERO(c) (0 == (c))
+#   define CLOCK_TO_MS(c) ((c) * 1000 / CLOCKS_PER_SEC)
+#   define CLOCK_DIFF_TO_MS(a,b) CLOCK_TO_MS((a) - (b))
+#else
+#   define CLOCK_ID CLOCK_MONOTONIC_RAW_APPROX
+// #   define CLOCK_ID CLOCK_MONOTONIC_RAW
+#   define CLOCK_IS_ZERO(c) (0 == (c).tv_sec && 0 == (c).tv_nsec)
+#   define CLOCK_TO_MS(c) ((c).tv_sec * 1000 + (c).tv_nsec / 1000000)
+#   define CLOCK_DIFF_TO_MS(a,b) (((a).tv_sec - (b).tv_sec) * 1000 + ((a).tv_nsec - (b).tv_nsec) / 1000000)
+#endif
 
 namespace nut
 {
@@ -27,6 +34,12 @@ TimeWheel::TimeWheel()
         for (int j = 0; j < BUCKETS_PER_WHERE; ++j)
             w.buckets[j] = NULL;
     }
+
+#if NUT_PLATFORM_OS_WINDOWS
+    _first_clock = 0;
+#else
+    ::memset(&_first_clock, 0, sizeof(_first_clock));
+#endif
 }
 
 TimeWheel::~TimeWheel()
@@ -34,13 +47,13 @@ TimeWheel::~TimeWheel()
     clear();
 }
 
-TimeWheel::Timer* TimeWheel::new_timer(uint64_t when, uint64_t repeat_ms,
+TimeWheel::Timer* TimeWheel::new_timer(uint64_t when_ms, uint64_t repeat_ms,
                                        timer_func_t func, void *arg)
 {
     Timer *t = (Timer*) ::malloc(sizeof(Timer));
     assert(NULL != t);
     t->valid_mask = VALID_MASK;
-    t->when = when;
+    t->when_ms = when_ms;
     t->repeat_ms = repeat_ms;
     t->func = func;
     t->arg = arg;
@@ -57,13 +70,13 @@ void TimeWheel::delete_timer(Timer *t)
 
 size_t TimeWheel::size() const
 {
-    assert(!_in_tick);
+    assert(!_ticking);
     return _size;
 }
 
 void TimeWheel::clear()
 {
-    assert(!_in_tick);
+    assert(!_ticking);
 
     for (int i = 0; i < WHEEL_COUNT; ++i)
     {
@@ -87,22 +100,23 @@ TimeWheel::timer_id_t TimeWheel::add_timer(Timer *t)
 {
     assert(NULL != t);
 
-    uint64_t expires = (t->when > _last_tick ? t->when - _last_tick : 1);
-    assert(expires > 0); // Min expires is 1
+    const uint64_t when_tick = t->when_ms / TICK_GRANULARITY_MS;
+    uint64_t expires_tick = (when_tick > _last_tick ? when_tick - _last_tick : 1);
+    assert(expires_tick > 0); // Min expires tick is 1
     for (int i = 0; i < WHEEL_COUNT; ++i)
     {
         Wheel& w = _wheels[i];
 
-        if (expires <= BUCKETS_PER_WHERE)
+        if (expires_tick <= BUCKETS_PER_WHERE)
         {
-            const int bucket_index = (w.cursor + expires) % BUCKETS_PER_WHERE;
+            const int bucket_index = (w.cursor + expires_tick) % BUCKETS_PER_WHERE;
             t->next = w.buckets[bucket_index];
             w.buckets[bucket_index] = t;
             ++_size;
             return t;
         }
-        expires += w.cursor;
-        expires /= BUCKETS_PER_WHERE;
+        expires_tick += w.cursor;
+        expires_tick /= BUCKETS_PER_WHERE;
     }
 
     // Time out of range
@@ -114,14 +128,18 @@ TimeWheel::timer_id_t TimeWheel::add_timer(uint64_t interval, uint64_t repeat,
 {
     assert(NULL != func);
 
+#if NUT_PLATFORM_OS_WINDOWS
     const clock_t now_clock = ::clock();
-    if (0 == _first_clock)
+#else
+    struct timespec now_clock;
+    ::clock_gettime(CLOCK_ID, &now_clock);
+#endif
+
+    if (CLOCK_IS_ZERO(_first_clock))
         _first_clock = now_clock;
 
-    const uint64_t when = (CLOCK_TO_MS(now_clock - _first_clock) +
-                           interval) / TICK_INTERVAL_MS;
-
-    Timer *t = new_timer(when, repeat, func, arg);
+    const uint64_t when_ms = CLOCK_DIFF_TO_MS(now_clock, _first_clock) + interval;
+    Timer *t = new_timer(when_ms, repeat, func, arg);
     assert(NULL != t);
     timer_id_t rs = add_timer(t);
     if (NULL == rs)
@@ -131,19 +149,20 @@ TimeWheel::timer_id_t TimeWheel::add_timer(uint64_t interval, uint64_t repeat,
 
 bool TimeWheel::do_cancel_timer(Timer *t)
 {
-    assert(NULL != t && !_in_tick);
+    assert(NULL != t && !_ticking);
     if (VALID_MASK != t->valid_mask)
         return false;
 
-    uint64_t expires = (t->when > _last_tick ? t->when - _last_tick : 1);
-    assert(expires > 0); // Min expires is 1
+    const uint64_t when_tick = t->when_ms / TICK_GRANULARITY_MS;
+    uint64_t expires_tick = (when_tick > _last_tick ? when_tick - _last_tick : 1);
+    assert(expires_tick > 0); // Min expires tick is 1
     for (int i = 0; i < WHEEL_COUNT; ++i)
     {
         Wheel& w = _wheels[i];
 
-        if (expires <= BUCKETS_PER_WHERE)
+        if (expires_tick <= BUCKETS_PER_WHERE)
         {
-            const int bucket_index = (w.cursor + expires) % BUCKETS_PER_WHERE;
+            const int bucket_index = (w.cursor + expires_tick) % BUCKETS_PER_WHERE;
             Timer *pre = NULL, *p = w.buckets[bucket_index];
             while (NULL != p)
             {
@@ -161,9 +180,9 @@ bool TimeWheel::do_cancel_timer(Timer *t)
                 p = p->next;
             }
         }
-        expires += w.cursor;
-        expires /= BUCKETS_PER_WHERE;
-        if (0 == expires)
+        expires_tick += w.cursor;
+        expires_tick /= BUCKETS_PER_WHERE;
+        if (0 == expires_tick)
             break;
     }
     return false;
@@ -176,7 +195,7 @@ void TimeWheel::cancel_timer(timer_id_t timer_id)
     Timer *t = (Timer*) timer_id;
     if (VALID_MASK != t->valid_mask)
         return;
-    if (_in_tick)
+    if (_ticking)
         _to_be_canceled.push_back(t);
     else
         do_cancel_timer(t);
@@ -185,7 +204,7 @@ void TimeWheel::cancel_timer(timer_id_t timer_id)
 bool TimeWheel::timer_less(const Timer *t1, const Timer *t2)
 {
     assert(NULL != t1 && NULL != t2);
-    return t1->when < t2->when;
+    return t1->when_ms < t2->when_ms;
 }
 
 TimeWheel::Timer* TimeWheel::reverse_link(Timer *t)
@@ -203,15 +222,25 @@ TimeWheel::Timer* TimeWheel::reverse_link(Timer *t)
 
 void TimeWheel::tick()
 {
-    assert(!_in_tick);
-    if (0 == _first_clock || 0 == _size)
+    assert(!_ticking);
+    if (CLOCK_IS_ZERO(_first_clock) || 0 == _size)
         return;
-    const uint64_t now = CLOCK_TO_MS(::clock() - _first_clock) / TICK_INTERVAL_MS;
-    uint64_t elapse = now - _last_tick;
-    if (0 == elapse)
+
+#if NUT_PLATFORM_OS_WINDOWS
+    const clock_t now_clock = ::clock();
+#else
+    struct timespec now_clock;
+    ::clock_gettime(CLOCK_ID, &now_clock);
+#endif
+
+    const uint64_t now_ms = CLOCK_DIFF_TO_MS(now_clock, _first_clock);
+    const uint64_t now_tick = now_ms / TICK_GRANULARITY_MS;
+    uint64_t elapse_tick = now_tick - _last_tick;
+    if (0 == elapse_tick)
         return;
-    _in_tick = true;
-    _last_tick = now;
+
+    _ticking = true;
+    _last_tick = now_tick;
 
     // 找到所有需要操作的定时器
     Timer *timers = NULL; // 单链表
@@ -219,7 +248,7 @@ void TimeWheel::tick()
     {
         Wheel& w = _wheels[i];
 
-        for (int j = 1; j <= BUCKETS_PER_WHERE && j <= elapse; ++j)
+        for (int j = 1; j <= BUCKETS_PER_WHERE && j <= elapse_tick; ++j)
         {
             const int bucket_index = (w.cursor + j) % BUCKETS_PER_WHERE;
             Timer *t = w.buckets[bucket_index];
@@ -234,10 +263,10 @@ void TimeWheel::tick()
             w.buckets[bucket_index] = NULL;
         }
 
-        w.cursor += elapse;
+        w.cursor += elapse_tick;
         if (w.cursor < BUCKETS_PER_WHERE)
             break;
-        elapse = w.cursor / BUCKETS_PER_WHERE;
+        elapse_tick = w.cursor / BUCKETS_PER_WHERE;
         w.cursor %= BUCKETS_PER_WHERE;
     }
 
@@ -248,7 +277,7 @@ void TimeWheel::tick()
     while (NULL != t)
     {
         Timer *next = t->next;
-        if (t->when > now)
+        if (t->when_ms > now_ms)
         {
             // 对于需要切换时间轮的定时器，重新插入到时间轮中
             add_timer(t);
@@ -256,12 +285,12 @@ void TimeWheel::tick()
         else
         {
             // 调用定时器回调函数
-            t->func(t, t->arg, (now - t->when) * TICK_INTERVAL_MS);
+            t->func(t, t->arg, now_ms - t->when_ms);
 
             // 对于周期性定时器，重新插入到时间轮中
             if (t->repeat_ms > 0)
             {
-                t->when += t->repeat_ms / TICK_INTERVAL_MS;
+                t->when_ms += t->repeat_ms;
                 add_timer(t);
             }
             else
@@ -272,7 +301,7 @@ void TimeWheel::tick()
         t = next;
     }
 
-    _in_tick = false;
+    _ticking = false;
 
     // 删掉延迟删除的定时器
     for (size_t i = 0, size = _to_be_canceled.size(); i < size; ++i)

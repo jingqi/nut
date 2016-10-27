@@ -27,12 +27,12 @@ NUT_FIXTURE(TestTimeWheel)
     TimeWheel::timer_id_t id;
 
     long count = 0;
-    
+
     static void show(TimeWheel::timer_id_t id, void *arg, uint64_t expires)
     {
         TestTimeWheel *pthis = (TestTimeWheel*)arg;
 
-        cout << "-- " << pthis->count << " +" << expires << "ms" << endl;
+        cout << "-- " << pthis->count << " +" << expires << "ms" << endl << flush;
 
         if (pthis->count >= 20)
             pthis->tw.cancel_timer(id);
@@ -47,10 +47,11 @@ NUT_FIXTURE(TestTimeWheel)
         while (tw.size() > 0)
         {
             tw.tick();
+            // cout << "." << flush;
 #if NUT_PLATFORM_OS_WINDOWS
-            Sleep(10);
+            ::Sleep(TimeWheel::TICK_GRANULARITY_MS);
 #else
-            sleep(0.01);
+            ::usleep(TimeWheel::TICK_GRANULARITY_MS * 1000);
 #endif
         }
     }

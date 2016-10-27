@@ -6,6 +6,7 @@
 #include <time.h>
 
 #include <nut/nut_config.h>
+#include <nut/platform/platform.h>
 
 
 namespace nut
@@ -20,10 +21,14 @@ public:
     typedef void *timer_id_t; // 定时器 id 类型
     typedef void (*timer_func_t)(timer_id_t,void*,uint64_t); // 定时器回调函数类型
 
+    enum
+    {
+        TICK_GRANULARITY_MS = 10, // 每个 tick 粒度，单位: 毫秒
+    };
+
 private:
     enum
     {
-        TICK_INTERVAL_MS = 10,   // 每个 tick 粒度，单位: 毫秒
         BUCKETS_PER_WHERE = 256, // 每个 wheel 包含的 bucket 数
         WHEEL_COUNT = 5,         // wheel 数
     };
@@ -32,8 +37,10 @@ private:
     {
     public:
         uint32_t valid_mask = 0;
-        uint64_t when = 0;        // 具体 tick 位置
-        uint64_t repeat_ms = 0;      // 重复时间，单位: 毫秒
+
+        uint64_t when_ms = 0;
+        uint64_t repeat_ms = 0;   // 重复时间，单位: 毫秒
+
         timer_func_t func = NULL; // 定时器回调函数
         void *arg = NULL;         // 定时器用户参数
 
@@ -48,17 +55,24 @@ private:
     };
 
     Wheel _wheels[WHEEL_COUNT];
-    clock_t _first_clock = 0; // 计时起点
+
+    // 计时起点
+#if NUT_PLATFORM_OS_WINDOWS
+    clock_t _first_clock = 0;
+#else
+    struct timespec _first_clock;
+#endif
+
     uint64_t _last_tick = 0;  // 上一个 tick
     size_t _size = 0;         // 定时器数量
-    bool _in_tick = false;
-    std::vector<Timer*> _to_be_canceled;
+    bool _ticking = false;
+    std::vector<Timer*> _to_be_canceled; // 延迟取消列表
 
 private:
     TimeWheel(const TimeWheel&);
     TimeWheel& operator=(const TimeWheel&);
 
-    static Timer* new_timer(uint64_t when, uint64_t repeat_ms,
+    static Timer* new_timer(uint64_t when_ms, uint64_t repeat_ms,
                             timer_func_t func, void *arg);
     static void delete_timer(Timer *t);
 
