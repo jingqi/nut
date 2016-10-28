@@ -1,10 +1,13 @@
 ﻿
 #include <nut/platform/platform.h>
 
-#if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
+#if NUT_PLATFORM_OS_WINDOWS
+#   include <windows.h>
+#elif NUT_PLATFORM_OS_MAC
 #   include <unistd.h>
 #else
-#   include <windows.h>
+#   include <unistd.h>
+#   include <sys/time.h>
 #endif
 
 #include <stdio.h>
@@ -110,14 +113,15 @@ NUT_FIXTURE(TestTimeWheel)
             ::clock_gettime(CLOCK_MONOTONIC_RAW, &finish);
         END("::clock_gettime(CLOCK_MONOTONIC_RAW)")
 
+#if NUT_PLATFORM_OS_MAC
         BEGIN
             ::clock_gettime(CLOCK_MONOTONIC_RAW_APPROX, &finish);
-        END("::clock_gettime(CLOCK_MONOTONIC_RAW_APPROX)")
+        END("::clock_gettime(CLOCK_MONOTONIC_RAW)")
+#endif
 
         struct timeval tv;
-        struct timvezone tz;
         BEGIN
-            ::gettimeofday(&tv, &tz);
+            ::gettimeofday(&tv, NULL);
         END("::gettimeofday()")
 #endif
     }

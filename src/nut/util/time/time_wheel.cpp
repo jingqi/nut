@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include <vector>
 
 #include "time_wheel.h"
@@ -20,7 +21,6 @@
 #   define CLOCK_TO_MS(c) ((c).QuadPart * 1000 / _clock_freq.QuadPart)
 #   define CLOCK_DIFF_TO_MS(a,b) (((a).QuadPart - (b).QuadPart) * 1000 / _clock_freq.QuadPart)
 #else
-    // 使用 CLOCK_MONOTONIC_RAW 或者 CLOCK_MONOTONIC_RAW_APPROX
 #   define GET_CLOCK(name) \
         struct timespec name; \
         ::clock_gettime(CLOCK_MONOTONIC_RAW, &name)

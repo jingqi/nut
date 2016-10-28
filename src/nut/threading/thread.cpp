@@ -20,7 +20,7 @@ namespace nut
 {
 
 #if NUT_PLATFORM_OS_LINUX
-tid_t gettid()
+pid_t gettid()
 {
     return ::syscall(__NR_gettid);
 }
@@ -53,7 +53,7 @@ void* Thread::thread_entry(void *p)
     assert(NULL != p);
     Thread *pthis = (Thread*) p;
 #if NUT_PLATFORM_OS_LINUX
-    _tid = gettid();
+    pthis->_tid = gettid();
 #endif
     if (pthis->_thread_process != NULL)
         pthis->_thread_process(pthis->_thread_arg);
