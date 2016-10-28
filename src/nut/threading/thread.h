@@ -8,6 +8,9 @@
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
+#elif NUT_PLATFORM_OS_LINUX
+#   include <pthread.h>
+#   include <sys/types.h> // for tid_t
 #else
 #   include <pthread.h>
 #endif
@@ -29,10 +32,21 @@ public:
         // default do nothing
     }
 
+#if NUT_PLATFORM_OS_WINDOWS
+    typedef DWORD tid_type;
+#elif NUT_PLATFORM_OS_LINUX
+    typedef tid_t tid_type;
+#else
+    typedef pthread_t tid_type;
+#endif
+
 private:
 #if NUT_PLATFORM_OS_WINDOWS
     HANDLE _handle = NULL;
     DWORD _tid = 0;
+#elif NUT_PLATFORM_OS_LINUX
+    pthread_t _pthread;
+    tid_t _tid = 0;
 #else
     pthread_t _pthread;
 #endif
@@ -59,14 +73,20 @@ public:
 
     void set_thread_process(thread_process_type process);
     void set_thread_arg(void *arg);
-
+    
     bool has_started() const;
     bool has_finished() const;
 
-public:
+    /**
+     * 注意，只有线程启动后才可获取
+     */
+    tid_type get_tid() const;
+
     bool start();
     void join();
     void terminate();
+    
+    static tid_type current_thread_id();
 };
 
 }

@@ -56,7 +56,7 @@ TimeWheel::~TimeWheel()
 }
 
 TimeWheel::Timer* TimeWheel::new_timer(uint64_t when_ms, uint64_t repeat_ms,
-                                       timer_func_t func, void *arg)
+                                       timer_func_type func, void *arg)
 {
     Timer *t = (Timer*) ::malloc(sizeof(Timer));
     assert(NULL != t);
@@ -104,7 +104,7 @@ void TimeWheel::clear()
     _size = 0;
 }
 
-TimeWheel::timer_id_t TimeWheel::add_timer(Timer *t)
+TimeWheel::timer_id_type TimeWheel::add_timer(Timer *t)
 {
     assert(NULL != t);
 
@@ -131,8 +131,8 @@ TimeWheel::timer_id_t TimeWheel::add_timer(Timer *t)
     return NULL;
 }
 
-TimeWheel::timer_id_t TimeWheel::add_timer(uint64_t interval, uint64_t repeat,
-                                           timer_func_t func, void *arg)
+TimeWheel::timer_id_type TimeWheel::add_timer(uint64_t interval, uint64_t repeat,
+                                              timer_func_type func, void *arg)
 {
     assert(NULL != func);
 
@@ -144,7 +144,7 @@ TimeWheel::timer_id_t TimeWheel::add_timer(uint64_t interval, uint64_t repeat,
     const uint64_t when_ms = CLOCK_DIFF_TO_MS(now_clock, _first_clock) + interval;
     Timer *t = new_timer(when_ms, repeat, func, arg);
     assert(NULL != t);
-    timer_id_t rs = add_timer(t);
+    timer_id_type rs = add_timer(t);
     if (NULL == rs)
         delete_timer(t);
     return rs;
@@ -191,7 +191,7 @@ bool TimeWheel::do_cancel_timer(Timer *t)
     return false;
 }
 
-void TimeWheel::cancel_timer(timer_id_t timer_id)
+void TimeWheel::cancel_timer(timer_id_type timer_id)
 {
     if (NULL == timer_id)
         return;

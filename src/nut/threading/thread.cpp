@@ -4,15 +4,27 @@
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
+#elif NUT_PLATFORM_OS_LINUX
+#   include <pthread.h>
+#   include <signal.h> // for ::pthread_kill()
+#   include <unistd.h> // for ::syscall()
+#   include <sys/syscall.h> // for definition of __NR_*
 #else
 #   include <pthread.h>
-#   include <signal.h> // for pthread_kill()
+#   include <signal.h> // for ::pthread_kill()
 #endif
 
 #include "thread.h"
 
 namespace nut
 {
+
+#if NUT_PLATFORM_OS_LINUX
+tid_t gettid()
+{
+    return ::syscall(__NR_gettid);
+}
+#endif
 
 Thread::Thread(thread_process_type process, void *arg)
     : _thread_process(process), _thread_arg(arg)
@@ -40,6 +52,9 @@ void* Thread::thread_entry(void *p)
 {
     assert(NULL != p);
     Thread *pthis = (Thread*) p;
+#if NUT_PLATFORM_OS_LINUX
+    _tid = gettid();
+#endif
     if (pthis->_thread_process != NULL)
         pthis->_thread_process(pthis->_thread_arg);
     else
@@ -86,6 +101,16 @@ bool Thread::has_finished() const
         _has_finished = true;
 #endif
     return _has_finished;
+}
+
+Thread::tid_type Thread::get_tid() const
+{
+    assert(_has_started);
+#if NUT_PLATFORM_OS_WINDOWS || NUT_PLATFORM_OS_LINUX
+    return _tid;
+#else
+    return _pthread;
+#endif
 }
 
 bool Thread::start()
@@ -144,6 +169,17 @@ void Thread::terminate()
 #endif
 
     _has_finished = true;
+}
+
+Thread::tid_type Thread::current_thread_id()
+{
+#if NUT_PLATFORM_OS_WINDOWS
+    return ::GetCurrentThreadId();
+#elif NUT_PLATFORM_OS_LINUX
+    return gettid();
+#else
+    return ::pthread_self();
+#endif
 }
 
 }

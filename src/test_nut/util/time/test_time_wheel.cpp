@@ -25,11 +25,11 @@ NUT_FIXTURE(TestTimeWheel)
     NUT_CASES_END()
 
     TimeWheel tw;
-    TimeWheel::timer_id_t id;
+    TimeWheel::timer_id_type id;
 
     long count = 0;
 
-    static void show(TimeWheel::timer_id_t id, void *arg, uint64_t expires)
+    static void show(TimeWheel::timer_id_type id, void *arg, uint64_t expires)
     {
         TestTimeWheel *pthis = (TestTimeWheel*)arg;
 
