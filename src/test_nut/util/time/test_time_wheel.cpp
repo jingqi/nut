@@ -3,11 +3,9 @@
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
-#elif NUT_PLATFORM_OS_MAC
-#   include <unistd.h>
 #else
 #   include <unistd.h>
-#   include <sys/time.h>
+#   include <sys/time.h> // for ::gettimeofday()
 #endif
 
 #include <stdio.h>
@@ -116,7 +114,7 @@ NUT_FIXTURE(TestTimeWheel)
 #if NUT_PLATFORM_OS_MAC
         BEGIN
             ::clock_gettime(CLOCK_MONOTONIC_RAW_APPROX, &finish);
-        END("::clock_gettime(CLOCK_MONOTONIC_RAW)")
+        END("::clock_gettime(CLOCK_MONOTONIC_RAW_APPROX)")
 #endif
 
         struct timeval tv;
