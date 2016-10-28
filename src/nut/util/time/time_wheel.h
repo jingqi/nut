@@ -8,6 +8,9 @@
 #include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 
+#if NUT_PLATFORM_OS_WINDOWS
+#   include <windows.h>
+#endif
 
 namespace nut
 {
@@ -58,7 +61,7 @@ private:
 
     // 计时起点
 #if NUT_PLATFORM_OS_WINDOWS
-    clock_t _first_clock = 0;
+    LARGE_INTEGER _clock_freq, _first_clock;
 #else
     struct timespec _first_clock;
 #endif

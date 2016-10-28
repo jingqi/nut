@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
         // default action
         runner.run_group("quiet");
         // runner.run_fixture("TestTimeWheel");
+        // runner.run_case("TestTimeWheel", "test_smoke");
     }
     else
     {

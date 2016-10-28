@@ -12,12 +12,19 @@
 #define VALID_MASK 0x5011de5a
 
 #if NUT_PLATFORM_OS_WINDOWS
-#   define CLOCK_IS_ZERO(c) (0 == (c))
-#   define CLOCK_TO_MS(c) ((c) * 1000 / CLOCKS_PER_SEC)
-#   define CLOCK_DIFF_TO_MS(a,b) CLOCK_TO_MS((a) - (b))
+#   define GET_CLOCK(name) \
+        LARGE_INTEGER name; \
+        ::QueryPerformanceCounter(&name)
+
+#   define CLOCK_IS_ZERO(c) (0 == (c).QuadPart)
+#   define CLOCK_TO_MS(c) ((c).QuadPart * 1000 / _clock_freq.QuadPart)
+#   define CLOCK_DIFF_TO_MS(a,b) (((a).QuadPart - (b).QuadPart) * 1000 / _clock_freq.QuadPart)
 #else
-#   define CLOCK_ID CLOCK_MONOTONIC_RAW_APPROX
-// #   define CLOCK_ID CLOCK_MONOTONIC_RAW
+    // 使用 CLOCK_MONOTONIC_RAW 或者 CLOCK_MONOTONIC_RAW_APPROX
+#   define GET_CLOCK(name) \
+        struct timespec name; \
+        ::clock_gettime(CLOCK_MONOTONIC_RAW, &name)
+
 #   define CLOCK_IS_ZERO(c) (0 == (c).tv_sec && 0 == (c).tv_nsec)
 #   define CLOCK_TO_MS(c) ((c).tv_sec * 1000 + (c).tv_nsec / 1000000)
 #   define CLOCK_DIFF_TO_MS(a,b) (((a).tv_sec - (b).tv_sec) * 1000 + ((a).tv_nsec - (b).tv_nsec) / 1000000)
@@ -36,7 +43,8 @@ TimeWheel::TimeWheel()
     }
 
 #if NUT_PLATFORM_OS_WINDOWS
-    _first_clock = 0;
+    ::QueryPerformanceFrequency(&_clock_freq);
+    _first_clock.QuadPart = 0;
 #else
     ::memset(&_first_clock, 0, sizeof(_first_clock));
 #endif
@@ -128,12 +136,7 @@ TimeWheel::timer_id_t TimeWheel::add_timer(uint64_t interval, uint64_t repeat,
 {
     assert(NULL != func);
 
-#if NUT_PLATFORM_OS_WINDOWS
-    const clock_t now_clock = ::clock();
-#else
-    struct timespec now_clock;
-    ::clock_gettime(CLOCK_ID, &now_clock);
-#endif
+    GET_CLOCK(now_clock);
 
     if (CLOCK_IS_ZERO(_first_clock))
         _first_clock = now_clock;
@@ -226,12 +229,7 @@ void TimeWheel::tick()
     if (CLOCK_IS_ZERO(_first_clock) || 0 == _size)
         return;
 
-#if NUT_PLATFORM_OS_WINDOWS
-    const clock_t now_clock = ::clock();
-#else
-    struct timespec now_clock;
-    ::clock_gettime(CLOCK_ID, &now_clock);
-#endif
+    GET_CLOCK(now_clock);
 
     const uint64_t now_ms = CLOCK_DIFF_TO_MS(now_clock, _first_clock);
     const uint64_t now_tick = now_ms / TICK_GRANULARITY_MS;
