@@ -9,8 +9,11 @@
 
 /Debug
 /Release
+/x64
 /ipch
 /nut/Debug
 /nut/Release
+/nut/x64
 /test_nut/Debug
 /test_nut/Release
+/test_nut/x64

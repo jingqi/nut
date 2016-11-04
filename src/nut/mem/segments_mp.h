@@ -96,7 +96,7 @@ public:
 
         void *ret = _freelists[new_idx]->alloc(GRANULARITY * (new_idx + 1));
         assert(NULL != ret);
-        ::memcpy(ret, p, std::min(old_sz, new_sz));
+        ::memcpy(ret, p, (std::min)(old_sz, new_sz));
         _freelists[old_idx]->free(p, GRANULARITY * (old_idx + 1));
         return ret;
     }

@@ -9,7 +9,7 @@ namespace nut
 {
 
 lengthfixed_stmp::lengthfixed_stmp(size_t granularity, memory_allocator *ma)
-    : _alloc(ma), _granularity(std::max(granularity, sizeof(void*)))
+    : _alloc(ma), _granularity((std::max)(granularity, sizeof(void*)))
 {}
 
 lengthfixed_stmp::~lengthfixed_stmp()
@@ -36,7 +36,7 @@ void lengthfixed_stmp::clear()
 void* lengthfixed_stmp::alloc(size_t sz)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    assert(_granularity == std::max(sz, sizeof(void*)));
+    assert(_granularity == (std::max)(sz, sizeof(void*)));
 
     if (NULL == _head)
         return ma_alloc(_alloc, _granularity);
@@ -59,7 +59,7 @@ void* lengthfixed_stmp::realloc(void *p, size_t old_sz, size_t new_sz)
 void lengthfixed_stmp::free(void *p, size_t sz)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    assert(NULL != p && _granularity == std::max(sz, sizeof(void*)));
+    assert(NULL != p && _granularity == (std::max)(sz, sizeof(void*)));
 
     if (_free_num >= (int) MAX_FREE_NUM)
     {
@@ -78,7 +78,7 @@ namespace nut
 {
 
 lengthfixed_mtmp::lengthfixed_mtmp(size_t granularity, memory_allocator *ma)
-    : _alloc(ma), _granularity(std::max(granularity, sizeof(void*)))
+    : _alloc(ma), _granularity((std::max)(granularity, sizeof(void*)))
 {}
 
 lengthfixed_mtmp::~lengthfixed_mtmp()
@@ -91,35 +91,34 @@ void lengthfixed_mtmp::clear()
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
 
-    void *p = _head.ptr;
+    void *p = _head.pointer();
     while (NULL != p)
     {
         void *next = *reinterpret_cast<void**>(p);
         ma_free(_alloc, p, _granularity);
         p = next;
     }
-    _head.ptr = NULL;
+    _head.set_pointer(NULL);
     _free_num = 0;
 }
 
 void* lengthfixed_mtmp::alloc(size_t sz)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    assert(_granularity == std::max(sz, sizeof(void*)));
+    assert(_granularity == (std::max)(sz, sizeof(void*)));
 
     while (true)
     {
-        const TagedPtr<void> old_head(_head.cas);
+        const StampedPtr<void> old_head(_head);
 
-        if (NULL == old_head.ptr)
+        if (NULL == old_head.pointer())
             return ma_alloc(_alloc, _granularity);
 
-        void *next = *reinterpret_cast<void**>(old_head.ptr);
-        const TagedPtr<void> new_head(next, old_head.tag + 1);
-        if (atomic_cas(&(_head.cas), old_head.cas, new_head.cas))
+        void *next = *reinterpret_cast<void**>(old_head.pointer());
+        if (_head.compare_and_set(old_head, next))
         {
-            _free_num = std::max(0, _free_num - 1); // NOTE _free_num 在多线程下并不可靠
-            return old_head.ptr;
+            _free_num = (std::max)(0, _free_num - 1); // NOTE _free_num 在多线程下并不可靠
+            return old_head.pointer();
         }
     }
 }
@@ -136,7 +135,7 @@ void* lengthfixed_mtmp::realloc(void *p, size_t old_sz, size_t new_sz)
 void lengthfixed_mtmp::free(void *p, size_t sz)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    assert(NULL != p && _granularity == std::max(sz, sizeof(void*)));
+    assert(NULL != p && _granularity == (std::max)(sz, sizeof(void*)));
 
     while(true)
     {
@@ -146,13 +145,12 @@ void lengthfixed_mtmp::free(void *p, size_t sz)
             return;
         }
 
-        const TagedPtr<void> old_head(_head.cas);
-        *reinterpret_cast<void**>(p) = old_head.ptr;
-        const TagedPtr<void> new_head(p, old_head.tag + 1);
-        if (atomic_cas(&(_head.cas), old_head.cas, new_head.cas))
+        const StampedPtr<void> old_head(_head);
+        *reinterpret_cast<void**>(p) = old_head.pointer();
+        if (_head.compare_and_set(old_head, p))
         {
             // NOTE _free_num 在多线程下并不可靠
-            if (NULL == old_head.ptr)
+            if (NULL == old_head.pointer())
                 _free_num = 1;
             else
                 ++_free_num;

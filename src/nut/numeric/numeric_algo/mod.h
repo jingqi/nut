@@ -149,7 +149,9 @@ private:
 
 /**
 * 预算表法求乘模
-* 参见 《公开密钥密码算法及其快速实现》.周玉洁.冯国登.国防工业出版社.2002 P57
+*
+* 参考文献：
+*     [1]周玉洁，冯国登. 公开密钥密码算法及其快速实现[M]. 国防工业出版社. 2002. 57
  */
 template <size_t C>
 void mod_multiply(const BigInteger& b, const BigInteger& n, const ModMultiplyPreBuildTable<C>& table, BigInteger *rs)
@@ -182,7 +184,9 @@ void mod_multiply(const BigInteger& b, const BigInteger& n, const ModMultiplyPre
 
 /**
  * 求(a**b)%n，即a的b次方(模n)
- * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P576
+ *
+ * 参考文献：
+ *     [1]潘金贵，顾铁成. 现代计算机常用数据结构和算法[M]. 南京大学出版社. 1994. 576
  */
 NUT_API void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigInteger *rs);
 

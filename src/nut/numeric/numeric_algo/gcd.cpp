@@ -19,7 +19,9 @@ NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b)
 #if (OPTIMIZE_LEVEL == 0)
     /**
      * 欧几里德(EUCLID)算法，求最大公约数
-     * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P563
+     *
+     * 参考文献：
+     *     [1]潘金贵，顾铁成. 现代计算机常用数据结构和算法[M]. 南京大学出版社. 1994. 563
      */
     if (b.is_zero())
         return a;
@@ -27,7 +29,9 @@ NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b)
 #elif (OPTIMIZE_LEVEL == 1)
     /**
      * 利用二进制特性的gcd算法
-     * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P590
+     *
+     * 参考文献：
+     *     [1]潘金贵，顾铁成. 现代计算机常用数据结构和算法[M]. 南京大学出版社. 1994. 590
      */
     if (b.is_zero())
         return a;
@@ -191,7 +195,9 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
     /**
      * 欧几里得(EUCLID)算法的推广形式
      * d = gcd(a, b) = ax + by
-     * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P564
+     *
+     * 参考文献：
+     *     [1] 潘金贵，顾铁成. 现代计算机常用数据结构和算法[M]. 南京大学出版社. 1994. 564
      */
     if (b.is_zero())
     {
@@ -214,8 +220,10 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
 #elif (OPTIMIZE_LEVEL == 1)
     /**
      * 推广的 Euclidean 算法
-     * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P590
-     * 参见 《公开密钥密码算法及其快速实现》.周玉洁.冯国登.国防工业出版社.2002 P63
+     *
+     * 参考文献：
+     *     [1]潘金贵，顾铁成. 现代计算机常用数据结构和算法[M]. 南京大学出版社. 1994. 590
+     *     [2]周玉洁，冯国登. 公开密钥密码算法及其快速实现[M]. 国防工业出版社. 2002. 63
      */
     if (b.is_zero())
     {

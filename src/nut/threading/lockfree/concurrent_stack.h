@@ -14,21 +14,29 @@
 #   include <allocators>
 #endif
 
-#include "atomic.h"
+#include "stamped_ptr.h"
+
+
+// 消隐数组的指针常量
+#define COLLISION_EMPTY_PTR NULL
+#define COLLISION_DONE_PTR reinterpret_cast<Node*>(-1)
 
 namespace nut
 {
 
+/**
+ * 并发栈
+ */
 template <typename T, typename AllocT = std::allocator<T> >
 class ConcurrentStack
 {
-    /** 这里根据具体情况配置 */
+    // 这里根据具体情况配置
     enum
     {
-        /** 消隐使用的碰撞数组的大小 */
+        // 消隐使用的碰撞数组的大小
         COLLISIONS_ARRAY_SIZE = 5,
 
-        /** 消隐入队时等待碰撞的毫秒数 */
+        // 消隐入队时等待碰撞的毫秒数
         ELIMINATE_ENQUEUE_DELAY_MICROSECONDS = 10,
     };
 
@@ -42,26 +50,23 @@ class ConcurrentStack
         {}
     };
 
-    /** 尝试出栈的结果 */
+    // 尝试出栈的结果
     enum PopAttemptResult
     {
-        POP_SUCCESS /* 成功 */,
-        CONCURRENT_FAILURE /* 并发失败 */,
-        EMPTY_STACK_FAILURE /* 空栈 */
+        POP_SUCCESS, // 成功
+        CONCURRENT_FAILURE, // 并发失败
+        EMPTY_STACK_FAILURE, // 空栈
     };
 
-    /** 消隐数组的指针常量 */
-    enum { COLLISION_EMPTY_PTR = (int)NULL, COLLISION_DONE_PTR = -1 };
-
-    typedef AllocT                                data_allocator_type;
-    typedef typename AllocT::template rebind<Node>::other  node_allocator_type;
+    typedef AllocT                                        data_allocator_type;
+    typedef typename AllocT::template rebind<Node>::other node_allocator_type;
 
     data_allocator_type _data_alloc;
     node_allocator_type _node_alloc;
-    TagedPtr<Node> volatile _top;
+    StampedPtr<Node> _top;
 
-    /** 用于消隐的碰撞数组 */
-    TagedPtr<Node> volatile _collisions[COLLISIONS_ARRAY_SIZE];
+    // 用于消隐的碰撞数组
+    StampedPtr<Node> _collisions[COLLISIONS_ARRAY_SIZE];
 
 public:
     ConcurrentStack()
@@ -70,12 +75,12 @@ public:
     ~ConcurrentStack()
     {
         while (pop(NULL)) {}
-        assert(NULL == _top.ptr);
+        assert(NULL == _top.pointer());
     }
 
     bool is_empty() const
     {
-        return NULL == _top.ptr;
+        return NULL == _top.pointer();
     }
 
 public:
@@ -86,10 +91,9 @@ public:
 
         while (true)
         {
-            const TagedPtr<Node> old_top(_top.cas);
-            new_node->next = old_top.ptr;
-            const TagedPtr<Node> new_top(new_node, old_top.tag + 1);
-            if (atomic_cas(&(_top.cas), old_top.cas, new_top.cas))
+            const StampedPtr<Node> old_top(_top);
+            new_node->next = old_top.pointer();
+            if (_top.compare_and_set(old_top, new_node))
                 return;
         }
     }
@@ -98,18 +102,17 @@ public:
     {
         while (true)
         {
-            const TagedPtr<Node> old_top(_top.cas);
+            const StampedPtr<Node> old_top(_top);
 
-            if (NULL == old_top.ptr)
+            if (NULL == old_top.pointer())
                 return false;
 
-            const TagedPtr<Node> new_top(old_top.ptr->next, old_top.tag + 1);
-            if (atomic_cas(&(_top.cas), old_top.cas, new_top.cas))
+            if (_top.compare_and_set(old_top, old_top.pointer()->next))
             {
                 if (NULL != p)
-                    *p = old_top.ptr->data;
-                _data_alloc.destroy(&(old_top.ptr->data));
-                _node_alloc.deallocate(old_top.ptr, 1);
+                    *p = old_top.pointer()->data;
+                _data_alloc.destroy(&(old_top.pointer()->data));
+                _node_alloc.deallocate(old_top.pointer(), 1);
                 return true;
             }
         }
@@ -135,9 +138,9 @@ public:
         while (true)
         {
             const PopAttemptResult rs = pop_attempt(p);
-            if (rs == EMPTY_STACK_FAILURE)
+            if (EMPTY_STACK_FAILURE == rs)
                 return false;
-            else if (rs == POP_SUCCESS || try_to_eliminate_pop(p))
+            else if (POP_SUCCESS == rs || try_to_eliminate_pop(p))
                 return true;
         }
     }
@@ -145,26 +148,24 @@ public:
 private:
     bool push_attempt(Node *new_node)
     {
-        const TagedPtr<Node> old_top(_top.cas);
-        new_node->next = old_top.ptr;
-        const TagedPtr<Node> new_top(new_node, old_top.tag + 1);
-        return atomic_cas(&(_top.cas), old_top.cas, new_top.cas);
+        const StampedPtr<Node> old_top(_top);
+        new_node->next = old_top.pointer();
+        return _top.compare_and_set(old_top, new_node);
     }
 
     PopAttemptResult pop_attempt(T *p)
     {
-        const TagedPtr<Node> old_top(_top.cas);
+        const StampedPtr<Node> old_top(_top);
 
-        if (NULL == old_top.ptr)
+        if (NULL == old_top.pointer())
             return EMPTY_STACK_FAILURE;
 
-        const TagedPtr<Node> new_top(old_top.ptr->next, old_top.tag + 1);
-        if (atomic_cas(&(_top.cas), old_top.cas, new_top.cas))
+        if (_top.compare_and_set(old_top, old_top.pointer()->next))
         {
             if (NULL != p)
-                *p = old_top.ptr->data;
-            _data_alloc.destroy(&(old_top.ptr->data));
-            _node_alloc.deallocate(old_top.ptr, 1);
+                *p = old_top.pointer()->data;
+            _data_alloc.destroy(&(old_top.pointer()->data));
+            _node_alloc.deallocate(old_top.pointer(), 1);
             return POP_SUCCESS;
         }
         return CONCURRENT_FAILURE;
@@ -173,29 +174,30 @@ private:
     bool try_to_eliminate_push(Node *new_node)
     {
         const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
-        const TagedPtr<Node> old_collision_to_add(_collisions[i].cas);
-        if (old_collision_to_add.ptr != reinterpret_cast<Node*>(COLLISION_EMPTY_PTR))
+        const StampedPtr<Node> old_collision_to_add(_collisions[i]);
+        if (COLLISION_EMPTY_PTR != old_collision_to_add.pointer())
             return false;
 
         // 添加到碰撞数组
-        const TagedPtr<Node> new_collision_to_add(new_node, old_collision_to_add.tag + 1);
-        if (!atomic_cas(&(_collisions[i].cas), old_collision_to_add.cas, new_collision_to_add.cas))
+        if (!_collisions[i].compare_and_set(old_collision_to_add, new_node))
             return false;
 
         // 等待一段时间
 #if NUT_PLATFORM_OS_WINDOWS
         ::Sleep(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS);
 #elif NUT_PLATFORM_OS_LINUX
-        usleep(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS);
+        ::usleep(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS * 1000);
 #endif
 
         // 检查消隐是否成功
-        const TagedPtr<Node> old_collision_to_remove(_collisions[i].cas);
-        const TagedPtr<Node> new_collision_to_remove(reinterpret_cast<Node*>(COLLISION_EMPTY_PTR), old_collision_to_add.tag + 1);
-        if (old_collision_to_remove.ptr == reinterpret_cast<Node*>(COLLISION_DONE_PTR) ||
-            !atomic_cas(&(_collisions[i].cas), old_collision_to_remove.cas, new_collision_to_remove.cas))
+        const StampedPtr<Node> old_collision_to_remove(_collisions[i]);
+        if (COLLISION_DONE_PTR == old_collision_to_remove.pointer() ||
+            !_collisions[i].compare_and_set(old_collision_to_remove,
+                                            COLLISION_EMPTY_PTR,
+                                            old_collision_to_add.stamp_value() + 1))
         {
-            _collisions[i].cas = new_collision_to_remove.cas;
+            _collisions[i].set(COLLISION_EMPTY_PTR,
+                               old_collision_to_add.stamp_value() + 1);
             return true;
         }
 
@@ -205,18 +207,19 @@ private:
     bool try_to_eliminate_pop(T *p)
     {
         const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
-        const TagedPtr<Node> old_collision(_collisions[i].cas);
-        if (old_collision.ptr == reinterpret_cast<Node*>(COLLISION_EMPTY_PTR) ||
-            old_collision.ptr == reinterpret_cast<Node*>(COLLISION_DONE_PTR))
+        const StampedPtr<Node> old_collision(_collisions[i]);
+        if (COLLISION_EMPTY_PTR == old_collision.pointer() ||
+            COLLISION_DONE_PTR == old_collision.pointer())
             return false;
 
-        const TagedPtr<Node> new_collision(reinterpret_cast<Node*>(COLLISION_DONE_PTR), old_collision.tag);
-        if (atomic_cas(&(_collisions[i].cas), old_collision.cas, new_collision.cas))
+        if (_collisions[i].compare_and_set(old_collision,
+                                           COLLISION_DONE_PTR,
+                                           old_collision.stamp_value()))
         {
             if (NULL != p)
-                *p = old_collision.ptr->data;
-            _data_alloc.destroy(&(old_collision.ptr->data));
-            _node_alloc.deallocate(old_collision.ptr, 1);
+                *p = old_collision.pointer()->data;
+            _data_alloc.destroy(&(old_collision.pointer()->data));
+            _node_alloc.deallocate(old_collision.pointer(), 1);
             return true;
         }
         return false;
@@ -224,5 +227,8 @@ private:
 };
 
 }
+
+#undef COLLISION_EMPTY_PTR
+#undef COLLISION_DONE_PTR
 
 #endif

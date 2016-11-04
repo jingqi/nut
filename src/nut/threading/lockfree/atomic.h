@@ -143,61 +143,6 @@ NUT_API int16_t atomic_add(int16_t volatile *addend, int16_t value);
  */
 NUT_API uint16_t atomic_add(uint16_t volatile *addend, uint16_t value);
 
-/**
- * 为了避免 ABA 问题而引入的带标签的指针
- *
- * 解决 ABA 问题有几个方案：
- * 1. 由于指针地址一般是对齐的，用指针末尾的几个 bit 做一个时间戳 tag
- *    缺点是 tag 位数少，可能 wrap 后依然出现 ABA 问题; 如果指针不对齐(不推荐，但是有可能出现)，则
- *    不适用
- * 2. 在指针后附加一个大字段来表示时间戳，也就是下面的方案。
- *    缺点是，操作位数变长，性能有所损失
- */
-template <typename T>
-union TagedPtr
-{
-    /** 整体对应的CAS操作数类型 */
-#if NUT_PLATFORM_BITS_64
-    typedef uint64_t tag_type;
-    typedef uint128_t cas_type;
-#elif NUT_PLATFORM_BITS_32
-    typedef uint32_t tag_type;
-    typedef uint64_t cas_type;
-#elif NUT_PLATFORM_BITS_16
-    typedef uint16_t tag_type;
-    typedef uint32_t cas_type;
-#else
-#   error platform not supported!
-#endif
-
-    struct
-    {
-        T *ptr; // union 内部无法重复赋初值(字段 cas 已经初始化)
-        tag_type tag;
-    };
-
-    // FIXME 在 Windows 系统上的 MinGW 编译器有个bug: 会忽略 union 内的 "就地初始化"
-    //       (c++11新特性，直接在成员后加 "=" 号来初始化)。
-    //       虽然在编译时没有报错，但是会导致该成员在运行时处于未初始化状态
-    cas_type cas;
-
-    TagedPtr()
-        : cas(0) // NOTE 使用构造函数的初始化列表来避免上述"就地初始化"问题
-    {}
-
-    TagedPtr(T *p, tag_type t)
-        : ptr(p), tag(t)
-    {}
-
-    TagedPtr(cas_type c)
-        : cas(c)
-    {}
-};
-
-static_assert(sizeof(void*) == sizeof(TagedPtr<void>::tag_type), "TagedPtr 数据结构对齐问题");
-static_assert(sizeof(void*) * 2 == sizeof(TagedPtr<void>::cas_type), "TagedPtr 数据结构对齐问题");
-static_assert(sizeof(TagedPtr<void>) == sizeof(TagedPtr<void>::cas_type), "TagedPtr 数据结构对齐问题");
-
 }
 
 #endif /* head file guarder */

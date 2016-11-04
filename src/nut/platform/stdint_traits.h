@@ -12,10 +12,11 @@ typedef SSIZE_T ssize_t;
 #endif
 
 #if NUT_PLATFORM_BITS_64
-#   if NUT_PLATFORM_OS_WINDOWS
-typedef unsigned __int128 uint128_t;
-typedef signed __int128 int128_t;
+#   if NUT_PLATFORM_CC_VC
+        // FIXME 目前 vs2015 有 __int128 关键字的语法高亮，但是并不被编译器支持
+#       define NUT_HAS_INT128 0
 #   else
+#       define NUT_HAS_INT128 1
 typedef __uint128_t uint128_t;
 typedef __int128_t int128_t;
 #   endif
@@ -127,7 +128,7 @@ struct StdInt<uint64_t>
     typedef uint64_t unsigned_type;
     typedef int64_t signed_type;
 
-#if NUT_PLATFORM_BITS_64
+#if NUT_HAS_INT128
     typedef uint128_t double_type;
     typedef uint128_t double_unsigned_type;
     typedef int128_t double_signed_type;
@@ -145,14 +146,14 @@ struct StdInt<int64_t>
     typedef uint64_t unsigned_type;
     typedef int64_t signed_type;
 
-#if NUT_PLATFORM_BITS_64
+#if NUT_HAS_INT128
     typedef int128_t double_type;
     typedef uint128_t double_unsigned_type;
     typedef int128_t double_signed_type;
 #endif
 };
 
-#if NUT_PLATFORM_BITS_64
+#if NUT_HAS_INT128
 template <>
 struct StdInt<uint128_t>
 {

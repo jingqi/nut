@@ -11,7 +11,9 @@ namespace nut
 
 /**
  * 费马小定理素数测试法, 伪素数测试
- * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P582
+ *
+ * 参考文献：
+ *     [1]潘金贵，顾铁成. 现代计算机常用数据结构和算法[M]. 南京大学出版社. 1994. 582
  */
 bool psedoprime(const BigInteger& n)
 {
@@ -56,7 +58,9 @@ bool miller_rabin(const BigInteger& n, unsigned s)
 #if (OPTIMIZE_LEVEL == 0)
     /**
      * 米勒-拉宾(Miller-Rabin)素数测试
-     * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P584
+     *
+     * 参考文献：
+     *     [1]潘金贵，顾铁成. 现代计算机常用数据结构和算法[M]. 南京大学出版社. 1994. 584
      */
     const BigInteger ONE(1);
     for (size_t i = 0; i < s; ++i)

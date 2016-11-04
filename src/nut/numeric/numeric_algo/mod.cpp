@@ -40,8 +40,8 @@ static void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, c
 /**
  * 变形的蒙哥马利算法
  *
- * 算法来源:
- *      王金荣，周赟，王红霞. Montgomery模平方算法及其应用[J]. 计算机工程，2007，33(24)：155 - 156
+ * 参考文献：
+ *      [1]王金荣，周赟，王红霞. Montgomery模平方算法及其应用[J]. 计算机工程，2007，33(24). 155-156
  */
 static void _montgomery2(const BigInteger& t, const BigInteger& n, BigInteger::word_type nn, BigInteger *rs)
 {
@@ -99,8 +99,8 @@ static void _montgomery2(const BigInteger& t, const BigInteger& n, BigInteger::w
  * 求 rr, nn 使得:
  *      r * rr - n * nn = 1 (rr为r模n的逆元，nn为n模r的负逆元)
  *
- * 算法来源：
- *      雷明，叶新，张焕国. Montgomery算法及其快速实现[J]. 计算机工程，2003，29(14)：46
+ * 参考文献：
+ *      [1]雷明，叶新，张焕国. Montgomery算法及其快速实现[J]. 计算机工程，2003，29(14). 46
  *
  * @return rr, nn 都为正数
  */
@@ -416,7 +416,9 @@ static void _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p, BigIn
 
 /**
  * 求(a**b)%n，即a的b次方(模n)
- * 参见 《现代计算机常用数据结构和算法》.潘金贵.顾铁成.南京大学出版社.1994 P576
+ *
+ * 参考文献：
+ *      [1]潘金贵，顾铁成. 现代计算机常用数据结构和算法[M]. 南京大学出版社. 1994. 576
  */
 NUT_API void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigInteger *rs)
 {
