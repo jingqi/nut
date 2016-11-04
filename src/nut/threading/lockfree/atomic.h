@@ -21,7 +21,7 @@ namespace nut
 NUT_API bool atomic_cas(void * volatile *dest, void *oldval, void *newval);
 
 
-#if NUT_PLATFORM_BITS_64
+#if NUT_HAS_INT128
 
 /**
  * 128位CAS操作
@@ -83,7 +83,7 @@ NUT_API bool atomic_cas(int16_t volatile *dest, int16_t oldval, int16_t newval);
 NUT_API bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newval);
 
 
-#if NUT_PLATFORM_BITS_64
+#if NUT_HAS_INT128
 
 /**
  * 128位原子加

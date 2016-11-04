@@ -67,8 +67,8 @@ private:
 #if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_BITS_64 && NUT_PLATFORM_CC_VC
         struct
         {
-            uint64_t volatile _low_part;
-            uint64_t volatile _high_part;
+            int64_t volatile _low_part;
+            int64_t volatile _high_part;
         };
 #else
         cas_type volatile _whole_value;
@@ -151,10 +151,11 @@ public:
     bool compare_and_set(const StampedPtr<T>& comparand, const StampedPtr<T>& new_stamped_ptr)
     {
 #if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_BITS_64 && NUT_PLATFORM_CC_VC
+        StampedPtr<T> comparand_dup(comparand); // NOTE 根据微软的文档，可能会被修改
         return 1 == InterlockedCompareExchange128(&(_stamped_ptr._low_part),
                                                   new_stamped_ptr._stamped_ptr._high_part,
                                                   new_stamped_ptr._stamped_ptr._low_part,
-                                                  &(comparand._stamped_ptr._low_part));
+                                                  (int64_t*) &(comparand_dup._stamped_ptr._low_part));
 #else
         return atomic_cas(&(_stamped_ptr._whole_value),
                           comparand._stamped_ptr._whole_value,

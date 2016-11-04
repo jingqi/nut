@@ -25,7 +25,10 @@ namespace nut
 {
 
 /**
- * 并发栈
+ * 无锁并发栈
+ *
+ * 参考文献：
+ *   [1]Danny Hendler, Nir Shavit, Lena Yerushalmi. A Scalable Lock-free Stack Algorithm[J]. SPAA. 2004-06-27. 206-215
  */
 template <typename T, typename AllocT = std::allocator<T> >
 class ConcurrentStack

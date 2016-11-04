@@ -31,7 +31,7 @@ NUT_API bool atomic_cas(void * volatile *dest, void *oldval, void *newval)
 }
 
 
-#if NUT_PLATFORM_BITS_64
+#if NUT_HAS_INT128
 
 /**
  * 128位CAS操作
@@ -53,7 +53,10 @@ NUT_API bool atomic_cas(int128_t volatile *dest, int128_t oldval, int128_t newva
         :"a" (old_low), "d" (old_high), "b" (new_low), "c" (new_high));
     return ret;
 #elif NUT_PLATFORM_OS_WINDOWS
-    return InterlockedCompareExchange128(dest, newval, oldval) == oldval;
+    return 1 == InterlockedCompareExchange128(reinterpret_cast<int64_t volatile*>(dest),
+                                              reinterpret_cast<const int64_t*>(&newval)[1],
+                                              reinterpret_cast<const int64_t*>(&newval)[0],
+                                              reinterpret_cast<int64_t*>(&oldval));
 #else
 #   error platform not supported!
 #endif
@@ -195,7 +198,7 @@ NUT_API bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newva
 }
 
 
-#if NUT_PLATFORM_BITS_64
+#if NUT_HAS_INT128
 
 /**
  * 128位原子加

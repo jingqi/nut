@@ -20,6 +20,8 @@ typedef SSIZE_T ssize_t;
 typedef __uint128_t uint128_t;
 typedef __int128_t int128_t;
 #   endif
+#else
+#   define NUT_HAS_INT128 0
 #endif
 
 namespace nut

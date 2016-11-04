@@ -32,9 +32,16 @@ namespace nut
 /**
  * 无锁并发队列
  *
- * 参考资料和关键字：
- *    MS-queue(Michael and Scott)算法, Compare-and-swap(CAS)操作,
- *    Dominique Fober算法, optimistic算法, 消隐(shavit and Touitou)
+ * 关键字：
+ *   CAS(Compare-And-Swap)
+ *   MS-queue(Michael and Scott)算法
+ *   Dominique Fober算法
+ *   optimistic算法
+ *   消隐(shavit and Touitou)
+ *
+ * 参考文献：
+ *   [1]钱立兵，陈波等. 多线程并发访问无锁队列的算法研究[J]. 先进技术研究通报，2009-8，3(8). 50-55
+ *   [2]Danny Hendler, Nir Shavit, Lena Yerushalmi. A Scalable Lock-free Stack Algorithm[J]. SPAA. 2004-06-27. 206-215
  */
 template <typename T, typename AllocT = std::allocator<T> >
 class ConcurrentQueue
