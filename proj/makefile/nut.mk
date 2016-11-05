@@ -47,4 +47,4 @@ rebuild:
 
 # rules
 include common_rules.mk
-include shared_rules.mk
+include shared_lib_rules.mk

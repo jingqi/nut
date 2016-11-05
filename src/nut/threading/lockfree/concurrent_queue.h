@@ -56,11 +56,13 @@ class ConcurrentQueue
         ELIMINATE_ENQUEUE_DELAY_MICROSECONDS = 10,
     };
 
+    typedef typename StampedPtr<void>::stamp_type stamp_type;
+
     // 节点
     struct Node
     {
         T data;
-        StampedPtr<void>::stamp_type seg = 0; // 用于安全消隐的标记
+        stamp_type seg = 0; // 用于安全消隐的标记
         StampedPtr<Node> prev;
         StampedPtr<Node> next;
 
@@ -209,7 +211,7 @@ public:
         Node *new_node = _node_alloc.allocate(1);
         _data_alloc.construct(&(new_node->data), v);
 
-        const typename StampedPtr<Node>::stamp_type seen_tail = _tail.stamp_value();
+        const stamp_type seen_tail = _tail.stamp_value();
         while (true)
         {
             if (enqueue_attempt(new_node))
@@ -290,7 +292,7 @@ private:
         }
     }
 
-    bool try_to_eliminate_enqueue(Node *new_node, StampedPtr<void>::stamp_type seen_tail)
+    bool try_to_eliminate_enqueue(Node *new_node, stamp_type seen_tail)
     {
         new_node->seg = seen_tail;
         const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
@@ -325,7 +327,7 @@ private:
 
     bool try_to_eliminate_dequeue(T *p)
     {
-        const StampedPtr<Node>::stamp_type seen_head = _head.stamp_value();
+        const stamp_type seen_head = _head.stamp_value();
         const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
         const StampedPtr<Node> old_collision(_collisions[i]);
         if (COLLISION_EMPTY_PTR == old_collision.pointer() ||
