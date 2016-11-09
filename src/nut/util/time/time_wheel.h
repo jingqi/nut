@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include <time.h>
+#include <vector>
 
 #include <nut/nut_config.h>
 #include <nut/platform/platform.h>
