@@ -341,7 +341,7 @@ NUT_API void trim(const char *str_, std::string *result, const char *blanks)
         *result += str.substr(begin, end - begin + 1);
 }
 
-NUT_API void trim(const std::string& str, const std::string *result, const std::string& blanks)
+NUT_API void trim(const std::string& str, std::string *result, const std::string& blanks)
 {
     assert(NULL != result);
     trim(str.c_str(), result, blanks.c_str());

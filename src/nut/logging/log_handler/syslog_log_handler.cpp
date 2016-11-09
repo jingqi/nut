@@ -53,8 +53,10 @@ void SyslogLogHandler::handle_log(const LogRecord& rec)
     default:
         assert(false);
     }
+    // NOTE None-constant string should be treated as an argument of format string
+    //      to avoid of security issue
     std::string msg = rec.to_string();
-    ::syslog(level, msg.c_str());
+    ::syslog(level, "%s", msg.c_str());
 }
 
 }
