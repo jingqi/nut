@@ -19,7 +19,6 @@ CONFIG(debug, debug|release) {
 } else {
     DESTDIR = $${DESTDIR}-release
 }
-message("DESTDIR: "$${DESTDIR})
 
 # C++11 支持
 QMAKE_CXXFLAGS += -std=c++11

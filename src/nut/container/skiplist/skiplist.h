@@ -5,6 +5,9 @@
 #include <assert.h>
 #include <stdlib.h>
 
+namespace nut
+{
+
 /**
  * skip-list 的公共算法
  *
@@ -167,5 +170,7 @@ public:
         }
     }
 };
+
+}
 
 #endif
