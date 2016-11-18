@@ -6,27 +6,9 @@ QT -= core gui
 CONFIG += console
 CONFIG -= app_bundle
 
-# 配置输出目录
-DESTDIR = $$PWD/../..
-mac {
-    DESTDIR = $${DESTDIR}/mac
-} else: unix {
-    DESTDIR = $${DESTDIR}/unix
-} else {
-    DESTDIR = $${DESTDIR}/win
-}
-DESTDIR = $${DESTDIR}-$${QMAKE_HOST.arch}
-CONFIG(debug, debug|release) {
-    DESTDIR = $${DESTDIR}-debug
-} else {
-    DESTDIR = $${DESTDIR}-release
-}
-
 # C++11 支持
 QMAKE_CXXFLAGS += -std=c++11
-mac {
-    QMAKE_CXXFLAGS += -stdlib=libc++
-}
+mac: QMAKE_CXXFLAGS += -stdlib=libc++
 
 # 这里貌似是qmake的一个bug，不会主动添加 _DEBUG/NDEBUG 宏
 CONFIG(debug, debug|release) {
@@ -52,7 +34,10 @@ mac {
 } else {
     LIBS += -lpthread
 }
-LIBS += -L$${DESTDIR} -lnut
+# nut
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../nut/release -lnut
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../nut/debug -lnut
+else:unix: LIBS += -L$$OUT_PWD/../nut -lnut
 
 # dylib 安装路径
 mac:contains(TEMPLATE, app) {
