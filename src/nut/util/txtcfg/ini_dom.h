@@ -47,7 +47,7 @@ class NUT_API IniDom
         /**
          * @param le 换行符
          */
-        void serielize(std::string *appended, const char *le = "\n");
+        std::string serielize(const char *le = "\n");
     };
 
     std::vector<rc_ptr<Line> > _global_lines;
@@ -66,7 +66,7 @@ public:
     /**
      * @param le 换行符
      */
-    void serielize(std::string *appended, const char *le = "\n") const;
+    std::string serielize(const char *le = "\n") const;
 
     bool is_dirty() const;
 

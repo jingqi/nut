@@ -47,7 +47,7 @@ class NUT_API PropertyDom
         /**
          * 序列化，不包含尾部的 '\n'
          */
-        void serielize(std::string *appended);
+        std::string serielize();
     };
     friend class IniDom;
 
@@ -66,7 +66,7 @@ public:
     /**
      * @param le 换行符
      */
-    void serielize(std::string *appended, const char *le = "\n") const;
+    std::string serielize(const char *le = "\n") const;
 
     bool is_dirty() const;
 

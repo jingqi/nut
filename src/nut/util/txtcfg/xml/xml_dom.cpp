@@ -132,26 +132,26 @@ void XmlDom::parse(const std::string& s, bool ignore_text_blank)
  *
  * @param format 格式化输出，以便于阅读
  */
-void XmlDom::serielize(std::string *appended, bool format) const
+std::string XmlDom::serielize(bool format) const
 {
-    assert(NULL != appended);
-
     // xml header
-    *appended += "<?xml version=\"";
-    *appended += _version;
-    *appended += "\" encoding=\"";
-    *appended += _encoding;
-    *appended += "\"?>";
+    std::string ret;
+    ret += "<?xml version=\"";
+    ret += _version;
+    ret += "\" encoding=\"";
+    ret += _encoding;
+    ret += "\"?>";
     if (_root.is_null())
-        return;
+        return ret;
     if (format)
-        appended->push_back('\n');
+        ret.push_back('\n');
 
     // xml elements
     std::stringstream ss;
     XmlWriter w(&ss);
     _root->serielize(w, format ? 0 : -1);
-    *appended += ss.str();
+    ret += ss.str();
+    return ret;
 }
 
 }

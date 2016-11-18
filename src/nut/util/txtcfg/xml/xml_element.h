@@ -124,7 +124,7 @@ public:
     /*
      * @param format 格式化输出，以便于阅读
      */
-    void serielize(std::string *appended, bool format = true) const;
+    std::string serielize(bool format = true) const;
 
     void serielize(XmlWriter &writer, int tab) const;
 };

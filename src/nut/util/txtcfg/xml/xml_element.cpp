@@ -302,13 +302,12 @@ void XmlElement::parse(const std::string& s, size_t start_index, bool ignore_tex
 /*
  * @param format 格式化输出，以便于阅读
  */
-void XmlElement::serielize(std::string *appended, bool format) const
+std::string XmlElement::serielize(bool format) const
 {
-    assert(NULL != appended);
     std::stringstream ss;
     XmlWriter w(&ss);
     serielize(w, format ? 0 : -1);
-    *appended += ss.str();
+    return ss.str();
 }
 
 void XmlElement::serielize(XmlWriter &writer, int tab) const

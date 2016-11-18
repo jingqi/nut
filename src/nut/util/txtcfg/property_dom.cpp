@@ -120,18 +120,19 @@ void PropertyDom::Line::parse(const std::string& line, const char *line_comment_
 /**
  * 序列化，不包含尾部的 '\n'
  */
-void PropertyDom::Line::serielize(std::string *appended)
+std::string PropertyDom::Line::serielize()
 {
-    assert(NULL != appended);
-    *appended += _space0;
-    *appended += _key;
-    *appended += _space1;
+    std::string ret;
+    ret += _space0;
+    ret += _key;
+    ret += _space1;
     if (_equal_sign)
-        appended->push_back('=');
-    *appended += _space2;
-    *appended += _value;
-    *appended += _space3;
-    *appended += _comment;
+        ret.push_back('=');
+    ret += _space2;
+    ret += _value;
+    ret += _space3;
+    ret += _comment;
+    return ret;
 }
 
 PropertyDom::PropertyDom()
@@ -178,15 +179,17 @@ void PropertyDom::parse(const std::string& s, const char *line_comment_chars, co
 /**
  * @param le 换行符
  */
-void PropertyDom::serielize(std::string *appended, const char *le) const
+std::string PropertyDom::serielize(const char *le) const
 {
-    assert(NULL != appended && NULL != le);
+    assert(NULL != le);
+    std::string ret;
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
         if (0 != i)
-            *appended += le;
-        _lines.at(i)->serielize(appended);
+            ret += le;
+        ret += _lines.at(i)->serielize();
     }
+    return ret;
 }
 
 bool PropertyDom::is_dirty() const

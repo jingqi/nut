@@ -18,98 +18,56 @@ namespace nut
 {
 
 /// char
-NUT_API void char_to_str(char i, std::string *appended)
-{
-    llong_to_str((long long) i, appended);
-}
-
 NUT_API std::string char_to_str(char i)
 {
     return llong_to_str((long long) i);
 }
 
 /// unsigned char
-NUT_API void uchar_to_str(unsigned char i, std::string *appended)
-{
-    llong_to_str((long long) i, appended);
-}
-
 NUT_API std::string uchar_to_str(unsigned char i)
 {
     return llong_to_str((long long) i);
 }
 
 /// short
-NUT_API void short_to_str(short i, std::string *appended)
-{
-    llong_to_str((long long) i, appended);
-}
-
 NUT_API std::string short_to_str(short i)
 {
     return llong_to_str((long long) i);
 }
 
 /// unsigned short
-NUT_API void ushort_to_str(unsigned short i, std::string *appended)
-{
-    llong_to_str((long long) i, appended);
-}
-
 NUT_API std::string ushort_to_str(unsigned short i)
 {
     return llong_to_str((long long) i);
 }
 
 /// int
-NUT_API void int_to_str(int i, std::string *appended)
-{
-    llong_to_str((long long) i, appended);
-}
-
 NUT_API std::string int_to_str(int i)
 {
     return llong_to_str((long long) i);
 }
 
 /// unsigned int
-NUT_API void uint_to_str(unsigned int i, std::string *appended)
-{
-    llong_to_str((long long) i, appended);
-}
-
 NUT_API std::string uint_to_str(unsigned int i)
 {
     return llong_to_str((long long) i);
 }
 
 /// long
-NUT_API void long_to_str(long i, std::string *appended)
-{
-    llong_to_str((long long) i, appended);
-}
-
 NUT_API std::string long_to_str(long i)
 {
     return llong_to_str((long long) i);
 }
 
 /// unsigned long
-NUT_API void ulong_to_str(unsigned long i, std::string *appended)
-{
-    llong_to_str((long long) i, appended);
-}
-
 NUT_API std::string ulong_to_str(unsigned long i)
 {
     return llong_to_str((long long) i);
 }
 
 /// long long
-NUT_API void llong_to_str(long long i, std::string *appended)
+NUT_API std::string llong_to_str(long long i)
 {
-    assert(NULL != appended);
-
     const int BUF_SIZE = 60;
     char buf[BUF_SIZE];
     ::memset(buf, 0, BUF_SIZE);
@@ -123,83 +81,44 @@ NUT_API void llong_to_str(long long i, std::string *appended)
 #else
     ::sprintf(buf, "%lld", i);
 #endif
-
-    *appended += buf;
-}
-
-NUT_API std::string llong_to_str(long long i)
-{
-    std::string ret;
-    llong_to_str(i, &ret);
-    return ret;
+    return buf;
 }
 
 /// unsigned long long
-NUT_API void ullong_to_str(unsigned long long i, std::string *appended)
-{
-    llong_to_str((long long) i, appended);
-}
-
 NUT_API std::string ullong_to_str(unsigned long long i)
 {
     return llong_to_str((long long) i);
 }
 
 /// bool
-NUT_API void bool_to_str(bool b, std::string *appended)
-{
-    assert(NULL != appended);
-    *appended += (b ? "true" : "false");
-}
-
 NUT_API std::string bool_to_str(bool b)
 {
     return (b ? "true" : "false");
 }
 
 /// double
-NUT_API void double_to_str(double d, std::string *appended)
+NUT_API std::string double_to_str(double d)
 {
-    assert(NULL != appended);
-
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
     ::memset(buf, 0, BUF_SIZE);
     ::sprintf(buf, "%lf", d);
-    *appended += buf;
-}
-
-NUT_API std::string double_to_str(double d)
-{
-    std::string ret;
-    double_to_str(d, &ret);
-    return ret;
+    return buf;
 }
 
 /// float
-NUT_API void float_to_str(float f, std::string *appended)
+NUT_API std::string float_to_str(float f)
 {
-    assert(NULL != appended);
-
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
     ::memset(buf, 0, BUF_SIZE);
     ::sprintf(buf, "%f", f);
-    *appended += buf;
-}
-
-NUT_API std::string float_to_str(float f)
-{
-    std::string ret;
-    float_to_str(f, &ret);
-    return ret;
+    return buf;
 }
 
 /// pointer
-NUT_API void ptr_to_str(const void *p, std::string *appended)
+NUT_API std::string ptr_to_str(const void *p)
 {
-    assert(NULL != appended);
-
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
     ::memset(buf, 0, BUF_SIZE);
@@ -208,30 +127,23 @@ NUT_API void ptr_to_str(const void *p, std::string *appended)
 #else
     ::sprintf(buf,"%p",p);      // linux: 0x2e459f
 #endif
-
-    *appended += buf;
-}
-
-NUT_API std::string ptr_to_str(const void *p)
-{
-    std::string ret;
-    ptr_to_str(p, &ret);
-    return ret;
+    return buf;
 }
 
 /// memory block
-NUT_API void mem_to_str(const void *p, size_t align, size_t count, std::string *appended)
+NUT_API std::string mem_to_str(const void *p, size_t align, size_t count)
 {
-    assert(NULL != p && align > 0 && count > 0 && NULL != appended);
+    assert(NULL != p && align > 0 && count > 0);
 
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
     unsigned char *current = (unsigned char*)p;
 
+    std::string ret;
     for (size_t i = 0; i < count; ++i)
     {
         if (i % 0x08 == 0)
-            ptr_to_str((const void*) current, appended);
+            ret += ptr_to_str((const void*) current);
 
         std::string single;
         for (size_t j = 0; j < align; ++j)
@@ -241,39 +153,28 @@ NUT_API void mem_to_str(const void *p, size_t align, size_t count, std::string *
             single = std::string(buf) + single;
             ++current;
         }
-        appended->push_back(' ');
-        *appended += single;
+        ret.push_back(' ');
+        ret += single;
 
         if ((i % 0x08 == 0x07) && (i != count - 1))
-            appended->push_back('\n');
+            ret.push_back('\n');
     }
-}
-
-NUT_API std::string mem_to_str(const void *p, size_t align, size_t count)
-{
-    std::string ret;
-    mem_to_str(p, align, count, &ret);
     return ret;
 }
 
 /// n-size string
-NUT_API void sub_cstr(const char *str, size_t len, std::string *appended, const char *fill_nil)
+NUT_API std::string sub_cstr(const char *str, size_t len, const char *fill_nil)
 {
-    assert(NULL != str && NULL != appended && NULL != fill_nil);
+    assert(NULL != str && NULL != fill_nil);
 
+    std::string ret;
     for (size_t i = 0; i < len; ++i)
     {
         if (str[i] != '\0')
-            appended->push_back(str[i]);
+            ret.push_back(str[i]);
         else
-            *appended += fill_nil;
+            ret += fill_nil;
     }
-}
-
-NUT_API std::string sub_cstr(const char *str, size_t len, const char *fill_nil)
-{
-    std::string ret;
-    sub_cstr(str, len, &ret, fill_nil);
     return ret;
 }
 

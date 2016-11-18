@@ -62,7 +62,7 @@ CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(const std::string& dir_pa
 #else
     pid_t pid = ::getpid();
 #endif
-    llong_to_str(pid, &file_name);
+    file_name += llong_to_str(pid);
     file_name += log_suffix;
 
     std::string full_path;

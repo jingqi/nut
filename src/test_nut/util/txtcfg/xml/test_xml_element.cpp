@@ -56,8 +56,7 @@ NUT_FIXTURE(TestXmlElement)
 		}*/
         NUT_TA(s == expect);
 
-        s.clear();
-        r->serielize(&s, false);
+        s = r->serielize(false);
         // cout << endl << s << endl;
         expect =
             "<root attr1=\"size\" attr2=\"&lt;good&gt;\">"
@@ -103,8 +102,7 @@ NUT_FIXTURE(TestXmlElement)
         r->parse(s);
         r = r->get_child(0);
 
-        std::string rs;
-        r->serielize(&rs, false);
+        const std::string rs = r->serielize(false);
         // cout << endl << rs << endl;
         const char *expect =
             "<root attr1=\"size\" attr2=\"&lt;good&gt;\">"

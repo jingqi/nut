@@ -93,22 +93,24 @@ rc_ptr<IniDom::Sector> IniDom::Sector::parse_sector_name(const std::string& line
 /**
  * @param le 换行符
  */
-void IniDom::Sector::serielize(std::string *appended, const char *le)
+std::string IniDom::Sector::serielize(const char *le)
 {
-    assert(NULL != appended);
-    *appended += _space0;
-    appended->push_back('[');
-    *appended += _space1;
-    *appended += _name;
-    *appended += _space2;
-    appended->push_back(']');
-    *appended += _space3;
-    *appended += _comment;
+    assert(NULL != le);
+    std::string ret;
+    ret += _space0;
+    ret.push_back('[');
+    ret += _space1;
+    ret += _name;
+    ret += _space2;
+    ret.push_back(']');
+    ret += _space3;
+    ret += _comment;
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
-        *appended += le;
-        _lines.at(i)->serielize(appended);
+        ret += le;
+        ret += _lines.at(i)->serielize();
     }
+    return ret;
 }
 
 IniDom::IniDom()
@@ -165,23 +167,27 @@ void IniDom::parse(const std::string& s, const char *line_comment_chars, const c
 /**
  * @param le 换行符
  */
-void IniDom::serielize(std::string *appended, const char *le) const
+std::string IniDom::serielize(const char *le) const
 {
+    assert(NULL != le);
+
     // 全局数据
+    std::string ret;
     for (size_t i = 0, sz = _global_lines.size(); i < sz; ++i)
     {
         if (0 != i)
-            *appended += le;
-        _global_lines.at(i)->serielize(appended);
+            ret += le;
+        ret += _global_lines.at(i)->serielize();
     }
 
     // 各个块
     for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
     {
         if (0 != i || !_global_lines.empty())
-            *appended += le;
-        _sectors.at(i)->serielize(appended, le);
+            ret += le;
+        ret += _sectors.at(i)->serielize(le);
     }
+    return ret;
 }
 
 bool IniDom::is_dirty() const

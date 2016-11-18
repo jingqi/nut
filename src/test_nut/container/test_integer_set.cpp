@@ -17,14 +17,14 @@ static string to_string(const IntegerSet<int> s)
 		const IntegerSet<int>::Range& rg = s.range_at(i);
 		if (rg.first == rg.last)
 		{
-			int_to_str(rg.first, &sb);
+			sb += int_to_str(rg.first);
 		}
 		else
 		{
 			sb += "(";
-			int_to_str(rg.first, &sb);
+			sb += int_to_str(rg.first);
 			sb += ",";
-			int_to_str(rg.last, &sb);
+			sb += int_to_str(rg.last);
 			sb += ")";
 		}
 		if (i + 1 < sz)
