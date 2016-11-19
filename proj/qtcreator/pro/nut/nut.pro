@@ -8,12 +8,10 @@ QT -= core gui
 QMAKE_CXXFLAGS += -std=c++11
 mac: QMAKE_CXXFLAGS += -stdlib=libc++
 
-# 这里貌似是qmake的一个bug，不会主动添加 _DEBUG/NDEBUG 宏
-CONFIG(debug, debug|release) {
-    DEFINES += _DEBUG
-} else {
-    DEFINES += NDEBUG
-}
+# XXX 这里貌似是qmake的一个bug，不会主动添加 _DEBUG/NDEBUG 宏
+CONFIG(debug, debug|release): DEFINES += _DEBUG
+else: DEFINES += NDEBUG
+
 DEFINES += BUILDING_NUT_DLL
 
 # INCLUDE 路径

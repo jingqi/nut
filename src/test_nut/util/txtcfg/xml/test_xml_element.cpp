@@ -32,8 +32,7 @@ NUT_FIXTURE(TestXmlElement)
         rc_ptr<XmlElement> e2 = rc_new<XmlElement>("e2");
         r->append_child(e2);
 
-        string s;
-        r->serielize(&s);
+        string s = r->serielize();
         // cout << endl << s << endl;
         const char *expect =
             "<root attr1=\"size\" attr2=\"&lt;good&gt;\">\n"
@@ -78,8 +77,7 @@ NUT_FIXTURE(TestXmlElement)
         r->add_attribute("attr1", "size");
         r->add_attribute("attr2", "<good>");
 
-        string s;
-        r->serielize(&s);
+        const string s = r->serielize();
         // cout << endl << s << endl;
         const char *expect =
             "<root attr1=\"size\" attr2=\"&lt;good&gt;\" />";

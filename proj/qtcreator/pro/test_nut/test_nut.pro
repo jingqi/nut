@@ -10,20 +10,12 @@ CONFIG -= app_bundle
 QMAKE_CXXFLAGS += -std=c++11
 mac: QMAKE_CXXFLAGS += -stdlib=libc++
 
-# 这里貌似是qmake的一个bug，不会主动添加 _DEBUG/NDEBUG 宏
-CONFIG(debug, debug|release) {
-    DEFINES += _DEBUG
-} else {
-    DEFINES += NDEBUG
-}
-
-# INCLUDE 路径
-SRC_ROOT = $$PWD/../../../../src/test_nut
-INCLUDEPATH += \
-    $${SRC_ROOT}/.. \
-    $${SRC_ROOT}
+# XXX 这里貌似是qmake的一个bug，不会主动添加 _DEBUG/NDEBUG 宏
+CONFIG(debug, debug|release): DEFINES += _DEBUG
+else: DEFINES += NDEBUG
 
 # 源代码
+SRC_ROOT = $$PWD/../../../../src/test_nut
 SOURCES += $$files($${SRC_ROOT}/*.c*, true)
 
 # 连接库
@@ -34,9 +26,12 @@ mac {
 } else {
     LIBS += -lpthread
 }
+
 # nut
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../nut/release -lnut
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../nut/debug -lnut
+INCLUDEPATH += $${SRC_ROOT}/..
+
+win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../nut/debug -lnut
+else:win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../nut/release -lnut
 else:unix: LIBS += -L$$OUT_PWD/../nut -lnut
 
 # dylib 安装路径
