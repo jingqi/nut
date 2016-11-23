@@ -29,8 +29,7 @@ mac {
 
 # nut
 INCLUDEPATH += $${SRC_ROOT}/..
-
-win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../nut/debug -lnut
+win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../nut/debug -lnut1
 else:win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../nut/release -lnut
 else:unix: LIBS += -L$$OUT_PWD/../nut -lnut
 

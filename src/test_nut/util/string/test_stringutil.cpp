@@ -45,17 +45,17 @@ NUT_FIXTURE(TestStringUtil)
 
     void test_format()
     {
-        std::string tmp;
-        format(&tmp, "%d,%s,%c,%f", 1, "am", 's', 1.23);
-        NUT_TA(tmp == "1,am,s,1.230000");
+        //std::string tmp;
+        // format(&tmp, "%d,%s,%c,%f", 1, "am", 's', 1.23);
+        // NUT_TA(tmp == "1,am,s,1.230000");
 
         NUT_TA(format("%d,%s,%c,%f", 1, "am", 's', 1.23) == "1,am,s,1.230000");
 
-        std::wstring wtmp;
+        //std::wstring wtmp;
         // wcout << format(L"%d,%S,%c,%f", 1, L"am", L's', 1.23) << endl;
 #if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
-        format(&wtmp, L"%d,%S,%C,%f", 1, L"am", L's', 1.23);
-        NUT_TA(wtmp == L"1,am,s,1.230000");
+        //format(&wtmp, L"%d,%S,%C,%f", 1, L"am", L's', 1.23);
+        //NUT_TA(wtmp == L"1,am,s,1.230000");
 
         NUT_TA(format(L"%d,%S,%C,%f", 1, L"am", L's', 1.23) == L"1,am,s,1.230000");
 #else
@@ -68,16 +68,13 @@ NUT_FIXTURE(TestStringUtil)
 
     void test_trim()
     {
-        std::string tmp;
-        trim(" ab\r\t", &tmp);
+        std::string tmp = trim(" ab\r\t");
         NUT_TA(tmp == "ab");
 
-        tmp.clear();
-        ltrim(" ab\r\t", &tmp);
+        tmp = ltrim(" ab\r\t");
         NUT_TA(tmp == "ab\r\t");
 
-        tmp.clear();
-        rtrim(" ab\r\t", &tmp);
+        tmp = rtrim(" ab\r\t");
         NUT_TA(tmp == " ab");
     }
 

@@ -52,48 +52,23 @@ NUT_API void chr_split(const wchar_t *str, wchar_t c, std::vector<std::wstring> 
 NUT_API void chr_split(const std::wstring& str, wchar_t c, std::vector<std::wstring> *result,
                        bool ignore_empty = false);
 
-NUT_API void format(std::string *result, const char *fmt, ...);
-NUT_API void format(std::wstring *result, const wchar_t *fmt, ...);
+/** 格式化 */
 NUT_API std::string format(const char *fmt, ...);
 NUT_API std::wstring format(const wchar_t *fmt, ...);
 
 /** 去除首尾空白 */
-NUT_API void trim(const char *str, std::string *result,
-                  const char *blanks = __NUT_DEFAULT_BLANKS);
-NUT_API void trim(const std::string& str, std::string *result,
-                  const std::string& blanks = __NUT_DEFAULT_BLANKS);
-NUT_API void trim(const wchar_t *str, std::wstring *result,
-                  const wchar_t *blanks = __NUT_DEFAULT_BLANKSW);
-NUT_API void trim(const std::wstring& str, std::wstring *result,
-                  const std::wstring& blanks = __NUT_DEFAULT_BLANKSW);
 NUT_API std::string trim(const char *str, const char *blanks = __NUT_DEFAULT_BLANKS);
 NUT_API std::string trim(const std::string& str, const std::string& blacks = __NUT_DEFAULT_BLANKS);
 NUT_API std::wstring trim(const wchar_t *str, const wchar_t *blanks = __NUT_DEFAULT_BLANKSW);
 NUT_API std::wstring trim(const std::wstring& str, const std::wstring& blacks = __NUT_DEFAULT_BLANKSW);
 
 /** 去除左边空白 */
-NUT_API void ltrim(const char *str, std::string *result,
-                   const char *blanks = __NUT_DEFAULT_BLANKS);
-NUT_API void ltrim(const std::string& str, std::string *result,
-                   const std::string& blanks = __NUT_DEFAULT_BLANKS);
-NUT_API void ltrim(const wchar_t *str, std::wstring *result,
-                   const wchar_t *blanks = __NUT_DEFAULT_BLANKSW);
-NUT_API void ltrim(const std::wstring& str, std::wstring *result,
-                   const std::wstring& blanks = __NUT_DEFAULT_BLANKSW);
 NUT_API std::string ltrim(const char *str, const char *blanks = __NUT_DEFAULT_BLANKS);
 NUT_API std::string ltrim(const std::string& str, const std::string& blanks = __NUT_DEFAULT_BLANKS);
 NUT_API std::wstring ltrim(const wchar_t *str, const wchar_t *blanks = __NUT_DEFAULT_BLANKSW);
 NUT_API std::wstring ltrim(const std::wstring& str, const std::wstring& blanks = __NUT_DEFAULT_BLANKSW);
 
 /** 去除右边空白 */
-NUT_API void rtrim(const char *str, std::string *result,
-                   const char *blanks = __NUT_DEFAULT_BLANKS);
-NUT_API void rtrim(const std::string& str, std::string *result,
-                   const std::string& blanks = __NUT_DEFAULT_BLANKS);
-NUT_API void rtrim(const wchar_t *str, std::wstring *result,
-                   const wchar_t *blanks = __NUT_DEFAULT_BLANKSW);
-NUT_API void rtrim(const std::wstring& str, std::wstring *result,
-                   const std::wstring& blanks = __NUT_DEFAULT_BLANKSW);
 NUT_API std::string rtrim(const char *str, const char *blanks = __NUT_DEFAULT_BLANKS);
 NUT_API std::string rtrim(const std::string& str, const std::string& blanks = __NUT_DEFAULT_BLANKS);
 NUT_API std::wstring rtrim(const wchar_t *str, const wchar_t *blanks = __NUT_DEFAULT_BLANKSW);

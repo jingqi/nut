@@ -177,80 +177,6 @@ NUT_API void chr_split(const std::wstring& str, wchar_t c, std::vector<std::wstr
     chr_split(str.c_str(), c, result, ignore_empty);
 }
 
-NUT_API void format(std::string *result, const char *fmt, ...)
-{
-    assert(NULL != result && NULL != fmt);
-
-    size_t size = 100;
-    char *buf = (char*) ::malloc(size);
-    assert(NULL != buf);
-
-    va_list ap;
-    while (NULL != buf)
-    {
-        va_start(ap, fmt);
-        int n = ::vsnprintf(buf, size, fmt, ap);
-        va_end(ap);
-        if (n > -1 && n < (int)size)
-            break;
-
-        if (n > -1)
-            size = n + 1; /* glibc 2.1 */
-        else
-            size *= 2;  /* glib 2.0 */
-
-        char *np = (char*) ::realloc(buf, size);
-        assert(NULL != np);
-        if (NULL != np)
-            buf = np;
-    }
-    if (NULL != buf)
-    {
-        *result += buf;
-        ::free(buf); /* include the case of success of realloc() and failure of realloc() */
-    }
-}
-
-NUT_API void format(std::wstring *result, const wchar_t *fmt, ...)
-{
-    assert(NULL != result && NULL != fmt);
-
-    size_t size = 100;
-    wchar_t *buf = (wchar_t*) ::malloc(size * sizeof(wchar_t));
-    assert(NULL != buf);
-
-    va_list ap;
-    while (NULL != buf)
-    {
-        va_start(ap, fmt);
-#if NUT_PLATFORM_CC_VC
-        int n = ::_vsnwprintf(buf, size, fmt, ap);
-#elif NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
-        int n = ::vswprintf(buf, size, fmt, ap);
-#else
-        int n = ::vsnwprintf(buf, size, fmt, ap);
-#endif
-        va_end(ap);
-        if (n > -1 && n < (int)size)
-            break;
-
-        if (n > -1)
-            size = n + 1; /* glibc 2.1 */
-        else
-            size *= 2;  /* glib 2.0 */
-
-        wchar_t *np = (wchar_t*) ::realloc(buf, size);
-        assert(NULL != np);
-        if (NULL != np)
-            buf = np;
-    }
-    if (NULL != buf)
-    {
-        *result += buf;
-        ::free(buf); /* include the case of success of realloc() and failure of realloc() */
-    }
-}
-
 NUT_API std::string format(const char *fmt, ...)
 {
     assert(NULL != fmt);
@@ -330,46 +256,16 @@ NUT_API std::wstring format(const wchar_t *fmt, ...)
 }
 
 /* 去除首尾空白 */
-NUT_API void trim(const char *str_, std::string *result, const char *blanks)
+NUT_API std::string trim(const char *str_, const char *blanks)
 {
-    assert(NULL != str_ && NULL != result && NULL != blanks);
+    assert(NULL != str_ && NULL != blanks);
 
     const std::string str(str_);
     const std::string::size_type begin = str.find_first_not_of(blanks),
         end = str.find_last_not_of(blanks);
     if (std::string::npos != begin && std::string::npos != end)
-        *result += str.substr(begin, end - begin + 1);
-}
-
-NUT_API void trim(const std::string& str, std::string *result, const std::string& blanks)
-{
-    assert(NULL != result);
-    trim(str.c_str(), result, blanks.c_str());
-}
-
-NUT_API void trim(const wchar_t *str_, std::wstring *result, const wchar_t *blanks)
-{
-    assert(NULL != str_ && NULL != result && NULL != blanks);
-
-    const std::wstring str(str_);
-    const std::wstring::size_type begin = str.find_first_not_of(blanks),
-        end = str.find_last_not_of(blanks);
-    if (std::wstring::npos != begin && std::wstring::npos == end)
-        *result += str.substr(begin, end - begin + 1);
-}
-
-NUT_API void trim(const std::wstring& str, std::wstring *result, const std::wstring& blanks)
-{
-    assert(NULL != result);
-    trim(str.c_str(), result, blanks.c_str());
-}
-
-NUT_API std::string trim(const char *str, const char *blanks)
-{
-    assert(NULL != str && NULL != blanks);
-    std::string ret;
-    trim(str, &ret, blanks);
-    return ret;
+        return str.substr(begin, end - begin + 1);
+    return std::string();
 }
 
 NUT_API std::string trim(const std::string& str, const std::string& blanks)
@@ -377,12 +273,16 @@ NUT_API std::string trim(const std::string& str, const std::string& blanks)
     return trim(str.c_str(), blanks.c_str());
 }
 
-NUT_API std::wstring trim(const wchar_t *str, const wchar_t *blanks)
+NUT_API std::wstring trim(const wchar_t *str_, const wchar_t *blanks)
 {
-    assert(NULL != str && NULL != blanks);
-    std::wstring ret;
-    trim(str, &ret, blanks);
-    return ret;
+    assert(NULL != str_ && NULL != blanks);
+
+    const std::wstring str(str_);
+    const std::wstring::size_type begin = str.find_first_not_of(blanks),
+        end = str.find_last_not_of(blanks);
+    if (std::wstring::npos != begin && std::wstring::npos == end)
+        return str.substr(begin, end - begin + 1);
+    return std::wstring();
 }
 
 NUT_API std::wstring trim(const std::wstring& str, const std::wstring& blanks)
@@ -391,53 +291,25 @@ NUT_API std::wstring trim(const std::wstring& str, const std::wstring& blanks)
 }
 
 /** 去除左边空白 */
-NUT_API void ltrim(const char *str_, std::string *result, const char *blanks)
+NUT_API std::string ltrim(const char *str_, const char *blanks)
 {
-    assert(NULL != str_ && NULL != result && NULL != blanks);
+    assert(NULL != str_ && NULL != blanks);
     const std::string str(str_);
     const std::string::size_type begin = str.find_first_not_of(blanks);
-    *result += str.substr(begin);
-}
-
-NUT_API void ltrim(const std::string& str, std::string *result, const std::string& blanks)
-{
-    assert(NULL != result);
-    ltrim(str.c_str(), result, blanks.c_str());
-}
-
-NUT_API void ltrim(const wchar_t *str_, std::wstring *result, const wchar_t *blanks)
-{
-    assert(NULL != str_ && NULL != result && NULL != blanks);
-    const std::wstring str(str_);
-    const std::wstring::size_type begin = str.find_first_not_of(blanks);
-    *result += str.substr(begin);
-}
-
-NUT_API void ltrim(const std::wstring& str, std::wstring *result, const std::wstring& blanks)
-{
-    assert(NULL != result);
-    ltrim(str.c_str(), result, blanks.c_str());
-}
-
-NUT_API std::string ltrim(const char *str, const char *blanks)
-{
-    assert(NULL != str && NULL != blanks);
-    std::string ret;
-    ltrim(str, &ret, blanks);
-    return ret;
+    return str.substr(begin);
 }
 
 NUT_API std::string ltrim(const std::string& str, const std::string& blanks)
 {
     return ltrim(str.c_str(), blanks.c_str());
-};
+}
 
-NUT_API std::wstring ltrim(const wchar_t *str, const wchar_t *blanks)
+NUT_API std::wstring ltrim(const wchar_t *str_, const wchar_t *blanks)
 {
-    assert(NULL != str && NULL != blanks);
-    std::wstring ret;
-    ltrim(str, &ret, blanks);
-    return ret;
+    assert(NULL != str_ && NULL != blanks);
+    const std::wstring str(str_);
+    const std::wstring::size_type begin = str.find_first_not_of(blanks);
+    return str.substr(begin);
 }
 
 NUT_API std::wstring ltrim(const std::wstring str, const std::wstring& blanks)
@@ -446,41 +318,14 @@ NUT_API std::wstring ltrim(const std::wstring str, const std::wstring& blanks)
 }
 
 /** 去除右边空白 */
-NUT_API void rtrim(const char *str_, std::string *result, const char *blanks)
+NUT_API std::string rtrim(const char *str_, const char *blanks)
 {
-    assert(NULL != str_ && NULL != result && NULL != blanks);
+    assert(NULL != str_ && NULL != blanks);
     const std::string str(str_);
     const std::string::size_type end = str.find_last_not_of(blanks);
     if (std::string::npos != end)
-        *result += str.substr(0, end + 1);
-}
-
-NUT_API void rtrim(const std::string& str, std::string *result, const std::string& blanks)
-{
-    assert(NULL != result);
-    rtrim(str.c_str(), result, blanks.c_str());
-}
-
-NUT_API void rtrim(const wchar_t *str_, std::wstring *result, const wchar_t *blanks)
-{
-    assert(NULL != str_ && NULL != result && NULL != blanks);
-    const std::wstring str(str_);
-    const std::wstring::size_type end = str.find_last_not_of(blanks);
-    if (std::wstring::npos != end)
-        *result += str.substr(0, end + 1);
-}
-
-NUT_API void rtrim(const std::wstring& str, std::wstring *result, const std::wstring& blanks)
-{
-    rtrim(str.c_str(), result, blanks.c_str());
-}
-
-NUT_API std::string rtrim(const char *str, const char *blanks)
-{
-    assert(NULL != str && NULL != blanks);
-    std::string ret;
-    rtrim(str, &ret, blanks);
-    return ret;
+        return str.substr(0, end + 1);
+    return std::string();
 }
 
 NUT_API std::string rtrim(const std::string& str, const std::string& blanks)
@@ -488,12 +333,14 @@ NUT_API std::string rtrim(const std::string& str, const std::string& blanks)
     return rtrim(str.c_str(), blanks.c_str());
 }
 
-NUT_API std::wstring rtrim(const wchar_t *str, const wchar_t *blanks)
+NUT_API std::wstring rtrim(const wchar_t *str_, const wchar_t *blanks)
 {
-    assert(NULL != str && NULL != blanks);
-    std::wstring ret;
-    rtrim(str, &ret, blanks);
-    return ret;
+    assert(NULL != str_ && NULL != blanks);
+    const std::wstring str(str_);
+    const std::wstring::size_type end = str.find_last_not_of(blanks);
+    if (std::wstring::npos != end)
+        return str.substr(0, end + 1);
+    return std::wstring();
 }
 
 NUT_API std::wstring rtrim(const std::wstring& str, const std::wstring& blanks)

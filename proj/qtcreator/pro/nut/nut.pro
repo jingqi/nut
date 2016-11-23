@@ -1,6 +1,7 @@
 
 TARGET = nut
 TEMPLATE = lib
+VERSION = 1.0.0
 
 QT -= core gui
 
