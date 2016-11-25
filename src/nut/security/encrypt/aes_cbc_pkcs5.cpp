@@ -124,6 +124,8 @@ bool AES_CBC_PKCS5::finish_decrypt()
         return false;
 
     const uint8_t last_byte = _result[_result.size() - 1];
+    if (_result.size() < last_byte)
+        return false;
     for (size_t i = 0; i < last_byte; ++i)
     {
         if (_result[_result.size() - i - 1] != last_byte)

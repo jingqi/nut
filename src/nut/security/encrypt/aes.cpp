@@ -2,8 +2,8 @@
 #include "aes.h"
 
 /**
- *  set FIXED_TABLES to 0 to use pre-computed tables.
- * otherwise the tables will be generated at the first run
+ * Set FIXED_TABLES to 0 to use pre-computed tables.
+ * Otherwise the tables will be generated at the first run.
  */
 #define FIXED_TABLES 0
 
@@ -27,7 +27,7 @@ static uint32_t RT3[256];
 
 static uint32_t RCON[10];
 
-/* tables generation routine */
+/* Tables generation routine */
 #define ROTR8(x) ( ( ( x << 24 ) & 0xFFFFFFFF ) | ( ( x & 0xFFFFFFFF ) >>  8 ) )
 #define XTIME(x) ( ( x <<  1 ) ^ ( ( x & 0x80 ) ? 0x1B : 0x00 ) )
 #define MUL(x,y) ( ( x &&  y ) ? pow[(log[x] + log[y]) % 255] : 0 )
@@ -44,20 +44,20 @@ static void aes_gen_tables()
     uint8_t pow[256];
     uint8_t log[256];
 
-    /* compute pow and log tables over GF(2^8) */
+    /* Compute pow and log tables over GF(2^8) */
     for (i = 0, x = 1; i < 256; ++i, x ^= XTIME( x ))
     {
         pow[i] = x;
         log[x] = i;
     }
 
-    /* calculate the round constants */
+    /* Calculate the round constants */
     for (i = 0, x = 1; i < 10; ++i, x = XTIME( x ))
     {
         RCON[i] = (uint32_t) x << 24;
     }
 
-    /* generate the forward and reverse S-boxes */
+    /* Generate the forward and reverse S-boxes */
     FSb[0x00] = 0x63;
     RSb[0x63] = 0x00;
 
@@ -75,7 +75,7 @@ static void aes_gen_tables()
         RSb[x] = i;
     }
 
-    /* generate the forward and reverse tables */
+    /* Generate the forward and reverse tables */
     for (i = 0; i < 256; ++i)
     {
         x = (unsigned char) FSb[i];
@@ -113,7 +113,7 @@ static void aes_gen_tables()
 
 #else /* FIXED_TABLES */
 
-/* forward S-box */
+/* Forward S-box */
 static const uint32_t FSb[256] =
 {
     0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5,
@@ -151,7 +151,7 @@ static const uint32_t FSb[256] =
 };
 
 
-/* forward tables */
+/* Forward tables */
 #define FT                                                          \
     V(C6,63,63,A5), V(F8,7C,7C,84), V(EE,77,77,99), V(F6,7B,7B,8D), \
     V(FF,F2,F2,0D), V(D6,6B,6B,BD), V(DE,6F,6F,B1), V(91,C5,C5,54), \
@@ -237,7 +237,7 @@ static const uint32_t FT3[256] = { FT };
 #undef FT
 
 
-/* reverse S-box */
+/* Reverse S-box */
 static const uint32_t RSb[256] =
 {
     0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5, 0x38,
@@ -274,7 +274,7 @@ static const uint32_t RSb[256] =
     0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D
 };
 
-/* reverse tables */
+/* Reverse tables */
 #define RT                                                          \
     V(51,F4,A7,50), V(7E,41,65,53), V(1A,17,A4,C3), V(3A,27,5E,96), \
     V(3B,AB,6B,CB), V(1F,9D,45,F1), V(AC,FA,58,AB), V(4B,E3,03,93), \
@@ -360,7 +360,7 @@ static const uint32_t RT3[256] = { RT };
 #undef RT
 
 
-/* round constants */
+/* Round constants */
 static const uint32_t RCON[10] =
 {
     0x01000000, 0x02000000, 0x04000000, 0x08000000,
@@ -377,7 +377,7 @@ static uint32_t KT2[256];
 static uint32_t KT3[256];
 
 /**
- * setup decryption round keys
+ * Setup decryption round keys
  */
 static void aes_setup_decryption_round_keys()
 {
@@ -403,7 +403,7 @@ AES::AES()
     aes_setup_decryption_round_keys();
 }
 
-    /* platform-independant 32-bit integer manipulation macros */
+    /* Platform-independant 32-bit integer manipulation macros */
 #define GET_UINT32(n,b,i)                       \
     {                                           \
         (n) = ( (uint32_t) (b)[(i)] << 24 )     \
@@ -452,7 +452,7 @@ bool AES::set_key(const uint8_t *key, int nbits)
         GET_UINT32( RK[i], key, i * 4 );
     }
 
-    /* setup encryption round keys */
+    /* Setup encryption round keys */
     switch (nbits)
     {
     case 128:
@@ -513,7 +513,7 @@ bool AES::set_key(const uint8_t *key, int nbits)
         break;
     }
 
-    /* setup decryption round keys */
+    /* Setup decryption round keys */
     uint32_t *SK = _drk;
 
     *SK++ = *RK++;
@@ -619,7 +619,7 @@ void AES::encrypt(const uint8_t input[16], uint8_t output[16])
         AES_FROUND( Y0, Y1, Y2, Y3, X0, X1, X2, X3 );   /* round 13 */
     }
 
-    /* last round */
+    /* Last round */
 
     RK += 4;
 
@@ -712,7 +712,7 @@ void AES::decrypt(const uint8_t input[16], uint8_t output[16] )
         AES_RROUND( Y0, Y1, Y2, Y3, X0, X1, X2, X3 );   /* round 13 */
     }
 
-    /* last round */
+    /* Last round */
 
     RK += 4;
 

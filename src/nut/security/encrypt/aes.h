@@ -9,13 +9,16 @@
 namespace nut
 {
 
+/**
+ * Advanced Encryption Standard
+ */
 class NUT_API AES
 {
-    /** encryption round keys */
+    /** Encryption round keys */
     uint32_t _erk[64];
-    /** decryption round keys */
+    /** Decryption round keys */
     uint32_t _drk[64];
-    /** number of rounds */
+    /** Number of rounds */
     int _nr = 10;
 
 public:
