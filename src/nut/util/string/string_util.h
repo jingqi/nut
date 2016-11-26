@@ -6,8 +6,10 @@
 #include <string>
 #include <vector>
 
-#include <nut/nut_config.h>
 #include <nut/container/array.h>
+
+#include "../../nut_config.h"
+
 
 #define __NUT_DEFAULT_BLANKS " \t\r\n"
 #define __NUT_DEFAULT_BLANKSW L" \t\r\n"

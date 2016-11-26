@@ -7,10 +7,11 @@
 #include <string>
 #include <map>
 
-#include <nut/nut_config.h>
 #include <nut/rc/rc_new.h>
 
+#include "../../../nut_config.h"
 #include "xml_writer.h"
+
 
 namespace nut
 {

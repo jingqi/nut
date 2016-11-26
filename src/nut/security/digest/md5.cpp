@@ -1,8 +1,9 @@
 ﻿
 #include <assert.h>
-#include <string.h> // for memcpy()
+#include <string.h> /* For memcpy() */
 
 #include "md5.h"
+
 
 #define __S11__ 7
 #define __S12__ 12
@@ -66,9 +67,9 @@ MD5::MD5()
 
 void MD5::reset()
 {
-    _byteslen = 0;
+    _bytes_len = 0;
 
-    // load magic initialization constants
+    /* Load magic initialization constants */
     _state[0] = 0x67452301;
     _state[1] = 0xefcdab89;
     _state[2] = 0x98badcfe;
@@ -84,14 +85,14 @@ void MD5::update(const void *buf, size_t cb)
 {
     assert(NULL != buf || 0 == cb);
 
-    // compute number of bytes mod 64
-    uint32_t index = _byteslen & 0x3F;
+    /* Calculate number of bytes mod 64 */
+    uint32_t index = _bytes_len & 0x3F;
     uint32_t partlen = 64 - index;
 
-    // update number of bits
-    _byteslen += cb;
+    /* Update number of bits */
+    _bytes_len += cb;
 
-    // transform as many times as possible
+    /* Transform as many times as possible */
     size_t i = 0;
     if (cb >= partlen)
     {
@@ -115,20 +116,26 @@ void MD5::update(const void *buf, size_t cb)
 void MD5::digest()
 {
     /* Save number of bits */
-    const uint64_t bits = _byteslen << 3;
+    const uint64_t bits = _bytes_len << 3;
 
     /* Pad out to 56 mod 64. */
-    const size_t index = (size_t)(_byteslen & 0x3f);
+    const size_t index = (size_t)(_bytes_len & 0x3f);
     const size_t pad_len = (index < 56) ? (56 - index) : (120 - index);
     const uint8_t PADDING[64] = {
-        0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     };
     update(PADDING, pad_len);
 
     /* Append length (before padding) */
     update(&bits, 8);
+}
+
+const uint8_t* MD5::get_bytes_result() const
+{
+    return (const uint8_t*) _state;
 }
 
 std::string MD5::get_string_result() const
@@ -153,12 +160,6 @@ std::string MD5::get_string_result() const
         }
     }
     return ret;
-}
-
-void MD5::get_bytes_result(uint8_t *ret)
-{
-    assert(NULL != ret);
-    ::memcpy(ret, _state, 16);
 }
 
 void MD5::transform512bits(const void *block)

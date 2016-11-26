@@ -2,7 +2,6 @@
 #ifndef ___HEADFILE_49083D01_04DA_4385_A1BD_6D1F2902FA7A_
 #define ___HEADFILE_49083D01_04DA_4385_A1BD_6D1F2902FA7A_
 
-#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_OS_WINDOWS
@@ -10,6 +9,9 @@
 #else
 #   include <semaphore.h>
 #endif
+
+#include "../../nut_config.h"
+
 
 namespace nut
 {

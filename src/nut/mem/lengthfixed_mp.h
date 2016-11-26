@@ -5,9 +5,9 @@
 #include <nut/threading/lockfree/stamped_ptr.h>
 #include <nut/debugging/destroy_checker.h>
 
-#include <nut/nut_config.h>
-
+#include "../nut_config.h"
 #include "memory_allocator.h"
+
 
 namespace nut
 {

@@ -2,7 +2,6 @@
 #ifndef ___HEADFILE_93CDBEEC_8BDC_4AE9_A2D1_717CAC0ECD85_
 #define ___HEADFILE_93CDBEEC_8BDC_4AE9_A2D1_717CAC0ECD85_
 
-#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 #include <nut/rc/rc_ptr.h>
 
@@ -14,6 +13,9 @@
 #else
 #   include <pthread.h>
 #endif
+
+#include "../nut_config.h"
+
 
 namespace nut
 {

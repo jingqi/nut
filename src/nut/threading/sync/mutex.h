@@ -2,7 +2,6 @@
 #ifndef ___HEADFILE___814FCD2E_2F65_4787_93E5_ECDE19588938_
 #define ___HEADFILE___814FCD2E_2F65_4787_93E5_ECDE19588938_
 
-#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_OS_WINDOWS
@@ -12,6 +11,9 @@
 #if !NUT_PLATFORM_OS_WINDOWS || NUT_PLATFORM_CC_MINGW
 #  include <pthread.h>
 #endif
+
+#include "../../nut_config.h"
+
 
 namespace nut
 {

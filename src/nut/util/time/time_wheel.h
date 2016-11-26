@@ -6,12 +6,14 @@
 #include <time.h>
 #include <vector>
 
-#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #endif
+
+#include "../../nut_config.h"
+
 
 namespace nut
 {

@@ -6,12 +6,13 @@
 #include <string>
 #include <vector>
 
-#include <nut/nut_config.h>
 #include <nut/rc/rc_new.h>
 #include <nut/util/string/string_util.h>
 
+#include "../nut_config.h"
 #include "icommand.h"
 #include "iconsole.h"
+
 
 namespace nut
 {

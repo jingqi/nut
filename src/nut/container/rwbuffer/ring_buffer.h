@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <string.h> // for size_t
 
-#include <nut/nut_config.h>
+#include "../../nut_config.h"
 
 
 namespace nut

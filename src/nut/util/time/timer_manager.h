@@ -6,7 +6,6 @@
 #include <vector>
 #include <time.h>
 
-#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 #include <nut/threading/sync/condition.h>
 #include <nut/threading/thread.h>
@@ -17,6 +16,7 @@
 #   include <sys/time.h>
 #endif
 
+#include "../../nut_config.h"
 #include "time_val.h"
 
 

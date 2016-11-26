@@ -4,10 +4,11 @@
 
 #include <string>
 
-#include <nut/nut_config.h>
 #include <nut/util/time/date_time.h>
 
+#include "../nut_config.h"
 #include "log_level.h"
+
 
 namespace nut
 {

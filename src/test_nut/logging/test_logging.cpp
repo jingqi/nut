@@ -3,9 +3,11 @@
 
 #include <nut/rc/rc_new.h>
 #include <nut/logging/logger.h>
+#include <nut/logging/log_handler/stream_log_handler.h>
+#include <nut/logging/log_handler/syslog_log_handler.h>
+
 
 using namespace nut;
-
 
 NUT_FIXTURE(TestLogging)
 {

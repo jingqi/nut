@@ -4,9 +4,9 @@
 
 #include <fstream>
 
-#include <nut/nut_config.h>
-
+#include "../../nut_config.h"
 #include "log_handler.h"
+
 
 namespace nut
 {

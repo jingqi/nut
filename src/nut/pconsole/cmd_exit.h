@@ -5,10 +5,10 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include <nut/nut_config.h>
-
+#include "../nut_config.h"
 #include "icommand.h"
 #include "iconsole.h"
+
 
 namespace nut
 {

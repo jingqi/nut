@@ -6,9 +6,11 @@
 #include <stdint.h>
 #include <utility>
 
-#include <nut/nut_config.h>
 #include <nut/rc/rc_ptr.h>
 #include <nut/debugging/destroy_checker.h>
+
+#include "../nut_config.h"
+
 
 namespace nut
 {

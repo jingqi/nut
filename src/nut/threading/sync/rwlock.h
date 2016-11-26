@@ -2,7 +2,6 @@
 #ifndef ___HEADFILE_409C4713_58BB_467B_A1CB_A8BC6EDA6CFE_
 #define ___HEADFILE_409C4713_58BB_467B_A1CB_A8BC6EDA6CFE_
 
-#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
@@ -10,6 +9,9 @@
 #else
 #   include <pthread.h>
 #endif
+
+#include "../../nut_config.h"
+
 
 namespace nut
 {

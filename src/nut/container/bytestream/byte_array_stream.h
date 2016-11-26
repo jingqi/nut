@@ -4,11 +4,11 @@
 
 #include <assert.h>
 
-#include <nut/nut_config.h>
-
+#include "../../nut_config.h"
 #include "../array.h"
 #include "random_access_input_stream.h"
 #include "output_stream.h"
+
 
 namespace nut
 {

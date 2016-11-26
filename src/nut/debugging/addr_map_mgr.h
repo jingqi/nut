@@ -2,7 +2,6 @@
 #ifndef ___HEADFILE_95CF1F75_72F1_454A_AA4C_B0D8DD34F14A_
 #define ___HEADFILE_95CF1F75_72F1_454A_AA4C_B0D8DD34F14A_
 
-#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_OS_LINUX
@@ -21,6 +20,9 @@
 #include <stdint.h>
 
 #include <nut/util/string/string_util.h>
+
+#include "../nut_config.h"
+
 
 namespace nut
 {

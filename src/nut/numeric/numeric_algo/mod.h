@@ -2,10 +2,10 @@
 #ifndef ___HEADFILE_058D89EB_50A2_4934_AF92_FC4F82613999_
 #define ___HEADFILE_058D89EB_50A2_4934_AF92_FC4F82613999_
 
-#include <nut/nut_config.h>
-
+#include "../../nut_config.h"
 #include "../big_integer.h"
 #include "gcd.h"
+
 
 // 优化程度，>= 0
 #define OPTIMIZE_LEVEL 1000

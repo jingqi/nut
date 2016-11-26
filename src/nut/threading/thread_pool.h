@@ -6,11 +6,12 @@
 #include <vector>
 #include <queue>
 
-#include <nut/nut_config.h>
 #include <nut/rc/rc_new.h>
 
+#include "../nut_config.h"
 #include "thread.h"
 #include "sync/condition.h"
+
 
 namespace nut
 {

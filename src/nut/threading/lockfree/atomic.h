@@ -6,9 +6,11 @@
 #ifndef ___HEADFILE_CBAE01C9_CF0C_4836_A4DC_E7B0934DEA6E_
 #define ___HEADFILE_CBAE01C9_CF0C_4836_A4DC_E7B0934DEA6E_
 
-#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 #include <nut/platform/stdint_traits.h>
+
+#include "../../nut_config.h"
+
 
 namespace nut
 {

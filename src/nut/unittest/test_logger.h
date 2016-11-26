@@ -4,9 +4,9 @@
 
 #include <vector>
 
-#include <nut/nut_config.h>
-
+#include "../nut_config.h"
 #include "testcase_failure_exception.h"
+
 
 namespace nut
 {

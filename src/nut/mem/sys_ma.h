@@ -5,10 +5,11 @@
 #include <assert.h>
 #include <stdint.h>
 
-#include <nut/nut_config.h>
 #include <nut/debugging/destroy_checker.h>
 
+#include "../nut_config.h"
 #include "memory_allocator.h"
+
 
 namespace nut
 {

@@ -2,9 +2,9 @@
 #ifndef ___HEADFILE_78125394_FD78_4023_AE0B_E382527514CB_
 #define ___HEADFILE_78125394_FD78_4023_AE0B_E382527514CB_
 
-#include <nut/nut_config.h>
-
+#include "../../nut_config.h"
 #include "log_handler.h"
+
 
 namespace nut
 {

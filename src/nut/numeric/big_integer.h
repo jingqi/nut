@@ -6,10 +6,11 @@
 #include <stdint.h>
 #include <string>
 
-#include <nut/nut_config.h>
 #include <nut/platform/stdint_traits.h>
 
+#include "../nut_config.h"
 #include "word_array_integer.h"
+
 
 namespace nut
 {

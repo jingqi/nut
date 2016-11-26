@@ -21,6 +21,12 @@
 #endif
 
 #include "logger.h"
+#include "log_handler/stream_log_handler.h"
+#include "log_handler/console_log_handler.h"
+#include "log_handler/syslog_log_handler.h"
+#include "log_handler/file_log_handler.h"
+#include "log_handler/circle_file_by_size_log_handler.h"
+#include "log_handler/circle_file_by_time_log_handler.h"
 
 namespace nut
 {

@@ -6,9 +6,9 @@
 #include <ostream>
 #include <vector>
 
-#include <nut/nut_config.h>
-
+#include "../nut_config.h"
 #include "test_logger.h"
+
 
 namespace nut
 {

@@ -4,7 +4,6 @@
 
 #include <time.h>
 
-#include <nut/nut_config.h>
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_OS_WINDOWS
@@ -12,6 +11,9 @@
 #else
 #   include <sys/time.h>
 #endif
+
+#include "../../nut_config.h"
+
 
 namespace nut
 {

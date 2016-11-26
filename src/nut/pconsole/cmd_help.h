@@ -2,10 +2,10 @@
 #ifndef ___HEADFILE_8FCF1438_56E0_43B3_AB98_BA0EEEB3F7C3_
 #define ___HEADFILE_8FCF1438_56E0_43B3_AB98_BA0EEEB3F7C3_
 
-#include <nut/nut_config.h>
-
+#include "../nut_config.h"
 #include "icommand.h"
 #include "iconsole.h"
+
 
 namespace nut
 {

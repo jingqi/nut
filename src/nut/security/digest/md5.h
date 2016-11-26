@@ -5,16 +5,17 @@
 #include <stdint.h>
 #include <string>
 
-#include <nut/nut_config.h>
+#include "../../nut_config.h"
+
 
 namespace nut
 {
 
 class NUT_API MD5
 {
-    uint32_t _state[4]; // state ABCD
+    uint32_t _state[4]; // State ABCD
     uint8_t _buffer[64];
-    uint64_t _byteslen = 0; // len of bytes
+    uint64_t _bytes_len = 0; // Length of bytes
 
 public:
     MD5();
@@ -22,14 +23,16 @@ public:
     void reset();
 
     void update(uint8_t byte);
-
     void update(const void *buf, size_t cb);
 
     void digest();
 
-    std::string get_string_result() const;
+    /**
+     * 返回16字节二进制散列结果
+     */
+    const uint8_t* get_bytes_result() const;
 
-    void get_bytes_result(uint8_t *ret);
+    std::string get_string_result() const;
 
 private:
     void transform512bits(const void *block);

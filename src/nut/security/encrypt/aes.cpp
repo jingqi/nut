@@ -423,7 +423,7 @@ AES::AES()
 /**
  * AES key scheduling routine
  *
- * @return true, if success
+ * @return True if success
  */
 bool AES::set_key(const uint8_t *key, int nbits)
 {

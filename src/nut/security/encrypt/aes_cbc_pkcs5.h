@@ -4,10 +4,11 @@
 
 #include <stdint.h>
 
-#include <nut/nut_config.h>
 #include <nut/container/array.h>
 
+#include "../../nut_config.h"
 #include "aes.h"
+
 
 namespace nut
 {

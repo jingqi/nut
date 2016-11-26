@@ -4,7 +4,8 @@
 
 #include <stdint.h>
 
-#include <nut/nut_config.h>
+#include "../../nut_config.h"
+
 
 namespace nut
 {
@@ -27,7 +28,8 @@ public:
     /**
      * AES key scheduling routine
      *
-     * @return true, if success
+     * @param nbits Bits of key, should be 128 / 192 / 256
+     * @return True if success
      */
     bool set_key(const uint8_t *key, int nbits);
 

@@ -2,9 +2,9 @@
 #ifndef ___HEADFILE_96AEB548_0516_4970_A913_AF51AAC6E02C_
 #define ___HEADFILE_96AEB548_0516_4970_A913_AF51AAC6E02C_
 
-#include <nut/nut_config.h>
-
+#include "../nut_config.h"
 #include "log_level.h"
+
 
 namespace nut
 {

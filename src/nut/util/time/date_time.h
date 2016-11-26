@@ -6,7 +6,8 @@
 #include <string>
 #include <stdint.h>
 
-#include <nut/nut_config.h>
+#include "../../nut_config.h"
+
 
 namespace nut
 {
