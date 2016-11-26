@@ -30,7 +30,7 @@ public:
     /**
      * 返回16字节二进制散列结果
      */
-    const uint8_t* get_bytes_result() const;
+    const uint8_t* get_bytes_result(void *result = NULL) const;
 
     std::string get_string_result() const;
 

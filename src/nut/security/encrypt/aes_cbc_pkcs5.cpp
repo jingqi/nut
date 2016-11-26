@@ -8,14 +8,14 @@
 namespace nut
 {
 
-static void xor_buf(uint8_t *buf1, const uint8_t *buf2, size_t len = 16)
+static void xor_buf(void *buf1, const void *buf2, size_t len = 16)
 {
     assert(NULL != buf1 && NULL != buf2);
     for (size_t i = 0; i < len; ++i)
-        buf1[i] ^= buf2[i];
+        ((uint8_t*) buf1)[i] ^= ((const uint8_t*) buf2)[i];
 }
 
-void AES_CBC_PKCS5::start_encrypt(const uint8_t* key, int key_bits, const uint8_t iv[16])
+void AES_CBC_PKCS5::start_encrypt(const void* key, int key_bits, const void *iv)
 {
     assert(NULL != key && NULL != iv);
     _state = IN_ENCRYPT;
@@ -27,7 +27,7 @@ void AES_CBC_PKCS5::start_encrypt(const uint8_t* key, int key_bits, const uint8_
     ::memcpy(_iv, iv, 16);
 }
 
-void AES_CBC_PKCS5::update_encrypt(const uint8_t *data, size_t data_len)
+void AES_CBC_PKCS5::update_encrypt(const void *data, size_t data_len)
 {
     assert(NULL != data);
     assert(IN_ENCRYPT == _state && _data_buf_size < 16);
@@ -39,7 +39,7 @@ void AES_CBC_PKCS5::update_encrypt(const uint8_t *data, size_t data_len)
         _aes.encrypt(_iv, _iv);
         _result.append((const uint8_t*) _iv, (const uint8_t*) _iv + 16);
 
-        data += 16 - _data_buf_size;
+        ((const uint8_t*&) data) += 16 - _data_buf_size;
         data_len -= 16 - _data_buf_size;
         _data_buf_size = 0;
     }
@@ -47,22 +47,24 @@ void AES_CBC_PKCS5::update_encrypt(const uint8_t *data, size_t data_len)
     size_t i = 0;
     for (; i < data_len / 16; ++i)
     {
-        xor_buf(_iv, data + i * 16, 16);
+        xor_buf(_iv, data, 16);
         _aes.encrypt(_iv, _iv);
         _result.append((const uint8_t*) _iv, (const uint8_t*) _iv + 16);
+
+        ((const uint8_t*&) data) += 16;
     }
 
-    ::memcpy(_data_buf + _data_buf_size, data + i * 16, data_len - i * 16);
-    _data_buf_size += data_len - i * 16;
+    ::memcpy(_data_buf + _data_buf_size, data, data_len % 16);
+    _data_buf_size += data_len % 16;
     assert(_data_buf_size < 16);
 }
 
 void AES_CBC_PKCS5::finish_encrypt()
 {
     assert(IN_ENCRYPT == _state && _data_buf_size < 16);
+
     /* PKCS5 填充 */
-    for (size_t i = _data_buf_size; i < 16; ++i)
-        _data_buf[i] = 16 - (uint8_t) _data_buf_size;
+    ::memset(_data_buf + _data_buf_size, 16 - _data_buf_size, 16 - _data_buf_size);
     xor_buf(_iv, _data_buf, 16);
     _aes.encrypt(_iv, _iv);
 
@@ -71,7 +73,7 @@ void AES_CBC_PKCS5::finish_encrypt()
     _data_buf_size = 0;
 }
 
-void AES_CBC_PKCS5::start_decrypt(const uint8_t *key, int key_bits, const uint8_t iv[16])
+void AES_CBC_PKCS5::start_decrypt(const void *key, int key_bits, const void *iv)
 {
     assert(NULL != key && NULL != iv);
     _state = IN_DECRYPT;
@@ -84,7 +86,7 @@ void AES_CBC_PKCS5::start_decrypt(const uint8_t *key, int key_bits, const uint8_
 }
 
 
-void AES_CBC_PKCS5::update_decrypt(const uint8_t *data, size_t data_len)
+void AES_CBC_PKCS5::update_decrypt(const void *data, size_t data_len)
 {
     assert(NULL != data);
     assert(IN_DECRYPT == _state && _data_buf_size < 16);
@@ -98,7 +100,7 @@ void AES_CBC_PKCS5::update_decrypt(const uint8_t *data, size_t data_len)
         _result.append((const uint8_t*) buf, (const uint8_t*) buf + 16);
         ::memcpy(_iv, _data_buf, 16);
 
-        data += 16 - _data_buf_size;
+        ((const uint8_t*&) data) += 16 - _data_buf_size;
         data_len -= 16 - _data_buf_size;
         _data_buf_size = 0;
     }
@@ -106,14 +108,16 @@ void AES_CBC_PKCS5::update_decrypt(const uint8_t *data, size_t data_len)
     size_t i = 0;
     for (; i < data_len / 16; ++i)
     {
-        _aes.decrypt(data + i * 16, buf);
+        _aes.decrypt(data, buf);
         xor_buf(buf, _iv, 16);
         _result.append((const uint8_t*) buf, (const uint8_t*) buf + 16);
-        ::memcpy(_iv, data + i * 16, 16);
+        ::memcpy(_iv, data, 16);
+
+        ((const uint8_t*&) data) += 16;
     }
 
-    ::memcpy(_data_buf + _data_buf_size, data + i * 16, data_len - i * 16);
-    _data_buf_size += data_len - i * 16;
+    ::memcpy(_data_buf + _data_buf_size, data, data_len % 16);
+    _data_buf_size += data_len % 16;
     assert(_data_buf_size < 16);
 }
 

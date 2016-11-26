@@ -133,8 +133,10 @@ void MD5::digest()
     update(&bits, 8);
 }
 
-const uint8_t* MD5::get_bytes_result() const
+const uint8_t* MD5::get_bytes_result(void *result) const
 {
+    if (NULL != result)
+        ::memcpy(result, _state, 16);
     return (const uint8_t*) _state;
 }
 

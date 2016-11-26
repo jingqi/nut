@@ -403,21 +403,21 @@ AES::AES()
     aes_setup_decryption_round_keys();
 }
 
-    /* Platform-independant 32-bit integer manipulation macros */
-#define GET_UINT32(n,b,i)                       \
-    {                                           \
-        (n) = ( (uint32_t) (b)[(i)] << 24 )     \
-            | ( (uint32_t) (b)[(i) + 1] << 16 ) \
-            | ( (uint32_t) (b)[(i) + 2] <<  8 ) \
-            | ( (uint32_t) (b)[(i) + 3] );      \
+/* Platform-independant 32-bit integer manipulation macros */
+#define GET_UINT32(n,b,i)                                          \
+    {                                                              \
+        (n) = ( (uint32_t) ((const uint8_t*) (b))[(i)    ] << 24 ) \
+            | ( (uint32_t) ((const uint8_t*) (b))[(i) + 1] << 16 ) \
+            | ( (uint32_t) ((const uint8_t*) (b))[(i) + 2] <<  8 ) \
+            | ( (uint32_t) ((const uint8_t*) (b))[(i) + 3] );      \
     }
 
-#define PUT_UINT32(n,b,i)                       \
-    {                                           \
-        (b)[(i)    ] = (uint8_t) ( (n) >> 24 ); \
-        (b)[(i) + 1] = (uint8_t) ( (n) >> 16 ); \
-        (b)[(i) + 2] = (uint8_t) ( (n) >>  8 ); \
-        (b)[(i) + 3] = (uint8_t) ( (n) );       \
+#define PUT_UINT32(n,b,i)                                       \
+    {                                                           \
+        ((uint8_t*) (b))[(i)    ] = (uint8_t) ( (n) >> 24 );    \
+        ((uint8_t*) (b))[(i) + 1] = (uint8_t) ( (n) >> 16 );    \
+        ((uint8_t*) (b))[(i) + 2] = (uint8_t) ( (n) >>  8 ); \
+        ((uint8_t*) (b))[(i) + 3] = (uint8_t) ( (n) );       \
     }
 
 /**
@@ -425,9 +425,9 @@ AES::AES()
  *
  * @return True if success
  */
-bool AES::set_key(const uint8_t *key, int nbits)
+bool AES::set_key(const void *key, int nbits)
 {
-    switch( nbits )
+    switch (nbits)
     {
     case 128:
         _nr = 10;
@@ -557,7 +557,7 @@ bool AES::set_key(const uint8_t *key, int nbits)
 }
 
 /* AES 128-bit block encryption routine */
-void AES::encrypt(const uint8_t input[16], uint8_t output[16]) const
+void AES::encrypt(const void *input, void *output) const
 {
     uint32_t X0, X1, X2, X3, Y0, Y1, Y2, Y3;
 
@@ -650,7 +650,7 @@ void AES::encrypt(const uint8_t input[16], uint8_t output[16]) const
 }
 
 /* AES 128-bit block decryption routine */
-void AES::decrypt(const uint8_t input[16], uint8_t output[16]) const
+void AES::decrypt(const void *input, void *output) const
 {
     uint32_t X0, X1, X2, X3, Y0, Y1, Y2, Y3;
 

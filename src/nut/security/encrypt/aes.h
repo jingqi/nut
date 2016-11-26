@@ -31,17 +31,23 @@ public:
      * @param nbits Bits of key, should be 128 / 192 / 256
      * @return True if success
      */
-    bool set_key(const uint8_t *key, int nbits);
+    bool set_key(const void *key, int nbits);
 
     /**
      * AES 128-bit block encryption routine
+     *
+     * @param input 16 bytes input data
+     * @param output 16 bytes output buffer
      */
-    void encrypt(const uint8_t input[16], uint8_t output[16]) const;
+    void encrypt(const void *input, void *output) const;
 
     /**
      * AES 128-bit block decryption routine
+     *
+     * @param input 16 bytes input data
+     * @param output 16 bytes output buffer
      */
-    void decrypt(const uint8_t input[16], uint8_t output[16]) const;
+    void decrypt(const void *input, void *output) const;
 };
 
 }

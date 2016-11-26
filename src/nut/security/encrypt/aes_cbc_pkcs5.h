@@ -39,14 +39,14 @@ public:
      *
      * @param key       密钥
      * @param key_bits  密钥的比特长度，只能取128, 192, 256
-     * @param iv        初始化向量，加密时可随机给出
+     * @param iv        16字节初始化向量，加密时可随机给出
      */
-    void start_encrypt(const uint8_t* key, int key_bits, const uint8_t iv[16]);
+    void start_encrypt(const void* key, int key_bits, const void *iv);
 
     /**
      * 更新要加密的数据
      */
-    void update_encrypt(const uint8_t *data, size_t data_len);
+    void update_encrypt(const void *data, size_t data_len);
 
     /**
      * 结束加密过程
@@ -57,14 +57,14 @@ public:
     /**
     * @param key       密钥
     * @param key_bits  密钥的比特长度，只能取128, 192, 256
-    * @param iv        初始化向量，必须与加密时使用的是相同的
+    * @param iv        16字节初始化向量，必须与加密时使用的是相同的
      */
-    void start_decrypt(const uint8_t *key, int key_bits, const uint8_t iv[16]);
+    void start_decrypt(const void *key, int key_bits, const void *iv);
 
     /**
      * 更新要解密的数据
      */
-    void update_decrypt(const uint8_t *data, size_t data_len);
+    void update_decrypt(const void *data, size_t data_len);
 
     /**
      * 结束解密过程
