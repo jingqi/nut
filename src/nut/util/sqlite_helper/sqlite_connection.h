@@ -27,34 +27,39 @@ class SqliteConnection
     int _last_error = SQLITE_OK;
     std::string _last_error_msg;
 
-    struct Sqlite3Freer
+    class Sqlite3Freer
     {
-        void *pt = NULL;
+        void *_ptr = NULL;
 
+    public:
         Sqlite3Freer(void *p = NULL)
-            : pt(p)
+            : _ptr(p)
         {}
 
         void attach(void *p)
         {
-            pt = p;
+            _ptr = p;
         }
 
         ~Sqlite3Freer()
         {
-            if (NULL != pt)
-                ::sqlite3_free(pt);
+            if (NULL != _ptr)
+                ::sqlite3_free(_ptr);
         }
     };
 
-    void on_error(int err, const char *msg = NULL)
+    void on_error(int err = SQLITE_OK, const char *msg = NULL)
     {
         _last_error = err;
+        if (SQLITE_OK == err && NULL != _sqlite)
+            _last_error = ::sqlite3_errcode(_sqlite);
 
         if (NULL == msg)
         {
-            assert(NULL != _sqlite);
-            msg = ::sqlite3_errmsg(_sqlite); // XXX memory of "msg" is managed internally by sqlite3
+            if (NULL != _sqlite)
+                msg = ::sqlite3_errmsg(_sqlite); // XXX memory of "msg" is managed internally by sqlite3
+            else if (SQLITE_OK != _last_error)
+                msg = ::sqlite3_errstr(_last_error);
         }
         _last_error_msg = (NULL == msg ? "no error detected" : msg);
 
@@ -92,6 +97,7 @@ public:
     {
         assert(NULL != db_file);
 
+        // Close old database if exists
         if (is_valid())
         {
             bool rs = close();
@@ -99,15 +105,19 @@ public:
             UNUSED(rs);
         }
 
-        int rs = ::sqlite3_open(db_file, &_sqlite);
+        // Open new database
+        _last_error = SQLITE_OK;
+        _last_error_msg.clear();
+        _sqlite = NULL;
+        const int rs = ::sqlite3_open(db_file, &_sqlite);
         if (SQLITE_OK != rs)
         {
+            on_error(rs);
             _sqlite = NULL;
-            on_error(rs, "open db file failed");
             return false;
         }
         assert(is_valid());
-        return true;
+        return SQLITE_OK == rs;
     }
 
     bool close()
@@ -115,17 +125,43 @@ public:
         if (NULL == _sqlite)
             return true;
 
-        int rs = ::sqlite3_close(_sqlite);
+        const int rs = ::sqlite3_close(_sqlite);
         if (SQLITE_OK != rs)
-        {
             on_error(rs);
-            return false;
-        }
         else
-        {
             _sqlite = NULL;
-            return true;
-        }
+        return SQLITE_OK == rs;
+    }
+
+#ifdef SQLITE_HAS_CODEC
+    /**
+     * 设置加密密码，或者用密码打开已加密数据库
+     */
+    bool set_key(const char *key, int key_len)
+    {
+        assert(is_valid());
+        const int rs = ::sqlite3_key(_sqlite, key, key_len);
+        if (SQLITE_OK != rs)
+            on_error(rs);
+        return SQLITE_OK == rs;
+    }
+
+    /**
+     * 更改密数据库码
+     */
+    bool change_key(const char *key, int key_len)
+    {
+        assert(is_valid());
+        const int rs = ::sqlite3_rekey(_sqlite, key, key_len);
+        if (SQLITE_OK != rs)
+            on_error(rs);
+        return SQLITE_OK == rs;
+    }
+#endif
+
+    sqlite3* get_raw_db() const
+    {
+        return _sqlite;
     }
 
     bool is_valid() const
@@ -153,6 +189,11 @@ public:
         _throw_exceptions = b;
     }
 
+    int get_last_error_code() const
+    {
+        return _last_error;
+    }
+
     const std::string& get_last_error_msg() const
     {
         return _last_error_msg;
@@ -162,42 +203,33 @@ public:
     {
         assert(is_valid());
         char *msg = NULL;
-        int rs = ::sqlite3_exec(_sqlite, "begin;", NULL, NULL, &msg);
-        Sqlite3Freer _f(msg);
+        const int rs = ::sqlite3_exec(_sqlite, "begin;", NULL, NULL, &msg);
+        Sqlite3Freer _g(msg);
         if (SQLITE_OK != rs)
-        {
             on_error(rs, msg);
-            return false;
-        }
-        return true;
+        return SQLITE_OK == rs;
     }
 
     bool commit()
     {
         assert(is_valid());
         char *msg = NULL;
-        int rs = ::sqlite3_exec(_sqlite, "commit;", NULL, NULL, &msg);
-        Sqlite3Freer _f(msg);
+        const int rs = ::sqlite3_exec(_sqlite, "commit;", NULL, NULL, &msg);
+        Sqlite3Freer _g(msg);
         if (SQLITE_OK != rs)
-        {
             on_error(rs, msg);
-            return false;
-        }
-        return true;
+        return SQLITE_OK == rs;
     }
 
     bool rollback()
     {
         assert(is_valid());
         char *msg = NULL;
-        int rs = ::sqlite3_exec(_sqlite, "rollback;", NULL, NULL, &msg);
-        Sqlite3Freer _f(msg);
+        const int rs = ::sqlite3_exec(_sqlite, "rollback;", NULL, NULL, &msg);
+        Sqlite3Freer _g(msg);
         if (SQLITE_OK != rs)
-        {
             on_error(rs, msg);
-            return false;
-        }
-        return true;
+        return SQLITE_OK == rs;
     }
 
     /** 压缩数据库 */
@@ -205,14 +237,11 @@ public:
     {
         assert(is_valid());
         char *msg = NULL;
-        int rs = ::sqlite3_exec(_sqlite, "vacuum;", NULL, NULL, &msg);
-        Sqlite3Freer _f(msg);
+        const int rs = ::sqlite3_exec(_sqlite, "vacuum;", NULL, NULL, &msg);
+        Sqlite3Freer _g(msg);
         if (SQLITE_OK != rs)
-        {
             on_error(rs, msg);
-            return false;
-        }
-        return true;
+        return SQLITE_OK == rs;
     }
 
     bool execute_update(const char *sql)
@@ -221,8 +250,8 @@ public:
         char *msg = NULL;
         if (_auto_commit)
             start();
-        int rs = ::sqlite3_exec(_sqlite, sql, NULL, NULL, &msg);
-        Sqlite3Freer _f(msg);
+        const int rs = ::sqlite3_exec(_sqlite, sql, NULL, NULL, &msg);
+        Sqlite3Freer _g(msg);
         if (SQLITE_OK != rs)
         {
             if (_auto_commit)
@@ -251,7 +280,7 @@ public:
         rc_ptr<SqliteStatement> stmt = rc_new<SqliteStatement>(_sqlite, sql);
         if (!stmt->is_valid())
         {
-            on_error(SQLITE_ERROR);
+            on_error();
             return false;
         }
 
@@ -259,16 +288,16 @@ public:
         bool rs = stmt->reset();
         if (!rs)
         {
-            on_error(SQLITE_ERROR);
+            on_error();
             return false;
         }
 
-#define __BIND(i) \
+#define __BIND(i)                   \
         rs = stmt->bind(i, arg##i); \
-        if (!rs) \
-        { \
-            on_error(SQLITE_ERROR); \
-            return false; \
+        if (!rs)                    \
+        {                           \
+            on_error();             \
+            return false;           \
         }
 
         __BIND(1)
@@ -286,7 +315,7 @@ public:
         // 执行
         if (_auto_commit)
             start();
-        int irs = ::sqlite3_step(stmt->get_raw_stmt());
+        const int irs = ::sqlite3_step(stmt->get_raw_stmt());
         if (SQLITE_DONE != irs)
         {
             if (_auto_commit)
@@ -307,7 +336,7 @@ public:
         rc_ptr<SqliteStatement> stmt = rc_new<SqliteStatement>(_sqlite, sql);
         if (!stmt->is_valid())
         {
-            on_error(SQLITE_ERROR);
+            on_error();
             return false;
         }
 
@@ -315,7 +344,7 @@ public:
         bool rs = stmt->reset();
         if (!rs)
         {
-            on_error(SQLITE_ERROR);
+            on_error();
             return false;
         }
         for (size_t i = 0, size = args.size(); i < size; ++i)
@@ -323,14 +352,14 @@ public:
             rs = stmt->bind(i + 1, args.at(i));
             if (!rs)
             {
-                on_error(SQLITE_ERROR);
+                on_error();
                 return false;
             }
         }
             // 执行
         if (_auto_commit)
              start();
-        int irs = ::sqlite3_step(stmt->get_raw_stmt());
+        const int irs = ::sqlite3_step(stmt->get_raw_stmt());
         if (SQLITE_DONE != irs)
         {
             if (_auto_commit)
@@ -360,7 +389,7 @@ public:
         rc_ptr<SqliteStatement> stmt = rc_new<SqliteStatement>(_sqlite, sql);
         if (!stmt->is_valid())
         {
-            on_error(SQLITE_ERROR);
+            on_error();
             return rc_new<SqliteResultSet>();
         }
 
@@ -368,15 +397,15 @@ public:
         bool rs = stmt->reset();
         if (!rs)
         {
-            on_error(SQLITE_ERROR);
+            on_error();
             return rc_new<SqliteResultSet>();
         }
 
-#define __BIND(i) \
-        rs = stmt->bind(i, arg##i); \
-        if (!rs) \
-        { \
-            on_error(SQLITE_ERROR); \
+#define __BIND(i)                             \
+        rs = stmt->bind(i, arg##i);           \
+        if (!rs)                              \
+        {                                     \
+            on_error();                       \
             return rc_new<SqliteResultSet>(); \
         }
 
@@ -404,7 +433,7 @@ public:
         rc_ptr<SqliteStatement> stmt = rc_new<SqliteStatement>(_sqlite, sql);
         if (!stmt->is_valid())
         {
-            on_error(SQLITE_ERROR);
+            on_error();
             return rc_new<SqliteResultSet>();
         }
 
@@ -412,7 +441,7 @@ public:
         bool rs = stmt->reset();
         if (!rs)
         {
-            on_error(SQLITE_ERROR);
+            on_error();
             return rc_new<SqliteResultSet>();
         }
         for (size_t i = 0, size = args.size(); i < size; ++i)
@@ -420,7 +449,7 @@ public:
             rs = stmt->bind(i + 1, args.at(i));
             if (!rs)
             {
-                on_error(SQLITE_ERROR);
+                on_error();
                 return rc_new<SqliteResultSet>();
             }
         }
