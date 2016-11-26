@@ -34,12 +34,12 @@ public:
     /**
      * AES 128-bit block encryption routine
      */
-    void encrypt(const uint8_t input[16], uint8_t output[16]);
+    void encrypt(const uint8_t input[16], uint8_t output[16]) const;
 
     /**
      * AES 128-bit block decryption routine
      */
-    void decrypt(const uint8_t input[16], uint8_t output[16]);
+    void decrypt(const uint8_t input[16], uint8_t output[16]) const;
 };
 
 }

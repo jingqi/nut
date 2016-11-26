@@ -81,7 +81,7 @@ static void aes_gen_tables()
         x = (unsigned char) FSb[i];
         y = XTIME( x );
 
-        FT0[i] =   (uint32_t) ( x ^ y ) ^
+        FT0[i] = (uint32_t) ( x ^ y ) ^
             ( (uint32_t) x <<  8 ) ^
             ( (uint32_t) x << 16 ) ^
             ( (uint32_t) y << 24 );
@@ -94,7 +94,7 @@ static void aes_gen_tables()
 
         y = (unsigned char) RSb[i];
 
-        RT0[i] = ( (uint32_t) MUL( 0x0B, y )       ) ^
+        RT0[i] = ( (uint32_t) MUL( 0x0B, y ) ) ^
             ( (uint32_t) MUL( 0x0D, y ) <<  8 ) ^
             ( (uint32_t) MUL( 0x09, y ) << 16 ) ^
             ( (uint32_t) MUL( 0x0E, y ) << 24 );
@@ -557,11 +557,11 @@ bool AES::set_key(const uint8_t *key, int nbits)
 }
 
 /* AES 128-bit block encryption routine */
-void AES::encrypt(const uint8_t input[16], uint8_t output[16])
+void AES::encrypt(const uint8_t input[16], uint8_t output[16]) const
 {
-    uint32_t *RK, X0, X1, X2, X3, Y0, Y1, Y2, Y3;
+    uint32_t X0, X1, X2, X3, Y0, Y1, Y2, Y3;
 
-    RK = _erk;
+    const uint32_t *RK = _erk;
 
     GET_UINT32( X0, input,  0 );
     X0 ^= RK[0];
@@ -572,29 +572,29 @@ void AES::encrypt(const uint8_t input[16], uint8_t output[16])
     GET_UINT32( X3, input, 12 );
     X3 ^= RK[3];
 
-#define AES_FROUND(X0,X1,X2,X3,Y0,Y1,Y2,Y3)     \
-    {                                           \
-    RK += 4;                                    \
-    \
-    X0 = RK[0] ^ FT0[ (uint8_t) ( Y0 >> 24 ) ] ^  \
-    FT1[ (uint8_t) ( Y1 >> 16 ) ] ^  \
-    FT2[ (uint8_t) ( Y2 >>  8 ) ] ^  \
-    FT3[ (uint8_t) ( Y3       ) ];   \
-    \
-    X1 = RK[1] ^ FT0[ (uint8_t) ( Y1 >> 24 ) ] ^  \
-    FT1[ (uint8_t) ( Y2 >> 16 ) ] ^  \
-    FT2[ (uint8_t) ( Y3 >>  8 ) ] ^  \
-    FT3[ (uint8_t) ( Y0       ) ];   \
-    \
-    X2 = RK[2] ^ FT0[ (uint8_t) ( Y2 >> 24 ) ] ^  \
-    FT1[ (uint8_t) ( Y3 >> 16 ) ] ^  \
-    FT2[ (uint8_t) ( Y0 >>  8 ) ] ^  \
-    FT3[ (uint8_t) ( Y1       ) ];   \
-    \
-    X3 = RK[3] ^ FT0[ (uint8_t) ( Y3 >> 24 ) ] ^  \
-    FT1[ (uint8_t) ( Y0 >> 16 ) ] ^  \
-    FT2[ (uint8_t) ( Y1 >>  8 ) ] ^  \
-    FT3[ (uint8_t) ( Y2       ) ];   \
+#define AES_FROUND(X0,X1,X2,X3,Y0,Y1,Y2,Y3)             \
+    {                                                   \
+        RK += 4;                                        \
+                                                        \
+        X0 = RK[0] ^ FT0[ (uint8_t) ( Y0 >> 24 ) ] ^    \
+            FT1[ (uint8_t) ( Y1 >> 16 ) ] ^             \
+            FT2[ (uint8_t) ( Y2 >>  8 ) ] ^             \
+            FT3[ (uint8_t) ( Y3       ) ];              \
+                                                        \
+        X1 = RK[1] ^ FT0[ (uint8_t) ( Y1 >> 24 ) ] ^    \
+            FT1[ (uint8_t) ( Y2 >> 16 ) ] ^             \
+            FT2[ (uint8_t) ( Y3 >>  8 ) ] ^             \
+            FT3[ (uint8_t) ( Y0       ) ];              \
+                                                        \
+        X2 = RK[2] ^ FT0[ (uint8_t) ( Y2 >> 24 ) ] ^    \
+            FT1[ (uint8_t) ( Y3 >> 16 ) ] ^             \
+            FT2[ (uint8_t) ( Y0 >>  8 ) ] ^             \
+            FT3[ (uint8_t) ( Y1       ) ];              \
+                                                        \
+        X3 = RK[3] ^ FT0[ (uint8_t) ( Y3 >> 24 ) ] ^    \
+            FT1[ (uint8_t) ( Y0 >> 16 ) ] ^             \
+            FT2[ (uint8_t) ( Y1 >>  8 ) ] ^             \
+            FT3[ (uint8_t) ( Y2       ) ];              \
     }
 
     AES_FROUND( Y0, Y1, Y2, Y3, X0, X1, X2, X3 );       /* round 1 */
@@ -650,11 +650,11 @@ void AES::encrypt(const uint8_t input[16], uint8_t output[16])
 }
 
 /* AES 128-bit block decryption routine */
-void AES::decrypt(const uint8_t input[16], uint8_t output[16] )
+void AES::decrypt(const uint8_t input[16], uint8_t output[16]) const
 {
-    uint32_t *RK, X0, X1, X2, X3, Y0, Y1, Y2, Y3;
+    uint32_t X0, X1, X2, X3, Y0, Y1, Y2, Y3;
 
-    RK = _drk;
+    const uint32_t *RK = _drk;
 
     GET_UINT32( X0, input,  0 );
     X0 ^= RK[0];
