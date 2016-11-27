@@ -1,8 +1,11 @@
 ﻿
-#include <nut/unittest/unit_test.h>
+#include <iostream>
 
+#include <nut/unittest/unit_test.h>
 #include <nut/security/digest/md5.h>
 
+
+using namespace std;
 
 NUT_FIXTURE(TestMD5)
 {
@@ -14,8 +17,14 @@ NUT_FIXTURE(TestMD5)
     {
         nut::MD5 digest;
         digest.reset();
-        digest.update(msg, strlen(msg));
+        digest.update(msg, ::strlen(msg));
         digest.digest();
+
+        if (digest.get_string_result() != rs)
+        {
+            cerr << " MD5: \"" << msg << "\" expect " << rs <<
+                " got " << digest.get_string_result() << endl;
+        }
         NUT_TA(digest.get_string_result() == rs);
     }
 

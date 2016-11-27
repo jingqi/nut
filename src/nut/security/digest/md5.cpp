@@ -27,7 +27,7 @@
 #define __H__(x, y, z) ((x) ^ (y) ^ (z))
 #define __I__(x, y, z) ((y) ^ ((x) | (~z)))
 
-#define __ROTATE_LEFT__(x, n) (((x) << (n)) | ((x) >> (32-(n))))
+#define __ROTATE_LEFT__(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
 
 #define __FF__(a, b, c, d, x, s, ac)                        \
     {                                                       \
@@ -87,7 +87,7 @@ void MD5::update(const void *buf, size_t cb)
 
     /* Calculate number of bytes mod 64 */
     uint32_t index = _bytes_len & 0x3F;
-    uint32_t partlen = 64 - index;
+    const uint32_t partlen = 64 - index;
 
     /* Update number of bits */
     _bytes_len += cb;
@@ -100,17 +100,13 @@ void MD5::update(const void *buf, size_t cb)
         transform512bits(_buffer);
 
         for (i = partlen; i + 63 < cb; i += 64)
-            transform512bits(((const uint8_t*)buf) + i);
+            transform512bits(((const uint8_t*) buf) + i);
 
         index = 0;
     }
-    else
-    {
-        i = 0;
-    }
 
     /* Buffer remaining input */
-    ::memcpy(_buffer + index, ((const uint8_t*)buf) + i, cb - i);
+    ::memcpy(_buffer + index, ((const uint8_t*) buf) + i, cb - i);
 }
 
 void MD5::digest()
@@ -119,7 +115,7 @@ void MD5::digest()
     const uint64_t bits = _bytes_len << 3;
 
     /* Pad out to 56 mod 64. */
-    const size_t index = (size_t)(_bytes_len & 0x3f);
+    const size_t index = (size_t) (_bytes_len & 0x3f);
     const size_t pad_len = (index < 56) ? (56 - index) : (120 - index);
     const uint8_t PADDING[64] = {
         0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -131,6 +127,7 @@ void MD5::digest()
 
     /* Append length (before padding) */
     update(&bits, 8);
+    assert(0 == (_bytes_len & 0x3f));
 }
 
 const uint8_t* MD5::get_bytes_result(void *result) const

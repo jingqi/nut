@@ -54,8 +54,8 @@ void AES_CBC_PKCS5::update_encrypt(const void *data, size_t data_len)
         ((const uint8_t*&) data) += 16;
     }
 
-    ::memcpy(_data_buf + _data_buf_size, data, data_len % 16);
-    _data_buf_size += data_len % 16;
+    ::memcpy(_data_buf + _data_buf_size, data, data_len & 0x0f);
+    _data_buf_size += data_len & 0x0f;
     assert(_data_buf_size < 16);
 }
 
@@ -116,8 +116,8 @@ void AES_CBC_PKCS5::update_decrypt(const void *data, size_t data_len)
         ((const uint8_t*&) data) += 16;
     }
 
-    ::memcpy(_data_buf + _data_buf_size, data, data_len % 16);
-    _data_buf_size += data_len % 16;
+    ::memcpy(_data_buf + _data_buf_size, data, data_len & 0x0f);
+    _data_buf_size += data_len & 0x0f;
     assert(_data_buf_size < 16);
 }
 
