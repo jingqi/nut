@@ -433,6 +433,9 @@
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\stamped_ptr.h">
       <Filter>nut\threading\lockfree</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\security\digest\sha1.h">
+      <Filter>nut\security\digest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">
@@ -638,6 +641,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\util\time\time_wheel.cpp">
       <Filter>nut\util\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\security\digest\sha1.cpp">
+      <Filter>nut\security\digest</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

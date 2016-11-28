@@ -207,5 +207,8 @@
     <ClCompile Include="..\..\..\src\test_nut\util\time\test_time_wheel.cpp">
       <Filter>test\util\time</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\security\digest\test_sha1.cpp">
+      <Filter>test\security\digest</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -192,6 +192,7 @@
     <ClInclude Include="..\..\..\src\nut\rc\ref_counter.h" />
     <ClInclude Include="..\..\..\src\nut\security\digest\adler32.h" />
     <ClInclude Include="..\..\..\src\nut\security\digest\md5.h" />
+    <ClInclude Include="..\..\..\src\nut\security\digest\sha1.h" />
     <ClInclude Include="..\..\..\src\nut\security\encrypt\aes.h" />
     <ClInclude Include="..\..\..\src\nut\security\encrypt\aes_cbc_pkcs5.h" />
     <ClInclude Include="..\..\..\src\nut\security\encrypt\rsa.h" />
@@ -275,6 +276,7 @@
     <ClCompile Include="..\..\..\src\nut\platform\path.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\digest\adler32.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\digest\md5.cpp" />
+    <ClCompile Include="..\..\..\src\nut\security\digest\sha1.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\encrypt\aes.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\encrypt\aes_cbc_pkcs5.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\encrypt\rsa.cpp" />
