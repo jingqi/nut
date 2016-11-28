@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		2E00A7771DC232A500A90738 /* time_wheel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E00A7751DC232A500A90738 /* time_wheel.cpp */; };
 		2E00A7781DC232A500A90738 /* time_wheel.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E00A7761DC232A500A90738 /* time_wheel.h */; };
+		2E05D3011DEC6D4700D08BC7 /* sha1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E05D2FF1DEC6D4700D08BC7 /* sha1.cpp */; };
+		2E05D3021DEC6D4700D08BC7 /* sha1.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E05D3001DEC6D4700D08BC7 /* sha1.h */; };
+		2E05D3041DEC6D6F00D08BC7 /* test_sha1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E05D3031DEC6D6F00D08BC7 /* test_sha1.cpp */; };
 		2E0CCB5D1B78E88A006A6DB5 /* test_bytearraystream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E0CCB5C1B78E88A006A6DB5 /* test_bytearraystream.cpp */; };
 		2E17D6751DC24E6B006DAB9E /* test_time_wheel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E17D6741DC24E6B006DAB9E /* test_time_wheel.cpp */; };
 		2E1BABB71D268ABB005E25C9 /* test_segments_mp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E1BABB61D268ABB005E25C9 /* test_segments_mp.cpp */; };
@@ -260,6 +263,9 @@
 /* Begin PBXFileReference section */
 		2E00A7751DC232A500A90738 /* time_wheel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = time_wheel.cpp; path = ../../src/nut/util/time/time_wheel.cpp; sourceTree = "<group>"; };
 		2E00A7761DC232A500A90738 /* time_wheel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = time_wheel.h; path = ../../src/nut/util/time/time_wheel.h; sourceTree = "<group>"; };
+		2E05D2FF1DEC6D4700D08BC7 /* sha1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sha1.cpp; path = ../../src/nut/security/digest/sha1.cpp; sourceTree = "<group>"; };
+		2E05D3001DEC6D4700D08BC7 /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha1.h; path = ../../src/nut/security/digest/sha1.h; sourceTree = "<group>"; };
+		2E05D3031DEC6D6F00D08BC7 /* test_sha1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_sha1.cpp; path = ../../src/test_nut/security/digest/test_sha1.cpp; sourceTree = "<group>"; };
 		2E0CCB4F1B78E822006A6DB5 /* byte_array_stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = byte_array_stream.cpp; path = ../../src/nut/container/bytestream/byte_array_stream.cpp; sourceTree = "<group>"; };
 		2E0CCB501B78E822006A6DB5 /* byte_array_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = byte_array_stream.h; path = ../../src/nut/container/bytestream/byte_array_stream.h; sourceTree = "<group>"; };
 		2E0CCB521B78E822006A6DB5 /* input_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = input_stream.h; path = ../../src/nut/container/bytestream/input_stream.h; sourceTree = "<group>"; };
@@ -732,6 +738,8 @@
 		2E1927491AD9009300FDFFA6 /* digest */ = {
 			isa = PBXGroup;
 			children = (
+				2E05D2FF1DEC6D4700D08BC7 /* sha1.cpp */,
+				2E05D3001DEC6D4700D08BC7 /* sha1.h */,
 				2E19274A1AD900AB00FDFFA6 /* adler32.cpp */,
 				2E19274B1AD900AB00FDFFA6 /* adler32.h */,
 				2E19274C1AD900AB00FDFFA6 /* md5.cpp */,
@@ -983,6 +991,7 @@
 		2E1928171AD9030800FDFFA6 /* digest */ = {
 			isa = PBXGroup;
 			children = (
+				2E05D3031DEC6D6F00D08BC7 /* test_sha1.cpp */,
 				2E50AAD81B6F2EC600AA2E58 /* test_adler32.cpp */,
 				2E50AAD91B6F2EC600AA2E58 /* test_md5.cpp */,
 			);
@@ -1289,6 +1298,7 @@
 				2EA9F8E81D84628200017E41 /* stream_log_handler.h in Headers */,
 				2E4D98931DBF8EBF00757198 /* ring_buffer.h in Headers */,
 				2EA9F8E11D84628200017E41 /* circle_file_by_time_log_handler.h in Headers */,
+				2E05D3021DEC6D4700D08BC7 /* sha1.h in Headers */,
 				2EA9F8E31D84628200017E41 /* console_log_handler.h in Headers */,
 				2EA9F8E51D84628200017E41 /* file_log_handler.h in Headers */,
 				2E4D98911DBF8EBF00757198 /* fragment_buffer.h in Headers */,
@@ -1388,6 +1398,7 @@
 				2E4D98981DBF8EDB00757198 /* test_ring_buffer.cpp in Sources */,
 				2E50AAD51B6F2EA900AA2E58 /* test_path.cpp in Sources */,
 				2E50AAE61B6F2EE400AA2E58 /* test_queue.cpp in Sources */,
+				2E05D3041DEC6D6F00D08BC7 /* test_sha1.cpp in Sources */,
 				2E50AADA1B6F2EC600AA2E58 /* test_adler32.cpp in Sources */,
 				2E50AAD41B6F2EA900AA2E58 /* test_os.cpp in Sources */,
 				2E50AAC21B6F2E3F00AA2E58 /* test_lru_cache.cpp in Sources */,
@@ -1463,6 +1474,7 @@
 				2ECBDB9B1D82EF5400A47CD8 /* stream_test_logger.cpp in Sources */,
 				2ECBDB9C1D82EF5400A47CD8 /* test_register.cpp in Sources */,
 				2ECBDB9D1D82EF5400A47CD8 /* test_runner.cpp in Sources */,
+				2E05D3011DEC6D4700D08BC7 /* sha1.cpp in Sources */,
 				2ECBDB9E1D82EF5400A47CD8 /* xml_dom.cpp in Sources */,
 				2ECBDB9F1D82EF5400A47CD8 /* xml_element.cpp in Sources */,
 				2ECBDBA01D82EF5400A47CD8 /* xml_parser.cpp in Sources */,
