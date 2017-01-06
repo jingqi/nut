@@ -12,12 +12,9 @@ namespace nut
 class NUT_API ConsoleLogHandler : public LogHandler
 {
     bool _in_a_tty = false;
-    bool _colored = true;
 
 public:
-    ConsoleLogHandler(bool colored = true);
-
-    void set_colored(bool colored);
+    ConsoleLogHandler();
 
     virtual void handle_log(const LogRecord& l) override;
 };

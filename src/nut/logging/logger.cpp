@@ -213,7 +213,6 @@ void Logger::load_xml_config(const std::string& config)
         std::string _path;
         std::string _file_prefix;
         bool _append = false;
-        bool _colored = true;
         bool _close_syslog_on_exit = false;
         bool _cross_file = true;
         size_t _circle = 10;
@@ -278,10 +277,6 @@ void Logger::load_xml_config(const std::string& config)
             {
                 _cross_file = (value == "true" || value == "1");
             }
-            else if (name == "colored")
-            {
-                _colored = (value == "true" || value == "1");
-            }
             else if (name == "close_syslog_on_exit")
             {
                 _close_syslog_on_exit = (value == "true" || value == "1");
@@ -309,7 +304,6 @@ void Logger::load_xml_config(const std::string& config)
                 rc_ptr<ConsoleLogHandler> handler = rc_new<ConsoleLogHandler>();
                 handler->set_flush_mask(_flush_mask);
                 handler->get_filter().swap(&_filter);
-                handler->set_colored(_colored);
                 Logger::get_instance()->add_handler(handler);
             }
             else if (_type == "file")

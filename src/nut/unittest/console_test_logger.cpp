@@ -67,7 +67,7 @@ void ConsoleTestLogger::on_finish()
     std::cout << "  ";
     if (_in_a_tty)
         ConsoleUtil::set_text_color(0 == _count_of_failed_fixtures ? ConsoleUtil::GREEN : ConsoleUtil::RED);
-    std::cout << (0 == _count_of_failed_fixtures ? "√" : "×");
+    std::cout << (0 == _count_of_failed_fixtures ? (_in_a_tty ? "√" : "OK") : (_in_a_tty ? "×" : "FAILED"));
     if (_in_a_tty)
         ConsoleUtil::set_text_color();
     std::cout << std::endl << "> total cases  : ";
@@ -85,7 +85,7 @@ void ConsoleTestLogger::on_finish()
     std::cout << "  ";
     if (_in_a_tty)
         ConsoleUtil::set_text_color(0 == _count_of_failed_cases ? ConsoleUtil::GREEN : ConsoleUtil::RED);
-    std::cout << (0 == _count_of_failed_cases ? "√" : "×");
+    std::cout << (0 == _count_of_failed_cases ? (_in_a_tty ? "√" : "OK") : (_in_a_tty ? "×" : "FAILED"));
     if (_in_a_tty)
         ConsoleUtil::set_text_color();
     std::cout << std::endl;

@@ -26,6 +26,7 @@ enum LogLevel
 typedef uint8_t ll_mask_t;
 
 const char* log_level_to_str(LogLevel level);
+char log_level_to_char(LogLevel level);
 LogLevel str_to_log_level(const char *str);
 
 }

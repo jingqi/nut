@@ -3,6 +3,7 @@
 
 #include <nut/rc/rc_new.h>
 #include <nut/logging/logger.h>
+#include <nut/logging/log_handler/console_log_handler.h>
 #include <nut/logging/log_handler/stream_log_handler.h>
 #include <nut/logging/log_handler/syslog_log_handler.h>
 
@@ -13,6 +14,7 @@ NUT_FIXTURE(TestLogging)
 {
     NUT_CASES_BEGIN()
     NUT_CASE(test_smoking)
+    NUT_CASE(test_console_handler)
     NUT_CASE(test_filter)
     NUT_CASE(test_xml_config)
     NUT_CASES_END()
@@ -24,6 +26,27 @@ NUT_FIXTURE(TestLogging)
         l->get_filter().clear_forbids();
 
         l->add_handler(rc_new<StreamLogHandler>(std::cout));
+
+        NUT_LOG_D("a", "debug msg");
+        NUT_LOG_I("a.b", "info msg");
+        NUT_LOG_W("b.c", "warn msg");
+        NUT_LOG_E("a.m", "error msg");
+        NUT_LOG_F(NULL, "fatal msg");
+
+        NUT_LOG_D("a", "debug msg");
+        NUT_LOG_I("a.b", "info msg");
+        NUT_LOG_W("a.c", "warn msg");
+        NUT_LOG_E("b.c", "error msg");
+        NUT_LOG_F("a.b.m", "fatal msg");
+    }
+    
+    void test_console_handler()
+    {
+        Logger *l = Logger::get_instance();
+        l->clear_handlers();
+        l->get_filter().clear_forbids();
+
+        l->add_handler(rc_new<ConsoleLogHandler>());
 
         NUT_LOG_D("a", "debug msg");
         NUT_LOG_I("a.b", "info msg");
