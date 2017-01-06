@@ -175,6 +175,7 @@
     <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\mod.h" />
     <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\prime.h" />
     <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer.h" />
+    <ClInclude Include="..\..\..\src\nut\nut.h" />
     <ClInclude Include="..\..\..\src\nut\nut_config.h" />
     <ClInclude Include="..\..\..\src\nut\pconsole\cmd_exit.h" />
     <ClInclude Include="..\..\..\src\nut\pconsole\cmd_help.h" />
