@@ -160,6 +160,7 @@
 		2E50AAF71B6F2F2700AA2E58 /* test_property_dom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAF51B6F2F2700AA2E58 /* test_property_dom.cpp */; };
 		2E50AAF91B6F2F3900AA2E58 /* test_delegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAF81B6F2F3900AA2E58 /* test_delegate.cpp */; };
 		2E50AAFB1B6F2F5600AA2E58 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAFA1B6F2F5600AA2E58 /* main.cpp */; };
+		2EA0B7701E1FD2CB00563338 /* nut.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EA0B76F1E1FD2CB00563338 /* nut.h */; };
 		2EA9F8DE1D84628200017E41 /* circle_file_by_size_log_handler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EA9F8D11D84628200017E41 /* circle_file_by_size_log_handler.cpp */; };
 		2EA9F8DF1D84628200017E41 /* circle_file_by_size_log_handler.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EA9F8D21D84628200017E41 /* circle_file_by_size_log_handler.h */; };
 		2EA9F8E01D84628200017E41 /* circle_file_by_time_log_handler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EA9F8D31D84628200017E41 /* circle_file_by_time_log_handler.cpp */; };
@@ -462,6 +463,7 @@
 		2E91FDDC1AECC5AC00223604 /* logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = logger.cpp; path = ../../src/nut/logging/logger.cpp; sourceTree = "<group>"; };
 		2E91FDDD1AECC5AC00223604 /* logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = logger.h; path = ../../src/nut/logging/logger.h; sourceTree = "<group>"; };
 		2E91FDE81AECC5DF00223604 /* time_val.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = time_val.cpp; path = ../../src/nut/util/time/time_val.cpp; sourceTree = "<group>"; };
+		2EA0B76F1E1FD2CB00563338 /* nut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = nut.h; path = ../../src/nut/nut.h; sourceTree = "<group>"; };
 		2EA9F8D11D84628200017E41 /* circle_file_by_size_log_handler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = circle_file_by_size_log_handler.cpp; path = ../../src/nut/logging/log_handler/circle_file_by_size_log_handler.cpp; sourceTree = "<group>"; };
 		2EA9F8D21D84628200017E41 /* circle_file_by_size_log_handler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = circle_file_by_size_log_handler.h; path = ../../src/nut/logging/log_handler/circle_file_by_size_log_handler.h; sourceTree = "<group>"; };
 		2EA9F8D31D84628200017E41 /* circle_file_by_time_log_handler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = circle_file_by_time_log_handler.cpp; path = ../../src/nut/logging/log_handler/circle_file_by_time_log_handler.cpp; sourceTree = "<group>"; };
@@ -536,6 +538,7 @@
 		2E1926961AD8FE8400FDFFA6 /* nut */ = {
 			isa = PBXGroup;
 			children = (
+				2EA0B76F1E1FD2CB00563338 /* nut.h */,
 				2E1926991AD8FEC600FDFFA6 /* container */,
 				2E1927481AD9008A00FDFFA6 /* security */,
 				2E19273D1AD9006B00FDFFA6 /* rc */,
@@ -1273,6 +1276,7 @@
 				2E4D98E51DBF8F1D00757198 /* test_register.h in Headers */,
 				2E4D98E61DBF8F1D00757198 /* test_runner.h in Headers */,
 				2E4D98E71DBF8F1D00757198 /* testcase_failure_exception.h in Headers */,
+				2EA0B7701E1FD2CB00563338 /* nut.h in Headers */,
 				2E4D98E81DBF8F1D00757198 /* unit_test.h in Headers */,
 				2E4D98E91DBF8F1D00757198 /* element_handler.h in Headers */,
 				2E4D98EA1DBF8F1D00757198 /* xml_dom.h in Headers */,
