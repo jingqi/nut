@@ -11,6 +11,7 @@ namespace nut
 
 class NUT_API ConsoleLogHandler : public LogHandler
 {
+    bool _in_a_tty = false;
     bool _colored = true;
 
 public:

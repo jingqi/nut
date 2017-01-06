@@ -12,7 +12,7 @@ namespace nut
 
 class NUT_API ConsoleUtil
 {
-public :
+public:
     enum ConsoleColor
     {
         DEFAULT     = 0,     /* 默认 */
@@ -26,12 +26,19 @@ public :
         WHITE       = 8,     /* 白 = 红 + 绿 + 蓝*/
     };
 
+    // 判断是否运行在终端中
+    static bool isatty();
+
+    // 设置终端文字前景色
     static void set_text_color(ConsoleColor forecolor = DEFAULT, ConsoleColor backcolor = DEFAULT);
 
+    // 设置终端文字背景色
     static void set_back_ground_color(ConsoleColor forecolor = DEFAULT, ConsoleColor backcolor = DEFAULT);
 
+    // 暂停，等待用户按键
     static void pause();
 
+    // 从终端中读取密码
     static std::string get_password();
 };
 

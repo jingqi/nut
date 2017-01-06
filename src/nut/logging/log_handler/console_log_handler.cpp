@@ -10,7 +10,9 @@ namespace nut
 
 ConsoleLogHandler::ConsoleLogHandler(bool colored)
     : _colored(colored)
-{}
+{
+    _in_a_tty = ConsoleUtil::isatty();
+}
 
 void ConsoleLogHandler::set_colored(bool colored)
 {
@@ -20,7 +22,7 @@ void ConsoleLogHandler::set_colored(bool colored)
 void ConsoleLogHandler::handle_log(const LogRecord& rec)
 {
     std::cout << "[" << rec.get_time().get_clock_str() << "] ";
-    if (_colored)
+    if (_colored && _in_a_tty)
     {
         switch (rec.get_level())
         {
@@ -51,11 +53,10 @@ void ConsoleLogHandler::handle_log(const LogRecord& rec)
 
     std::cout << log_level_to_str(rec.get_level());
 
-    if (_colored)
+    if (_colored && _in_a_tty)
         ConsoleUtil::set_text_color();
 
-    std::cout << " (" << rec.get_file_name() << ":" << rec.get_line() <<
-        ")  " << rec.get_message() << std::endl;
+    std::cout << " " << rec.get_message() << std::endl;
 
     if (0 != (_flush_mask & rec.get_level()))
         std::cout.flush();

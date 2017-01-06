@@ -14,7 +14,11 @@ namespace nut
 
 class NUT_API ConsoleTestLogger : public ITestLogger
 {
+    bool _in_a_tty = false;
+
 public:
+    ConsoleTestLogger();
+
     virtual void on_start(const char *group_name, const char *fixture_name, const char *case_name) override;
     virtual void on_finish() override;
 

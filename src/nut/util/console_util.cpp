@@ -5,7 +5,8 @@
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_OS_WINDOWS
-#   include <conio.h>
+#   include <conio.h> // for ::getch()
+#   include <io.h> // for ::_isatty()
 #   include <windows.h>
 #else
 #   include <unistd.h>
@@ -20,6 +21,15 @@
 
 namespace nut
 {
+
+bool ConsoleUtil::isatty()
+{
+#if NUT_PLATFORM_OS_WINDOWS
+    return 0 != ::_isatty(::_fileno(stdout));
+#else
+    return 1 == ::isatty(STDOUT_FILENO);
+#endif
+}
 
 void ConsoleUtil::set_text_color(ConsoleColor forecolor, ConsoleColor backcolor)
 {

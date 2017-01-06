@@ -1,5 +1,5 @@
 ﻿
-#include <nut/platform/platform.h>
+#include <nut/nut.h>
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <conio.h>
@@ -7,11 +7,6 @@
 
 #include <stdio.h>
 #include <iostream>
-#include <nut/unittest/unit_test.h>
-#include <nut/unittest/console_test_logger.h>
-#include <nut/unittest/stream_test_logger.h>
-#include <nut/unittest/test_runner.h>
-#include <nut/logging/logger.h>
 
 using namespace std;
 using namespace nut;
@@ -76,12 +71,7 @@ int main(int argc, char *argv[])
     ::srand((unsigned) ::time(NULL));
 	print_platform();
 
-#if NUT_PLATFORM_CC_VC
     ConsoleTestLogger l;
-#else
-    StreamTestLogger l(&std::cout);
-#endif
-
     TestRunner runner(&l);
     if (argc <= 1)
     {
@@ -149,8 +139,11 @@ int main(int argc, char *argv[])
     }
 
 #if NUT_PLATFORM_OS_WINDOWS
-    printf("press any key to continue...");
-    getch();
+    if (ConsoleUtil::isatty())
+    {
+        printf("press any key to continue...");
+        getch();
+    }
 #endif
 
     return l.get_count_of_failed_cases();

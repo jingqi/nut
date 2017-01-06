@@ -89,6 +89,8 @@
 
 // unittest
 #include "unittest/unit_test.h"
+#include "unittest/console_test_logger.h"
+#include "unittest/stream_test_logger.h"
 
 // pconsole
 #include "pconsole/pconsole.h"
