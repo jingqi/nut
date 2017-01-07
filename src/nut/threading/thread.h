@@ -80,7 +80,7 @@ public:
     bool has_finished() const;
 
     /**
-     * 注意，只有线程启动后才可获取
+     * NOTE 只有线程启动后才可获取
      */
     tid_type get_tid() const;
 
@@ -88,7 +88,17 @@ public:
     void join();
     void terminate();
 
+    /**
+     * 获取当前线程的 tid
+     */
     static tid_type current_thread_id();
+
+    /**
+     * 比较 tid 是否相等
+     *
+     * NOTE 由于 tid 可复用(包括 pthread_t)，请尽量保证 tid 指向当前有效的线程
+     */
+    static bool tid_equals(const tid_type& t1, const tid_type& t2);
 };
 
 }

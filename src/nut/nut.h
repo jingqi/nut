@@ -74,6 +74,7 @@
 
 // threading
 #include "threading/threading.h"
+#include "threading/runnable.h"
 #include "threading/thread.h"
 #include "threading/thread_pool.h"
 #include "threading/lockfree/atomic.h"

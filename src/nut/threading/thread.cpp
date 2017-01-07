@@ -182,4 +182,13 @@ Thread::tid_type Thread::current_thread_id()
 #endif
 }
 
+bool Thread::tid_equals(const tid_type &t1, const tid_type &t2)
+{
+#if NUT_PLATFORM_OS_WINDOWS || NUT_PLATFORM_OS_LINUX
+    return t1 == t2;
+#else
+    return ::pthread_equal(t1, t2);
+#endif
+}
+
 }
