@@ -22,7 +22,7 @@ template <typename T> class delegate;
 template <typename Ret TEMPLATE_ARGS>                                   \
 class delegate<Ret (FUNCTION_ARGS)>                                     \
 {                                                                       \
-    typedef delegate<Ret (FUNCTION_ARGS)> self;                         \
+    typedef delegate<Ret (FUNCTION_ARGS)> self_type;                    \
                                                                         \
     enum HolderType                                                     \
     {                                                                   \
@@ -114,7 +114,7 @@ public:                                                                 \
         _holders.push_back(new MemHolder<U,MemFun>(obj, mfunc));        \
     }                                                                   \
                                                                         \
-    delegate(const self& x)                                             \
+    delegate(const self_type& x)                                        \
     {                                                                   \
         for (size_t i = 0, sz = x._holders.size(); i < sz; ++i)         \
         {                                                               \
@@ -128,21 +128,20 @@ public:                                                                 \
         disconnect_all();                                               \
     }                                                                   \
                                                                         \
-    delegate& operator=(const self& x)                                  \
+    delegate& operator=(const self_type& x)                             \
     {                                                                   \
-        if (&x != this)                                                 \
+        if (this == &x)                                                 \
+            return *this;                                               \
+        disconnect_all();                                               \
+        for (size_t i = 0, sz = x._holders.size(); i < sz; ++i)         \
         {                                                               \
-            disconnect_all();                                           \
-            for (size_t i = 0, sz = x._holders.size(); i < sz; ++i)     \
-            {                                                           \
-                assert(NULL != x._holders[i]);                          \
-                _holders.push_back(x._holders[i]->clone());             \
-            }                                                           \
+            assert(NULL != x._holders[i]);                              \
+            _holders.push_back(x._holders[i]->clone());                 \
         }                                                               \
         return *this;                                                   \
     }                                                                   \
                                                                         \
-    bool operator==(const self& x) const                                \
+    bool operator==(const self_type& x) const                           \
     {                                                                   \
         if (_holders.size() != x._holders.size())                       \
             return false;                                               \
@@ -181,7 +180,7 @@ public:                                                                 \
         return true;                                                    \
     }                                                                   \
                                                                         \
-    bool operator!=(const self& x) const                                \
+    bool operator!=(const self_type& x) const                           \
     {                                                                   \
         return !(*this == x);                                           \
     }                                                                   \

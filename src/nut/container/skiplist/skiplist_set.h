@@ -79,8 +79,9 @@ class SkipListSet
     size_t _size = 0;
 
 private:
-    typedef SkipList<T,Node,SkipListSet<T> > algo_t;
-    friend class SkipList<T,Node,SkipListSet<T> >;
+    typedef SkipListSet<T>             self_type;
+    typedef SkipList<T,Node,self_type> algo_type;
+    friend class SkipList<T,Node,self_type>;
 
     int get_level() const
     {
@@ -122,18 +123,18 @@ public:
     SkipListSet()
     {}
 
-    SkipListSet(const SkipListSet<T>& x)
+    SkipListSet(const self_type& x)
     {
         if (x._size == 0)
             return;
         assert(NULL != x._head && x._level >= 0);
 
-        // initial attributes
+        // Initial attributes
         _level = x._level;
         _head = (Node**) ::malloc(sizeof(Node*) * (_level + 1));
         ::memset(_head, 0, sizeof(Node*) * (_level + 1));
 
-        // copy nodes
+        // Copy nodes
         Node **pre_lv = (Node**) ::malloc(sizeof(Node*) * (_level + 1));
         ::memset(pre_lv, 0, sizeof(Node*) * (_level + 1));
         Node *n = x._head[0];
@@ -143,7 +144,7 @@ public:
             new (c) Node(n->_key);
             c->_level = n->_level;
             c->_next = (Node**) ::malloc(sizeof(Node*) * (c->_level + 1));
-            algo_t::insert_node(c, *this, pre_lv);
+            algo_type::insert_node(c, *this, pre_lv);
             for (size_t i = 0; i <= c->_level; ++i)
                 pre_lv[i] = c;
 
@@ -151,6 +152,16 @@ public:
         }
         ::free(pre_lv);
         _size = x._size;
+    }
+
+    SkipListSet(self_type&& x)
+    {
+        _level = x._level;
+        _head = x._head;
+        _size = x._size;
+        x._level = -1;
+        x._head = NULL;
+        x._size = 0;
     }
 
     ~SkipListSet()
@@ -162,18 +173,18 @@ public:
         _level = -1;
     }
 
-    SkipListSet<T>& operator=(const SkipListSet<T>& x)
+    self_type& operator=(const self_type& x)
     {
         if (this == &x)
             return *this;
 
-        // clear memory
+        // Clear memory
         clear();
         if (x._size == 0)
             return *this;
         assert(NULL != x._head && x._level >= 0);
 
-        // initial attributes
+        // Initial attributes
         if (NULL != _head)
         {
             assert(_level >= 0);
@@ -187,7 +198,7 @@ public:
         _level = x._level;
         ::memset(_head, 0, sizeof(Node*) * (_level + 1));
 
-        // copy nodes
+        // Copy nodes
         Node **pre_lv = (Node**) ::malloc(sizeof(Node*) * (_level + 1));
         ::memset(pre_lv, 0, sizeof(Node*) * (_level + 1));
         Node *n = x._head[0];
@@ -197,7 +208,7 @@ public:
             new (c) Node(n->_key);
             c->_level = n->_level;
             c->_next = (Node**) ::malloc(sizeof(Node*) * (c->_level + 1));
-            algo_t::insert_node(c, *this, pre_lv);
+            algo_type::insert_node(c, *this, pre_lv);
             for (size_t i = 0; i <= c->_level; ++i)
                 pre_lv[i] = c;
 
@@ -209,7 +220,20 @@ public:
         return *this;
     }
 
-    bool operator==(const SkipListSet<T>& x) const
+    self_type& operator=(self_type&& x)
+    {
+        if (this == &x)
+            return *this;
+        _level = x._level;
+        _head = x._head;
+        _size = x._size;
+        x._level = -1;
+        x._head = NULL;
+        x._size = 0;
+        return *this;
+    }
+
+    bool operator==(const self_type& x) const
     {
         if (this == &x)
             return true;
@@ -232,7 +256,7 @@ public:
         return true;
     }
 
-    bool operator!=(const SkipListSet<T>& x) const
+    bool operator!=(const self_type& x) const
     {
         return !(*this == x);
     }
@@ -266,7 +290,7 @@ public:
             return false;
         assert(NULL != _head && _level >= 0);
 
-        return NULL != algo_t::search_node(k, *this, NULL);
+        return NULL != algo_type::search_node(k, *this, NULL);
     }
 
     bool add(const T& k)
@@ -286,19 +310,19 @@ public:
         }
         assert(_level >= 0);
 
-        // search
+        // Search
         Node **pre_lv = (Node **) ::malloc(sizeof(Node*) * (_level + 1));
-        Node *n = algo_t::search_node(k, *this, pre_lv);
+        Node *n = algo_type::search_node(k, *this, pre_lv);
         if (NULL != n)
         {
             ::free(pre_lv);
             return false;
         }
 
-        // insert
+        // Insert
         n = (Node*) ::malloc(sizeof(Node));
         new (n) Node(k);
-        algo_t::insert_node(n, *this, pre_lv);
+        algo_type::insert_node(n, *this, pre_lv);
         ::free(pre_lv);
         ++_size;
         return true;
@@ -310,17 +334,17 @@ public:
             return false;
         assert(NULL != _head && _level >= 0);
 
-        // search
+        // Search
         Node **pre_lv = (Node **) ::malloc(sizeof(Node*) * (_level + 1));
-        Node *n = algo_t::search_node(k, *this, pre_lv);
+        Node *n = algo_type::search_node(k, *this, pre_lv);
         if (NULL == n)
         {
             ::free(pre_lv);
             return false;
         }
 
-        // remove
-        algo_t::remove_node(n, *this, pre_lv);
+        // Remove
+        algo_type::remove_node(n, *this, pre_lv);
         ::free(pre_lv);
         n->~Node();
         ::free(n);

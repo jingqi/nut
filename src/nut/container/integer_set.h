@@ -23,8 +23,9 @@ class IntegerSet
 public:
     typedef IntType int_type;
 
-    struct Range
+    class Range
     {
+    public:
         int_type first = 0, last = 0;
 
         Range()
@@ -101,6 +102,30 @@ private:
 public:
     IntegerSet()
     {}
+
+    IntegerSet(const self_type& x)
+        : _ranges(x._ranges)
+    {}
+
+    IntegerSet(self_type&& x)
+        : _ranges(std::move(x._ranges))
+    {}
+
+    self_type& operator=(const self_type& x)
+    {
+        if (this == &x)
+            return *this;
+        _ranges = x._ranges;
+        return *this;
+    }
+
+    self_type& operator=(self_type&& x)
+    {
+        if (this == &x)
+            return *this;
+        _ranges = std::move(x._ranges);
+        return *this;
+    }
 
     bool operator==(const self_type& x) const
     {
@@ -321,7 +346,7 @@ public:
                 return rg.first + index;
             index -= rg.last - rg.first + 1;
         }
-        // index out of range
+        // Index out of range
         assert(false);
     }
 
@@ -613,7 +638,7 @@ public:
             }
             else
             {
-                value1 = y._ranges.at(y._ranges.size() - 1).last + 1; // same effect as max integer
+                value1 = y._ranges.at(y._ranges.size() - 1).last + 1; // Same effect as max integer
             }
 
             int_type value2;
@@ -624,7 +649,7 @@ public:
             }
             else
             {
-                value2 = x._ranges.at(x._ranges.size() - 1).last + 1; // same effect as max integer
+                value2 = x._ranges.at(x._ranges.size() - 1).last + 1; // Same effect as max integer
             }
 
             // 对于边界重叠的情况，优先进入状态 X_AND_Y
@@ -728,7 +753,7 @@ public:
             }
             else
             {
-                value1 = y._ranges.at(y._ranges.size() - 1).last + 1; // same effect as max integer
+                value1 = y._ranges.at(y._ranges.size() - 1).last + 1; // Same effect as max integer
             }
 
             int_type value2;
@@ -739,7 +764,7 @@ public:
             }
             else
             {
-                value2 = x._ranges.at(x._ranges.size() - 1).last + 1; // same effect as max integer
+                value2 = x._ranges.at(x._ranges.size() - 1).last + 1; // Same effect as max integer
             }
 
             // 对于边界重叠的情况，优先进入状态 X_AND_Y 和 SINGLE_Y

@@ -33,7 +33,7 @@ namespace nut
 class NUT_API AddrMapManager
 {
 public:
-    typedef unsigned int addr_t;
+    typedef unsigned int addr_type;
 
 private:
     // 析构检查字段
@@ -43,8 +43,8 @@ private:
      * key 为动态链接库实际绝对路径（不是软链接，也不是相对路径）
      * value为动态链接库加载地址
      */
-    typedef std::map<std::string, addr_t> addr_map_t;
-    addr_map_t _addr_map;
+    typedef std::map<std::string, addr_type> addr_map_type;
+    addr_map_type _addr_map;
 
     // 程序的绝对路径
     std::string _exec_path;
@@ -77,7 +77,7 @@ public:
     /**
      * 找到某个共享库的起始地址
      */
-    bool find(const std::string& path, addr_t *out_addr);
+    bool find(const std::string& path, addr_type *out_addr);
 
 private:
     /**

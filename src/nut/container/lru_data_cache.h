@@ -72,16 +72,16 @@ class LRUDataCache
         }
 
     private:
-        // invalid methods
+        // Invalid methods
         Node(const Node&);
         Node& operator=(const Node&);
     };
 
     enum { DEFAULT_BYTES_CAPACITY = 5 * 1024 * 1024 }; // 单位: 字节
-    typedef std::map<K,Node*> map_t;
+    typedef std::map<K,Node*> map_type;
 
     size_t _bytes_size = 0, _bytes_capacity = 0;
-    map_t _map;
+    map_type _map;
     Node *_list_head = NULL, *_list_end = NULL;
     SpinLock _lock; // 注意，linux下自旋锁不可重入
 
@@ -188,7 +188,7 @@ public:
         assert(NULL != buf || 0 == cb);
         Guard<SpinLock> g(&_lock);
 
-        typename map_t::const_iterator const n = _map.find(k);
+        typename map_type::const_iterator const n = _map.find(k);
         if (n == _map.end())
         {
             Node *const p = new_node(k, buf, cb);
@@ -199,7 +199,7 @@ public:
             while (_bytes_size > _bytes_capacity)
             {
                 assert(NULL != _list_end);
-                typename map_t::iterator const nn = _map.find(_list_end->key);
+                typename map_type::iterator const nn = _map.find(_list_end->key);
                 assert(nn != _map.end());
                 Node *const pp = nn->second;
                 assert(NULL != pp && _bytes_size >= pp->size);
@@ -224,7 +224,7 @@ public:
     {
         Guard<SpinLock> g(&_lock);
 
-        typename map_t::iterator const n = _map.find(k);
+        typename map_type::iterator const n = _map.find(k);
         if (n == _map.end())
             return;
 
@@ -246,7 +246,7 @@ public:
         assert(NULL != pdata && NULL != psize);
         Guard<SpinLock> g(&_lock);
 
-        typename map_t::const_iterator const n = _map.find(k);
+        typename map_type::const_iterator const n = _map.find(k);
         if (n == _map.end())
         {
 #ifndef NDEBUG

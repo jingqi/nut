@@ -28,7 +28,8 @@ class NUT_API sys_ma : public memory_allocator
 #endif
 
 private:
-    explicit sys_ma(const sys_ma&);
+    // Invalid methods
+    sys_ma(const sys_ma&);
     sys_ma& operator=(const sys_ma&);
 
 public:

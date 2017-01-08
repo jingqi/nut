@@ -75,6 +75,7 @@ private:
     std::vector<Timer*> _to_be_canceled; // 延迟取消列表
 
 private:
+    // Invalid methods
     TimeWheel(const TimeWheel&);
     TimeWheel& operator=(const TimeWheel&);
 

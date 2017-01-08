@@ -186,7 +186,7 @@ private:
     };
 
 private:
-    typedef RTree<DataT, NumT, DIMENSIONS, RealNumT, MAX_ENTRY_COUNT, MIN_ENTRY_COUNT, AllocT>  self;
+    typedef RTree<DataT, NumT, DIMENSIONS, RealNumT, MAX_ENTRY_COUNT, MIN_ENTRY_COUNT, AllocT>  self_type;
     typedef AllocT                                                                              data_allocator_type;
     typedef typename AllocT::template rebind<TreeNode>::other                                   treenode_allocator_type;
     typedef typename AllocT::template rebind<DataNode>::other                                   datanode_allocator_type;
@@ -516,7 +516,7 @@ private:
     {
         assert(NULL != parent && NULL != child);
 
-        typedef typename std::list<Node*>::const_iterator iter_t;
+        typedef typename std::list<Node*>::const_iterator iter_type;
 
         // 收集所有的子节点
         std::list<Node*> remained;
@@ -545,7 +545,7 @@ private:
         {
             if (remained.size() == MIN_ENTRY_COUNT - count1)
             {
-                for (iter_t iter = remained.begin(), end = remained.end();
+                for (iter_type iter = remained.begin(), end = remained.end();
                     iter != end; ++iter)
                 {
                     parent->append_child(*iter);
@@ -555,7 +555,7 @@ private:
             }
             else if (remained.size() == MIN_ENTRY_COUNT - count2)
             {
-                for (iter_t iter = remained.begin(), end = remained.end();
+                for (iter_type iter = remained.begin(), end = remained.end();
                     iter != end; ++iter)
                 {
                     uncle->append_child(*iter);
@@ -591,19 +591,19 @@ private:
     {
         assert(NULL != children && children->size() >= 2 && NULL != pseed1 && NULL != pseed2);
 
-        typedef std::list<Node*> list_t;
-        typedef typename list_t::iterator iter_t;
+        typedef std::list<Node*> list_type;
+        typedef typename list_type::iterator iter_type;
 
         // 下面两组变量用来求各个维度中 children 占用的 range
-        iter_t highest_high_side[DIMENSIONS];
-        iter_t lowest_low_side[DIMENSIONS];
+        iter_type highest_high_side[DIMENSIONS];
+        iter_type lowest_low_side[DIMENSIONS];
 
         // 下面两组变量用来求 children 在各个维度中分的最开的两个 child
-        iter_t highest_low_side[DIMENSIONS];
-        iter_t lowest_high_side[DIMENSIONS];
+        iter_type highest_low_side[DIMENSIONS];
+        iter_type lowest_high_side[DIMENSIONS];
 
         // 初始化
-        const iter_t end = children->end();
+        const iter_type end = children->end();
         for (size_t i = 0; i < DIMENSIONS; ++i)
         {
             highest_high_side[i] = end;
@@ -613,7 +613,7 @@ private:
         }
 
         // 给上述四组变量取值
-        for (iter_t iter = children->begin(); iter != end; ++iter)
+        for (iter_type iter = children->begin(); iter != end; ++iter)
         {
             assert(NULL != *iter);
             for (size_t i = 0; i < DIMENSIONS; ++i)
@@ -671,11 +671,11 @@ private:
     {
         assert(NULL != remained);
 
-        typedef typename std::list<Node*>::iterator iter_t;
+        typedef typename std::list<Node*>::iterator iter_type;
 
-        iter_t max_diff_index = remained->begin();
+        iter_type max_diff_index = remained->begin();
         RealNumT max_diff = 0;
-        for (iter_t iter = remained->begin(), end = remained->end();
+        for (iter_type iter = remained->begin(), end = remained->end();
             iter != end; ++iter)
         {
             RealNumT diff = acreage_needed(r1, (*iter)->area) - acreage_needed(r2, (*iter)->area);

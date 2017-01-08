@@ -16,6 +16,7 @@ namespace nut
 
 class NUT_API memory_allocator
 {
+    // Invalid methods
     memory_allocator(const memory_allocator&);
     memory_allocator& operator=(const memory_allocator&);
 

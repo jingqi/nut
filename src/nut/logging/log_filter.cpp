@@ -24,11 +24,11 @@ void LogFilter::Node::swap(Node *x)
     if (this == x)
         return;
 
-    const ll_mask_t mask = forbid_mask;
+    const ll_mask_type mask = forbid_mask;
     forbid_mask = x->forbid_mask;
     x->forbid_mask = mask;
 
-    hash_t *const hash = children_hash;
+    hashcode_type *const hash = children_hash;
     children_hash = x->children_hash;
     x->children_hash = hash;
 
@@ -50,7 +50,7 @@ void LogFilter::Node::swap(Node *x)
         x->children[i]->parent = x;
 }
 
-int LogFilter::Node::search(hash_t hash) const
+int LogFilter::Node::search(hashcode_type hash) const
 {
     // binary search
     int left = -1, right = children_size;
@@ -76,12 +76,12 @@ void LogFilter::Node::ensure_cap(int new_size)
     if (new_cap < new_size)
         new_cap = new_size;
 
-    children_hash = (hash_t*) ::realloc(children_hash, sizeof(hash_t) * new_cap);
+    children_hash = (hashcode_type*) ::realloc(children_hash, sizeof(hashcode_type) * new_cap);
     children = (Node**) ::realloc(children, sizeof(Node*) * new_cap);
     children_cap = new_cap;
 }
 
-void LogFilter::Node::insert(int pos, hash_t hash)
+void LogFilter::Node::insert(int pos, hashcode_type hash)
 {
     assert(pos < 0);
     pos = -pos - 1;
@@ -89,7 +89,7 @@ void LogFilter::Node::insert(int pos, hash_t hash)
     if (pos < children_size)
     {
         const int count = children_size - pos;
-        ::memmove(children_hash + pos + 1, children_hash + pos, sizeof(hash_t) * count);
+        ::memmove(children_hash + pos + 1, children_hash + pos, sizeof(hashcode_type) * count);
         ::memmove(children + pos + 1, children + pos, sizeof(Node*) * count);
     }
     children_hash[pos] = hash;
@@ -112,7 +112,7 @@ void LogFilter::Node::remove(Node *child)
     if (pos < children_size - 1)
     {
         const int count = children_size - pos - 1;
-        ::memmove(children_hash + pos, children_hash + pos + 1, sizeof(hash_t) * count);
+        ::memmove(children_hash + pos, children_hash + pos + 1, sizeof(hashcode_type) * count);
         ::memmove(children + pos, children + pos + 1, sizeof(Node*) * count);
     }
     --children_size;
@@ -153,12 +153,12 @@ void LogFilter::swap(LogFilter *x)
     _root.swap(&x->_root);
 }
 
-LogFilter::hash_t LogFilter::hash_to_dot(const char *s, int *char_accum)
+LogFilter::hashcode_type LogFilter::hash_to_dot(const char *s, int *char_accum)
 {
     assert(NULL != s && NULL != char_accum);
 
     // SDBRHash 算法
-    hash_t hash = 17;
+    hashcode_type hash = 17;
     int i = 0;
     while (0 != s[i] && '.' != s[i])
     {
@@ -170,7 +170,7 @@ LogFilter::hash_t LogFilter::hash_to_dot(const char *s, int *char_accum)
     return hash;
 }
 
-void LogFilter::forbid(const char *tag, ll_mask_t mask)
+void LogFilter::forbid(const char *tag, ll_mask_type mask)
 {
     // dummy operation
     if (0 == mask)
@@ -189,7 +189,7 @@ void LogFilter::forbid(const char *tag, ll_mask_t mask)
     do
     {
         // hash 一段标志符
-        const hash_t hash = hash_to_dot(tag + i, &i);
+        const hashcode_type hash = hash_to_dot(tag + i, &i);
 
         // 找到对应的节点
         assert(NULL != current);
@@ -216,7 +216,7 @@ void LogFilter::forbid(const char *tag, ll_mask_t mask)
     current->forbid_mask |= mask;
 }
 
-void LogFilter::unforbid(const char *tag, ll_mask_t mask)
+void LogFilter::unforbid(const char *tag, ll_mask_type mask)
 {
     // dummy operation
     if (0 == mask)
@@ -235,7 +235,7 @@ void LogFilter::unforbid(const char *tag, ll_mask_t mask)
     do
     {
         // hash 一段标志符
-        const hash_t hash = hash_to_dot(tag + i, &i);
+        const hashcode_type hash = hash_to_dot(tag + i, &i);
 
         // 找到对应的节点
         assert(NULL != current);
@@ -285,7 +285,7 @@ bool LogFilter::is_forbidden(const char *tag, LogLevel level) const
     do
     {
         // hash 一段标志符
-        const hash_t hash = hash_to_dot(tag + i, &i);
+        const hashcode_type hash = hash_to_dot(tag + i, &i);
 
         // 找到对应的节点
         assert(NULL != current);

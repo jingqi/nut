@@ -115,7 +115,7 @@ void XmlElement::clear_children()
  */
 bool XmlElement::get_attribute(const std::string& name, std::string *attr) const
 {
-    const_attr_iter_t iter = _attrs.find(name);
+    const_attr_iter_type iter = _attrs.find(name);
     if (iter == _attrs.end())
         return false;
     if (NULL != attr)
@@ -148,7 +148,7 @@ void XmlElement::set_attribute(const std::string& name, const std::string& value
 
 bool XmlElement::remove_attribute(const std::string& name)
 {
-    attr_iter_t iter = _attrs.find(name);
+    attr_iter_type iter = _attrs.find(name);
     if (iter == _attrs.end())
         return false;
     _attrs.erase(iter);
@@ -218,23 +218,23 @@ void XmlElement::clear()
     _dirty = true;
 }
 
-XmlElement::const_attr_iter_t XmlElement::attr_const_begin() const
+XmlElement::const_attr_iter_type XmlElement::attr_const_begin() const
 {
     return _attrs.begin();
 }
 
-XmlElement::const_attr_iter_t XmlElement::attr_const_end() const
+XmlElement::const_attr_iter_type XmlElement::attr_const_end() const
 {
     return _attrs.end();
 }
 
-XmlElement::attr_iter_t XmlElement::attr_begin()
+XmlElement::attr_iter_type XmlElement::attr_begin()
 {
     _dirty = true; // in case of modification
     return _attrs.begin();
 }
 
-XmlElement::attr_iter_t XmlElement::attr_end()
+XmlElement::attr_iter_type XmlElement::attr_end()
 {
     _dirty = true; // in case of modification
     return _attrs.end();
@@ -314,7 +314,7 @@ void XmlElement::serielize(XmlWriter &writer, int tab) const
     writer.start_element(_name.c_str());
 
     // attributes
-    for (const_attr_iter_t iter = _attrs.begin(), end = _attrs.end();
+    for (const_attr_iter_type iter = _attrs.begin(), end = _attrs.end();
         iter != end; ++iter)
     {
         writer.write_attribute(iter->first.c_str(), iter->second.c_str());

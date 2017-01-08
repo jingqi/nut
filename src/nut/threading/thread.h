@@ -66,6 +66,7 @@ private:
 #endif
 
 private:
+    // Invalid methods
     Thread(const Thread& x);
     Thread& operator=(const Thread& x);
 

@@ -40,8 +40,10 @@ private:
 public:
     RingBuffer();
     RingBuffer(const RingBuffer& x);
+    RingBuffer(RingBuffer&& x);
     ~RingBuffer();
     RingBuffer& operator=(const RingBuffer& x);
+    RingBuffer& operator=(RingBuffer&& x);
 
     void clear();
 

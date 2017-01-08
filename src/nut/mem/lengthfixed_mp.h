@@ -30,6 +30,7 @@ class NUT_API lengthfixed_stmp : public memory_allocator
     NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
+    // Invalid methods
     explicit lengthfixed_stmp(const lengthfixed_stmp&);
     lengthfixed_stmp& operator=(const lengthfixed_stmp&);
 
@@ -68,7 +69,8 @@ class NUT_API lengthfixed_mtmp : public memory_allocator
     NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
-    explicit lengthfixed_mtmp(const lengthfixed_mtmp&);
+    // Invalid methods
+    lengthfixed_mtmp(const lengthfixed_mtmp&);
     lengthfixed_mtmp& operator=(const lengthfixed_mtmp&);
 
 public:

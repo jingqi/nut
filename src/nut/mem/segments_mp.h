@@ -34,6 +34,7 @@ class segments_mp : public memory_allocator
     NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
+    // Invalid methods
     segments_mp(const segments_mp&);
     segments_mp& operator=(const segments_mp&);
 

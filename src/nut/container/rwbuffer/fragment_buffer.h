@@ -25,11 +25,12 @@ public:
         uint8_t buffer[1];
 
     private:
+        // Invalid methods
         Fragment(const Fragment&);
         Fragment& operator=(const Fragment&);
 
     public:
-        Fragment(size_t cap)
+        explicit Fragment(size_t cap)
             : capacity(cap)
         {}
     };
@@ -46,8 +47,11 @@ private:
 public:
     FragmentBuffer();
     FragmentBuffer(const FragmentBuffer& x);
+    FragmentBuffer(FragmentBuffer&& x);
     ~FragmentBuffer();
+
     FragmentBuffer& operator=(const FragmentBuffer& x);
+    FragmentBuffer& operator=(FragmentBuffer&& x);
 
     void clear();
 

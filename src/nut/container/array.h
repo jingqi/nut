@@ -25,7 +25,7 @@ private:
     size_type _size = 0, _cap = 0;
 
 public:
-    Array(size_type init_cap = 16)
+    explicit Array(size_type init_cap = 16)
     {
         ensure_cap(init_cap);
     }

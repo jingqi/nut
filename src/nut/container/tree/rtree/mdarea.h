@@ -21,7 +21,7 @@ namespace nut
 template <typename NumT, size_t DIMENSIONS = 2, typename RealNumT = double>
 class MDArea
 {
-    typedef MDArea<NumT, DIMENSIONS, RealNumT> self;
+    typedef MDArea<NumT, DIMENSIONS, RealNumT> self_type;
 
 public:
     NumT lower[DIMENSIONS]; // 低边界
@@ -36,7 +36,7 @@ public:
         }
     }
 
-    bool operator==(const self& x) const
+    bool operator==(const self_type& x) const
     {
         for (size_t i = 0; i < DIMENSIONS; ++i)
             if (lower[i] != x.lower[i] || higher[i] != x.higher[i])
@@ -44,7 +44,7 @@ public:
         return true;
     }
 
-    bool operator!=(const self& x) const
+    bool operator!=(const self_type& x) const
     {
         return !(*this == x);
     }
@@ -64,7 +64,7 @@ public:
     /**
      * 扩展区域，以便包含目标区域
      */
-    void expand_to_contain(const self& x)
+    void expand_to_contain(const self_type& x)
     {
         for (size_t i = 0; i < DIMENSIONS; ++i)
         {
@@ -98,7 +98,7 @@ public:
     /**
      * 查看是否完全包含另一个区域
      */
-    bool contains(const self& x) const
+    bool contains(const self_type& x) const
     {
         for (size_t i = 0; i < DIMENSIONS; ++i)
             if (!(lower[i] <= x.lower[i] && x.higher[i] <= higher[i]))
@@ -109,7 +109,7 @@ public:
     /**
      * 查看是否与另一个区域有交集
      */
-    bool intersects(const self& x) const
+    bool intersects(const self_type& x) const
     {
         // 任意一个维度不想交，则区域不想交
         for (size_t i = 0; i < DIMENSIONS; ++i)

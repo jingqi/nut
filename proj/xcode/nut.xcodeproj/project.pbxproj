@@ -160,6 +160,7 @@
 		2E50AAF71B6F2F2700AA2E58 /* test_property_dom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAF51B6F2F2700AA2E58 /* test_property_dom.cpp */; };
 		2E50AAF91B6F2F3900AA2E58 /* test_delegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAF81B6F2F3900AA2E58 /* test_delegate.cpp */; };
 		2E50AAFB1B6F2F5600AA2E58 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAFA1B6F2F5600AA2E58 /* main.cpp */; };
+		2E662FC51E21FFE70028B7F6 /* runnable.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E662FC41E21FFE70028B7F6 /* runnable.h */; };
 		2EA0B7701E1FD2CB00563338 /* nut.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EA0B76F1E1FD2CB00563338 /* nut.h */; };
 		2EA9F8DE1D84628200017E41 /* circle_file_by_size_log_handler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EA9F8D11D84628200017E41 /* circle_file_by_size_log_handler.cpp */; };
 		2EA9F8DF1D84628200017E41 /* circle_file_by_size_log_handler.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EA9F8D21D84628200017E41 /* circle_file_by_size_log_handler.h */; };
@@ -442,6 +443,7 @@
 		2E50AAF81B6F2F3900AA2E58 /* test_delegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_delegate.cpp; path = ../../src/test_nut/util/test_delegate.cpp; sourceTree = "<group>"; };
 		2E50AAFA1B6F2F5600AA2E58 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../src/test_nut/main.cpp; sourceTree = "<group>"; };
 		2E6429DD1A1F76760037E554 /* test_nut */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_nut; sourceTree = BUILT_PRODUCTS_DIR; };
+		2E662FC41E21FFE70028B7F6 /* runnable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = runnable.h; path = ../../src/nut/threading/runnable.h; sourceTree = "<group>"; };
 		2E91FDBC1AECC58700223604 /* console_test_logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = console_test_logger.cpp; path = ../../src/nut/unittest/console_test_logger.cpp; sourceTree = "<group>"; };
 		2E91FDBD1AECC58700223604 /* console_test_logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = console_test_logger.h; path = ../../src/nut/unittest/console_test_logger.h; sourceTree = "<group>"; };
 		2E91FDBE1AECC58700223604 /* stream_test_logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = stream_test_logger.cpp; path = ../../src/nut/unittest/stream_test_logger.cpp; sourceTree = "<group>"; };
@@ -770,6 +772,7 @@
 				2E1927811AD900F000FDFFA6 /* lockfree */,
 				2E1927681AD900E100FDFFA6 /* sync */,
 				2E4D98881DBF8E3400757198 /* threading.h */,
+				2E662FC41E21FFE70028B7F6 /* runnable.h */,
 				2E1927601AD900DC00FDFFA6 /* thread_pool.cpp */,
 				2E1927611AD900DC00FDFFA6 /* thread_pool.h */,
 				2E1927621AD900DC00FDFFA6 /* thread.cpp */,
@@ -1215,6 +1218,7 @@
 				2E4D98A81DBF8F1D00757198 /* bundle.h in Headers */,
 				2E4D98A91DBF8F1D00757198 /* lru_cache.h in Headers */,
 				2E4D98AA1DBF8F1D00757198 /* lru_data_cache.h in Headers */,
+				2E662FC51E21FFE70028B7F6 /* runnable.h in Headers */,
 				2E4D98AB1DBF8F1D00757198 /* tuple.h in Headers */,
 				2E4D98AC1DBF8F1D00757198 /* aes_cbc_pkcs5.h in Headers */,
 				2E4D98AD1DBF8F1D00757198 /* aes.h in Headers */,

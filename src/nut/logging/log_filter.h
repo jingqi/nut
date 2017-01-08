@@ -14,25 +14,26 @@ namespace nut
  */
 class NUT_API LogFilter
 {
-    typedef unsigned hash_t;
+    typedef unsigned hashcode_type;
 
     // 字典树节点
     class NUT_API Node
     {
     public:
-        ll_mask_t forbid_mask = 0;
+        ll_mask_type forbid_mask = 0;
 
         Node *parent = NULL;
-        hash_t *children_hash = NULL; // 升序排列
+        hashcode_type *children_hash = NULL; // 升序排列
         Node **children = NULL;
         int children_size = 0, children_cap = 0;
 
     private:
+        // Invalid methods
         Node(const Node&);
         Node& operator=(const Node&);
 
     public:
-        Node(Node *p);
+        explicit Node(Node *p);
         ~Node();
 
         void swap(Node *x);
@@ -41,14 +42,14 @@ class NUT_API LogFilter
          * @return >=0, 找到的位置
          *         <0, 插入位置
          */
-        int search(hash_t hash) const;
+        int search(hashcode_type hash) const;
 
         void ensure_cap(int new_size);
 
         /**
          * @param pos 必须小于 0
          */
-        void insert(int pos, hash_t hash);
+        void insert(int pos, hashcode_type hash);
 
         void remove(Node *child);
 
@@ -57,13 +58,14 @@ class NUT_API LogFilter
     class Node _root;
 
 private:
+    // Invalid methods
     LogFilter(const LogFilter&);
     LogFilter& operator=(const LogFilter&);
 
     /**
      * 哈稀字符串，直到遇到结尾或者 '.' 字符
      */
-    static hash_t hash_to_dot(const char *s, int *char_accum);
+    static hashcode_type hash_to_dot(const char *s, int *char_accum);
 
 public:
     LogFilter();
@@ -75,14 +77,14 @@ public:
      *
      * @param mask 禁用的 LogLevel 掩码
      */
-    void forbid(const char *tag, ll_mask_t mask = LL_ALL_MASK);
+    void forbid(const char *tag, ll_mask_type mask = LL_ALL_MASK);
 
     /**
      * 解禁指定 tag
      *
      * @param mask 禁用的 LogLevel 掩码
      */
-    void unforbid(const char *tag, ll_mask_t mask = LL_ALL_MASK);
+    void unforbid(const char *tag, ll_mask_type mask = LL_ALL_MASK);
 
     void clear_forbids();
 

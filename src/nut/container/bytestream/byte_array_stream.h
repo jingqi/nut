@@ -28,9 +28,14 @@ class NUT_API ByteArrayStream : public RandomAccessInputStream, public OutputStr
     size_t _index = 0;
     bool _little_endian = true;
 
+private:
+    // Invalid methods
+    ByteArrayStream(const ByteArrayStream&);
+    ByteArrayStream& operator=(const ByteArrayStream&);
+
 public:
     ByteArrayStream();
-    ByteArrayStream(byte_rcarray_type *arr);
+    explicit ByteArrayStream(byte_rcarray_type *arr);
 
     size_t size() const;
     void resize(size_t new_size);

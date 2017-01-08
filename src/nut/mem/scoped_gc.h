@@ -59,7 +59,8 @@ class NUT_API scoped_gc
     NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
-    explicit scoped_gc(const self_type&);
+    // Invalid methods
+    scoped_gc(const self_type&);
     self_type& operator=(const self_type&);
 
 public:

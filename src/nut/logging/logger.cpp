@@ -140,7 +140,7 @@ void Logger::load_xml_config(const std::string& config)
     {
         LogFilter *_filter = NULL;
         std::string _tag_name;
-        ll_mask_t _forbid_mask = 0;
+        ll_mask_type _forbid_mask = 0;
 
     public:
         TagHandler()
@@ -217,7 +217,7 @@ void Logger::load_xml_config(const std::string& config)
         bool _cross_file = true;
         size_t _circle = 10;
         long _max_file_size = 1 * 1024 * 1024;
-        ll_mask_t _flush_mask = LL_FATAL;
+        ll_mask_type _flush_mask = LL_FATAL;
         LogFilter _filter;
 
     public:

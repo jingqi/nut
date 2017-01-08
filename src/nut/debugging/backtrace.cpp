@@ -26,7 +26,7 @@ namespace nut
 
 #if NUT_BACKTRACE_USE_ADDR_MAP
 
-typedef AddrMapManager::addr_t addr_t;
+typedef AddrMapManager::addr_type addr_type;
 
 static AddrMapManager& get_addr_map_mgr()
 {
@@ -37,7 +37,7 @@ static AddrMapManager& get_addr_map_mgr()
 /*
  * 构造用于调用addr2line的命令。
  */
-static std::string make_addr2line_cmd(addr_t addr, const std::string& str_path)
+static std::string make_addr2line_cmd(addr_type addr, const std::string& str_path)
 {
     char buf[50] = {0};
     sprintf(buf, "0x%X", addr);
@@ -111,7 +111,7 @@ static void get_real_path(std::string *str_path)
  * @param module_path [out]
  * @param addr [out]
  */
-static void parse_backtrace_symbol(const char* backtrace_symbol, std::string *module_path, addr_t *addr)
+static void parse_backtrace_symbol(const char* backtrace_symbol, std::string *module_path, addr_type *addr)
 {
     assert(NULL != backtrace_symbol && NULL != module_path && NULL != addr);
     *addr = 0;
@@ -153,11 +153,11 @@ int Backtrace::backtrace(std::string *appended)
     for (size_t i = 1; i < trace_size; i++)
     {
         std::string func_module_path;
-        addr_t func_addr;
+        addr_type func_addr;
         parse_backtrace_symbol(messages[i], &func_module_path, &func_addr);
 
         std::string cmd;
-        addr_t addr = 0;
+        addr_type addr = 0;
         bool found = addr_map.find(func_module_path, &addr);
         if (!found)
         {

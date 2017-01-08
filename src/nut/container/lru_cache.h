@@ -30,10 +30,10 @@ class LRUCache
     };
 
     enum { DEFAULT_CAPACITY = 50 };
-    typedef std::map<K,Node*> map_t;
+    typedef std::map<K,Node*> map_type;
 
     size_t _capacity = 0;
-    map_t _map;
+    map_type _map;
     Node *_list_head = NULL, *_list_end = NULL;
     SpinLock _lock; // 注意，linux下自旋锁不可重入
 
@@ -94,7 +94,7 @@ class LRUCache
     }
 
 private:
-    // invalid methods
+    // Invalid methods
     LRUCache(const LRUCache<K,V>&);
     LRUCache<K,V>& operator=(const LRUCache<K,V>&);
 
@@ -134,7 +134,7 @@ public:
     {
         Guard<SpinLock> g(&_lock);
 
-        typename map_t::const_iterator const n = _map.find(k);
+        typename map_type::const_iterator const n = _map.find(k);
         if (n == _map.end())
         {
             Node *const p = new_node(k,std::forward<V>(v));
@@ -144,7 +144,7 @@ public:
             while (_map.size() > _capacity)
             {
                 assert(NULL != _list_end);
-                typename map_t::iterator const nn = _map.find(_list_end->key);
+                typename map_type::iterator const nn = _map.find(_list_end->key);
                 assert(nn != _map.end());
                 Node *const pp = nn->second;
                 assert(NULL != pp);
@@ -166,7 +166,7 @@ public:
     {
         Guard<SpinLock> g(&_lock);
 
-        typename map_t::iterator const n = _map.find(k);
+        typename map_type::iterator const n = _map.find(k);
         if (n == _map.end())
             return;
 
@@ -187,7 +187,7 @@ public:
         assert(NULL != v);
         Guard<SpinLock> g(&_lock);
 
-        typename map_t::const_iterator const n = _map.find(k);
+        typename map_type::const_iterator const n = _map.find(k);
         if (n == _map.end())
         {
 #ifndef NDEBUG

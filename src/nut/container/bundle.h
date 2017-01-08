@@ -35,11 +35,12 @@ public:
 
 class Bundle
 {
-    typedef std::map<std::string, rc_ptr<_BundleElementBase> > map_t;
-    map_t _values;
+    typedef std::map<std::string, rc_ptr<_BundleElementBase> > map_type;
+    map_type _values;
 
 private:
-    explicit Bundle(const Bundle&);
+    // Invalid methods
+    Bundle(const Bundle&);
     Bundle& operator=(const Bundle&);
 
 public:
@@ -50,7 +51,7 @@ public:
 
     bool has_key(const std::string& key) const
     {
-        map_t::const_iterator iter = _values.find(key);
+        map_type::const_iterator iter = _values.find(key);
         if (iter == _values.end() || iter->second.is_null())
             return false;
         return true;
@@ -59,7 +60,7 @@ public:
     template <typename T>
     const T& get_value(const std::string& key) const
     {
-        map_t::const_iterator iter = _values.find(key);
+        map_type::const_iterator iter = _values.find(key);
         assert(iter != _values.end());
         _BundleElementBase *e = iter->second;
         assert(NULL != e);

@@ -21,6 +21,18 @@ RingBuffer::RingBuffer(const RingBuffer& x)
     *this = x;
 }
 
+RingBuffer::RingBuffer(RingBuffer&& x)
+{
+    _buffer = x._buffer;
+    _capacity = x._capacity;
+    _read_index = x._read_index;
+    _write_index = x._write_index;
+    x._buffer = NULL;
+    x._capacity = 0;
+    x._read_index = 0;
+    x._write_index = 0;
+}
+
 RingBuffer::~RingBuffer()
 {
     if (NULL != _buffer)
@@ -33,6 +45,9 @@ RingBuffer::~RingBuffer()
 
 RingBuffer& RingBuffer::operator=(const RingBuffer& x)
 {
+    if (this == &x)
+        return *this;
+
     clear();
     ensure_writable_size(x.readable_size());
 
@@ -43,6 +58,21 @@ RingBuffer& RingBuffer::operator=(const RingBuffer& x)
     for (int i = 0; i < n; ++i)
         write(buffers[i], lens[i]);
 
+    return *this;
+}
+
+RingBuffer& RingBuffer::operator=(RingBuffer&& x)
+{
+    if (this == &x)
+        return *this;
+    _buffer = x._buffer;
+    _capacity = x._capacity;
+    _read_index = x._read_index;
+    _write_index = x._write_index;
+    x._buffer = NULL;
+    x._capacity = 0;
+    x._read_index = 0;
+    x._write_index = 0;
     return *this;
 }
 

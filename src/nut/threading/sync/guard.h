@@ -11,7 +11,12 @@ class Guard
     T *_lock = NULL;
     bool _need_unlock = true;
 
-public :
+private:
+    // Invalid methods
+    Guard(const Guard<T>&);
+    Guard& operator=(const Guard<T>&);
+
+public:
     /**
      * @param lock
      *      a pointer to a lock, NULL will be ignored
@@ -20,7 +25,7 @@ public :
      * @param need_unlock
      *      whether need to unlock it
      */
-    Guard(T *lock, bool need_lock = true, bool need_unlock = true)
+    explicit Guard(T *lock, bool need_lock = true, bool need_unlock = true)
         : _lock(lock), _need_unlock(need_unlock)
     {
         if (NULL != _lock && need_lock)

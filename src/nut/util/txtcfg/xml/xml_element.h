@@ -35,15 +35,15 @@ class NUT_API XmlElement
     };
 
     std::string _name, _text;
-    typedef std::map<std::string, std::string> attr_map_t;
-    attr_map_t _attrs;
+    typedef std::map<std::string, std::string> attr_map_type;
+    attr_map_type _attrs;
     std::vector<rc_ptr<XmlElement> > _children;
     std::vector<Comment> _comments; // sorted ascending
     bool _dirty = false;
 
 public:
-    typedef attr_map_t::iterator attr_iter_t;
-    typedef attr_map_t::const_iterator const_attr_iter_t;
+    typedef attr_map_type::iterator attr_iter_type;
+    typedef attr_map_type::const_iterator const_attr_iter_type;
 
 public:
     XmlElement();
@@ -114,11 +114,11 @@ public:
 
     void clear();
 
-    const_attr_iter_t attr_const_begin() const;
-    const_attr_iter_t attr_const_end() const;
+    const_attr_iter_type attr_const_begin() const;
+    const_attr_iter_type attr_const_end() const;
 
-    attr_iter_t attr_begin();
-    attr_iter_t attr_end();
+    attr_iter_type attr_begin();
+    attr_iter_type attr_end();
 
     void parse(const std::string& s, size_t start_index = 0, bool ignore_text_blank = true);
 

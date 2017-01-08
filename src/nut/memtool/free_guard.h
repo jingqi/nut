@@ -12,8 +12,13 @@ class FreeGuard
 {
     void *_ptr = NULL;
 
+private:
+    // Invalid methods
+    FreeGuard(const FreeGuard&);
+    FreeGuard& operator=(const FreeGuard&);
+
 public:
-    FreeGuard(void *p = NULL)
+    explicit FreeGuard(void *p = NULL)
         : _ptr(p)
     {}
 
