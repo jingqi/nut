@@ -15,12 +15,21 @@
 #endif
 
 #include "thread.h"
+#include "threading.h"
 
 namespace nut
 {
 
+#if NUT_PLATFORM_OS_WINDOWS || NUT_PLATFORM_OS_LINUX
+static NUT_THREAD_LOCAL Thread::tid_type s_cached_tid = 0;
+#else
+// pthread_t should not be initialized by manually
+static NUT_THREAD_LOCAL bool s_cached_tid_initialized = false;
+static NUT_THREAD_LOCAL Thread::tid_type s_cached_tid;
+#endif
+
 #if NUT_PLATFORM_OS_LINUX
-pid_t gettid()
+static pid_t gettid()
 {
     return ::syscall(__NR_gettid);
 }
@@ -174,11 +183,20 @@ void Thread::terminate()
 Thread::tid_type Thread::current_thread_id()
 {
 #if NUT_PLATFORM_OS_WINDOWS
-    return ::GetCurrentThreadId();
+    if (0 == s_cached_tid)
+        s_cached_tid = ::GetCurrentThreadId();
+    return s_cached_tid;
 #elif NUT_PLATFORM_OS_LINUX
-    return gettid();
+    if (0 == s_cached_tid)
+        s_cached_tid = gettid();
+    return s_cached_tid;
 #else
-    return ::pthread_self();
+    if (!s_cached_tid_initialized)
+    {
+        s_cached_tid = ::pthread_self();
+        s_cached_tid_initialized = true;
+    }
+    return s_cached_tid;
 #endif
 }
 

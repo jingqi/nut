@@ -439,6 +439,9 @@
     <ClInclude Include="..\..\..\src\nut\nut.h">
       <Filter>nut</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\runnable.h">
+      <Filter>nut\threading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">
