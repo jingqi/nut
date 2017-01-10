@@ -15,6 +15,9 @@
 #include "../../nut_config.h"
 
 
+// 无效定时器 id
+#define NUT_INVALID_TIMER_ID NULL
+
 namespace nut
 {
 
