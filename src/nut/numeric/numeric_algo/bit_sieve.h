@@ -46,6 +46,11 @@ class BitSieve
      */
     static BitSieve _small_sieve;
 
+private:
+    // Non-copyable
+    BitSieve(const BitSieve&) = delete;
+    BitSieve& operator=(const BitSieve&) = delete;
+    
     /**
      * Construct a "small sieve" with a base of 0.  This constructor is
      * used internally to generate the set of "small primes" whose multiples

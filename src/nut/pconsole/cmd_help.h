@@ -15,7 +15,7 @@ class NUT_API CmdHelp : public ICommand
     IConsole *_console = nullptr;
 
 public:
-    CmdHelp(IConsole *c);
+    explicit CmdHelp(IConsole *c);
 
     virtual const char* get_command_name() const override;
 

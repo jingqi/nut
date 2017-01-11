@@ -18,7 +18,7 @@ class NUT_API CmdExit : public ICommand
     IConsole *_console = nullptr;
 
 public:
-    CmdExit(IConsole *c);
+    explicit CmdExit(IConsole *c);
 
     virtual const char* get_command_name() const override;
 

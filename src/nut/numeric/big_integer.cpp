@@ -114,12 +114,15 @@ BigInteger& BigInteger::operator=(self_type&& x)
 
     if (nullptr != _data)
         ::free(_data);
+    
     _data = x._data;
     _capacity = x._capacity;
     _significant_len = x._significant_len;
+    
     x._data = nullptr;
     x._capacity = 0;
     x._significant_len = 0;
+    
     return *this;
 }
 

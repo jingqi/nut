@@ -70,6 +70,10 @@ class ConcurrentStack
 
     // 用于消隐的碰撞数组
     StampedPtr<Node> _collisions[COLLISIONS_ARRAY_SIZE];
+    
+private:
+    ConcurrentStack(const ConcurrentStack&) = delete;
+    ConcurrentStack& operator=(const ConcurrentStack&) = delete;
 
 public:
     ConcurrentStack() = default;

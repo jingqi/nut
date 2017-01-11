@@ -14,7 +14,7 @@ namespace nut
 class NUT_API OS
 {
 private:
-    OS(); // invalid
+    OS() = delete;
 
 public:
     /**

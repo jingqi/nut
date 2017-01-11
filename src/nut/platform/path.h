@@ -13,7 +13,7 @@ namespace nut
 class NUT_API Path
 {
 private:
-    Path(); // invalid
+    Path() = delete;
 
 public:
     /**

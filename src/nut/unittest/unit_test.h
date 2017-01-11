@@ -105,7 +105,7 @@ class fixture_name : public ::nut::TestFixture
     }                                                                   \
     static void ___delete##fixture(::nut::TestFixture *p)               \
     {                                                                   \
-        assert(nullptr != p);                                              \
+        assert(nullptr != p);                                           \
         p->~TestFixture();                                              \
         ::free(p);                                                      \
     }                                                                   \

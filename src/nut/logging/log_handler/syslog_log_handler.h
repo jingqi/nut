@@ -17,8 +17,12 @@ class NUT_API SyslogLogHandler : public LogHandler
 {
     bool _close_syslog_on_exit = false;
 
+private:
+    SyslogLogHandler(const SyslogLogHandler&) = delete;
+    SyslogLogHandler& operator=(const SyslogLogHandler&) = delete;
+    
 public:
-    SyslogLogHandler(bool close_syslog_on_exit = false);
+    explicit SyslogLogHandler(bool close_syslog_on_exit = false);
 
     ~SyslogLogHandler();
 

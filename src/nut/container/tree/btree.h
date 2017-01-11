@@ -16,6 +16,9 @@ template <typename NODE>
 class BTree
 {
 private:
+    BTree() = delete;
+    
+private:
     /**
      * 中序遍历迭代器
      *

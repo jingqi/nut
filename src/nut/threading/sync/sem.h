@@ -23,9 +23,14 @@ class NUT_API Semaphore
 #else
     sem_t _sem;
 #endif
+    
+private:
+    // Non-copyable
+    Semaphore(const Semaphore&) = delete;
+    Semaphore& operator=(const Semaphore&) = delete;
 
 public:
-    Semaphore(int init_value);
+    explicit Semaphore(int init_value);
     ~Semaphore();
 
     void wait();

@@ -37,9 +37,7 @@ public:
         : T(std::forward<Args>(args)...)
     {}
 #else
-    RCWrapper()
-        : T()
-    {}
+    RCWrapper() = default;
 
     template <typename Arg1>
     RCWrapper(Arg1&& arg1)

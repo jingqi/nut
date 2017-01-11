@@ -14,6 +14,10 @@ namespace nut
 class NUT_API FileLogHandler : public LogHandler
 {
     std::ofstream _ofs;
+    
+private:
+    FileLogHandler(const FileLogHandler&) = delete;
+    FileLogHandler& operator=(const FileLogHandler&) = delete;
 
 public:
     FileLogHandler(const char *file, bool append = false);

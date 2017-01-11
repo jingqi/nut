@@ -36,7 +36,7 @@ private:
     bool _busy = false;
 
 public:
-    XmlElementHandler(uint8_t mask = 0xFF)
+    explicit XmlElementHandler(uint8_t mask = 0xFF)
         : _handle_mask(mask)
     {}
 

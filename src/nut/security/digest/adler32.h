@@ -36,7 +36,7 @@ class NUT_API RollingAdler32
     size_t _count = 0;
 
 public:
-    RollingAdler32(size_t window);
+    explicit RollingAdler32(size_t window);
     ~RollingAdler32();
 
     void initialize();

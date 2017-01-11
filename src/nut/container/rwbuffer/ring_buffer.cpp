@@ -24,6 +24,7 @@ RingBuffer::RingBuffer(RingBuffer&& x)
     _capacity = x._capacity;
     _read_index = x._read_index;
     _write_index = x._write_index;
+    
     x._buffer = nullptr;
     x._capacity = 0;
     x._read_index = 0;
@@ -50,9 +51,8 @@ RingBuffer& RingBuffer::operator=(const RingBuffer& x)
 
     const void *buffers[2];
     size_t lens[2];
-    const int n = x.readable_pointers(buffers, lens,
-                                      buffers + 1, lens + 1);
-    for (int i = 0; i < n; ++i)
+    const size_t n = x.readable_pointers(buffers, lens, buffers + 1, lens + 1);
+    for (size_t i = 0; i < n; ++i)
         write(buffers[i], lens[i]);
 
     return *this;
@@ -62,14 +62,20 @@ RingBuffer& RingBuffer::operator=(RingBuffer&& x)
 {
     if (this == &x)
         return *this;
+    
+    if (nullptr != _buffer)
+        ::free(_buffer);
+    
     _buffer = x._buffer;
     _capacity = x._capacity;
     _read_index = x._read_index;
     _write_index = x._write_index;
+    
     x._buffer = nullptr;
     x._capacity = 0;
     x._read_index = 0;
     x._write_index = 0;
+    
     return *this;
 }
 

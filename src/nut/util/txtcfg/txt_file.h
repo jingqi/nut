@@ -13,7 +13,6 @@ namespace nut
 class NUT_API TxtFile
 {
 private:
-    // Non-copyable
     TxtFile() = delete;
 
 public:

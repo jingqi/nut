@@ -25,7 +25,9 @@ private:
     char *_message = nullptr;
 
 private:
-    LogRecord(const LogRecord&);
+    // Non-copyable
+    LogRecord(const LogRecord&) = delete;
+    LogRecord& operator=(const LogRecord&) = delete;
 
 public:
     LogRecord(LogLevel level, const char *tag, const char *file_path, int line,

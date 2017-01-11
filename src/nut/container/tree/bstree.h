@@ -13,6 +13,9 @@ namespace nut
 template <typename K, typename NODE>
 class BSTree
 {
+private:
+    BSTree() = delete;
+    
 public:
 
     /**

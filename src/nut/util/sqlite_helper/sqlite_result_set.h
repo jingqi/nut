@@ -38,7 +38,7 @@ class SqliteResultSet
 public:
     SqliteResultSet() = default;
 
-    SqliteResultSet(SqliteStatement *stmt)
+    explicit SqliteResultSet(SqliteStatement *stmt)
         : _stmt(stmt)
     {
         assert(nullptr != stmt);

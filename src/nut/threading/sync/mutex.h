@@ -25,6 +25,11 @@ class NUT_API Mutex
 #else
     pthread_mutex_t _mutex;
 #endif
+    
+private:
+    // Non-copyable
+    Mutex(const Mutex&) = delete;
+    Mutex& operator=(const Mutex&) = delete;
 
 public :
     Mutex();

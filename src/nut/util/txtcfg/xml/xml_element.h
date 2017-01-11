@@ -47,7 +47,7 @@ public:
 public:
     XmlElement() = default;
 
-    XmlElement(const std::string& name);
+    explicit XmlElement(const std::string& name);
 
     bool is_dirty() const;
 

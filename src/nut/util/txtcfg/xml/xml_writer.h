@@ -29,7 +29,7 @@ class NUT_API XmlWriter
     std::vector<ElemState> _elem_path;
 
 public:
-    XmlWriter(std::ostream *os = nullptr);
+    explicit XmlWriter(std::ostream *os = nullptr);
 
     std::ostream* get_output_stream() const
     {

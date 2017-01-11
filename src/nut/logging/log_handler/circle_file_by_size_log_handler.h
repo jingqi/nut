@@ -34,6 +34,10 @@ class NUT_API CircleFileBySizeLogHandler : public LogHandler
     bool _cross_file = true;
 
 private:
+    // Non-copyable
+    CircleFileBySizeLogHandler(const CircleFileBySizeLogHandler&) = delete;
+    CircleFileBySizeLogHandler& operator=(const CircleFileBySizeLogHandler&) = delete;
+    
     // 重新打开输出流
     void reopen(const char *file);
 

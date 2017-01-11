@@ -30,7 +30,7 @@ class NUT_API PConsole : public IConsole
     int _exit_value = 0;
 
 public:
-    PConsole(const std::string& name = "PConsole");
+    explicit PConsole(const std::string& name = "PConsole");
 
     char get_prompt_char() const;
 

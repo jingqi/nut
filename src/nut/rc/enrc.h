@@ -27,8 +27,7 @@ public:
         : T(std::forward<Args>(args)...)
     {}
 #else
-    enrc()
-    {}
+    enrc() = default;
 
     template <typename Arg1>
     enrc(Arg1&& arg1)

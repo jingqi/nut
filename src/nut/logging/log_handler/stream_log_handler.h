@@ -14,6 +14,10 @@ namespace nut
 class NUT_API StreamLogHandler : public LogHandler
 {
     std::ostream &_os;
+    
+private:
+    StreamLogHandler(const StreamLogHandler&) = delete;
+    StreamLogHandler& operator=(const StreamLogHandler&) = delete;
 
 public:
     StreamLogHandler(std::ostream& os);

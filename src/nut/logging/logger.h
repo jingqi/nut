@@ -25,7 +25,13 @@ class NUT_API Logger
 
     NUT_DEBUGGING_DESTROY_CHECKER
 
+private:
+    // Non-copyable
+    Logger(const Logger&) = delete;
+    Logger& operator=(const Logger&) = delete;
+
 public:
+    Logger() = default;
     ~Logger();
 
     static Logger* get_instance();
@@ -52,41 +58,41 @@ public:
 #define NUT_LOG_D(tag, fmt, ...)                                        \
     do                                                                  \
     {                                                                   \
-        ::nut::Logger::get_instance()->log(nut::LL_DEBUG, (tag),        \
-                                           NUT_SOURCE_LOCATION_ARGS,    \
-                                           (fmt), ##__VA_ARGS__);       \
+        ::nut::Logger::get_instance()->log(                             \
+            nut::LL_DEBUG, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),      \
+            ##__VA_ARGS__);                                             \
     } while (false)
 
 #define NUT_LOG_I(tag, fmt, ...)                                        \
     do                                                                  \
     {                                                                   \
-        ::nut::Logger::get_instance()->log(nut::LL_INFO, (tag),         \
-                                           NUT_SOURCE_LOCATION_ARGS,    \
-                                           (fmt), ##__VA_ARGS__);       \
+        ::nut::Logger::get_instance()->log(                             \
+            nut::LL_INFO, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),       \
+            ##__VA_ARGS__);                                             \
     } while (false)
 
 #define NUT_LOG_W(tag, fmt, ...)                                        \
     do                                                                  \
     {                                                                   \
-        ::nut::Logger::get_instance()->log(nut::LL_WARN, (tag),         \
-                                           NUT_SOURCE_LOCATION_ARGS,    \
-                                           (fmt), ##__VA_ARGS__);       \
+        ::nut::Logger::get_instance()->log(                             \
+            nut::LL_WARN, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),       \
+            ##__VA_ARGS__);                                             \
     } while (false)
 
 #define NUT_LOG_E(tag, fmt, ...)                                        \
     do                                                                  \
     {                                                                   \
-        ::nut::Logger::get_instance()->log(nut::LL_ERROR, (tag),        \
-                                           NUT_SOURCE_LOCATION_ARGS,    \
-                                           (fmt), ##__VA_ARGS__);       \
+        ::nut::Logger::get_instance()->log(                             \
+            nut::LL_ERROR, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),      \
+            ##__VA_ARGS__);                                             \
     } while (false)
 
 #define NUT_LOG_F(tag, fmt, ...)                                        \
     do                                                                  \
     {                                                                   \
-        ::nut::Logger::get_instance()->log(nut::LL_FATAL, (tag),        \
-                                           NUT_SOURCE_LOCATION_ARGS,    \
-                                           (fmt), ##__VA_ARGS__);       \
+        ::nut::Logger::get_instance()->log(                             \
+            nut::LL_FATAL, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),      \
+            ##__VA_ARGS__);                                             \
     } while (false)
 
 #endif

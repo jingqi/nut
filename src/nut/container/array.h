@@ -95,32 +95,35 @@ private:
 public:
     self_type& operator=(const self_type& x)
     {
-        if (this != &x)
-        {
-            clear();
-            ensure_cap(x._size);
-            std::uninitialized_copy(x._buf, x._buf + x._size, _buf);
-            _size = x._size;
-        }
+        if (this == &x)
+            return *this;
+        
+        clear();
+        
+        ensure_cap(x._size);
+        std::uninitialized_copy(x._buf, x._buf + x._size, _buf);
+        _size = x._size;
+        
         return *this;
     }
 
     self_type& operator=(self_type&& x)
     {
-        if (this != &x)
-        {
-            clear();
-            if (nullptr != _buf)
-                ::free(_buf);
+        if (this == &x)
+            return *this;
+        
+        clear();
+        if (nullptr != _buf)
+            ::free(_buf);
 
-            _buf = x._buf;
-            _size = x._size;
-            _cap = x._cap;
-
-            x._buf = nullptr;
-            x._size = 0;
-            x._cap = 0;
-        }
+        _buf = x._buf;
+        _size = x._size;
+        _cap = x._cap;
+        
+        x._buf = nullptr;
+        x._size = 0;
+        x._cap = 0;
+        
         return *this;
     }
 

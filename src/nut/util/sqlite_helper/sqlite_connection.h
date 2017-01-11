@@ -70,7 +70,7 @@ class SqliteConnection
 public:
     SqliteConnection() = default;
 
-    SqliteConnection(sqlite3 *db)
+    explicit SqliteConnection(sqlite3 *db)
         : _sqlite(db)
     {
         assert(nullptr != db);

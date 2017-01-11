@@ -27,7 +27,8 @@ namespace nut
 template <typename K, typename NODE, typename SL>
 class SkipList
 {
-    SkipList();
+private:
+    SkipList() = delete;
 
 public:
     enum

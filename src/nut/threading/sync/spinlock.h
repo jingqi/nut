@@ -25,6 +25,11 @@ class NUT_API SpinLock
 #else
     pthread_spinlock_t _spinlock;
 #endif
+    
+private:
+    // Non-copyable
+    SpinLock(const SpinLock&) = delete;
+    SpinLock& operator=(const SpinLock&) = delete;
 
 public:
     SpinLock();

@@ -20,6 +20,7 @@ FragmentBuffer::FragmentBuffer(FragmentBuffer&& x)
     _write_fragment = x._write_fragment;
     _read_index = x._read_index;
     _read_available = x._read_available;
+    
     x._read_fragment = nullptr;
     x._write_fragment = nullptr;
     x._read_index = 0;
@@ -58,14 +59,19 @@ FragmentBuffer& FragmentBuffer::operator=(FragmentBuffer&& x)
 {
     if (this == &x)
         return *this;
+    
+    clear();
+    
     _read_fragment = x._read_fragment;
     _write_fragment = x._write_fragment;
     _read_index = x._read_index;
     _read_available = x._read_available;
+    
     x._read_fragment = nullptr;
     x._write_fragment = nullptr;
     x._read_index = 0;
     x._read_available = 0;
+    
     return *this;
 }
 
@@ -246,8 +252,6 @@ FragmentBuffer::Fragment* FragmentBuffer::new_fragment(size_t capacity)
     Fragment* p = (Fragment*) ::malloc(sizeof(Fragment) + capacity - 1);
     assert(nullptr != p);
     new (p) Fragment(capacity);
-    p->size = 0;
-    p->next = nullptr;
     return p;
 }
 

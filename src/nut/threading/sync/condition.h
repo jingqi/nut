@@ -25,19 +25,26 @@ namespace nut
 
 class NUT_API Condition
 {
-#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
-    CONDITION_VARIABLE _cond;
-#else
-    pthread_cond_t _cond;
-#endif
-
 public:
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     typedef SpinLock condition_lock_type; // windows 下condition只能配合临界区
 #else
     typedef Mutex condition_lock_type;
 #endif
+    
+private:
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
+    CONDITION_VARIABLE _cond;
+#else
+    pthread_cond_t _cond;
+#endif
 
+private:
+    // Non-copyable
+    Condition(const Condition&) = delete;
+    Condition& operator=(const Condition&) = delete;
+
+public:
     Condition();
     ~Condition();
 

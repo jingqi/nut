@@ -56,7 +56,7 @@ class DeleteGuard
     T *_ptr = nullptr;
 
 public:
-    DeleteGuard(T *p = nullptr)
+    explicit DeleteGuard(T *p = nullptr)
         : _ptr(p)
     {}
 

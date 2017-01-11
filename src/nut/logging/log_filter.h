@@ -55,7 +55,7 @@ class NUT_API LogFilter
 
         void clear();
     };
-    class Node _root;
+    Node _root;
 
 private:
     // Non-copyable

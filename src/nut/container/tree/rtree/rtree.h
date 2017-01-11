@@ -53,19 +53,21 @@ private:
     /**
      * 节点基类
      */
-    struct TreeNode;
-    struct Node
+    class TreeNode;
+    class Node
     {
+        bool tree_node = true; // 是树节点还是数据节点
+
+    public:
         area_type area;
         TreeNode *parent = nullptr;
-        const bool tree_node = true; // 是树节点还是数据节点
 
-        Node(bool tn)
+        explicit Node(bool tn)
             : tree_node(tn)
         {}
 
-        Node(const area_type& rt, bool tn)
-            : area(rt), tree_node(tn)
+        Node(bool tn, const area_type& rt)
+            : tree_node(tn), area(rt)
         {}
 
         virtual ~Node() = default;
@@ -79,8 +81,9 @@ private:
     /**
      * 树节点
      */
-    struct TreeNode : public Node
+    class TreeNode : public Node
     {
+    public:
         using Node::area;
         Node *children[MAX_ENTRY_COUNT];
 
@@ -171,16 +174,17 @@ private:
     /**
      * 数据节点
      */
-    struct DataNode : public Node
+    class DataNode : public Node
     {
+    public:
         data_type data;
 
-        DataNode(const data_type& v)
+        explicit DataNode(const data_type& v)
             : Node(false), data(v)
         {}
 
         DataNode(const area_type& rt, const data_type& v)
-            : Node(rt, false), data(v)
+            : Node(false, rt), data(v)
         {}
     };
 
@@ -218,13 +222,118 @@ public:
         _height = 1;
     }
 
+    RTree(const RTree& x)
+        : _tree_node_alloc(x._tree_node_alloc), _data_node_alloc(x._data_node_alloc)
+    {
+        _root = _tree_node_alloc.allocate(1);
+        assert(nullptr != _root);
+        new (_root) TreeNode();
+        _height = 1;
+
+        *this = x;
+    }
+
+    RTree(RTree&& x)
+        : _tree_node_alloc(x._tree_node_alloc), _data_node_alloc(x._data_node_alloc)
+    {
+        _root = x._root;
+        _height = x._height;
+        _size = x._size;
+        
+        x._root = nullptr; // NOTE 该对象已经不能执行任何有效操作，只能等待析构了
+        x._height = 0;
+        x._size = 0;
+    }
+
     ~RTree()
     {
         clear();
-        assert(nullptr != _root);
-        _root->~TreeNode();
-        _tree_node_alloc.deallocate(_root, 1);
-        _root = nullptr;
+        if (nullptr != _root)
+        {
+            _root->~TreeNode();
+            _tree_node_alloc.deallocate(_root, 1);
+            _root = nullptr;
+        }
+    }
+
+    RTree& operator=(const RTree& x)
+    {
+        if (this == &x)
+            return *this;
+
+        clear();
+
+        *_root = *x._root;
+        _height = x._height;
+        _size = x._size;
+
+        std::stack<TreeNode*> s1, s2;
+        s1.push(_root);
+        s2.push(x._root);
+        while (!s2.empty())
+        {
+            TreeNode *n1 = s1.top(), *n2 = s2.top();
+            s1.pop();
+            s2.pop();
+
+            for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
+            {
+                Node *c2 = n2->child_at(i);
+                if (nullptr == c2)
+                    break;
+                if (c2->is_tree_node())
+                {
+                    TreeNode *t2 = dynamic_cast<TreeNode*>(c2);
+
+                    TreeNode *t1 = _tree_node_alloc.allocate(1);
+                    assert(nullptr != t1);
+                    new (t1) TreeNode(*t2);
+
+                    t1->parent = n1;
+                    n1->children[i] = t1;
+
+                    s1.push(t1);
+                    s2.push(t2);
+                }
+                else
+                {
+                    DataNode *d2 = dynamic_cast<DataNode*>(c2);
+
+                    DataNode *d1 = _data_node_alloc.allocate(1);
+                    assert(nullptr != d1);
+                    new (d1) DataNode(*d2);
+
+                    d1->parent = n1;
+                    n1->children[i] = d1;
+                }
+            }
+        }
+
+        return *this;
+    }
+
+    RTree& operator=(RTree&& x)
+    {
+        if (this == &x)
+            return *this;
+
+        clear();
+        if (nullptr != _root)
+        {
+            _root->~TreeNode();
+            _tree_node_alloc.deallocate(_root, 1);
+            _root = nullptr;
+        }
+
+        _root = x._root;
+        _height = x._height;
+        _size = x._size;
+        
+        x._root = nullptr; // NOTE 该对象已经不能执行任何有效操作，只能等待析构了
+        x._height = 0;
+        x._size = 0;
+
+        return *this;
     }
 
     /**
@@ -318,6 +427,9 @@ public:
      */
     void clear()
     {
+        if (nullptr == _root)
+            return;
+
         // 清除所有
         std::stack<TreeNode*> s;
         s.push(_root);
@@ -326,9 +438,11 @@ public:
             TreeNode *n = s.top();
             s.pop();
 
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != nullptr; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
             {
                 Node *c = n->child_at(i);
+                if (nullptr == c)
+                    break;
                 if (c->is_tree_node())
                 {
                     TreeNode *tn = dynamic_cast<TreeNode*>(c);
@@ -367,9 +481,11 @@ public:
             TreeNode *n = s.top();
             s.pop();
 
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != nullptr; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
             {
                 Node *c = n->child_at(i);
+                if (nullptr == c)
+                    break;
                 if (!c->area.intersects(rect))
                     continue;
 
@@ -401,9 +517,11 @@ public:
             TreeNode *n = s.top();
             s.pop();
 
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != nullptr; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
             {
                 Node *c = n->child_at(i);
+                if (nullptr == c)
+                    break;
                 if (!c->area.intersects(rect))
                     continue;
 
@@ -435,9 +553,11 @@ public:
             TreeNode *n = s.top();
             s.pop();
 
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != nullptr; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
             {
                 Node *c = n->child_at(i);
+                if (nullptr == c)
+                    break;
                 if (c->is_tree_node())
                 {
                     TreeNode *tn = dynamic_cast<TreeNode*>(c);
@@ -489,12 +609,15 @@ private:
 
             // choose the least enlargement child
             RealNumT least = 0;
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && nullptr != ret->children[i]; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
             {
-                RealNumT el = acreage_needed(ret->children[i]->area, rect_to_add);
+                Node *e = ret->child_at(i);
+                if (nullptr == e)
+                    break;
+                RealNumT el = acreage_needed(e->area, rect_to_add);
                 if (0 == i || el < least)
                 {
-                    nn = dynamic_cast<TreeNode*>(ret->children[i]); // 因为 depth > 1，这里应当是成功的
+                    nn = dynamic_cast<TreeNode*>(e); // 因为 depth > 1，这里应当是成功的
                     assert(nullptr != nn);
                     least = el;
                 }
@@ -522,8 +645,8 @@ private:
         remained.push_back(child);
         for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
         {
-            assert(nullptr != parent->children[i]);
-            remained.push_back(parent->children[i]);
+            assert(nullptr != parent->child_at(i));
+            remained.push_back(parent->child_at(i));
         }
 
         // 挑选两个种子，并分别作为 parent 和 uncle (parent的兄弟节点) 的一个子节点
@@ -730,12 +853,14 @@ private:
             st.pop();
             assert(nullptr != n);
 
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && nullptr != n->children[i]; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
             {
-                Node *child = n->children[i];
+                Node *child = n->child_at(i);
+                if (nullptr == child)
+                    break;
                 if (child->area.contains(r))
                 {
-                    if (child->tree_node)
+                    if (child->is_tree_node())
                         st.push(dynamic_cast<TreeNode*>(child));
                     else if (child->area == r)
                         return dynamic_cast<DataNode*>(child);
@@ -758,12 +883,14 @@ private:
             st.pop();
             assert(nullptr != n);
 
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && nullptr != n->children[i]; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
             {
-                Node *child = n->children[i];
+                Node *child = n->child_at(i);
+                if (nullptr == child)
+                    break;
                 if (child->area.contains(r))
                 {
-                    if (child->tree_node)
+                    if (child->is_tree_node())
                     {
                         st.push(dynamic_cast<TreeNode*>(child));
                     }
@@ -817,8 +944,13 @@ private:
             depth = qd.top();
             qd.pop();
 
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != nullptr; ++i)
-                insert(n->children[i], depth);
+            for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
+            {
+                Node *e = n->child_at(i);
+                if (nullptr == e)
+                    break;
+                insert(e, depth);
+            }
 
             // 释放内存
             n->~TreeNode();
@@ -870,9 +1002,11 @@ public:
         const size_t cc = n->child_count();
         if (depth != 1 && cc < MIN_ENTRY_COUNT)
             return false; // under fill
-        for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != nullptr; ++i)
+        for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
         {
             Node *ee = n->child_at(i);
+            if (nullptr == ee)
+                break;
             if (!n->area.contains(ee->area))
                 return false; // area error
             if (!is_valid(ee, depth + 1))

@@ -18,6 +18,10 @@ namespace nut
 class NUT_API CircleFileByTimeLogHandler : public LogHandler
 {
     std::ofstream _ofs;
+    
+private:
+    CircleFileByTimeLogHandler(const CircleFileByTimeLogHandler&) = delete;
+    CircleFileByTimeLogHandler& operator=(const CircleFileByTimeLogHandler&) = delete;
 
 public:
     /**

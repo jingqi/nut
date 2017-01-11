@@ -12,6 +12,9 @@ namespace nut
 
 class NUT_API ConsoleUtil
 {
+private:
+    ConsoleUtil() = delete;
+    
 public:
     enum ConsoleColor
     {

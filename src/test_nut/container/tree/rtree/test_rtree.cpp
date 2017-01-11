@@ -17,6 +17,7 @@ NUT_FIXTURE(TestRTree)
     NUT_CASE(test_smoking)
     NUT_CASE(test_random)
     NUT_CASE(test_simple)
+    NUT_CASE(test_copy)
     NUT_CASES_END()
 
     static Area mkrect(int x1, int x2, int y1, int y2)
@@ -76,6 +77,31 @@ NUT_FIXTURE(TestRTree)
             NUT_TA(t.is_valid());
         }
         NUT_TA(t.size() == 0 && t.height() == 1);
+    }
+
+    void test_copy()
+    {
+        RTree<int,int> t;
+        for (int i = 0; i < 50; ++i)
+        {
+            Area a = mkrect(i, i + 2, 0, 3);
+            t.insert(a, i);
+            NUT_TA(t.is_valid());
+        }
+
+        RTree<int,int> t2(t);
+        NUT_TA(t2.size() == 50);
+        NUT_TA(t2.is_valid());
+
+        RTree<int,int> t3;
+        t3 = t;
+        NUT_TA(t3.size() == 50);
+        NUT_TA(t3.is_valid());
+
+        RTree<int,int> t4;
+        t4 = std::move(t2);
+        NUT_TA(t4.size() == 50);
+        NUT_TA(t4.is_valid());
     }
 };
 

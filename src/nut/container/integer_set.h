@@ -101,30 +101,6 @@ private:
 public:
     IntegerSet() = default;
 
-    IntegerSet(const self_type& x)
-        : _ranges(x._ranges)
-    {}
-
-    IntegerSet(self_type&& x)
-        : _ranges(std::move(x._ranges))
-    {}
-
-    self_type& operator=(const self_type& x)
-    {
-        if (this == &x)
-            return *this;
-        _ranges = x._ranges;
-        return *this;
-    }
-
-    self_type& operator=(self_type&& x)
-    {
-        if (this == &x)
-            return *this;
-        _ranges = std::move(x._ranges);
-        return *this;
-    }
-
     bool operator==(const self_type& x) const
     {
         if (this == &x)
@@ -191,7 +167,7 @@ public:
         }
 
         // 二分查找法确定可以合并的 range 范围
-        int i1 = binary_search(first_value - 1), i2 = binary_search(last_value + 1);
+        ssize_t i1 = binary_search(first_value - 1), i2 = binary_search(last_value + 1);
         if (i1 < 0)
             i1 = -i1 - 1;
         if (i2 < 0)

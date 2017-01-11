@@ -22,6 +22,9 @@ namespace nut
  */
 class NUT_API Backtrace
 {
+private:
+    Backtrace() = delete;
+
 public:
     /**
      * @return >=0， 调用栈层数

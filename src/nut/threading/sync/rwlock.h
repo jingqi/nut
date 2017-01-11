@@ -24,6 +24,11 @@ class NUT_API RwLock
 #else
     pthread_rwlock_t _rwlock;
 #endif
+    
+private:
+    // Non-copyable
+    RwLock(const RwLock&) = delete;
+    RwLock& operator=(const RwLock&) = delete;
 
 public:
     RwLock();

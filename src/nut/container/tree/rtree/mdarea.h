@@ -39,8 +39,10 @@ public:
     bool operator==(const self_type& x) const
     {
         for (size_t i = 0; i < DIMENSIONS; ++i)
+        {
             if (lower[i] != x.lower[i] || higher[i] != x.higher[i])
                 return false;
+        }
         return true;
     }
 
@@ -79,8 +81,10 @@ public:
     bool is_valid() const
     {
         for (int i = 0; i < DIMENSIONS; ++i)
+        {
             if (lower[i] > higher[i])
                 return false;
+        }
         return true;
     }
 
@@ -101,8 +105,10 @@ public:
     bool contains(const self_type& x) const
     {
         for (size_t i = 0; i < DIMENSIONS; ++i)
-            if (!(lower[i] <= x.lower[i] && x.higher[i] <= higher[i]))
+        {
+            if (lower[i] > x.lower[i] || higher[i] < x.higher[i])
                 return false;
+        }
         return true;
     }
 
@@ -113,8 +119,10 @@ public:
     {
         // 任意一个维度不想交，则区域不想交
         for (size_t i = 0; i < DIMENSIONS; ++i)
+        {
             if (lower[i] > x.higher[i] || higher[i] < x.lower[i])
                 return false;
+        }
         return true;
     }
 };

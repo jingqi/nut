@@ -13,14 +13,16 @@ namespace nut
 class NUT_API RSA
 {
 public:
-    struct PublicKey
+    class PublicKey
     {
+    public:
         BigInteger e;
         BigInteger n;
     };
 
-    struct PrivateKey
+    class PrivateKey
     {
+    public:
         BigInteger d, n;
     };
 
