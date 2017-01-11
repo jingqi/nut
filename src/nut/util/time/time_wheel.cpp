@@ -60,6 +60,7 @@ TimeWheel::Timer* TimeWheel::new_timer(uint64_t when_ms, uint64_t repeat_ms,
 {
     Timer *t = (Timer*) ::malloc(sizeof(Timer));
     assert(nullptr != t);
+    new (t) Timer;
     t->valid_mask = VALID_MASK;
     t->when_ms = when_ms;
     t->repeat_ms = repeat_ms;
@@ -71,6 +72,7 @@ TimeWheel::Timer* TimeWheel::new_timer(uint64_t when_ms, uint64_t repeat_ms,
 void TimeWheel::delete_timer(Timer *t)
 {
     assert(nullptr != t);
+    t->~Timer();
     t->valid_mask = 0;
     ::free(t);
 }
