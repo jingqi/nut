@@ -14,7 +14,7 @@ using namespace nut;
 
 NUT_FIXTURE(TestBigInteger)
 {
-	NUT_CASES_BEGIN()
+    NUT_CASES_BEGIN()
     NUT_CASE(test_smoking)
     NUT_CASE(test_bugs)
     NUT_CASE(test_comparator)
@@ -25,34 +25,34 @@ NUT_FIXTURE(TestBigInteger)
     NUT_CASE(test_bit_operator)
     NUT_CASE(test_to_string)
     NUT_CASE(test_value_of)
-	NUT_CASES_END()
+    NUT_CASES_END()
 
     void test_smoking()
-	{
-		// +
-		NUT_TA((BigInteger(12) + BigInteger(13)).llong_value() == 12 + 13);
-		NUT_TA((BigInteger(12) + BigInteger(-11)).llong_value() == 12 - 11);
-		NUT_TA((BigInteger(12) + BigInteger(-13)).llong_value() == 12 - 13);
+    {
+        // +
+        NUT_TA((BigInteger(12) + BigInteger(13)).llong_value() == 12 + 13);
+        NUT_TA((BigInteger(12) + BigInteger(-11)).llong_value() == 12 - 11);
+        NUT_TA((BigInteger(12) + BigInteger(-13)).llong_value() == 12 - 13);
 
-		// -
-		NUT_TA((BigInteger(12) - BigInteger(1)).llong_value() == 12 - 1);
-		NUT_TA((BigInteger(12) - BigInteger(-1)).llong_value() == 12 - -1);
-		NUT_TA((BigInteger(12) - BigInteger(13)).llong_value() == 12 - 13);
+        // -
+        NUT_TA((BigInteger(12) - BigInteger(1)).llong_value() == 12 - 1);
+        NUT_TA((BigInteger(12) - BigInteger(-1)).llong_value() == 12 - -1);
+        NUT_TA((BigInteger(12) - BigInteger(13)).llong_value() == 12 - 13);
 
-		// *
-		NUT_TA((BigInteger(12) * BigInteger(1)).llong_value() == 12 * 1);
-		NUT_TA((BigInteger(12) * BigInteger(24)).llong_value() == 12 * 24);
-		NUT_TA(((BigInteger(0x12345LL) * BigInteger(0x12345LL)).llong_value() & 0xFFFFFFLL) ==
-			((0x12345LL * 0x12345LL) & 0xFFFFFFLL));
+        // *
+        NUT_TA((BigInteger(12) * BigInteger(1)).llong_value() == 12 * 1);
+        NUT_TA((BigInteger(12) * BigInteger(24)).llong_value() == 12 * 24);
+        NUT_TA(((BigInteger(0x12345LL) * BigInteger(0x12345LL)).llong_value() & 0xFFFFFFLL) ==
+            ((0x12345LL * 0x12345LL) & 0xFFFFFFLL));
 
-		// /
-		NUT_TA(BigInteger(3) / BigInteger(4) == BigInteger(3/4));
-		NUT_TA(BigInteger(4) / BigInteger(3) == BigInteger(4/3));
+        // /
+        NUT_TA(BigInteger(3) / BigInteger(4) == BigInteger(3/4));
+        NUT_TA(BigInteger(4) / BigInteger(3) == BigInteger(4/3));
 
-		// %
-		NUT_TA(BigInteger(3) % BigInteger(4) == BigInteger(3%4));
+        // %
+        NUT_TA(BigInteger(3) % BigInteger(4) == BigInteger(3%4));
         NUT_TA(BigInteger(4) % BigInteger(3) == BigInteger(4%3));
-	}
+    }
 
     void test_bugs()
     {
@@ -71,26 +71,26 @@ NUT_FIXTURE(TestBigInteger)
     }
 
     void test_comparator()
-	{
-		NUT_TA(BigInteger(2) < BigInteger(5));
-		NUT_TA(BigInteger(9) > BigInteger(-5));
-		NUT_TA(BigInteger(9) > BigInteger(5));
-		NUT_TA(!(BigInteger(2) < BigInteger(2)));
-	}
+    {
+        NUT_TA(BigInteger(2) < BigInteger(5));
+        NUT_TA(BigInteger(9) > BigInteger(-5));
+        NUT_TA(BigInteger(9) > BigInteger(5));
+        NUT_TA(!(BigInteger(2) < BigInteger(2)));
+    }
 
     void test_math_operator()
-	{
-		// +
+    {
+        // +
         NUT_TA(BigInteger(2) + BigInteger(3) == BigInteger(2 + 3));
-		NUT_TA(BigInteger(2) + BigInteger(-3) == BigInteger(2 + -3));
+        NUT_TA(BigInteger(2) + BigInteger(-3) == BigInteger(2 + -3));
 
-		// -
+        // -
         NUT_TA(BigInteger(3) - BigInteger(2) == BigInteger(3 - 2));
-		NUT_TA(BigInteger(2) - BigInteger(-3) == BigInteger(2 - -3));
+        NUT_TA(BigInteger(2) - BigInteger(-3) == BigInteger(2 - -3));
 
-		// *
+        // *
         NUT_TA(BigInteger(2) * BigInteger(3) == BigInteger(2 * 3));
-		NUT_TA(BigInteger(2) * BigInteger(-3) == BigInteger(2 * -3));
+        NUT_TA(BigInteger(2) * BigInteger(-3) == BigInteger(2 * -3));
 
         // 乘方
         BigInteger a;
@@ -100,27 +100,27 @@ NUT_FIXTURE(TestBigInteger)
         a.data()[2] = 5;
         a.data()[3] = 68;
         NUT_TA(a * a == a * BigInteger(a));
-	}
+    }
 
-	// 测试除法
+    // 测试除法
     void test_divide()
-	{
-		NUT_TA(BigInteger(4) / BigInteger(3) == BigInteger(4/3));
-		NUT_TA(BigInteger(3) / BigInteger(4) == BigInteger(3/4));
-		NUT_TA(BigInteger(4) / BigInteger(4) == BigInteger(4/4));
+    {
+        NUT_TA(BigInteger(4) / BigInteger(3) == BigInteger(4/3));
+        NUT_TA(BigInteger(3) / BigInteger(4) == BigInteger(3/4));
+        NUT_TA(BigInteger(4) / BigInteger(4) == BigInteger(4/4));
 
-		NUT_TA(BigInteger(4) / BigInteger(-3) == BigInteger(4/-3));
-		NUT_TA(BigInteger(3) / BigInteger(-4) == BigInteger(3/-4));
-		NUT_TA(BigInteger(4) / BigInteger(-4) == BigInteger(4/-4));
+        NUT_TA(BigInteger(4) / BigInteger(-3) == BigInteger(4/-3));
+        NUT_TA(BigInteger(3) / BigInteger(-4) == BigInteger(3/-4));
+        NUT_TA(BigInteger(4) / BigInteger(-4) == BigInteger(4/-4));
 
-		NUT_TA(BigInteger(-4) / BigInteger(3) == BigInteger((-4)/3));
-		NUT_TA(BigInteger(-3) / BigInteger(4) == BigInteger((-3)/4));
-		NUT_TA(BigInteger(-4) / BigInteger(4) == BigInteger((-4)/4));
+        NUT_TA(BigInteger(-4) / BigInteger(3) == BigInteger((-4)/3));
+        NUT_TA(BigInteger(-3) / BigInteger(4) == BigInteger((-3)/4));
+        NUT_TA(BigInteger(-4) / BigInteger(4) == BigInteger((-4)/4));
 
-		NUT_TA(BigInteger(-4) / BigInteger(-3) == BigInteger((-4)/-3));
-		NUT_TA(BigInteger(-3) / BigInteger(-4) == BigInteger((-3)/-4));
-		NUT_TA(BigInteger(-4) / BigInteger(-4) == BigInteger((-4)/-4));
-	}
+        NUT_TA(BigInteger(-4) / BigInteger(-3) == BigInteger((-4)/-3));
+        NUT_TA(BigInteger(-3) / BigInteger(-4) == BigInteger((-3)/-4));
+        NUT_TA(BigInteger(-4) / BigInteger(-4) == BigInteger((-4)/-4));
+    }
 
     // 测试平方
     void test_square()
@@ -134,29 +134,29 @@ NUT_FIXTURE(TestBigInteger)
         NUT_TA(x[0] == 4 && x[1] == 0 && x[2] == 0 && x[3] == 0 && x[4] == 0 && x[5] == 0);
     }
 
-	// 测试取余数
+    // 测试取余数
     void test_mod()
-	{
-		NUT_TA(BigInteger(4) % BigInteger(3) == BigInteger(4%3));
-		NUT_TA(BigInteger(3) % BigInteger(4) == BigInteger(3%4));
-		NUT_TA(BigInteger(4) % BigInteger(4) == BigInteger(4%4));
+    {
+        NUT_TA(BigInteger(4) % BigInteger(3) == BigInteger(4%3));
+        NUT_TA(BigInteger(3) % BigInteger(4) == BigInteger(3%4));
+        NUT_TA(BigInteger(4) % BigInteger(4) == BigInteger(4%4));
 
-		NUT_TA(BigInteger(4) % BigInteger(-3) == BigInteger(4%-3));
-		NUT_TA(BigInteger(3) % BigInteger(-4) == BigInteger(3%-4));
-		NUT_TA(BigInteger(4) % BigInteger(-4) == BigInteger(4%-4));
+        NUT_TA(BigInteger(4) % BigInteger(-3) == BigInteger(4%-3));
+        NUT_TA(BigInteger(3) % BigInteger(-4) == BigInteger(3%-4));
+        NUT_TA(BigInteger(4) % BigInteger(-4) == BigInteger(4%-4));
 
-		NUT_TA(BigInteger(-4) % BigInteger(3) == BigInteger((-4)%3));
-		NUT_TA(BigInteger(-3) % BigInteger(4) == BigInteger((-3)%4));
-		NUT_TA(BigInteger(-4) % BigInteger(4) == BigInteger((-4)%4));
+        NUT_TA(BigInteger(-4) % BigInteger(3) == BigInteger((-4)%3));
+        NUT_TA(BigInteger(-3) % BigInteger(4) == BigInteger((-3)%4));
+        NUT_TA(BigInteger(-4) % BigInteger(4) == BigInteger((-4)%4));
 
-		NUT_TA(BigInteger(-4) % BigInteger(-3) == BigInteger((-4)%-3));
-		NUT_TA(BigInteger(-3) % BigInteger(-4) == BigInteger((-3)%-4));
-		NUT_TA(BigInteger(-4) % BigInteger(-4) == BigInteger((-4)%-4));
-	}
+        NUT_TA(BigInteger(-4) % BigInteger(-3) == BigInteger((-4)%-3));
+        NUT_TA(BigInteger(-3) % BigInteger(-4) == BigInteger((-3)%-4));
+        NUT_TA(BigInteger(-4) % BigInteger(-4) == BigInteger((-4)%-4));
+    }
 
     void test_bit_operator()
-	{
-		NUT_TA((BigInteger(5) << 2) == BigInteger(5 << 2));
+    {
+        NUT_TA((BigInteger(5) << 2) == BigInteger(5 << 2));
         NUT_TA((BigInteger(5) >> 1) == BigInteger(5 >> 1));
 
         NUT_TA((BigInteger(-5) << 1) == -10);

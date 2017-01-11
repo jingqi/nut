@@ -92,8 +92,8 @@ NUT_FIXTURE(TestStringUtil)
 
     void test_wstr()
     {
-		std::string a;
-		std::wstring b;
+        std::string a;
+        std::wstring b;
 
 #if !NUT_PLATFORM_OS_MAC // mac 下目前对 wchar_t 常量字符串转换有问题
         NUT_TA(wstr_to_ascii(L"c5&汉", &a));
@@ -101,8 +101,8 @@ NUT_FIXTURE(TestStringUtil)
         //wcout << endl << b << endl;
         NUT_TA(b == L"c5&汉");
 
-		a.clear();
-		b.clear();
+        a.clear();
+        b.clear();
         NUT_TA(wstr_to_utf8(L"c5&汉", &a));
         NUT_TA(utf8_to_wstr(a.c_str(), &b));
         //wcout << endl << b << endl;
@@ -111,15 +111,15 @@ NUT_FIXTURE(TestStringUtil)
 
 #if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
         // gcc 或直接取源码的编码并遗留到运行时编码中，目前源码的编码为 utf8
-		a.clear();
-		b.clear();
+        a.clear();
+        b.clear();
         NUT_TA(utf8_to_wstr("c5&汉", &b));
         NUT_TA(wstr_to_utf8(b.c_str(), &a));
         NUT_TA(a == "c5&汉");
 #elif NUT_PLATFORM_CC_VC
         // vc 会将c字符串转编码为 ascii，所以运行时全部为 ascii
-		a.clear();
-		b.clear();
+        a.clear();
+        b.clear();
         NUT_TA(ascii_to_wstr("c5&汉", &b));
         NUT_TA(wstr_to_ascii(b.c_str(), &a));
         NUT_TA(a == "c5&汉");

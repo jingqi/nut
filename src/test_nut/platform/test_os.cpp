@@ -8,12 +8,12 @@ using namespace nut;
 
 NUT_FIXTURE(TestOS)
 {
-	NUT_CASES_BEGIN()
+    NUT_CASES_BEGIN()
     NUT_CASE(test_smoking)
     NUT_CASES_END()
 
     void test_smoking()
-	{
+    {
         //cout << endl;
         vector<string> subs;
         OS::list_dir(".", &subs);
@@ -26,7 +26,7 @@ NUT_FIXTURE(TestOS)
         //for (size_t i = 0, sz = subsw.size(); i < sz; ++i)
             //wcout << subsw.at(i) << endl;
         NUT_TA(subs.size() == subsw.size());
-	}
+    }
 
 };
 

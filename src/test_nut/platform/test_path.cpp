@@ -8,7 +8,7 @@ using namespace nut;
 
 NUT_FIXTURE(TestPath)
 {
-	NUT_CASES_BEGIN()
+    NUT_CASES_BEGIN()
     NUT_CASE(test_split)
     NUT_CASE(test_splitw)
     NUT_CASE(test_split_drive)
@@ -24,7 +24,7 @@ NUT_FIXTURE(TestPath)
     NUT_CASES_END()
 
     void test_split()
-	{
+    {
         string p, c;
         Path::split("ab/c/d", &p, &c);
         NUT_TA(p == "ab/c");
@@ -41,10 +41,10 @@ NUT_FIXTURE(TestPath)
         Path::split("c:\\tmp", &p, &c);
         NUT_TA(p == "c:\\");
         NUT_TA(c == "tmp");
-	}
+    }
 
     void test_splitw()
-	{
+    {
         wstring p, c;
         Path::split(L"ab/c/d", &p, &c);
         NUT_TA(p == L"ab/c");
@@ -61,7 +61,7 @@ NUT_FIXTURE(TestPath)
         Path::split(L"c:\\tmp", &p, &c);
         NUT_TA(p == L"c:\\");
         NUT_TA(c == L"tmp");
-	}
+    }
 
     void test_split_drive()
     {

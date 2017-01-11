@@ -35,11 +35,11 @@ NUT_FIXTURE(TestXmlWriter)
         
         //printf("%s", s.c_str());
         const char *s =
-			"<a b=\"c&amp;\" c=\"&quot;\">"
-				"<d e=\"&lt;\" />"
-				"<!--efg-->"
-				"h&gt;i"
-			"</a>";
+            "<a b=\"c&amp;\" c=\"&quot;\">"
+                "<d e=\"&lt;\" />"
+                "<!--efg-->"
+                "h&gt;i"
+            "</a>";
         NUT_TA(ss.str() == s);
     }
 };

@@ -18,7 +18,7 @@ using namespace nut;
 
 NUT_FIXTURE(TestNumericAlgo)
 {
-	NUT_CASES_BEGIN()
+    NUT_CASES_BEGIN()
     NUT_CASE(test_bugs)
     NUT_CASE(test_gcd)
     NUT_CASE(test_extend_euclid)
@@ -26,10 +26,10 @@ NUT_FIXTURE(TestNumericAlgo)
     NUT_CASE(test_mod_pow)
     NUT_CASE(test_prime)
     NUT_CASE(test_karatsuba_multiply)
-	NUT_CASES_END()
+    NUT_CASES_END()
 
     void test_bugs()
-	{
+    {
         {
             // bug 根据二进制特性对扩展欧几里得算法的优化实现有问题
             // 实际上是 BigInteger 的 -= 操作由于计算结果和操作数共享内存导致的问题
@@ -49,7 +49,7 @@ NUT_FIXTURE(TestNumericAlgo)
 //            printf("\n%s\n%s\n", x1.toString().c_str(), x2.toString().c_str());
             NUT_TA(x1 == x2);
         }
-	}
+    }
 
     void test_gcd()
     {

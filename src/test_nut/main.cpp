@@ -17,42 +17,42 @@ using namespace nut;
 
 static void print_platform()
 {
-	printf("\nOS: %s, Bits: %s, Compiler: %s\n",
-		// OS
+    printf("\nOS: %s, Bits: %s, Compiler: %s\n",
+        // OS
 #if NUT_PLATFORM_OS_WINDOWS
-		"Windows"
+        "Windows"
 #elif NUT_PLATFORM_OS_MAC
-		"Mac"
+        "Mac"
 #elif NUT_PLATFORM_OS_LINUX
-		"Linux"
+        "Linux"
 #else
-		"Unknown"
+        "Unknown"
 #endif
-		,
+        ,
 
-		// Bits
+        // Bits
 #if NUT_PLATFORM_BITS_16
-		"16"
+        "16"
 #elif NUT_PLATFORM_BITS_32
-		"32"
+        "32"
 #elif NUT_PLATFORM_BITS_64
-		"64"
+        "64"
 #else
-		"Unknown"
+        "Unknown"
 #endif
-		,
+        ,
 
-		// Compiler
+        // Compiler
 #if NUT_PLATFORM_CC_VC
-		"VC"
+        "VC"
 #elif NUT_PLATFORM_CC_MINGW
-		"MINGW"
+        "MINGW"
 #elif NUT_PLATFORM_CC_GCC
-		"GCC"
+        "GCC"
 #else
-		"Unknown"
+        "Unknown"
 #endif
-	);
+    );
 }
 
 static void print_help()
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 #endif
 
     ::srand((unsigned) ::time(NULL));
-	print_platform();
+    print_platform();
 
     ConsoleTestLogger l;
     TestRunner runner(&l);

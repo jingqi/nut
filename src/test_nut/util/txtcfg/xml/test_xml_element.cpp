@@ -45,14 +45,14 @@ NUT_FIXTURE(TestXmlElement)
                 "\t<!--comment2-->\n"
             "</root>";
         /*printf("%s\n%s\n", s.c_str(), expect);
-		for (int i = 0; i < s.length(); ++i)
-		{
-			if (s[i] != expect[i])
-			 {
-				printf("d: %s", expect + i);
-				break;
-			}
-		}*/
+        for (int i = 0; i < s.length(); ++i)
+        {
+            if (s[i] != expect[i])
+             {
+                printf("d: %s", expect + i);
+                break;
+            }
+        }*/
         NUT_TA(s == expect);
 
         s = r->serielize(false);

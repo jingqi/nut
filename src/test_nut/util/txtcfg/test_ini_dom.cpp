@@ -32,7 +32,7 @@ NUT_FIXTURE(TestIniDom)
             "readList1 = a,b,cd\n"
             "[a]\n"
             "b=value\n";
-		pf->parse(all);
+        pf->parse(all);
     }
 
     void test_read_string()
@@ -50,7 +50,7 @@ NUT_FIXTURE(TestIniDom)
 
     void test_read_list()
     {
-		vector<string> vec;
+        vector<string> vec;
         pf->get_list(NULL, "readList1", &vec);
         NUT_TA(vec.size() == 3);
         NUT_TA(vec[0] == "a");
