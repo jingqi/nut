@@ -20,7 +20,7 @@ namespace nut
 template <typename T>
 void kmp_build_next(const T *target, int *next, size_t len)
 {
-    assert(NULL != target && NULL != next && len > 0);
+    assert(nullptr != target && nullptr != next && len > 0);
     if (len > 0)
         next[0] = 0;
     size_t i = 1;
@@ -48,7 +48,7 @@ void kmp_build_next(const T *target, int *next, size_t len)
 template <typename T>
 int kmp_update(T c, int state, const T *target, const int *next)
 {
-    assert(state >= 0 && NULL != target && NULL != next);
+    assert(state >= 0 && nullptr != target && nullptr != next);
     while (true)
     {
         if (c == target[state])
@@ -71,7 +71,7 @@ int kmp_update(T c, int state, const T *target, const int *next)
 template <typename T>
 int kmp_search(const T *src, size_t len_src, size_t start, const T *target, const int *next, size_t len_target)
 {
-    assert(NULL != src && NULL != target && NULL != next);
+    assert(nullptr != src && nullptr != target && nullptr != next);
     size_t i = start;
     int state = 0; // 状态，其实代表着已经匹配的字符串长度
     while (i < len_src && ((size_t) state) < len_target)

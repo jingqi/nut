@@ -17,7 +17,7 @@ namespace nut
 
 static bool contains(const char *s, char c)
 {
-    assert(NULL != s);
+    assert(nullptr != s);
     for (size_t i = 0; 0 != s[i]; ++i)
     {
         if (s[i] == c)
@@ -35,19 +35,19 @@ rc_ptr<IniDom::Sector> IniDom::Sector::parse_sector_name(const std::string& line
     const std::string::size_type index1 = line.find_first_of('[');
     const std::string::size_type index2 = line.find_first_of(']');
     if (std::string::npos == index1 || std::string::npos == index2 || index1 > index2)
-        return rc_ptr<Sector>(NULL);
+        return rc_ptr<Sector>(nullptr);
     const std::string::size_type index3 = line.find_first_of(line_comment_chars, index2);
 
     for (size_t i = 0; i < index1; ++i)
     {
         if (!contains(space_chars, line.at(i)))
-            return rc_ptr<Sector>(NULL);
+            return rc_ptr<Sector>(nullptr);
     }
 
     for (size_t i = index2 + 1, len = line.length(); i < len && i != index3; ++i)
     {
         if (!contains(space_chars, line.at(i)))
-            return rc_ptr<Sector>(NULL);
+            return rc_ptr<Sector>(nullptr);
     }
 
     rc_ptr<Sector> ret = rc_new<Sector>();
@@ -95,7 +95,7 @@ rc_ptr<IniDom::Sector> IniDom::Sector::parse_sector_name(const std::string& line
  */
 std::string IniDom::Sector::serielize(const char *le)
 {
-    assert(NULL != le);
+    assert(nullptr != le);
     std::string ret;
     ret += _space0;
     ret.push_back('[');
@@ -113,16 +113,13 @@ std::string IniDom::Sector::serielize(const char *le)
     return ret;
 }
 
-IniDom::IniDom()
-{}
-
 /**
  * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
  * @param space_chars 空白字符，其中出现的字符将被视为空白
  */
 void IniDom::parse(const std::string& s, const char *line_comment_chars, const char *space_chars)
 {
-    assert(NULL != line_comment_chars && NULL != space_chars);
+    assert(nullptr != line_comment_chars && nullptr != space_chars);
 
     _global_lines.clear();
     _sectors.clear();
@@ -169,7 +166,7 @@ void IniDom::parse(const std::string& s, const char *line_comment_chars, const c
  */
 std::string IniDom::serielize(const char *le) const
 {
-    assert(NULL != le);
+    assert(nullptr != le);
 
     // 全局数据
     std::string ret;
@@ -209,14 +206,14 @@ void IniDom::clear()
 
 void IniDom::list_sectors(std::vector<std::string> *rs) const
 {
-    assert(NULL != rs);
+    assert(nullptr != rs);
     for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
         rs->push_back(_sectors.at(i)->_name);
 }
 
 bool IniDom::has_sector(const char *sector) const
 {
-    if (NULL == sector)
+    if (nullptr == sector)
         return true;
 
     for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
@@ -229,7 +226,7 @@ bool IniDom::has_sector(const char *sector) const
 
 bool IniDom::remove_sector(const char *sector)
 {
-    if (NULL == sector)
+    if (nullptr == sector)
         return false;
 
     for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
@@ -246,8 +243,8 @@ bool IniDom::remove_sector(const char *sector)
 
 void IniDom::list_keys(const char *sector, std::vector<std::string> *rs) const
 {
-    assert(NULL != rs);
-    if (NULL == sector)
+    assert(nullptr != rs);
+    if (nullptr == sector)
     {
         for (size_t i = 0, sz = _global_lines.size(); i < sz; ++i)
         {
@@ -278,9 +275,9 @@ void IniDom::list_keys(const char *sector, std::vector<std::string> *rs) const
 
 bool IniDom::has_key(const char *sector, const char *key) const
 {
-    assert(NULL != key);
-    const std::vector<rc_ptr<Line> > *lines = NULL;
-    if (NULL == sector)
+    assert(nullptr != key);
+    const std::vector<rc_ptr<Line> > *lines = nullptr;
+    if (nullptr == sector)
     {
         lines = &_global_lines;
     }
@@ -295,7 +292,7 @@ bool IniDom::has_key(const char *sector, const char *key) const
             }
         }
     }
-    if (NULL == lines)
+    if (nullptr == lines)
         return false;
 
     for (size_t i = 0, sz = lines->size(); i < sz; ++i)
@@ -310,9 +307,9 @@ bool IniDom::has_key(const char *sector, const char *key) const
 
 bool IniDom::remove_key(const char *sector, const char *key)
 {
-    assert(NULL != key);
-    std::vector<rc_ptr<Line> > *lines = NULL;
-    if (NULL == sector)
+    assert(nullptr != key);
+    std::vector<rc_ptr<Line> > *lines = nullptr;
+    if (nullptr == sector)
     {
         lines = &_global_lines;
     }
@@ -327,7 +324,7 @@ bool IniDom::remove_key(const char *sector, const char *key)
             }
         }
     }
-    if (NULL == lines)
+    if (nullptr == lines)
         return false;
 
     for (size_t i = 0, sz = lines->size(); i < sz; ++i)
@@ -344,9 +341,9 @@ bool IniDom::remove_key(const char *sector, const char *key)
 
 const char* IniDom::get_string(const char *sector, const char *key, const char *default_value) const
 {
-    assert(NULL != key);
-    const std::vector<rc_ptr<Line> > *lines = NULL;
-    if (NULL == sector)
+    assert(nullptr != key);
+    const std::vector<rc_ptr<Line> > *lines = nullptr;
+    if (nullptr == sector)
     {
         lines = &_global_lines;
     }
@@ -361,7 +358,7 @@ const char* IniDom::get_string(const char *sector, const char *key, const char *
             }
         }
     }
-    if (NULL == lines)
+    if (nullptr == lines)
         return default_value;
 
     for (size_t i = 0, sz = lines->size(); i < sz; ++i)
@@ -374,7 +371,7 @@ const char* IniDom::get_string(const char *sector, const char *key, const char *
 
 bool IniDom::get_bool(const char *sector, const char *key, bool default_value) const
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     const char *s = get_string(sector, key);
     if (0 == ::strcmp(s, "0") || 0 == stricmp(s, "false") || 0 == stricmp(s, "no"))
         return false;
@@ -385,9 +382,9 @@ bool IniDom::get_bool(const char *sector, const char *key, bool default_value) c
 
 long IniDom::get_num(const char *sector, const char *key, long default_value) const
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     const char *s = get_string(sector, key);
-    if (NULL == s || '\0' == s[0])
+    if (nullptr == s || '\0' == s[0])
         return default_value;
 
     return atol(s);
@@ -395,9 +392,9 @@ long IniDom::get_num(const char *sector, const char *key, long default_value) co
 
 double IniDom::get_decimal(const char *sector, const char *key, double default_value) const
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     const char *s = get_string(sector, key);
-    if (NULL == s || '\0' == s[0])
+    if (nullptr == s || '\0' == s[0])
         return default_value;
 
     return atof(s);
@@ -405,7 +402,7 @@ double IniDom::get_decimal(const char *sector, const char *key, double default_v
 
 void IniDom::get_list(const char *sector, const char *key, std::vector<std::string> *rs, char split_char) const
 {
-    assert(NULL != key && NULL != rs);
+    assert(nullptr != key && nullptr != rs);
     std::string s = get_string(sector, key);
     if (s.length() == 0)
         return;
@@ -422,9 +419,9 @@ void IniDom::get_list(const char *sector, const char *key, std::vector<std::stri
 
 void IniDom::set_string(const char *sector, const char *key, const char *value)
 {
-    assert(NULL != key && NULL != value);
-    std::vector<rc_ptr<Line> > *lines = NULL;
-    if (NULL == sector)
+    assert(nullptr != key && nullptr != value);
+    std::vector<rc_ptr<Line> > *lines = nullptr;
+    if (nullptr == sector)
     {
         lines = &_global_lines;
     }
@@ -439,7 +436,7 @@ void IniDom::set_string(const char *sector, const char *key, const char *value)
             }
         }
     }
-    if (NULL == lines)
+    if (nullptr == lines)
     {
         rc_ptr<Sector> sec = rc_new<Sector>();
         sec->_name = sector;
@@ -466,13 +463,13 @@ void IniDom::set_string(const char *sector, const char *key, const char *value)
 
 void IniDom::set_bool(const char *sector, const char *key, bool value)
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     set_string(sector, key, (value ? "true" : "false"));
 }
 
 void IniDom::set_num(const char *sector, const char *key, long value)
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     const int BUF_LEN = 30;
     char buf[BUF_LEN];
     ::memset(buf, 0, BUF_LEN);
@@ -486,7 +483,7 @@ void IniDom::set_num(const char *sector, const char *key, long value)
 
 void IniDom::set_decimal(const char *sector, const char *key, double value)
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     const int BUF_LEN = 30;
     char buf[BUF_LEN];
     ::memset(buf, 0, BUF_LEN);
@@ -496,7 +493,7 @@ void IniDom::set_decimal(const char *sector, const char *key, double value)
 
 void IniDom::set_list(const char *sector, const char *key, const std::vector<std::string>& values, char split_char)
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     std::string s;
     if (values.size() > 0)
         s = values.at(0);

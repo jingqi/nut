@@ -10,7 +10,7 @@ namespace nut
 CmdHelp::CmdHelp(IConsole *c)
     : _console(c)
 {
-    assert(NULL != c);
+    assert(nullptr != c);
 }
 
 const char* CmdHelp::get_command_name() const
@@ -22,7 +22,7 @@ const char** CmdHelp::get_command_nick_names() const
 {
     static const char* ret[] = {
         "hlp",
-        NULL
+        nullptr
     };
     return ret;
 }
@@ -39,7 +39,7 @@ const char* CmdHelp::get_detail_info() const
 
 void CmdHelp::execute(const char* command_line)
 {
-    assert(NULL != command_line);
+    assert(nullptr != command_line);
     const std::vector<std::string> params = parse_comand_line(command_line);
 
     // 空参数
@@ -67,14 +67,14 @@ void CmdHelp::execute(const char* command_line)
         for (size_t i = 0, size = matched_cmds.size(); i < size; ++i)
         {
             const char *n = matched_cmds.at(i)->get_command_name();
-            printf(" %s", (NULL == n ? "(null)" : n));
+            printf(" %s", (nullptr == n ? "(null)" : n));
         }
         return;
     }
 
     // 打印帮助信息
     const char *i = matched_cmds.at(0)->get_detail_info();
-    printf("%s\n", (NULL == i ? "(No information found)" : i));
+    printf("%s\n", (nullptr == i ? "(No information found)" : i));
 }
 
 }

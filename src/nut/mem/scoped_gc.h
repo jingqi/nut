@@ -38,7 +38,7 @@ class NUT_API scoped_gc
     /** 内存块 */
     struct Block
     {
-        Block *prev = NULL;
+        Block *prev = nullptr;
         uint8_t body[DEFAULT_BLOCK_BODY_SIZE];
     };
     static_assert(sizeof(Block) == DEFAULT_BLOCK_LEN, "数据结构对齐问题");
@@ -49,36 +49,36 @@ class NUT_API scoped_gc
     /** 析构函数链表 */
     struct DestructorNode
     {
-        DestructorNode *prev = NULL;
-        destruct_func_type destruct_func = NULL;
+        DestructorNode *prev = nullptr;
+        destruct_func_type destruct_func = nullptr;
     };
 
-    Block *_current_block = NULL;
-    uint8_t *_end = NULL;
-    DestructorNode *_destruct_chain = NULL;
+    Block *_current_block = nullptr;
+    uint8_t *_end = nullptr;
+    DestructorNode *_destruct_chain = nullptr;
     NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
-    // Invalid methods
-    scoped_gc(const self_type&);
-    self_type& operator=(const self_type&);
+    // Non-copyable
+    scoped_gc(const self_type&) = delete;
+    self_type& operator=(const self_type&) = delete;
 
 public:
-    scoped_gc();
+    scoped_gc() = default;
     ~scoped_gc();
 
 private:
     template <typename T>
     static void destruct_single(void *p)
     {
-        assert(NULL != p);
+        assert(nullptr != p);
         ((T*) p)->~T();
     }
 
     template <typename T>
     static void destruct_array(void *p)
     {
-        assert(NULL != p);
+        assert(nullptr != p);
         size_t count = *(size_t*)p;
         T *pd = (T*)(((size_t*) p) + 1);
         for (int i = 0; i < (int) count; ++i)
@@ -105,7 +105,7 @@ public:
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
-        assert(NULL != p);
+        assert(nullptr != p);
         new (p) T(std::forward<Args>(args)...);
         return p;
     }
@@ -115,7 +115,7 @@ public:
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
-        assert(NULL != p);
+        assert(nullptr != p);
         new (p) T;
         return p;
     }
@@ -125,7 +125,7 @@ public:
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
-        assert(NULL != p);
+        assert(nullptr != p);
         new (p) T(std::forward<Arg1>(arg1));
         return p;
     }
@@ -135,7 +135,7 @@ public:
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
-        assert(NULL != p);
+        assert(nullptr != p);
         new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2));
         return p;
     }
@@ -145,7 +145,7 @@ public:
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
-        assert(NULL != p);
+        assert(nullptr != p);
         new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3));
         return p;
     }
@@ -155,7 +155,7 @@ public:
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
-        assert(NULL != p);
+        assert(nullptr != p);
         new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4));
         return p;
     }
@@ -165,7 +165,7 @@ public:
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
-        assert(NULL != p);
+        assert(nullptr != p);
         new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5));
         return p;
     }
@@ -177,7 +177,7 @@ public:
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
-        assert(NULL != p);
+        assert(nullptr != p);
         new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5),
                   std::forward<Arg6>(arg6));
         return p;
@@ -190,7 +190,7 @@ public:
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
-        assert(NULL != p);
+        assert(nullptr != p);
         new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5),
                   std::forward<Arg6>(arg6), std::forward<Arg7>(arg7));
         return p;
@@ -203,7 +203,7 @@ public:
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
-        assert(NULL != p);
+        assert(nullptr != p);
         new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5),
                   std::forward<Arg6>(arg6), std::forward<Arg7>(arg7), std::forward<Arg8>(arg8));
         return p;
@@ -216,7 +216,7 @@ public:
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
-        assert(NULL != p);
+        assert(nullptr != p);
         new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5),
                   std::forward<Arg6>(arg6), std::forward<Arg7>(arg7), std::forward<Arg8>(arg8), std::forward<Arg9>(arg9));
         return p;
@@ -229,7 +229,7 @@ public:
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
-        assert(NULL != p);
+        assert(nullptr != p);
         new (p) T(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Arg3>(arg3), std::forward<Arg4>(arg4), std::forward<Arg5>(arg5),
                   std::forward<Arg6>(arg6), std::forward<Arg7>(arg7), std::forward<Arg8>(arg8), std::forward<Arg9>(arg9), std::forward<Arg10>(arg10));
         return p;
@@ -241,7 +241,7 @@ public:
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *ret = (T*) alloc(sizeof(T), count, destruct_array<T>);
-        assert(NULL != ret);
+        assert(nullptr != ret);
         for (size_t i = 0; i < count; ++i)
             new (ret + i) T;
         return ret;

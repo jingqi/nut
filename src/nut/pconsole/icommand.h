@@ -26,7 +26,7 @@ public:
     /**
      * 命令名缩写
      * 
-     * @return 最后一项必须是NULL
+     * @return 最后一项必须是 nullptr
      */
     virtual const char** get_command_nick_names() const;
 

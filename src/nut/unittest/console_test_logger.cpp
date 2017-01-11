@@ -17,9 +17,9 @@ ConsoleTestLogger::ConsoleTestLogger()
 void ConsoleTestLogger::on_start(const char *group_name, const char *fixture_name, const char *case_name)
 {
     std::cout << std::endl;
-    if (NULL != group_name)
+    if (nullptr != group_name)
     {
-        assert(NULL == fixture_name && NULL == case_name);
+        assert(nullptr == fixture_name && nullptr == case_name);
         std::cout << "> run group: ";
         if (_in_a_tty)
             ConsoleUtil::set_text_color(ConsoleUtil::BLUE);
@@ -27,9 +27,9 @@ void ConsoleTestLogger::on_start(const char *group_name, const char *fixture_nam
         if (_in_a_tty)
             ConsoleUtil::set_text_color();
     }
-    else if (NULL != case_name)
+    else if (nullptr != case_name)
     {
-        assert(NULL != fixture_name);
+        assert(nullptr != fixture_name);
         std::cout << "> run case: ";
         if (_in_a_tty)
             ConsoleUtil::set_text_color(ConsoleUtil::BLUE);
@@ -39,7 +39,7 @@ void ConsoleTestLogger::on_start(const char *group_name, const char *fixture_nam
     }
     else
     {
-        assert(NULL != fixture_name);
+        assert(nullptr != fixture_name);
         std::cout << "> run fixture: ";
         if (_in_a_tty)
             ConsoleUtil::set_text_color(ConsoleUtil::BLUE);
@@ -111,7 +111,7 @@ void ConsoleTestLogger::on_finish()
 
 void ConsoleTestLogger::on_enter_fixture(const char *fixture_name)
 {
-    assert(NULL != fixture_name);
+    assert(nullptr != fixture_name);
     std::cout << "  + " << fixture_name << std::endl;
 }
 
@@ -122,7 +122,7 @@ void ConsoleTestLogger::on_leave_fixture()
 
 void ConsoleTestLogger::on_enter_case(const char *case_name)
 {
-    assert(NULL != case_name);
+    assert(nullptr != case_name);
     std::cout << "    - " << case_name << "()";
 }
 

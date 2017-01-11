@@ -18,7 +18,7 @@ namespace nut
 class NUT_API BitStream
 {
     typedef unsigned int word_type;
-    word_type *_buf = NULL; // 缓冲区
+    word_type *_buf = nullptr; // 缓冲区
     size_t _word_cap = 0; // 缓冲区长度
     size_t _bit_size = 0; // bit 长度
 
@@ -34,8 +34,7 @@ private:
     void _normalize_tail();
 
 public:
-    BitStream()
-    {}
+    BitStream() = default;
 
     /**
      * @param fill_bit 填充比特值，只能为 1 或者 0

@@ -194,7 +194,7 @@ double InputStream::read_double()
 
 size_t InputStream::read(void *buf, size_t cb)
 {
-    assert(NULL != buf || 0 == cb);
+    assert(nullptr != buf || 0 == cb);
     assert(available() >= cb);
     for (size_t i = 0; i < cb; ++i)
         static_cast<uint8_t*>(buf)[i] = read_uint8();

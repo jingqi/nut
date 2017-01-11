@@ -34,12 +34,12 @@ class segments_mp : public memory_allocator
     NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
-    // Invalid methods
-    segments_mp(const segments_mp&);
-    segments_mp& operator=(const segments_mp&);
+    // Non-copyable
+    segments_mp(const segments_mp&) = delete;
+    segments_mp& operator=(const segments_mp&) = delete;
 
 public:
-    segments_mp(memory_allocator *ma = NULL)
+    segments_mp(memory_allocator *ma = nullptr)
         : _alloc(ma)
     {
         for (size_t i = 0; i < FREE_LIST_COUNT; ++i)
@@ -75,7 +75,7 @@ public:
 
     virtual void* realloc(void *p, size_t old_sz, size_t new_sz) override
     {
-        assert(NULL != p && old_sz > 0 && new_sz > 0);
+        assert(nullptr != p && old_sz > 0 && new_sz > 0);
         NUT_DEBUGGING_ASSERT_ALIVE;
 
         if (old_sz > GRANULARITY * FREE_LIST_COUNT && new_sz > GRANULARITY * FREE_LIST_COUNT)
@@ -96,7 +96,7 @@ public:
             return ma_realloc(_alloc, p, GRANULARITY * (old_idx + 1), GRANULARITY * (new_idx + 1));
 
         void *ret = _freelists[new_idx]->alloc(GRANULARITY * (new_idx + 1));
-        assert(NULL != ret);
+        assert(nullptr != ret);
         ::memcpy(ret, p, (std::min)(old_sz, new_sz));
         _freelists[old_idx]->free(p, GRANULARITY * (old_idx + 1));
         return ret;
@@ -104,7 +104,7 @@ public:
 
     virtual void free(void *p, size_t sz) override
     {
-        assert(NULL != p);
+        assert(nullptr != p);
         NUT_DEBUGGING_ASSERT_ALIVE;
 
         if (sz > GRANULARITY * FREE_LIST_COUNT)

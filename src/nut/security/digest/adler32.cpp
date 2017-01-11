@@ -10,9 +10,6 @@
 namespace nut
 {
 
-Adler32::Adler32()
-{}
-
 void Adler32::reset()
 {
     _result = 1;
@@ -20,7 +17,7 @@ void Adler32::reset()
 
 void Adler32::update(const void *buf, size_t len)
 {
-    assert(NULL != buf || len <= 0);
+    assert(nullptr != buf || len <= 0);
     uint16_t *a = reinterpret_cast<uint16_t*>(&_result);
     uint16_t *b = reinterpret_cast<uint16_t*>(&_result) + 1;
     for (size_t i = 0; i < len; ++i)
@@ -58,7 +55,7 @@ void RollingAdler32::initialize()
 
 void RollingAdler32::update(const void *buf, size_t len)
 {
-    assert(NULL != buf || len <= 0);
+    assert(nullptr != buf || len <= 0);
     uint16_t& a = reinterpret_cast<uint16_t*>(&_result)[0];
     uint16_t& b = reinterpret_cast<uint16_t*>(&_result)[1];
     for (size_t i = 0; i < len; ++i)

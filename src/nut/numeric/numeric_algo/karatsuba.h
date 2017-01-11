@@ -18,7 +18,7 @@ namespace nut
 template <typename T>
 void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 {
-    assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
+    assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
 
     // 去除无效位长
     M = (std::min)(unsigned_significant_size(a, M), P);
@@ -132,7 +132,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
 template <typename T>
 void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 {
-    assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
+    assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
 
     // karatsuba 算法不能处理负数的补数形式
     T *aa = const_cast<T*>(a), *bb = const_cast<T*>(b);

@@ -19,14 +19,14 @@ ThreadPool::~ThreadPool()
     join();
 }
 
-bool ThreadPool::add_task(thread_process_type process, void* arg)
+bool ThreadPool::add_task(const task_type& task)
 {
-    assert(NULL != process);
+    assert(task);
     Guard<Condition::condition_lock_type> guard(&_lock);
     if (_interrupt)
         return false;
 
-    _task_queue.push(Task(process, arg));
+    _task_queue.push(task);
     _condition.signal();
     return true;
 }
@@ -35,9 +35,9 @@ void ThreadPool::start()
 {
     for (size_t i = _threads.size(); i < _thread_count; ++i)
     {
-        rc_ptr<Thread> t = rc_new<Thread>(thread_process, this);
-        _threads.push_back(t);
-        t->start();
+        rc_ptr<Thread> thread = rc_new<Thread>([=] { thread_process(); });
+        _threads.push_back(thread);
+        thread->start();
     }
 }
 
@@ -60,26 +60,23 @@ void ThreadPool::terminate()
         _threads[i]->terminate();
 }
 
-void ThreadPool::thread_process(void *p)
+void ThreadPool::thread_process()
 {
-    assert(NULL != p);
-    ThreadPool *pthis = (ThreadPool*) p;
-
     do
     {
-        Task t;
+        task_type task;
         {
-            Guard<Condition::condition_lock_type> guard(&(pthis->_lock));
-            while (!pthis->_interrupt && pthis->_task_queue.empty())
-                pthis->_condition.wait(&(pthis->_lock));
-            if (pthis->_interrupt)
+            Guard<Condition::condition_lock_type> guard(&_lock);
+            while (!_interrupt && _task_queue.empty())
+                _condition.wait(&_lock);
+            if (_interrupt)
                 continue;
-            t = pthis->_task_queue.front();
-            pthis->_task_queue.pop();
+            task = _task_queue.front();
+            _task_queue.pop();
         }
 
-        t.process(t.arg);
-    } while (!(pthis->_interrupt));
+        task();
+    } while (!_interrupt);
 }
 
 }

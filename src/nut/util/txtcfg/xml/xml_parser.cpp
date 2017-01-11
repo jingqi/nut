@@ -11,7 +11,7 @@ namespace nut
 
 static void decode_append(const std::string& e, std::string *appended)
 {
-    assert(NULL != appended);
+    assert(nullptr != appended);
     if (e == "&amp;")
         appended->push_back('&');
     else if (e == "&quot;")
@@ -558,7 +558,7 @@ bool XmlParser::should_handle_child() const
     if (_elem_path.empty())
         return false;
     const ElementInfo& current_elem = _elem_path.at(_elem_path.size() - 1);
-    if (NULL == current_elem.handler)
+    if (nullptr == current_elem.handler)
         return false;
     return 0 != (current_elem.handler->get_handle_mask() & XmlElementHandler::HANDLE_CHILD);
 }
@@ -568,7 +568,7 @@ bool XmlParser::should_handle_attribute() const
     if (_elem_path.empty())
         return false;
     const ElementInfo& current_elem = _elem_path.at(_elem_path.size() - 1);
-    if (NULL == current_elem.handler)
+    if (nullptr == current_elem.handler)
         return false;
     return 0 != (current_elem.handler->get_handle_mask() & XmlElementHandler::HANDLE_ATTRIBUTE);
 }
@@ -578,7 +578,7 @@ bool XmlParser::should_handle_text() const
     if (_elem_path.empty())
         return false;
     const ElementInfo& current_elem = _elem_path.at(_elem_path.size() - 1);
-    if (NULL == current_elem.handler)
+    if (nullptr == current_elem.handler)
         return false;
     return 0 != (current_elem.handler->get_handle_mask() & XmlElementHandler::HANDLE_TEXT);
 }
@@ -588,7 +588,7 @@ bool XmlParser::should_handle_comment() const
     if (_elem_path.empty())
         return false;
     const ElementInfo& current_elem = _elem_path.at(_elem_path.size() - 1);
-    if (NULL == current_elem.handler)
+    if (nullptr == current_elem.handler)
         return false;
     return 0 != (current_elem.handler->get_handle_mask() & XmlElementHandler::HANDLE_COMMENT);
 }
@@ -596,12 +596,12 @@ bool XmlParser::should_handle_comment() const
 void XmlParser::handle_child()
 {
     // Create child handler
-    XmlElementHandler *child = NULL;
+    XmlElementHandler *child = nullptr;
     if (should_handle_child())
         child = _elem_path.at(_elem_path.size() - 1).handler->handle_child(_tmp_name);
 
     // Set busy
-    if (NULL != child)
+    if (nullptr != child)
     {
         assert(!child->is_busy()); // Should not be used this moment
         child->set_name(_tmp_name);
@@ -653,12 +653,12 @@ void XmlParser::handle_finish()
 
     // Pop stack
     XmlElementHandler *handler = _elem_path.at(_elem_path.size() - 1).handler;
-    if (NULL != handler)
+    if (nullptr != handler)
         handler->handle_finish();
     _elem_path.pop_back();
 
     // Set not-busy
-    if (NULL != handler)
+    if (nullptr != handler)
     {
         assert(handler->is_busy());
         handler->set_busy(false);
@@ -668,7 +668,7 @@ void XmlParser::handle_finish()
     if (_elem_path.empty())
         return;
     XmlElementHandler *parent = _elem_path.at(_elem_path.size() - 1).handler;
-    if (NULL != parent)
+    if (nullptr != parent)
         parent->handle_child_finish(handler);
 }
 
@@ -713,7 +713,7 @@ void XmlParser::reset(XmlElementHandler *root_handler)
 
 bool XmlParser::input(const char *s, int len)
 {
-    assert(NULL != s);
+    assert(nullptr != s);
     for (int i = 0; (len < 0 || i < len) && '\0' != s[i]; ++i)
     {
         const bool rs = input(s[i]);

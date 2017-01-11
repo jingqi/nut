@@ -1,5 +1,6 @@
 ﻿
 #include <assert.h>
+
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_OS_WINDOWS
@@ -35,8 +36,8 @@ static pid_t gettid()
 }
 #endif
 
-Thread::Thread(thread_process_type process, void *arg)
-    : _thread_process(process), _thread_arg(arg)
+Thread::Thread(const task_type& task)
+    : _task(task)
 {}
 
 Thread::~Thread()
@@ -59,32 +60,27 @@ DWORD WINAPI Thread::thread_entry(LPVOID p)
 void* Thread::thread_entry(void *p)
 #endif
 {
-    assert(NULL != p);
+    assert(nullptr != p);
     Thread *pthis = (Thread*) p;
 #if NUT_PLATFORM_OS_LINUX
     pthis->_tid = gettid();
 #endif
-    if (pthis->_thread_process != NULL)
-        pthis->_thread_process(pthis->_thread_arg);
+    if (pthis->_task)
+        pthis->_task();
     else
-        pthis->run(pthis->_thread_arg);
+        pthis->run();
     pthis->_has_finished = true;
 
 #if NUT_PLATFORM_OS_WINDOWS
     return 0;
 #else
-    return NULL;
+    return nullptr;
 #endif
 }
 
-void Thread::set_thread_process(thread_process_type process)
+void Thread::set_thread_task(const task_type& task)
 {
-    _thread_process = process;
-}
-
-void Thread::set_thread_arg(void *arg)
-{
-    _thread_arg = arg;
+    _task = task;
 }
 
 bool Thread::has_started() const
@@ -129,21 +125,21 @@ bool Thread::start()
     _has_started = true;
 
 #if NUT_PLATFORM_OS_WINDOWS
-    _handle = ::CreateThread(NULL, // default security attributes
-                             0, // use default stack size
+    _handle = ::CreateThread(nullptr,      // Default security attributes
+                             0,            // Use default stack size
                              thread_entry, // thread function
-                             this, // argument to thread
-                             0, // use default cration flags
-                             &_tid); // thread identifier
-    if (_handle == NULL)
+                             this,         // Argument to thread
+                             0,            // Use default cration flags
+                             &_tid);       // Thread identifier
+    if (nullptr == _handle)
     {
         _has_finished = true;
         return false;
     }
     return true;
 #else
-    const int rs = ::pthread_create(&_pthread, NULL, thread_entry, this);
-    if (rs != 0)
+    const int rs = ::pthread_create(&_pthread, nullptr, thread_entry, this);
+    if (0 != rs)
     {
         _has_finished = true;
         return false;
@@ -161,7 +157,7 @@ void Thread::join()
 #if NUT_PLATFORM_OS_WINDOWS
     ::WaitForSingleObject(_handle, INFINITE);
 #else
-    ::pthread_join(_pthread, NULL);
+    ::pthread_join(_pthread, nullptr);
 #endif
 }
 

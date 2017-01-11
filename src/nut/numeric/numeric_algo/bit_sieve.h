@@ -32,7 +32,7 @@ class BitSieve
     /**
      * Stores the bits in this BitSieve.
      */
-    int64_t *_bits = NULL;
+    int64_t *_bits = nullptr;
     int _bits_cap = 0;
 
     /**

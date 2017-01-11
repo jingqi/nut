@@ -3,8 +3,9 @@
 #define ___HEADFILE_C26E9AEE_1281_403B_A44C_5CF82E61DD5C_
 
 #include <assert.h>
-#include <vector>
 #include <time.h>
+#include <vector>
+#include <functional>
 
 #include <nut/platform/platform.h>
 #include <nut/threading/sync/condition.h>
@@ -29,39 +30,52 @@ namespace nut
 class NUT_API TimerManager
 {
 public:
-    // 定时器回调函数类型
-    typedef void (*timer_func_type)(int,void*);
+    // 定时器 id 类型
+    typedef int timer_id_type;
+    // 定时器任务类型
+    typedef std::function<void(timer_id_type)> timer_task_type;
 
-public:
+private:
     // 定时器
-    struct Timer
+    class Timer
     {
-        int id = 0;
+    public:
+        timer_id_type id = 0;
         TimeVal time;
-        void *arg = NULL;
-        timer_func_type func = NULL;
+        timer_task_type task;
     };
 
-    int volatile _next_id = 1;  // 用于生成不重复的 timer id
+    timer_id_type volatile _next_id = 1;  // 用于生成不重复的 timer id
     std::vector<Timer*> _timers; // 小头堆
     Condition _cond;
     typedef Condition::condition_lock_type lock_type;
     lock_type _lock;
     bool volatile _stopping = false; // 是否停止所有计时器
 
+private:
+    // Non-copyable
+    TimerManager(const TimerManager& x) = delete;
+    TimerManager& operator=(const TimerManager& x) = delete;
+
+    Timer* new_timer();
+    void delete_timer(Timer *t);
+
+    // Greater-Than 操作符用于维护小头堆算法
+    static bool timer_greater_than(const Timer *t1, const Timer *t2);
+
 public:
-    TimerManager();
+    TimerManager() = default;
     ~TimerManager();
 
     /**
      * 添加定时器
      *
-     * @param t 距离现在时间的间隔,单位毫秒
-     * @return 定时器id
+     * @param interval 距离现在时间的间隔,单位毫秒
+     * @return 定时器 id
      */
-    int add_timer(const TimeVal& interval, timer_func_type func, void *arg = NULL);
+    timer_id_type add_timer(const TimeVal& interval, const timer_task_type& task);
 
-    bool cancel_timer(int id);
+    bool cancel_timer(timer_id_type id);
 
     void interupt();
 

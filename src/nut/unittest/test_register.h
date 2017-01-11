@@ -20,11 +20,11 @@ class NUT_API TestRegister
     typedef TestFixture* (*new_fixture_func)();
     typedef void (*delete_fixture_func)(TestFixture*);
 
-    new_fixture_func _new_func = NULL;
-    delete_fixture_func _delete_func = NULL;
-    const char *_fixture_name = NULL;
+    new_fixture_func _new_func = nullptr;
+    delete_fixture_func _delete_func = nullptr;
+    const char *_fixture_name = nullptr;
     std::vector<std::string> _groups;
-    TestRegister *_pnext = NULL;
+    TestRegister *_pnext = nullptr;
 
 public:
     TestRegister(const char *fixture_name, const char *groups,

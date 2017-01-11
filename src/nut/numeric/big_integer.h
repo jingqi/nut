@@ -28,7 +28,7 @@ public:
     typedef StdInt<word_type>::double_unsigned_type dword_type;
 
 private:
-    word_type *_data = NULL; // 缓冲区, little-endian, 带符号
+    word_type *_data = nullptr; // 缓冲区, little-endian, 带符号
     size_type _capacity = 0;
     size_type _significant_len = 0; // 有效字长度
 
@@ -54,7 +54,7 @@ public:
     template <typename U>
     BigInteger(const U *buf, size_type len, bool with_sign)
     {
-        assert(NULL != buf && len > 0);
+        assert(nullptr != buf && len > 0);
 
         const uint8_t fill = (with_sign ? (nut::is_positive(buf, len) ? 0 : 0xFF) : 0);
         const size_type min_sig = sizeof(U) * len / sizeof(word_type) + 1; // 保证一个空闲字节放符号位
@@ -198,14 +198,14 @@ public:
     self_type operator/(const self_type& x) const
     {
         self_type ret(0);
-        self_type::divide(*this, x, &ret, NULL);
+        self_type::divide(*this, x, &ret, nullptr);
         return ret;
     }
 
     self_type operator/(long long v) const
     {
         self_type divider(v), ret(0);
-        self_type::divide(*this, divider, &ret, NULL);
+        self_type::divide(*this, divider, &ret, nullptr);
         return ret;
     }
 
@@ -217,7 +217,7 @@ public:
         assert(0 != v);
 
         self_type divider(v), ret(0);
-        self_type::divide(*this, divider, NULL, &ret);
+        self_type::divide(*this, divider, nullptr, &ret);
         return ret;
     }
 
@@ -259,14 +259,14 @@ public:
 
     self_type& operator/=(const self_type& x)
     {
-        self_type::divide(*this, x, this, NULL);
+        self_type::divide(*this, x, this, nullptr);
         return *this;
     }
 
     self_type& operator/=(long long v)
     {
         self_type divider(v);
-        self_type::divide(*this, divider, this, NULL);
+        self_type::divide(*this, divider, this, nullptr);
         return *this;
     }
 
@@ -276,7 +276,7 @@ public:
     {
         assert(0 != v);
         self_type divider(v);
-        self_type::divide(*this, divider, NULL, this);
+        self_type::divide(*this, divider, nullptr, this);
         return *this;
     }
 

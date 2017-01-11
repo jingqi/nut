@@ -59,7 +59,7 @@ class fixture_name : public ::nut::TestFixture
 #define NUT_CASES_BEGIN()                                               \
     virtual int ___run_case(::nut::ITestLogger *logger, const int op, const char *case_name) override \
     {                                                                   \
-        assert(NULL != logger);                                         \
+        assert(nullptr != logger);                                      \
         int index = -1;
 
 /** case */
@@ -99,13 +99,13 @@ class fixture_name : public ::nut::TestFixture
     static ::nut::TestFixture* ___new##fixture()                        \
     {                                                                   \
         fixture *p = (fixture*) ::malloc(sizeof(fixture));              \
-        assert(NULL != p);                                              \
+        assert(nullptr != p);                                           \
         new (p) fixture();                                              \
         return p;                                                       \
     }                                                                   \
     static void ___delete##fixture(::nut::TestFixture *p)               \
     {                                                                   \
-        assert(NULL != p);                                              \
+        assert(nullptr != p);                                              \
         p->~TestFixture();                                              \
         ::free(p);                                                      \
     }                                                                   \

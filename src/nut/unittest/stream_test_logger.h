@@ -15,7 +15,7 @@ namespace nut
 
 class NUT_API StreamTestLogger : public ITestLogger
 {
-    std::ostream *_out_stream = NULL;
+    std::ostream *_out_stream = nullptr;
 
 public:
     StreamTestLogger(std::ostream *os);

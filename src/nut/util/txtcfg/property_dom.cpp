@@ -36,7 +36,7 @@ void PropertyDom::Line::clear()
  */
 void PropertyDom::Line::parse(const std::string& line, const char *line_comment_chars, const char *space_chars)
 {
-    assert(NULL != line_comment_chars && NULL != space_chars);
+    assert(nullptr != line_comment_chars && nullptr != space_chars);
     clear();
 
     std::string s = line;
@@ -135,16 +135,13 @@ std::string PropertyDom::Line::serielize()
     return ret;
 }
 
-PropertyDom::PropertyDom()
-{}
-
 /**
  * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
  * @param space_chars 空白字符，其中出现的字符将被视为空白
  */
 void PropertyDom::parse(const std::string& s, const char *line_comment_chars, const char *space_chars)
 {
-    assert(NULL != line_comment_chars && NULL != space_chars);
+    assert(nullptr != line_comment_chars && nullptr != space_chars);
 
     _lines.clear();
     _dirty = true;
@@ -181,7 +178,7 @@ void PropertyDom::parse(const std::string& s, const char *line_comment_chars, co
  */
 std::string PropertyDom::serielize(const char *le) const
 {
-    assert(NULL != le);
+    assert(nullptr != le);
     std::string ret;
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
@@ -210,7 +207,7 @@ void PropertyDom::clear()
 
 void PropertyDom::list_keys(std::vector<std::string> *rs) const
 {
-    assert(NULL != rs);
+    assert(nullptr != rs);
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
         const rc_ptr<Line>& line = _lines.at(i);
@@ -222,7 +219,7 @@ void PropertyDom::list_keys(std::vector<std::string> *rs) const
 
 bool PropertyDom::has_key(const char *key) const
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
         if (_lines.at(i)->_key == key)
@@ -233,7 +230,7 @@ bool PropertyDom::has_key(const char *key) const
 
 bool PropertyDom::remove_key(const char *key)
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
         if (_lines.at(i)->_key == key)
@@ -248,7 +245,7 @@ bool PropertyDom::remove_key(const char *key)
 
 const char* PropertyDom::get_string(const char *key, const char *default_value) const
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
         if (_lines.at(i)->_key == key)
@@ -259,7 +256,7 @@ const char* PropertyDom::get_string(const char *key, const char *default_value) 
 
 bool PropertyDom::get_bool(const char *key, bool default_value) const
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     const char *s = get_string(key);
     if (0 == ::strcmp(s, "0") || 0 == stricmp(s, "false") || 0 == stricmp(s, "no"))
         return false;
@@ -270,9 +267,9 @@ bool PropertyDom::get_bool(const char *key, bool default_value) const
 
 long PropertyDom::get_num(const char *key, long default_value) const
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     const char *s = get_string(key);
-    if (NULL == s || '\0' == s[0])
+    if (nullptr == s || '\0' == s[0])
         return default_value;
 
     return atol(s);
@@ -280,9 +277,9 @@ long PropertyDom::get_num(const char *key, long default_value) const
 
 double PropertyDom::get_decimal(const char *key, double default_value) const
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     const char *s = get_string(key);
-    if (NULL == s || '\0' == s[0])
+    if (nullptr == s || '\0' == s[0])
         return default_value;
 
     return atof(s);
@@ -290,7 +287,7 @@ double PropertyDom::get_decimal(const char *key, double default_value) const
 
 void PropertyDom::get_list(const char *key, std::vector<std::string> *rs, char split_char) const
 {
-    assert(NULL != key && NULL != rs);
+    assert(nullptr != key && nullptr != rs);
     std::string s = get_string(key);
     if (s.empty())
         return;
@@ -307,7 +304,7 @@ void PropertyDom::get_list(const char *key, std::vector<std::string> *rs, char s
 
 void PropertyDom::set_string(const char *key, const char *value)
 {
-    assert(NULL != key && NULL != value);
+    assert(nullptr != key && nullptr != value);
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
         if (_lines.at(i)->_key == key)
@@ -329,13 +326,13 @@ void PropertyDom::set_string(const char *key, const char *value)
 
 void PropertyDom::set_bool(const char *key, bool value)
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     set_string(key, (value ? "true" : "false"));
 }
 
 void PropertyDom::set_num(const char *key, long value)
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     const int BUF_LEN = 30;
     char buf[BUF_LEN];
     ::memset(buf, 0, BUF_LEN);
@@ -349,7 +346,7 @@ void PropertyDom::set_num(const char *key, long value)
 
 void PropertyDom::set_decimal(const char *key, double value)
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     const int BUF_LEN = 30;
     char buf[BUF_LEN];
     ::memset(buf, 0, BUF_LEN);
@@ -359,7 +356,7 @@ void PropertyDom::set_decimal(const char *key, double value)
 
 void PropertyDom::set_list(const char *key, const std::vector<std::string>& values, char split_char)
 {
-    assert(NULL != key);
+    assert(nullptr != key);
     std::string s;
     if (values.size() > 0)
         s = values.at(0);

@@ -84,7 +84,8 @@ void PConsole::print_general_info() const
         assert(!cmd.is_null());
         const char* cmd_name = cmd->get_command_name();
         const char* cmd_info = cmd->get_general_info();
-        printf("\t%s %s\n", (NULL == cmd_name ? "(null)" : cmd_name), (NULL == cmd_info ? "" : cmd_info));
+        printf("\t%s %s\n", (nullptr == cmd_name ? "(null)" : cmd_name), 
+               (nullptr == cmd_info ? "" : cmd_info));
     }
 }
 
@@ -103,7 +104,7 @@ void PConsole::exit(int e)
 
 void PConsole::execute_line(const char* l)
 {
-    assert(NULL != l);
+    assert(nullptr != l);
     // 首先取出命令名
     size_t start = 0;
     while (l[start] != '\0' && (l[start] == ' ' || l[start] == '\t'))
@@ -132,7 +133,7 @@ void PConsole::execute_line(const char* l)
         for (size_t i = 0, size = matched_cmds.size(); i < size; ++i)
         {
             const char *n = matched_cmds.at(i)->get_command_name();
-            printf(" %s", (NULL == n ? "(null)" : n));
+            printf(" %s", (nullptr == n ? "(null)" : n));
         }
         return;
     }

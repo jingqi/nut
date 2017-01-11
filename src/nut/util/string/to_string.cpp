@@ -133,7 +133,7 @@ NUT_API std::string ptr_to_str(const void *p)
 /// memory block
 NUT_API std::string mem_to_str(const void *p, size_t align, size_t count)
 {
-    assert(NULL != p && align > 0 && count > 0);
+    assert(nullptr != p && align > 0 && count > 0);
 
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
@@ -165,7 +165,7 @@ NUT_API std::string mem_to_str(const void *p, size_t align, size_t count)
 /// n-size string
 NUT_API std::string sub_cstr(const char *str, size_t len, const char *fill_nil)
 {
-    assert(NULL != str && NULL != fill_nil);
+    assert(nullptr != str && nullptr != fill_nil);
 
     std::string ret;
     for (size_t i = 0; i < len; ++i)

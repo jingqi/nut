@@ -53,7 +53,7 @@ LogFilter& Logger::get_filter()
 
 void Logger::add_handler(LogHandler *handler)
 {
-    assert(NULL != handler);
+    assert(nullptr != handler);
     NUT_DEBUGGING_ASSERT_ALIVE;
 
     handler->add_ref();
@@ -62,7 +62,7 @@ void Logger::add_handler(LogHandler *handler)
 
 void Logger::remove_handler(LogHandler *handler)
 {
-    assert(NULL != handler);
+    assert(nullptr != handler);
     NUT_DEBUGGING_ASSERT_ALIVE;
 
     for (size_t i = 0, sz = _handlers.size(); i < sz; ++i)
@@ -83,7 +83,7 @@ void Logger::clear_handlers()
     for (size_t i = 0, sz = _handlers.size(); i < sz; ++i)
     {
         LogHandler *handler = _handlers.at(i);
-        assert(NULL != handler);
+        assert(nullptr != handler);
         handler->release_ref();
     }
     _handlers.clear();
@@ -93,7 +93,7 @@ void Logger::log(LogLevel level, const char *tag, const char *file, int line,
                  const char *func, const char *format, ...) const
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    assert(NULL != format);
+    assert(nullptr != format);
 
     if (_handlers.empty())
         return;
@@ -103,9 +103,9 @@ void Logger::log(LogLevel level, const char *tag, const char *file, int line,
 
     size_t size = 32;
     char *buf = (char*) ::malloc(size);
-    assert(NULL != buf);
+    assert(nullptr != buf);
     va_list ap;
-    while (NULL != buf)
+    while (nullptr != buf)
     {
         va_start(ap, format);
         int n = ::vsnprintf(buf, size, format, ap);
@@ -120,14 +120,14 @@ void Logger::log(LogLevel level, const char *tag, const char *file, int line,
 
         buf = (char*) ::realloc(buf, size);
     }
-    if (NULL == buf)
+    if (nullptr == buf)
         return;
 
     LogRecord record(level, tag, file, line, func, buf); // 'buf' will be freed by LogRecord
     for (size_t i = 0, sz = _handlers.size(); i < sz; ++i)
     {
         LogHandler *handler = _handlers.at(i);
-        assert(NULL != handler);
+        assert(nullptr != handler);
         if (handler->get_filter().is_forbidden(tag, level))
             continue;
         handler->handle_log(record);
@@ -138,7 +138,7 @@ void Logger::load_xml_config(const std::string& config)
 {
     class TagHandler : public XmlElementHandler
     {
-        LogFilter *_filter = NULL;
+        LogFilter *_filter = nullptr;
         std::string _tag_name;
         ll_mask_type _forbid_mask = 0;
 
@@ -149,7 +149,7 @@ void Logger::load_xml_config(const std::string& config)
 
         void reset(LogFilter *filter)
         {
-            assert(NULL != filter);
+            assert(nullptr != filter);
             _filter = filter;
         }
 
@@ -178,19 +178,19 @@ void Logger::load_xml_config(const std::string& config)
 
     class FilterHandler : public XmlElementHandler
     {
-        TagHandler *_tag_xml_handler = NULL;
-        LogFilter *_filter = NULL;
+        TagHandler *_tag_xml_handler = nullptr;
+        LogFilter *_filter = nullptr;
 
     public:
         FilterHandler(TagHandler *tag_xml_handler)
             : XmlElementHandler(HANDLE_CHILD), _tag_xml_handler(tag_xml_handler)
         {
-            assert(NULL != tag_xml_handler);
+            assert(nullptr != tag_xml_handler);
         }
 
         void reset(LogFilter *filter)
         {
-            assert(NULL != filter);
+            assert(nullptr != filter);
             _filter = filter;
         }
 
@@ -201,13 +201,13 @@ void Logger::load_xml_config(const std::string& config)
                 _tag_xml_handler->reset(_filter);
                 return _tag_xml_handler;
             }
-            return NULL;
+            return nullptr;
         }
     } filter_xml_handler(&tag_xml_handler);
 
     class HandlerHandler : public XmlElementHandler
     {
-        FilterHandler *_filter_xml_handler = NULL;
+        FilterHandler *_filter_xml_handler = nullptr;
 
         std::string _type;
         std::string _path;
@@ -225,7 +225,7 @@ void Logger::load_xml_config(const std::string& config)
             : XmlElementHandler(HANDLE_ATTRIBUTE | HANDLE_CHILD),
               _filter_xml_handler(filter_xml_handler)
         {
-            assert(NULL != filter_xml_handler);
+            assert(nullptr != filter_xml_handler);
         }
 
         virtual XmlElementHandler* handle_child(const std::string& name) override
@@ -235,7 +235,7 @@ void Logger::load_xml_config(const std::string& config)
                 _filter_xml_handler->reset(&_filter);
                 return _filter_xml_handler;
             }
-            return NULL;
+            return nullptr;
         }
 
         virtual void handle_attribute(const std::string& name, const std::string& value) override
@@ -349,15 +349,15 @@ void Logger::load_xml_config(const std::string& config)
 
     class LoggerHandler : public XmlElementHandler
     {
-        FilterHandler *_filter_xml_handler = NULL;
-        HandlerHandler *_handler_xml_handler = NULL;
+        FilterHandler *_filter_xml_handler = nullptr;
+        HandlerHandler *_handler_xml_handler = nullptr;
 
     public:
         LoggerHandler(FilterHandler *filter_xml_handler, HandlerHandler *handler_xml_handler)
             : XmlElementHandler(HANDLE_CHILD), _filter_xml_handler(filter_xml_handler),
             _handler_xml_handler(handler_xml_handler)
         {
-            assert(NULL != filter_xml_handler && NULL != handler_xml_handler);
+            assert(nullptr != filter_xml_handler && nullptr != handler_xml_handler);
         }
 
         virtual XmlElementHandler* handle_child(const std::string& name) override
@@ -371,26 +371,26 @@ void Logger::load_xml_config(const std::string& config)
             {
                 return _handler_xml_handler;
             }
-            return NULL;
+            return nullptr;
         }
     } logger_xml_handler(&filter_xml_handler, &handler_xml_handler);
 
     class RootHandler : public XmlElementHandler
     {
-        LoggerHandler *_logger_xml_handler = NULL;
+        LoggerHandler *_logger_xml_handler = nullptr;
 
     public:
         RootHandler(LoggerHandler *logger_xml_handler)
             : XmlElementHandler(HANDLE_CHILD), _logger_xml_handler(logger_xml_handler)
         {
-            assert(NULL != logger_xml_handler);
+            assert(nullptr != logger_xml_handler);
         }
 
         virtual XmlElementHandler* handle_child(const std::string& name)
         {
             if (name == "Logger")
                 return _logger_xml_handler;
-            return NULL;
+            return nullptr;
         }
     } root_handler(&logger_xml_handler);
 

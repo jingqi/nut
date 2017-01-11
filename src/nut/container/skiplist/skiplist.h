@@ -56,29 +56,29 @@ public:
      *
      * @param k         要查找的键值
      * @param sl        跳表本身
-     * @param pre_lv    存放返回值，可以是 NULL. 存放前向节点的返回值数组，长度为 (level+1).
+     * @param pre_lv    存放返回值，可以是 nullptr. 存放前向节点的返回值数组，长度为 (level+1).
      */
     static NODE* search_node(const K& key, const SL& sl, NODE **pre_lv)
     {
-        NODE *ret = NULL;
-        NODE *pre = NULL;
+        NODE *ret = nullptr;
+        NODE *pre = nullptr;
         int lv = sl.get_level();
         assert(lv >= 0);
         do
         {
             while (true)
             {
-                NODE *n = (NULL == pre ? sl.get_head(lv) : pre->get_next(lv));
-                if (NULL == n)
+                NODE *n = (nullptr == pre ? sl.get_head(lv) : pre->get_next(lv));
+                if (nullptr == n)
                 {
-                    if (NULL != pre_lv)
+                    if (nullptr != pre_lv)
                         pre_lv[lv] = pre;
                     break;
                 }
 
                 if (key < n->get_key())
                 {
-                    if (NULL != pre_lv)
+                    if (nullptr != pre_lv)
                         pre_lv[lv] = pre;
                     break;
                 }
@@ -88,7 +88,7 @@ public:
                 }
                 else
                 {
-                    if (NULL == pre_lv)
+                    if (nullptr == pre_lv)
                     {
                         return n; // 找到节点直接返回
                     }
@@ -114,7 +114,7 @@ public:
      */
     static void insert_node(NODE *n, SL& sl, NODE** pre_lv)
     {
-        assert(NULL != n && NULL != pre_lv);
+        assert(nullptr != n && nullptr != pre_lv);
 
         // random level
         if (n->get_level() < 0)
@@ -125,7 +125,7 @@ public:
         assert(sl_level >= 0 && n_level >= 0);
         for (int i = 0; i <= sl_level && i <= n_level; ++i)
         {
-            if (NULL == pre_lv[i])
+            if (nullptr == pre_lv[i])
             {
                 n->set_next(i, sl.get_head(i));
                 sl.set_head(i, n);
@@ -144,7 +144,7 @@ public:
             for (int i = sl_level + 1; i <= n_level; ++i)
             {
                 sl.set_head(i, n);
-                n->set_next(i, NULL);
+                n->set_next(i, nullptr);
             }
         }
     }
@@ -158,12 +158,12 @@ public:
      */
     static void remove_node(NODE *n, SL& sl, NODE **pre_lv)
     {
-        assert(NULL != n && NULL != pre_lv);
+        assert(nullptr != n && nullptr != pre_lv);
         const int sl_level = sl.get_level(), n_level = n->get_level();
         assert(sl_level >= 0 && n_level >= 0);
         for (int i = 0; i <= sl_level && i <= n_level; ++i)
         {
-            if (NULL == pre_lv[i])
+            if (nullptr == pre_lv[i])
                 sl.set_head(i, n->get_next(i));
             else
                 pre_lv[i]->set_next(i, n->get_next(i));

@@ -36,7 +36,7 @@ static std::string trim_end(const std::string& s)
  */
 static void split_groups(const char *groups, std::vector<std::string> *rs)
 {
-    assert(NULL != groups && NULL != rs);
+    assert(nullptr != groups && nullptr != rs);
 
     const char GROUP_SPLITER = ','; // 分组分隔符
 
@@ -70,10 +70,10 @@ TestRegister::TestRegister(const char *fixture_name, const char *groups,
                            new_fixture_func n, delete_fixture_func d)
     : _new_func(n), _delete_func(d), _fixture_name(fixture_name)
 {
-    assert(NULL != fixture_name);
-    assert(NULL != groups);
-    assert(NULL != n);
-    assert(NULL != d);
+    assert(nullptr != fixture_name);
+    assert(nullptr != groups);
+    assert(nullptr != n);
+    assert(nullptr != d);
 
     // 分离出组别
     split_groups(groups, &_groups);
@@ -85,13 +85,13 @@ TestRegister::TestRegister(const char *fixture_name, const char *groups,
 
 TestRegister** TestRegister::get_link_header()
 {
-    static TestRegister *header = NULL;
+    static TestRegister *header = nullptr;
     return &header;
 }
 
 bool TestRegister::match_group(const char *group_name) const
 {
-    assert(NULL != group_name);
+    assert(nullptr != group_name);
     for (std::vector<std::string>::const_iterator iter = _groups.begin();
          iter != _groups.end(); ++iter)
     {
@@ -113,13 +113,13 @@ TestRegister* TestRegister::get_next_register() const
 
 TestFixture* TestRegister::new_fixture() const
 {
-    assert(NULL != _new_func);
+    assert(nullptr != _new_func);
     return _new_func();
 }
 
 void TestRegister::delete_fixture(TestFixture *p)
 {
-    assert(NULL != p);
+    assert(nullptr != p);
     _delete_func(p);
 }
 

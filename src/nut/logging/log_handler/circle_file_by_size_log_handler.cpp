@@ -27,7 +27,7 @@ CircleFileBySizeLogHandler::CircleFileBySizeLogHandler(const std::string& dir_pa
 
 void CircleFileBySizeLogHandler::reopen(const char *file)
 {
-    assert(NULL != file);
+    assert(nullptr != file);
 
     if (Path::exists(file))
         _file_size = Path::get_size(file);

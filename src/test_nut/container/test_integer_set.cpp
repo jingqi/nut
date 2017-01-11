@@ -68,7 +68,7 @@ NUT_FIXTURE(TestIntegerSet)
     
     void check_add_one_range(int first, int last, const char *expected)
     {
-        assert(NULL != expected);
+        assert(nullptr != expected);
 
         IntegerSet<int> l;
         l.add_value_range(4, 6);
@@ -109,7 +109,7 @@ NUT_FIXTURE(TestIntegerSet)
 
     void check_remove_one_range(int first, int last, const char *expected)
     {
-        assert(NULL != expected);
+        assert(nullptr != expected);
 
         IntegerSet<int> l;
         l.add_value_range(4, 6);

@@ -10,15 +10,15 @@ namespace nut
 
 class FreeGuard
 {
-    void *_ptr = NULL;
+    void *_ptr = nullptr;
 
 private:
-    // Invalid methods
-    FreeGuard(const FreeGuard&);
-    FreeGuard& operator=(const FreeGuard&);
+    // Non-copyable
+    FreeGuard(const FreeGuard&) = delete;
+    FreeGuard& operator=(const FreeGuard&) = delete;
 
 public:
-    explicit FreeGuard(void *p = NULL)
+    explicit FreeGuard(void *p = nullptr)
         : _ptr(p)
     {}
 
@@ -34,14 +34,14 @@ public:
 
     void clear()
     {
-        _ptr = NULL;
+        _ptr = nullptr;
     }
 
     void release()
     {
-        if (NULL != _ptr)
+        if (nullptr != _ptr)
             ::free(_ptr);
-        _ptr = NULL;
+        _ptr = nullptr;
     }
 
     ~FreeGuard()
@@ -53,10 +53,10 @@ public:
 template <typename T>
 class DeleteGuard
 {
-    T *_ptr = NULL;
+    T *_ptr = nullptr;
 
 public:
-    DeleteGuard(T *p = NULL)
+    DeleteGuard(T *p = nullptr)
         : _ptr(p)
     {}
 
@@ -72,14 +72,14 @@ public:
 
     void clear()
     {
-        _ptr = NULL;
+        _ptr = nullptr;
     }
 
     void release()
     {
-        if (NULL != _ptr)
+        if (nullptr != _ptr)
             delete _ptr;
-        _ptr = NULL;
+        _ptr = nullptr;
     }
 
     ~DeleteGuard()

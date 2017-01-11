@@ -23,12 +23,12 @@ class SqliteResultSet
 
     int get_column_index(const char *column_name)
     {
-        assert(NULL != column_name && NULL != _stmt);
+        assert(nullptr != column_name && nullptr != _stmt);
         const int c = ::sqlite3_column_count(_stmt->get_raw_stmt());
         for (int i = 0; i < c; ++i)
         {
             const char *n = ::sqlite3_column_name(_stmt->get_raw_stmt(), i);
-            assert(NULL != n);
+            assert(nullptr != n);
             if (0 == stricmp(n, column_name))
                 return i;
         }
@@ -36,18 +36,17 @@ class SqliteResultSet
     }
 
 public:
-    SqliteResultSet()
-    {}
+    SqliteResultSet() = default;
 
     SqliteResultSet(SqliteStatement *stmt)
         : _stmt(stmt)
     {
-        assert(NULL != stmt);
+        assert(nullptr != stmt);
     }
 
     bool next()
     {
-        if (NULL == _stmt)
+        if (nullptr == _stmt)
             return false;
 
         return SQLITE_ROW == ::sqlite3_step(_stmt->get_raw_stmt());
@@ -58,13 +57,13 @@ public:
      */
     int get_int(int column_index)
     {
-        assert(column_index >= 0 && NULL != _stmt);
+        assert(column_index >= 0 && nullptr != _stmt);
         return ::sqlite3_column_int(_stmt->get_raw_stmt(), column_index);
     }
 
     int get_int(const char *column_name)
     {
-        assert(NULL != column_name && NULL != _stmt);
+        assert(nullptr != column_name && nullptr != _stmt);
         const int i = get_column_index(column_name);
         assert(i >= 0);
         return get_int(i);
@@ -75,14 +74,14 @@ public:
      */
     std::string get_string(int column_index)
     {
-        assert(column_index >= 0 && NULL != _stmt);
+        assert(column_index >= 0 && nullptr != _stmt);
         const char *ret = (const char*) ::sqlite3_column_text(_stmt->get_raw_stmt(), column_index);
-        return NULL == ret ? "" : ret;
+        return nullptr == ret ? "" : ret;
     }
 
     std::string get_string(const char *column_name)
     {
-        assert(NULL != column_name && NULL != _stmt);
+        assert(nullptr != column_name && nullptr != _stmt);
         const int i = get_column_index(column_name);
         assert(i >= 0);
         return get_string(i);

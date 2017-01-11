@@ -12,35 +12,35 @@ namespace nut
 TestRunner::TestRunner(ITestLogger *logger)
     : _logger(logger)
 {
-    assert(NULL != logger);
+    assert(nullptr != logger);
 }
 
 void TestRunner::run_group(const char *group_name)
 {
-    assert(NULL != group_name);
+    assert(nullptr != group_name);
 
-    _logger->start(group_name, NULL, NULL);
+    _logger->start(group_name, nullptr, nullptr);
 
     TestRegister *pregister = *TestRegister::get_link_header();
-    while (NULL != pregister)
+    while (nullptr != pregister)
     {
         if (pregister->match_group(group_name))
         {
             _logger->enter_fixture(pregister->get_fixture_name());
 
             TestFixture *fixture = pregister->new_fixture();
-            assert(NULL != fixture);
-            int total = fixture->___run_case(_logger, __NUT_UNITTEST_SUM_CASES_OP, NULL);
+            assert(nullptr != fixture);
+            int total = fixture->___run_case(_logger, __NUT_UNITTEST_SUM_CASES_OP, nullptr);
 
             for (int i = 0; i < total; ++i)
             {
-                if (NULL == fixture)
+                if (nullptr == fixture)
                     fixture = pregister->new_fixture();
-                fixture->___run_case(_logger, i, NULL);
+                fixture->___run_case(_logger, i, nullptr);
                 pregister->delete_fixture(fixture);
-                fixture = NULL;
+                fixture = nullptr;
             }
-            if (NULL != fixture)
+            if (nullptr != fixture)
                 pregister->delete_fixture(fixture);
 
             _logger->leave_fixture();
@@ -53,30 +53,30 @@ void TestRunner::run_group(const char *group_name)
 
 void TestRunner::run_fixture(const char *fixture_name)
 {
-    assert(NULL != fixture_name);
+    assert(nullptr != fixture_name);
 
-    _logger->start(NULL, fixture_name, NULL);
+    _logger->start(nullptr, fixture_name, nullptr);
 
     TestRegister *pregister = *TestRegister::get_link_header();
-    while (NULL != pregister)
+    while (nullptr != pregister)
     {
         if (0 == ::strcmp(fixture_name, pregister->get_fixture_name()))
         {
             _logger->enter_fixture(fixture_name);
 
             TestFixture *fixture = pregister->new_fixture();
-            assert(NULL != fixture);
-            int total = fixture->___run_case(_logger, __NUT_UNITTEST_SUM_CASES_OP, NULL);
+            assert(nullptr != fixture);
+            int total = fixture->___run_case(_logger, __NUT_UNITTEST_SUM_CASES_OP, nullptr);
 
             for (int i = 0; i < total; ++i)
             {
-                if (NULL == fixture)
+                if (nullptr == fixture)
                     fixture = pregister->new_fixture();
-                fixture->___run_case(_logger, i, NULL);
+                fixture->___run_case(_logger, i, nullptr);
                 pregister->delete_fixture(fixture);
-                fixture = NULL;
+                fixture = nullptr;
             }
-            if (NULL != fixture)
+            if (nullptr != fixture)
                 pregister->delete_fixture(fixture);
 
             _logger->leave_fixture();
@@ -90,12 +90,12 @@ void TestRunner::run_fixture(const char *fixture_name)
 
 void TestRunner::run_case(const char *fixture_name, const char *case_name)
 {
-    assert(NULL != fixture_name && NULL != case_name);
+    assert(nullptr != fixture_name && nullptr != case_name);
 
-    _logger->start(NULL, fixture_name, case_name);
+    _logger->start(nullptr, fixture_name, case_name);
 
     TestRegister *pregister = *TestRegister::get_link_header();
-    while (NULL != pregister)
+    while (nullptr != pregister)
     {
         if (0 == ::strcmp(fixture_name, pregister->get_fixture_name()))
         {

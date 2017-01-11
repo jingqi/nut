@@ -23,7 +23,7 @@
 
 
 // 消隐数组的指针常量
-#define COLLISION_EMPTY_PTR NULL
+#define COLLISION_EMPTY_PTR nullptr
 #define COLLISION_DONE_PTR reinterpret_cast<Node*>(-1)
 
 namespace nut
@@ -103,8 +103,9 @@ public:
     ~ConcurrentQueue()
     {
         // Clear elements
-        while (optimistic_dequeue(NULL)) {}
-        assert(_head == _tail && NULL != _head.pointer());
+        while (optimistic_dequeue(nullptr))
+        {}
+        assert(_head == _tail && nullptr != _head.pointer());
         _node_alloc.deallocate(_head.pointer(), 1);
     }
 
@@ -182,7 +183,7 @@ public:
                 if (_head.compare_and_set(old_head, first_node_prev.pointer()))
                 {
                     _node_alloc.deallocate(old_head.pointer(), 1);
-                    if (NULL != p)
+                    if (nullptr != p)
                         *p = *reinterpret_cast<T*>(tmp);
                     _data_alloc.destroy(reinterpret_cast<T*>(tmp));
                     return true;
@@ -282,7 +283,7 @@ private:
                 if (_head.compare_and_set(old_head, first_node_prev.pointer()))
                 {
                     _node_alloc.deallocate(old_head.pointer(), 1);
-                    if (NULL != p)
+                    if (nullptr != p)
                         *p = *reinterpret_cast<T*>(tmp);
                     _data_alloc.destroy(reinterpret_cast<T*>(tmp));
                     return DEQUEUE_SUCCESS;
@@ -341,7 +342,7 @@ private:
                                            COLLISION_DONE_PTR,
                                            old_collision.stamp_value()))
         {
-            if (NULL != p)
+            if (nullptr != p)
                 *p = old_collision.pointer()->data;
             _data_alloc.destroy(&(old_collision.pointer()->data));
             _node_alloc.deallocate(old_collision.pointer(), 1);

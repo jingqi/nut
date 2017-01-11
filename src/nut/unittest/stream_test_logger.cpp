@@ -9,25 +9,25 @@ namespace nut
 StreamTestLogger::StreamTestLogger(std::ostream *os)
     : _out_stream(os)
 {
-    assert(NULL != os);
+    assert(nullptr != os);
 }
 
 void StreamTestLogger::on_start(const char *group_name, const char *fixture_name, const char *case_name)
 {
     *_out_stream << std::endl;
-    if (NULL != group_name)
+    if (nullptr != group_name)
     {
-        assert(NULL == fixture_name && NULL == case_name);
+        assert(nullptr == fixture_name && nullptr == case_name);
         *_out_stream << "> run group: " << group_name;
     }
-    else if (NULL != case_name)
+    else if (nullptr != case_name)
     {
-        assert(NULL != fixture_name);
+        assert(nullptr != fixture_name);
         *_out_stream << "> run case: " << fixture_name << "::" << case_name << "()";
     }
     else
     {
-        assert(NULL != fixture_name);
+        assert(nullptr != fixture_name);
         *_out_stream << "> run fixture: " << fixture_name;
     }
     *_out_stream << std::endl << std::endl;
@@ -58,7 +58,7 @@ void StreamTestLogger::on_finish()
 
 void StreamTestLogger::on_enter_fixture(const char *fixture_name)
 {
-    assert(NULL != fixture_name);
+    assert(nullptr != fixture_name);
     *_out_stream << "  + " << fixture_name << std::endl;
 }
 
@@ -69,7 +69,7 @@ void StreamTestLogger::on_leave_fixture()
 
 void StreamTestLogger::on_enter_case(const char *case_name)
 {
-    assert(NULL != case_name);
+    assert(nullptr != case_name);
     *_out_stream << "    - " << case_name << "()";
 }
 

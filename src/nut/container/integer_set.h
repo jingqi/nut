@@ -28,8 +28,7 @@ public:
     public:
         int_type first = 0, last = 0;
 
-        Range()
-        {}
+        Range() = default;
 
         Range(int_type f, int_type l)
             : first(f), last(l)
@@ -100,8 +99,7 @@ private:
     }
 
 public:
-    IntegerSet()
-    {}
+    IntegerSet() = default;
 
     IntegerSet(const self_type& x)
         : _ranges(x._ranges)
@@ -352,7 +350,7 @@ public:
 
     class const_iterator
     {
-        const self_type *_container = NULL;
+        const self_type *_container = nullptr;
         int_type _value = 0;
         ssize_t _index = 0;
 
@@ -367,19 +365,19 @@ public:
         const_iterator(const self_type *container, int_type value, ssize_t index)
             : _container(container), _value(value), _index(index)
         {
-            assert(NULL != _container);
+            assert(nullptr != _container);
         }
 
         int_type operator*() const
         {
-            assert(NULL != _container);
+            assert(nullptr != _container);
             assert(0 <= _index && _index < (ssize_t) _container->_ranges.size());
             return _value;
         }
 
         const_iterator& operator++()
         {
-            assert(NULL != _container);
+            assert(nullptr != _container);
             assert(0 <= _index && _index < (ssize_t) _container->_ranges.size());
 
             const Range& rg = _container->_ranges.at(_index);
@@ -398,7 +396,7 @@ public:
 
         const_iterator& operator--()
         {
-            assert(NULL != _container);
+            assert(nullptr != _container);
             assert(0 <= _index && _index < (ssize_t) _container->_ranges.size());
 
             const Range& rg = _container->_ranges.at(_index);
@@ -431,7 +429,7 @@ public:
 
         bool operator==(const const_iterator& x) const
         {
-            assert(NULL != _container && _container == x._container);
+            assert(nullptr != _container && _container == x._container);
             if (_index != x._index)
                 return false;
             if (0 <= _index && _index < (ssize_t) _container->_ranges.size())
@@ -529,7 +527,7 @@ public:
      */
     static void intersect(const self_type& x, const self_type& y, self_type *result)
     {
-        assert(NULL != result && result != &x && result != &y);
+        assert(nullptr != result && result != &x && result != &y);
         result->clear();
 
         size_t index1 = 0, index2 = 0;
@@ -621,7 +619,7 @@ public:
      */
     static void merge(const self_type& x, const self_type& y, self_type *result)
     {
-        assert(NULL != result && result != &x && result != &y);
+        assert(nullptr != result && result != &x && result != &y);
         result->clear();
 
         // 状态机基本上和intersectWith()方法中一样
@@ -737,7 +735,7 @@ public:
      */
     static void remainder(const self_type& x, const self_type& y, self_type *result)
     {
-        assert(NULL != result && result != &x && result != &y);
+        assert(nullptr != result && result != &x && result != &y);
         result->clear();
 
         size_t index1 = 0, index2 = 0;

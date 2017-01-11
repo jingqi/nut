@@ -50,7 +50,7 @@ public:
     virtual void handle_child_finish(XmlElementHandler *child)
     {
         //printf("fin child\n");
-        if (NULL != child)
+        if (nullptr != child)
         {
             tag += "x";
             delete child;

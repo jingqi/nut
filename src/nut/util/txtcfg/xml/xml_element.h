@@ -26,8 +26,7 @@ class NUT_API XmlElement
         size_t pos = 0;
         std::string text;
 
-        Comment()
-        {}
+        Comment() = default;
 
         Comment(size_t _pos, const std::string& _text)
             : pos(_pos), text(_text)
@@ -46,7 +45,7 @@ public:
     typedef attr_map_type::const_iterator const_attr_iter_type;
 
 public:
-    XmlElement();
+    XmlElement() = default;
 
     XmlElement(const std::string& name);
 
@@ -88,7 +87,7 @@ public:
     /**
      * 获取属性
      *
-     * @param attr 用来存储返回的属性值，可以为 NULL
+     * @param attr 用来存储返回的属性值，可以为 nullptr
      * @param 改属性是否存在
      */
     bool get_attribute(const std::string& name, std::string *attr) const;

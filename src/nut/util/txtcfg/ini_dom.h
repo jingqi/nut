@@ -56,7 +56,7 @@ class NUT_API IniDom
     bool _dirty = false;
 
 public:
-    IniDom();
+    IniDom() = default;
 
     /**
      * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释

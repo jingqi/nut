@@ -11,8 +11,7 @@ namespace nut
 class TestFixture
 {
 public:
-    virtual ~TestFixture()
-    {}
+    virtual ~TestFixture() = default;
 
     virtual void set_up()
     {}

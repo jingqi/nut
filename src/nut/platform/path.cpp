@@ -59,7 +59,7 @@ bool Path::is_path_separator(wchar_t c)
 
 void Path::get_cwd(std::string *result)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   if NUT_PLATFORM_CC_VC
@@ -83,7 +83,7 @@ void Path::get_cwd(std::string *result)
 
 void Path::get_cwd(std::wstring *result)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   if NUT_PLATFORM_CC_VC
@@ -121,7 +121,7 @@ std::wstring Path::get_wcwd()
 
 void Path::chdir(const char *cwd)
 {
-    assert(NULL != cwd);
+    assert(nullptr != cwd);
 #if NUT_PLATFORM_OS_WINDOWS
     ::_chdir(cwd);
 #else
@@ -136,7 +136,7 @@ void Path::chdir(const std::string& cwd)
 
 bool Path::is_abs(const char *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
     if (0 == path[0])
         return false;
 
@@ -155,7 +155,7 @@ bool Path::is_abs(const char *path)
 
 bool Path::is_abs(const wchar_t *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
     if (0 == path[0])
         return false;
 
@@ -184,7 +184,7 @@ bool Path::is_abs(const std::wstring& path)
 
 void Path::abs_path(const char *path, std::string *result)
 {
-    assert(NULL != path && NULL != result);
+    assert(nullptr != path && nullptr != result);
     if (0 == path[0])
     {
         get_cwd(result);
@@ -276,7 +276,7 @@ void Path::abs_path(const char *path, std::string *result)
 
 void Path::abs_path(const wchar_t *path, std::wstring *result)
 {
-    assert(NULL != path && NULL != result);
+    assert(nullptr != path && nullptr != result);
     if (0 == path[0])
     {
         get_cwd(result);
@@ -406,7 +406,7 @@ std::wstring Path::abs_path(const std::wstring& path)
 
 void Path::relative_path(const char *input_path, const char *ref_path, std::string *result)
 {
-    assert(NULL != input_path && NULL != ref_path && NULL != result);
+    assert(nullptr != input_path && nullptr != ref_path && nullptr != result);
 
     std::string abs_input_path;
     abs_path(input_path, &abs_input_path);
@@ -485,7 +485,7 @@ void Path::relative_path(const char *input_path, const char *ref_path, std::stri
 
 void Path::relative_path(const wchar_t *input_path, const wchar_t *ref_path, std::wstring *result)
 {
-    assert(NULL != input_path && NULL != ref_path && NULL != result);
+    assert(nullptr != input_path && nullptr != ref_path && nullptr != result);
 
     std::wstring abs_input_path;
     abs_path(input_path, &abs_input_path);
@@ -564,19 +564,19 @@ void Path::relative_path(const wchar_t *input_path, const wchar_t *ref_path, std
 
 void Path::relative_path(const std::string& input_path, const std::string& ref_path, std::string *result)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
     relative_path(input_path.c_str(), ref_path.c_str(), result);
 }
 
 void Path::relative_path(const std::wstring& input_path, const std::wstring& ref_path, std::wstring *result)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
     relative_path(input_path.c_str(), ref_path.c_str(), result);
 }
 
 std::string Path::relative_path(const char *input_path, const char *ref_path)
 {
-    assert(NULL != input_path && NULL != ref_path);
+    assert(nullptr != input_path && nullptr != ref_path);
     std::string result;
     relative_path(input_path, ref_path, &result);
     return result;
@@ -584,7 +584,7 @@ std::string Path::relative_path(const char *input_path, const char *ref_path)
 
 std::wstring Path::relative_path(const wchar_t *input_path, const wchar_t *ref_path)
 {
-    assert(NULL != input_path && NULL != ref_path);
+    assert(nullptr != input_path && nullptr != ref_path);
     std::wstring result;
     relative_path(input_path, ref_path, &result);
     return result;
@@ -614,7 +614,7 @@ std::wstring Path::relative_path(const std::wstring& input_path, const std::wstr
  */
 void Path::split(const char *path, std::string *parent_result, std::string *child_result)
 {
-    assert(NULL != path && (NULL != parent_result || NULL != child_result));
+    assert(nullptr != path && (nullptr != parent_result || nullptr != child_result));
 
     // 找到最后一个 '/'
     ssize_t pos = -1;
@@ -625,30 +625,30 @@ void Path::split(const char *path, std::string *parent_result, std::string *chil
     }
     if (pos < 0)
     {
-        if (NULL != child_result)
+        if (nullptr != child_result)
             *child_result += path;
         return;
     }
 
     if (0 == pos || ':' == path[pos - 1]) // 磁盘号 + 根目录
     {
-        if (NULL != parent_result)
+        if (nullptr != parent_result)
             parent_result->append(path, pos + 1);
-        if (NULL != child_result)
+        if (nullptr != child_result)
             child_result->append(path + pos + 1);
     }
     else
     {
-        if (NULL != parent_result)
+        if (nullptr != parent_result)
             parent_result->append(path, pos);
-        if (NULL != child_result)
+        if (nullptr != child_result)
             child_result->append(path + pos + 1);
     }
 }
 
 void Path::split(const wchar_t *path, std::wstring *parent_result, std::wstring *child_result)
 {
-    assert(NULL != path && (NULL != parent_result || NULL != child_result));
+    assert(nullptr != path && (nullptr != parent_result || nullptr != child_result));
 
     // 找到最后一个 '/'
     ssize_t pos = -1;
@@ -659,23 +659,23 @@ void Path::split(const wchar_t *path, std::wstring *parent_result, std::wstring 
     }
     if (pos < 0)
     {
-        if (NULL != child_result)
+        if (nullptr != child_result)
             *child_result += path;
         return;
     }
 
     if (0 == pos || L':' == path[pos - 1]) // 磁盘号 + 根目录
     {
-        if (NULL != parent_result)
+        if (nullptr != parent_result)
             parent_result->append(path, pos + 1);
-        if (NULL != child_result)
+        if (nullptr != child_result)
             child_result->append(path + pos + 1);
     }
     else
     {
-        if (NULL != parent_result)
+        if (nullptr != parent_result)
             parent_result->append(path, pos);
-        if (NULL != child_result)
+        if (nullptr != child_result)
             child_result->append(path + pos + 1);
     }
 }
@@ -699,7 +699,7 @@ void Path::split(const std::wstring& path, std::wstring *parent_result, std::wst
  */
 void Path::split_drive(const char *path, std::string *drive_result, std::string *rest_result)
 {
-    assert(NULL != path && (NULL != drive_result || NULL != rest_result));
+    assert(nullptr != path && (nullptr != drive_result || nullptr != rest_result));
 
     ssize_t pos = -1;
     for (ssize_t i = 0; 0 != path[i]; ++i)
@@ -714,19 +714,19 @@ void Path::split_drive(const char *path, std::string *drive_result, std::string 
     }
     if (pos < 0)
     {
-        if (NULL != rest_result)
+        if (nullptr != rest_result)
             *rest_result += path;
         return;
     }
-    if (NULL != drive_result)
+    if (nullptr != drive_result)
         drive_result->append(path, pos + 1);
-    if (NULL != rest_result)
+    if (nullptr != rest_result)
         rest_result->append(path + pos + 1);
 }
 
 void Path::split_drive(const wchar_t *path, std::wstring *drive_result, std::wstring *rest_result)
 {
-    assert(NULL != path && (NULL != drive_result || NULL != rest_result));
+    assert(nullptr != path && (nullptr != drive_result || nullptr != rest_result));
 
     ssize_t pos = -1;
     for (ssize_t i = 0; 0 != path[i]; ++i)
@@ -741,13 +741,13 @@ void Path::split_drive(const wchar_t *path, std::wstring *drive_result, std::wst
     }
     if (pos < 0)
     {
-        if (NULL != rest_result)
+        if (nullptr != rest_result)
             *rest_result += path;
         return;
     }
-    if (NULL != drive_result)
+    if (nullptr != drive_result)
         drive_result->append(path, pos + 1);
-    if (NULL != rest_result)
+    if (nullptr != rest_result)
         rest_result->append(path + pos + 1);
 }
 
@@ -769,7 +769,7 @@ void Path::split_drive(const std::wstring& path, std::wstring *drive_result, std
  */
 void Path::split_ext(const char *path, std::string *prefix_result, std::string *ext_result)
 {
-    assert(NULL != path && (NULL != prefix_result || NULL != ext_result));
+    assert(nullptr != path && (nullptr != prefix_result || nullptr != ext_result));
 
     ssize_t pos = -1;
     for (ssize_t i = ::strlen(path) - 1; i >= 0; --i)
@@ -786,19 +786,19 @@ void Path::split_ext(const char *path, std::string *prefix_result, std::string *
     }
     if (pos < 0)
     {
-        if (NULL != prefix_result)
+        if (nullptr != prefix_result)
             *prefix_result += path;
         return;
     }
-    if (NULL != prefix_result)
+    if (nullptr != prefix_result)
         prefix_result->append(path, pos);
-    if (NULL != ext_result)
+    if (nullptr != ext_result)
         ext_result->append(path + pos);
 }
 
 void Path::split_ext(const wchar_t *path, std::wstring *prefix_result, std::wstring *ext_result)
 {
-    assert(NULL != path && (NULL != prefix_result || NULL != ext_result));
+    assert(nullptr != path && (nullptr != prefix_result || nullptr != ext_result));
 
     ssize_t pos = -1;
     for (ssize_t i = ::wcslen(path) - 1; i >= 0; --i)
@@ -815,13 +815,13 @@ void Path::split_ext(const wchar_t *path, std::wstring *prefix_result, std::wstr
     }
     if (pos < 0)
     {
-        if (NULL != prefix_result)
+        if (nullptr != prefix_result)
             *prefix_result += path;
         return;
     }
-    if (NULL != prefix_result)
+    if (nullptr != prefix_result)
         prefix_result->append(path, pos);
-    if (NULL != ext_result)
+    if (nullptr != ext_result)
         ext_result->append(path + pos);
 }
 
@@ -837,7 +837,7 @@ void Path::split_ext(const std::wstring& path, std::wstring *prefix_result, std:
 
 bool Path::lexists(const char *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     return -1 != ::_access(path, 0);
@@ -857,7 +857,7 @@ bool Path::lexists(const char *path)
 
 bool Path::lexists(const wchar_t *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     return -1 != ::_waccess(path, 0);
@@ -880,7 +880,7 @@ bool Path::lexists(const std::wstring& path)
 
 bool Path::exists(const char *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     return -1 != ::_access(path, 0);
@@ -891,7 +891,7 @@ bool Path::exists(const char *path)
 
 bool Path::exists(const wchar_t *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     return -1 != ::_waccess(path, 0);
@@ -917,7 +917,7 @@ bool Path::exists(const std::wstring& path)
  */
 time_t Path::get_atime(const char *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
@@ -933,7 +933,7 @@ time_t Path::get_atime(const char *path)
 
 time_t Path::get_atime(const wchar_t *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
@@ -961,7 +961,7 @@ time_t Path::get_atime(const std::wstring& path)
  */
 time_t Path::get_mtime(const char *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
@@ -977,7 +977,7 @@ time_t Path::get_mtime(const char *path)
 
 time_t Path::get_mtime(const wchar_t *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
@@ -1005,7 +1005,7 @@ time_t Path::get_mtime(const std::wstring& path)
  */
 time_t Path::get_ctime(const char *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
@@ -1021,7 +1021,7 @@ time_t Path::get_ctime(const char *path)
 
 time_t Path::get_ctime(const wchar_t *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
@@ -1049,7 +1049,7 @@ time_t Path::get_ctime(const std::wstring& path)
  */
 long long Path::get_size(const char *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
@@ -1065,7 +1065,7 @@ long long Path::get_size(const char *path)
 
 long long Path::get_size(const wchar_t *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
@@ -1090,7 +1090,7 @@ long long Path::get_size(const std::wstring& path)
 
 bool Path::is_dir(const char *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     return 0 != (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesA(path));
@@ -1104,7 +1104,7 @@ bool Path::is_dir(const char *path)
 
 bool Path::is_dir(const wchar_t *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     return 0 != (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(path));
@@ -1127,7 +1127,7 @@ bool Path::is_dir(const std::wstring& path)
 
 bool Path::is_file(const char *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     return 0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesA(path));
@@ -1141,7 +1141,7 @@ bool Path::is_file(const char *path)
 
 bool Path::is_file(const wchar_t *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     return 0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(path));
@@ -1164,7 +1164,7 @@ bool Path::is_file(const std::wstring& path)
 
 bool Path::is_link(const char *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
@@ -1179,7 +1179,7 @@ bool Path::is_link(const char *path)
 
 bool Path::is_link(const wchar_t *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
@@ -1204,7 +1204,7 @@ bool Path::is_link(const std::wstring& path)
 template <typename C>
 static ssize_t str_find(const C *str, C c)
 {
-    assert(NULL != str);
+    assert(nullptr != str);
     for (size_t i = 0; 0 != str[i]; ++i)
     {
         if (str[i] == c)
@@ -1223,7 +1223,7 @@ static ssize_t str_find(const C *str, C c)
  */
 void Path::join(const char *a, const char *b, std::string *result)
 {
-    assert(NULL != a && NULL != b && NULL != result);
+    assert(nullptr != a && nullptr != b && nullptr != result);
 
     if (0 == a[0])
     {
@@ -1263,7 +1263,7 @@ void Path::join(const char *a, const char *b, std::string *result)
 
 void Path::join(const wchar_t *a, const wchar_t *b, std::wstring *result)
 {
-    assert(NULL != a && NULL != b && NULL != result);
+    assert(nullptr != a && nullptr != b && nullptr != result);
 
     if (0 == a[0])
     {

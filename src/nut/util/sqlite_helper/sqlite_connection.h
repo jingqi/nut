@@ -21,7 +21,7 @@ class SqliteConnection
 {
     NUT_REF_COUNTABLE
 
-    sqlite3 *_sqlite = NULL;
+    sqlite3 *_sqlite = nullptr;
     bool _auto_commit = true;
     bool _throw_exceptions = false;
     int _last_error = SQLITE_OK;
@@ -29,10 +29,10 @@ class SqliteConnection
 
     class Sqlite3Freer
     {
-        void *_ptr = NULL;
+        void *_ptr = nullptr;
 
     public:
-        Sqlite3Freer(void *p = NULL)
+        Sqlite3Freer(void *p = nullptr)
             : _ptr(p)
         {}
 
@@ -43,38 +43,37 @@ class SqliteConnection
 
         ~Sqlite3Freer()
         {
-            if (NULL != _ptr)
+            if (nullptr != _ptr)
                 ::sqlite3_free(_ptr);
         }
     };
 
-    void on_error(int err = SQLITE_OK, const char *msg = NULL)
+    void on_error(int err = SQLITE_OK, const char *msg = nullptr)
     {
         _last_error = err;
-        if (SQLITE_OK == err && NULL != _sqlite)
+        if (SQLITE_OK == err && nullptr != _sqlite)
             _last_error = ::sqlite3_errcode(_sqlite);
 
-        if (NULL == msg)
+        if (nullptr == msg)
         {
-            if (NULL != _sqlite)
+            if (nullptr != _sqlite)
                 msg = ::sqlite3_errmsg(_sqlite); // XXX memory of "msg" is managed internally by sqlite3
             else if (SQLITE_OK != _last_error)
                 msg = ::sqlite3_errstr(_last_error);
         }
-        _last_error_msg = (NULL == msg ? "no error detected" : msg);
+        _last_error_msg = (nullptr == msg ? "no error detected" : msg);
 
         if (_throw_exceptions)
             throw ExceptionA(_last_error, _last_error_msg, __FILE__, __LINE__, __FUNCTION__);
     }
 
 public:
-    SqliteConnection()
-    {}
+    SqliteConnection() = default;
 
     SqliteConnection(sqlite3 *db)
         : _sqlite(db)
     {
-        assert(NULL != db);
+        assert(nullptr != db);
     }
 
     /**
@@ -82,7 +81,7 @@ public:
      */
     SqliteConnection(const char *db_file)
     {
-        assert(NULL != db_file);
+        assert(nullptr != db_file);
         open(db_file);
     }
 
@@ -95,7 +94,7 @@ public:
 
     bool open(const char *db_file)
     {
-        assert(NULL != db_file);
+        assert(nullptr != db_file);
 
         // Close old database if exists
         if (is_valid())
@@ -108,12 +107,12 @@ public:
         // Open new database
         _last_error = SQLITE_OK;
         _last_error_msg.clear();
-        _sqlite = NULL;
+        _sqlite = nullptr;
         const int rs = ::sqlite3_open(db_file, &_sqlite);
         if (SQLITE_OK != rs)
         {
             on_error(rs);
-            _sqlite = NULL;
+            _sqlite = nullptr;
             return false;
         }
         assert(is_valid());
@@ -122,14 +121,14 @@ public:
 
     bool close()
     {
-        if (NULL == _sqlite)
+        if (nullptr == _sqlite)
             return true;
 
         const int rs = ::sqlite3_close(_sqlite);
         if (SQLITE_OK != rs)
             on_error(rs);
         else
-            _sqlite = NULL;
+            _sqlite = nullptr;
         return SQLITE_OK == rs;
     }
 
@@ -166,7 +165,7 @@ public:
 
     bool is_valid() const
     {
-        return NULL != _sqlite;
+        return nullptr != _sqlite;
     }
 
     bool is_auto_commit() const
@@ -202,8 +201,8 @@ public:
     bool start()
     {
         assert(is_valid());
-        char *msg = NULL;
-        const int rs = ::sqlite3_exec(_sqlite, "begin;", NULL, NULL, &msg);
+        char *msg = nullptr;
+        const int rs = ::sqlite3_exec(_sqlite, "begin;", nullptr, nullptr, &msg);
         Sqlite3Freer _g(msg);
         if (SQLITE_OK != rs)
             on_error(rs, msg);
@@ -213,8 +212,8 @@ public:
     bool commit()
     {
         assert(is_valid());
-        char *msg = NULL;
-        const int rs = ::sqlite3_exec(_sqlite, "commit;", NULL, NULL, &msg);
+        char *msg = nullptr;
+        const int rs = ::sqlite3_exec(_sqlite, "commit;", nullptr, nullptr, &msg);
         Sqlite3Freer _g(msg);
         if (SQLITE_OK != rs)
             on_error(rs, msg);
@@ -224,8 +223,8 @@ public:
     bool rollback()
     {
         assert(is_valid());
-        char *msg = NULL;
-        const int rs = ::sqlite3_exec(_sqlite, "rollback;", NULL, NULL, &msg);
+        char *msg = nullptr;
+        const int rs = ::sqlite3_exec(_sqlite, "rollback;", nullptr, nullptr, &msg);
         Sqlite3Freer _g(msg);
         if (SQLITE_OK != rs)
             on_error(rs, msg);
@@ -236,8 +235,8 @@ public:
     bool vacuum()
     {
         assert(is_valid());
-        char *msg = NULL;
-        const int rs = ::sqlite3_exec(_sqlite, "vacuum;", NULL, NULL, &msg);
+        char *msg = nullptr;
+        const int rs = ::sqlite3_exec(_sqlite, "vacuum;", nullptr, nullptr, &msg);
         Sqlite3Freer _g(msg);
         if (SQLITE_OK != rs)
             on_error(rs, msg);
@@ -246,11 +245,11 @@ public:
 
     bool execute_update(const char *sql)
     {
-        assert(NULL != sql && is_valid());
-        char *msg = NULL;
+        assert(nullptr != sql && is_valid());
+        char *msg = nullptr;
         if (_auto_commit)
             start();
-        const int rs = ::sqlite3_exec(_sqlite, sql, NULL, NULL, &msg);
+        const int rs = ::sqlite3_exec(_sqlite, sql, nullptr, nullptr, &msg);
         Sqlite3Freer _g(msg);
         if (SQLITE_OK != rs)
         {
@@ -274,7 +273,7 @@ public:
         const SqliteParam& arg8 = SqliteParam::none(),
         const SqliteParam& arg9 = SqliteParam::none())
     {
-        assert(NULL != sql && is_valid());
+        assert(nullptr != sql && is_valid());
 
         // 预编译
         rc_ptr<SqliteStatement> stmt = rc_new<SqliteStatement>(_sqlite, sql);
@@ -330,7 +329,7 @@ public:
 
     bool execute_update(const char *sql, const std::vector<SqliteParam>& args)
     {
-        assert(NULL != sql && is_valid());
+        assert(nullptr != sql && is_valid());
 
         // 预编译
         rc_ptr<SqliteStatement> stmt = rc_new<SqliteStatement>(_sqlite, sql);
@@ -383,7 +382,7 @@ public:
         const SqliteParam& arg8 = SqliteParam::none(),
         const SqliteParam& arg9 = SqliteParam::none())
     {
-        assert(NULL != sql && is_valid());
+        assert(nullptr != sql && is_valid());
 
         // 预编译
         rc_ptr<SqliteStatement> stmt = rc_new<SqliteStatement>(_sqlite, sql);
@@ -427,7 +426,7 @@ public:
 
     rc_ptr<SqliteResultSet> execute_query(const char *sql, const std::vector<SqliteParam>& args)
     {
-        assert(NULL != sql && is_valid());
+        assert(nullptr != sql && is_valid());
 
         // 预编译
         rc_ptr<SqliteStatement> stmt = rc_new<SqliteStatement>(_sqlite, sql);

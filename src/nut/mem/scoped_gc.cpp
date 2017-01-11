@@ -7,9 +7,6 @@
 namespace nut
 {
 
-scoped_gc::scoped_gc()
-{}
-
 scoped_gc::~scoped_gc()
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
@@ -24,16 +21,16 @@ void* scoped_gc::raw_alloc(size_t sz)
         if (sz >= DEFAULT_BLOCK_BODY_SIZE)
         {
             Block *const new_blk = (Block*) ::malloc(BLOCK_HEADER_SIZE + sz);
-            assert(NULL != new_blk);
+            assert(nullptr != new_blk);
 
-            if (NULL != _current_block)
+            if (nullptr != _current_block)
             {
                 new_blk->prev = _current_block->prev;
                 _current_block->prev = new_blk;
             }
             else
             {
-                new_blk->prev = NULL;
+                new_blk->prev = nullptr;
                 _current_block = new_blk;
                 _end = _current_block->body;
             }
@@ -42,7 +39,7 @@ void* scoped_gc::raw_alloc(size_t sz)
         else
         {
             Block *new_blk = (Block*) ::malloc(DEFAULT_BLOCK_LEN);
-            assert(NULL != new_blk);
+            assert(nullptr != new_blk);
 
             new_blk->prev = _current_block;
             _current_block = new_blk;
@@ -57,7 +54,7 @@ void* scoped_gc::alloc(size_t sz, destruct_func_type func)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     DestructorNode *dn = (DestructorNode*) raw_alloc(sizeof(DestructorNode) + sz);
-    assert(NULL != dn);
+    assert(nullptr != dn);
     dn->destruct_func = func;
     dn->prev = _destruct_chain;
     _destruct_chain = dn;
@@ -68,7 +65,7 @@ void* scoped_gc::alloc(size_t sz, size_t count, destruct_func_type func)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     DestructorNode *dn = (DestructorNode*) raw_alloc(sizeof(DestructorNode) + sizeof(size_t) + sz * count);
-    assert(NULL != dn);
+    assert(nullptr != dn);
     dn->destruct_func = func;
     *(size_t*)(dn + 1) = count;
     dn->prev = _destruct_chain;
@@ -79,27 +76,27 @@ void* scoped_gc::alloc(size_t sz, size_t count, destruct_func_type func)
 void scoped_gc::clear()
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    while (NULL != _destruct_chain)
+    while (nullptr != _destruct_chain)
     {
-        assert(NULL != _destruct_chain->destruct_func);
+        assert(nullptr != _destruct_chain->destruct_func);
         _destruct_chain->destruct_func(_destruct_chain + 1);
         _destruct_chain = _destruct_chain->prev;
     }
 
-    while (NULL != _current_block)
+    while (nullptr != _current_block)
     {
         Block *prev = _current_block->prev;
         ::free(_current_block);
         _current_block = prev;
     }
-    _end = NULL;
+    _end = nullptr;
 }
 
 void* scoped_gc::gc_alloc(size_t sz)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     void* ret = raw_alloc(sz);
-    assert(NULL != ret);
+    assert(nullptr != ret);
     return ret;
 }
 

@@ -18,7 +18,7 @@
 
 
 // 消隐数组的指针常量
-#define COLLISION_EMPTY_PTR NULL
+#define COLLISION_EMPTY_PTR nullptr
 #define COLLISION_DONE_PTR reinterpret_cast<Node*>(-1)
 
 namespace nut
@@ -46,7 +46,7 @@ class ConcurrentStack
     struct Node
     {
         T data;
-        Node *next = NULL;
+        Node *next = nullptr;
 
         Node(const T& v)
             : data(v)
@@ -72,18 +72,18 @@ class ConcurrentStack
     StampedPtr<Node> _collisions[COLLISIONS_ARRAY_SIZE];
 
 public:
-    ConcurrentStack()
-    {}
+    ConcurrentStack() = default;
 
     ~ConcurrentStack()
     {
-        while (pop(NULL)) {}
-        assert(NULL == _top.pointer());
+        while (pop(nullptr))
+        {}
+        assert(nullptr == _top.pointer());
     }
 
     bool is_empty() const
     {
-        return NULL == _top.pointer();
+        return nullptr == _top.pointer();
     }
 
 public:
@@ -107,12 +107,12 @@ public:
         {
             const StampedPtr<Node> old_top(_top);
 
-            if (NULL == old_top.pointer())
+            if (nullptr == old_top.pointer())
                 return false;
 
             if (_top.compare_and_set(old_top, old_top.pointer()->next))
             {
-                if (NULL != p)
+                if (nullptr != p)
                     *p = old_top.pointer()->data;
                 _data_alloc.destroy(&(old_top.pointer()->data));
                 _node_alloc.deallocate(old_top.pointer(), 1);
@@ -160,12 +160,12 @@ private:
     {
         const StampedPtr<Node> old_top(_top);
 
-        if (NULL == old_top.pointer())
+        if (nullptr == old_top.pointer())
             return EMPTY_STACK_FAILURE;
 
         if (_top.compare_and_set(old_top, old_top.pointer()->next))
         {
-            if (NULL != p)
+            if (nullptr != p)
                 *p = old_top.pointer()->data;
             _data_alloc.destroy(&(old_top.pointer()->data));
             _node_alloc.deallocate(old_top.pointer(), 1);
@@ -219,7 +219,7 @@ private:
                                            COLLISION_DONE_PTR,
                                            old_collision.stamp_value()))
         {
-            if (NULL != p)
+            if (nullptr != p)
                 *p = old_collision.pointer()->data;
             _data_alloc.destroy(&(old_collision.pointer()->data));
             _node_alloc.deallocate(old_collision.pointer(), 1);

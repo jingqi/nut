@@ -13,7 +13,7 @@ RwLock::RwLock()
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::InitializeSRWLock(&_rwlock);
 #else
-    const int rs = ::pthread_rwlock_init(&_rwlock, NULL);
+    const int rs = ::pthread_rwlock_init(&_rwlock, nullptr);
     assert(0 == rs);
     UNUSED(rs);
 #endif

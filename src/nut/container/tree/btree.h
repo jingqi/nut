@@ -25,8 +25,8 @@ private:
      */
     class InorderTraversalIterator
     {
-        const NODE *_parent_of_sub_root = NULL;
-        NODE *_current = NULL;
+        const NODE *_parent_of_sub_root = nullptr;
+        NODE *_current = nullptr;
         bool _eof = false;
 
     public:
@@ -40,31 +40,31 @@ private:
         InorderTraversalIterator(const NODE *parent_of_sub_root, NODE *current, bool eof = false)
             : _parent_of_sub_root(parent_of_sub_root), _current(current), _eof(eof)
         {
-            assert( (_eof && NULL == _current) ||
-                (_eof && NULL != _current && NULL == _current->get_right_child()) ||
-                (!_eof && NULL != _current));
+            assert( (_eof && nullptr == _current) ||
+                (_eof && nullptr != _current && nullptr == _current->get_right_child()) ||
+                (!_eof && nullptr != _current));
         }
 
         NODE& operator*() const
         {
-            assert(!_eof && NULL != _current);
+            assert(!_eof && nullptr != _current);
             return *_current;
         }
 
         NODE* operator->() const
         {
-            assert(!_eof && NULL != _current);
+            assert(!_eof && nullptr != _current);
             return _current;
         }
 
         InorderTraversalIterator& operator++()
         {
-            assert(NULL != _current);
+            assert(nullptr != _current);
             assert(!_eof); // no next
-            if (NULL != _current->get_right_child())
+            if (nullptr != _current->get_right_child())
             {
                 _current = _current->get_right_child();
-                while (NULL != _current->get_left_child())
+                while (nullptr != _current->get_left_child())
                     _current = _current->get_left_child();
             }
             else
@@ -85,15 +85,15 @@ private:
 
         InorderTraversalIterator& operator--()
         {
-            assert(NULL != _current);
+            assert(nullptr != _current);
             if (_eof)
             {
                 _eof = false;
             }
-            else if (NULL != _current->get_left_child())
+            else if (nullptr != _current->get_left_child())
             {
                 _current = _current->get_left_child();
-                while (NULL != _current->get_right_child())
+                while (nullptr != _current->get_right_child())
                     _current = _current->get_right_child();
             }
             else
@@ -145,11 +145,11 @@ public:
      */
     static inorder_iterator inorder_traversal_begin(NODE *sub_root)
     {
-        if (NULL == sub_root)
-            return inorder_iterator(NULL, NULL, true);
+        if (nullptr == sub_root)
+            return inorder_iterator(nullptr, nullptr, true);
 
         NODE *parent_of_sub_root = sub_root->get_parent();
-        while (NULL != sub_root->get_left_child())
+        while (nullptr != sub_root->get_left_child())
             sub_root = sub_root->get_left_child();
         return inorder_iterator(parent_of_sub_root, sub_root, false);
     }
@@ -159,11 +159,11 @@ public:
      */
     static inorder_iterator inorder_traversal_end(NODE *sub_root)
     {
-        if (NULL == sub_root)
-            return inorder_iterator(NULL, NULL, true);
+        if (nullptr == sub_root)
+            return inorder_iterator(nullptr, nullptr, true);
 
         NODE *parent_of_sub_root = sub_root->get_parent();
-        while (NULL != sub_root->get_right_child())
+        while (nullptr != sub_root->get_right_child())
             sub_root = sub_root->get_right_child();
         return inorder_iterator(parent_of_sub_root, sub_root, true);
     }
@@ -194,8 +194,8 @@ private:
      */
     class PreorderTraversalIterator
     {
-        const NODE *_parent_of_sub_root = NULL;
-        NODE *_current = NULL;
+        const NODE *_parent_of_sub_root = nullptr;
+        NODE *_current = nullptr;
         bool _eof = false;
 
     public:
@@ -209,32 +209,33 @@ private:
         PreorderTraversalIterator(const NODE *parent_of_sub_root, NODE *current, bool eof = false)
             : _parent_of_sub_root(parent_of_sub_root), _current(current), _eof(eof)
         {
-            assert( (_eof && NULL == _current) ||
-                (_eof && NULL != _current && NULL == _current->get_left_child() && NULL == _current->get_right_child()) ||
-                (!_eof && NULL != _current) );
+            assert( (_eof && nullptr == _current) ||
+                (_eof && nullptr != _current && nullptr == _current->get_left_child() &&
+                 nullptr == _current->get_right_child()) ||
+                (!_eof && nullptr != _current) );
         }
 
         NODE& operator*() const
         {
-            assert(!_eof && NULL != _current);
+            assert(!_eof && nullptr != _current);
             return *_current;
         }
 
         NODE* operator->() const
         {
-            assert(!_eof && NULL != _current);
+            assert(!_eof && nullptr != _current);
             return _current;
         }
 
         PreorderTraversalIterator& operator++()
         {
-            assert(NULL != _current);
+            assert(nullptr != _current);
             assert(!_eof); // no next
-            if (NULL != _current->get_left_child())
+            if (nullptr != _current->get_left_child())
             {
                 _current = _current->get_left_child();
             }
-            else if (NULL != _current->get_right_child())
+            else if (nullptr != _current->get_right_child())
             {
                 _current = _current->get_right_child();
             }
@@ -242,7 +243,7 @@ private:
             {
                 NODE *current = _current, *parent = _current->get_parent();
                 while (_parent_of_sub_root != parent &&
-                    (current == parent->get_right_child() || NULL == parent->get_right_child()))
+                    (current == parent->get_right_child() || nullptr == parent->get_right_child()))
                 {
                     current = parent;
                     parent = current->get_parent();
@@ -257,7 +258,7 @@ private:
 
         PreorderTraversalIterator& operator--()
         {
-            assert(NULL != _current);
+            assert(nullptr != _current);
             if (_eof)
             {
                 _eof = false;
@@ -266,7 +267,7 @@ private:
             {
                 NODE *parent = _current->get_parent();
                 assert(_parent_of_sub_root != parent); // no pre
-                if (_current == parent->get_left_child() || NULL == parent->get_left_child())
+                if (_current == parent->get_left_child() || nullptr == parent->get_left_child())
                 {
                     _current = parent;
                 }
@@ -275,9 +276,9 @@ private:
                     _current = parent->get_left_child();
                     while (true)
                     {
-                        if (NULL != _current->get_right_child())
+                        if (nullptr != _current->get_right_child())
                             _current = _current->get_right_child();
-                        else if (NULL != _current->get_left_child())
+                        else if (nullptr != _current->get_left_child())
                             _current = _current->get_left_child();
                         else
                             break;
@@ -322,8 +323,8 @@ public:
      */
     static preorder_iterator preorder_traversal_begin(NODE *sub_root)
     {
-        if (NULL == sub_root)
-            return preorder_iterator(NULL, NULL, true);
+        if (nullptr == sub_root)
+            return preorder_iterator(nullptr, nullptr, true);
         return preorder_iterator(sub_root->get_parent(), sub_root, false);
     }
 
@@ -332,11 +333,11 @@ public:
      */
     static preorder_iterator preorder_traversal_end(NODE *sub_root)
     {
-        if (NULL == sub_root)
-            return preorder_iterator(NULL, NULL, true);
+        if (nullptr == sub_root)
+            return preorder_iterator(nullptr, nullptr, true);
 
         const NODE* parent_of_sub_root = sub_root->get_parent();
-        while (NULL != sub_root->get_right_child())
+        while (nullptr != sub_root->get_right_child())
             sub_root = sub_root->get_right_child();
         return preorder_iterator(parent_of_sub_root, sub_root, true);
     }
@@ -367,8 +368,8 @@ private:
      */
     class PostorderTraversalIterator
     {
-        const NODE *_parent_of_sub_root = NULL;
-        NODE *_current = NULL;
+        const NODE *_parent_of_sub_root = nullptr;
+        NODE *_current = nullptr;
         bool _eof = false;
 
     public:
@@ -382,33 +383,33 @@ private:
         PostorderTraversalIterator(const NODE *parent_of_sub_root, NODE *current, bool eof = false)
             : _parent_of_sub_root(parent_of_sub_root), _current(current), _eof(eof)
         {
-            assert( (_eof && NULL == _current) ||
-                (_eof && NULL != _current && _parent_of_sub_root == _current->get_parent()) ||
-                (!_eof && NULL != _current) );
+            assert( (_eof && nullptr == _current) ||
+                (_eof && nullptr != _current && _parent_of_sub_root == _current->get_parent()) ||
+                (!_eof && nullptr != _current) );
         }
 
         NODE& operator*() const
         {
-            assert(!_eof && NULL != _current);
+            assert(!_eof && nullptr != _current);
             return *_current;
         }
 
         NODE* operator->() const
         {
-            assert(!_eof && NULL != _current);
+            assert(!_eof && nullptr != _current);
             return _current;
         }
 
         PostorderTraversalIterator& operator++()
         {
-            assert(NULL != _current);
+            assert(nullptr != _current);
             assert(!_eof); // no next
             NODE *parent = _current->get_parent();
             if (_parent_of_sub_root == parent)
             {
                 _eof = true; // end
             }
-            else if (_current == parent->get_right_child() || NULL == parent->get_right_child())
+            else if (_current == parent->get_right_child() || nullptr == parent->get_right_child())
             {
                 _current = parent;
             }
@@ -417,9 +418,9 @@ private:
                 _current = parent->get_right_child();
                 while (true)
                 {
-                    if (NULL != _current->get_left_child())
+                    if (nullptr != _current->get_left_child())
                         _current = _current->get_left_child();
-                    else if (NULL != _current->get_right_child())
+                    else if (nullptr != _current->get_right_child())
                         _current = _current->get_right_child();
                     else
                         break;
@@ -431,16 +432,16 @@ private:
 
         PostorderTraversalIterator& operator--()
         {
-            assert(NULL != _current);
+            assert(nullptr != _current);
             if (_eof)
             {
                 _eof = false;
             }
-            else if (NULL != _current->get_right_child())
+            else if (nullptr != _current->get_right_child())
             {
                 _current = _current->get_right_child();
             }
-            else if (NULL != _current->get_left_child())
+            else if (nullptr != _current->get_left_child())
             {
                 _current = _current->get_left_child();
             }
@@ -448,7 +449,7 @@ private:
             {
                 NODE *parent = _current->get_parent();
                 while (_parent_of_sub_root != parent &&
-                    (_current == parent->get_left_child() || NULL == parent->get_left_child()))
+                    (_current == parent->get_left_child() || nullptr == parent->get_left_child()))
                 {
                     _current = parent;
                     parent = _current->get_parent();
@@ -494,11 +495,11 @@ public:
      */
     static postorder_iterator postorder_traversal_begin(NODE *sub_root)
     {
-        if (NULL == sub_root)
-            return postorder_iterator(NULL, NULL, true);
+        if (nullptr == sub_root)
+            return postorder_iterator(nullptr, nullptr, true);
 
         NODE* parent_of_sub_root = sub_root->get_parent();
-        while (NULL != sub_root->get_left_child())
+        while (nullptr != sub_root->get_left_child())
             sub_root = sub_root->get_left_child();
         return postorder_iterator(parent_of_sub_root, sub_root, false);
     }
@@ -508,8 +509,8 @@ public:
      */
     static postorder_iterator postorder_traversal_end(NODE *sub_root)
     {
-        if (NULL == sub_root)
-            return postorder_iterator(NULL, NULL, true);
+        if (nullptr == sub_root)
+            return postorder_iterator(nullptr, nullptr, true);
         return postorder_iterator(sub_root->get_parent(), sub_root, true);
     }
 

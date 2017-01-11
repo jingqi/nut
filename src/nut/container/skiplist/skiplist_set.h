@@ -16,7 +16,7 @@ class SkipListSet
     class Node
     {
         T _key;
-        Node **_next = NULL;
+        Node **_next = nullptr;
         int _level = -1; // 0-based
 
     public:
@@ -26,9 +26,9 @@ class SkipListSet
 
         ~Node()
         {
-            if (NULL != _next)
+            if (nullptr != _next)
                 ::free(_next);
-            _next = NULL;
+            _next = nullptr;
             _level = -1;
         }
 
@@ -45,7 +45,7 @@ class SkipListSet
         void set_level(int lv)
         {
             assert(lv >= 0);
-            if (NULL != _next)
+            if (nullptr != _next)
             {
                 assert(_level >= 0);
                 _next = (Node**) ::realloc(_next, sizeof(Node*) * (lv + 1));
@@ -63,19 +63,19 @@ class SkipListSet
 
         Node* get_next(int lv) const
         {
-            assert(NULL != _next && 0 <= lv && lv <= _level);
+            assert(nullptr != _next && 0 <= lv && lv <= _level);
             return _next[lv];
         }
 
         void set_next(int lv, Node *n)
         {
-            assert(NULL != _next && 0 <= lv && lv <= _level);
+            assert(nullptr != _next && 0 <= lv && lv <= _level);
             _next[lv] = n;
         }
     };
 
     int _level = -1; // 0-based
-    Node **_head = NULL;
+    Node **_head = nullptr;
     size_t _size = 0;
 
 private:
@@ -91,7 +91,7 @@ private:
     void set_level(int lv)
     {
         assert(lv >= 0);
-        if (NULL != _head)
+        if (nullptr != _head)
         {
             assert(_level >= 0);
             _head = (Node**) ::realloc(_head, sizeof(Node*) * (lv + 1));
@@ -109,25 +109,24 @@ private:
 
     Node* get_head(int lv) const
     {
-        assert(NULL != _head && 0 <= lv && lv <= _level);
+        assert(nullptr != _head && 0 <= lv && lv <= _level);
         return _head[lv];
     }
 
     void set_head(int lv, Node *n)
     {
-        assert(NULL != _head && 0 <= lv && lv <= _level);
+        assert(nullptr != _head && 0 <= lv && lv <= _level);
         _head[lv] = n;
     }
 
 public:
-    SkipListSet()
-    {}
+    SkipListSet() = default;
 
     SkipListSet(const self_type& x)
     {
         if (x._size == 0)
             return;
-        assert(NULL != x._head && x._level >= 0);
+        assert(nullptr != x._head && x._level >= 0);
 
         // Initial attributes
         _level = x._level;
@@ -138,7 +137,7 @@ public:
         Node **pre_lv = (Node**) ::malloc(sizeof(Node*) * (_level + 1));
         ::memset(pre_lv, 0, sizeof(Node*) * (_level + 1));
         Node *n = x._head[0];
-        while (NULL != n)
+        while (nullptr != n)
         {
             Node *c = (Node*) ::malloc(sizeof(Node));
             new (c) Node(n->_key);
@@ -160,16 +159,16 @@ public:
         _head = x._head;
         _size = x._size;
         x._level = -1;
-        x._head = NULL;
+        x._head = nullptr;
         x._size = 0;
     }
 
     ~SkipListSet()
     {
         clear();
-        if (NULL != _head)
+        if (nullptr != _head)
             ::free(_head);
-        _head = NULL;
+        _head = nullptr;
         _level = -1;
     }
 
@@ -182,10 +181,10 @@ public:
         clear();
         if (x._size == 0)
             return *this;
-        assert(NULL != x._head && x._level >= 0);
+        assert(nullptr != x._head && x._level >= 0);
 
         // Initial attributes
-        if (NULL != _head)
+        if (nullptr != _head)
         {
             assert(_level >= 0);
             _head = (Node**) ::realloc(_head, sizeof(Node*) * (x._level + 1));
@@ -202,7 +201,7 @@ public:
         Node **pre_lv = (Node**) ::malloc(sizeof(Node*) * (_level + 1));
         ::memset(pre_lv, 0, sizeof(Node*) * (_level + 1));
         Node *n = x._head[0];
-        while (NULL != n)
+        while (nullptr != n)
         {
             Node *c = (Node*) ::malloc(sizeof(Node));
             new (c) Node(n->_key);
@@ -228,7 +227,7 @@ public:
         _head = x._head;
         _size = x._size;
         x._level = -1;
-        x._head = NULL;
+        x._head = nullptr;
         x._size = 0;
         return *this;
     }
@@ -241,18 +240,18 @@ public:
             return false;
         if (0 == _size)
             return true;
-        assert(NULL != _head && _level >= 0 && NULL != x._head && x._level >= 0);
+        assert(nullptr != _head && _level >= 0 && nullptr != x._head && x._level >= 0);
 
         Node *current1 = _head[0], current2 = x._head[0];
-        while (NULL != current1)
+        while (nullptr != current1)
         {
-            assert(NULL != current2);
+            assert(nullptr != current2);
             if (current1->_key != current2->_key)
                 return false;
             current1 = current1->_next[0];
             current2 = current2->_next[0];
         }
-        assert(NULL == current2);
+        assert(nullptr == current2);
         return true;
     }
 
@@ -270,10 +269,10 @@ public:
     {
         if (0 == _size)
             return;
-        assert(NULL != _head && _level >= 0);
+        assert(nullptr != _head && _level >= 0);
 
         Node *current = _head[0];
-        while (NULL != current)
+        while (nullptr != current)
         {
             Node *next = current->get_next(0);
             current->~Node();
@@ -288,14 +287,14 @@ public:
     {
         if (0 == _size)
             return false;
-        assert(NULL != _head && _level >= 0);
+        assert(nullptr != _head && _level >= 0);
 
-        return NULL != algo_type::search_node(k, *this, NULL);
+        return nullptr != algo_type::search_node(k, *this, nullptr);
     }
 
     bool add(const T& k)
     {
-        if (NULL == _head)
+        if (nullptr == _head)
         {
             assert(_level < 0 && _size == 0);
             Node *n = (Node*) ::malloc(sizeof(Node));
@@ -304,7 +303,7 @@ public:
             _level = 0;
             _head[0] = n;
             n->set_level(0);
-            n->set_next(0, NULL);
+            n->set_next(0, nullptr);
             _size = 1;
             return true;
         }
@@ -313,7 +312,7 @@ public:
         // Search
         Node **pre_lv = (Node **) ::malloc(sizeof(Node*) * (_level + 1));
         Node *n = algo_type::search_node(k, *this, pre_lv);
-        if (NULL != n)
+        if (nullptr != n)
         {
             ::free(pre_lv);
             return false;
@@ -332,12 +331,12 @@ public:
     {
         if (0 == _size)
             return false;
-        assert(NULL != _head && _level >= 0);
+        assert(nullptr != _head && _level >= 0);
 
         // Search
         Node **pre_lv = (Node **) ::malloc(sizeof(Node*) * (_level + 1));
         Node *n = algo_type::search_node(k, *this, pre_lv);
-        if (NULL == n)
+        if (nullptr == n)
         {
             ::free(pre_lv);
             return false;

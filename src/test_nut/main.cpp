@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     setlocale(LC_ALL, "zh_CN.UTF8");
 #endif
 
-    ::srand((unsigned) ::time(NULL));
+    ::srand((unsigned) ::time(nullptr));
     print_platform();
 
     ConsoleTestLogger l;

@@ -14,7 +14,7 @@ namespace nut
  */
 static void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, const BigInteger& nn, BigInteger *rs)
 {
-    assert(NULL != rs);
+    assert(nullptr != rs);
     assert(t.is_positive() && rlen > 0 && n.is_positive() && nn.is_positive());
     typedef BigInteger::word_type word_type;
 
@@ -45,7 +45,7 @@ static void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, c
  */
 static void _montgomery2(const BigInteger& t, const BigInteger& n, BigInteger::word_type nn, BigInteger *rs)
 {
-    assert(NULL != rs);
+    assert(nullptr != rs);
     assert(t.is_positive() && n.is_positive() && nn > 0);
     typedef BigInteger::word_type word_type;
     typedef BigInteger::dword_type dword_type;
@@ -106,7 +106,7 @@ static void _montgomery2(const BigInteger& t, const BigInteger& n, BigInteger::w
  */
 static void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *rr, BigInteger *nn)
 {
-    assert(NULL != rr || NULL != nn);
+    assert(nullptr != rr || nullptr != nn);
 
     BigInteger r(1);
     r <<= rlen;
@@ -139,9 +139,9 @@ static void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *
         }
     }
 
-    if (NULL != rr)
+    if (nullptr != rr)
         *rr = std::move(ret_rr);
-    if (NULL != nn)
+    if (nullptr != nn)
         *nn = std::move(ret_nn);
 }
 
@@ -155,13 +155,13 @@ struct MontgomeryPreBuildTable
 
     MontgomeryPreBuildTable(size_t wnd_sz, const BigInteger& m, size_t rlen,
             const BigInteger& n, const BigInteger& nn)
-        : table(NULL), size(0)
+        : table(nullptr), size(0)
     {
         assert(0 < wnd_sz && wnd_sz < 16);
 
         size = 1 << (wnd_sz - 1);
         table = (BigInteger**) ::malloc(sizeof(BigInteger*) * size);
-        assert(NULL != table);
+        assert(nullptr != table);
         ::memset(table, 0, sizeof(BigInteger*) * size);
 
         table[0] = (BigInteger*) ::malloc(sizeof(BigInteger));
@@ -178,19 +178,19 @@ struct MontgomeryPreBuildTable
 
     ~MontgomeryPreBuildTable()
     {
-        if (NULL != table)
+        if (nullptr != table)
         {
             for (size_t i = 0; i < size; ++i)
             {
-                if (NULL != table[i])
+                if (nullptr != table[i])
                 {
                     table[i]->~BigInteger();
                     ::free(table[i]);
-                    table[i] = NULL;
+                    table[i] = nullptr;
                 }
             }
             ::free(table);
-            table = NULL;
+            table = nullptr;
             size = 0;
         }
     }
@@ -234,7 +234,7 @@ static size_t _best_wnd(size_t bit_len)
  */
 static void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigInteger *rs)
 {
-    assert(NULL != rs);
+    assert(nullptr != rs);
     assert(a.is_positive() && b.is_positive() && n.is_positive());
     assert(a < n && n.bit_at(0) == 1);
 
@@ -243,7 +243,7 @@ static void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
     const size_t rlen = n.bit_length();
     BigInteger r(1), nn;
     r <<= rlen;
-    extended_euclid(r, n, NULL, NULL, &nn);
+    extended_euclid(r, n, nullptr, nullptr, &nn);
     if (nn.is_positive())
         nn = r - (nn % r);
     else
@@ -271,7 +271,7 @@ static void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
     // 预运算
     const size_t r_word_count = n.significant_words_length();
     BigInteger nn;
-    _mont_extended_euclid(8 * sizeof(BigInteger::word_type), BigInteger(n.word_at(0)), NULL, &nn);
+    _mont_extended_euclid(8 * sizeof(BigInteger::word_type), BigInteger(n.word_at(0)), nullptr, &nn);
     BigInteger::word_type nnn = nn.word_at(0);
 
     // 循环计算
@@ -299,7 +299,7 @@ static void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
     // 预运算
     const size_t rlen = n.bit_length();
     BigInteger nn;
-    _mont_extended_euclid(rlen, n, NULL, &nn); // 特殊的欧几里得算法
+    _mont_extended_euclid(rlen, n, nullptr, &nn); // 特殊的欧几里得算法
     nn.limit_positive_bits_to(rlen);
 
     // 循环计算
@@ -327,7 +327,7 @@ static void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
     // 准备蒙哥马利相关变量
     const size_t rlen = n.bit_length();
     BigInteger nn(0);
-    _mont_extended_euclid(rlen, n, NULL, &nn);
+    _mont_extended_euclid(rlen, n, nullptr, &nn);
     nn.limit_positive_bits_to(rlen);
 
     // 准备预运算表
@@ -399,7 +399,7 @@ static void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
  */
 static void _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p, BigInteger *rs)
 {
-    assert(NULL != rs);
+    assert(nullptr != rs);
     assert(a.is_positive() && b.is_positive() && p > 0);
 
     BigInteger ret(1);
@@ -422,7 +422,7 @@ static void _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p, BigIn
  */
 NUT_API void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigInteger *rs)
 {
-    assert(NULL != rs);
+    assert(nullptr != rs);
     assert(a.is_positive() && b.is_positive() && n.is_positive());
 
     if (b.is_zero())
@@ -500,7 +500,7 @@ NUT_API void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger&
     _mod_pow_2((a < n ? a : a % n), b, p, &a2);
 
     BigInteger y1(0);
-    extended_euclid(n2, n1, NULL, &y1, NULL);
+    extended_euclid(n2, n1, nullptr, &y1, nullptr);
     if (y1 < 0)
     {
         // y1 = n1 + (y1 % n1);
@@ -508,7 +508,7 @@ NUT_API void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger&
         y1 += n1;
     }
     BigInteger y2(0);
-    extended_euclid(n1, n2, NULL, &y2, NULL);
+    extended_euclid(n1, n2, nullptr, &y2, nullptr);
     if (y2 < 0)
     {
         // y2 = n2 + (y2 % n2);

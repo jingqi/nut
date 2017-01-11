@@ -20,7 +20,7 @@ LogFilter::Node::~Node()
 
 void LogFilter::Node::swap(Node *x)
 {
-    assert(NULL != x);
+    assert(nullptr != x);
     if (this == x)
         return;
 
@@ -94,7 +94,7 @@ void LogFilter::Node::insert(int pos, hashcode_type hash)
     }
     children_hash[pos] = hash;
     Node *child = (Node*) ::malloc(sizeof(Node));
-    assert(NULL != child);
+    assert(nullptr != child);
     new (child) Node(this);
     children[pos] = child;
     ++children_size;
@@ -102,7 +102,7 @@ void LogFilter::Node::insert(int pos, hashcode_type hash)
 
 void LogFilter::Node::remove(Node *child)
 {
-    assert(NULL != child);
+    assert(nullptr != child);
     int pos = 0;
     while (pos < children_size && child != children[pos])
         ++pos;
@@ -122,31 +122,31 @@ void LogFilter::Node::clear()
 {
     for (int i = 0; i < children_size; ++i)
     {
-        assert(NULL != children && NULL != children[i]);
+        assert(nullptr != children && nullptr != children[i]);
         children[i]->~Node();
     }
 
-    if (NULL != children_hash)
+    if (nullptr != children_hash)
     {
         ::free(children_hash);
-        assert(NULL != children);
+        assert(nullptr != children);
         ::free(children);
     }
 
     forbid_mask = 0;
-    children_hash = NULL;
-    children = NULL;
+    children_hash = nullptr;
+    children = nullptr;
     children_size = 0;
     children_cap = 0;
 }
 
 LogFilter::LogFilter()
-    : _root(NULL)
+    : _root(nullptr)
 {}
 
 void LogFilter::swap(LogFilter *x)
 {
-    assert(NULL != x);
+    assert(nullptr != x);
     if (this == x)
         return;
 
@@ -155,7 +155,7 @@ void LogFilter::swap(LogFilter *x)
 
 LogFilter::hashcode_type LogFilter::hash_to_dot(const char *s, int *char_accum)
 {
-    assert(NULL != s && NULL != char_accum);
+    assert(nullptr != s && nullptr != char_accum);
 
     // SDBRHash 算法
     hashcode_type hash = 17;
@@ -177,7 +177,7 @@ void LogFilter::forbid(const char *tag, ll_mask_type mask)
         return;
 
     // root rule
-    if (NULL == tag || 0 == tag[0])
+    if (nullptr == tag || 0 == tag[0])
     {
         _root.forbid_mask |= mask;
         return;
@@ -192,7 +192,7 @@ void LogFilter::forbid(const char *tag, ll_mask_type mask)
         const hashcode_type hash = hash_to_dot(tag + i, &i);
 
         // 找到对应的节点
-        assert(NULL != current);
+        assert(nullptr != current);
         const int pos = current->search(hash);
         if (pos < 0)
         {
@@ -212,7 +212,7 @@ void LogFilter::forbid(const char *tag, ll_mask_type mask)
     } while (0 != tag[i]);
 
     // apply the rule
-    assert(NULL != current);
+    assert(nullptr != current);
     current->forbid_mask |= mask;
 }
 
@@ -223,7 +223,7 @@ void LogFilter::unforbid(const char *tag, ll_mask_type mask)
         return;
 
     // root rule
-    if (NULL == tag || 0 == tag[0])
+    if (nullptr == tag || 0 == tag[0])
     {
         _root.forbid_mask &= ~mask;
         return;
@@ -238,7 +238,7 @@ void LogFilter::unforbid(const char *tag, ll_mask_type mask)
         const hashcode_type hash = hash_to_dot(tag + i, &i);
 
         // 找到对应的节点
-        assert(NULL != current);
+        assert(nullptr != current);
         const int pos = current->search(hash);
         if (pos < 0)
             return;
@@ -253,12 +253,12 @@ void LogFilter::unforbid(const char *tag, ll_mask_type mask)
     } while (0 != tag[i]);
 
     // apply the rule
-    assert(NULL != current);
+    assert(nullptr != current);
     current->forbid_mask &= ~mask;
 
     // remove empty nodes
     while (0 == current->forbid_mask && 0 == current->children_size &&
-           NULL != current->parent)
+           nullptr != current->parent)
     {
         Node *parent = current->parent;
         parent->remove(current);
@@ -276,7 +276,7 @@ bool LogFilter::is_forbidden(const char *tag, LogLevel level) const
     // root rule
     if (0 != (_root.forbid_mask & level))
         return true;
-    if (NULL == tag || 0 == tag[0])
+    if (nullptr == tag || 0 == tag[0])
         return false;
 
     // find the node
@@ -288,7 +288,7 @@ bool LogFilter::is_forbidden(const char *tag, LogLevel level) const
         const hashcode_type hash = hash_to_dot(tag + i, &i);
 
         // 找到对应的节点
-        assert(NULL != current);
+        assert(nullptr != current);
         const int pos = current->search(hash);
         if (pos < 0)
             return false;
@@ -296,7 +296,7 @@ bool LogFilter::is_forbidden(const char *tag, LogLevel level) const
             current = current->children[pos];
 
         // apply rule
-        assert(NULL != current);
+        assert(nullptr != current);
         if (0 != (current->forbid_mask & level))
             return true;
 

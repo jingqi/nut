@@ -33,7 +33,7 @@ namespace nut
 void OS::list_dir(const char *path, std::vector<std::string> *result,
                   bool exclude_file, bool exclude_dir, bool exclude_initial_dot)
 {
-    assert(NULL != path && NULL != result);
+    assert(nullptr != path && nullptr != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
     char search_path[MAX_PATH];
@@ -63,12 +63,12 @@ void OS::list_dir(const char *path, std::vector<std::string> *result,
     // 关闭查找句柄
     ::FindClose(hfind);
 #else
-    DIR *dp = NULL;
-    struct dirent *dirp = NULL;
-    if ((dp = ::opendir(path)) == NULL)
+    DIR *dp = nullptr;
+    struct dirent *dirp = nullptr;
+    if ((dp = ::opendir(path)) == nullptr)
         return;
 
-    while ((dirp = ::readdir(dp)) != NULL)
+    while ((dirp = ::readdir(dp)) != nullptr)
     {
         if (exclude_initial_dot && dirp->d_name[0] == '.')
             continue;
@@ -97,7 +97,7 @@ void OS::list_dir(const char *path, std::vector<std::string> *result,
 void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *result,
                   bool exclude_file, bool exclude_dir, bool exclude_initial_dot)
 {
-    assert(NULL != path && NULL != result);
+    assert(nullptr != path && nullptr != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
     wchar_t search_path[MAX_PATH];
@@ -158,17 +158,17 @@ void OS::list_dir(const std::wstring& path, std::vector<std::wstring> *result,
  */
 bool OS::copy_file(const char *src, const char *dst)
 {
-    assert(NULL != src && NULL != dst);
+    assert(nullptr != src && nullptr != dst);
 
 #if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::CopyFileA(src, dst, TRUE);
 #else
     FILE *in_file = ::fopen(src, "rb");
-    if (NULL == in_file)
+    if (nullptr == in_file)
         return false;
 
     FILE *out_file = ::fopen(dst, "wb+");
-    if (NULL == out_file)
+    if (nullptr == out_file)
     {
         ::fclose(in_file);
         return false;
@@ -189,7 +189,7 @@ bool OS::copy_file(const char *src, const char *dst)
 
 bool OS::copy_file(const wchar_t *src, const wchar_t *dst)
 {
-    assert(NULL != src && NULL != dst);
+    assert(nullptr != src && nullptr != dst);
 
 #if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::CopyFileW(src, dst, TRUE);
@@ -213,13 +213,13 @@ bool OS::copy_file(const std::wstring& src, const std::wstring& dst)
 
 bool OS::remove_file(const char *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
     return 0 == ::remove(path);
 }
 
 bool OS::remove_file(const wchar_t *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::DeleteFileW(path);
@@ -242,10 +242,10 @@ bool OS::remove_file(const std::wstring& path)
 
 bool OS::mkdir(const char *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    return FALSE != ::CreateDirectoryA(path, NULL);
+    return FALSE != ::CreateDirectoryA(path, nullptr);
 #else
     return 0 == ::mkdir(path, S_IREAD | S_IWRITE | S_IEXEC);
 #endif
@@ -253,10 +253,10 @@ bool OS::mkdir(const char *path)
 
 bool OS::mkdir(const wchar_t *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    return FALSE != ::CreateDirectoryW(path, NULL);
+    return FALSE != ::CreateDirectoryW(path, nullptr);
 #else
     std::string p;
     wstr_to_ascii(path, &p);
@@ -276,7 +276,7 @@ bool OS::mkdir(const std::wstring& path)
 
 bool OS::mkdirs(const char *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
     // 可能目录已经存在
     if (Path::exists(path))
@@ -298,7 +298,7 @@ bool OS::mkdirs(const char *path)
 
 bool OS::mkdirs(const wchar_t *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
     std::string p;
     wstr_to_ascii(path, &p);
@@ -320,7 +320,7 @@ bool OS::mkdirs(const std::wstring& path)
  */
 bool OS::rmdir(const char *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::RemoveDirectoryA(path);
@@ -331,7 +331,7 @@ bool OS::rmdir(const char *path)
 
 bool OS::rmdir(const wchar_t *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::RemoveDirectoryW(path);
@@ -357,7 +357,7 @@ bool OS::rmdir(const std::wstring& path)
  */
 bool OS::remove_tree(const char *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     // 删除文件
@@ -410,14 +410,14 @@ bool OS::remove_tree(const char *path)
         return 0 == ::unlink(path); // 这里就不用 remove() 了
 
     // 遍历文件夹
-    DIR *dp = NULL;
-    struct dirent *dirp = NULL;
-    if ((dp = ::opendir(path)) == NULL)
+    DIR *dp = nullptr;
+    struct dirent *dirp = nullptr;
+    if ((dp = ::opendir(path)) == nullptr)
         return false;
 
     bool ret = true;
     char full_path[PATH_MAX];
-    while (ret && (dirp = ::readdir(dp)) != NULL)
+    while (ret && (dirp = ::readdir(dp)) != nullptr)
     {
         // 忽略 . 和 ..
         if (('.' == dirp->d_name[0] && '\0' == dirp->d_name[1]) ||
@@ -440,7 +440,7 @@ bool OS::remove_tree(const char *path)
 
 bool OS::remove_tree(const wchar_t *path)
 {
-    assert(NULL != path);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     // 删除文件
@@ -502,7 +502,7 @@ bool OS::remove_tree(const std::wstring& path)
 
 bool OS::read_link(const char *path, std::string *result)
 {
-    assert(NULL != path && NULL != result);
+    assert(nullptr != path && nullptr != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
@@ -522,7 +522,7 @@ bool OS::read_link(const char *path, std::string *result)
 
 bool OS::read_link(const wchar_t *path, std::wstring *result)
 {
-    assert(NULL != path && NULL != result);
+    assert(nullptr != path && nullptr != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
@@ -551,7 +551,7 @@ bool OS::read_link(const std::wstring& path, std::wstring *result)
 
 bool OS::symlink(const char *link, const char *path)
 {
-    assert(NULL != link && NULL != path);
+    assert(nullptr != link && nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(link);
@@ -564,7 +564,7 @@ bool OS::symlink(const char *link, const char *path)
 
 bool OS::symlink(const wchar_t *link, const wchar_t *path)
 {
-    assert(NULL != link && NULL != path);
+    assert(nullptr != link && nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(link);
@@ -590,13 +590,13 @@ bool OS::symlink(const std::wstring& link, const std::wstring& path)
 
 bool OS::rename(const char *from, const char *to)
 {
-    assert(NULL != from && NULL != to);
+    assert(nullptr != from && nullptr != to);
     return 0 == ::rename(from, to);
 }
 
 bool OS::rename(const wchar_t *from, const wchar_t *to)
 {
-    assert(NULL != from && NULL != to);
+    assert(nullptr != from && nullptr != to);
 
     std::string f, t;
     wstr_to_ascii(from, &f);

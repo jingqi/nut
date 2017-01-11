@@ -25,8 +25,7 @@ protected:
     std::vector<TestCaseFailureException> _failures;
 
 public:
-    virtual ~ITestLogger()
-    {}
+    virtual ~ITestLogger() = default;
 
     size_t get_count_of_fixtures() const;
     size_t get_count_of_failed_fixtures() const;

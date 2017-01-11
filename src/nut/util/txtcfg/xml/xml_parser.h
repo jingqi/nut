@@ -18,7 +18,7 @@ class NUT_API XmlParser
     struct ElementInfo
     {
         std::string name;
-        XmlElementHandler *handler = NULL;
+        XmlElementHandler *handler = nullptr;
 
         ElementInfo(const std::string& n, XmlElementHandler *h)
             : name(n), handler(h)

@@ -1,6 +1,6 @@
 ﻿
 #include <assert.h>
-#include <stdlib.h> // for NULL
+#include <stdlib.h> // for nullptr
 
 #include <nut/platform/platform.h>
 
@@ -20,7 +20,7 @@ namespace nut
  */
 NUT_API bool atomic_cas(void * volatile *dest, void *oldval, void *newval)
 {
-    assert(NULL != dest);
+    assert(nullptr != dest);
 #if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
     return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
 #elif NUT_PLATFORM_OS_WINDOWS
@@ -40,7 +40,7 @@ NUT_API bool atomic_cas(void * volatile *dest, void *oldval, void *newval)
  */
 NUT_API bool atomic_cas(int128_t volatile *dest, int128_t oldval, int128_t newval)
 {
-    assert(NULL != dest);
+    assert(nullptr != dest);
 #if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
     /** __sync_val_compare_and_swap() does not support 128 bits, so we get it by ourself */
     uint64_t old_low = (uint64_t)oldval, old_high = (uint64_t)(oldval >> 64);
@@ -84,7 +84,7 @@ NUT_API bool atomic_cas(uint128_t volatile *dest, uint128_t oldval, uint128_t ne
  */
 NUT_API bool atomic_cas(int64_t volatile *dest, int64_t oldval, int64_t newval)
 {
-    assert(NULL != dest);
+    assert(nullptr != dest);
 #if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
     return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
 #elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_VC
@@ -116,7 +116,7 @@ NUT_API bool atomic_cas(int64_t volatile *dest, int64_t oldval, int64_t newval)
  */
 NUT_API bool atomic_cas(uint64_t volatile *dest, uint64_t oldval, uint64_t newval)
 {
-    assert(NULL != dest);
+    assert(nullptr != dest);
     return atomic_cas(reinterpret_cast<int64_t volatile*>(dest),
                       static_cast<int64_t>(oldval),
                       static_cast<int64_t>(newval));
@@ -129,7 +129,7 @@ NUT_API bool atomic_cas(uint64_t volatile *dest, uint64_t oldval, uint64_t newva
  */
 NUT_API bool atomic_cas(int32_t volatile *dest, int32_t oldval, int32_t newval)
 {
-    assert(NULL != dest);
+    assert(nullptr != dest);
 #if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
     return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
 #elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_VC
@@ -153,7 +153,7 @@ NUT_API bool atomic_cas(int32_t volatile *dest, int32_t oldval, int32_t newval)
  */
 NUT_API bool atomic_cas(uint32_t volatile *dest, uint32_t oldval, uint32_t newval)
 {
-    assert(NULL != dest);
+    assert(nullptr != dest);
     return atomic_cas(reinterpret_cast<int32_t volatile*>(dest),
                       static_cast<int32_t>(oldval),
                       static_cast<int32_t>(newval));
@@ -166,7 +166,7 @@ NUT_API bool atomic_cas(uint32_t volatile *dest, uint32_t oldval, uint32_t newva
  */
 NUT_API bool atomic_cas(int16_t volatile *dest, int16_t oldval, int16_t newval)
 {
-    assert(NULL != dest);
+    assert(nullptr != dest);
 #if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
     return __sync_val_compare_and_swap(dest, oldval, newval) == oldval;
 #elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_VC
@@ -191,7 +191,7 @@ NUT_API bool atomic_cas(int16_t volatile *dest, int16_t oldval, int16_t newval)
  */
 NUT_API bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newval)
 {
-    assert(NULL != dest);
+    assert(nullptr != dest);
     return atomic_cas(reinterpret_cast<int16_t volatile*>(dest),
                       static_cast<int16_t>(oldval),
                       static_cast<int16_t>(newval));
@@ -207,7 +207,7 @@ NUT_API bool atomic_cas(uint16_t volatile *dest, uint16_t oldval, uint16_t newva
  */
 NUT_API int128_t atomic_add(int128_t volatile *addend, int128_t value)
 {
-    assert(NULL != addend);
+    assert(nullptr != addend);
 #if NUT_PLATFORM_OS_WINDOWS
     return InterlockedExchangeAdd128(addend, value);
 #else
@@ -227,7 +227,7 @@ NUT_API int128_t atomic_add(int128_t volatile *addend, int128_t value)
  */
 NUT_API uint128_t atomic_add(uint128_t volatile *addend, uint128_t value)
 {
-    assert(NULL != addend);
+    assert(nullptr != addend);
     return static_cast<uint128_t>(atomic_add(reinterpret_cast<int128_t volatile*>(addend),
                                              static_cast<int128_t>(value)));
 }
@@ -241,7 +241,7 @@ NUT_API uint128_t atomic_add(uint128_t volatile *addend, uint128_t value)
  */
 NUT_API int64_t atomic_add(int64_t volatile *addend, int64_t value)
 {
-    assert(NULL != addend);
+    assert(nullptr != addend);
 #if NUT_PLATFORM_OS_LINUX
     return __sync_fetch_and_add(addend, value);
 #elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_VC
@@ -263,7 +263,7 @@ NUT_API int64_t atomic_add(int64_t volatile *addend, int64_t value)
  */
 NUT_API uint64_t atomic_add(uint64_t volatile *addend, uint64_t value)
 {
-    assert(NULL != addend);
+    assert(nullptr != addend);
     return static_cast<uint64_t>(atomic_add(reinterpret_cast<int64_t volatile*>(addend),
                                             static_cast<int64_t>(value)));
 }
@@ -275,7 +275,7 @@ NUT_API uint64_t atomic_add(uint64_t volatile *addend, uint64_t value)
  */
 NUT_API int32_t atomic_add(int32_t volatile *addend, int32_t value)
 {
-    assert(NULL != addend);
+    assert(nullptr != addend);
 #if NUT_PLATFORM_OS_LINUX
     return __sync_fetch_and_add(addend, value);
 #elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_VC
@@ -302,7 +302,7 @@ NUT_API int32_t atomic_add(int32_t volatile *addend, int32_t value)
  */
 NUT_API uint32_t atomic_add(uint32_t volatile *addend, uint32_t value)
 {
-    assert(NULL != addend);
+    assert(nullptr != addend);
     return static_cast<uint32_t>(atomic_add(reinterpret_cast<int32_t volatile*>(addend),
                                             static_cast<int32_t>(value)));
 }
@@ -314,7 +314,7 @@ NUT_API uint32_t atomic_add(uint32_t volatile *addend, uint32_t value)
  */
 NUT_API int16_t atomic_add(int16_t volatile *addend, int16_t value)
 {
-    assert(NULL != addend);
+    assert(nullptr != addend);
 #if NUT_PLATFORM_OS_LINUX
     return __sync_fetch_and_add(addend, value);
 #else
@@ -334,7 +334,7 @@ NUT_API int16_t atomic_add(int16_t volatile *addend, int16_t value)
  */
 NUT_API uint16_t atomic_add(uint16_t volatile *addend, uint16_t value)
 {
-    assert(NULL != addend);
+    assert(nullptr != addend);
     return static_cast<uint16_t>(atomic_add(reinterpret_cast<int16_t volatile*>(addend),
                                             static_cast<int16_t>(value)));
 }

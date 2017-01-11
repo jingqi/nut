@@ -24,33 +24,26 @@ class NUT_API ThreadPool
     NUT_REF_COUNTABLE
 
 public:
-    typedef Thread::thread_process_type thread_process_type;
+    typedef Thread::task_type task_type;
 
 private:
-    class Task
-    {
-    public:
-        thread_process_type process = NULL;
-        void *arg = NULL;
-
-        Task(thread_process_type p = NULL, void *a = NULL)
-            : process(p), arg(a)
-        {}
-    };
-
     size_t _thread_count = 1;
     std::vector<rc_ptr<Thread> > _threads;
     bool volatile _interrupt = false;
-    std::queue<Task> _task_queue;
+    std::queue<task_type> _task_queue;
     Condition::condition_lock_type _lock;
     Condition _condition;
 
-public:
-    ThreadPool(size_t thread_count);
+private:
+    // Non-copyable
+    ThreadPool(const ThreadPool& x) = delete;
+    ThreadPool& operator=(const ThreadPool& x) = delete;
 
+public:
+    explicit ThreadPool(size_t thread_count);
     ~ThreadPool();
 
-    bool add_task(thread_process_type process, void* arg = NULL);
+    bool add_task(const task_type& task);
 
     void start();
 
@@ -61,7 +54,7 @@ public:
     void terminate();
 
 private:
-    static void thread_process(void *p);
+    void thread_process();
 };
 
 }

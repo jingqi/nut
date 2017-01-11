@@ -3,7 +3,7 @@
 #define ___HEADFILE___9698630E_2BC3_42BB_91C2_734500687C95_
 
 #include <assert.h>
-#include <stdlib.h> // for NULL
+#include <stdlib.h> // for nullptr
 
 namespace nut
 {
@@ -16,11 +16,10 @@ class rc_ptr
 {
 protected:
     template <typename U> friend class rc_ptr;
-    T *_ptr = NULL;
+    T *_ptr = nullptr;
 
 public:
-    rc_ptr()
-    {}
+    rc_ptr() = default;
 
     /**
      * 类型转换
@@ -55,7 +54,7 @@ public:
     rc_ptr(rc_ptr<U>&& p)
     {
         _ptr = p._ptr;
-        p._ptr = NULL;
+        p._ptr = nullptr;
     }
 
     ~rc_ptr()
@@ -96,8 +95,8 @@ public:
 
         T *tmp = _ptr;
         _ptr = p._ptr;
-        p._ptr = NULL;
-        if (NULL != tmp)
+        p._ptr = nullptr;
+        if (nullptr != tmp)
             tmp->release_ref();
 
         return *this;
@@ -132,13 +131,13 @@ public:
 
     T* operator->() const
     {
-        assert(NULL != _ptr);
+        assert(nullptr != _ptr);
         return _ptr;
     }
 
     T& operator*() const
     {
-        assert(NULL != _ptr);
+        assert(nullptr != _ptr);
         return *_ptr;
     }
 
@@ -149,9 +148,9 @@ public:
             return;
 
         // 先添加引用，以免先减少引用的话引发连锁反应
-        if (p != NULL)
+        if (p != nullptr)
             p->add_ref();
-        if (_ptr != NULL)
+        if (_ptr != nullptr)
             _ptr->release_ref();
         _ptr = p;
     }
@@ -163,20 +162,20 @@ public:
 
     bool is_null() const
     {
-        return NULL == _ptr;
+        return nullptr == _ptr;
     }
 
     bool is_not_null() const
     {
-        return NULL != _ptr;
+        return nullptr != _ptr;
     }
 
     void set_null()
     {
-        if (_ptr != NULL)
+        if (_ptr != nullptr)
         {
             _ptr->release_ref();
-            _ptr = NULL;
+            _ptr = nullptr;
         }
     }
 };

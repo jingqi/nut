@@ -98,9 +98,9 @@ BitSieve::BitSieve(const BigInteger& base, int search_len)
 
 BitSieve::~BitSieve()
 {
-    if (NULL != _bits)
+    if (nullptr != _bits)
         ::free(_bits);
-    _bits = NULL;
+    _bits = nullptr;
     _bits_cap = 0;
 }
 

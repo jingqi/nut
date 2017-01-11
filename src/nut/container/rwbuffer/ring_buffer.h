@@ -30,7 +30,7 @@ class NUT_API RingBuffer
 
      */
 
-    void *_buffer = NULL;
+    void *_buffer = nullptr;
     size_t _capacity = 0;
     size_t _read_index = 0, _write_index = 0;
 
@@ -38,7 +38,7 @@ private:
     void ensure_writable_size(size_t write_size);
 
 public:
-    RingBuffer();
+    RingBuffer() = default;
     RingBuffer(const RingBuffer& x);
     RingBuffer(RingBuffer&& x);
     ~RingBuffer();

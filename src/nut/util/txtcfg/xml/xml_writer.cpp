@@ -12,7 +12,7 @@ XmlWriter::XmlWriter(std::ostream *os)
 
 void XmlWriter::start_element(const char *name)
 {
-    assert(NULL != name && '\0' != name[0]);
+    assert(nullptr != name && '\0' != name[0]);
 
     if (!_elem_path.empty())
     {
@@ -48,7 +48,7 @@ void XmlWriter::end_element()
 
 void XmlWriter::write_attribute(const char *name, const char *value)
 {
-    assert(NULL != name && '\0' != name[0] && NULL != value);
+    assert(nullptr != name && '\0' != name[0] && nullptr != value);
     if (_elem_path.empty())
         return;
     if (_elem_path.at(_elem_path.size() - 1).has_child)
@@ -63,7 +63,7 @@ void XmlWriter::write_attribute(const char *name, const char *value)
 
 void XmlWriter::write_text(const char *text)
 {
-    assert(NULL != text);
+    assert(nullptr != text);
     if (!_elem_path.empty())
     {
         ElemState& parent_state = _elem_path[_elem_path.size() - 1];
@@ -77,7 +77,7 @@ void XmlWriter::write_text(const char *text)
 
 void XmlWriter::write_comment(const char *comment)
 {
-    assert(NULL != comment);
+    assert(nullptr != comment);
     if (!_elem_path.empty())
     {
         ElemState& parent_state = _elem_path[_elem_path.size() - 1];
@@ -93,9 +93,9 @@ void XmlWriter::write_comment(const char *comment)
 
 void XmlWriter::write(const char *s, int len)
 {
-    if (NULL == _os)
+    if (nullptr == _os)
         return;
-    if (NULL == s || 0 == len)
+    if (nullptr == s || 0 == len)
         return;
     if (len < 0)
         *_os << s;

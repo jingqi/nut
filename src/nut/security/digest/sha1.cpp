@@ -34,7 +34,7 @@ void SHA1::update(uint8_t byte)
 
 void SHA1::update(const void *buf, size_t cb)
 {
-    assert(NULL != buf || 0 == cb);
+    assert(nullptr != buf || 0 == cb);
 
     /* Calculate number of bytes mod 64 */
     uint32_t index = _bytes_len & 0x3F;
@@ -84,7 +84,7 @@ void SHA1::digest()
 
 const uint8_t* SHA1::get_bytes_result(void *result) const
 {
-    if (NULL != result)
+    if (nullptr != result)
         ::memcpy(result, _state, 20);
     return (const uint8_t*) _state;
 }
@@ -115,7 +115,7 @@ std::string SHA1::get_string_result() const
 
 void SHA1::transform512bits(const void *block)
 {
-    assert(NULL != block);
+    assert(nullptr != block);
 
     uint32_t w[80];
     for (int i = 0; i < 16; ++i)

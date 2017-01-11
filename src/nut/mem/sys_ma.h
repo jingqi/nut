@@ -28,9 +28,9 @@ class NUT_API sys_ma : public memory_allocator
 #endif
 
 private:
-    // Invalid methods
-    sys_ma(const sys_ma&);
-    sys_ma& operator=(const sys_ma&);
+    // Non-copyable
+    sys_ma(const sys_ma&) = delete;
+    sys_ma& operator=(const sys_ma&) = delete;
 
 public:
     sys_ma();

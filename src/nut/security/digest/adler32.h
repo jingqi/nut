@@ -16,7 +16,7 @@ class NUT_API Adler32
     uint32_t _result = 1;
 
 public:
-    Adler32();
+    Adler32() = default;
 
     void reset();
 
@@ -32,7 +32,7 @@ class NUT_API RollingAdler32
 {
     uint32_t _result = 1;
     const size_t _window_size = 16;
-    uint8_t *_buf = NULL;
+    uint8_t *_buf = nullptr;
     size_t _count = 0;
 
 public:

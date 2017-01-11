@@ -41,7 +41,7 @@ void* sys_ma::alloc(size_t sz)
 #ifndef NDEBUG
     const size_t total_sz = sz + sizeof(uint32_t) * 3;
     void* ret = ::malloc(total_sz);
-    assert(NULL != ret);
+    assert(nullptr != ret);
     *(uint32_t*) ret = (uint32_t) sz;
     ((uint32_t*) ret)[1] = _left_tag;
     *(uint32_t*) (((uint8_t*) ret) + sizeof(uint32_t) * 2 + sz) = _right_tag;
@@ -56,7 +56,7 @@ void* sys_ma::alloc(size_t sz)
 
 void* sys_ma::realloc(void *p, size_t old_sz, size_t new_sz)
 {
-    assert(NULL != p && old_sz > 0 && new_sz > 0);
+    assert(nullptr != p && old_sz > 0 && new_sz > 0);
     NUT_DEBUGGING_ASSERT_ALIVE;
 
 #ifndef NDEBUG
@@ -69,7 +69,7 @@ void* sys_ma::realloc(void *p, size_t old_sz, size_t new_sz)
 
     const size_t total_sz = new_sz + sizeof(uint32_t) * 3;
     void *ret = ::realloc(((uint32_t*) p) - 2, total_sz);
-    assert(NULL != ret);
+    assert(nullptr != ret);
     *(uint32_t*) ret = (uint32_t) new_sz;
     ((uint32_t*) ret)[1] = _left_tag;
     *(uint32_t*) (((uint8_t*) ret) + sizeof(uint32_t) * 2 + new_sz) = _right_tag;
@@ -87,7 +87,7 @@ void* sys_ma::realloc(void *p, size_t old_sz, size_t new_sz)
 
 void sys_ma::free(void *p, size_t sz)
 {
-    assert(NULL != p && sz > 0);
+    assert(nullptr != p && sz > 0);
     NUT_DEBUGGING_ASSERT_ALIVE;
 
 #ifndef NDEBUG

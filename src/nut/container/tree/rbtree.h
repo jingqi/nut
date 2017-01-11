@@ -23,10 +23,10 @@ public:
      */
     static NODE* insert(NODE *root, NODE *new_node)
     {
-        assert(NULL != new_node);
-        NODE *parent = NULL;
+        assert(nullptr != new_node);
+        NODE *parent = nullptr;
         bool insert_to_left = true;
-        for (NODE *current = root; NULL != current; )
+        for (NODE *current = root; nullptr != current; )
         {
             parent = current;
             if (new_node->get_key() < current->get_key())
@@ -42,7 +42,7 @@ public:
         }
 
         new_node->set_parent(parent);
-        if (NULL == parent)
+        if (nullptr == parent)
             root = new_node;
         else if (insert_to_left)
             parent->set_left_child(new_node);
@@ -62,24 +62,24 @@ public:
      */
     static NODE* remove(NODE *root, NODE *to_be_del)
     {
-        assert(NULL != to_be_del);
-        NODE *escaper = NULL;
-        if (NULL == to_be_del->get_left_child() || NULL == to_be_del->get_right_child())
+        assert(nullptr != to_be_del);
+        NODE *escaper = nullptr;
+        if (nullptr == to_be_del->get_left_child() || nullptr == to_be_del->get_right_child())
             escaper = to_be_del;
         else
             escaper = BSTree<K,NODE>::successor(to_be_del);
 
-        NODE *sublink = NULL;
-        if (NULL != escaper->get_left_child())
+        NODE *sublink = nullptr;
+        if (nullptr != escaper->get_left_child())
             sublink = escaper->get_left_child();
         else
             sublink = escaper->get_right_child();
 
         NODE *sublink_parent = escaper->get_parent();
-        if (NULL != sublink)
+        if (nullptr != sublink)
             sublink->set_parent(sublink_parent);
 
-        if (NULL == sublink_parent)
+        if (nullptr == sublink_parent)
             root = sublink;
         else if (escaper == sublink_parent->get_left_child())
             sublink_parent->set_left_child(sublink);
@@ -94,7 +94,7 @@ public:
             escaper->set_right_child(to_be_del->get_right_child());
             escaper->set_parent(to_be_del->get_parent());
             escaper->set_red(to_be_del->is_red());
-            if (NULL == to_be_del->get_parent())
+            if (nullptr == to_be_del->get_parent())
                 root = escaper;
             else if (to_be_del == to_be_del->get_parent()->get_left_child())
                 to_be_del->get_parent()->set_left_child(escaper);
@@ -122,13 +122,13 @@ private:
          *         Y         ->            X
          *        / \                     / \
          */
-        assert(NULL != x);
+        assert(nullptr != x);
         NODE *y = x->get_right_child();
         x->set_right_child(y->get_left_child());
-        if (NULL != y->get_left_child())
+        if (nullptr != y->get_left_child())
             y->get_left_child()->set_parent(x);
         y->set_parent(x->get_parent());
-        if (NULL == x->get_parent())
+        if (nullptr == x->get_parent())
             root = y;
         else if (x == x->get_parent()->get_left_child())
             x->get_parent()->set_left_child(y);
@@ -152,13 +152,13 @@ private:
          *      Y             ->                X
          *     / \                             / \
          */
-        assert(NULL != x);
+        assert(nullptr != x);
         NODE *y = x->get_left_child();
         x->set_left_child(y->get_right_child());
-        if (NULL != y->get_right_child())
+        if (nullptr != y->get_right_child())
             y->get_right_child()->set_parent(x);
         y->set_parent(x->get_parent());
-        if (NULL == x->get_parent())
+        if (nullptr == x->get_parent())
             root = y;
         else if (x == x->get_parent()->get_left_child())
             x->get_parent()->set_left_child(y);
@@ -172,15 +172,15 @@ private:
 
     static NODE* _rb_insert_fixup(NODE *root, NODE *x)
     {
-        assert(NULL != x && x->is_red());
-        while (NULL != x->get_parent() && x->get_parent()->is_red())
+        assert(nullptr != x && x->is_red());
+        while (nullptr != x->get_parent() && x->get_parent()->is_red())
         {
             NODE *parent = x->get_parent();
-            assert(NULL != parent->get_parent()); // because the root is always black
+            assert(nullptr != parent->get_parent()); // because the root is always black
             if (parent == parent->get_parent()->get_left_child())
             {
                 NODE *uncle = parent->get_parent()->get_right_child();
-                if (NULL != uncle && uncle->is_red())
+                if (nullptr != uncle && uncle->is_red())
                 {
                     /* case 1:
                      *
@@ -230,7 +230,7 @@ private:
             else
             {
                 NODE *uncle = parent->get_parent()->get_left_child();
-                if (NULL != uncle && uncle->is_red())
+                if (nullptr != uncle && uncle->is_red())
                 {
                     /* case 1:
                      *
@@ -284,13 +284,13 @@ private:
 
     static NODE* _rb_delete_fixup(NODE *root, NODE *sublink, NODE *sublink_parent)
     {
-        while (sublink != root && (NULL == sublink || !sublink->is_red()))
+        while (sublink != root && (nullptr == sublink || !sublink->is_red()))
         {
-            assert(NULL != sublink_parent); // because sublink is not root
+            assert(nullptr != sublink_parent); // because sublink is not root
             if (sublink == sublink_parent->get_left_child())
             {
                 NODE *brother = sublink_parent->get_right_child();
-                assert(NULL != brother); // because before deleting, there must be a right branch here to ensure
+                assert(nullptr != brother); // because before deleting, there must be a right branch here to ensure
                 // the same black height with left branch
 
                 if (brother->is_red())
@@ -310,7 +310,8 @@ private:
                     brother = sublink_parent->get_right_child();
                 }
 
-                if ((NULL == brother->get_left_child() || !brother->get_left_child()->is_red()) && (NULL == brother->get_right_child() || !brother->get_right_child()->is_red()))
+                if ((nullptr == brother->get_left_child() || !brother->get_left_child()->is_red()) &&
+                    (nullptr == brother->get_right_child() || !brother->get_right_child()->is_red()))
                 {
                     /* case 2:
                      *
@@ -327,7 +328,7 @@ private:
                 }
                 else
                 {
-                    if (NULL == brother->get_right_child() || !brother->get_right_child()->is_red())
+                    if (nullptr == brother->get_right_child() || !brother->get_right_child()->is_red())
                     {
                         /* case 3:
                          *
@@ -360,13 +361,13 @@ private:
                     brother->get_right_child()->set_red(false);
                     root = _left_rotate(root, sublink_parent);
                     sublink = root; // end the loop
-                    sublink_parent = NULL;
+                    sublink_parent = nullptr;
                }
             }
             else
             {
                 NODE *brother = sublink_parent->get_left_child();
-                assert(NULL != brother); // because before deleting, there must be a left branch here to ensure
+                assert(nullptr != brother); // because before deleting, there must be a left branch here to ensure
                 // the same black height with right branch
 
                 if (brother->is_red())
@@ -386,7 +387,8 @@ private:
                     brother = sublink_parent->get_left_child();
                 }
 
-                if ((NULL == brother->get_left_child() || !brother->get_left_child()->is_red()) && (NULL == brother->get_right_child() || !brother->get_right_child()->is_red()))
+                if ((nullptr == brother->get_left_child() || !brother->get_left_child()->is_red()) &&
+                    (nullptr == brother->get_right_child() || !brother->get_right_child()->is_red()))
                 {
                     /* case 2:
                      *
@@ -403,7 +405,7 @@ private:
                 }
                 else
                 {
-                    if (NULL == brother->get_left_child() || !brother->get_left_child()->is_red())
+                    if (nullptr == brother->get_left_child() || !brother->get_left_child()->is_red())
                     {
                         /* case 3:
                          *
@@ -436,7 +438,7 @@ private:
                     brother->get_left_child()->set_red(false);
                     root = _right_rotate(root, sublink_parent);
                     sublink = root; // end the loop
-                    sublink_parent = NULL;
+                    sublink_parent = nullptr;
                 }
             }
         }

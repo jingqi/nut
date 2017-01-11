@@ -40,7 +40,7 @@ AddrMapManager::~AddrMapManager()
 
 bool AddrMapManager::is_valid() const
 {
-    return NULL != this && _destruct_tag == CONSTRUCTED_TAG;
+    return nullptr != this && _destruct_tag == CONSTRUCTED_TAG;
 }
 
 const std::string& AddrMapManager::get_exec_path() const
@@ -76,7 +76,7 @@ void AddrMapManager::load(const std::string& path)
 
 bool AddrMapManager::find(const std::string& path, addr_type *out_addr)
 {
-    assert(NULL != out_addr);
+    assert(nullptr != out_addr);
     *out_addr = 0;
 
     addr_map_t::iterator iter = _addr_map.find(path);
@@ -109,7 +109,7 @@ bool AddrMapManager::parse_line(const std::string& str_line, bool fappoint_path,
 
     if (str_path.size() > 0 && str_addr.size() > 0)
     {
-        char* pch_end = NULL;
+        char* pch_end = nullptr;
         addr_type addr = ::strtoul(str_addr.c_str(), &pch_end, 16);
         addr_map_t::iterator iter = _addr_map.find(str_path);
         // 据观察，第一个地址是最小的，所以之后的地址不需要了

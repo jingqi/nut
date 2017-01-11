@@ -201,20 +201,20 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
      */
     if (b.is_zero())
     {
-        if (NULL != d)
+        if (nullptr != d)
             *d = a;
-        if (NULL != x)
+        if (nullptr != x)
             *x = 1;
-        if (NULL != y)
+        if (nullptr != y)
             *y = 0;
         return;
     }
 
     BigInteger xx(0), yy(0);
     extended_euclid(b, a % b, d, &yy, &xx);
-    if (NULL != y)
+    if (nullptr != y)
         *y = yy - a / b * xx;
-    if (NULL != x)
+    if (nullptr != x)
         *x = std::move(xx);
     return;
 #elif (OPTIMIZE_LEVEL == 1)
@@ -227,11 +227,11 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
      */
     if (b.is_zero())
     {
-        if (NULL != d)
+        if (nullptr != d)
             *d = a;
-        if (NULL != x)
+        if (nullptr != x)
             *x = 1;
-        if (NULL != y)
+        if (nullptr != y)
             *y = 0;
         return;
     }
@@ -241,7 +241,7 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
         extended_euclid(a >> 1, b >> 1, d, x, y);
         // d = dd * 2;
         // x = xx; y = yy;
-        if (NULL != d)
+        if (nullptr != d)
             *d <<= 1;
         return;
     }
@@ -253,16 +253,16 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
         {
             // d = dd;
             // x = xx / 2; y = yy;
-            if (NULL != x)
+            if (nullptr != x)
                 *x = xx >> 1;
         }
         else
         {
             // d = dd;
             // x = (xx + b) / 2; y = yy - a / 2;
-            if (NULL != x)
+            if (nullptr != x)
                 *x = (xx + b) >> 1;
-            if (NULL != y)
+            if (nullptr != y)
                 *y -= a >> 1;
         }
         return;
@@ -275,16 +275,16 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
         {
             // d = dd;
             // x = xx; y = yy / 2;
-            if (NULL != y)
+            if (nullptr != y)
                 *y = yy >> 1;
         }
         else
         {
             // d = dd;
             // x = xx - b / 2; y = (yy + a) / 2;
-            if (NULL != x)
+            if (nullptr != x)
                 *x -= b >> 1;
-            if (NULL != y)
+            if (nullptr != y)
                 *y = (yy + a) >> 1;
         }
         return;
@@ -297,9 +297,9 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
         {
             // d = dd;
             // x = xx / 2; y = yy - xx / 2;
-            if (NULL != x)
+            if (nullptr != x)
                 *x = xx >> 1;
-            if (NULL != y)
+            if (nullptr != y)
                 *y -= xx >> 1;
         }
         else
@@ -307,9 +307,9 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
             // d = dd;
             // x = (xx + b) / 2; y = yy - (xx + a) / 2;
             // 或者 x = (xx - b) / 2; y = yy - (xx - a) / 2;
-            if (NULL != x)
+            if (nullptr != x)
                 *x = (xx + b) >> 1;
-            if (NULL != y)
+            if (nullptr != y)
                 *y -= (xx + a) >> 1;
         }
         return;
@@ -322,9 +322,9 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
         {
             // d = dd;
             // x = xx - yy / 2; y = yy / 2;
-            if (NULL != x)
+            if (nullptr != x)
                 *x -= yy >> 1;
-            if (NULL != y)
+            if (nullptr != y)
                 *y = yy >> 1;
         }
         else
@@ -332,9 +332,9 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
             // d = dd;
             // x = xx - (yy + b) / 2; y = (yy + a) / 2;
             // 或者 x == xx - (yy - b) / 2; y = (yy - a) / 2;
-            if (NULL != x)
+            if (nullptr != x)
                 *x -= (yy + b) >> 1;
-            if (NULL != y)
+            if (nullptr != y)
                 *y = (yy + a) >> 1;
         }
         return;
@@ -346,21 +346,21 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
     const int lb1 = a.lowest_bit(), lb2 = b.lowest_bit();
     if (lb1 < 0)
     {
-        if (NULL != d)
+        if (nullptr != d)
             *d = b;
-        if (NULL != x)
+        if (nullptr != x)
             *x = 0;
-        if (NULL != y)
+        if (nullptr != y)
             *y = 1;
         return;
     }
     else if (lb2 < 0)
     {
-        if (NULL != d)
+        if (nullptr != d)
             *d = a;
-        if (NULL != x)
+        if (nullptr != x)
             *x = 1;
-        if (NULL != y)
+        if (nullptr != y)
             *y = 0;
         return;
     }
@@ -368,7 +368,7 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
     {
         const int min_lb = (lb1 < lb2 ? lb1 : lb2);
         extended_euclid(a >> min_lb, b >> min_lb, d, x, y);
-        if (NULL != d)
+        if (nullptr != d)
             *d <<= min_lb;
         return;
     }
@@ -387,7 +387,7 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
             else if (lbx == 0)
             {
                 xx = (xx + b) >> 1;
-                if (NULL != y)
+                if (nullptr != y)
                     *y -= a >> (lb1 - done);
                 ++done;
             }
@@ -398,7 +398,7 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
                 done += min_lb;
             }
         }
-        if (NULL != x)
+        if (nullptr != x)
             *x = std::move(xx);
         return;
     }
@@ -417,7 +417,7 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
             else if (lby == 0)
             {
                 yy = (yy + a) >> 1;
-                if (NULL != x)
+                if (nullptr != x)
                     *x -= b >> (lb2 - done);
                 ++done;
             }
@@ -428,7 +428,7 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
                 done += min_lb;
             }
         }
-        if (NULL != y)
+        if (nullptr != y)
             *y = std::move(yy);
         return;
     }
@@ -440,9 +440,9 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
         {
             // d = dd;
             // x = xx / 2; y = yy - xx / 2;
-            if (NULL != x)
+            if (nullptr != x)
                 *x = xx >> 1;
-            if (NULL != y)
+            if (nullptr != y)
                 *y -= xx >> 1;
         }
         else
@@ -450,9 +450,9 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
             // d = dd;
             // x = (xx + b) / 2; y = yy - (xx + a) / 2;
             // 或者 x = (xx - b) / 2; y = yy - (xx - a) / 2;
-            if (NULL != x)
+            if (nullptr != x)
                 *x = (xx + b) >> 1;
-            if (NULL != y)
+            if (nullptr != y)
                 *y -= (xx + a) >> 1;
         }
         return;
@@ -465,9 +465,9 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
         {
             // d = dd;
             // x = xx - yy / 2; y = yy / 2;
-            if (NULL != x)
+            if (nullptr != x)
                 *x -= yy >> 1;
-            if (NULL != y)
+            if (nullptr != y)
                 *y = yy >> 1;
         }
         else
@@ -475,9 +475,9 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
             // d = dd;
             // x = xx - (yy + b) / 2; y = (yy + a) / 2;
             // 或者 x == xx - (yy - b) / 2; y = (yy - a) / 2;
-            if (NULL != x)
+            if (nullptr != x)
                 *x -= (yy + b) >> 1;
-            if (NULL != y)
+            if (nullptr != y)
                 *y = (yy + a) >> 1;
         }
         return;
@@ -498,7 +498,7 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
             aa %= bb;
             BigInteger::swap(&aa, &bb);
         }
-        if (NULL != d)
+        if (nullptr != d)
             *d = aa;
 
         BigInteger xx(1), yy(0);
@@ -510,9 +510,9 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
             as.pop();
             yy -= aa / bb * xx;
         }
-        if (NULL != x)
+        if (nullptr != x)
             *x = std::move(xx);
-        if (NULL != y)
+        if (nullptr != y)
             *y = std::move(yy);
         return;
     }
@@ -525,7 +525,7 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
         const int lb1 = aa.lowest_bit(), lb2 = bb.lowest_bit();
         if (lb1 < 0)
         {
-            if (NULL != d)
+            if (nullptr != d)
                 *d = (bb << left_shift);
             xx = 0;
             yy = 1;
@@ -533,7 +533,7 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
         }
         else if (lb2 < 0)
         {
-            if (NULL != d)
+            if (nullptr != d)
                 *d = (aa << left_shift);
             xx = 1;
             yy = 0;
@@ -575,7 +575,7 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
             bb >>= 1;
         }
     }
-    if (NULL == x && NULL == y)
+    if (nullptr == x && nullptr == y)
         return;
 
     while (!lb1s.empty())
@@ -685,9 +685,9 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
             }
         }
     }
-    if (NULL != x)
+    if (nullptr != x)
         *x = std::move(xx);
-    if (NULL != y)
+    if (nullptr != y)
         *y = std::move(yy);
     return;
 #endif

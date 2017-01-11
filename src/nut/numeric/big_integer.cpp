@@ -21,7 +21,7 @@ void BigInteger::ensure_cap(size_type new_size)
         new_cap = new_size;
 
     _data = (word_type*) ::realloc(_data, sizeof(word_type) * new_cap);
-    assert(NULL != _data);
+    assert(nullptr != _data);
     _capacity = new_cap;
 }
 
@@ -51,7 +51,7 @@ BigInteger::BigInteger(long long v)
 
 BigInteger::BigInteger(const word_type *buf, size_type len, bool with_sign)
 {
-    assert(NULL != buf && len > 0);
+    assert(nullptr != buf && len > 0);
 
     if (with_sign || nut::is_positive(buf, len))
     {
@@ -82,16 +82,16 @@ BigInteger::BigInteger(self_type&& x)
     _capacity = x._capacity;
     _significant_len = x._significant_len;
 
-    x._data = NULL;
+    x._data = nullptr;
     x._capacity = 0;
     x._significant_len = 0;
 }
 
 BigInteger::~BigInteger()
 {
-    if (NULL != _data)
+    if (nullptr != _data)
         ::free(_data);
-    _data = NULL;
+    _data = nullptr;
     _capacity = 0;
     _significant_len = 0;
 }
@@ -112,12 +112,12 @@ BigInteger& BigInteger::operator=(self_type&& x)
     if (this == &x)
         return *this;
 
-    if (NULL != _data)
+    if (nullptr != _data)
         ::free(_data);
     _data = x._data;
     _capacity = x._capacity;
     _significant_len = x._significant_len;
-    x._data = NULL;
+    x._data = nullptr;
     x._capacity = 0;
     x._significant_len = 0;
     return *this;
@@ -149,7 +149,7 @@ BigInteger BigInteger::operator%(const self_type& x) const
     }
 
     self_type ret(0);
-    self_type::divide(*this, x, NULL, &ret);
+    self_type::divide(*this, x, nullptr, &ret);
     return ret;
 }
 
@@ -166,7 +166,7 @@ BigInteger& BigInteger::operator%=(const self_type& x)
             return *this -= x;
     }
 
-    self_type::divide(*this, x, NULL, this);
+    self_type::divide(*this, x, nullptr, this);
     return *this;
 }
 
@@ -213,7 +213,7 @@ BigInteger& BigInteger::operator>>=(size_type count)
 
 void BigInteger::add(const self_type& a, const self_type& b, self_type *x)
 {
-    assert(NULL != x);
+    assert(nullptr != x);
 
     const size_type max_len = (a._significant_len > b._significant_len ? a._significant_len : b._significant_len);
     x->ensure_cap(max_len + 1);
@@ -225,7 +225,7 @@ void BigInteger::add(const self_type& a, const self_type& b, self_type *x)
 void BigInteger::add(const self_type& a, long long b, self_type *x)
 {
     static_assert(sizeof(b) % sizeof(word_type) == 0, "整数长度对齐问题");
-    assert(NULL != x);
+    assert(nullptr != x);
 
     const size_type max_len = (a._significant_len > sizeof(b) / sizeof(word_type) ? a._significant_len : sizeof(b) / sizeof(word_type));
     x->ensure_cap(max_len + 1);
@@ -237,7 +237,7 @@ void BigInteger::add(const self_type& a, long long b, self_type *x)
 void BigInteger::add(long long a, const self_type& b, self_type *x)
 {
     static_assert(sizeof(a) % sizeof(word_type) == 0, "整数长度对齐问题");
-    assert(NULL != x);
+    assert(nullptr != x);
 
     const size_type max_len = (sizeof(a) / sizeof(word_type) > b._significant_len ? sizeof(a) / sizeof(word_type) : b._significant_len);
     x->ensure_cap(max_len + 1);
@@ -248,7 +248,7 @@ void BigInteger::add(long long a, const self_type& b, self_type *x)
 
 void BigInteger::sub(const self_type& a, const self_type& b, self_type *x)
 {
-    assert(NULL != x);
+    assert(nullptr != x);
 
     const size_type max_len = (a._significant_len > b._significant_len ? a._significant_len : b._significant_len);
     x->ensure_cap(max_len + 1);
@@ -260,7 +260,7 @@ void BigInteger::sub(const self_type& a, const self_type& b, self_type *x)
 void BigInteger::sub(const self_type& a, long long b, self_type *x)
 {
     static_assert(sizeof(b) % sizeof(word_type) == 0, "整数长度对齐问题");
-    assert(NULL != x);
+    assert(nullptr != x);
 
     const size_type max_len = (a._significant_len > sizeof(b) / sizeof(word_type) ? a._significant_len : sizeof(b) / sizeof(word_type));
     x->ensure_cap(max_len + 1);
@@ -272,7 +272,7 @@ void BigInteger::sub(const self_type& a, long long b, self_type *x)
 void BigInteger::sub(long long a, const self_type& b, self_type *x)
 {
     static_assert(sizeof(a) % sizeof(word_type) == 0, "整数长度对齐问题");
-    assert(NULL != x);
+    assert(nullptr != x);
 
     const size_type max_len = (sizeof(a) / sizeof(word_type) > b._significant_len ? sizeof(a) / sizeof(word_type) : b._significant_len);
     x->ensure_cap(max_len + 1);
@@ -283,7 +283,7 @@ void BigInteger::sub(long long a, const self_type& b, self_type *x)
 
 void BigInteger::negate(const self_type &a, self_type *x)
 {
-    assert(NULL != x);
+    assert(nullptr != x);
 
     x->ensure_cap(a._significant_len + 1);
     signed_negate(a._data, a._significant_len, x->_data, a._significant_len + 1);
@@ -293,7 +293,7 @@ void BigInteger::negate(const self_type &a, self_type *x)
 
 void BigInteger::increase(self_type *x)
 {
-    assert(NULL != x);
+    assert(nullptr != x);
     x->ensure_significant_len(x->_significant_len + 1);
     nut::increase(x->_data, x->_significant_len);
     x->minimize_significant_len();
@@ -301,7 +301,7 @@ void BigInteger::increase(self_type *x)
 
 void BigInteger::decrease(self_type *x)
 {
-    assert(NULL != x);
+    assert(nullptr != x);
     x->ensure_significant_len(x->_significant_len + 1);
     nut::decrease(x->_data, x->_significant_len);
     x->minimize_significant_len();
@@ -309,7 +309,7 @@ void BigInteger::decrease(self_type *x)
 
 void BigInteger::multiply(const self_type& a, const self_type& b, self_type *x)
 {
-    assert(NULL != x);
+    assert(nullptr != x);
 
     x->ensure_cap(a._significant_len + b._significant_len);
     signed_multiply(a._data, a._significant_len, b._data, b._significant_len,
@@ -321,7 +321,7 @@ void BigInteger::multiply(const self_type& a, const self_type& b, self_type *x)
 void BigInteger::multiply(const self_type& a, long long b, self_type *x)
 {
     static_assert(sizeof(b) % sizeof(word_type) == 0, "整数长度对齐问题");
-    assert(NULL != x);
+    assert(nullptr != x);
 
     x->ensure_cap(a._significant_len + sizeof(b) / sizeof(word_type));
     signed_multiply(a._data, a._significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type),
@@ -333,7 +333,7 @@ void BigInteger::multiply(const self_type& a, long long b, self_type *x)
 void BigInteger::multiply(long long a, const self_type& b, self_type *x)
 {
     static_assert(sizeof(a) % sizeof(word_type) == 0, "整数长度对齐问题");
-    assert(NULL != x);
+    assert(nullptr != x);
 
     x->ensure_cap(sizeof(a) / sizeof(word_type) + b._significant_len);
     signed_multiply((word_type*)&a, sizeof(a) / sizeof(word_type), b._data, b._significant_len,
@@ -348,24 +348,24 @@ void BigInteger::multiply(long long a, const self_type& b, self_type *x)
  */
 void BigInteger::divide(const self_type& a, const self_type& b, self_type *result, self_type *remainder)
 {
-    assert(NULL != result || NULL != remainder);
+    assert(nullptr != result || nullptr != remainder);
     assert(!b.is_zero());
 
-    if (NULL != result)
+    if (nullptr != result)
         result->ensure_cap(a._significant_len);
-    if (NULL != remainder)
+    if (nullptr != remainder)
         remainder->ensure_cap(b._significant_len);
 
     signed_divide(a._data, a._significant_len, b._data, b._significant_len,
-           (NULL == result ? NULL : result->_data), a._significant_len,
-           (NULL == remainder ? NULL : remainder->_data), b._significant_len);
+           (nullptr == result ? nullptr : result->_data), a._significant_len,
+           (nullptr == remainder ? nullptr : remainder->_data), b._significant_len);
 
-    if (NULL != result)
+    if (nullptr != result)
     {
         result->_significant_len = a._significant_len;
         result->minimize_significant_len();
     }
-    if (NULL != remainder)
+    if (nullptr != remainder)
     {
         remainder->_significant_len = b._significant_len;
         remainder->minimize_significant_len();
@@ -550,10 +550,10 @@ BigInteger BigInteger::rand_between(const self_type& a, const self_type& b)
  */
 void BigInteger::swap(self_type *a, self_type *b)
 {
-    assert(NULL != a && NULL != b);
+    assert(nullptr != a && nullptr != b);
     word_type *tmp = a->_data;
     const size_type tmp_sig = a->_significant_len;
-    a->_data = NULL;
+    a->_data = nullptr;
     a->_capacity = 0;
 
     a->ensure_cap(b->_significant_len);

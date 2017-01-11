@@ -15,7 +15,7 @@ namespace nut
 
 class NUT_API CmdExit : public ICommand
 {
-    IConsole *_console = NULL;
+    IConsole *_console = nullptr;
 
 public:
     CmdExit(IConsole *c);

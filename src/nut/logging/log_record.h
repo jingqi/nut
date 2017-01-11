@@ -18,11 +18,11 @@ class NUT_API LogRecord
 private:
     DateTime _time;
     LogLevel _level = LL_DEBUG;
-    const char *_tag = NULL;            // can be NULL, which indicated a root tag
-    const char *_file_path = NULL;
+    const char *_tag = nullptr;            // Can be nullptr, which indicated a root tag
+    const char *_file_path = nullptr;
     int _line = -1;
-    const char *_func = NULL;           // can be NULL, when the source location is out of any function
-    char *_message = NULL;
+    const char *_func = nullptr;           // Can be nullptr, when the source location is out of any function
+    char *_message = nullptr;
 
 private:
     LogRecord(const LogRecord&);

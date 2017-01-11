@@ -12,8 +12,7 @@ class Runnable
     NUT_REF_COUNTABLE
 
 public:
-    virtual ~Runnable()
-    {}
+    virtual ~Runnable() = default;
 
     virtual void run() = 0;
 };

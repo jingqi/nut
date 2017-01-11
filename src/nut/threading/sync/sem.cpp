@@ -13,11 +13,11 @@ Semaphore::Semaphore(int init_value)
 {
 #if NUT_PLATFORM_OS_WINDOWS
     _sem = ::CreateSemaphoreA(
-        NULL, // security attributes
+        nullptr, // security attributes
         init_value, // initial count
         0x7fffffff, // maximum value
-        NULL); // name
-    assert(NULL != _sem);
+        nullptr); // name
+    assert(nullptr != _sem);
 #else
     const int rs = ::sem_init(&_sem, 0, init_value);
     assert(0 == rs);
@@ -54,7 +54,7 @@ void Semaphore::wait()
 void Semaphore::post()
 {
 #if NUT_PLATFORM_OS_WINDOWS
-    const BOOL rs = ::ReleaseSemaphore(_sem, 1, NULL);
+    const BOOL rs = ::ReleaseSemaphore(_sem, 1, nullptr);
     assert(FALSE != rs);
     UNUSED(rs);
 #else

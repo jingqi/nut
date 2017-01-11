@@ -16,8 +16,8 @@ namespace nut
 Mutex::Mutex()
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
-    _hmutex = ::CreateMutex(NULL, FALSE, NULL);
-    assert(NULL != _hmutex);
+    _hmutex = ::CreateMutex(nullptr, FALSE, nullptr);
+    assert(nullptr != _hmutex);
 #elif NUT_PLATFORM_OS_MAC
     ::pthread_mutexattr_t attr;
     ::pthread_mutexattr_init(&attr);
@@ -109,7 +109,7 @@ bool Mutex::trylock()
  */
 static int _pthread_mutex_timedlock(pthread_mutex_t *mutex, const struct timeval *abs_timeout)
 {
-    assert(NULL != mutex && NULL != abs_timeout);
+    assert(nullptr != mutex && nullptr != abs_timeout);
 
     while (true)
     {
@@ -127,7 +127,7 @@ static int _pthread_mutex_timedlock(pthread_mutex_t *mutex, const struct timeval
         if (0 != abs_timeout->tv_sec || 0 != abs_timeout->tv_usec) // 0 for infinitive
         {
             struct timeval now;
-            ::gettimeofday(&now, NULL); // MAC 不支持 clock_gettime()
+            ::gettimeofday(&now, nullptr); // MAC 不支持 clock_gettime()
             const long long v = (((long long) now.tv_sec) - abs_timeout->tv_sec) * 1000 * 1000 +
                 (now.tv_usec - abs_timeout->tv_usec);
             if (v >= 0) // timeout
@@ -154,7 +154,7 @@ bool Mutex::timedlock(unsigned s, unsigned ms)
     return WAIT_OBJECT_0 == ::WaitForSingleObject(_hmutex, dw_milliseconds);
 #elif NUT_PLATFORM_OS_MAC
     struct timeval abstime;
-    ::gettimeofday(&abstime, NULL);
+    ::gettimeofday(&abstime, nullptr);
     abstime.tv_sec += s;
     abstime.tv_usec += ((long)ms) * 1000;
     return 0 == _pthread_mutex_timedlock(&_mutex, &abstime);

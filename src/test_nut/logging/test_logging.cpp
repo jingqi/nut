@@ -31,7 +31,7 @@ NUT_FIXTURE(TestLogging)
         NUT_LOG_I("a.b", "info msg");
         NUT_LOG_W("b.c", "warn msg");
         NUT_LOG_E("a.m", "error msg");
-        NUT_LOG_F(NULL, "fatal msg");
+        NUT_LOG_F(nullptr, "fatal msg");
 
         NUT_LOG_D("a", "debug msg");
         NUT_LOG_I("a.b", "info msg");
@@ -52,7 +52,7 @@ NUT_FIXTURE(TestLogging)
         NUT_LOG_I("a.b", "info msg");
         NUT_LOG_W("b.c", "warn msg");
         NUT_LOG_E("a.m", "error msg");
-        NUT_LOG_F(NULL, "fatal msg");
+        NUT_LOG_F(nullptr, "fatal msg");
 
         NUT_LOG_D("a", "debug msg");
         NUT_LOG_I("a.b", "info msg");
@@ -69,7 +69,7 @@ NUT_FIXTURE(TestLogging)
 
         l->add_handler(rc_new<StreamLogHandler>(std::cout));
 
-        l->get_filter().forbid(NULL, LL_INFO);
+        l->get_filter().forbid(nullptr, LL_INFO);
         l->get_filter().forbid("a.b", LL_ERROR | LL_FATAL);
         l->get_filter().unforbid("a.b", LL_ERROR);
 

@@ -25,8 +25,7 @@ public:
     int int_arg = 0;
 
 private:
-    SqliteParam()
-    {}
+    SqliteParam() = delete;
 
 public:
     SqliteParam(int arg)

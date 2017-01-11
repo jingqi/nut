@@ -11,7 +11,7 @@ namespace nut
 SourceLocation::SourceLocation(const char *file, int line, const char *func)
     : _path(file), _line(line), _func(func)
 {
-    assert(NULL != file && line >= 0);
+    assert(nullptr != file && line >= 0);
 }
 
 bool SourceLocation::operator==(const SourceLocation& x) const
@@ -21,14 +21,14 @@ bool SourceLocation::operator==(const SourceLocation& x) const
 
     if (_path != x._path)
     {
-        assert(NULL != _path && NULL != x._path);
+        assert(nullptr != _path && nullptr != x._path);
         if (0 != ::strcmp(_path, x._path))
             return false;
     }
 
     if (_func != x._func)
     {
-        if (NULL == _func || NULL == x._func)
+        if (nullptr == _func || nullptr == x._func)
             return false;
         if (0 != ::strcmp(_func, x._func))
             return false;
@@ -49,7 +49,7 @@ const char* SourceLocation::get_file_path() const
 
 const char* SourceLocation::get_file_name() const
 {
-    assert(NULL != _path);
+    assert(nullptr != _path);
 
     const char *ret = _path;
     for (const char *tmp = _path; 0 != *tmp; ++tmp)
@@ -75,7 +75,7 @@ std::string SourceLocation::to_string() const
     std::string s = get_file_name();
     s.push_back(':');
     s += nut::int_to_str(_line);
-    if (_func != NULL)
+    if (_func != nullptr)
     {
         s.push_back(' ');
         s += _func;

@@ -19,15 +19,15 @@ public:
     public:
         const size_t capacity = 0;
         size_t size = 0;
-        Fragment *next = NULL;
+        Fragment *next = nullptr;
 
         // NOTE 这一部分是变长的，应该作为最后一个成员
         uint8_t buffer[1];
 
     private:
-        // Invalid methods
-        Fragment(const Fragment&);
-        Fragment& operator=(const Fragment&);
+        // Non-copyable
+        Fragment(const Fragment&) = delete;
+        Fragment& operator=(const Fragment&) = delete;
 
     public:
         explicit Fragment(size_t cap)
@@ -36,8 +36,8 @@ public:
     };
 
 private:
-    Fragment *_read_fragment = NULL;
-    Fragment *_write_fragment = NULL;
+    Fragment *_read_fragment = nullptr;
+    Fragment *_write_fragment = nullptr;
 
     size_t _read_index = 0;
     size_t _read_available = 0;
@@ -45,7 +45,7 @@ private:
     void enqueue(Fragment *frag);
 
 public:
-    FragmentBuffer();
+    FragmentBuffer() = default;
     FragmentBuffer(const FragmentBuffer& x);
     FragmentBuffer(FragmentBuffer&& x);
     ~FragmentBuffer();
@@ -72,7 +72,7 @@ public:
     static void delete_fragment(Fragment *frag);
 
     /**
-     * @return 如果内存片段被征用，则返回 NULL，否则返回传入的同一指针
+     * @return 如果内存片段被征用，则返回 nullptr，否则返回传入的同一指针
      */
     Fragment* write_fragment(Fragment *frag);
 };

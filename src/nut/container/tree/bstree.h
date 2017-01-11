@@ -19,11 +19,11 @@ public:
      * 查找数据所在的节点
      *
      * @return
-     *      没有找到则返回 NULL
+     *      没有找到则返回 nullptr
      */
     static NODE* search(NODE *sub_root, const K& key)
     {
-        while (NULL != sub_root)
+        while (nullptr != sub_root)
         {
             if (key < sub_root->get_key())
                 sub_root = sub_root->get_left_child();
@@ -32,7 +32,7 @@ public:
             else
                 return sub_root;
         }
-        return NULL;
+        return nullptr;
     }
 
     /**
@@ -42,10 +42,10 @@ public:
      */
     static NODE* insert(NODE *root, NODE *new_node)
     {
-        assert(NULL != new_node);
-        NODE *parent = NULL;
+        assert(nullptr != new_node);
+        NODE *parent = nullptr;
         bool insert_to_left = true;
-        for (NODE *x = root; NULL != x; )
+        for (NODE *x = root; nullptr != x; )
         {
             parent = x;
             if (new_node->get_key() < x->get_key())
@@ -61,7 +61,7 @@ public:
         }
 
         new_node->set_parent(parent);
-        if (NULL == parent)
+        if (nullptr == parent)
             root = new_node;
         else if (insert_to_left)
             parent->set_left_child(new_node);
@@ -77,24 +77,24 @@ public:
      */
     static NODE* remove(NODE *root, NODE *to_be_del)
     {
-        assert(NULL != to_be_del);
-        NODE *escaper = NULL;
-        if (NULL == to_be_del->get_left_child() || NULL == to_be_del->get_right_child())
+        assert(nullptr != to_be_del);
+        NODE *escaper = nullptr;
+        if (nullptr == to_be_del->get_left_child() || nullptr == to_be_del->get_right_child())
             escaper = to_be_del;
         else
             escaper = successor(to_be_del);
 
-        NODE *sublink = NULL;
-        if (NULL != escaper->get_left_child())
+        NODE *sublink = nullptr;
+        if (nullptr != escaper->get_left_child())
             sublink = escaper->get_left_child();
         else
             sublink = escaper->get_right_child();
 
         NODE *sublink_parent = escaper->get_parent();
-        if (NULL != sublink)
+        if (nullptr != sublink)
             sublink->set_parent(sublink_parent);
 
-        if (NULL == sublink_parent)
+        if (nullptr == sublink_parent)
             root = sublink;
         else if (escaper == sublink_parent->get_left_child())
             sublink_parent->set_left_child(sublink);
@@ -106,7 +106,7 @@ public:
             escaper->set_parent(to_be_del->get_parent());
             escaper->set_left_child(to_be_del->get_left_child());
             escaper->set_right_child(to_be_del->get_right_child());
-            if (NULL == to_be_del->get_parent())
+            if (nullptr == to_be_del->get_parent())
                 root = escaper;
             else if (to_be_del == to_be_del->get_parent()->get_left_child())
                 to_be_del->get_parent()->set_left_child(escaper);
@@ -121,8 +121,8 @@ public:
      */
     static NODE* minimum(NODE *sub_root)
     {
-        assert(NULL != sub_root);
-        while (NULL != sub_root->get_left_child())
+        assert(nullptr != sub_root);
+        while (nullptr != sub_root->get_left_child())
             sub_root = sub_root->get_left_child();
         return sub_root;
     }
@@ -132,8 +132,8 @@ public:
      */
     static NODE* maximum(NODE *sub_root)
     {
-        assert(NULL != sub_root);
-        while (NULL != sub_root->get_right_child())
+        assert(nullptr != sub_root);
+        while (nullptr != sub_root->get_right_child())
             sub_root = sub_root->get_right_child();
         return sub_root;
     }
@@ -143,11 +143,11 @@ public:
      */
     static NODE* successor(NODE *x)
     {
-        assert(NULL != x);
-        if (NULL != x->get_right_child())
+        assert(nullptr != x);
+        if (nullptr != x->get_right_child())
             return minimum(x->get_right_child());
         NODE *parent = x->get_parent();
-        while (NULL != parent && x == parent->get_right_child())
+        while (nullptr != parent && x == parent->get_right_child())
         {
             x = parent;
             parent = x->get_parent();
@@ -160,11 +160,11 @@ public:
      */
     static NODE* predecessor(NODE *x)
     {
-        assert(NULL != x);
-        if (NULL != x->get_left_child())
+        assert(nullptr != x);
+        if (nullptr != x->get_left_child())
             return maximum(x->get_left_child());
         NODE *parent = x->get_parent();
-        while (NULL != parent && x == parent->get_left_child())
+        while (nullptr != parent && x == parent->get_left_child())
         {
             x = parent;
             parent = x->get_parent();

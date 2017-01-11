@@ -2,7 +2,7 @@
 #ifndef ___HEADFILE___AD10542C_56CB_4BD3_B17A_1355A3FC0EF6_
 #define ___HEADFILE___AD10542C_56CB_4BD3_B17A_1355A3FC0EF6_
 
-#include <stdlib.h> // for NULL
+#include <stdlib.h> // for nullptr
 
 #include "../nut_config.h"
 
@@ -15,8 +15,8 @@ namespace nut
  */
 class NUT_API TestCaseFailureException
 {
-    const char *_description = NULL;
-    const char *_file = NULL;
+    const char *_description = nullptr;
+    const char *_file = nullptr;
     int _line = -1;
 
 public:

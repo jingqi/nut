@@ -31,7 +31,7 @@ namespace nut
 NUT_API void str_split(const char *str, const char *sep_str,
                        std::vector<std::string> *result, bool ignore_empty)
 {
-    assert(NULL != str && NULL != sep_str && 0 != sep_str[0] && NULL != result);
+    assert(nullptr != str && nullptr != sep_str && 0 != sep_str[0] && nullptr != result);
 
     const size_t sep_len = ::strlen(sep_str);
     int *next = (int*) ::malloc(sizeof(int) * sep_len);
@@ -55,14 +55,14 @@ NUT_API void str_split(const char *str, const char *sep_str,
 NUT_API void str_split(const std::string& str, const std::string& sep_str,
                        std::vector<std::string> *result, bool ignore_empty)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
     str_split(str.c_str(), sep_str.c_str(), result, ignore_empty);
 }
 
 NUT_API void str_split(const wchar_t *str, const wchar_t *sep_str,
                        std::vector<std::wstring> *result, bool ignore_empty)
 {
-    assert(NULL != str && NULL != sep_str && 0 != sep_str[0] && NULL != result);
+    assert(nullptr != str && nullptr != sep_str && 0 != sep_str[0] && nullptr != result);
 
     const size_t sep_len = ::wcslen(sep_str);
     int *next = (int*) ::malloc(sizeof(int) * sep_len);
@@ -86,7 +86,7 @@ NUT_API void str_split(const wchar_t *str, const wchar_t *sep_str,
 NUT_API void str_split(const std::wstring& str, const std::wstring& sep_str,
                        std::vector<std::wstring> *result, bool ignore_empty)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
     str_split(str.c_str(), sep_str.c_str(), result, ignore_empty);
 }
 
@@ -97,7 +97,7 @@ NUT_API void str_split(const std::wstring& str, const std::wstring& sep_str,
 NUT_API void chr_split(const char *str_, const char *sep_chars,
                        std::vector<std::string> *result, bool ignore_empty)
 {
-    assert(NULL != str_ && NULL != sep_chars && 0 != sep_chars[0] && NULL != result);
+    assert(nullptr != str_ && nullptr != sep_chars && 0 != sep_chars[0] && nullptr != result);
 
     const std::string str(str_);
     std::string::size_type begin = 0, end = str.find_first_of(sep_chars);
@@ -115,14 +115,14 @@ NUT_API void chr_split(const char *str_, const char *sep_chars,
 NUT_API void chr_split(const std::string& str, const std::string& sep_chars,
                        std::vector<std::string> *result, bool ignore_empty)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
     chr_split(str.c_str(), sep_chars.c_str(), result, ignore_empty);
 }
 
 NUT_API void chr_split(const wchar_t *str_, const wchar_t *sep_chars,
                        std::vector<std::wstring> *result, bool ignore_empty)
 {
-    assert(NULL != str_ && NULL != sep_chars && 0 != sep_chars[0] && NULL != result);
+    assert(nullptr != str_ && nullptr != sep_chars && 0 != sep_chars[0] && nullptr != result);
 
     const std::wstring str(str_);
     std::wstring::size_type begin = 0, end = str.find_first_of(sep_chars);
@@ -140,7 +140,7 @@ NUT_API void chr_split(const wchar_t *str_, const wchar_t *sep_chars,
 NUT_API void chr_split(const std::wstring& str, const std::wstring& sep_chars,
                        std::vector<std::wstring> *result, bool ignore_empty)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
     chr_split(str.c_str(), sep_chars.c_str(), result, ignore_empty);
 }
 
@@ -150,7 +150,7 @@ NUT_API void chr_split(const std::wstring& str, const std::wstring& sep_chars,
 NUT_API void chr_split(const char *str, char c, std::vector<std::string> *result,
                        bool ignore_empty)
 {
-    assert(NULL != str && NULL != result);
+    assert(nullptr != str && nullptr != result);
     char seps[2] = {c, 0};
     chr_split(str, seps, result, ignore_empty);
 }
@@ -158,14 +158,14 @@ NUT_API void chr_split(const char *str, char c, std::vector<std::string> *result
 NUT_API void chr_split(const std::string& str, char c, std::vector<std::string> *result,
                        bool ignore_empty)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
     chr_split(str.c_str(), c, result, ignore_empty);
 }
 
 NUT_API void chr_split(const wchar_t *str, wchar_t c, std::vector<std::wstring> *result,
                        bool ignore_empty)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
     wchar_t seps[2] = {c, 0};
     chr_split(str, seps, result, ignore_empty);
 }
@@ -173,20 +173,20 @@ NUT_API void chr_split(const wchar_t *str, wchar_t c, std::vector<std::wstring> 
 NUT_API void chr_split(const std::wstring& str, wchar_t c, std::vector<std::wstring> *result,
                        bool ignore_empty)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
     chr_split(str.c_str(), c, result, ignore_empty);
 }
 
 NUT_API std::string format(const char *fmt, ...)
 {
-    assert(NULL != fmt);
+    assert(nullptr != fmt);
 
     size_t size = 100;
     char *buf = (char*) ::malloc(size);
-    assert(NULL != buf);
+    assert(nullptr != buf);
 
     va_list ap;
-    while (NULL != buf)
+    while (nullptr != buf)
     {
         va_start(ap, fmt);
         int n = ::vsnprintf(buf, size, fmt, ap);
@@ -200,12 +200,12 @@ NUT_API std::string format(const char *fmt, ...)
             size *= 2;  /* glib 2.0 */
 
         char *np = (char*) ::realloc(buf, size);
-        assert(NULL != np);
-        if (NULL != np)
+        assert(nullptr != np);
+        if (nullptr != np)
             buf = np;
     }
     std::string ret;
-    if (NULL != buf)
+    if (nullptr != buf)
     {
         ret = buf;
         ::free(buf); /* include the case of success of realloc() and failure of realloc() */
@@ -215,14 +215,14 @@ NUT_API std::string format(const char *fmt, ...)
 
 NUT_API std::wstring format(const wchar_t *fmt, ...)
 {
-    assert(NULL != fmt);
+    assert(nullptr != fmt);
 
     size_t size = 100;
     wchar_t *buf = (wchar_t*) ::malloc(size * sizeof(wchar_t));
-    assert(NULL != buf);
+    assert(nullptr != buf);
 
     va_list ap;
-    while (NULL != buf)
+    while (nullptr != buf)
     {
         va_start(ap, fmt);
 #if NUT_PLATFORM_CC_VC
@@ -242,12 +242,12 @@ NUT_API std::wstring format(const wchar_t *fmt, ...)
             size *= 2;  /* glib 2.0 */
 
         wchar_t *np = (wchar_t*) ::realloc(buf, size);
-        assert(NULL != np);
-        if (NULL != np)
+        assert(nullptr != np);
+        if (nullptr != np)
             buf = np;
     }
     std::wstring ret;
-    if (NULL != buf)
+    if (nullptr != buf)
     {
         ret = buf;
         ::free(buf); /* include the case of success of realloc() and failure of realloc() */
@@ -258,7 +258,7 @@ NUT_API std::wstring format(const wchar_t *fmt, ...)
 /* 去除首尾空白 */
 NUT_API std::string trim(const char *str_, const char *blanks)
 {
-    assert(NULL != str_ && NULL != blanks);
+    assert(nullptr != str_ && nullptr != blanks);
 
     const std::string str(str_);
     const std::string::size_type begin = str.find_first_not_of(blanks),
@@ -275,7 +275,7 @@ NUT_API std::string trim(const std::string& str, const std::string& blanks)
 
 NUT_API std::wstring trim(const wchar_t *str_, const wchar_t *blanks)
 {
-    assert(NULL != str_ && NULL != blanks);
+    assert(nullptr != str_ && nullptr != blanks);
 
     const std::wstring str(str_);
     const std::wstring::size_type begin = str.find_first_not_of(blanks),
@@ -293,7 +293,7 @@ NUT_API std::wstring trim(const std::wstring& str, const std::wstring& blanks)
 /** 去除左边空白 */
 NUT_API std::string ltrim(const char *str_, const char *blanks)
 {
-    assert(NULL != str_ && NULL != blanks);
+    assert(nullptr != str_ && nullptr != blanks);
     const std::string str(str_);
     const std::string::size_type begin = str.find_first_not_of(blanks);
     return str.substr(begin);
@@ -306,7 +306,7 @@ NUT_API std::string ltrim(const std::string& str, const std::string& blanks)
 
 NUT_API std::wstring ltrim(const wchar_t *str_, const wchar_t *blanks)
 {
-    assert(NULL != str_ && NULL != blanks);
+    assert(nullptr != str_ && nullptr != blanks);
     const std::wstring str(str_);
     const std::wstring::size_type begin = str.find_first_not_of(blanks);
     return str.substr(begin);
@@ -320,7 +320,7 @@ NUT_API std::wstring ltrim(const std::wstring str, const std::wstring& blanks)
 /** 去除右边空白 */
 NUT_API std::string rtrim(const char *str_, const char *blanks)
 {
-    assert(NULL != str_ && NULL != blanks);
+    assert(nullptr != str_ && nullptr != blanks);
     const std::string str(str_);
     const std::string::size_type end = str.find_last_not_of(blanks);
     if (std::string::npos != end)
@@ -335,7 +335,7 @@ NUT_API std::string rtrim(const std::string& str, const std::string& blanks)
 
 NUT_API std::wstring rtrim(const wchar_t *str_, const wchar_t *blanks)
 {
-    assert(NULL != str_ && NULL != blanks);
+    assert(nullptr != str_ && nullptr != blanks);
     const std::wstring str(str_);
     const std::wstring::size_type end = str.find_last_not_of(blanks);
     if (std::wstring::npos != end)
@@ -363,7 +363,7 @@ NUT_API int chricmp(int c1, int c2)
 /** 忽略大小写的字符串比较 */
 NUT_API int stricmp(const char *str1, const char *str2)
 {
-    assert(NULL != str1 && NULL != str2);
+    assert(nullptr != str1 && nullptr != str2);
     size_t i = 0;
     while (0 != str1[i] && 0 == chricmp(str1[i], str2[i]))
         ++i;
@@ -377,7 +377,7 @@ NUT_API int stricmp(const std::string& str1, const std::string& str2)
 
 NUT_API int stricmp(const wchar_t *str1, const wchar_t *str2)
 {
-    assert(NULL != str1 && NULL != str2);
+    assert(nullptr != str1 && nullptr != str2);
     size_t i = 0;
     while (0 != str1[i] && 0 == chricmp(str1[i], str2[i]))
         ++i;
@@ -391,7 +391,7 @@ NUT_API int stricmp(const std::wstring& str1, const std::wstring& str2)
 
 NUT_API int strincmp(const char *str1, const char *str2, size_t n)
 {
-    assert(NULL != str1 && NULL != str2);
+    assert(nullptr != str1 && nullptr != str2);
     size_t i = 0;
     while (i < n && 0 == chricmp(str1[i], str2[i]))
         ++i;
@@ -407,7 +407,7 @@ NUT_API int strincmp(const std::string& str1, const std::string& str2, size_t n)
 
 NUT_API int strincmp(const wchar_t *str1, const wchar_t *str2, size_t n)
 {
-    assert(NULL != str1 && NULL != str2);
+    assert(nullptr != str1 && nullptr != str2);
     size_t i = 0;
     while (i < n && 0 == chricmp(str1[i], str2[i]))
         ++i;
@@ -426,7 +426,7 @@ NUT_API int strincmp(const std::wstring& str1, const std::wstring& str2, size_t 
  */
 NUT_API bool starts_with(const char *s, const char *head)
 {
-    assert(NULL != s && NULL != head);
+    assert(nullptr != s && nullptr != head);
     for (size_t i = 0; 0 != head[i]; ++i)
     {
         if (s[i] != head[i])
@@ -442,7 +442,7 @@ NUT_API bool starts_with(const std::string& s, const std::string& head)
 
 NUT_API bool starts_with(const wchar_t *s, const wchar_t *head)
 {
-    assert(NULL != s && NULL != head);
+    assert(nullptr != s && nullptr != head);
     for (size_t i = 0; 0 != head[i]; ++i)
     {
         if (s[i] != head[i])
@@ -461,7 +461,7 @@ NUT_API bool starts_with(const std::wstring& s, const std::wstring& head)
  */
 NUT_API bool ends_with(const char *s, const char *tail)
 {
-    assert(NULL != s && NULL != tail);
+    assert(nullptr != s && nullptr != tail);
     const size_t s_len = ::strlen(s), tail_len = ::strlen(tail);
     if (s_len < tail_len)
         return false;
@@ -480,7 +480,7 @@ NUT_API bool ends_with(const std::string& s, const std::string& tail)
 
 NUT_API bool ends_with(const wchar_t *s, const wchar_t *tail)
 {
-    assert(NULL != s && NULL != tail);
+    assert(nullptr != s && nullptr != tail);
     const size_t s_len = ::wcslen(s), tail_len = ::wcslen(tail);
     if (s_len < tail_len)
         return false;
@@ -499,10 +499,15 @@ NUT_API bool ends_with(const std::wstring& s, const std::wstring& tail)
 
 NUT_API bool ascii_to_wstr(const char *str, std::wstring *result)
 {
-    assert(NULL != str && NULL != result);
+    assert(nullptr != str && nullptr != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    const int n = ::MultiByteToWideChar(CP_ACP, 0 /* flags */, str, -1 /* 字符串以'\0'结束 */, NULL, 0); // 返回值包含了 '\0'
+    const int n = ::MultiByteToWideChar(CP_ACP, 
+                                        0,       // flags
+                                        str,
+                                        -1,      // 字符串以'\0'结束
+                                        nullptr,
+                                        0);      // 返回值包含了 '\0'
     if (n <= 0)
         return false;
     const int old_len = (int) result->length();
@@ -511,7 +516,7 @@ NUT_API bool ascii_to_wstr(const char *str, std::wstring *result)
     assert(((int) result->length()) == old_len + n - 1);
     return rs > 0;
 #else
-    const size_t n = ::mbstowcs(NULL, str, 0); // 返回值未包含 '\0'
+    const size_t n = ::mbstowcs(nullptr, str, 0); // 返回值未包含 '\0'
     if (n <= 0)
         return false;
     const size_t old_len = result->length();
@@ -524,25 +529,25 @@ NUT_API bool ascii_to_wstr(const char *str, std::wstring *result)
 
 NUT_API bool ascii_to_wstr(const std::string& str, std::wstring *result)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
     return ascii_to_wstr(str.c_str(), result);
 }
 
 NUT_API bool wstr_to_ascii(const wchar_t *wstr, std::string *result)
 {
-    assert(NULL != wstr && NULL != result);
+    assert(nullptr != wstr && nullptr != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    const int n = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
+    const int n = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, nullptr, 0, nullptr, nullptr);
     if (n <= 0)
         return false;
     const int old_len = (int) result->length();
     result->resize(old_len + n - 1);
-    const int rs = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, &(*result)[old_len], n, NULL, NULL);
+    const int rs = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, &(*result)[old_len], n, nullptr, nullptr);
     assert(((int) result->length()) == old_len + n - 1);
     return rs > 0;
 #else
-    const size_t n = ::wcstombs(NULL, wstr, 0);
+    const size_t n = ::wcstombs(nullptr, wstr, 0);
     if (n <= 0)
         return false;
     const size_t old_len = result->length();
@@ -555,16 +560,21 @@ NUT_API bool wstr_to_ascii(const wchar_t *wstr, std::string *result)
 
 NUT_API bool wstr_to_ascii(const std::wstring& wstr, std::string *result)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
     return wstr_to_ascii(wstr.c_str(), result);
 }
 
 NUT_API bool utf8_to_wstr(const char *str, std::wstring *result)
 {
-    assert(NULL != str && NULL != result);
+    assert(nullptr != str && nullptr != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    const int n = ::MultiByteToWideChar(CP_UTF8, 0 /* flags */, str, -1 /* 字符串以'\0'结束 */, NULL, 0);
+    const int n = ::MultiByteToWideChar(CP_UTF8,
+                                        0,       // flags
+                                        str,
+                                        -1,      // 字符串以'\0'结束
+                                        nullptr,
+                                        0);
     if (n <= 0)
         return false;
     const int old_len = (int) result->length();
@@ -579,21 +589,21 @@ NUT_API bool utf8_to_wstr(const char *str, std::wstring *result)
 
 NUT_API bool utf8_to_wstr(const std::string& str, std::wstring *result)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
     return utf8_to_wstr(str.c_str(), result);
 }
 
 NUT_API bool wstr_to_utf8(const wchar_t *wstr, std::string *result)
 {
-    assert(NULL != wstr && NULL != result);
+    assert(nullptr != wstr && nullptr != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    const int n = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
+    const int n = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, nullptr, 0, nullptr, nullptr);
     if (n <= 0)
         return false;
     const int old_len = (int) result->length();
     result->resize(old_len + n - 1);
-    const int rs = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, &(*result)[old_len], n, NULL, NULL);
+    const int rs = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, &(*result)[old_len], n, nullptr, nullptr);
     assert(((int) result->length()) == old_len + n - 1);
     return rs > 0;
 #else
@@ -603,13 +613,13 @@ NUT_API bool wstr_to_utf8(const wchar_t *wstr, std::string *result)
 
 NUT_API bool wstr_to_utf8(const std::wstring& wstr, std::string *result)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
     return wstr_to_utf8(wstr.c_str(), result);
 }
 
 NUT_API bool ascii_to_utf8(const char *str, std::string *result)
 {
-    assert(NULL != str && NULL != result);
+    assert(nullptr != str && nullptr != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
     std::wstring tmp;
@@ -624,13 +634,13 @@ NUT_API bool ascii_to_utf8(const char *str, std::string *result)
 
 NUT_API bool ascii_to_utf8(const std::string& str, std::string *result)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
     return ascii_to_utf8(str.c_str(), result);
 }
 
 NUT_API bool utf8_to_ascii(const char *str, std::string *result)
 {
-    assert(NULL != str && NULL != result);
+    assert(nullptr != str && nullptr != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
     std::wstring tmp;
@@ -645,7 +655,7 @@ NUT_API bool utf8_to_ascii(const char *str, std::string *result)
 
 NUT_API bool utf8_to_ascii(const std::string& str, std::string *result)
 {
-    assert(NULL != result);
+    assert(nullptr != result);
     return utf8_to_ascii(str.c_str(), result);
 }
 
@@ -670,7 +680,7 @@ NUT_API int hex_char_to_int(char c)
 
 NUT_API int xml_encode(const char *s, int len, std::string *result)
 {
-    assert(NULL != s && NULL != result);
+    assert(nullptr != s && nullptr != result);
 
     int ret = 0;
     for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
@@ -708,7 +718,7 @@ NUT_API int xml_encode(const char *s, int len, std::string *result)
 
 NUT_API int xml_decode(const char *s, int len, std::string *result)
 {
-    assert(NULL != s && NULL != result);
+    assert(nullptr != s && nullptr != result);
 
     int ret = 0;
     for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
@@ -753,7 +763,7 @@ NUT_API int xml_decode(const char *s, int len, std::string *result)
 
 NUT_API int url_encode(const char *s, int len, std::string *result)
 {
-    assert(NULL != s && NULL != result);
+    assert(nullptr != s && nullptr != result);
 
     int ret = 0;
     for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
@@ -777,7 +787,7 @@ NUT_API int url_encode(const char *s, int len, std::string *result)
 
 NUT_API int url_decode(const char *s, int len, std::string *result)
 {
-    assert(NULL != s && NULL != result);
+    assert(nullptr != s && nullptr != result);
 
     int ret = 0;
     for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
@@ -802,7 +812,7 @@ NUT_API int url_decode(const char *s, int len, std::string *result)
 
 NUT_API int hex_encode(const void *data, size_t cb, std::string *result)
 {
-    assert(NULL != data && NULL != result);
+    assert(nullptr != data && nullptr != result);
 
     for (size_t i = 0; i < cb; ++i)
     {
@@ -815,7 +825,7 @@ NUT_API int hex_encode(const void *data, size_t cb, std::string *result)
 
 NUT_API int hex_decode(const char *s, int len, Array<uint8_t> *result)
 {
-    assert(NULL != s && NULL != result);
+    assert(nullptr != s && nullptr != result);
 
     int ret = 0;
     uint8_t v = 0;
@@ -840,7 +850,7 @@ NUT_API int hex_decode(const char *s, int len, Array<uint8_t> *result)
 
 NUT_API int cstyle_encode(const char *s, int len, std::string *result)
 {
-    assert(NULL != s && NULL != result);
+    assert(nullptr != s && nullptr != result);
 
     int ret = 0;
     for (int i = 0; i < len || (len < 0 && 0 != s[i]); ++i)
@@ -919,7 +929,7 @@ NUT_API int cstyle_encode(const char *s, int len, std::string *result)
 
 NUT_API int cstyle_decode(const char *s, int len, std::string *result)
 {
-    assert(NULL != s && NULL != result);
+    assert(nullptr != s && nullptr != result);
 
     int ret = 0;
     for (int i = 0; i < len || (len < 0 && 0 != s[i]); ++i)
@@ -1076,7 +1086,7 @@ static int base64_char_to_int(char c)
 
 NUT_API int base64_encode(const void *data, size_t cb, std::string *result)
 {
-    assert(NULL != data && NULL != result);
+    assert(nullptr != data && nullptr != result);
 
     const uint8_t *bytes = (const uint8_t*) data;
     for (size_t i = 0; i < cb; i += 3)
@@ -1119,7 +1129,7 @@ NUT_API int base64_encode(const void *data, size_t cb, std::string *result)
 
 NUT_API int base64_decode(const char *s, int len, Array<uint8_t> *result)
 {
-    assert(NULL != s && NULL != result);
+    assert(nullptr != s && nullptr != result);
 
     int ret = 0;
     int buff[4], state = 0;

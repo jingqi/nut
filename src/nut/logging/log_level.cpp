@@ -60,7 +60,7 @@ char log_level_to_char(LogLevel level)
 
 LogLevel str_to_log_level(const char *str)
 {
-    if (NULL == str || 0 == strincmp(str, "DEBUG", 5))
+    if (nullptr == str || 0 == strincmp(str, "DEBUG", 5))
         return LL_DEBUG;
     else if (0 == strincmp(str, "INFO", 4))
         return LL_INFO;

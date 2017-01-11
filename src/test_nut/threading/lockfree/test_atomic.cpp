@@ -22,8 +22,8 @@ NUT_FIXTURE(TestAtomic)
     void test_bug1()
     {
         {
-            void* volatile p = NULL;
-            void *p1 = NULL, *p2 = reinterpret_cast<void*>(65);
+            void* volatile p = nullptr;
+            void *p1 = nullptr, *p2 = reinterpret_cast<void*>(65);
             NUT_TA(atomic_cas(&p, p1, p2));
             NUT_TA(p == p2);
             NUT_TA(atomic_cas(&p, p2, p1));

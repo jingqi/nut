@@ -57,7 +57,7 @@ private:
     struct Node
     {
         area_type area;
-        TreeNode *parent = NULL;
+        TreeNode *parent = nullptr;
         const bool tree_node = true; // 是树节点还是数据节点
 
         Node(bool tn)
@@ -68,8 +68,7 @@ private:
             : area(rt), tree_node(tn)
         {}
 
-        virtual ~Node()
-        {}
+        virtual ~Node() = default;
 
         bool is_tree_node() const
         {
@@ -104,7 +103,7 @@ private:
             while (left + 1 < right)
             {
                 int middle = (left + right) / 2;
-                if (NULL == children[middle])
+                if (nullptr == children[middle])
                     right = middle;
                 else
                     left = middle;
@@ -114,9 +113,9 @@ private:
 
         bool append_child(Node *child, bool set_child_parent = true)
         {
-            assert(NULL != child);
+            assert(nullptr != child);
 
-            if (NULL != children[MAX_ENTRY_COUNT - 1])
+            if (nullptr != children[MAX_ENTRY_COUNT - 1])
                 return false;
             children[child_count()] = child;
             if (set_child_parent)
@@ -126,20 +125,20 @@ private:
 
         bool remove_child(Node *child, bool set_child_parent = true)
         {
-            assert(NULL != child);
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
+            assert(nullptr != child);
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && nullptr != children[i]; ++i)
             {
                 if (children[i] == child)
                 {
                     if (set_child_parent)
-                        child->parent = NULL; // 附带设置 parent
-                    children[i] = NULL;
+                        child->parent = nullptr; // 附带设置 parent
+                    children[i] = nullptr;
 
                     // 保持紧凑
-                    for (size_t j = i; j + 1 < MAX_ENTRY_COUNT && NULL != children[j + 1]; ++j)
+                    for (size_t j = i; j + 1 < MAX_ENTRY_COUNT && nullptr != children[j + 1]; ++j)
                     {
                         children[j] = children[j + 1];
-                        children[j + 1] = NULL;
+                        children[j + 1] = nullptr;
                     }
                     return true;
                 }
@@ -149,11 +148,11 @@ private:
 
         void clear_children(bool set_child_parent = true)
         {
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && nullptr != children[i]; ++i)
             {
                 if (set_child_parent)
-                    children[i]->parent = NULL; // 附带设置 parent
-                children[i] = NULL;
+                    children[i]->parent = nullptr; // 附带设置 parent
+                children[i] = nullptr;
             }
         }
 
@@ -162,9 +161,9 @@ private:
          */
         void fit_rect()
         {
-            assert(NULL != children[0]);
+            assert(nullptr != children[0]);
             area = children[0]->area;
-            for (size_t i = 1; i < MAX_ENTRY_COUNT && NULL != children[i]; ++i)
+            for (size_t i = 1; i < MAX_ENTRY_COUNT && nullptr != children[i]; ++i)
                 area.expand_to_contain(children[i]->area);
         }
     };
@@ -193,7 +192,7 @@ private:
 
     treenode_allocator_type _tree_node_alloc;
     datanode_allocator_type _data_node_alloc;
-    TreeNode *_root = NULL; // 根节点
+    TreeNode *_root = nullptr; // 根节点
     size_t _height = 0; // 高度，TreeNode的层数
     size_t _size = 0; // 容量
 
@@ -214,7 +213,7 @@ public:
     RTree()
     {
         _root = _tree_node_alloc.allocate(1);
-        assert(NULL != _root);
+        assert(nullptr != _root);
         new (_root) TreeNode();
         _height = 1;
     }
@@ -222,10 +221,10 @@ public:
     ~RTree()
     {
         clear();
-        assert(NULL != _root);
+        assert(nullptr != _root);
         _root->~TreeNode();
         _tree_node_alloc.deallocate(_root, 1);
-        _root = NULL;
+        _root = nullptr;
     }
 
     /**
@@ -234,7 +233,7 @@ public:
     void insert(const area_type& rect, const data_type& data)
     {
         DataNode *data_node = _data_node_alloc.allocate(1);
-        assert(NULL != data_node);
+        assert(nullptr != data_node);
         new (data_node) DataNode(rect, data);
         insert(data_node, _height);
         ++_size;
@@ -247,11 +246,11 @@ public:
     {
         // 找到数据节点并删除数据
         DataNode *dn = find_first_data_node(rect);
-        if (NULL == dn)
+        if (nullptr == dn)
             return false;
-        assert(NULL != dn->parent);
+        assert(nullptr != dn->parent);
         TreeNode *l = dynamic_cast<TreeNode*>(dn->parent);
-        assert(NULL != l);
+        assert(nullptr != l);
         bool rs = l->remove_child(dn);
         if (!rs)
             return false;
@@ -266,7 +265,7 @@ public:
         {
             TreeNode *tobedel = _root;
             _root = dynamic_cast<TreeNode*>(_root->child_at(0));
-            _root->parent = NULL;
+            _root->parent = nullptr;
             --_height;
 
             // 释放内存
@@ -284,11 +283,11 @@ public:
     {
         // 找到数据节点并删除数据
         DataNode *dn = find_data_node(rect, data);
-        if (NULL == dn)
+        if (nullptr == dn)
             return false;
-        assert(NULL != dn->parent);
+        assert(nullptr != dn->parent);
         TreeNode *l = dynamic_cast<TreeNode*>(dn->parent);
-        assert(NULL != l);
+        assert(nullptr != l);
         bool rs = l->remove_child(dn);
         if (!rs)
             return false;
@@ -303,7 +302,7 @@ public:
         {
             TreeNode *tobedel = _root;
             _root = dynamic_cast<TreeNode*>(_root->child_at(0));
-            _root->parent = NULL;
+            _root->parent = nullptr;
             --_height;
 
             // 释放内存
@@ -327,7 +326,7 @@ public:
             TreeNode *n = s.top();
             s.pop();
 
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != nullptr; ++i)
             {
                 Node *c = n->child_at(i);
                 if (c->is_tree_node())
@@ -359,7 +358,7 @@ public:
      */
     void search_intersect(const area_type& rect, std::vector<std::pair<area_type,data_type> > *appended)
     {
-        assert(NULL != appended);
+        assert(nullptr != appended);
 
         std::stack<TreeNode*> s;
         s.push(_root);
@@ -368,7 +367,7 @@ public:
             TreeNode *n = s.top();
             s.pop();
 
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != nullptr; ++i)
             {
                 Node *c = n->child_at(i);
                 if (!c->area.intersects(rect))
@@ -393,7 +392,7 @@ public:
      */
     void search_contains(const area_type& rect, std::vector<std::pair<area_type, data_type> > *appended)
     {
-        assert(NULL != appended);
+        assert(nullptr != appended);
 
         std::stack<TreeNode*> s;
         s.push(_root);
@@ -402,7 +401,7 @@ public:
             TreeNode *n = s.top();
             s.pop();
 
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != nullptr; ++i)
             {
                 Node *c = n->child_at(i);
                 if (!c->area.intersects(rect))
@@ -427,7 +426,7 @@ public:
      */
     void get_all(std::vector<data_type> *appended)
     {
-        assert(NULL != appended);
+        assert(nullptr != appended);
 
         std::stack<TreeNode*> s;
         s.push(_root);
@@ -436,7 +435,7 @@ public:
             TreeNode *n = s.top();
             s.pop();
 
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != nullptr; ++i)
             {
                 Node *c = n->child_at(i);
                 if (c->is_tree_node())
@@ -459,16 +458,16 @@ private:
      */
     void insert(Node *node, size_t depth)
     {
-        assert(NULL != node);
+        assert(nullptr != node);
 
         TreeNode *n = choose_node(node->area, depth);
-        TreeNode *ll = n->append_child(node) ? NULL : split_node(n, node);
+        TreeNode *ll = n->append_child(node) ? nullptr : split_node(n, node);
         TreeNode *r = adjust_tree(n, ll);
-        if (NULL != r)
+        if (nullptr != r)
         {
             // new root
             TreeNode *nln = _tree_node_alloc.allocate(1);
-            assert(NULL != nln);
+            assert(nullptr != nln);
             new (nln) TreeNode();
             nln->append_child(_root);
             nln->append_child(r);
@@ -486,17 +485,17 @@ private:
         TreeNode *ret = _root;
         while (depth > 1)
         {
-            TreeNode *nn = NULL;
+            TreeNode *nn = nullptr;
 
             // choose the least enlargement child
             RealNumT least = 0;
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && NULL != ret->children[i]; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && nullptr != ret->children[i]; ++i)
             {
                 RealNumT el = acreage_needed(ret->children[i]->area, rect_to_add);
                 if (0 == i || el < least)
                 {
                     nn = dynamic_cast<TreeNode*>(ret->children[i]); // 因为 depth > 1，这里应当是成功的
-                    assert(NULL != nn);
+                    assert(nullptr != nn);
                     least = el;
                 }
             }
@@ -514,7 +513,7 @@ private:
      */
     TreeNode* split_node(TreeNode *parent, Node *child)
     {
-        assert(NULL != parent && NULL != child);
+        assert(nullptr != parent && nullptr != child);
 
         typedef typename std::list<Node*>::const_iterator iter_type;
 
@@ -523,19 +522,19 @@ private:
         remained.push_back(child);
         for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
         {
-            assert(NULL != parent->children[i]);
+            assert(nullptr != parent->children[i]);
             remained.push_back(parent->children[i]);
         }
 
         // 挑选两个种子，并分别作为 parent 和 uncle (parent的兄弟节点) 的一个子节点
-        Node *seed1 = NULL, *seed2 = NULL;
+        Node *seed1 = nullptr, *seed2 = nullptr;
         liner_pick_seeds(&remained, &seed1, &seed2);
-        assert(NULL != seed1 && NULL != seed2);
+        assert(nullptr != seed1 && nullptr != seed2);
         parent->clear_children();
         parent->area = seed1->area;
         parent->append_child(seed1);
         TreeNode *uncle = _tree_node_alloc.allocate(1);
-        assert(NULL != uncle);
+        assert(nullptr != uncle);
         new (uncle) TreeNode();
         uncle->append_child(seed2);
         uncle->fit_rect();
@@ -565,7 +564,7 @@ private:
             }
 
             Node *e = pick_next(&remained, parent->area, uncle->area);
-            assert(NULL != e);
+            assert(nullptr != e);
             RealNumT el1 = acreage_needed(parent->area, e->area), el2 = acreage_needed(uncle->area, e->area);
             if (el1 < el2 || (el1 == el2 && count1 < count2))
             {
@@ -589,7 +588,7 @@ private:
      */
     void liner_pick_seeds(std::list<Node*> *children, Node **pseed1, Node **pseed2)
     {
-        assert(NULL != children && children->size() >= 2 && NULL != pseed1 && NULL != pseed2);
+        assert(nullptr != children && children->size() >= 2 && nullptr != pseed1 && nullptr != pseed2);
 
         typedef std::list<Node*> list_type;
         typedef typename list_type::iterator iter_type;
@@ -615,7 +614,7 @@ private:
         // 给上述四组变量取值
         for (iter_type iter = children->begin(); iter != end; ++iter)
         {
-            assert(NULL != *iter);
+            assert(nullptr != *iter);
             for (size_t i = 0; i < DIMENSIONS; ++i)
             {
                 const area_type& area = (*iter)->area;
@@ -669,7 +668,7 @@ private:
      */
     Node* pick_next(std::list<Node*> *remained, const area_type& r1, const area_type& r2)
     {
-        assert(NULL != remained);
+        assert(nullptr != remained);
 
         typedef typename std::list<Node*>::iterator iter_type;
 
@@ -688,7 +687,7 @@ private:
             }
         }
         Node *ret = *max_diff_index;
-        assert(NULL != ret);
+        assert(nullptr != ret);
         remained->erase(max_diff_index);
         return ret;
     }
@@ -697,11 +696,11 @@ private:
      * 添加节点后调整 rtree
      *
      * @param n The parent node which has appended a new child
-     * @param nn 可以为 NULL
+     * @param nn 可以为 nullptr
      */
     TreeNode* adjust_tree(TreeNode *n, TreeNode *nn)
     {
-        assert(NULL != n);
+        assert(nullptr != n);
         while (true)
         {
             // adjust range of N
@@ -709,11 +708,11 @@ private:
 
             // if N is root, stop
             TreeNode *parent = dynamic_cast<TreeNode*>(n->parent);
-            if (NULL == parent)
+            if (nullptr == parent)
                 return nn;
 
-            if (NULL != nn)
-                nn = parent->append_child(nn) ? NULL : split_node(parent, nn);
+            if (nullptr != nn)
+                nn = parent->append_child(nn) ? nullptr : split_node(parent, nn);
             n = parent;
         }
     }
@@ -729,9 +728,9 @@ private:
         {
             TreeNode *n = st.top();
             st.pop();
-            assert(NULL != n);
+            assert(nullptr != n);
 
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && NULL != n->children[i]; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && nullptr != n->children[i]; ++i)
             {
                 Node *child = n->children[i];
                 if (child->area.contains(r))
@@ -743,7 +742,7 @@ private:
                 }
             }
         }
-        return NULL;
+        return nullptr;
     }
 
     /**
@@ -757,9 +756,9 @@ private:
         {
             TreeNode *n = st.top();
             st.pop();
-            assert(NULL != n);
+            assert(nullptr != n);
 
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && NULL != n->children[i]; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && nullptr != n->children[i]; ++i)
             {
                 Node *child = n->children[i];
                 if (child->area.contains(r))
@@ -777,7 +776,7 @@ private:
                 }
             }
         }
-        return NULL;
+        return nullptr;
     }
 
     /**
@@ -787,7 +786,7 @@ private:
      */
     void condense_tree(TreeNode *l)
     {
-        assert(NULL != l);
+        assert(nullptr != l);
 
         std::stack<TreeNode*> q;
         std::stack<size_t> qd;
@@ -813,12 +812,12 @@ private:
         {
             n = q.top();
             q.pop();
-            assert(NULL != n);
+            assert(nullptr != n);
 
             depth = qd.top();
             qd.pop();
 
-            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+            for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != nullptr; ++i)
                 insert(n->children[i], depth);
 
             // 释放内存
@@ -848,14 +847,14 @@ public:
     /**
      * 检查 rtree 结构是否错误
      */
-    bool is_valid(Node *e = NULL, size_t depth = 1)
+    bool is_valid(Node *e = nullptr, size_t depth = 1)
     {
-        if (NULL == e)
+        if (nullptr == e)
         {
             e = _root;
             depth = 1;
         }
-        assert(NULL != e && 1 <= depth && depth <= _height + 1);
+        assert(nullptr != e && 1 <= depth && depth <= _height + 1);
 
         if (depth == _height + 1)
         {
@@ -871,7 +870,7 @@ public:
         const size_t cc = n->child_count();
         if (depth != 1 && cc < MIN_ENTRY_COUNT)
             return false; // under fill
-        for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != NULL; ++i)
+        for (size_t i = 0; i < MAX_ENTRY_COUNT && n->children[i] != nullptr; ++i)
         {
             Node *ee = n->child_at(i);
             if (!n->area.contains(ee->area))

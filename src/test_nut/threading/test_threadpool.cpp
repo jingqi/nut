@@ -19,9 +19,8 @@ NUT_FIXTURE(TestThreadpool)
     NUT_CASE(test_manual)
     NUT_CASES_END()
 
-    static void custom(void *p)
+    static void custom(char c)
     {
-        int c = (int) (reinterpret_cast<char*>(p) - (char*)NULL);
         printf("%c", c);
     }
 
@@ -37,11 +36,11 @@ NUT_FIXTURE(TestThreadpool)
 #endif
 
         printf("a");
-        tp->add_task(custom, (void*)'A');
+        tp->add_task([] { custom('A'); });
         printf("b");
-        tp->add_task(custom, (void*)'B');
+        tp->add_task([] { custom('B'); });
         printf("c");
-        tp->add_task(custom, (void*)'C');
+        tp->add_task([] { custom('C'); });
 
 #if NUT_PLATFORM_OS_WINDOWS
         Sleep(2000);
@@ -49,16 +48,16 @@ NUT_FIXTURE(TestThreadpool)
         sleep(2);
 #endif
         printf("x");
-        tp->add_task(custom, (void*)'X');
+        tp->add_task([] { custom('X'); });
         printf("y");
-        tp->add_task(custom, (void*)'Y');
+        tp->add_task([] { custom('Y'); });
         printf("z");
-        tp->add_task(custom, (void*)'Z');
+        tp->add_task([] { custom('Z'); });
 
         tp->interrupt();
 
         printf("i");
-        tp->add_task(custom, (void*)'I');
+        tp->add_task([] { custom('I'); });
     }
 };
 

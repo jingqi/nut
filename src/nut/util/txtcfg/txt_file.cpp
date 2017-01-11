@@ -11,7 +11,7 @@ namespace nut
 
 bool TxtFile::read_file(const char *path, std::string *rs)
 {
-    assert(NULL != path && NULL != rs);
+    assert(nullptr != path && nullptr != rs);
     if (!Path::exists(path))
         return false;
 

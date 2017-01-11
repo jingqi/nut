@@ -97,7 +97,7 @@ static void call_addr2line(const std::string& cmd, std::string *appended_result)
  */
 static void get_real_path(std::string *str_path)
 {
-    assert(NULL != str_path);
+    assert(nullptr != str_path);
     char resolved_path[PATH_MAX + 1] = {0};
     if (realpath(str_path->c_str(), resolved_path))
         *str_path = resolved_path;
@@ -113,7 +113,7 @@ static void get_real_path(std::string *str_path)
  */
 static void parse_backtrace_symbol(const char* backtrace_symbol, std::string *module_path, addr_type *addr)
 {
-    assert(NULL != backtrace_symbol && NULL != module_path && NULL != addr);
+    assert(nullptr != backtrace_symbol && nullptr != module_path && nullptr != addr);
     *addr = 0;
 
     std::string str(backtrace_symbol);
@@ -129,14 +129,14 @@ static void parse_backtrace_symbol(const char* backtrace_symbol, std::string *mo
     {
         std::string str_addr;
         str_addr.assign(str.begin() + pos_begin + 1, str.begin() + pos_end);
-        char* pch_end = NULL;
+        char* pch_end = nullptr;
         *addr = ::strtoul(str_addr.c_str(), &pch_end, 16);
     }
 }
 
 int Backtrace::backtrace(std::string *appended)
 {
-    assert(NULL != appended);
+    assert(nullptr != appended);
 
     // XXX 有可能该方法在静态域中被调用，而此时 AddrMapManager 已经被析构
     AddrMapManager& addr_map = get_addr_map_mgr();
@@ -146,7 +146,7 @@ int Backtrace::backtrace(std::string *appended)
     void *trace[MAX_BACKTRACE + 1];
     const size_t trace_size = ::backtrace(trace, MAX_BACKTRACE + 1);
     char **messages = ::backtrace_symbols(trace, trace_size);
-    if (NULL == messages)
+    if (nullptr == messages)
         return -1;
 
     // 从1开始，不返回本函数的信息
@@ -197,12 +197,12 @@ int Backtrace::backtrace(std::string *appended)
 
 int Backtrace::backtrace(std::string *appended)
 {
-    assert(NULL != appended);
+    assert(nullptr != appended);
 
     void *buffer[MAX_BACKTRACE + 1];
     const int nptrs = ::backtrace(buffer, MAX_BACKTRACE + 1);
     char **strs = ::backtrace_symbols(buffer, nptrs);
-    if (NULL == strs) // error
+    if (nullptr == strs) // error
         return -1;
     for (int i = 1; i < nptrs; ++i) // 不包含本函数的调用地址
     {

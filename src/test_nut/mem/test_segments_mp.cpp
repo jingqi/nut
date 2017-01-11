@@ -24,10 +24,10 @@ NUT_FIXTURE(TestSegmentsMP)
         rc_ptr<sys_ma> sma = rc_new<sys_ma>();
         rc_ptr<mp_type> mp = rc_new<mp_type>(sma);
         void *p1 = mp->alloc(1);
-        NUT_TA(NULL != p1);
+        NUT_TA(nullptr != p1);
 
         void *p2 = mp->alloc(17);
-        NUT_TA(NULL != p2 && p1 != p2);
+        NUT_TA(nullptr != p2 && p1 != p2);
 
         mp->free(p1, 1);
         void *p3 = mp->alloc(8);

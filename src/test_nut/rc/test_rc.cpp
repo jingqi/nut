@@ -69,7 +69,7 @@ NUT_FIXTURE(TestGC)
         rc_new<G>();
         rc_new<G>(1, true, 1.5);
         int a;
-        rc_new<G>(&a, (double*)NULL);
+        rc_new<G>(&a, nullptr);
         rc_new<G>(std::cout);
         rc_new<G>(1, std::cout);
     }

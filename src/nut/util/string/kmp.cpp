@@ -19,7 +19,7 @@ namespace nut
 NUT_API int kmp_search(const std::string& src, size_t start, const std::string& target)
 {
     int *next = (int*) ::malloc(sizeof(int) * target.length());
-    assert(NULL != next);
+    assert(nullptr != next);
     kmp_build_next(target.c_str(), next, target.length());
     const int ret = kmp_search(src.c_str(), src.length(), start, target.c_str(), next, target.length());
     ::free(next);
@@ -29,7 +29,7 @@ NUT_API int kmp_search(const std::string& src, size_t start, const std::string& 
 NUT_API int kmp_search(const std::wstring& src, size_t start, const std::wstring& target)
 {
     int *next = (int*) ::malloc(sizeof(int) * target.length());
-    assert(NULL != next);
+    assert(nullptr != next);
     kmp_build_next(target.c_str(), next, target.length());
     const int ret = kmp_search(src.c_str(), src.length(), start, target.c_str(), next, target.length());
     ::free(next);

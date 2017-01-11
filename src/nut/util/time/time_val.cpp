@@ -68,7 +68,7 @@ TimeVal TimeVal::now()
     ret.set(wtm);
 #else
     struct timeval tv;
-    ::gettimeofday(&tv, NULL);
+    ::gettimeofday(&tv, nullptr);
     ret.set(tv);
 #endif
     return ret;
@@ -172,7 +172,7 @@ TimeVal& TimeVal::operator-=(const TimeVal& x)
 #   define PTW32_TIMESPEC_TO_FILETIME_OFFSET (LONGLONG)((((LONGLONG) 27111902LL << 32)+(LONGLONG) 3577643008LL ))
 void clock_getrealtime(struct timespec *ts)
 {
-    assert(NULL != ts);
+    assert(nullptr != ts);
 
     SYSTEMTIME st;
     ::GetSystemTime(&st);

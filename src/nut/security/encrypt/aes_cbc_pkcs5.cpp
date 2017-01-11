@@ -10,14 +10,14 @@ namespace nut
 
 static void xor_buf(void *buf1, const void *buf2, size_t len = 16)
 {
-    assert(NULL != buf1 && NULL != buf2);
+    assert(nullptr != buf1 && nullptr != buf2);
     for (size_t i = 0; i < len; ++i)
         ((uint8_t*) buf1)[i] ^= ((const uint8_t*) buf2)[i];
 }
 
 void AES_CBC_PKCS5::start_encrypt(const void* key, int key_bits, const void *iv)
 {
-    assert(NULL != key && NULL != iv);
+    assert(nullptr != key && nullptr != iv);
     _state = IN_ENCRYPT;
     _data_buf_size = 0;
     _result.resize(0);
@@ -29,7 +29,7 @@ void AES_CBC_PKCS5::start_encrypt(const void* key, int key_bits, const void *iv)
 
 void AES_CBC_PKCS5::update_encrypt(const void *data, size_t data_len)
 {
-    assert(NULL != data);
+    assert(nullptr != data);
     assert(IN_ENCRYPT == _state && _data_buf_size < 16);
 
     if (_data_buf_size != 0 && _data_buf_size + data_len >= 16)
@@ -75,7 +75,7 @@ void AES_CBC_PKCS5::finish_encrypt()
 
 void AES_CBC_PKCS5::start_decrypt(const void *key, int key_bits, const void *iv)
 {
-    assert(NULL != key && NULL != iv);
+    assert(nullptr != key && nullptr != iv);
     _state = IN_DECRYPT;
     _data_buf_size = 0;
     _result.resize(0);
@@ -88,7 +88,7 @@ void AES_CBC_PKCS5::start_decrypt(const void *key, int key_bits, const void *iv)
 
 void AES_CBC_PKCS5::update_decrypt(const void *data, size_t data_len)
 {
-    assert(NULL != data);
+    assert(nullptr != data);
     assert(IN_DECRYPT == _state && _data_buf_size < 16);
 
     uint8_t buf[16];

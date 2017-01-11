@@ -23,11 +23,11 @@ NUT_FIXTURE(TestLengthFixedMP)
     {
         rc_ptr<mp_type> mp = rc_new<mp_type>(sizeof(A));
         A *p1 = (A*) mp->alloc(sizeof(A));
-        NUT_TA(NULL != p1);
+        NUT_TA(nullptr != p1);
         p1->a = 0x12345678;
 
         A *p2 = (A*) mp->alloc(sizeof(A));
-        NUT_TA(NULL != p2 && p1 != p2);
+        NUT_TA(nullptr != p2 && p1 != p2);
         p2->a = ~0;
 
         mp->free(p1, sizeof(A));

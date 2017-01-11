@@ -39,15 +39,14 @@ class Bundle
     map_type _values;
 
 private:
-    // Invalid methods
-    Bundle(const Bundle&);
-    Bundle& operator=(const Bundle&);
+    // Non-copyable
+    Bundle(const Bundle&) = delete;
+    Bundle& operator=(const Bundle&) = delete;
 
 public:
     NUT_REF_COUNTABLE
 
-    Bundle()
-    {}
+    Bundle() = default;
 
     bool has_key(const std::string& key) const
     {
@@ -63,9 +62,9 @@ public:
         map_type::const_iterator iter = _values.find(key);
         assert(iter != _values.end());
         _BundleElementBase *e = iter->second;
-        assert(NULL != e);
+        assert(nullptr != e);
         _BundleElement<T> *be = dynamic_cast<_BundleElement<T>*>(e);
-        assert(NULL != be);
+        assert(nullptr != be);
         return be->value;
     }
 

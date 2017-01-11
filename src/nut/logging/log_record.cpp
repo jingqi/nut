@@ -14,14 +14,14 @@ LogRecord::LogRecord(LogLevel level, const char *tag, const char *file_path, int
     : _level(level), _tag(tag), _file_path(file_path), _line(line),
     _func(func), _message(message)
 {
-    assert(NULL != file_path && line >= 0 && NULL != message);
+    assert(nullptr != file_path && line >= 0 && nullptr != message);
 }
 
 LogRecord::~LogRecord()
 {
-    if (NULL != _message)
+    if (nullptr != _message)
         ::free(_message);
-    _message = NULL;
+    _message = nullptr;
 }
 
 const DateTime& LogRecord::get_time() const
@@ -46,7 +46,7 @@ const char* LogRecord::get_file_path() const
 
 const char* LogRecord::get_file_name() const
 {
-    assert(NULL != _file_path);
+    assert(nullptr != _file_path);
 
     const char *ret = _file_path;
     for (const char *tmp = _file_path; 0 != *tmp; ++tmp)
@@ -73,7 +73,7 @@ std::string LogRecord::to_string() const
     s += _time.to_string();
     s += "] ";
     s += log_level_to_str(_level);
-    if (NULL != _tag)
+    if (nullptr != _tag)
     {
         s.push_back(' ');
         s += _tag;
@@ -83,7 +83,7 @@ std::string LogRecord::to_string() const
     s.push_back(':');
     s += int_to_str(_line);
     s.push_back(')');
-    if (NULL != _func)
+    if (nullptr != _func)
     {
         s.push_back(' ');
         s += _func;

@@ -21,7 +21,7 @@ namespace nut
 class NUT_API Mutex
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
-    HANDLE _hmutex = NULL;
+    HANDLE _hmutex = nullptr;
 #else
     pthread_mutex_t _mutex;
 #endif

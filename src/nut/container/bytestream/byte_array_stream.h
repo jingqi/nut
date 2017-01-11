@@ -29,9 +29,9 @@ class NUT_API ByteArrayStream : public RandomAccessInputStream, public OutputStr
     bool _little_endian = true;
 
 private:
-    // Invalid methods
-    ByteArrayStream(const ByteArrayStream&);
-    ByteArrayStream& operator=(const ByteArrayStream&);
+    // Non-copyable
+    ByteArrayStream(const ByteArrayStream&) = delete;
+    ByteArrayStream& operator=(const ByteArrayStream&) = delete;
 
 public:
     ByteArrayStream();

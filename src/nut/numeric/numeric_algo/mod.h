@@ -21,7 +21,7 @@ struct ModMultiplyPreBuildTable
 {
 #if (OPTIMIZE_LEVEL == 0)
     size_t hight = 0, width = 0;
-    BigInteger *table = NULL;
+    BigInteger *table = nullptr;
 
     ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n)
     {
@@ -32,7 +32,7 @@ struct ModMultiplyPreBuildTable
 
         const size_t count = hight * width;
         table = (BigInteger*) ::malloc(sizeof(BigInteger) * count);
-        assert(NULL != table);
+        assert(nullptr != table);
 
         // 填充第一行
         new (table + 0) BigInteger(a);
@@ -61,12 +61,12 @@ struct ModMultiplyPreBuildTable
 
     ~ModMultiplyPreBuildTable()
     {
-        if (NULL != table)
+        if (nullptr != table)
         {
             for (size_t i = 0, count = hight * width; i < count; ++i)
                 (table + i)->~BigInteger();
             ::free(table);
-            table = NULL;
+            table = nullptr;
         }
     }
 
@@ -77,7 +77,7 @@ struct ModMultiplyPreBuildTable
     }
 #else
     size_t hight = 0, width = 0;
-    BigInteger **table = NULL;
+    BigInteger **table = nullptr;
     BigInteger mod;
 
     ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n)
@@ -89,7 +89,7 @@ struct ModMultiplyPreBuildTable
 
         const size_t count = hight * width;
         table = (BigInteger**) ::malloc(sizeof(BigInteger*) * count);
-        assert(NULL != table);
+        assert(nullptr != table);
         ::memset(table, 0, sizeof(BigInteger*) * count);
 
         table[0] = (BigInteger*) ::malloc(sizeof(BigInteger));
@@ -99,22 +99,22 @@ struct ModMultiplyPreBuildTable
 
     ~ModMultiplyPreBuildTable()
     {
-        if (NULL != table)
+        if (nullptr != table)
         {
             for (size_t i = 0; i < hight; ++i)
             {
                 for (size_t j = 0; j < width; ++j)
                 {
-                    if (NULL != table[i * width + j])
+                    if (nullptr != table[i * width + j])
                     {
                         table[i * width + j]->~BigInteger();
                         ::free(table[i * width + j]);
-                        table[i * width + j] = NULL;
+                        table[i * width + j] = nullptr;
                     }
                 }
             }
             ::free(table);
-            table = NULL;
+            table = nullptr;
         }
     }
 
@@ -123,7 +123,7 @@ struct ModMultiplyPreBuildTable
         assert(i < hight && j < width);
 
         const size_t base_off = i * width;
-        if (NULL == table[base_off + j])
+        if (nullptr == table[base_off + j])
         {
             if (j == 0)
             {
@@ -156,7 +156,7 @@ private:
 template <size_t C>
 void mod_multiply(const BigInteger& b, const BigInteger& n, const ModMultiplyPreBuildTable<C>& table, BigInteger *rs)
 {
-    assert(NULL != rs);
+    assert(nullptr != rs);
     assert(b.is_positive() && n.is_positive() && b < n); // 一定要保证 b<n ,以便优化模加运算
 
     BigInteger s(0);

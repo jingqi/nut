@@ -23,8 +23,8 @@ void BitStream::_ensure_cap(size_t new_bit_size)
     if (new_word_cap < new_word_size)
         new_word_cap = new_word_size;
 
-    _buf = (word_type*) ::realloc(_buf, sizeof(word_type) * new_word_cap); // XXX realloc() handle NULL
-    assert(NULL != _buf);
+    _buf = (word_type*) ::realloc(_buf, sizeof(word_type) * new_word_cap); // XXX realloc() handle nullptr
+    assert(nullptr != _buf);
     _word_cap = new_word_cap;
 }
 
@@ -41,7 +41,7 @@ BitStream::BitStream(size_t bit_size, int fill_bit)
 
 BitStream::BitStream(const void *buf, size_t bit_size)
 {
-    assert(NULL != buf || 0 == bit_size);
+    assert(nullptr != buf || 0 == bit_size);
     if (0 == bit_size)
         return;
 
@@ -100,16 +100,16 @@ BitStream::BitStream(BitStream&& x)
     _word_cap = x._word_cap;
     _bit_size = x._bit_size;
 
-    x._buf = NULL;
+    x._buf = nullptr;
     x._word_cap = 0;
     x._bit_size = 0;
 }
 
 BitStream::~BitStream()
 {
-    if (NULL != _buf)
+    if (nullptr != _buf)
         ::free(_buf);
-    _buf = NULL;
+    _buf = nullptr;
     _word_cap = 0;
     _bit_size = 0;
 }
@@ -140,14 +140,14 @@ BitStream& BitStream::operator=(BitStream&& x)
     if (this == &x)
         return *this;
 
-    if (NULL != _buf)
+    if (nullptr != _buf)
         ::free(_buf);
 
     _buf = x._buf;
     _word_cap = x._word_cap;
     _bit_size = x._bit_size;
 
-    x._buf = NULL;
+    x._buf = nullptr;
     x._word_cap = 0;
     x._bit_size = 0;
 

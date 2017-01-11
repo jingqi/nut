@@ -19,8 +19,7 @@ class DestroyChecker
     int32_t _tag = CONSTRUCTED;
 
 public:
-    DestroyChecker()
-    {}
+    DestroyChecker() = default;
 
     ~DestroyChecker()
     {

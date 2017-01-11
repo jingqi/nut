@@ -8,18 +8,18 @@ namespace nut
 template <typename T>
 class Guard
 {
-    T *_lock = NULL;
+    T *_lock = nullptr;
     bool _need_unlock = true;
 
 private:
-    // Invalid methods
-    Guard(const Guard<T>&);
-    Guard& operator=(const Guard<T>&);
+    // Non-copyable
+    Guard(const Guard<T>&) = delete;
+    Guard& operator=(const Guard<T>&) = delete;
 
 public:
     /**
      * @param lock
-     *      a pointer to a lock, NULL will be ignored
+     *      a pointer to a lock, nullptr will be ignored
      * @param need_lock
      *      whether need to lock it
      * @param need_unlock
@@ -28,13 +28,13 @@ public:
     explicit Guard(T *lock, bool need_lock = true, bool need_unlock = true)
         : _lock(lock), _need_unlock(need_unlock)
     {
-        if (NULL != _lock && need_lock)
+        if (nullptr != _lock && need_lock)
             _lock->lock();
     }
 
     ~Guard()
     {
-        if (NULL != _lock && _need_unlock)
+        if (nullptr != _lock && _need_unlock)
             _lock->unlock();
     }
 };

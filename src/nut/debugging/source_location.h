@@ -16,9 +16,9 @@ namespace nut
  */
 class NUT_API SourceLocation
 {
-    const char *_path = NULL;    // source file path
+    const char *_path = nullptr;    // source file path
     int _line = -1;            // source file line
-    const char *_func = NULL;    // source function
+    const char *_func = nullptr;    // source function
 
 public:
     SourceLocation(const char *file, int line, const char *func);
@@ -34,7 +34,7 @@ public:
     int get_line_number() const;
 
     /**
-     * @return This method may return NULL if the location is not in any function
+     * @return This method may return nullptr if the location is not in any function
      */
     const char* get_function_name() const;
 

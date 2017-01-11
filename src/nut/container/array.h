@@ -21,7 +21,7 @@ public:
     typedef size_t size_type;
 
 private:
-    T *_buf = NULL;
+    T *_buf = nullptr;
     size_type _size = 0, _cap = 0;
 
 public:
@@ -63,7 +63,7 @@ public:
     Array(self_type&& x)
         : _buf(x._buf), _size(x._size), _cap(x._cap)
     {
-        x._buf = NULL;
+        x._buf = nullptr;
         x._size = 0;
         x._cap = 0;
     }
@@ -71,9 +71,9 @@ public:
     ~Array()
     {
         clear();
-        if (NULL != _buf)
+        if (nullptr != _buf)
             ::free(_buf);
-        _buf = NULL;
+        _buf = nullptr;
         _cap = 0;
     }
 
@@ -88,7 +88,7 @@ private:
             new_cap = new_size;
 
         _buf = (T*) ::realloc(_buf, sizeof(T) * new_cap);
-        assert(NULL != _buf);
+        assert(nullptr != _buf);
         _cap = new_cap;
     }
 
@@ -110,14 +110,14 @@ public:
         if (this != &x)
         {
             clear();
-            if (NULL != _buf)
+            if (nullptr != _buf)
                 ::free(_buf);
 
             _buf = x._buf;
             _size = x._size;
             _cap = x._cap;
 
-            x._buf = NULL;
+            x._buf = nullptr;
             x._size = 0;
             x._cap = 0;
         }

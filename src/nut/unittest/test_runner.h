@@ -15,7 +15,7 @@ namespace nut
 
 class NUT_API TestRunner
 {
-    ITestLogger *_logger = NULL;
+    ITestLogger *_logger = nullptr;
 
 public:
     TestRunner(ITestLogger *logger);

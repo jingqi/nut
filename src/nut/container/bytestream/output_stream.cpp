@@ -172,7 +172,7 @@ void OutputStream::write_double(double v)
 
 size_t OutputStream::write(const void *buf, size_t cb)
 {
-    assert(NULL != buf || 0 == cb);
+    assert(nullptr != buf || 0 == cb);
     for (size_t i = 0; i < cb; ++i)
         write_uint8(((const uint8_t*) buf)[i]);
     return cb;

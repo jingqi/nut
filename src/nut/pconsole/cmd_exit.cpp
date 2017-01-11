@@ -9,7 +9,7 @@ namespace nut
 CmdExit::CmdExit(IConsole *c)
     : _console(c)
 {
-    assert(NULL != c);
+    assert(nullptr != c);
 }
 
 const char* CmdExit::get_command_name() const

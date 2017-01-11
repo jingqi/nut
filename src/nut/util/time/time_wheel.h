@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <time.h>
 #include <vector>
+#include <functional>
 
 #include <nut/platform/platform.h>
 
@@ -16,7 +17,7 @@
 
 
 // 无效定时器 id
-#define NUT_INVALID_TIMER_ID NULL
+#define NUT_INVALID_TIMER_ID nullptr
 
 namespace nut
 {
@@ -27,8 +28,10 @@ namespace nut
 class NUT_API TimeWheel
 {
 public:
-    typedef void *timer_id_type; // 定时器 id 类型
-    typedef void (*timer_func_type)(timer_id_type,void*,uint64_t); // 定时器回调函数类型
+    // 定时器 id 类型
+    typedef void *timer_id_type;
+    // 定时器任务类型
+    typedef std::function<void(timer_id_type,uint64_t)> timer_task_type;
 
     enum
     {
@@ -48,12 +51,11 @@ private:
         uint32_t valid_mask = 0;
 
         uint64_t when_ms = 0;
-        uint64_t repeat_ms = 0;      // 重复时间，单位: 毫秒
+        uint64_t repeat_ms = 0;    // 重复时间，单位: 毫秒
 
-        timer_func_type func = NULL; // 定时器回调函数
-        void *arg = NULL;            // 定时器用户参数
+        timer_task_type task;      // 定时器任务
 
-        Timer *next = NULL;       // 链指针
+        Timer *next = nullptr;     // 链指针
     };
 
     class Wheel
@@ -78,12 +80,12 @@ private:
     std::vector<Timer*> _to_be_canceled; // 延迟取消列表
 
 private:
-    // Invalid methods
-    TimeWheel(const TimeWheel&);
-    TimeWheel& operator=(const TimeWheel&);
+    // Non-copyable
+    TimeWheel(const TimeWheel&) = delete;
+    TimeWheel& operator=(const TimeWheel&) = delete;
 
     static Timer* new_timer(uint64_t when_ms, uint64_t repeat_ms,
-                            timer_func_type func, void *arg);
+                            const timer_task_type& task);
     static void delete_timer(Timer *t);
 
     timer_id_type add_timer(Timer *t);
@@ -104,7 +106,7 @@ public:
      * @param repeat 重复间隔，单位毫秒, 0 表示不延时
      */
     timer_id_type add_timer(uint64_t interval, uint64_t repeat,
-                            timer_func_type func, void *arg = NULL);
+                            const timer_task_type& task);
 
     /**
      * 注意，如果当前已经处于 tick() 过程中，取消操作不会对当前 tick 生效

@@ -17,9 +17,9 @@ class ExceptionBase : public std::exception
 {
     long _code = 0;                 // 错误码
     StringT _message;           // 错误附带信息
-    const char *_source_file = NULL;   // 源代码文件
+    const char *_source_file = nullptr;   // 源代码文件
     int _source_line = -1;           // 源代码行数
-    const char *_function = NULL;          // 源代码函数
+    const char *_function = nullptr;          // 源代码函数
 
 public :
     /**
@@ -29,7 +29,7 @@ public :
      * @param sl 源代码行数， __LINE__
      * @param fc 源代码函数， __FUNCTION__
      */
-    ExceptionBase(long cd, StringT msg, const char *file = NULL, int line = -1, const char *func = NULL)
+    ExceptionBase(long cd, StringT msg, const char *file = nullptr, int line = -1, const char *func = nullptr)
         : _code(cd), _message(msg), _source_file(file), _source_line(line), _function(func)
     {}
 
@@ -51,8 +51,8 @@ public :
     /// 获取源文件名
     const char* get_source_file() const
     {
-        if (NULL == _source_file)
-            return NULL;
+        if (nullptr == _source_file)
+            return nullptr;
 
         const char *ret = _source_file;
         for (const char *i = _source_file; '\0' != *i; ++i)

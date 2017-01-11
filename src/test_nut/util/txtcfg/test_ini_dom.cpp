@@ -37,21 +37,21 @@ NUT_FIXTURE(TestIniDom)
 
     void test_read_string()
     {
-        NUT_TA(pf->get_string(NULL, "readString1") == string("abc"));
-        NUT_TA(pf->get_string(NULL, "readString2") == string("abc"));
-        NUT_TA(pf->get_string(NULL, "read String3") == string("ab c"));
+        NUT_TA(pf->get_string(nullptr, "readString1") == string("abc"));
+        NUT_TA(pf->get_string(nullptr, "readString2") == string("abc"));
+        NUT_TA(pf->get_string(nullptr, "read String3") == string("ab c"));
     }
 
     void test_read_num()
     {
-        NUT_TA(pf->get_num(NULL, "readNum1") == 123);
-        NUT_TA(pf->get_num(NULL, "readNum2") == 123);
+        NUT_TA(pf->get_num(nullptr, "readNum1") == 123);
+        NUT_TA(pf->get_num(nullptr, "readNum2") == 123);
     }
 
     void test_read_list()
     {
         vector<string> vec;
-        pf->get_list(NULL, "readList1", &vec);
+        pf->get_list(nullptr, "readList1", &vec);
         NUT_TA(vec.size() == 3);
         NUT_TA(vec[0] == "a");
         NUT_TA(vec[1] == "b");

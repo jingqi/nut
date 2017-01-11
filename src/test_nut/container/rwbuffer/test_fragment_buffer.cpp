@@ -24,7 +24,7 @@ NUT_FIXTURE(TestFragmentBuffer)
         f->size = 2;
         f->buffer[1] = 0x12;
         f = fb.write_fragment(f);
-        NUT_TA(NULL == f);
+        NUT_TA(nullptr == f);
         NUT_TA(fb.readable_size() == 2);
         NUT_TA(fb.readable_pointers(bufs, lens, 2) == 1);
         NUT_TA(lens[0] == 2);
@@ -34,7 +34,7 @@ NUT_FIXTURE(TestFragmentBuffer)
         f->buffer[0] = 0x34;
         f->buffer[1] = 0x56;
         f = fb.write_fragment(f);
-        NUT_TA(NULL != f);
+        NUT_TA(nullptr != f);
         NUT_TA(fb.readable_size() == 4);
         NUT_TA(fb.readable_pointers(bufs, lens, 2) == 1);
         NUT_TA(lens[0] == 4);
@@ -42,7 +42,7 @@ NUT_FIXTURE(TestFragmentBuffer)
         f->size = 7;
         f->buffer[0] = 0x78;
         f = fb.write_fragment(f);
-        NUT_TA(NULL == f);
+        NUT_TA(nullptr == f);
         NUT_TA(fb.readable_size() == 11);
         NUT_TA(fb.readable_pointers(bufs, lens, 2) == 2);
         NUT_TA(lens[0] == 4 && lens[1] == 7);

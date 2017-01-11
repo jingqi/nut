@@ -22,15 +22,15 @@ class NUT_API LogFilter
     public:
         ll_mask_type forbid_mask = 0;
 
-        Node *parent = NULL;
-        hashcode_type *children_hash = NULL; // 升序排列
-        Node **children = NULL;
+        Node *parent = nullptr;
+        hashcode_type *children_hash = nullptr; // 升序排列
+        Node **children = nullptr;
         int children_size = 0, children_cap = 0;
 
     private:
-        // Invalid methods
-        Node(const Node&);
-        Node& operator=(const Node&);
+        // Non-copyable
+        Node(const Node&) = delete;
+        Node& operator=(const Node&) = delete;
 
     public:
         explicit Node(Node *p);
@@ -58,9 +58,9 @@ class NUT_API LogFilter
     class Node _root;
 
 private:
-    // Invalid methods
-    LogFilter(const LogFilter&);
-    LogFilter& operator=(const LogFilter&);
+    // Non-copyable
+    LogFilter(const LogFilter&) = delete;
+    LogFilter& operator=(const LogFilter&) = delete;
 
     /**
      * 哈稀字符串，直到遇到结尾或者 '.' 字符

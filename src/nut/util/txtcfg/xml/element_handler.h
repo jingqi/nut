@@ -40,8 +40,7 @@ public:
         : _handle_mask(mask)
     {}
 
-    virtual ~XmlElementHandler()
-    {}
+    virtual ~XmlElementHandler() = default;
 
     void set_name(const std::string& name)
     {
@@ -89,7 +88,7 @@ public:
     virtual XmlElementHandler* handle_child(const std::string& name)
     {
         UNUSED(name);
-        return NULL;
+        return nullptr;
     }
 
     // 回收旧的 handler

@@ -33,19 +33,19 @@ void RSA::gen_key(size_t bit_count, PublicKey *public_key, PrivateKey *private_k
 
     // d 为 e 对模 gamma_n 的乘法逆元
     BigInteger d(0);
-    extended_euclid(BigInteger(e), gamma_n, NULL, &d, NULL);
+    extended_euclid(BigInteger(e), gamma_n, nullptr, &d, nullptr);
     if (d < 0)
         d = gamma_n + (d % gamma_n); // % 运算符号与被除数一致
 
     // 公钥 (e, n)
-    if (NULL != public_key)
+    if (nullptr != public_key)
     {
         public_key->e = e;
         public_key->n = n;
     }
 
     // 私钥(d, n)
-    if (NULL != private_key)
+    if (nullptr != private_key)
     {
         private_key->d = std::move(d);
         private_key->n = std::move(n);
@@ -54,13 +54,13 @@ void RSA::gen_key(size_t bit_count, PublicKey *public_key, PrivateKey *private_k
 
 void RSA::encode(const BigInteger& m, const PublicKey& k, BigInteger *rs)
 {
-    assert(NULL != rs);
+    assert(nullptr != rs);
     mod_pow(m, k.e, k.n, rs);
 }
 
 void RSA::decode(const BigInteger& c, const PrivateKey& k, BigInteger *rs)
 {
-    assert(NULL != rs);
+    assert(nullptr != rs);
     mod_pow(c, k.d, k.n, rs);
 }
 

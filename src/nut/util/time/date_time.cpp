@@ -228,7 +228,7 @@ std::string DateTime::to_string() const
  */
 std::string DateTime::format_time(const char *format) const
 {
-    assert(NULL != format);
+    assert(nullptr != format);
     size_t new_size = ::strlen(format) * 3;
     char * buf = (char*) ::malloc(new_size);
     ::strftime(buf, new_size, format, &_time_info);

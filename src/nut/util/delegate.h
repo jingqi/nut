@@ -32,7 +32,7 @@ class delegate<Ret (FUNCTION_ARGS)>                                     \
                                                                         \
     struct IHolder                                                      \
     {                                                                   \
-        virtual ~IHolder() {};                                          \
+        virtual ~IHolder() = default;                                   \
         virtual HolderType type() const = 0;                            \
         virtual Ret operator() (FUNCTION_ARGS) = 0;                     \
         virtual IHolder* clone() const = 0;                             \
@@ -42,12 +42,12 @@ class delegate<Ret (FUNCTION_ARGS)>                                     \
     template <typename FunctorPtr>                                      \
     struct FunctorHolder : public IHolder                               \
     {                                                                   \
-        FunctorPtr func = NULL;                                         \
+        FunctorPtr func = nullptr;                                      \
                                                                         \
         FunctorHolder(FunctorPtr pfunc)                                 \
             : func(pfunc)                                               \
         {                                                               \
-            assert(NULL != pfunc);                                      \
+            assert(nullptr != pfunc);                                   \
         }                                                               \
                                                                         \
         virtual HolderType type() const                                 \
@@ -57,7 +57,7 @@ class delegate<Ret (FUNCTION_ARGS)>                                     \
                                                                         \
         virtual Ret operator()(FUNCTION_ARGS)                           \
         {                                                               \
-            assert(NULL != func);                                       \
+            assert(nullptr != func);                                    \
             return (*func)(FUNCTION_PARA);                              \
         }                                                               \
                                                                         \
@@ -70,13 +70,13 @@ class delegate<Ret (FUNCTION_ARGS)>                                     \
     template <typename U, typename MemFun>                              \
     struct MemHolder : public IHolder                                   \
     {                                                                   \
-        U obj = NULL;                                                   \
-        MemFun mem_func = NULL;                                         \
+        U obj = nullptr;                                                \
+        MemFun mem_func = nullptr;                                      \
                                                                         \
         MemHolder(U o, MemFun f)                                        \
             : obj(o), mem_func(f)                                       \
         {                                                               \
-            assert(NULL != o && NULL != f);                             \
+            assert(nullptr != o && nullptr != f);                       \
         }                                                               \
                                                                         \
         virtual HolderType type() const                                 \
@@ -86,7 +86,7 @@ class delegate<Ret (FUNCTION_ARGS)>                                     \
                                                                         \
         virtual Ret operator()(FUNCTION_ARGS)                           \
         {                                                               \
-            assert(NULL != obj && NULL != mem_func);                    \
+            assert(nullptr != obj && nullptr != mem_func);              \
             return ((*obj).*mem_func)(FUNCTION_PARA);                   \
         }                                                               \
                                                                         \
@@ -97,20 +97,19 @@ class delegate<Ret (FUNCTION_ARGS)>                                     \
     };                                                                  \
                                                                         \
 public:                                                                 \
-    delegate()                                                          \
-    {}                                                                  \
+    delegate() = default;                                               \
                                                                         \
     template <typename FunctorPtr>                                      \
     delegate(FunctorPtr func)                                           \
     {                                                                   \
-        assert(NULL != func);                                           \
+        assert(nullptr != func);                                        \
         _holders.push_back(new FunctorHolder<FunctorPtr>(func));        \
     }                                                                   \
                                                                         \
     template <typename U, typename MemFun>                              \
     delegate(U obj, MemFun mfunc)                                       \
     {                                                                   \
-        assert(NULL != obj && NULL != mfunc);                           \
+        assert(nullptr != obj && nullptr != mfunc);                     \
         _holders.push_back(new MemHolder<U,MemFun>(obj, mfunc));        \
     }                                                                   \
                                                                         \
@@ -118,7 +117,7 @@ public:                                                                 \
     {                                                                   \
         for (size_t i = 0, sz = x._holders.size(); i < sz; ++i)         \
         {                                                               \
-            assert(NULL != x._holders[i]);                              \
+            assert(nullptr != x._holders[i]);                           \
             _holders.push_back(x._holders[i]->clone());                 \
         }                                                               \
     }                                                                   \
@@ -135,7 +134,7 @@ public:                                                                 \
         disconnect_all();                                               \
         for (size_t i = 0, sz = x._holders.size(); i < sz; ++i)         \
         {                                                               \
-            assert(NULL != x._holders[i]);                              \
+            assert(nullptr != x._holders[i]);                           \
             _holders.push_back(x._holders[i]->clone());                 \
         }                                                               \
         return *this;                                                   \
@@ -147,7 +146,7 @@ public:                                                                 \
             return false;                                               \
         for (size_t i = _holders.size(); i > 0; --i)                    \
         {                                                               \
-            assert(NULL != _holders[i - 1] && NULL != x._holders[i - 1]); \
+            assert(nullptr != _holders[i - 1] && nullptr != x._holders[i - 1]); \
             if (_holders[i - 1]->type() != x._holders[i - 1]->type())   \
                 return false;                                           \
             switch (_holders[i - 1]->type())                            \
@@ -156,7 +155,7 @@ public:                                                                 \
                 typedef FunctorHolder<Ret(*)(FUNCTION_ARGS)> *holder_type; \
                 holder_type fh1 = dynamic_cast<holder_type>(_holders[i - 1]); \
                 holder_type fh2 = dynamic_cast<holder_type>(x._holders[i - 1]); \
-                assert(NULL != fh1 && NULL != fh2);                     \
+                assert(nullptr != fh1 && nullptr != fh2);               \
                 if (fh1->func != fh2->func)                             \
                     return false;                                       \
                 break;                                                  \
@@ -166,7 +165,7 @@ public:                                                                 \
                 typedef MemHolder<IHolder*, Ret(__THISCALL IHolder::*)(FUNCTION_ARGS)> *holder_type; \
                 holder_type mh1 = (holder_type)(_holders[i - 1]);       \
                 holder_type mh2 = (holder_type)(x._holders[i - 1]);     \
-                assert(NULL != mh1 && NULL != mh2);                     \
+                assert(nullptr != mh1 && nullptr != mh2);               \
                 if (mh1->obj != mh2->obj || mh1->mem_func != mh2->mem_func) \
                     return false;                                       \
                 break;                                                  \
@@ -188,14 +187,14 @@ public:                                                                 \
     template <typename FunctorPtr>                                      \
     void connect(FunctorPtr func)                                       \
     {                                                                   \
-        assert(NULL != func);                                           \
+        assert(nullptr != func);                                        \
         _holders.push_back(new FunctorHolder<FunctorPtr>(func));        \
     }                                                                   \
                                                                         \
     template <typename U, typename MemFun>                              \
     void connect(U obj, MemFun mfunc)                                   \
     {                                                                   \
-        assert(NULL != obj && NULL != mfunc);                           \
+        assert(nullptr != obj && nullptr != mfunc);                     \
         _holders.push_back(new MemHolder<U, MemFun>(obj, mfunc));       \
     }                                                                   \
                                                                         \
@@ -208,7 +207,7 @@ public:                                                                 \
             if (_holders[i]->type() == FUNCTOR)                         \
             {                                                           \
                 FunctorHolder<FunctorPtr> *h = dynamic_cast<FunctorHolder<FunctorPtr>*>(_holders[i]); \
-                assert(NULL != h);                                      \
+                assert(nullptr != h);                                   \
                 if (h->func == func)                                    \
                 {                                                       \
                     found = true;                                       \
@@ -230,7 +229,7 @@ public:                                                                 \
             if (_holders[i]->type() == MEMBER_FUNCTION)                 \
             {                                                           \
                 MemHolder<U,MemFun> *h = dynamic_cast<MemHolder<U,MemFun>*>(_holders[i]); \
-                assert(NULL != h);                                      \
+                assert(nullptr != h);                                   \
                 if (h->obj == obj && h->mem_func == mfunc)              \
                 {                                                       \
                     found = true;                                       \
@@ -247,7 +246,7 @@ public:                                                                 \
     {                                                                   \
         for (size_t i = 0, sz = _holders.size(); i < sz; ++i)           \
         {                                                               \
-            assert(NULL != _holders[i]);                                \
+            assert(nullptr != _holders[i]);                             \
             delete _holders[i];                                         \
         }                                                               \
         _holders.clear();                                               \
@@ -262,7 +261,7 @@ public:                                                                 \
     {                                                                   \
         for (size_t i = 0, sz = _holders.size(); i < sz; ++i)           \
         {                                                               \
-            assert(NULL != _holders[i]);                                \
+            assert(nullptr != _holders[i]);                             \
             if (i == sz - 1)                                            \
                 return (*_holders[i])(FUNCTION_PARA);                   \
             (*_holders[i])(FUNCTION_PARA);                              \

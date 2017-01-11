@@ -19,7 +19,7 @@ namespace nut
 class NUT_API Semaphore
 {
 #if NUT_PLATFORM_OS_WINDOWS
-    HANDLE _sem = NULL;
+    HANDLE _sem = nullptr;
 #else
     sem_t _sem;
 #endif

@@ -26,16 +26,16 @@ class NUT_API lengthfixed_stmp : public memory_allocator
     const rc_ptr<memory_allocator> _alloc;
     const size_t _granularity; // 粒度
     int _free_num = 0;
-    void *_head = NULL;
+    void *_head = nullptr;
     NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
-    // Invalid methods
-    explicit lengthfixed_stmp(const lengthfixed_stmp&);
-    lengthfixed_stmp& operator=(const lengthfixed_stmp&);
+    // Non-copyable
+    lengthfixed_stmp(const lengthfixed_stmp&) = delete;
+    lengthfixed_stmp& operator=(const lengthfixed_stmp&) = delete;
 
 public:
-    lengthfixed_stmp(size_t granularity, memory_allocator *ma = NULL);
+    lengthfixed_stmp(size_t granularity, memory_allocator *ma = nullptr);
     virtual ~lengthfixed_stmp();
 
     bool is_empty() const
@@ -69,12 +69,12 @@ class NUT_API lengthfixed_mtmp : public memory_allocator
     NUT_DEBUGGING_DESTROY_CHECKER
 
 private:
-    // Invalid methods
-    lengthfixed_mtmp(const lengthfixed_mtmp&);
-    lengthfixed_mtmp& operator=(const lengthfixed_mtmp&);
+    // Non-copyable
+    lengthfixed_mtmp(const lengthfixed_mtmp&) = delete;
+    lengthfixed_mtmp& operator=(const lengthfixed_mtmp&) = delete;
 
 public:
-    lengthfixed_mtmp(size_t granularity, memory_allocator *ma = NULL);
+    lengthfixed_mtmp(size_t granularity, memory_allocator *ma = nullptr);
     virtual ~lengthfixed_mtmp();
 
     bool is_empty() const

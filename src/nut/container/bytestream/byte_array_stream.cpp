@@ -14,7 +14,7 @@ ByteArrayStream::ByteArrayStream()
 ByteArrayStream::ByteArrayStream(byte_rcarray_type *arr)
     : _data(arr)
 {
-    assert(NULL != arr);
+    assert(nullptr != arr);
 }
 
 size_t ByteArrayStream::size() const
@@ -184,7 +184,7 @@ double ByteArrayStream::read_double()
 
 size_t ByteArrayStream::read(void *buf, size_t cb)
 {
-    assert(NULL != buf || 0 == cb);
+    assert(nullptr != buf || 0 == cb);
     const byte_rcarray_type *data = _data;
     size_t ret = (cb < available() ? cb : available());
     ::memcpy(buf, data->data() + _index, ret);
@@ -270,7 +270,7 @@ void ByteArrayStream::write_double(double v)
 
 size_t ByteArrayStream::write(const void *buf, size_t cb)
 {
-    assert(NULL != buf || 0 == cb);
+    assert(nullptr != buf || 0 == cb);
     assert(_index <= _data->size());
     const size_t copy = _data->size() - _index;
     ::memcpy(_data->data() + _index, buf, copy);

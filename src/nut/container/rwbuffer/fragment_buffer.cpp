@@ -9,9 +9,6 @@
 namespace nut
 {
 
-FragmentBuffer::FragmentBuffer()
-{}
-
 FragmentBuffer::FragmentBuffer(const FragmentBuffer& x)
 {
     *this = x;
@@ -23,8 +20,8 @@ FragmentBuffer::FragmentBuffer(FragmentBuffer&& x)
     _write_fragment = x._write_fragment;
     _read_index = x._read_index;
     _read_available = x._read_available;
-    x._read_fragment = NULL;
-    x._write_fragment = NULL;
+    x._read_fragment = nullptr;
+    x._write_fragment = nullptr;
     x._read_index = 0;
     x._read_available = 0;
 }
@@ -42,10 +39,10 @@ FragmentBuffer& FragmentBuffer::operator=(const FragmentBuffer& x)
     clear();
 
     Fragment *p = x._read_fragment;
-    while (NULL != p)
+    while (nullptr != p)
     {
         Fragment *new_frag = new_fragment(p->size);
-        assert(NULL != new_frag);
+        assert(nullptr != new_frag);
         ::memcpy(new_frag->buffer, p->buffer, p->size);
         new_frag->size = p->size;
 
@@ -65,8 +62,8 @@ FragmentBuffer& FragmentBuffer::operator=(FragmentBuffer&& x)
     _write_fragment = x._write_fragment;
     _read_index = x._read_index;
     _read_available = x._read_available;
-    x._read_fragment = NULL;
-    x._write_fragment = NULL;
+    x._read_fragment = nullptr;
+    x._write_fragment = nullptr;
     x._read_index = 0;
     x._read_available = 0;
     return *this;
@@ -74,10 +71,10 @@ FragmentBuffer& FragmentBuffer::operator=(FragmentBuffer&& x)
 
 void FragmentBuffer::enqueue(Fragment *frag)
 {
-    assert(NULL != frag && frag->capacity >= frag->size);
+    assert(nullptr != frag && frag->capacity >= frag->size);
 
-    frag->next = NULL;
-    if (NULL == _write_fragment)
+    frag->next = nullptr;
+    if (nullptr == _write_fragment)
     {
         _read_fragment = frag;
         _write_fragment = frag;
@@ -94,14 +91,14 @@ void FragmentBuffer::enqueue(Fragment *frag)
 void FragmentBuffer::clear()
 {
     Fragment *p = _read_fragment;
-    while (NULL != p)
+    while (nullptr != p)
     {
         Fragment *next = p->next;
         delete_fragment(p);
         p = next;
     }
-    _read_fragment = NULL;
-    _write_fragment = NULL;
+    _read_fragment = nullptr;
+    _write_fragment = nullptr;
     _read_index = 0;
     _read_available = 0;
 }
@@ -117,7 +114,7 @@ size_t FragmentBuffer::read(void *buf, size_t len)
     size_t readed = 0;
     while (readed < can_read)
     {
-        assert(NULL != _read_fragment && _read_fragment->size >= _read_index);
+        assert(nullptr != _read_fragment && _read_fragment->size >= _read_index);
         const size_t can_read_once = std::min(_read_fragment->size - _read_index,
                                               can_read - readed);
         const bool full_read = (_read_fragment->size - _read_index <=
@@ -129,8 +126,8 @@ size_t FragmentBuffer::read(void *buf, size_t len)
             Fragment *next = _read_fragment->next;
             delete_fragment(_read_fragment);
             _read_fragment = next;
-            if (NULL == next)
-                _write_fragment = NULL;
+            if (nullptr == next)
+                _write_fragment = nullptr;
             _read_index = 0;
         }
         else
@@ -152,7 +149,7 @@ size_t FragmentBuffer::look_ahead(void *buf, size_t len) const
     size_t read_index = _read_index;
     while (readed < can_read)
     {
-        assert(NULL != p && p->size >= read_index);
+        assert(nullptr != p && p->size >= read_index);
         const size_t can_read_once = std::min(p->size - read_index,
                                               can_read - readed);
         const bool full_read = (p->size - read_index <= can_read - readed);
@@ -175,7 +172,7 @@ size_t FragmentBuffer::skip_read(size_t len)
     size_t skiped = 0;
     while (skiped < can_skip)
     {
-        assert(NULL != _read_fragment && _read_fragment->size >= _read_index);
+        assert(nullptr != _read_fragment && _read_fragment->size >= _read_index);
         const size_t can_skip_once = std::min(_read_fragment->size - _read_index,
                                               can_skip - skiped);
         const bool full_skip = (_read_fragment->size - _read_index <=
@@ -185,8 +182,8 @@ size_t FragmentBuffer::skip_read(size_t len)
             Fragment *next = _read_fragment->next;
             delete_fragment(_read_fragment);
             _read_fragment = next;
-            if (NULL == next)
-                _write_fragment = NULL;
+            if (nullptr == next)
+                _write_fragment = nullptr;
             _read_index = 0;
         }
         else
@@ -203,12 +200,12 @@ size_t FragmentBuffer::skip_read(size_t len)
 size_t FragmentBuffer::readable_pointers(const void **buf_ptrs, size_t *len_ptrs,
                                          size_t ptr_count) const
 {
-    assert(NULL != buf_ptrs && NULL != len_ptrs);
+    assert(nullptr != buf_ptrs && nullptr != len_ptrs);
 
     size_t buf_count = 0;
     Fragment *p = _read_fragment;
     size_t read_index = _read_index;
-    while (NULL != p && buf_count < ptr_count)
+    while (nullptr != p && buf_count < ptr_count)
     {
         assert(p->size >= read_index);
         *buf_ptrs = p->buffer + read_index;
@@ -226,9 +223,9 @@ size_t FragmentBuffer::readable_pointers(const void **buf_ptrs, size_t *len_ptrs
 
 void FragmentBuffer::write(const void *buf, size_t len)
 {
-    assert(NULL != buf);
+    assert(nullptr != buf);
 
-    if (NULL != _write_fragment &&
+    if (nullptr != _write_fragment &&
         _write_fragment->capacity - _write_fragment->size >= len)
     {
         ::memcpy(_write_fragment->buffer + _write_fragment->size, buf, len);
@@ -247,24 +244,24 @@ FragmentBuffer::Fragment* FragmentBuffer::new_fragment(size_t capacity)
 {
     assert(capacity > 0);
     Fragment* p = (Fragment*) ::malloc(sizeof(Fragment) + capacity - 1);
-    assert(NULL != p);
+    assert(nullptr != p);
     new (p) Fragment(capacity);
     p->size = 0;
-    p->next = NULL;
+    p->next = nullptr;
     return p;
 }
 
 void FragmentBuffer::delete_fragment(Fragment *frag)
 {
-    assert(NULL != frag);
+    assert(nullptr != frag);
     frag->~Fragment();
     ::free(frag);
 }
 
 FragmentBuffer::Fragment* FragmentBuffer::write_fragment(Fragment *frag)
 {
-    assert(NULL != frag && frag->size <= frag->capacity);
-    if (NULL != _write_fragment &&
+    assert(nullptr != frag && frag->size <= frag->capacity);
+    if (nullptr != _write_fragment &&
         _write_fragment->capacity - _write_fragment->size >= frag->size)
     {
         ::memcpy(_write_fragment->buffer + _write_fragment->size, frag->buffer,
@@ -276,7 +273,7 @@ FragmentBuffer::Fragment* FragmentBuffer::write_fragment(Fragment *frag)
     }
 
     enqueue(frag);
-    return NULL;
+    return nullptr;
 }
 
 }

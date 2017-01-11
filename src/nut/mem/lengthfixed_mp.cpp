@@ -23,13 +23,13 @@ void lengthfixed_stmp::clear()
     NUT_DEBUGGING_ASSERT_ALIVE;
 
     void *p = _head;
-    while (NULL != p)
+    while (nullptr != p)
     {
         void *next = *reinterpret_cast<void**>(p);
         ma_free(_alloc, p, _granularity);
         p = next;
     }
-    _head = NULL;
+    _head = nullptr;
     _free_num = 0;
 }
 
@@ -38,7 +38,7 @@ void* lengthfixed_stmp::alloc(size_t sz)
     NUT_DEBUGGING_ASSERT_ALIVE;
     assert(_granularity == (std::max)(sz, sizeof(void*)));
 
-    if (NULL == _head)
+    if (nullptr == _head)
         return ma_alloc(_alloc, _granularity);
 
     void *p = _head;
@@ -50,7 +50,7 @@ void* lengthfixed_stmp::alloc(size_t sz)
 void* lengthfixed_stmp::realloc(void *p, size_t old_sz, size_t new_sz)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    assert(NULL != p && _granularity == old_sz && _granularity == new_sz);
+    assert(nullptr != p && _granularity == old_sz && _granularity == new_sz);
     UNUSED(old_sz);
     UNUSED(new_sz);
     return p;
@@ -59,7 +59,7 @@ void* lengthfixed_stmp::realloc(void *p, size_t old_sz, size_t new_sz)
 void lengthfixed_stmp::free(void *p, size_t sz)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    assert(NULL != p && _granularity == (std::max)(sz, sizeof(void*)));
+    assert(nullptr != p && _granularity == (std::max)(sz, sizeof(void*)));
 
     if (_free_num >= (int) MAX_FREE_NUM)
     {
@@ -92,13 +92,13 @@ void lengthfixed_mtmp::clear()
     NUT_DEBUGGING_ASSERT_ALIVE;
 
     void *p = _head.pointer();
-    while (NULL != p)
+    while (nullptr != p)
     {
         void *next = *reinterpret_cast<void**>(p);
         ma_free(_alloc, p, _granularity);
         p = next;
     }
-    _head.set_pointer(NULL);
+    _head.set_pointer(nullptr);
     _free_num = 0;
 }
 
@@ -111,7 +111,7 @@ void* lengthfixed_mtmp::alloc(size_t sz)
     {
         const StampedPtr<void> old_head(_head);
 
-        if (NULL == old_head.pointer())
+        if (nullptr == old_head.pointer())
             return ma_alloc(_alloc, _granularity);
 
         void *next = *reinterpret_cast<void**>(old_head.pointer());
@@ -126,7 +126,7 @@ void* lengthfixed_mtmp::alloc(size_t sz)
 void* lengthfixed_mtmp::realloc(void *p, size_t old_sz, size_t new_sz)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    assert(NULL != p && _granularity == old_sz && _granularity == new_sz);
+    assert(nullptr != p && _granularity == old_sz && _granularity == new_sz);
     UNUSED(old_sz);
     UNUSED(new_sz);
     return p;
@@ -135,7 +135,7 @@ void* lengthfixed_mtmp::realloc(void *p, size_t old_sz, size_t new_sz)
 void lengthfixed_mtmp::free(void *p, size_t sz)
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    assert(NULL != p && _granularity == (std::max)(sz, sizeof(void*)));
+    assert(nullptr != p && _granularity == (std::max)(sz, sizeof(void*)));
 
     while(true)
     {
@@ -150,7 +150,7 @@ void lengthfixed_mtmp::free(void *p, size_t sz)
         if (_head.compare_and_set(old_head, p))
         {
             // NOTE _free_num 在多线程下并不可靠
-            if (NULL == old_head.pointer())
+            if (nullptr == old_head.pointer())
                 _free_num = 1;
             else
                 ++_free_num;

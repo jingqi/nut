@@ -10,9 +10,6 @@
 namespace nut
 {
 
-XmlElement::XmlElement()
-{}
-
 XmlElement::XmlElement(const std::string& name)
     : _name(name)
 {}
@@ -110,7 +107,7 @@ void XmlElement::clear_children()
 /**
  * 获取属性
  *
- * @param attr 用来存储返回的属性值，可以为 NULL
+ * @param attr 用来存储返回的属性值，可以为 nullptr
  * @param 改属性是否存在
  */
 bool XmlElement::get_attribute(const std::string& name, std::string *attr) const
@@ -118,7 +115,7 @@ bool XmlElement::get_attribute(const std::string& name, std::string *attr) const
     const_attr_iter_type iter = _attrs.find(name);
     if (iter == _attrs.end())
         return false;
-    if (NULL != attr)
+    if (nullptr != attr)
         *attr = iter->second;
     return true;
 }
@@ -246,7 +243,7 @@ void XmlElement::parse(const std::string& s, size_t start_index, bool ignore_tex
 
     class Handler : public XmlElementHandler
     {
-        XmlElement *_elem = NULL;
+        XmlElement *_elem = nullptr;
         bool _ignore_text_blank = false;
 
     public:

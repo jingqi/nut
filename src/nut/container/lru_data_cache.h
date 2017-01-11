@@ -21,18 +21,18 @@ class LRUDataCache
     struct Node
     {
         K key;
-        void *data = NULL;
+        void *data = nullptr;
         size_t size = 0;
-        Node *pre = NULL, *next = NULL;
+        Node *pre = nullptr, *next = nullptr;
 
         Node(const K& k, const void *buf, size_t cb)
             : key(k), size(cb)
         {
-            assert(NULL != buf || 0 == cb);
+            assert(nullptr != buf || 0 == cb);
             if (cb > 0)
             {
                 data = ::malloc(cb);
-                assert(NULL != data);
+                assert(nullptr != data);
                 ::memcpy(data, buf, cb);
             }
         }
@@ -44,12 +44,12 @@ class LRUDataCache
 
         void copy_from(const void *buf, size_t cb)
         {
-            assert(NULL != buf || 0 == cb);
+            assert(nullptr != buf || 0 == cb);
             clear();
             if (cb > 0)
             {
                 data = ::malloc(cb);
-                assert(NULL != data);
+                assert(nullptr != data);
                 ::memcpy(data, buf, cb);
                 size = cb;
             }
@@ -57,7 +57,7 @@ class LRUDataCache
 
         void fast_set(void *buf, size_t cb)
         {
-            assert(NULL != buf || 0 == cb);
+            assert(nullptr != buf || 0 == cb);
             clear();
             data = buf;
             size = cb;
@@ -65,16 +65,16 @@ class LRUDataCache
 
         void clear()
         {
-            if (NULL != data)
+            if (nullptr != data)
                 ::free(data);
-            data = NULL;
+            data = nullptr;
             size = 0;
         }
 
     private:
-        // Invalid methods
-        Node(const Node&);
-        Node& operator=(const Node&);
+        // Non-copyable
+        Node(const Node&) = delete;
+        Node& operator=(const Node&) = delete;
     };
 
     enum { DEFAULT_BYTES_CAPACITY = 5 * 1024 * 1024 }; // 单位: 字节
@@ -82,7 +82,7 @@ class LRUDataCache
 
     size_t _bytes_size = 0, _bytes_capacity = 0;
     map_type _map;
-    Node *_list_head = NULL, *_list_end = NULL;
+    Node *_list_head = nullptr, *_list_end = nullptr;
     SpinLock _lock; // 注意，linux下自旋锁不可重入
 
 #ifndef NDEBUG
@@ -96,34 +96,34 @@ class LRUDataCache
 
     static void dealloc_node(Node *p)
     {
-        assert(NULL != p);
+        assert(nullptr != p);
         ::free(p);
     }
 
     static Node* new_node(const K& k, const void *buf, size_t cb)
     {
         Node *p = alloc_node();
-        assert(NULL != p);
+        assert(nullptr != p);
         new (p) Node(k, buf, cb);
         return p;
     }
 
     static void delete_node(Node *p)
     {
-        assert(NULL != p);
+        assert(nullptr != p);
         p->~Node();
         dealloc_node(p);
     }
 
     void remove_from_list(Node *p)
     {
-        assert(NULL != p);
-        if (NULL != p->pre)
+        assert(nullptr != p);
+        if (nullptr != p->pre)
             p->pre->next = p->next;
         else
             _list_head = p->next;
 
-        if (NULL != p->next)
+        if (nullptr != p->next)
             p->next->pre = p->pre;
         else
             _list_end = p->pre;
@@ -131,10 +131,10 @@ class LRUDataCache
 
     void push_list_head(Node *p)
     {
-        assert(NULL != p);
+        assert(nullptr != p);
         p->next = _list_head;
-        p->pre = NULL;
-        if (NULL != _list_head)
+        p->pre = nullptr;
+        if (nullptr != _list_head)
             _list_head->pre = p;
         else
             _list_end = p;
@@ -142,9 +142,9 @@ class LRUDataCache
     }
 
 private:
-    // invalid methods
-    LRUDataCache(const LRUDataCache<K>&);
-    LRUDataCache<K>& operator=(const LRUDataCache<K>&);
+    // Non-copyable
+    LRUDataCache(const LRUDataCache<K>&) = delete;
+    LRUDataCache<K>& operator=(const LRUDataCache<K>&) = delete;
 
 public:
     LRUDataCache()
@@ -185,7 +185,7 @@ public:
 
     void put(const K& k, const void *buf, size_t cb)
     {
-        assert(NULL != buf || 0 == cb);
+        assert(nullptr != buf || 0 == cb);
         Guard<SpinLock> g(&_lock);
 
         typename map_type::const_iterator const n = _map.find(k);
@@ -198,11 +198,11 @@ public:
 
             while (_bytes_size > _bytes_capacity)
             {
-                assert(NULL != _list_end);
+                assert(nullptr != _list_end);
                 typename map_type::iterator const nn = _map.find(_list_end->key);
                 assert(nn != _map.end());
                 Node *const pp = nn->second;
-                assert(NULL != pp && _bytes_size >= pp->size);
+                assert(nullptr != pp && _bytes_size >= pp->size);
                 _bytes_size -= pp->size;
                 _map.erase(nn);
                 remove_from_list(pp);
@@ -212,7 +212,7 @@ public:
         }
 
         Node *const p = n->second;
-        assert(NULL != p && _bytes_size >= p->size);
+        assert(nullptr != p && _bytes_size >= p->size);
         _bytes_size -= p->size;
         p->copy_from(buf, cb);
         remove_from_list(p);
@@ -229,7 +229,7 @@ public:
             return;
 
         Node *const p = n->second;
-        assert(NULL != p && _bytes_size >= p->size);
+        assert(nullptr != p && _bytes_size >= p->size);
         _bytes_size -= p->size;
         _map.erase(n);
         remove_from_list(p);
@@ -243,7 +243,7 @@ public:
 
     bool get(const K& k, const void **pdata, size_t *psize)
     {
-        assert(NULL != pdata && NULL != psize);
+        assert(nullptr != pdata && nullptr != psize);
         Guard<SpinLock> g(&_lock);
 
         typename map_type::const_iterator const n = _map.find(k);
@@ -256,7 +256,7 @@ public:
         }
 
         Node *const p = n->second;
-        assert(NULL != p);
+        assert(nullptr != p);
         *pdata = p->data;
         *psize = p->size;
         remove_from_list(p);
@@ -274,14 +274,14 @@ public:
         Guard<SpinLock> g(&_lock);
 
         Node *p = _list_head;
-        while (NULL != p)
+        while (nullptr != p)
         {
             Node *const n = p->next;
             delete_node(p);
             p = n;
         }
-        _list_head = NULL;
-        _list_end = NULL;
+        _list_head = nullptr;
+        _list_end = nullptr;
         _map.clear();
         _bytes_size = 0;
 

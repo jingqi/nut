@@ -19,16 +19,15 @@ class SqliteStatement
 {
     NUT_REF_COUNTABLE
 
-    sqlite3_stmt *_stmt = NULL;
+    sqlite3_stmt *_stmt = nullptr;
     std::vector<rc_ptr<enrc<std::string> > > _strings;
 
 public:
-    SqliteStatement()
-    {}
+    SqliteStatement() = default;
 
     SqliteStatement(sqlite3 *db, const char *sql)
     {
-        assert(NULL != db && NULL != sql);
+        assert(nullptr != db && nullptr != sql);
         prepare(db, sql);
     }
 
@@ -39,17 +38,17 @@ public:
 
     bool prepare(sqlite3 *db, const char *sql)
     {
-        assert(NULL != db && NULL != sql);
+        assert(nullptr != db && nullptr != sql);
         clear();
-        const int rs = ::sqlite3_prepare_v2(db, sql, -1, &_stmt, NULL);
-        if (SQLITE_OK != rs || NULL == _stmt)
+        const int rs = ::sqlite3_prepare_v2(db, sql, -1, &_stmt, nullptr);
+        if (SQLITE_OK != rs || nullptr == _stmt)
             return false;
         return true;
     }
 
     bool is_valid() const
     {
-        return NULL != _stmt;
+        return nullptr != _stmt;
     }
 
     bool reset()
@@ -62,12 +61,12 @@ public:
     void clear()
     {
         _strings.clear();
-        if (NULL != _stmt)
+        if (nullptr != _stmt)
         {
             const int rs = ::sqlite3_finalize(_stmt);
             assert(SQLITE_OK == rs);
             UNUSED(rs);
-            _stmt = NULL;
+            _stmt = nullptr;
         }
     }
 
@@ -87,7 +86,7 @@ public:
             //      否则导致访问内存错误，或者其他未定义错误
             assert(!param.string_arg.is_null());
             _strings.push_back(param.string_arg);
-            return SQLITE_OK == ::sqlite3_bind_text(_stmt, pos, param.string_arg->c_str(), -1, NULL);
+            return SQLITE_OK == ::sqlite3_bind_text(_stmt, pos, param.string_arg->c_str(), -1, nullptr);
 
         default:
             return true;

@@ -12,7 +12,7 @@ namespace nut
 
 class NUT_API CmdHelp : public ICommand
 {
-    IConsole *_console = NULL;
+    IConsole *_console = nullptr;
 
 public:
     CmdHelp(IConsole *c);

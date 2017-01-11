@@ -25,7 +25,7 @@ NUT_FIXTURE(TestBSTree)
         Node *right;
 
         Node(int k)
-            : key(k), parent(NULL), left(NULL), right(NULL)
+            : key(k), parent(nullptr), left(nullptr), right(nullptr)
         {}
 
         int get_key() const { return key; }
@@ -38,9 +38,9 @@ NUT_FIXTURE(TestBSTree)
 
         void destroy()
         {
-            if (NULL != left)
+            if (nullptr != left)
                 left->destroy();
-            if (NULL != right)
+            if (nullptr != right)
                 right->destroy();
             delete this;
         }
@@ -58,7 +58,7 @@ NUT_FIXTURE(TestBSTree)
              / \   / \
             1   3 5   7
         */
-        root = NULL;
+        root = nullptr;
         int nodes[7] = {4, 2, 6, 1, 3, 5, 7 };
         for (int i = 0; i < 7; ++i)
             root = BSTree<int,Node>::insert(root, new Node(nodes[i]));
@@ -67,7 +67,7 @@ NUT_FIXTURE(TestBSTree)
     virtual void tear_down() override
     {
         root->destroy();
-        root = NULL;
+        root = nullptr;
     }
 
     void test_smoking()

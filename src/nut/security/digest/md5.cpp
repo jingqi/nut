@@ -83,7 +83,7 @@ void MD5::update(uint8_t byte)
 
 void MD5::update(const void *buf, size_t cb)
 {
-    assert(NULL != buf || 0 == cb);
+    assert(nullptr != buf || 0 == cb);
 
     /* Calculate number of bytes mod 64 */
     uint32_t index = _bytes_len & 0x3F;
@@ -132,7 +132,7 @@ void MD5::digest()
 
 const uint8_t* MD5::get_bytes_result(void *result) const
 {
-    if (NULL != result)
+    if (nullptr != result)
         ::memcpy(result, _state, 16);
     return (const uint8_t*) _state;
 }
@@ -163,7 +163,7 @@ std::string MD5::get_string_result() const
 
 void MD5::transform512bits(const void *block)
 {
-    assert(NULL != block);
+    assert(nullptr != block);
 
     uint32_t a = _state[0], b = _state[1], c = _state[2], d = _state[3];
     const uint32_t *x = (const uint32_t*) block;

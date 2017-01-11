@@ -28,7 +28,7 @@ namespace nut
 template <typename T>
 bool is_zero(const T *a, size_t N)
 {
-    assert(NULL != a && N > 0);
+    assert(nullptr != a && N > 0);
 
     for (size_t i = 0; i < N; ++i)
     {
@@ -47,7 +47,7 @@ bool is_zero(const T *a, size_t N)
 template <typename T>
 bool is_positive(const T *a, size_t N)
 {
-    assert(NULL != a && N > 0);
+    assert(nullptr != a && N > 0);
     return 0 == (a[N - 1] & (((T) 1) << (8 * sizeof(T) - 1)));
 }
 
@@ -71,7 +71,7 @@ bool is_negative(const T *a, size_t N)
 template <typename T>
 size_t signed_significant_size(const T *a, size_t N)
 {
-    assert(NULL != a && N > 0);
+    assert(nullptr != a && N > 0);
 
     const bool positive = is_positive(a, N);
     const T skip_value = (positive ? 0 : ~(T)0);
@@ -90,7 +90,7 @@ size_t signed_significant_size(const T *a, size_t N)
 template <typename T>
 size_t unsigned_significant_size(const T *a, size_t N)
 {
-    assert(NULL != a && N > 0);
+    assert(nullptr != a && N > 0);
 
     size_t ret = N;
     while (ret > 1 && a[ret - 1] == 0)
@@ -104,7 +104,7 @@ size_t unsigned_significant_size(const T *a, size_t N)
 template <typename T>
 bool signed_equals(const T *a, size_t M, const T *b, size_t N)
 {
-    assert(NULL != a && M > 0 && NULL != b && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != b && N > 0);
 
     const bool positive1 = is_positive(a, M), positive2 = is_positive(b, N);
     if (positive1 != positive2)
@@ -126,7 +126,7 @@ bool signed_equals(const T *a, size_t M, const T *b, size_t N)
 template <typename T>
 bool unsigned_equals(const T *a, size_t M, const T*b, size_t N)
 {
-    assert(NULL != a && M > 0 && NULL != b && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != b && N > 0);
 
     const size_t limit = (std::max)(M, N);
     for (size_t i = 0; i < limit; ++i)
@@ -145,7 +145,7 @@ bool unsigned_equals(const T *a, size_t M, const T*b, size_t N)
 template <typename T>
 bool signed_less_than(const T *a, size_t M, const T *b, size_t N)
 {
-    assert(NULL != a && M > 0 && NULL != b && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != b && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
     const bool positive1 = is_positive(a, M), positive2 = is_positive(b, N);
@@ -172,7 +172,7 @@ bool signed_less_than(const T *a, size_t M, const T *b, size_t N)
 template <typename T>
 bool unsigned_less_than(const T *a, size_t M, const T *b, size_t N)
 {
-    assert(NULL != a && M > 0 && NULL != b && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != b && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
     for (int i = (int) (std::max)(M, N) - 1; i >= 0; --i)
@@ -192,7 +192,7 @@ bool unsigned_less_than(const T *a, size_t M, const T *b, size_t N)
 template <typename T>
 void signed_expand(const T *a, size_t M, T *x, size_t N)
 {
-    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
     const int fill = (is_positive(a, M) ? 0 : 0xFF); /// 先把变量算出来，避免操作数被破坏
     if (x != a)
@@ -208,7 +208,7 @@ void signed_expand(const T *a, size_t M, T *x, size_t N)
 template <typename T>
 void unsigned_expand(const T *a, size_t M, T *x, size_t N)
 {
-    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
     if (x != a)
         ::memmove(x, a, sizeof(T) * (std::min)(M, N));
@@ -219,7 +219,7 @@ void unsigned_expand(const T *a, size_t M, T *x, size_t N)
 template <typename T>
 void _signed_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_count)
 {
-    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
     if (x + word_count == a)
     {
@@ -251,7 +251,7 @@ void _signed_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_c
 template <typename T>
 void signed_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 {
-    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
     const size_t words_off = bit_count / (8 * sizeof(word_type)), bits_off = bit_count % (8 * sizeof(word_type));
@@ -288,7 +288,7 @@ void signed_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 template <typename T>
 void _unsigned_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_count)
 {
-    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
     if (x + word_count == a)
     {
@@ -315,7 +315,7 @@ void _unsigned_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word
 template <typename T>
 void unsigned_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 {
-    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
     const size_t words_off = bit_count / (8 * sizeof(word_type)), bits_off = bit_count % (8 * sizeof(word_type));
@@ -350,7 +350,7 @@ void unsigned_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 template <typename T>
 void _signed_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t word_count)
 {
-    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
     if (x == a + word_count)
     {
@@ -381,7 +381,7 @@ void _signed_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t word_
 template <typename T>
 void signed_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 {
-    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
     const size_t words_off = bit_count / (8 * sizeof(word_type)), bits_off = bit_count % (8 * sizeof(word_type));
@@ -418,7 +418,7 @@ void signed_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 template <typename T>
 void _unsigned_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t word_count)
 {
-    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
     if (x == a + word_count)
     {
@@ -444,7 +444,7 @@ void _unsigned_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t wor
 template <typename T>
 void unsigned_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 {
-    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
     const size_t words_off = bit_count / (8 * sizeof(word_type)), bits_off = bit_count % (8 * sizeof(word_type));
@@ -481,9 +481,9 @@ void unsigned_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count
  * x<N> = a<N> & b<N>
  */
 template <typename T>
-void bit_and(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL)
+void bit_and(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = nullptr)
 {
-    assert(NULL != a && NULL != b && NULL != x && N > 0);
+    assert(nullptr != a && nullptr != b && nullptr != x && N > 0);
 
 #if (OPTIMIZE_LEVEL == 0)
     // 避免区域交叉覆盖
@@ -531,9 +531,9 @@ void bit_and(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL
  * x<N> = a<N> | b<N>
  */
 template <typename T>
-void bit_or(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL)
+void bit_or(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = nullptr)
 {
-    assert(NULL != a && NULL != b && NULL != x && N > 0);
+    assert(nullptr != a && nullptr != b && nullptr != x && N > 0);
 
 #if (OPTIMIZE_LEVEL == 0)
     // 避免区域交叉覆盖
@@ -581,9 +581,9 @@ void bit_or(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL)
  * x<N> = a<N> ^ b<N>
  */
 template <typename T>
-void bit_xor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL)
+void bit_xor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = nullptr)
 {
-    assert(NULL != a && NULL != b && NULL != x && N > 0);
+    assert(nullptr != a && nullptr != b && nullptr != x && N > 0);
 
 #if (OPTIMIZE_LEVEL == 0)
     // 避免区域交叉覆盖
@@ -631,9 +631,9 @@ void bit_xor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL
  * x<N> = ~(a<N> ^ b<N>)
  */
 template <typename T>
-void bit_nxor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NULL)
+void bit_nxor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = nullptr)
 {
-    assert(NULL != a && NULL != b && NULL != x && N > 0);
+    assert(nullptr != a && nullptr != b && nullptr != x && N > 0);
 
 #if (OPTIMIZE_LEVEL == 0)
     // 避免区域交叉覆盖
@@ -683,7 +683,7 @@ void bit_nxor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = NUL
 template <typename T>
 void bit_not(const T *a, T *x, size_t N)
 {
-    assert(NULL != a && NULL != x && N > 0);
+    assert(nullptr != a && nullptr != x && N > 0);
 
     if (x < a)
     {
@@ -812,7 +812,7 @@ inline size_t _bit_length(uint8_t a)
  */
 inline size_t bit_length(const uint8_t *a,  size_t N)
 {
-    assert(NULL != a && N > 0);
+    assert(nullptr != a && N > 0);
 
 #if (OPTIMIZE_LEVEL == 0)
     for (int i = N - 1; i >= 0; --i)
@@ -842,7 +842,7 @@ inline size_t bit_length(const uint8_t *a,  size_t N)
  */
 inline size_t bit0_length(const uint8_t *a, size_t N)
 {
-    assert(NULL != a && N > 0);
+    assert(nullptr != a && N > 0);
 
 #if (OPTIMIZE_LEVEL == 0)
     for (int i = N - 1; i >= 0; --i)
@@ -910,7 +910,7 @@ inline size_t _bit_count(uint8_t a)
  */
 inline size_t bit_count(const uint8_t *a, size_t N)
 {
-    assert(NULL != a && N > 0);
+    assert(nullptr != a && N > 0);
 
 #if (OPTIMIZE_LEVEL == 0)
     size_t ret = 0;
@@ -933,7 +933,7 @@ inline size_t bit_count(const uint8_t *a, size_t N)
  */
 inline size_t bit0_count(const uint8_t *a, size_t N)
 {
-    assert(NULL != a && N > 0);
+    assert(nullptr != a && N > 0);
     return N * 8 - bit_count(a, N);
 }
 
@@ -1055,7 +1055,7 @@ inline int _lowest_bit(uint8_t a)
  */
 inline int lowest_bit(const uint8_t *a, size_t N)
 {
-    assert(NULL != a && N > 0);
+    assert(nullptr != a && N > 0);
 
 #if (OPTIMIZE_LEVEL == 0)
     for (size_t i = 0; i < N; ++i)
@@ -1088,7 +1088,7 @@ inline int lowest_bit(const uint8_t *a, size_t N)
  */
 inline int lowest_bit0(const uint8_t *a, size_t N)
 {
-    assert(NULL != a && N > 0);
+    assert(nullptr != a && N > 0);
 
 #if (OPTIMIZE_LEVEL == 0)
     for (size_t i = 0; i < N; ++i)
@@ -1120,9 +1120,10 @@ inline int lowest_bit0(const uint8_t *a, size_t N)
  * @return 进位
  */
 template <typename T>
-uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma = NULL)
+uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, 
+                   memory_allocator *ma = nullptr)
 {
-    assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
+    assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
 
@@ -1159,9 +1160,10 @@ uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, m
  * @return 进位
  */
 template <typename T>
-uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma = NULL)
+uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
+                     memory_allocator *ma = nullptr)
 {
-    assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
+    assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
 
@@ -1199,7 +1201,7 @@ uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
 template <typename T>
 uint8_t increase(T *x, size_t N)
 {
-    assert(NULL != x && N > 0);
+    assert(nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
 
@@ -1222,9 +1224,10 @@ uint8_t increase(T *x, size_t N)
  * @return 进位
  */
 template <typename T>
-uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma = NULL)
+uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, 
+                   memory_allocator *ma = nullptr)
 {
-    assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
+    assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<word_type>::double_unsigned_type dword_type;
 
@@ -1261,9 +1264,10 @@ uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, m
  * @return 进位
  */
 template <typename T>
-uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma = NULL)
+uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
+                     memory_allocator *ma = nullptr)
 {
-    assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
+    assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<word_type>::double_unsigned_type dword_type;
 
@@ -1301,7 +1305,7 @@ uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
 template <typename T>
 uint8_t decrease(T *x, size_t N)
 {
-    assert(NULL != x && N > 0);
+    assert(nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
 
@@ -1324,9 +1328,9 @@ uint8_t decrease(T *x, size_t N)
  * @return 进位
  */
 template <typename T>
-uint8_t signed_negate(const T *a, size_t M, T *x, size_t N, memory_allocator *ma = NULL)
+uint8_t signed_negate(const T *a, size_t M, T *x, size_t N, memory_allocator *ma = nullptr)
 {
-    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
 
@@ -1362,9 +1366,9 @@ uint8_t signed_negate(const T *a, size_t M, T *x, size_t N, memory_allocator *ma
  * @return 进位
  */
 template <typename T>
-uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N, memory_allocator *ma = NULL)
+uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N, memory_allocator *ma = nullptr)
 {
-    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
 
@@ -1416,9 +1420,9 @@ uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N, memory_allocator *
  *    ab ac ad ae
  */
 template <typename T>
-void _unsigned_square(const T *a, size_t M, T *x, size_t N, memory_allocator *ma = NULL)
+void _unsigned_square(const T *a, size_t M, T *x, size_t N, memory_allocator *ma = nullptr)
 {
-    assert(NULL != a && M > 0 && NULL != x && N > 0);
+    assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     assert(is_positive(a, M));
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
@@ -1492,9 +1496,10 @@ void _unsigned_square(const T *a, size_t M, T *x, size_t N, memory_allocator *ma
  * x<P> = a<M> * b<N>
  */
 template <typename T>
-void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma = NULL)
+void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
+                     memory_allocator *ma = nullptr)
 {
-    assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
+    assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
 
@@ -1549,9 +1554,10 @@ void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
  * x<P> = a<M> * b<N>
  */
 template <typename T>
-void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, memory_allocator *ma = NULL)
+void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
+                       memory_allocator *ma = nullptr)
 {
-    assert(NULL != a && M > 0 && NULL != b && N > 0 && NULL != x && P > 0);
+    assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
 
@@ -1604,11 +1610,12 @@ void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t 
  *      余数
  */
 template <typename T>
-void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, size_t Q, memory_allocator *ma = NULL)
+void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
+                   T *y, size_t Q, memory_allocator *ma = nullptr)
 {
-    assert(NULL != a && M > 0 && NULL != b && N > 0);
-    assert((NULL != x && P > 0) || (NULL != y && Q > 0));
-    assert(NULL == x || P == 0 || NULL == y || Q == 0 || y >= x + P || x >= y + Q); // 避免区域交叉覆盖
+    assert(nullptr != a && M > 0 && nullptr != b && N > 0);
+    assert((nullptr != x && P > 0) || (nullptr != y && Q > 0));
+    assert(nullptr == x || P == 0 || nullptr == y || Q == 0 || y >= x + P || x >= y + Q); // 避免区域交叉覆盖
     assert(!is_zero(b, N)); // 被除数不能为0
 
     typedef typename StdInt<T>::unsigned_type word_type;
@@ -1621,11 +1628,11 @@ void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T
     const size_t quotient_len = (std::min)(P, dividend_len);
 
     // 避免数据在计算中途被破坏
-    word_type *quotient = reinterpret_cast<word_type*>(x); // 商，可以为 NULL
+    word_type *quotient = reinterpret_cast<word_type*>(x); // 商，可以为 nullptr
     if ((a - P < x && x < a) || (b - P < x && x < b + N)) // 兼容 x==a 的情况
         quotient = (word_type*) ma_alloc(ma, sizeof(word_type) * quotient_len);
-    word_type *remainder = reinterpret_cast<word_type*>(y); // 余数，不能为 NULL
-    if (NULL == y || Q < divisor_len || (a - Q < y && y < a + M) || (b - Q < y && y < b + N))
+    word_type *remainder = reinterpret_cast<word_type*>(y); // 余数，不能为 nullptr
+    if (nullptr == y || Q < divisor_len || (a - Q < y && y < a + M) || (b - Q < y && y < b + N))
         remainder = (word_type*) ma_alloc(ma, sizeof(word_type) * divisor_len);
 
     // 逐位试商
@@ -1636,7 +1643,7 @@ void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T
     {
         const size_t dividend_word_pos = dividend_len - i - 1;
         const word_type next_dividend_word = reinterpret_cast<const word_type*>(a)[dividend_word_pos]; // 余数左移时的低位补位部分
-        if (NULL != quotient && dividend_word_pos < P)
+        if (nullptr != quotient && dividend_word_pos < P)
             quotient[dividend_word_pos] = 0; // 初始化商，注意，兼容 x==a 的情况
 
         for (size_t j = 0; j < 8 * sizeof(word_type); ++j)
@@ -1655,7 +1662,7 @@ void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T
             remainder_positive = is_positive(remainder, divisor_len);
             if (remainder_positive == divisor_positive)
             {
-                if (NULL != quotient && dividend_word_pos < P)
+                if (nullptr != quotient && dividend_word_pos < P)
                     quotient[dividend_word_pos] |= (1 << (8 * sizeof(word_type) - 1 - j));
                 if (0 == i && 0 == j)
                     quotient_positive = false;
@@ -1669,9 +1676,9 @@ void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T
         如果未除尽且商为负数，则商加1
     */
     const bool remainder_is_zero = is_zero(remainder, divisor_len);
-    if (NULL != x)
+    if (nullptr != x)
     {
-        assert(NULL != quotient);
+        assert(nullptr != quotient);
         if (remainder_is_zero)
         {
             if (!divisor_positive)
@@ -1689,7 +1696,7 @@ void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T
         恢复余数:
         如果未除尽且余数符号与被除数不一致，余数需加修正
     */
-    if (NULL != y)
+    if (nullptr != y)
     {
         if (!remainder_is_zero && remainder_positive != dividend_positive)
         {
@@ -1719,11 +1726,12 @@ void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T
  *    余数
  */
 template <typename T>
-void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, size_t Q, memory_allocator *ma = NULL)
+void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
+                     T *y, size_t Q, memory_allocator *ma = nullptr)
 {
-    assert(NULL != a && M > 0 && NULL != b && N > 0);
-    assert((NULL != x && P > 0) || (NULL != y && Q > 0));
-    assert(NULL == x || P == 0 || NULL == y || Q == 0 || y >= x + P || x >= y + Q); // 避免区域交叉覆盖
+    assert(nullptr != a && M > 0 && nullptr != b && N > 0);
+    assert((nullptr != x && P > 0) || (nullptr != y && Q > 0));
+    assert(nullptr == x || P == 0 || nullptr == y || Q == 0 || y >= x + P || x >= y + Q); // 避免区域交叉覆盖
     assert(!is_zero(b, N)); // 被除数不能为0
 
     typedef typename StdInt<T>::unsigned_type word_type;
@@ -1734,11 +1742,11 @@ void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
     const size_t quotient_len = (std::min)(P, dividend_len);
 
     // 避免数据在计算中途被破坏
-    word_type *quotient = reinterpret_cast<word_type*>(x); // 商，可以为 NULL
+    word_type *quotient = reinterpret_cast<word_type*>(x); // 商，可以为 nullptr
     if ((a - P < x && x < a) || (b - P < x && x < b + N)) // 兼容 x==a 的情况
         quotient = (word_type*) ma_alloc(ma, sizeof(word_type) * quotient_len);
-    word_type *remainder = reinterpret_cast<word_type*>(y); // 余数，不能为 NULL
-    if (NULL == y || Q < divisor_len || (a - Q < y && y < a + M) || (b - Q < y && y < b + N))
+    word_type *remainder = reinterpret_cast<word_type*>(y); // 余数，不能为 nullptr
+    if (nullptr == y || Q < divisor_len || (a - Q < y && y < a + M) || (b - Q < y && y < b + N))
         remainder = (word_type*) ma_alloc(ma, sizeof(word_type) * divisor_len);
 
     // 逐位试商
@@ -1748,7 +1756,7 @@ void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
     {
         const size_t dividend_word_pos = dividend_len - i - 1;
         const word_type next_dividend_word = reinterpret_cast<const word_type*>(a)[dividend_word_pos]; // 余数左移时的低位补位部分
-        if (NULL != quotient && dividend_word_pos < P)
+        if (nullptr != quotient && dividend_word_pos < P)
             quotient[dividend_word_pos] = 0; // 初始化商，注意，兼容 x==a 的情况
 
         for (size_t j = 0; j < 8 * sizeof(word_type); ++j)
@@ -1765,20 +1773,20 @@ void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
 
             // 试商结果
             remainder_positive = is_positive(remainder, divisor_len);
-            if (remainder_positive && NULL != quotient && dividend_word_pos < P)
+            if (remainder_positive && nullptr != quotient && dividend_word_pos < P)
                 quotient[dividend_word_pos] |= (1 << (8 * sizeof(word_type) - 1 - j));
         }
     }
 
     // 商
-    if (NULL != x)
+    if (nullptr != x)
         unsigned_expand(quotient, quotient_len, reinterpret_cast<word_type*>(x), P);
 
     /**
         恢复余数:
         如果未除尽且余数符号与被除数不一致，余数需加上除数
     */
-    if (NULL != y)
+    if (nullptr != y)
     {
         if (!is_zero(remainder, divisor_len) && !remainder_positive)
             unsigned_add(remainder, divisor_len, reinterpret_cast<const word_type*>(b), divisor_len, remainder, divisor_len, ma);

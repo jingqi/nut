@@ -12,8 +12,9 @@ namespace nut
 
 class NUT_API TxtFile
 {
-    // invalid methods
-    TxtFile();
+private:
+    // Non-copyable
+    TxtFile() = delete;
 
 public:
     static bool read_file(const char *path, std::string *rs);

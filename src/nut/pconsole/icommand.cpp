@@ -7,12 +7,12 @@ namespace nut
 /**
  * 命令名缩写
  *
- * @return 最后一项必须是NULL
+ * @return 最后一项必须是 nullptr
  */
 const char** ICommand::get_command_nick_names() const
 {
     static const char* ret[] = {
-        NULL
+        nullptr
     };
     return ret;
 }
@@ -21,7 +21,7 @@ const char** ICommand::get_command_nick_names() const
 std::vector<std::string> ICommand::parse_comand_line(const char *cmd_line)
 {
     std::vector<std::string> ret;
-    if (NULL == cmd_line)
+    if (nullptr == cmd_line)
         return ret;
 
     // 略过开头的空白
@@ -61,8 +61,8 @@ std::vector<std::string> ICommand::parse_comand_line(const char *cmd_line)
 /** 分析命令行 */
 void ICommand::parse_comand_line(const wchar_t *cmd_line, std::vector<std::wstring> *appended)
 {
-    assert(NULL != appended);
-    if (NULL == cmd_line)
+    assert(nullptr != appended);
+    if (nullptr == cmd_line)
         return;
 
     // 略过开头的空白

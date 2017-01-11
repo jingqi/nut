@@ -30,15 +30,13 @@ NUT_FIXTURE(TestTimeWheel)
 
     long count = 0;
 
-    static void show(TimeWheel::timer_id_type id, void *arg, uint64_t expires)
+    void show(TimeWheel::timer_id_type id, uint64_t expires)
     {
-        TestTimeWheel *pthis = (TestTimeWheel*)arg;
+        cout << "-- " << this->count << " +" << expires << "ms" << endl << flush;
 
-        cout << "-- " << pthis->count << " +" << expires << "ms" << endl << flush;
-
-        if (pthis->count >= 20)
-            pthis->tw.cancel_timer(id);
-        ++pthis->count;
+        if (this->count >= 20)
+            this->tw.cancel_timer(id);
+        ++this->count;
     }
 
     void test_smoke()
@@ -46,7 +44,7 @@ NUT_FIXTURE(TestTimeWheel)
         cout << endl;
 
         count = 0;
-        id = tw.add_timer(2550, 23, show, this); // 最小轮周期为 2560ms
+        id = tw.add_timer(2550, 23, [=](TimeWheel::timer_id_type id, uint64_t expires) { show(id, expires); }); // 最小轮周期为 2560ms
 
         while (tw.size() > 0)
         {
@@ -82,7 +80,7 @@ NUT_FIXTURE(TestTimeWheel)
         END("::clock()")
 
         BEGIN
-            ::time(NULL);
+            ::time(nullptr);
         END("::time()")
 
         BEGIN
@@ -119,7 +117,7 @@ NUT_FIXTURE(TestTimeWheel)
 
         struct timeval tv;
         BEGIN
-            ::gettimeofday(&tv, NULL);
+            ::gettimeofday(&tv, nullptr);
         END("::gettimeofday()")
 #endif
     }

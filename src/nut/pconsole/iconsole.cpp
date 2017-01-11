@@ -19,7 +19,7 @@ std::vector<rc_ptr<ICommand> > IConsole::match_commands(const std::vector<rc_ptr
         assert(!cmd.is_null());
 
         // 强匹配
-        if (NULL != cmd->get_command_name() && to_match == cmd->get_command_name())
+        if (nullptr != cmd->get_command_name() && to_match == cmd->get_command_name())
         {
             matched_cmds.clear();
             matched_cmds.push_back(cmd);
@@ -27,14 +27,14 @@ std::vector<rc_ptr<ICommand> > IConsole::match_commands(const std::vector<rc_ptr
         }
 
         // 弱匹配
-        if (NULL != cmd->get_command_name() && starts_with(cmd->get_command_name(), to_match.c_str()))
+        if (nullptr != cmd->get_command_name() && starts_with(cmd->get_command_name(), to_match.c_str()))
         {
             matched_cmds.push_back(cmd);
         }
-        else if (NULL != cmd->get_command_nick_names())
+        else if (nullptr != cmd->get_command_nick_names())
         {
             const char** nn = cmd->get_command_nick_names();
-            for (size_t j = 0; NULL != nn[j]; ++j)
+            for (size_t j = 0; nullptr != nn[j]; ++j)
             {
                 if (to_match == nn[j])
                 {
