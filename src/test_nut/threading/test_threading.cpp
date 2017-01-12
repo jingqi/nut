@@ -14,7 +14,8 @@ NUT_FIXTURE(TestThreading)
     void test_smoke()
     {
         // 如果不支持 thread-local 变量，则编译出错
-        NUT_THREAD_LOCAL int a;
+        static NUT_THREAD_LOCAL int a;
+        a = 2;
     }
 };
 

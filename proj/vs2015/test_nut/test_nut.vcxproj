@@ -170,6 +170,7 @@
     <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_atomic.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_queue.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_stack.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\threading\test_threading.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\threading\test_threadpool.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\string\test_kmp.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\string\test_stringutil.cpp" />

@@ -256,9 +256,6 @@
     <ClInclude Include="..\..\..\src\nut\threading\sync\spinlock.h">
       <Filter>nut\threading\sync</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\threading\sync\threading.h">
-      <Filter>nut\threading\sync</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\threading\thread.h">
       <Filter>nut\threading</Filter>
     </ClInclude>
@@ -438,6 +435,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\nut.h">
       <Filter>nut</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\threading.h">
+      <Filter>nut\threading</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

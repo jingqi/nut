@@ -207,8 +207,8 @@
     <ClInclude Include="..\..\..\src\nut\threading\sync\rwlock.h" />
     <ClInclude Include="..\..\..\src\nut\threading\sync\sem.h" />
     <ClInclude Include="..\..\..\src\nut\threading\sync\spinlock.h" />
-    <ClInclude Include="..\..\..\src\nut\threading\sync\threading.h" />
     <ClInclude Include="..\..\..\src\nut\threading\thread.h" />
+    <ClInclude Include="..\..\..\src\nut\threading\threading.h" />
     <ClInclude Include="..\..\..\src\nut\threading\thread_pool.h" />
     <ClInclude Include="..\..\..\src\nut\unittest\console_test_logger.h" />
     <ClInclude Include="..\..\..\src\nut\unittest\stream_test_logger.h" />
