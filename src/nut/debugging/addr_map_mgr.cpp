@@ -58,8 +58,7 @@ void AddrMapManager::load(const std::string& path)
     while (getline(inf, str_line))
     {
         // Linux下的getline没法处理"\r\n"
-        std::string s;
-        nut::trim(str_line.c_str(), &s, "\r\n");
+        const std::string s = trim(str_line, "\r\n");
 
         if (!path.empty())
         {
@@ -79,7 +78,7 @@ bool AddrMapManager::find(const std::string& path, addr_type *out_addr)
     assert(nullptr != out_addr);
     *out_addr = 0;
 
-    addr_map_t::iterator iter = _addr_map.find(path);
+    addr_map_type::iterator iter = _addr_map.find(path);
     if (iter == _addr_map.end())
         return false;
 
@@ -111,7 +110,7 @@ bool AddrMapManager::parse_line(const std::string& str_line, bool fappoint_path,
     {
         char* pch_end = nullptr;
         addr_type addr = ::strtoul(str_addr.c_str(), &pch_end, 16);
-        addr_map_t::iterator iter = _addr_map.find(str_path);
+        addr_map_type::iterator iter = _addr_map.find(str_path);
         // 据观察，第一个地址是最小的，所以之后的地址不需要了
         if (iter == _addr_map.end())
             _addr_map.insert(make_pair(str_path, addr));
