@@ -51,19 +51,9 @@ public:
     virtual void skip(size_t cb) override;
 
     virtual uint8_t read_uint8() override;
-    virtual uint16_t read_uint16() override;
-    virtual uint32_t read_uint32() override;
-    virtual uint64_t read_uint64() override;
-    virtual float read_float() override;
-    virtual double read_double() override;
     virtual size_t read(void *buf, size_t cb) override;
 
     virtual void write_uint8(uint8_t v) override;
-    virtual void write_uint16(uint16_t v) override;
-    virtual void write_uint32(uint32_t v) override;
-    virtual void write_uint64(uint64_t v) override;
-    virtual void write_float(float v) override;
-    virtual void write_double(double v) override;
     virtual size_t write(const void *buf, size_t cb) override;
 
     size_t write(const byte_array_type& ba);

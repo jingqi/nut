@@ -1,8 +1,15 @@
 ﻿
 #include "input_stream.h"
 
+
 namespace nut
 {
+
+InputStream& InputStream::operator>>(bool& v)
+{
+    v = (0 != read_uint8());
+    return *this;
+}
 
 InputStream& InputStream::operator>>(uint8_t& v)
 {
@@ -64,6 +71,18 @@ InputStream& InputStream::operator>>(double& v)
     return *this;
 }
 
+InputStream& InputStream::operator>>(std::string& s)
+{
+    s = read_string();
+    return *this;
+}
+
+InputStream& InputStream::operator>>(std::wstring& s)
+{
+    s = read_wstring();
+    return *this;
+}
+
 void InputStream::skip(size_t cb)
 {
     assert(available() >= cb);
@@ -82,8 +101,7 @@ uint16_t InputStream::read_uint16()
     uint16_t ret = 0;
     if (is_little_endian())
     {
-        ret |= (uint16_t) read_uint8();
-        ret |= ((uint16_t) read_uint8()) << 8;
+        read(&ret, sizeof(uint16_t));
     }
     else
     {
@@ -104,10 +122,7 @@ uint32_t InputStream::read_uint32()
     uint32_t ret = 0;
     if (is_little_endian())
     {
-        ret |= (uint32_t) read_uint8();
-        ret |= ((uint32_t) read_uint8()) << 8;
-        ret |= ((uint32_t) read_uint8()) << 16;
-        ret |= ((uint32_t) read_uint8()) << 24;
+        read(&ret, sizeof(uint32_t));
     }
     else
     {
@@ -130,14 +145,7 @@ uint64_t InputStream::read_uint64()
     uint64_t ret = 0;
     if (is_little_endian())
     {
-        ret |= (uint64_t) read_uint8();
-        ret |= ((uint64_t) read_uint8()) << 8;
-        ret |= ((uint64_t) read_uint8()) << 16;
-        ret |= ((uint64_t) read_uint8()) << 24;
-        ret |= ((uint64_t) read_uint8()) << 32;
-        ret |= ((uint64_t) read_uint8()) << 40;
-        ret |= ((uint64_t) read_uint8()) << 48;
-        ret |= ((uint64_t) read_uint8()) << 56;
+        read(&ret, sizeof(uint64_t));
     }
     else
     {
@@ -164,8 +172,7 @@ float InputStream::read_float()
     float ret = 0.0;
     if (is_little_endian())
     {
-        for (size_t i = 0; i < sizeof(float); ++i)
-            reinterpret_cast<uint8_t*>(&ret)[i] = read_uint8();
+        read(&ret, sizeof(float));
     }
     else
     {
@@ -181,14 +188,33 @@ double InputStream::read_double()
     double ret = 0.0;
     if (is_little_endian())
     {
-        for (size_t i = 0; i < sizeof(double); ++i)
-            reinterpret_cast<uint8_t*>(&ret)[i] = read_uint8();
+        read(&ret, sizeof(double));
     }
     else
     {
         for (size_t i = 0; i < sizeof(double); ++i)
             reinterpret_cast<uint8_t*>(&ret)[sizeof(double) - i - 1] = read_uint8();
     }
+    return ret;
+}
+
+std::string InputStream::read_string()
+{
+    std::string ret;
+    const size_t len = read_uint32();
+    ret.resize(len);
+    assert(available() >= sizeof(char) * len);
+    read((char*) ret.data(), sizeof(char) * len);
+    return ret;
+}
+
+std::wstring InputStream::read_wstring()
+{
+    std::wstring ret;
+    const size_t len = read_uint32();
+    ret.resize(len);
+    assert(available() >= sizeof(wchar_t) * len);
+    read((wchar_t*) ret.data(), sizeof(wchar_t) * len);
     return ret;
 }
 

@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include <stddef.h> // for size_t and so on
+#include <string>
 
 #include <nut/rc/rc_ptr.h>
 
@@ -19,6 +20,8 @@ class NUT_API InputStream
     NUT_REF_COUNTABLE
 
 public:
+    InputStream& operator>>(bool& v);
+
     InputStream& operator>>(uint8_t& v);
     InputStream& operator>>(int8_t& v);
 
@@ -32,8 +35,10 @@ public:
     InputStream& operator>>(int64_t& v);
 
     InputStream& operator>>(float& v);
-
     InputStream& operator>>(double& v);
+
+    InputStream& operator>>(std::string& s);
+    InputStream& operator>>(std::wstring& s);
 
 public:
     virtual bool is_little_endian() const = 0;
@@ -46,20 +51,24 @@ public:
     virtual uint8_t read_uint8() = 0;
     int8_t read_int8();
 
-    virtual uint16_t read_uint16();
+    uint16_t read_uint16();
     int16_t read_int16();
 
-    virtual uint32_t read_uint32();
+    uint32_t read_uint32();
     int32_t read_int32();
 
-    virtual uint64_t read_uint64();
+    uint64_t read_uint64();
     int64_t read_int64();
 
-    // IEEE-754 浮点数
-    virtual float read_float();
+    // IEEE-754 单精度浮点数
+    float read_float();
 
     // IEEE-754 双精度浮点数
-    virtual double read_double();
+    double read_double();
+
+    // Read 4 byte length + string data
+    virtual std::string read_string();
+    virtual std::wstring read_wstring();
 
     virtual size_t read(void *buf, size_t cb);
 };

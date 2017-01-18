@@ -5,8 +5,10 @@
 #include <assert.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <string>
 
 #include <nut/rc/rc_ptr.h>
+#include <nut/platform/stdint_traits.h> // For ssize_t
 
 #include "../../nut_config.h"
 
@@ -19,6 +21,8 @@ class NUT_API OutputStream
     NUT_REF_COUNTABLE
 
 public:
+    OutputStream& operator<<(bool v);
+
     OutputStream& operator<<(uint8_t v);
     OutputStream& operator<<(int8_t v);
 
@@ -32,33 +36,40 @@ public:
     OutputStream& operator<<(int64_t v);
 
     OutputStream& operator<<(float v);
-
     OutputStream& operator<<(double v);
+
+    OutputStream& operator<<(const char *s);
+    OutputStream& operator<<(const std::string& s);
+    OutputStream& operator<<(const wchar_t *s);
+    OutputStream& operator<<(const std::wstring& s);
 
 public:
     virtual bool is_little_endian() const = 0;
-
     virtual void set_little_endian(bool le) = 0;
 
     virtual void write_uint8(uint8_t v) = 0;
-
     void write_int8(int8_t v);
 
-    virtual void write_uint16(uint16_t v);
-
+    void write_uint16(uint16_t v);
     void write_int16(int16_t v);
 
-    virtual void write_uint32(uint32_t v);
-
+    void write_uint32(uint32_t v);
     void write_int32(int32_t v);
 
-    virtual void write_uint64(uint64_t v);
-
+    void write_uint64(uint64_t v);
     void write_int64(int64_t v);
 
-    virtual void write_float(float v);
+    // IEEE-754 单精度浮点数
+    void write_float(float v);
 
-    virtual void write_double(double v);
+    // IEEE-754 双精度浮点数
+    void write_double(double v);
+
+    // Write 4 byte length + string data
+    void write_string(const char* s, ssize_t len = -1);
+    virtual void write_string(const std::string& s);
+    void write_wstring(const wchar_t* s, ssize_t len = -1);
+    virtual void write_wstring(const std::wstring& s);
 
     virtual size_t write(const void *buf, size_t cb);
 };

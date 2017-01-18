@@ -29,7 +29,8 @@ NUT_FIXTURE(TestByteArrayStream)
         bas->write_float((float) 1.234);
         bas->write_double(7.8912);
         bas->write(arr, 3);
-        NUT_TA(bas->size() == sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint32_t) + sizeof(uint64_t) + sizeof(float) + sizeof(double) + 3);
+        NUT_TA(bas->size() == sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint32_t) +
+               sizeof(uint64_t) + sizeof(float) + sizeof(double) + 3);
         NUT_TA(bas->size() == bas->tell());
 
         bas->seek(0);
@@ -59,7 +60,8 @@ NUT_FIXTURE(TestByteArrayStream)
         bas->write_float((float) 1.234);
         bas->write_double(7.8912);
         bas->write(arr, 3);
-        NUT_TA(bas->size() == sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint32_t) + sizeof(uint64_t) + sizeof(float) + sizeof(double) + 3);
+        NUT_TA(bas->size() == sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint32_t) +
+               sizeof(uint64_t) + sizeof(float) + sizeof(double) + 3);
         NUT_TA(bas->size() == bas->tell());
 
         bas->seek(0);
@@ -85,8 +87,12 @@ NUT_FIXTURE(TestByteArrayStream)
             << (uint32_t) 0x12345678
             << (uint64_t) 0x1234567890123456L
             << (float) 1.234
-            << (double) 7.8912;
-        NUT_TA(bas->size() == sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint32_t) + sizeof(uint64_t) + sizeof(float) + sizeof(double));
+            << (double) 7.8912
+            << "abc"
+            << L"opq";
+        NUT_TA(bas->size() == sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint32_t) +
+               sizeof(uint64_t) + sizeof(float) + sizeof(double) +
+               sizeof(uint32_t) + sizeof(char) * 3 + sizeof(uint32_t) + sizeof(wchar_t) * 3);
         NUT_TA(bas->size() == bas->tell());
 
         bas->seek(0);
@@ -114,6 +120,16 @@ NUT_FIXTURE(TestByteArrayStream)
         double dv;
         *bas >> dv;
         NUT_TA(7.8912 == dv);
+
+        string s;
+        *bas >> s;
+        NUT_TA(s == "abc");
+
+        wstring ws;
+        *bas >> ws;
+        NUT_TA(ws == L"opq");
+
+        NUT_TA(bas->available() == 0);
     }
 };
 
