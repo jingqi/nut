@@ -129,7 +129,7 @@ NUT_FIXTURE(TestByteArrayStream)
         *bas >> ws;
         NUT_TA(ws == L"opq");
 
-        NUT_TA(bas->available() == 0);
+        NUT_TA(bas->readable_size() == 0);
     }
 };
 

@@ -27,7 +27,6 @@
 		2E4D98991DBF8F1D00757198 /* byte_array_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E0CCB501B78E822006A6DB5 /* byte_array_stream.h */; };
 		2E4D989A1DBF8F1D00757198 /* input_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E0CCB521B78E822006A6DB5 /* input_stream.h */; };
 		2E4D989B1DBF8F1D00757198 /* output_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E0CCB531B78E822006A6DB5 /* output_stream.h */; };
-		2E4D989C1DBF8F1D00757198 /* random_access_input_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E0CCB541B78E822006A6DB5 /* random_access_input_stream.h */; };
 		2E4D989D1DBF8F1D00757198 /* mdarea.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E19269D1AD8FF0F00FDFFA6 /* mdarea.h */; };
 		2E4D989E1DBF8F1D00757198 /* rtree.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E19269E1AD8FF0F00FDFFA6 /* rtree.h */; };
 		2E4D989F1DBF8F1D00757198 /* bstree.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E1926A11AD8FF2200FDFFA6 /* bstree.h */; };
@@ -162,6 +161,7 @@
 		2E50AAF91B6F2F3900AA2E58 /* test_delegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAF81B6F2F3900AA2E58 /* test_delegate.cpp */; };
 		2E50AAFB1B6F2F5600AA2E58 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E50AAFA1B6F2F5600AA2E58 /* main.cpp */; };
 		2E81F99C1E2FA8610029E6D6 /* test_endian.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E81F99B1E2FA8610029E6D6 /* test_endian.cpp */; };
+		2E81F99E1E2FC9300029E6D6 /* random_access_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E81F99D1E2FC9300029E6D6 /* random_access_stream.h */; };
 		2EA0B7701E1FD2CB00563338 /* nut.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EA0B76F1E1FD2CB00563338 /* nut.h */; };
 		2EA9F8DE1D84628200017E41 /* circle_file_by_size_log_handler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EA9F8D11D84628200017E41 /* circle_file_by_size_log_handler.cpp */; };
 		2EA9F8DF1D84628200017E41 /* circle_file_by_size_log_handler.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EA9F8D21D84628200017E41 /* circle_file_by_size_log_handler.h */; };
@@ -274,7 +274,6 @@
 		2E0CCB501B78E822006A6DB5 /* byte_array_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = byte_array_stream.h; path = ../../src/nut/container/bytestream/byte_array_stream.h; sourceTree = "<group>"; };
 		2E0CCB521B78E822006A6DB5 /* input_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = input_stream.h; path = ../../src/nut/container/bytestream/input_stream.h; sourceTree = "<group>"; };
 		2E0CCB531B78E822006A6DB5 /* output_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = output_stream.h; path = ../../src/nut/container/bytestream/output_stream.h; sourceTree = "<group>"; };
-		2E0CCB541B78E822006A6DB5 /* random_access_input_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = random_access_input_stream.h; path = ../../src/nut/container/bytestream/random_access_input_stream.h; sourceTree = "<group>"; };
 		2E0CCB5C1B78E88A006A6DB5 /* test_bytearraystream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_bytearraystream.cpp; path = ../../src/test_nut/container/bytestream/test_bytearraystream.cpp; sourceTree = "<group>"; };
 		2E17D6741DC24E6B006DAB9E /* test_time_wheel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_time_wheel.cpp; path = ../../src/test_nut/util/time/test_time_wheel.cpp; sourceTree = "<group>"; };
 		2E19269D1AD8FF0F00FDFFA6 /* mdarea.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mdarea.h; path = ../../src/nut/container/tree/rtree/mdarea.h; sourceTree = "<group>"; };
@@ -447,6 +446,7 @@
 		2E6429DD1A1F76760037E554 /* test_nut */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_nut; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E81F99A1E2FA44E0029E6D6 /* portable_endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = portable_endian.h; path = ../../src/nut/platform/portable_endian.h; sourceTree = "<group>"; };
 		2E81F99B1E2FA8610029E6D6 /* test_endian.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_endian.cpp; path = ../../src/test_nut/platform/test_endian.cpp; sourceTree = "<group>"; };
+		2E81F99D1E2FC9300029E6D6 /* random_access_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = random_access_stream.h; path = ../../src/nut/container/bytestream/random_access_stream.h; sourceTree = "<group>"; };
 		2E91FDBC1AECC58700223604 /* console_test_logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = console_test_logger.cpp; path = ../../src/nut/unittest/console_test_logger.cpp; sourceTree = "<group>"; };
 		2E91FDBD1AECC58700223604 /* console_test_logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = console_test_logger.h; path = ../../src/nut/unittest/console_test_logger.h; sourceTree = "<group>"; };
 		2E91FDBE1AECC58700223604 /* stream_test_logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = stream_test_logger.cpp; path = ../../src/nut/unittest/stream_test_logger.cpp; sourceTree = "<group>"; };
@@ -521,13 +521,13 @@
 		2E0CCB4E1B78E805006A6DB5 /* bytestream */ = {
 			isa = PBXGroup;
 			children = (
+				2E81F99D1E2FC9300029E6D6 /* random_access_stream.h */,
 				2EEDA8CE1C2C3D360022BE4E /* input_stream.cpp */,
 				2EEDA8CF1C2C3D360022BE4E /* output_stream.cpp */,
 				2E0CCB4F1B78E822006A6DB5 /* byte_array_stream.cpp */,
 				2E0CCB501B78E822006A6DB5 /* byte_array_stream.h */,
 				2E0CCB521B78E822006A6DB5 /* input_stream.h */,
 				2E0CCB531B78E822006A6DB5 /* output_stream.h */,
-				2E0CCB541B78E822006A6DB5 /* random_access_input_stream.h */,
 			);
 			name = bytestream;
 			sourceTree = "<group>";
@@ -1207,7 +1207,6 @@
 				2E4D98991DBF8F1D00757198 /* byte_array_stream.h in Headers */,
 				2E4D989A1DBF8F1D00757198 /* input_stream.h in Headers */,
 				2E4D989B1DBF8F1D00757198 /* output_stream.h in Headers */,
-				2E4D989C1DBF8F1D00757198 /* random_access_input_stream.h in Headers */,
 				2E4D989D1DBF8F1D00757198 /* mdarea.h in Headers */,
 				2E00A7781DC232A500A90738 /* time_wheel.h in Headers */,
 				2E4D989E1DBF8F1D00757198 /* rtree.h in Headers */,
@@ -1298,6 +1297,7 @@
 				2E4D98F21DBF8F1D00757198 /* time_val.h in Headers */,
 				2E4D98F31DBF8F1D00757198 /* timer_manager.h in Headers */,
 				2E4D98F41DBF8F1D00757198 /* kmp.h in Headers */,
+				2E81F99E1E2FC9300029E6D6 /* random_access_stream.h in Headers */,
 				2E4D98F51DBF8F1D00757198 /* string_util.h in Headers */,
 				2E4D98F61DBF8F1D00757198 /* to_string.h in Headers */,
 				2E4D98F71DBF8F1D00757198 /* sqlite_connection.h in Headers */,

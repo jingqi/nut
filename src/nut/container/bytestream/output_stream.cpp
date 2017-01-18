@@ -98,6 +98,13 @@ OutputStream& OutputStream::operator<<(const std::wstring& s)
     return *this;
 }
 
+void OutputStream::write_uint8(uint8_t v)
+{
+    const size_t rs = write(&v, sizeof(uint8_t));
+    assert(sizeof(uint8_t) == rs);
+    UNUSED(rs);
+}
+
 void OutputStream::write_int8(int8_t v)
 {
     write_uint8((uint8_t) v);
@@ -109,7 +116,7 @@ void OutputStream::write_uint16(uint16_t v)
         v = htole16(v);
     else
         v = htobe16(v);
-    
+
     const size_t rs = write(&v, sizeof(uint16_t));
     assert(sizeof(uint16_t) == rs);
     UNUSED(rs);
@@ -126,7 +133,7 @@ void OutputStream::write_uint32(uint32_t v)
         v = htole32(v);
     else
         v = htobe32(v);
-    
+
     const size_t rs = write(&v, sizeof(uint32_t));
     assert(sizeof(uint32_t) == rs);
     UNUSED(rs);
@@ -143,7 +150,7 @@ void OutputStream::write_uint64(uint64_t v)
         v = htole64(v);
     else
         v = htobe64(v);
-    
+
     const size_t rs = write(&v, sizeof(uint64_t));
     assert(sizeof(uint64_t) == rs);
     UNUSED(rs);
@@ -162,7 +169,7 @@ void OutputStream::write_float(float v)
         iv = htole32(iv);
     else
         iv = htobe32(iv);
-    
+
     const size_t rs = write(&iv, sizeof(float));
     assert(sizeof(float) == rs);
     UNUSED(rs);
@@ -176,7 +183,7 @@ void OutputStream::write_double(double v)
         iv = htole64(iv);
     else
         iv = htobe64(iv);
-    
+
     const size_t rs = write(&iv, sizeof(double));
     assert(sizeof(double) == rs);
     UNUSED(rs);
@@ -191,15 +198,6 @@ void OutputStream::write_string(const char *s, ssize_t len)
         write_string(std::string(s, len));
 }
 
-void OutputStream::write_string(const std::string& s)
-{
-    const size_t len = s.length();
-    write_uint32((uint32_t) len);
-    const size_t rs = write(s.data(), sizeof(char) * len);
-    assert(rs == sizeof(char) * len);
-    UNUSED(rs);
-}
-
 void OutputStream::write_wstring(const wchar_t* s, ssize_t len)
 {
     assert(nullptr != s);
@@ -209,6 +207,15 @@ void OutputStream::write_wstring(const wchar_t* s, ssize_t len)
         write_wstring(std::wstring(s, len));
 }
 
+void OutputStream::write_string(const std::string& s)
+{
+    const size_t len = s.length();
+    write_uint32((uint32_t) len);
+    const size_t rs = write(s.data(), sizeof(char) * len);
+    assert(rs == sizeof(char) * len);
+    UNUSED(rs);
+}
+
 void OutputStream::write_wstring(const std::wstring& s)
 {
     const size_t len = s.length();
@@ -216,14 +223,6 @@ void OutputStream::write_wstring(const std::wstring& s)
     const size_t rs = write(s.data(), sizeof(wchar_t) * len);
     assert(rs == sizeof(wchar_t) * len);
     UNUSED(rs);
-}
-
-size_t OutputStream::write(const void *buf, size_t cb)
-{
-    assert(nullptr != buf || 0 == cb);
-    for (size_t i = 0; i < cb; ++i)
-        write_uint8(((const uint8_t*) buf)[i]);
-    return cb;
 }
 
 }

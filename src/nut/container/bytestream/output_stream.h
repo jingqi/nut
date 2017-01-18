@@ -47,7 +47,9 @@ public:
     virtual bool is_little_endian() const = 0;
     virtual void set_little_endian(bool le) = 0;
 
-    virtual void write_uint8(uint8_t v) = 0;
+    virtual size_t write(const void *buf, size_t cb) = 0;
+
+    void write_uint8(uint8_t v);
     void write_int8(int8_t v);
 
     void write_uint16(uint16_t v);
@@ -67,11 +69,9 @@ public:
 
     // Write 4 byte length + string data
     void write_string(const char* s, ssize_t len = -1);
-    virtual void write_string(const std::string& s);
     void write_wstring(const wchar_t* s, ssize_t len = -1);
+    virtual void write_string(const std::string& s);
     virtual void write_wstring(const std::wstring& s);
-
-    virtual size_t write(const void *buf, size_t cb);
 };
 
 }

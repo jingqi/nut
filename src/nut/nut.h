@@ -43,7 +43,7 @@
 #include "container/lru_data_cache.h"
 #include "container/bytestream/input_stream.h"
 #include "container/bytestream/output_stream.h"
-#include "container/bytestream/random_access_input_stream.h"
+#include "container/bytestream/random_access_stream.h"
 #include "container/bytestream/byte_array_stream.h"
 #include "container/rwbuffer/ring_buffer.h"
 #include "container/rwbuffer/fragment_buffer.h"

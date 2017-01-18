@@ -4,7 +4,7 @@
 
 #include <assert.h>
 #include <stdint.h>
-#include <stddef.h> // for size_t and so on
+#include <stddef.h> // For size_t and so on
 #include <string>
 
 #include <nut/rc/rc_ptr.h>
@@ -44,11 +44,13 @@ public:
     virtual bool is_little_endian() const = 0;
     virtual void set_little_endian(bool le) = 0;
 
-    virtual size_t available() const = 0;
+    virtual size_t readable_size() const = 0;
 
-    virtual void skip(size_t cb);
+    virtual size_t read(void *buf, size_t cb) = 0;
 
-    virtual uint8_t read_uint8() = 0;
+    virtual void skip_read(size_t cb);
+
+    uint8_t read_uint8();
     int8_t read_int8();
 
     uint16_t read_uint16();
@@ -69,8 +71,6 @@ public:
     // Read 4 byte length + string data
     virtual std::string read_string();
     virtual std::wstring read_wstring();
-
-    virtual size_t read(void *buf, size_t cb);
 };
 
 }
