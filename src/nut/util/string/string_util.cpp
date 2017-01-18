@@ -181,35 +181,30 @@ NUT_API std::string format(const char *fmt, ...)
 {
     assert(nullptr != fmt);
 
-    size_t size = 100;
-    char *buf = (char*) ::malloc(size);
-    assert(nullptr != buf);
+    std::string ret;
+    size_t size = ::strlen(fmt) * 2 + 16;
+    ret.resize(size);
 
     va_list ap;
-    while (nullptr != buf)
+    while (true)
     {
         va_start(ap, fmt);
-        int n = ::vsnprintf(buf, size, fmt, ap);
+        const int n = ::vsnprintf((char*) ret.data(), size, fmt, ap);
         va_end(ap);
-        if (n > -1 && n < (int)size)
+
+        if (0 <= n && n < (int) size)
+        {
+            ret.resize(n);
             break;
+        }
 
         if (n > -1)
             size = n + 1; /* glibc 2.1 */
         else
-            size *= 2;  /* glib 2.0 */
+            size *= 2;    /* glib 2.0 */
+        ret.resize(size);
+    }
 
-        char *np = (char*) ::realloc(buf, size);
-        assert(nullptr != np);
-        if (nullptr != np)
-            buf = np;
-    }
-    std::string ret;
-    if (nullptr != buf)
-    {
-        ret = buf;
-        ::free(buf); /* include the case of success of realloc() and failure of realloc() */
-    }
     return ret;
 }
 
@@ -217,41 +212,36 @@ NUT_API std::wstring format(const wchar_t *fmt, ...)
 {
     assert(nullptr != fmt);
 
-    size_t size = 100;
-    wchar_t *buf = (wchar_t*) ::malloc(size * sizeof(wchar_t));
-    assert(nullptr != buf);
+    std::wstring ret;
+    size_t size = ::wcslen(fmt) * 2 + 16;
+    ret.resize(size);
 
     va_list ap;
-    while (nullptr != buf)
+    while (true)
     {
         va_start(ap, fmt);
 #if NUT_PLATFORM_CC_VC
-        int n = ::_vsnwprintf(buf, size, fmt, ap);
+        int n = ::_vsnwprintf((wchar_t*) ret.data(), size, fmt, ap);
 #elif NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
-        int n = ::vswprintf(buf, size, fmt, ap);
+        int n = ::vswprintf((wchar_t*) ret.data(), size, fmt, ap);
 #else
-        int n = ::vsnwprintf(buf, size, fmt, ap);
+        int n = ::vsnwprintf((wchar_t*) ret.data(), size, fmt, ap);
 #endif
         va_end(ap);
-        if (n > -1 && n < (int)size)
+
+        if (0 <= n && n < (int) size)
+        {
+            ret.resize(n);
             break;
+        }
 
         if (n > -1)
             size = n + 1; /* glibc 2.1 */
         else
-            size *= 2;  /* glib 2.0 */
+            size *= 2;    /* glib 2.0 */
+        ret.resize(size);
+    }
 
-        wchar_t *np = (wchar_t*) ::realloc(buf, size);
-        assert(nullptr != np);
-        if (nullptr != np)
-            buf = np;
-    }
-    std::wstring ret;
-    if (nullptr != buf)
-    {
-        ret = buf;
-        ::free(buf); /* include the case of success of realloc() and failure of realloc() */
-    }
     return ret;
 }
 
@@ -512,7 +502,12 @@ NUT_API bool ascii_to_wstr(const char *str, std::wstring *result)
         return false;
     const int old_len = (int) result->length();
     result->resize(old_len + n - 1);
-    const int rs = ::MultiByteToWideChar(CP_ACP, 0, str, -1, &(*result)[old_len], n);
+    const int rs = ::MultiByteToWideChar(CP_ACP,
+                                         0,
+                                         str,
+                                         -1,
+                                         (wchar_t*) (result->data() + old_len),
+                                         n);
     assert(((int) result->length()) == old_len + n - 1);
     return rs > 0;
 #else
@@ -521,7 +516,7 @@ NUT_API bool ascii_to_wstr(const char *str, std::wstring *result)
         return false;
     const size_t old_len = result->length();
     result->resize(old_len + n);
-    const size_t rs = ::mbstowcs(&(*result)[old_len], str, n); // 未包含 '\0'
+    const size_t rs = ::mbstowcs((wchar_t*) (result->data() + old_len), str, n); // 未包含 '\0'
     assert(result->length() == old_len + n);
     return rs > 0;
 #endif
@@ -538,12 +533,26 @@ NUT_API bool wstr_to_ascii(const wchar_t *wstr, std::string *result)
     assert(nullptr != wstr && nullptr != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    const int n = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, nullptr, 0, nullptr, nullptr);
+    const int n = ::WideCharToMultiByte(CP_ACP,
+                                        0,
+                                        wstr,
+                                        -1,
+                                        nullptr,
+                                        0,
+                                        nullptr,
+                                        nullptr);
     if (n <= 0)
         return false;
     const int old_len = (int) result->length();
     result->resize(old_len + n - 1);
-    const int rs = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, &(*result)[old_len], n, nullptr, nullptr);
+    const int rs = ::WideCharToMultiByte(CP_ACP,
+                                         0,
+                                         wstr,
+                                         -1,
+                                         (char*) (result->data() + old_len),
+                                         n,
+                                         nullptr,
+                                         nullptr);
     assert(((int) result->length()) == old_len + n - 1);
     return rs > 0;
 #else
@@ -552,7 +561,7 @@ NUT_API bool wstr_to_ascii(const wchar_t *wstr, std::string *result)
         return false;
     const size_t old_len = result->length();
     result->resize(old_len + n);
-    const size_t rs = ::wcstombs(&(*result)[old_len], wstr, n);
+    const size_t rs = ::wcstombs((char*) (result->data() + old_len), wstr, n);
     assert(result->length() == old_len + n);
     return rs > 0;
 #endif
@@ -579,7 +588,12 @@ NUT_API bool utf8_to_wstr(const char *str, std::wstring *result)
         return false;
     const int old_len = (int) result->length();
     result->resize(old_len + n - 1);
-    const int rs = ::MultiByteToWideChar(CP_UTF8, 0, str, -1, &(*result)[old_len], n);
+    const int rs = ::MultiByteToWideChar(CP_UTF8,
+                                         0,
+                                         str,
+                                         -1,
+                                         (wchar_t*) (result->data() + old_len),
+                                         n);
     assert(((int) result->length()) == old_len + n - 1);
     return rs > 0;
 #else
@@ -598,12 +612,26 @@ NUT_API bool wstr_to_utf8(const wchar_t *wstr, std::string *result)
     assert(nullptr != wstr && nullptr != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    const int n = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, nullptr, 0, nullptr, nullptr);
+    const int n = ::WideCharToMultiByte(CP_UTF8,
+                                        0,
+                                        wstr,
+                                        -1,
+                                        nullptr,
+                                        0,
+                                        nullptr,
+                                        nullptr);
     if (n <= 0)
         return false;
     const int old_len = (int) result->length();
     result->resize(old_len + n - 1);
-    const int rs = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, &(*result)[old_len], n, nullptr, nullptr);
+    const int rs = ::WideCharToMultiByte(CP_UTF8,
+                                         0,
+                                         wstr,
+                                         -1,
+                                         (char*) (result->data() + old_len),
+                                         n,
+                                         nullptr,
+                                         nullptr);
     assert(((int) result->length()) == old_len + n - 1);
     return rs > 0;
 #else
