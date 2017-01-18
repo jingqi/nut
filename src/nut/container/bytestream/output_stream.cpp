@@ -1,4 +1,6 @@
 ﻿
+#include <nut/platform/portable_endian.h>
+
 #include "output_stream.h"
 
 
@@ -104,14 +106,10 @@ void OutputStream::write_int8(int8_t v)
 void OutputStream::write_uint16(uint16_t v)
 {
     if (is_little_endian())
-    {
-        write(&v, sizeof(uint16_t));
-    }
+        v = htole16(v);
     else
-    {
-        write_uint8((uint8_t) (v >> 8));
-        write_uint8((uint8_t) v);
-    }
+        v = htobe16(v);
+    write(&v, sizeof(uint16_t));
 }
 
 void OutputStream::write_int16(int16_t v)
@@ -122,16 +120,10 @@ void OutputStream::write_int16(int16_t v)
 void OutputStream::write_uint32(uint32_t v)
 {
     if (is_little_endian())
-    {
-        write(&v, sizeof(uint32_t));
-    }
+        v = htole32(v);
     else
-    {
-        write_uint8((uint8_t) (v >> 24));
-        write_uint8((uint8_t) (v >> 16));
-        write_uint8((uint8_t) (v >> 8));
-        write_uint8((uint8_t) v);
-    }
+        v = htobe32(v);
+    write(&v, sizeof(uint32_t));
 }
 
 void OutputStream::write_int32(int32_t v)
@@ -142,20 +134,10 @@ void OutputStream::write_int32(int32_t v)
 void OutputStream::write_uint64(uint64_t v)
 {
     if (is_little_endian())
-    {
-        write(&v, sizeof(uint64_t));
-    }
+        v = htole64(v);
     else
-    {
-        write_uint8((uint8_t) (v >> 56));
-        write_uint8((uint8_t) (v >> 48));
-        write_uint8((uint8_t) (v >> 40));
-        write_uint8((uint8_t) (v >> 32));
-        write_uint8((uint8_t) (v >> 24));
-        write_uint8((uint8_t) (v >> 16));
-        write_uint8((uint8_t) (v >> 8));
-        write_uint8((uint8_t) v);
-    }
+        v = htobe64(v);
+    write(&v, sizeof(uint64_t));
 }
 
 void OutputStream::write_int64(int64_t v)

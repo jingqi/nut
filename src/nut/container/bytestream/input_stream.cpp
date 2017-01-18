@@ -1,4 +1,6 @@
 ﻿
+#include <nut/platform/portable_endian.h>
+
 #include "input_stream.h"
 
 
@@ -99,15 +101,11 @@ uint16_t InputStream::read_uint16()
 {
     assert(available() >= sizeof(uint16_t));
     uint16_t ret = 0;
+    read(&ret, sizeof(uint16_t));
     if (is_little_endian())
-    {
-        read(&ret, sizeof(uint16_t));
-    }
+        ret = le16toh(ret);
     else
-    {
-        ret |= ((uint16_t) read_uint8()) << 8;
-        ret |= (uint16_t) read_uint8();
-    }
+        ret = be16toh(ret);
     return ret;
 }
 
@@ -120,17 +118,11 @@ uint32_t InputStream::read_uint32()
 {
     assert(available() >= sizeof(uint32_t));
     uint32_t ret = 0;
+    read(&ret, sizeof(uint32_t));
     if (is_little_endian())
-    {
-        read(&ret, sizeof(uint32_t));
-    }
+        ret = le32toh(ret);
     else
-    {
-        ret |= ((uint32_t) read_uint8()) << 24;
-        ret |= ((uint32_t) read_uint8()) << 16;
-        ret |= ((uint32_t) read_uint8()) << 8;
-        ret |= (uint32_t) read_uint8();
-    }
+        ret = be32toh(ret);
     return ret;
 }
 
@@ -143,21 +135,11 @@ uint64_t InputStream::read_uint64()
 {
     assert(available() >= sizeof(uint64_t));
     uint64_t ret = 0;
+    read(&ret, sizeof(uint64_t));
     if (is_little_endian())
-    {
-        read(&ret, sizeof(uint64_t));
-    }
+        ret = le64toh(ret);
     else
-    {
-        ret |= ((uint64_t) read_uint8()) << 56;
-        ret |= ((uint64_t) read_uint8()) << 48;
-        ret |= ((uint64_t) read_uint8()) << 40;
-        ret |= ((uint64_t) read_uint8()) << 32;
-        ret |= ((uint64_t) read_uint8()) << 24;
-        ret |= ((uint64_t) read_uint8()) << 16;
-        ret |= ((uint64_t) read_uint8()) << 8;
-        ret |= (uint64_t) read_uint8();
-    }
+        ret = be64toh(ret);
     return ret;
 }
 
