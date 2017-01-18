@@ -22,7 +22,6 @@ class NUT_API ByteArrayStream : public RandomAccessInputStream, public OutputStr
 
     typedef Array<uint8_t> byte_array_type;
     typedef enrc<byte_array_type> byte_rcarray_type;
-    typedef ByteArrayStream self_type;
 
     rc_ptr<byte_rcarray_type> _data;
     size_t _index = 0;

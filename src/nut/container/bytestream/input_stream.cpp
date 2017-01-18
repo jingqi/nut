@@ -101,7 +101,10 @@ uint16_t InputStream::read_uint16()
 {
     assert(available() >= sizeof(uint16_t));
     uint16_t ret = 0;
-    read(&ret, sizeof(uint16_t));
+    const size_t rs = read(&ret, sizeof(uint16_t));
+    assert(sizeof(uint16_t) == rs);
+    UNUSED(rs);
+    
     if (is_little_endian())
         ret = le16toh(ret);
     else
@@ -118,7 +121,10 @@ uint32_t InputStream::read_uint32()
 {
     assert(available() >= sizeof(uint32_t));
     uint32_t ret = 0;
-    read(&ret, sizeof(uint32_t));
+    const size_t rs = read(&ret, sizeof(uint32_t));
+    assert(sizeof(uint32_t) == rs);
+    UNUSED(rs);
+    
     if (is_little_endian())
         ret = le32toh(ret);
     else
@@ -135,7 +141,10 @@ uint64_t InputStream::read_uint64()
 {
     assert(available() >= sizeof(uint64_t));
     uint64_t ret = 0;
-    read(&ret, sizeof(uint64_t));
+    const size_t rs = read(&ret, sizeof(uint64_t));
+    assert(sizeof(uint64_t) == rs);
+    UNUSED(rs);
+    
     if (is_little_endian())
         ret = le64toh(ret);
     else
@@ -151,33 +160,33 @@ int64_t InputStream::read_int64()
 float InputStream::read_float()
 {
     assert(available() >= sizeof(float));
-    float ret = 0.0;
+    static_assert(sizeof(float) == sizeof(uint32_t), "Unexpected float size");
+    uint32_t iv = 0;
+    const size_t rs = read(&iv, sizeof(float));
+    assert(sizeof(float) == rs);
+    UNUSED(rs);
+    
     if (is_little_endian())
-    {
-        read(&ret, sizeof(float));
-    }
+        iv = le32toh(iv);
     else
-    {
-        for (size_t i = 0; i < sizeof(float); ++i)
-            reinterpret_cast<uint8_t*>(&ret)[sizeof(float) - i - 1] = read_uint8();
-    }
-    return ret;
+        iv = be32toh(iv);
+    return *reinterpret_cast<float*>(&iv);
 }
 
 double InputStream::read_double()
 {
     assert(available() >= sizeof(double));
-    double ret = 0.0;
+    static_assert(sizeof(double) == sizeof(uint64_t), "Unexpected double size");
+    uint64_t iv = 0;
+    const size_t rs = read(&iv, sizeof(double));
+    assert(sizeof(double) == rs);
+    UNUSED(rs);
+    
     if (is_little_endian())
-    {
-        read(&ret, sizeof(double));
-    }
+        iv = le64toh(iv);
     else
-    {
-        for (size_t i = 0; i < sizeof(double); ++i)
-            reinterpret_cast<uint8_t*>(&ret)[sizeof(double) - i - 1] = read_uint8();
-    }
-    return ret;
+        iv = be64toh(iv);
+    return *reinterpret_cast<double*>(&iv);
 }
 
 std::string InputStream::read_string()
@@ -186,7 +195,9 @@ std::string InputStream::read_string()
     const size_t len = read_uint32();
     ret.resize(len);
     assert(available() >= sizeof(char) * len);
-    read((char*) ret.data(), sizeof(char) * len);
+    const size_t rs = read((char*) ret.data(), sizeof(char) * len);
+    assert(rs == sizeof(char) * len);
+    UNUSED(rs);
     return ret;
 }
 
@@ -196,7 +207,9 @@ std::wstring InputStream::read_wstring()
     const size_t len = read_uint32();
     ret.resize(len);
     assert(available() >= sizeof(wchar_t) * len);
-    read((wchar_t*) ret.data(), sizeof(wchar_t) * len);
+    const size_t rs = read((wchar_t*) ret.data(), sizeof(wchar_t) * len);
+    assert(rs == sizeof(wchar_t) * len);
+    UNUSED(rs);
     return ret;
 }
 

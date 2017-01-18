@@ -109,7 +109,10 @@ void OutputStream::write_uint16(uint16_t v)
         v = htole16(v);
     else
         v = htobe16(v);
-    write(&v, sizeof(uint16_t));
+    
+    const size_t rs = write(&v, sizeof(uint16_t));
+    assert(sizeof(uint16_t) == rs);
+    UNUSED(rs);
 }
 
 void OutputStream::write_int16(int16_t v)
@@ -123,7 +126,10 @@ void OutputStream::write_uint32(uint32_t v)
         v = htole32(v);
     else
         v = htobe32(v);
-    write(&v, sizeof(uint32_t));
+    
+    const size_t rs = write(&v, sizeof(uint32_t));
+    assert(sizeof(uint32_t) == rs);
+    UNUSED(rs);
 }
 
 void OutputStream::write_int32(int32_t v)
@@ -137,7 +143,10 @@ void OutputStream::write_uint64(uint64_t v)
         v = htole64(v);
     else
         v = htobe64(v);
-    write(&v, sizeof(uint64_t));
+    
+    const size_t rs = write(&v, sizeof(uint64_t));
+    assert(sizeof(uint64_t) == rs);
+    UNUSED(rs);
 }
 
 void OutputStream::write_int64(int64_t v)
@@ -147,28 +156,30 @@ void OutputStream::write_int64(int64_t v)
 
 void OutputStream::write_float(float v)
 {
+    static_assert(sizeof(float) == sizeof(uint32_t), "Unexpected float size");
+    uint32_t iv = *reinterpret_cast<uint32_t*>(&v);
     if (is_little_endian())
-    {
-        write(&v, sizeof(float));
-    }
+        iv = htole32(iv);
     else
-    {
-        for (size_t i = 0; i < sizeof(float); ++i)
-            write_uint8(reinterpret_cast<const uint8_t*>(&v)[sizeof(float) - i - 1]);
-    }
+        iv = htobe32(iv);
+    
+    const size_t rs = write(&iv, sizeof(float));
+    assert(sizeof(float) == rs);
+    UNUSED(rs);
 }
 
 void OutputStream::write_double(double v)
 {
+    static_assert(sizeof(double) == sizeof(uint64_t), "Unexpected double size");
+    uint64_t iv = *reinterpret_cast<uint64_t*>(&v);
     if (is_little_endian())
-    {
-        write(&v, sizeof(double));
-    }
+        iv = htole64(iv);
     else
-    {
-        for (size_t i = 0; i < sizeof(double); ++i)
-            write_uint8(reinterpret_cast<const uint8_t*>(&v)[sizeof(double) - i - 1]);
-    }
+        iv = htobe64(iv);
+    
+    const size_t rs = write(&iv, sizeof(double));
+    assert(sizeof(double) == rs);
+    UNUSED(rs);
 }
 
 void OutputStream::write_string(const char *s, ssize_t len)
@@ -183,8 +194,10 @@ void OutputStream::write_string(const char *s, ssize_t len)
 void OutputStream::write_string(const std::string& s)
 {
     const size_t len = s.length();
-    write_uint32(len);
-    write(s.data(), sizeof(char) * len);
+    write_uint32((uint32_t) len);
+    const size_t rs = write(s.data(), sizeof(char) * len);
+    assert(rs == sizeof(char) * len);
+    UNUSED(rs);
 }
 
 void OutputStream::write_wstring(const wchar_t* s, ssize_t len)
@@ -199,8 +212,10 @@ void OutputStream::write_wstring(const wchar_t* s, ssize_t len)
 void OutputStream::write_wstring(const std::wstring& s)
 {
     const size_t len = s.length();
-    write_uint32(len);
-    write(s.data(), sizeof(wchar_t) * len);
+    write_uint32((uint32_t) len);
+    const size_t rs = write(s.data(), sizeof(wchar_t) * len);
+    assert(rs == sizeof(wchar_t) * len);
+    UNUSED(rs);
 }
 
 size_t OutputStream::write(const void *buf, size_t cb)

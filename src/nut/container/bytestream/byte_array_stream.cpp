@@ -1,5 +1,6 @@
 ﻿
 #include <assert.h>
+#include <algorithm> // For std::min()
 
 #include "byte_array_stream.h"
 
@@ -82,7 +83,7 @@ size_t ByteArrayStream::read(void *buf, size_t cb)
 {
     assert(nullptr != buf || 0 == cb);
     const byte_rcarray_type *data = _data;
-    size_t ret = (cb < available() ? cb : available());
+    size_t ret = (std::min)(cb, available());
     ::memcpy(buf, data->data() + _index, ret);
     _index += ret;
     return ret;

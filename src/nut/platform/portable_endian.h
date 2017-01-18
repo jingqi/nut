@@ -34,13 +34,13 @@
 #           define le32toh(x) (x)
 #           define le64toh(x) (x)
 
-#           define htobe16(x) swap_uint16((uint16_t) (x))
-#           define htobe32(x) swap_uint32((uint32_t) (x))
-#           define htobe64(x) swap_uint64((uint64_t) (x))
+#           define htobe16(x) bswap_uint16((uint16_t) (x))
+#           define htobe32(x) bswap_uint32((uint32_t) (x))
+#           define htobe64(x) bswap_uint64((uint64_t) (x))
 
-#           define be16toh(x) swap_uint16((uint16_t) (x))
-#           define be32toh(x) swap_uint32((uint32_t) (x))
-#           define be64toh(x) swap_uint64((uint64_t) (x))
+#           define be16toh(x) bswap_uint16((uint16_t) (x))
+#           define be32toh(x) bswap_uint32((uint32_t) (x))
+#           define be64toh(x) bswap_uint64((uint64_t) (x))
 
 #       elif ENDIAN_ORDER == BIG_ENDIAN
 
@@ -66,13 +66,13 @@
 #elif NUT_PLATFORM_OS_MAC
 #   include <libkern/OSByteOrder.h>
 
-#   define htole16(x) OSSwapHostToLittleInt16
-#   define htole32(x) OSSwapHostToLittleInt32
-#   define htole64(x) OSSwapHostToLittleInt64
+#   define htole16(x) OSSwapHostToLittleInt16(x)
+#   define htole32(x) OSSwapHostToLittleInt32(x)
+#   define htole64(x) OSSwapHostToLittleInt64(x)
 
-#   define le16toh(x) OSSwapLittleToHostInt16
-#   define le32toh(x) OSSwapLittleToHostInt32
-#   define le64toh(x) OSSwapLittleToHostInt64
+#   define le16toh(x) OSSwapLittleToHostInt16(x)
+#   define le32toh(x) OSSwapLittleToHostInt32(x)
+#   define le64toh(x) OSSwapLittleToHostInt64(x)
 
 #   define htobe16(x) OSSwapHostToBigInt16(x)
 #   define htobe32(x) OSSwapHostToBigInt32(x)
@@ -110,40 +110,65 @@
 #endif
 
 
-inline uint16_t swap_uint16(uint16_t val)
+inline uint16_t bswap_uint16(uint16_t val)
 {
+#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
+    return __builtin_bswap16(val);
+#else
     return (val << 8) | (val >> 8);
+#endif
 }
 
-inline int16_t swap_int16(int16_t val)
+inline int16_t bswap_int16(int16_t val)
 {
+#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
+    return __builtin_bswap16(val);
+#else
     return (val << 8) | ((val >> 8) & 0xFF);
+#endif
 }
 
-inline uint32_t swap_uint32(uint32_t val)
+inline uint32_t bswap_uint32(uint32_t val)
 {
+#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
+    return __builtin_bswap32(val);
+#else
     val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
     return (val << 16) | (val >> 16);
+#endif
 }
 
-inline int32_t swap_int32(int32_t val)
+inline int32_t bswap_int32(int32_t val)
 {
+#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
+    return __builtin_bswap32(val);
+#else
     val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
     return (val << 16) | ((val >> 16) & 0xFFFF);
+#endif
 }
 
-inline int64_t swap_int64(int64_t val)
+inline uint64_t bswap_uint64(uint64_t val)
 {
-    val = ((val << 8) & 0xFF00FF00FF00FF00ULL) | ((val >> 8) & 0x00FF00FF00FF00FFULL);
-    val = ((val << 16) & 0xFFFF0000FFFF0000ULL) | ((val >> 16) & 0x0000FFFF0000FFFFULL);
-    return (val << 32) | ((val >> 32) & 0xFFFFFFFFULL);
-}
-
-inline uint64_t swap_uint64(uint64_t val)
-{
+#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
+    return __builtin_bswap64(val);
+#else
     val = ((val << 8) & 0xFF00FF00FF00FF00ULL) | ((val >> 8) & 0x00FF00FF00FF00FFULL);
     val = ((val << 16) & 0xFFFF0000FFFF0000ULL) | ((val >> 16) & 0x0000FFFF0000FFFFULL);
     return (val << 32) | (val >> 32);
+#endif
 }
+
+inline int64_t bswap_int64(int64_t val)
+{
+#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
+    return __builtin_bswap64(val);
+#else
+    val = ((val << 8) & 0xFF00FF00FF00FF00ULL) | ((val >> 8) & 0x00FF00FF00FF00FFULL);
+    val = ((val << 16) & 0xFFFF0000FFFF0000ULL) | ((val >> 16) & 0x0000FFFF0000FFFFULL);
+    return (val << 32) | ((val >> 32) & 0xFFFFFFFFULL);
+#endif
+}
+
 
 #endif
