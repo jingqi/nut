@@ -163,7 +163,7 @@ void OutputStream::write_int64(int64_t v)
 
 void OutputStream::write_float(float v)
 {
-    static_assert(sizeof(float) == sizeof(uint32_t), "Unexpected float size");
+    static_assert(sizeof(float) == sizeof(uint32_t), "Unexpected 'float' size");
     uint32_t iv = *reinterpret_cast<uint32_t*>(&v);
     if (is_little_endian())
         iv = htole32(iv);
@@ -177,7 +177,7 @@ void OutputStream::write_float(float v)
 
 void OutputStream::write_double(double v)
 {
-    static_assert(sizeof(double) == sizeof(uint64_t), "Unexpected double size");
+    static_assert(sizeof(double) == sizeof(uint64_t), "Unexpected 'double' size");
     uint64_t iv = *reinterpret_cast<uint64_t*>(&v);
     if (is_little_endian())
         iv = htole64(iv);

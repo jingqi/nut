@@ -170,7 +170,7 @@ int64_t InputStream::read_int64()
 float InputStream::read_float()
 {
     assert(readable_size() >= sizeof(float));
-    static_assert(sizeof(float) == sizeof(uint32_t), "Unexpected float size");
+    static_assert(sizeof(float) == sizeof(uint32_t), "Unexpected 'float' size");
     uint32_t iv = 0;
     const size_t rs = read(&iv, sizeof(float));
     assert(sizeof(float) == rs);
@@ -186,7 +186,7 @@ float InputStream::read_float()
 double InputStream::read_double()
 {
     assert(readable_size() >= sizeof(double));
-    static_assert(sizeof(double) == sizeof(uint64_t), "Unexpected double size");
+    static_assert(sizeof(double) == sizeof(uint64_t), "Unexpected 'double' size");
     uint64_t iv = 0;
     const size_t rs = read(&iv, sizeof(double));
     assert(sizeof(double) == rs);

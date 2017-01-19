@@ -385,9 +385,6 @@
     <ClInclude Include="..\..\..\src\nut\container\bytestream\output_stream.h">
       <Filter>nut\container\bytestream</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\container\bytestream\random_access_input_stream.h">
-      <Filter>nut\container\bytestream</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\integer_set.h">
       <Filter>nut\container</Filter>
     </ClInclude>
@@ -441,6 +438,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\platform\portable_endian.h">
       <Filter>nut\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\bytestream\random_access_stream.h">
+      <Filter>nut\container\bytestream</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -41,7 +41,7 @@ void BigInteger::ensure_significant_len(size_type siglen)
 
 BigInteger::BigInteger(long long v)
 {
-    static_assert(sizeof(v) % sizeof(word_type) == 0, "整数长度对齐问题");
+    static_assert(sizeof(v) % sizeof(word_type) == 0, "Unexpected integer size");
 
     ensure_cap(sizeof(v) / sizeof(word_type));
     ::memcpy(_data, &v, sizeof(v));
@@ -114,21 +114,21 @@ BigInteger& BigInteger::operator=(self_type&& x)
 
     if (nullptr != _data)
         ::free(_data);
-    
+
     _data = x._data;
     _capacity = x._capacity;
     _significant_len = x._significant_len;
-    
+
     x._data = nullptr;
     x._capacity = 0;
     x._significant_len = 0;
-    
+
     return *this;
 }
 
 BigInteger& BigInteger::operator=(long long v)
 {
-    static_assert(sizeof(v) % sizeof(word_type) == 0, "整数长度对齐问题");
+    static_assert(sizeof(v) % sizeof(word_type) == 0, "Unexpected integer size");
 
     ensure_cap(sizeof(v) / sizeof(word_type));
     ::memcpy(_data, &v, sizeof(v));
@@ -227,7 +227,7 @@ void BigInteger::add(const self_type& a, const self_type& b, self_type *x)
 
 void BigInteger::add(const self_type& a, long long b, self_type *x)
 {
-    static_assert(sizeof(b) % sizeof(word_type) == 0, "整数长度对齐问题");
+    static_assert(sizeof(b) % sizeof(word_type) == 0, "Unexpected integer size");
     assert(nullptr != x);
 
     const size_type max_len = (a._significant_len > sizeof(b) / sizeof(word_type) ? a._significant_len : sizeof(b) / sizeof(word_type));
@@ -239,7 +239,7 @@ void BigInteger::add(const self_type& a, long long b, self_type *x)
 
 void BigInteger::add(long long a, const self_type& b, self_type *x)
 {
-    static_assert(sizeof(a) % sizeof(word_type) == 0, "整数长度对齐问题");
+    static_assert(sizeof(a) % sizeof(word_type) == 0, "Unexpected integer size");
     assert(nullptr != x);
 
     const size_type max_len = (sizeof(a) / sizeof(word_type) > b._significant_len ? sizeof(a) / sizeof(word_type) : b._significant_len);
@@ -262,7 +262,7 @@ void BigInteger::sub(const self_type& a, const self_type& b, self_type *x)
 
 void BigInteger::sub(const self_type& a, long long b, self_type *x)
 {
-    static_assert(sizeof(b) % sizeof(word_type) == 0, "整数长度对齐问题");
+    static_assert(sizeof(b) % sizeof(word_type) == 0, "Unexpected integer size");
     assert(nullptr != x);
 
     const size_type max_len = (a._significant_len > sizeof(b) / sizeof(word_type) ? a._significant_len : sizeof(b) / sizeof(word_type));
@@ -274,7 +274,7 @@ void BigInteger::sub(const self_type& a, long long b, self_type *x)
 
 void BigInteger::sub(long long a, const self_type& b, self_type *x)
 {
-    static_assert(sizeof(a) % sizeof(word_type) == 0, "整数长度对齐问题");
+    static_assert(sizeof(a) % sizeof(word_type) == 0, "Unexpected integer size");
     assert(nullptr != x);
 
     const size_type max_len = (sizeof(a) / sizeof(word_type) > b._significant_len ? sizeof(a) / sizeof(word_type) : b._significant_len);
@@ -323,7 +323,7 @@ void BigInteger::multiply(const self_type& a, const self_type& b, self_type *x)
 
 void BigInteger::multiply(const self_type& a, long long b, self_type *x)
 {
-    static_assert(sizeof(b) % sizeof(word_type) == 0, "整数长度对齐问题");
+    static_assert(sizeof(b) % sizeof(word_type) == 0, "Unexpected integer size");
     assert(nullptr != x);
 
     x->ensure_cap(a._significant_len + sizeof(b) / sizeof(word_type));
@@ -335,7 +335,7 @@ void BigInteger::multiply(const self_type& a, long long b, self_type *x)
 
 void BigInteger::multiply(long long a, const self_type& b, self_type *x)
 {
-    static_assert(sizeof(a) % sizeof(word_type) == 0, "整数长度对齐问题");
+    static_assert(sizeof(a) % sizeof(word_type) == 0, "Unexpected integer size");
     assert(nullptr != x);
 
     x->ensure_cap(sizeof(a) / sizeof(word_type) + b._significant_len);
@@ -512,7 +512,7 @@ int BigInteger::lowest_bit() const
 
 long long BigInteger::llong_value() const
 {
-    static_assert(sizeof(long long) % sizeof(word_type) == 0, "整数长度对齐问题");
+    static_assert(sizeof(long long) % sizeof(word_type) == 0, "Unexpected integer size");
 
     long long ret = 0;
     signed_expand(_data, _significant_len, (word_type*)&ret, sizeof(ret) / sizeof(word_type));

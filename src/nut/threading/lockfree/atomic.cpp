@@ -137,7 +137,7 @@ NUT_API bool atomic_cas(int32_t volatile *dest, int32_t oldval, int32_t newval)
                                       static_cast<uint32_t>(newval),
                                       static_cast<uint32_t>(oldval)) == oldval;
 #elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_GCC
-    static_assert(sizeof(int32_t) == sizeof(LONG), "atomic_cas() 匹配API问题");
+    static_assert(sizeof(int32_t) == sizeof(LONG), "Unexpected 'LONG' size");
     return InterlockedCompareExchange(reinterpret_cast<LONG volatile*>(dest),
                                       static_cast<LONG>(newval),
                                       static_cast<LONG>(oldval)) == oldval;
@@ -282,7 +282,7 @@ NUT_API int32_t atomic_add(int32_t volatile *addend, int32_t value)
     return static_cast<int32_t>(InterlockedExchangeAdd(reinterpret_cast<uint32_t volatile*>(addend),
                                                        static_cast<uint32_t>(value)));
 #elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_GCC
-    static_assert(sizeof(int32_t) == sizeof(LONG), "atomic_add() 匹配API问题");
+    static_assert(sizeof(int32_t) == sizeof(LONG), "Unexpected 'LONG' size");
     return static_cast<int32_t>(InterlockedExchangeAdd(reinterpret_cast<LONG volatile*>(addend),
                                                        static_cast<LONG>(value)));
 #else

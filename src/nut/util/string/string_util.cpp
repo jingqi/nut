@@ -342,7 +342,7 @@ NUT_API int chricmp(int c1, int c2)
 {
     static_assert(((int) 'A') == ((int) L'A') && ((int) 'Z') == ((int) L'Z') &&
                   ((int) 'a') == ((int) L'a') && ((int) 'z') == ((int) L'z'),
-                  "wchar_t ASCII 字符编码问题");
+                  "Unexpected 'wchar_t' ASCII encoding");
     if ('A' <= c1 && c1 <= 'Z')
         c1 |= 0x20;
     if ('A' <= c2 && c2 <= 'Z')
@@ -492,7 +492,7 @@ NUT_API bool ascii_to_wstr(const char *str, std::wstring *result)
     assert(nullptr != str && nullptr != result);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    const int n = ::MultiByteToWideChar(CP_ACP, 
+    const int n = ::MultiByteToWideChar(CP_ACP,
                                         0,       // flags
                                         str,
                                         -1,      // 字符串以'\0'结束
