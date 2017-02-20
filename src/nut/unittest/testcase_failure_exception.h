@@ -2,8 +2,6 @@
 #ifndef ___HEADFILE___AD10542C_56CB_4BD3_B17A_1355A3FC0EF6_
 #define ___HEADFILE___AD10542C_56CB_4BD3_B17A_1355A3FC0EF6_
 
-#include <stdlib.h> // for nullptr
-
 #include "../nut_config.h"
 
 

@@ -1,6 +1,5 @@
 ﻿
 #include <assert.h>
-#include <stdlib.h> // for nullptr
 
 #include <nut/platform/platform.h>
 
@@ -9,6 +8,7 @@
 #endif
 
 #include "atomic.h"
+
 
 namespace nut
 {

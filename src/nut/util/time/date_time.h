@@ -13,12 +13,12 @@ namespace nut
 {
 
 /**
- * 时刻
+ * 日期时间
  */
 class NUT_API DateTime
 {
 protected:
-    time_t _seconds;      /* 从1970年1月1日起算的时间(秒) */
+    time_t _seconds;        /* 从1970年1月1日起算的时间(秒) */
     struct tm _time_info;   /* 时刻的细节 */
 
 public:
