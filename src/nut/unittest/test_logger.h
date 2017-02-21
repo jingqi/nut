@@ -2,6 +2,7 @@
 #ifndef ___HEADFILE___83BCB398_BF24_4F6B_9BA9_6E0CBCDE2791_
 #define ___HEADFILE___83BCB398_BF24_4F6B_9BA9_6E0CBCDE2791_
 
+#include <stddef.h> // For size_t on windows/Mingw
 #include <vector>
 
 #include "../nut_config.h"

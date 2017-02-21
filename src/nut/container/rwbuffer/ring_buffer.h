@@ -3,7 +3,7 @@
 #define ___HEADFILE_8DAEC806_FFB8_4415_A331_8D4965371079_
 
 #include <stdint.h>
-#include <string.h> // for size_t
+#include <stddef.h> // For size_t
 
 #include "../../nut_config.h"
 
