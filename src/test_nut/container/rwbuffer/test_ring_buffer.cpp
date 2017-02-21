@@ -22,20 +22,25 @@ NUT_FIXTURE(TestRingBuffer)
         NUT_TA(rb.writable_size() == 0);
 
         const void *rbufs[2];
+        ::memset(rbufs, 0, sizeof(const void*) * 2);
         size_t lens[2];
+        ::memset(lens, 0, sizeof(size_t) * 2);
         NUT_TA(rb.readable_pointers(rbufs, lens, rbufs + 1, lens + 1) == 0);
 
         void *wbufs[2];
+        ::memset(wbufs, 0, sizeof(void*) * 2);
         NUT_TA(rb.writable_pointers(wbufs, lens, wbufs + 1, lens + 1) == 0);
 
         uint8_t buf[10];
+        for (size_t i = 0; i < 10; ++i)
+            buf[i] = (uint8_t) i;
         rb.write(buf, 10);
         NUT_TA(rb.readable_size() == 10);
         size_t wsize = rb.writable_size();
         NUT_TA(rb.readable_pointers(rbufs, lens, rbufs + 1, lens + 1) == 1);
         NUT_TA(lens[0] == 10 && 0 == ::memcmp(rbufs[0], buf, 10));
 
-        NUT_TA(rb.read(&buf, 2) == 2);
+        NUT_TA(rb.read(buf, 2) == 2);
         NUT_TA(rb.readable_size() == 8);
         NUT_TA(rb.writable_size() == wsize + 2);
         NUT_TA(rb.readable_pointers(rbufs, lens, rbufs + 1, lens + 1) == 1);
@@ -47,6 +52,8 @@ NUT_FIXTURE(TestRingBuffer)
         // test half wrap
         RingBuffer rb;
         uint8_t buf[6];
+        for (size_t i = 0; i < 6; ++i)
+            buf[i] = (uint8_t) i;
         rb.write(buf, 6);                 // [====]-
         NUT_TA(rb.writable_size() == 0);
         rb.skip_read(2);                  // --[==]-
