@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include <stddef.h> // For size_t
 #include <utility>
 
 #include <nut/rc/rc_ptr.h>

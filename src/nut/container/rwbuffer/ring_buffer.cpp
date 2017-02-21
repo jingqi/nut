@@ -1,7 +1,8 @@
 ﻿
 #include <assert.h>
 #include <stdlib.h>
-#include <algorithm> // for std::min()
+#include <string.h> // For ::memcpy()
+#include <algorithm> // For std::min()
 
 #include "ring_buffer.h"
 

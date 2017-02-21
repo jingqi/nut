@@ -1,8 +1,8 @@
 
-TEMPLATE    = subdirs
-CONFIG      += ordered
+TEMPLATE = subdirs
 
-# 下面的声明顺序即是构建顺序
 SUBDIRS += \
     nut \
     test_nut
+
+test_nut.depends = nut
