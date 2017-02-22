@@ -81,9 +81,9 @@ size_t ByteArrayStream::write(const void *buf, size_t cb)
 {
     assert(nullptr != buf || 0 == cb);
     assert(_index <= _data->size());
-    const size_t copy = _data->size() - _index;
+    const size_t copy = (std::min)(cb, _data->size() - _index);
     ::memcpy(_data->data() + _index, buf, copy);
-    _data->append(((const uint8_t*) buf) + copy, ((const uint8_t*) buf) + cb - copy);
+    _data->append(((const uint8_t*) buf) + copy, ((const uint8_t*) buf) + cb);
     _index += cb;
     return cb;
 }

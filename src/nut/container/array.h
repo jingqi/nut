@@ -47,6 +47,7 @@ public:
     template <typename Iter>
     Array(const Iter& b, const Iter& e)
     {
+        assert(b <= e);
         const size_t sz = e - b;
         ensure_cap(sz);
         std::uninitialized_copy(b, e, _buf);
@@ -232,7 +233,7 @@ public:
     template <typename Iter>
     void insert(size_type index, const Iter& b, const Iter& e)
     {
-        assert(index <= _size);
+        assert(index <= _size && b <= e);
         const size_type len = e - b;
         ensure_cap(_size + len);
         if (index < _size)

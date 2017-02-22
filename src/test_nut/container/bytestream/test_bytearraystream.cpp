@@ -12,6 +12,7 @@ NUT_FIXTURE(TestByteArrayStream)
     NUT_CASE(test_little_endian)
     NUT_CASE(test_big_endian)
     NUT_CASE(test_operators)
+    NUT_CASE(test_bug1)
     NUT_CASES_END()
 
     void test_little_endian()
@@ -130,6 +131,21 @@ NUT_FIXTURE(TestByteArrayStream)
         NUT_TA(ws == L"opq");
 
         NUT_TA(bas->readable_size() == 0);
+    }
+
+    void test_bug1()
+    {
+        // 函数 size_t ByteArrayStream::write(const void *buf, size_t cb) 实现的
+        // 有问题，可能导致的问题：
+        //   1. 内存读取越界
+        //   1. 范围迭代器参数 begin,end 不满足 begin <= end 关系, 从而要么内存
+        //      分配失败(内存大小从负数回卷成超大正数)或者标准库崩溃
+        rc_ptr<ByteArrayStream> bas = rc_new<ByteArrayStream>();
+        bas->write_uint64(0);
+        bas->write_uint64(0);
+        bas->seek(0);
+        uint16_t v = 0;
+        bas->write(&v, sizeof(v)); // Will crash here if bug exists
     }
 };
 
