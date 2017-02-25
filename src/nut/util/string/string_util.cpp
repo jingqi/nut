@@ -221,11 +221,11 @@ NUT_API std::wstring format(const wchar_t *fmt, ...)
     {
         va_start(ap, fmt);
 #if NUT_PLATFORM_CC_VC
-        int n = ::_vsnwprintf((wchar_t*) ret.data(), size, fmt, ap);
+        const int n = ::_vsnwprintf((wchar_t*) ret.data(), size, fmt, ap);
 #elif NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
-        int n = ::vswprintf((wchar_t*) ret.data(), size, fmt, ap);
+        const int n = ::vswprintf((wchar_t*) ret.data(), size, fmt, ap);
 #else
-        int n = ::vsnwprintf((wchar_t*) ret.data(), size, fmt, ap);
+        const int n = ::vsnwprintf((wchar_t*) ret.data(), size, fmt, ap);
 #endif
         va_end(ap);
 
@@ -512,13 +512,13 @@ NUT_API bool ascii_to_wstr(const char *str, std::wstring *result)
     return rs > 0;
 #else
     const size_t n = ::mbstowcs(nullptr, str, 0); // 返回值未包含 '\0'
-    if (n <= 0)
+    if (n == (size_t) -1)
         return false;
     const size_t old_len = result->length();
     result->resize(old_len + n);
     const size_t rs = ::mbstowcs((wchar_t*) (result->data() + old_len), str, n); // 未包含 '\0'
     assert(result->length() == old_len + n);
-    return rs > 0;
+    return rs != (size_t) -1;
 #endif
 }
 
@@ -557,13 +557,13 @@ NUT_API bool wstr_to_ascii(const wchar_t *wstr, std::string *result)
     return rs > 0;
 #else
     const size_t n = ::wcstombs(nullptr, wstr, 0);
-    if (n <= 0)
+    if (n == (size_t) -1)
         return false;
     const size_t old_len = result->length();
     result->resize(old_len + n);
     const size_t rs = ::wcstombs((char*) (result->data() + old_len), wstr, n);
     assert(result->length() == old_len + n);
-    return rs > 0;
+    return rs != (size_t) -1;
 #endif
 }
 

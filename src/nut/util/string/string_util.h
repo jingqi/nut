@@ -23,7 +23,7 @@ namespace nut
 NUT_API void str_split(const char *str, const char *sep_str,
                        std::vector<std::string> *result, bool ignore_empty = false);
 NUT_API void str_split(const std::string& str, const std::string& sep_str,
-                       std::vector<std::string> &result, bool ignore_empty = false);
+                       std::vector<std::string> *result, bool ignore_empty = false);
 NUT_API void str_split(const wchar_t *str, const wchar_t *sep_str,
                        std::vector<std::wstring> *result, bool ignore_empty = false);
 NUT_API void str_split(const std::wstring& str, const std::wstring& sep_str,
@@ -132,18 +132,33 @@ NUT_API char int_to_hex_char(int i);
  */
 NUT_API int hex_char_to_int(char c);
 
+/**
+ * 将 & " < > 转换为 &amp; &quot; &lt; &gt;
+ */
 NUT_API int xml_encode(const char *s, int len, std::string *result);
 NUT_API int xml_decode(const char *s, int len, std::string *result);
 
+/**
+ * url 转义，例如 "http://search?ab%20c%20"
+ */
 NUT_API int url_encode(const char *s, int len, std::string *result);
 NUT_API int url_decode(const char *s, int len, std::string *result);
 
+/**
+ * 16进制编码转换，例如 "4FC012B" 等
+ */
 NUT_API int hex_encode(const void *data, size_t cb, std::string *result);
 NUT_API int hex_decode(const char *s, int len, Array<uint8_t> *result);
 
+/**
+ * C 常量风格编码转换
+ */
 NUT_API int cstyle_encode(const char *s, int len, std::string *result);
 NUT_API int cstyle_decode(const char *s, int len, std::string *result);
 
+/**
+ * base64 编码
+ */
 NUT_API int base64_encode(const void *data, size_t cb, std::string *result);
 NUT_API int base64_decode(const char *s, int len, Array<uint8_t> *result);
 
