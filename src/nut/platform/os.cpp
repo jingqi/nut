@@ -161,29 +161,39 @@ bool OS::copy_file(const char *src, const char *dst)
     assert(nullptr != src && nullptr != dst);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    return FALSE != ::CopyFileA(src, dst, TRUE);
+    return FALSE != ::CopyFileA(src, dst, FALSE);
 #else
     FILE *in_file = ::fopen(src, "rb");
     if (nullptr == in_file)
         return false;
 
-    FILE *out_file = ::fopen(dst, "wb+");
+    FILE *out_file = ::fopen(dst, "wb");
     if (nullptr == out_file)
     {
         ::fclose(in_file);
         return false;
     }
 
+    bool succeed = true;
     const int BUF_LEN = 4096;
     char buf[BUF_LEN];
-    int readed = -1;
-    while ((readed = (int) ::fread(buf, 1, BUF_LEN, in_file)) > 0)
+    size_t readed = 0;
+    while ((readed = ::fread(buf, 1, BUF_LEN, in_file)) > 0)
     {
-        ::fwrite(buf, 1, readed, out_file);
+        if (::fwrite(buf, 1, readed, out_file) != readed)
+        {
+            succeed = false;
+            break;
+        }
     }
-    ::fclose(in_file);
+
     ::fclose(out_file);
-    return true;
+
+    if (0 != ::ferror(in_file) || 0 == ::feof(in_file))
+        succeed = false;
+    ::fclose(in_file);
+
+    return succeed;
 #endif
 }
 
@@ -192,7 +202,7 @@ bool OS::copy_file(const wchar_t *src, const wchar_t *dst)
     assert(nullptr != src && nullptr != dst);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    return FALSE != ::CopyFileW(src, dst, TRUE);
+    return FALSE != ::CopyFileW(src, dst, FALSE);
 #else
     std::string s, d;
     wstr_to_ascii(src, &s);
