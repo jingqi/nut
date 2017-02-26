@@ -7,12 +7,19 @@
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #   include <io.h>    // for mkdir()
+#elif NUT_PLATFORM_OS_MAC
+#   include <dirent.h>  // for DIR, dirent
+#   include <limits.h>   // for PATH_MAX
+#   include <sys/stat.h> // for ::lstat()
+#   include <sys/types.h>  // for ::mkdir()
+#   include <unistd.h> // for ::rmdir()
+#   include <copyfile.h> // for ::copyfile()
 #else
 #   include <dirent.h>  // for DIR, dirent
 #   include <limits.h>   // for PATH_MAX
-#   include <sys/stat.h> // for lstat()
-#   include <sys/types.h>  // for mkdir()
-#   include <unistd.h> // for rmdir()
+#   include <sys/stat.h> // for ::lstat()
+#   include <sys/types.h>  // for ::mkdir()
+#   include <unistd.h> // for ::rmdir()
 #endif
 
 #include <nut/util/string/string_util.h>
@@ -162,6 +169,8 @@ bool OS::copy_file(const char *src, const char *dst)
 
 #if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::CopyFileA(src, dst, FALSE);
+#elif NUT_PLATFORM_OS_MAC
+    return 0 == ::copyfile(src, dst, nullptr, COPYFILE_ALL | COPYFILE_NOFOLLOW);
 #else
     FILE *in_file = ::fopen(src, "rb");
     if (nullptr == in_file)
@@ -416,8 +425,8 @@ bool OS::remove_tree(const char *path)
         return false;
 
     // 删除文件
-    if (S_ISLNK(info.st_mode) || !S_ISDIR(info.st_mode))
-        return 0 == ::unlink(path); // 这里就不用 remove() 了
+    if (!S_ISDIR(info.st_mode))
+        return 0 == ::remove(path); // Same as ::unlink()
 
     // 遍历文件夹
     DIR *dp = nullptr;
