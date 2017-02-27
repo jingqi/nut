@@ -474,7 +474,7 @@ bool OS::remove_tree(const char *path)
 
     // 删除文件
     if (!S_ISDIR(info.st_mode))
-        return 0 == ::remove(path); // Same as ::unlink()
+        return 0 == ::unlink(path); // Same as ::remove(), but won't follow link
 
     // 遍历文件夹
     DIR *dp = nullptr;
