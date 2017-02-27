@@ -14,12 +14,21 @@
 #   include <sys/types.h>  // for ::mkdir()
 #   include <unistd.h> // for ::rmdir()
 #   include <copyfile.h> // for ::copyfile()
+#elif NUT_PLATFORM_OS_LINUX
+#   include <dirent.h>  // for DIR, dirent
+#   include <limits.h>   // for PATH_MAX
+#   include <sys/stat.h> // for ::lstat()
+#   include <sys/types.h>  // for ::mkdir()
+#   include <unistd.h> // for ::rmdir()
+#   include <fcntl.h> // for ::open()
+#   include <sys/sendfile.h> // for ::sendfile()
 #else
 #   include <dirent.h>  // for DIR, dirent
 #   include <limits.h>   // for PATH_MAX
 #   include <sys/stat.h> // for ::lstat()
 #   include <sys/types.h>  // for ::mkdir()
 #   include <unistd.h> // for ::rmdir()
+#   include <fcntl.h> // for ::open(), ::posix_fadvise(), ::posix_fallocate() and so on
 #endif
 
 #include <nut/util/string/string_util.h>
@@ -171,38 +180,77 @@ bool OS::copy_file(const char *src, const char *dst)
     return FALSE != ::CopyFileA(src, dst, FALSE);
 #elif NUT_PLATFORM_OS_MAC
     return 0 == ::copyfile(src, dst, nullptr, COPYFILE_ALL | COPYFILE_NOFOLLOW);
-#else
-    FILE *in_file = ::fopen(src, "rb");
-    if (nullptr == in_file)
+#elif NUT_PLATFORM_OS_LINUX
+    const int in_file = ::open(src, O_RDONLY);
+    if (in_file < 0)
         return false;
 
-    FILE *out_file = ::fopen(dst, "wb");
-    if (nullptr == out_file)
+    struct stat info;
+    ::fstat(in_file, &info);
+
+    const int out_file = ::open(dst, O_WRONLY | O_CREAT | O_TRUNC, info.st_mode);
+    if (out_file < 0)
     {
-        ::fclose(in_file);
+        ::close(in_file);
         return false;
     }
 
-    bool succeed = true;
-    const int BUF_LEN = 4096;
-    char buf[BUF_LEN];
-    size_t readed = 0;
-    while ((readed = ::fread(buf, 1, BUF_LEN, in_file)) > 0)
+    off_t offset = 0;
+    const ssize_t wrote = ::sendfile(out_file, in_file, &offset, info.st_size);
+
+    ::close(out_file);
+    ::close(in_file);
+
+    return wrote == info.st_size;
+#else
+    const int in_file = ::open(src, O_RDONLY);
+    if (in_file < 0)
+        return false;
+
+    // 给系统一个建议，使其优化顺序读
+    // see http://stackoverflow.com/questions/7463689/most-efficient-way-to-copy-a-file-in-linux
+    ::posix_fadvise(in_file, 0, 0, POSIX_FADV_SEQUENTIAL);
+
+    struct stat info;
+    ::fstat(in_file, &info);
+
+    const int out_file = ::open(dst, O_WRONLY | O_CREAT | O_TRUNC, info.st_mode);
+    if (out_file < 0)
     {
-        if (::fwrite(buf, 1, readed, out_file) != readed)
+        ::close(in_file);
+        return false;
+    }
+
+    // 给文件预先分配大小，同时提前探知磁盘空间不足的情况
+    if (0 != ::posix_fallocate(out_file, 0, info.st_size))
+    {
+        ::close(out_file);
+        ::close(in_file);
+        return false; // 磁盘空间不足
+    }
+
+    bool success = true;
+    const int BUF_LEN = 8 * 1024;
+    char buf[BUF_LEN];
+    while (true)
+    {
+        const ssize_t readed = ::read(in_file, buf, BUF_LEN);
+        if (readed < 0)
+            success = false;
+        if (readed <= 0)
+            break;
+        const ssize_t wrote = ::write(out_file, buf, readed);
+        if (wrote != readed)
         {
-            succeed = false;
+            success = false;
             break;
         }
     }
 
-    ::fclose(out_file);
+    ::close(out_file);
+    ::close(in_file);
 
-    if (0 != ::ferror(in_file) || 0 == ::feof(in_file))
-        succeed = false;
-    ::fclose(in_file);
-
-    return succeed;
+    return success;
 #endif
 }
 
