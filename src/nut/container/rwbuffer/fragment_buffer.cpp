@@ -1,7 +1,7 @@
 ﻿
 #include <assert.h>
 #include <stdlib.h>
-#include <string.h> // For ::memcpy()
+#include <string.h> // for ::memcpy()
 #include <algorithm>
 
 #include "fragment_buffer.h"

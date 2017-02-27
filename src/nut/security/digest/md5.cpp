@@ -1,6 +1,6 @@
 ﻿
 #include <assert.h>
-#include <string.h> /* For memcpy() */
+#include <string.h> /* for memcpy() */
 
 #include "md5.h"
 

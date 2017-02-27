@@ -1,6 +1,6 @@
 ﻿
 #include <assert.h>
-#include <algorithm> // For std::min()
+#include <algorithm> // for std::min()
 
 #include "byte_array_stream.h"
 

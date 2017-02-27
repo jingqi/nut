@@ -7,7 +7,7 @@
 #define ___HEADFILE_BAE94271_DA1F_4411_AC7D_7734CBCA0672_
 
 #include <stdint.h>
-#include <stdlib.h> // For Windows _byteswap_ushort() and so on
+#include <stdlib.h> // for Windows _byteswap_ushort() and so on
 
 #include "platform.h"
 

@@ -2,7 +2,7 @@
 #ifndef ___HEADFILE_FB24F7BC_D536_4A9E_AF29_78920D9ADD53_
 #define ___HEADFILE_FB24F7BC_D536_4A9E_AF29_78920D9ADD53_
 
-#include <stddef.h> // For size_t and so on
+#include <stddef.h> // for size_t and so on
 
 #include <nut/rc/rc_ptr.h>
 

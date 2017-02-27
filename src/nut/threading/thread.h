@@ -10,7 +10,7 @@
 #   include <windows.h>
 #elif NUT_PLATFORM_OS_LINUX
 #   include <pthread.h>
-#   include <sys/types.h> // For tid_t
+#   include <sys/types.h> // for tid_t
 #else
 #   include <pthread.h>
 #endif

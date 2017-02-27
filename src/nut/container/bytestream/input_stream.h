@@ -4,7 +4,7 @@
 
 #include <assert.h>
 #include <stdint.h>
-#include <stddef.h> // For size_t and so on
+#include <stddef.h> // for size_t and so on
 #include <string>
 
 #include <nut/rc/rc_ptr.h>

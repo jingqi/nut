@@ -8,7 +8,7 @@
 #include <string>
 
 #include <nut/rc/rc_ptr.h>
-#include <nut/platform/stdint_traits.h> // For ssize_t
+#include <nut/platform/stdint_traits.h> // for ssize_t
 
 #include "../../nut_config.h"
 

@@ -1,6 +1,6 @@
 ﻿
 #include <assert.h>
-#include <stdlib.h> // For ::malloc() and so on
+#include <stdlib.h> // for ::malloc() and so on
 
 #include <nut/debugging/destroy_checker.h>
 
