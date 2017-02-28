@@ -186,6 +186,7 @@
     <ClInclude Include="..\..\..\src\nut\platform\path.h" />
     <ClInclude Include="..\..\..\src\nut\platform\platform.h" />
     <ClInclude Include="..\..\..\src\nut\platform\portable_endian.h" />
+    <ClInclude Include="..\..\..\src\nut\platform\savefile.h" />
     <ClInclude Include="..\..\..\src\nut\platform\stdint_traits.h" />
     <ClInclude Include="..\..\..\src\nut\rc\enrc.h" />
     <ClInclude Include="..\..\..\src\nut\rc\rc_new.h" />
@@ -276,6 +277,7 @@
     <ClCompile Include="..\..\..\src\nut\pconsole\pconsole.cpp" />
     <ClCompile Include="..\..\..\src\nut\platform\os.cpp" />
     <ClCompile Include="..\..\..\src\nut\platform\path.cpp" />
+    <ClCompile Include="..\..\..\src\nut\platform\savefile.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\digest\adler32.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\digest\md5.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\digest\sha1.cpp" />

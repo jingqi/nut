@@ -4,6 +4,12 @@
 
 #include <string>
 
+#include "../nut_config.h"
+#include "platform.h"
+
+#if NUT_PLATFORM_OS_WINDOWS
+#   include <windows.h>
+#endif
 
 namespace nut
 {
@@ -11,10 +17,17 @@ namespace nut
 /**
  * 安全的保存文件，避免崩溃时丢失原始文件数据
  */
-class SaveFile
+class NUT_API SaveFile
 {
     std::string _path, _tmp_path;
+
+#if NUT_PLATFORM_OS_WINDOWS
+    // INVALID_HANDLE_VALUE is an invalid value returned by ::CreateFile()
+    HANDLE _handle = INVALID_HANDLE_VALUE;
+#else
+    // -1 is an invalid value returned by ::open()
     int _fd = -1;
+#endif
 
 public:
     SaveFile(const std::string& path);
