@@ -12,8 +12,8 @@
 #include <iostream>
 
 #include <nut/unittest/unit_test.h>
-
 #include <nut/util/time/time_wheel.h>
+#include <nut/threading/thread.h>
 
 using namespace std;
 using namespace nut;
@@ -50,11 +50,7 @@ NUT_FIXTURE(TestTimeWheel)
         {
             tw.tick();
             // cout << "." << flush;
-#if NUT_PLATFORM_OS_WINDOWS
-            ::Sleep(TimeWheel::TICK_GRANULARITY_MS);
-#else
-            ::usleep(TimeWheel::TICK_GRANULARITY_MS * 1000);
-#endif
+            Thread::sleep(TimeWheel::TICK_GRANULARITY_MS);
         }
     }
 

@@ -13,6 +13,7 @@
 #else
 #   include <pthread.h>
 #   include <signal.h> // for ::pthread_kill()
+#   include <unistd.h> // for ::usleep()
 #endif
 
 #include "thread.h"
@@ -202,6 +203,15 @@ bool Thread::tid_equals(const tid_type &t1, const tid_type &t2)
     return t1 == t2;
 #else
     return ::pthread_equal(t1, t2);
+#endif
+}
+
+void Thread::sleep(unsigned long long ms)
+{
+#if NUT_PLATFORM_OS_WINDOWS
+    ::Sleep(ms);
+#else
+    ::usleep(ms * 1000);
 #endif
 }
 

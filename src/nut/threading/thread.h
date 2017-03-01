@@ -100,6 +100,11 @@ public:
      * NOTE 由于 tid 可复用(包括 pthread_t)，请尽量保证 tid 指向当前有效的线程
      */
     static bool tid_equals(const tid_type& t1, const tid_type& t2);
+
+    /**
+     * 挂起当前线程
+     */
+    static void sleep(unsigned long long ms);
 };
 
 }
