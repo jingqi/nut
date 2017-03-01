@@ -21,9 +21,9 @@ HOST = $(shell uname -s)
 
 # project things
 ifeq (${DEBUG}, 1)
-	OUT_DIR = $(CURDIR)/debug
+	OUT_DIR = $(CURDIR)/${HOST}-debug
 else
-	OUT_DIR = $(CURDIR)/release
+	OUT_DIR = $(CURDIR)/${HOST}-release
 endif
 OBJ_ROOT = ${OUT_DIR}/obj/${TARGET_NAME}
 
