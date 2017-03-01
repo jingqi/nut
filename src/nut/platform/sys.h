@@ -16,6 +16,8 @@ private:
 public:
     /**
      * 获得 CPU 核心数
+     * 1. 这里指系统配置的可用核心数
+     * 2. 对于某些 CPU 使用虚拟核心，则返回虚拟核心数
      */
     static unsigned get_processor_num();
 };

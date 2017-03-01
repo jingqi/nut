@@ -15,7 +15,8 @@ NUT_FIXTURE(TestSys)
 
     void test_smoking()
     {
-        NUT_TA(Sys::get_processor_num() > 0);
+        const int num = Sys::get_processor_num();
+        NUT_TA(num > 0);
     }
 
 };
