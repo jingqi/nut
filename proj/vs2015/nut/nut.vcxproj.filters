@@ -445,6 +445,9 @@
     <ClInclude Include="..\..\..\src\nut\platform\savefile.h">
       <Filter>nut\platform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\platform\sys.h">
+      <Filter>nut\platform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">
@@ -655,6 +658,9 @@
       <Filter>nut\security\digest</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\platform\savefile.cpp">
+      <Filter>nut\platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\platform\sys.cpp">
       <Filter>nut\platform</Filter>
     </ClCompile>
   </ItemGroup>
