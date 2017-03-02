@@ -10,6 +10,8 @@
 #include "platform/portable_endian.h"
 #include "platform/os.h"
 #include "platform/path.h"
+#include "platform/sys.h"
+#include "platform/savefile.h"
 
 // debugging
 #include "debugging/exception.h"

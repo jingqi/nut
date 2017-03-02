@@ -66,10 +66,10 @@ class ConcurrentStack
 
     data_allocator_type _data_alloc;
     node_allocator_type _node_alloc;
-    StampedPtr<Node> _top;
+    stamped_ptr<Node> _top;
 
     // 用于消隐的碰撞数组
-    StampedPtr<Node> _collisions[COLLISIONS_ARRAY_SIZE];
+    stamped_ptr<Node> _collisions[COLLISIONS_ARRAY_SIZE];
     
 private:
     ConcurrentStack(const ConcurrentStack&) = delete;
@@ -98,7 +98,7 @@ public:
 
         while (true)
         {
-            const StampedPtr<Node> old_top(_top);
+            const stamped_ptr<Node> old_top(_top);
             new_node->next = old_top.pointer();
             if (_top.compare_and_set(old_top, new_node))
                 return;
@@ -109,7 +109,7 @@ public:
     {
         while (true)
         {
-            const StampedPtr<Node> old_top(_top);
+            const stamped_ptr<Node> old_top(_top);
 
             if (nullptr == old_top.pointer())
                 return false;
@@ -155,14 +155,14 @@ public:
 private:
     bool push_attempt(Node *new_node)
     {
-        const StampedPtr<Node> old_top(_top);
+        const stamped_ptr<Node> old_top(_top);
         new_node->next = old_top.pointer();
         return _top.compare_and_set(old_top, new_node);
     }
 
     PopAttemptResult pop_attempt(T *p)
     {
-        const StampedPtr<Node> old_top(_top);
+        const stamped_ptr<Node> old_top(_top);
 
         if (nullptr == old_top.pointer())
             return EMPTY_STACK_FAILURE;
@@ -181,7 +181,7 @@ private:
     bool try_to_eliminate_push(Node *new_node)
     {
         const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
-        const StampedPtr<Node> old_collision_to_add(_collisions[i]);
+        const stamped_ptr<Node> old_collision_to_add(_collisions[i]);
         if (COLLISION_EMPTY_PTR != old_collision_to_add.pointer())
             return false;
 
@@ -197,7 +197,7 @@ private:
 #endif
 
         // 检查消隐是否成功
-        const StampedPtr<Node> old_collision_to_remove(_collisions[i]);
+        const stamped_ptr<Node> old_collision_to_remove(_collisions[i]);
         if (COLLISION_DONE_PTR == old_collision_to_remove.pointer() ||
             !_collisions[i].compare_and_set(old_collision_to_remove,
                                             COLLISION_EMPTY_PTR,
@@ -214,7 +214,7 @@ private:
     bool try_to_eliminate_pop(T *p)
     {
         const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
-        const StampedPtr<Node> old_collision(_collisions[i]);
+        const stamped_ptr<Node> old_collision(_collisions[i]);
         if (COLLISION_EMPTY_PTR == old_collision.pointer() ||
             COLLISION_DONE_PTR == old_collision.pointer())
             return false;

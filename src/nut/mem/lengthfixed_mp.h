@@ -65,7 +65,7 @@ class NUT_API lengthfixed_mtmp : public memory_allocator
     const rc_ptr<memory_allocator> _alloc;
     const size_t _granularity; // 粒度
     int volatile _free_num = 0;
-    StampedPtr<void> _head;
+    stamped_ptr<void> _head;
     NUT_DEBUGGING_DESTROY_CHECKER
 
 private:

@@ -109,7 +109,7 @@ void* lengthfixed_mtmp::alloc(size_t sz)
 
     while (true)
     {
-        const StampedPtr<void> old_head(_head);
+        const stamped_ptr<void> old_head(_head);
 
         if (nullptr == old_head.pointer())
             return ma_alloc(_alloc, _granularity);
@@ -145,7 +145,7 @@ void lengthfixed_mtmp::free(void *p, size_t sz)
             return;
         }
 
-        const StampedPtr<void> old_head(_head);
+        const stamped_ptr<void> old_head(_head);
         *reinterpret_cast<void**>(p) = old_head.pointer();
         if (_head.compare_and_set(old_head, p))
         {

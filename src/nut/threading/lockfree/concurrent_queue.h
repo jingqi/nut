@@ -56,15 +56,15 @@ class ConcurrentQueue
         ELIMINATE_ENQUEUE_DELAY_MICROSECONDS = 10,
     };
 
-    typedef typename StampedPtr<void>::stamp_type stamp_type;
+    typedef typename stamped_ptr<void>::stamp_type stamp_type;
 
     // 节点
     struct Node
     {
         T data;
         stamp_type seg = 0; // 用于安全消隐的标记
-        StampedPtr<Node> prev;
-        StampedPtr<Node> next;
+        stamped_ptr<Node> prev;
+        stamped_ptr<Node> next;
 
         Node(const T& v)
             : data(v)
@@ -84,11 +84,11 @@ class ConcurrentQueue
 
     data_allocator_type _data_alloc;
     node_allocator_type _node_alloc;
-    StampedPtr<Node> _head;
-    StampedPtr<Node> _tail;
+    stamped_ptr<Node> _head;
+    stamped_ptr<Node> _tail;
 
     // 用于消隐的碰撞数组
-    StampedPtr<Node> _collisions[COLLISIONS_ARRAY_SIZE];
+    stamped_ptr<Node> _collisions[COLLISIONS_ARRAY_SIZE];
     
 private:
     ConcurrentQueue(const ConcurrentQueue&) = delete;
@@ -138,7 +138,7 @@ public:
         while (true)
         {
             // 获取旧值
-            const StampedPtr<Node> old_tail(_tail);
+            const stamped_ptr<Node> old_tail(_tail);
 
             // 基于旧值的操作
             new_node->next.set(old_tail.pointer(), old_tail.stamp_value() + 1);
@@ -163,9 +163,9 @@ public:
         while (true)
         {
             // 保留旧值
-            const StampedPtr<Node> old_head(_head);
-            const StampedPtr<Node> old_tail(_tail);
-            const StampedPtr<Node> first_node_prev(old_head.pointer()->prev);
+            const stamped_ptr<Node> old_head(_head);
+            const stamped_ptr<Node> old_tail(_tail);
+            const stamped_ptr<Node> first_node_prev(old_head.pointer()->prev);
 
             if (old_head == _head) // 先取head, 然后取tail和其他，再验证head是否改变，以保证取到的值是可靠的
             {
@@ -198,12 +198,12 @@ public:
 
 private:
     // 修复
-    void fix_list(const StampedPtr<Node>& tail, const StampedPtr<Node>& head)
+    void fix_list(const stamped_ptr<Node>& tail, const stamped_ptr<Node>& head)
     {
-        StampedPtr<Node> cur_node = tail;
+        stamped_ptr<Node> cur_node = tail;
         while ((head == _head) && (cur_node != head))
         {
-            StampedPtr<Node> cur_node_next(cur_node.pointer()->next);
+            stamped_ptr<Node> cur_node_next(cur_node.pointer()->next);
             cur_node_next.pointer()->prev.set(cur_node.pointer(), cur_node.stamp_value() - 1);
             cur_node.set(cur_node_next.pointer(), cur_node.stamp_value() - 1);
         }
@@ -244,7 +244,7 @@ private:
     // 尝试入队
     bool enqueue_attempt(Node *new_node)
     {
-        const StampedPtr<Node> old_tail(_tail);
+        const stamped_ptr<Node> old_tail(_tail);
         new_node->next.set(old_tail.pointer(), old_tail.stamp_value() + 1);
 
         if (_tail.compare_and_set(old_tail, new_node))
@@ -263,9 +263,9 @@ private:
         while (true)
         {
             // 保留旧值
-            const StampedPtr<Node> old_head(_head);
-            const StampedPtr<Node> old_tail(_tail);
-            const StampedPtr<Node> first_node_prev(old_head.pointer()->prev);
+            const stamped_ptr<Node> old_head(_head);
+            const stamped_ptr<Node> old_tail(_tail);
+            const stamped_ptr<Node> first_node_prev(old_head.pointer()->prev);
 
             if (old_head == _head)
             {
@@ -301,7 +301,7 @@ private:
     {
         new_node->seg = seen_tail;
         const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
-        const StampedPtr<Node> old_collision_to_add(_collisions[i]);
+        const stamped_ptr<Node> old_collision_to_add(_collisions[i]);
         if (COLLISION_EMPTY_PTR != old_collision_to_add.pointer())
             return false;
 
@@ -317,7 +317,7 @@ private:
 #endif
 
         // 检查是否消隐成功
-        const StampedPtr<Node> old_collision_to_remove(_collisions[i]);
+        const stamped_ptr<Node> old_collision_to_remove(_collisions[i]);
         if (COLLISION_DONE_PTR == old_collision_to_remove.pointer() ||
             !_collisions[i].compare_and_set(old_collision_to_remove,
                                             COLLISION_EMPTY_PTR,
@@ -334,7 +334,7 @@ private:
     {
         const stamp_type seen_head = _head.stamp_value();
         const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
-        const StampedPtr<Node> old_collision(_collisions[i]);
+        const stamped_ptr<Node> old_collision(_collisions[i]);
         if (COLLISION_EMPTY_PTR == old_collision.pointer() ||
             COLLISION_DONE_PTR == old_collision.pointer())
             return false;
