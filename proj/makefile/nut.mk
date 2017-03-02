@@ -25,11 +25,7 @@ endif
 LD_FLAGS +=
 
 # TARGET
-ifeq (${HOST}, Darwin)
-	TARGET = ${OUT_DIR}/lib${TARGET_NAME}.dylib
-else
-	TARGET = ${OUT_DIR}/lib${TARGET_NAME}.so
-endif
+TARGET = ${OUT_DIR}/lib${TARGET_NAME}.${DL_SUFFIX}
 
 .PHONY: all clean rebuild
 

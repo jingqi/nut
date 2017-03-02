@@ -16,12 +16,10 @@ DEF +=
 CXX_FLAGS += -std=c++11
 
 # LIB LIB_DEPS
-ifeq (${HOST}, Darwin)
-	LIB_NUT = ${OUT_DIR}/libnut.dylib
-else
+ifeq (${HOST}, Linux)
 	LIB += -lpthread
-	LIB_NUT = ${OUT_DIR}/libnut.so
 endif
+LIB_NUT = ${OUT_DIR}/libnut.${DL_SUFFIX}
 LIB += -L${OUT_DIR} -lnut
 LIB_DEPS += ${LIB_NUT}
 

@@ -1,4 +1,8 @@
 
+## Requested input variables:
+# TARGET_NAME
+# SRC_ROOT
+
 ## 预定义变量和规则
 
 # built-in variables
@@ -17,21 +21,34 @@ FLEX ?= flex
 RAGEL ?= ragel
 
 # predefined variables
-HOST = $(shell uname -s)
+HOST := $(shell uname -s)
+
+ifeq (${DEBUG}, 1)
+	DEBUG_MODE := debug
+else
+	DEBUG_MODE := release
+endif
+
+ifeq (${HOST}, Darwin)
+	DL_SUFFIX := dylib
+else
+	ifeq (${HOST}, Linux)
+		DL_SUFFIX := so
+	else
+		DL_SUFFIX := dll
+	endif
+endif
 
 # project things
-ifeq (${DEBUG}, 1)
-	OUT_DIR = $(CURDIR)/${HOST}-debug
-else
-	OUT_DIR = $(CURDIR)/${HOST}-release
-endif
-OBJ_ROOT = ${OUT_DIR}/obj/${TARGET_NAME}
+OUT_DIR_NAME := $(shell echo ${HOST} | tr '[:upper:]' '[:lower:]')-${DEBUG_MODE}
+OUT_DIR := $(CURDIR)/${OUT_DIR_NAME}
+OBJ_ROOT := ${OUT_DIR}/obj/${TARGET_NAME}
 
 # OBJS, DEPS
-DIRS = $(shell find ${SRC_ROOT} -maxdepth 100 -type d)
-CPPS = $(foreach dir,${DIRS},$(wildcard $(dir)/*.cpp))
-OBJS = $(patsubst ${SRC_ROOT}%.cpp,${OBJ_ROOT}%.o,${CPPS})
-DEPS = ${OBJS:.o=.d}
+DIRS := $(shell find ${SRC_ROOT} -maxdepth 100 -type d)
+CPPS := $(foreach dir,${DIRS},$(wildcard $(dir)/*.cpp))
+OBJS := $(patsubst ${SRC_ROOT}%.cpp,${OBJ_ROOT}%.o,${CPPS})
+DEPS := ${OBJS:.o=.d}
 
 # mkdirs
 $(shell mkdir -p $(patsubst ${SRC_ROOT}%,${OBJ_ROOT}%,${DIRS}))
