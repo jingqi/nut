@@ -73,6 +73,11 @@ private:
 
 public:
     explicit Thread(const task_type& task = task_type());
+    
+    /**
+     * NOTE 不要在线程执行过程中调用自己的析构函数. 析构函数会通过 join() 等待线
+     *      程结束, 从而导致死锁
+     */
     virtual ~Thread();
 
     void set_thread_task(const task_type& task);
@@ -86,7 +91,15 @@ public:
     tid_type get_tid() const;
 
     bool start();
+    
+    /**
+     * NOTE 不要在线程中 join() 自己, 会导致死锁
+     */
     void join();
+    
+    /**
+     * NOTE 不要在线程中 terminate() 自己, 会导致调用栈上所有后继操作丢失
+     */
     void terminate();
 
     /**

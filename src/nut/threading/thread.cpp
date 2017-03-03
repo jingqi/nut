@@ -102,7 +102,7 @@ bool Thread::has_finished() const
     if (exit_code != STILL_ACTIVE)
         _has_finished = true;
 #else
-    // send the signal 0 will just check the state, not really "kill"
+    // Send the signal 0 will just check the state, not really "kill"
     if (::pthread_kill(_pthread, 0) != 0)
         _has_finished = true;
 #endif
@@ -155,6 +155,9 @@ void Thread::join()
     if (_has_finished)
         return;
 
+    // NOTE 在线程中 join() 自身会导致死锁
+    assert(current_thread_id() != get_tid());
+
 #if NUT_PLATFORM_OS_WINDOWS
     ::WaitForSingleObject(_handle, INFINITE);
 #else
@@ -167,6 +170,9 @@ void Thread::terminate()
     assert(_has_started);
     if (_has_finished)
         return;
+
+    // NOTE 在线程中 terminate() 自身会导致调用栈上所有后继操作无法执行
+    assert(current_thread_id() != get_tid());
 
 #if NUT_PLATFORM_OS_WINDOWS
     ::TerminateThread(_handle, 0);

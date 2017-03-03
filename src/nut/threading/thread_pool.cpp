@@ -48,12 +48,15 @@ bool ThreadPool::add_task(const task_type& task)
 
     // 启动新线程
     if (!_interrupted &&
-        (0 == _max_thread_number || _threads.size() < _max_thread_number) &&
+        (0 == _max_thread_number || _active_threads.size() < _max_thread_number) &&
         0 == _idle_number)
     {
         rc_ptr<Thread> thread = rc_new<Thread>();
-        thread->set_thread_task([=] { thread_process(thread); });
-        _threads.insert(thread);
+        _active_threads.push_back(thread);
+        thread_handle_type handle = _active_threads.end();
+        --handle;
+        assert(*handle == thread);
+        thread->set_thread_task([=] { thread_process(handle); });
         thread->start();
     }
 
@@ -63,7 +66,7 @@ bool ThreadPool::add_task(const task_type& task)
 void ThreadPool::wait_until_all_idle()
 {
     Guard<Condition::condition_lock_type> guard(&_lock);
-    while (_threads.size() != _idle_number)
+    while (_active_threads.size() != _idle_number)
         _all_idle_condition.wait(&_lock);
 }
 
@@ -81,9 +84,9 @@ void ThreadPool::join()
 
         {
             Guard<Condition::condition_lock_type> guard(&_lock);
-            if (_threads.empty())
+            if (_active_threads.empty())
                 return;
-            t = *_threads.begin();
+            t = *_active_threads.begin();
         }
 
         t->join();
@@ -96,16 +99,16 @@ void ThreadPool::terminate()
 
     Guard<Condition::condition_lock_type> guard(&_lock);
 
-    for (thread_container_type::const_iterator iter = _threads.begin(),
-         end = _threads.end(); iter != end; ++iter)
+    for (thread_list_type::const_iterator iter = _active_threads.begin(),
+         end = _active_threads.end(); iter != end; ++iter)
     {
         (*iter)->terminate();
     }
-    _threads.clear();
+    _active_threads.clear();
     _idle_number = 0;
 }
 
-void ThreadPool::thread_process(const thread_handle_type& thread)
+void ThreadPool::thread_process(const thread_handle_type& handle)
 {
     while (true)
     {
@@ -116,11 +119,11 @@ void ThreadPool::thread_process(const thread_handle_type& thread)
 
             // Wait for conditions
             while (!_interrupted &&
-                   (0 == _max_thread_number || _threads.size() <= _max_thread_number) &&
+                   (0 == _max_thread_number || _active_threads.size() <= _max_thread_number) &&
                    _task_queue.empty())
             {
                 ++_idle_number;
-                if (_threads.size() == _idle_number)
+                if (_active_threads.size() == _idle_number)
                     _all_idle_condition.signal();
 
                 if (0 == _max_sleep_seconds)
@@ -135,7 +138,7 @@ void ThreadPool::thread_process(const thread_handle_type& thread)
                     if (!rs)
                     {
                         // Idle timeout, thread should be released
-                        release_thread(thread);
+                        release_thread(handle);
                         return;
                     }
                 }
@@ -143,9 +146,9 @@ void ThreadPool::thread_process(const thread_handle_type& thread)
 
             // Wake by interruption or max thread number changed
             if (_interrupted ||
-                (0 != _max_thread_number && _threads.size() > _max_thread_number))
+                (0 != _max_thread_number && _active_threads.size() > _max_thread_number))
             {
-                release_thread(thread);
+                release_thread(handle);
                 return;
             }
 
@@ -159,12 +162,13 @@ void ThreadPool::thread_process(const thread_handle_type& thread)
     }
 }
 
-void ThreadPool::release_thread(const thread_handle_type& thread)
+void ThreadPool::release_thread(const thread_handle_type& handle)
 {
-    // Should run under protection of lock
-    _threads.erase(_threads.find(thread));
+    // Relase previous Thread struct, and hold current one
+    _previous_dead_thread = *handle;
+    _active_threads.erase(handle);
 
-    if (_threads.size() == _idle_number)
+    if (_active_threads.size() == _idle_number)
         _all_idle_condition.signal();
 }
 
