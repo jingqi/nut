@@ -9,8 +9,8 @@
 namespace nut
 {
 
-ThreadPool::ThreadPool(size_t max_thread_count, unsigned max_sleep_seconds)
-    : _max_thread_count(max_thread_count), _max_sleep_seconds(max_sleep_seconds)
+ThreadPool::ThreadPool(size_t max_thread_number, unsigned max_sleep_seconds)
+    : _max_thread_number(max_thread_number), _max_sleep_seconds(max_sleep_seconds)
 {}
 
 ThreadPool::~ThreadPool()
@@ -19,23 +19,35 @@ ThreadPool::~ThreadPool()
     join();
 }
 
+void ThreadPool::set_max_thread_number(size_t max_thread_number)
+{
+    _max_thread_number = max_thread_number;
+    _wake_condition.broadcast();
+}
+
+void ThreadPool::set_max_sleep_seconds(unsigned max_sleep_seconds)
+{
+    _max_sleep_seconds = max_sleep_seconds;
+    _wake_condition.broadcast();
+}
+
 bool ThreadPool::add_task(const task_type& task)
 {
     assert(task);
 
-    if (_interrupt)
+    if (_interrupted)
         return false;
 
     Guard<Condition::condition_lock_type> guard(&_lock);
 
     // 将任务入队
     _task_queue.push(task);
-    _condition.signal();
+    _wake_condition.signal();
 
     // 启动新线程
-    if (!_interrupt && !_joined &&
-        (0 == _max_thread_count || _threads.size() < _max_thread_count) &&
-        0 == _idle_count)
+    if (!_interrupted &&
+        (0 == _max_thread_number || _threads.size() < _max_thread_number) &&
+        0 == _idle_number)
     {
         rc_ptr<Thread> thread = rc_new<Thread>();
         thread->set_thread_task([=] { thread_process(thread); });
@@ -46,34 +58,39 @@ bool ThreadPool::add_task(const task_type& task)
     return true;
 }
 
+void ThreadPool::wait_until_all_idle()
+{
+    Guard<Condition::condition_lock_type> guard(&_lock);
+    while (_threads.size() != _idle_number)
+        _all_idle_condition.wait(&_lock);
+}
+
 void ThreadPool::interrupt()
 {
-    _interrupt = true;
-    _condition.broadcast();
+    _interrupted = true;
+    _wake_condition.broadcast();
 }
 
 void ThreadPool::join()
 {
-    std::vector<rc_ptr<Thread> > threads;
+    while (true)
     {
-        Guard<Condition::condition_lock_type> guard(&_lock);
-        for (threads_set_t::const_iterator iter = _threads.begin(),
-             end = _threads.end(); iter != end; ++iter)
-        {
-            threads.push_back(*iter);
-        }
-    }
+        rc_ptr<Thread> t;
 
-    _joined = true;
-    _condition.broadcast();
-    for (size_t i = 0; i < threads.size(); ++i)
-        threads[i]->join();
-    _joined = false;
+        {
+            Guard<Condition::condition_lock_type> guard(&_lock);
+            if (_threads.empty())
+                return;
+            t = *_threads.begin();
+        }
+
+        t->join();
+    }
 }
 
 void ThreadPool::terminate()
 {
-    _interrupt = true;
+    _interrupted = true;
 
     Guard<Condition::condition_lock_type> guard(&_lock);
 
@@ -83,7 +100,7 @@ void ThreadPool::terminate()
         (*iter)->terminate();
     }
     _threads.clear();
-    _idle_count = 0;
+    _idle_number = 0;
 }
 
 void ThreadPool::thread_process(const rc_ptr<Thread>& thread)
@@ -95,52 +112,58 @@ void ThreadPool::thread_process(const rc_ptr<Thread>& thread)
         {
             Guard<Condition::condition_lock_type> guard(&_lock);
 
-            // Max thread count may have been shrank
-            if (_interrupt ||
-                (_joined && _task_queue.empty()) ||
-                (0 != _max_thread_count && _threads.size() > _max_thread_count))
-            {
-                _threads.erase(_threads.find(thread));
-                return;
-            }
-
             // Wait for conditions
-            ++_idle_count;
-            while (!_interrupt && !_joined && _task_queue.empty())
+            while (!_interrupted &&
+                   (0 == _max_thread_number || _threads.size() <= _max_thread_number) &&
+                   _task_queue.empty())
             {
+                ++_idle_number;
+                if (_threads.size() == _idle_number)
+                    _all_idle_condition.signal();
+
                 if (0 == _max_sleep_seconds)
                 {
-                    _condition.wait(&_lock);
+                    _wake_condition.wait(&_lock);
+                    --_idle_number;
                 }
                 else
                 {
-                    const bool rs = _condition.timedwait(&_lock, _max_sleep_seconds);
+                    const bool rs = _wake_condition.timedwait(&_lock, _max_sleep_seconds);
+                    --_idle_number;
                     if (!rs)
                     {
-                        // Sleep timeout, thread should be released
-                        --_idle_count;
-                        _threads.erase(_threads.find(thread));
+                        // Idle timeout, thread should be released
+                        release_thread(thread);
                         return;
                     }
                 }
             }
-            --_idle_count;
 
-            // Wake by interruption or joined(and there are no new tasks)
-            if (_interrupt || _task_queue.empty())
+            // Wake by interruption or max thread number changed
+            if (_interrupted ||
+                (0 != _max_thread_number && _threads.size() > _max_thread_number))
             {
-                assert(_interrupt || _joined);
-                _threads.erase(_threads.find(thread));
+                release_thread(thread);
                 return;
             }
 
             // Wake by new task
+            assert(!_task_queue.empty());
             task = _task_queue.front();
             _task_queue.pop();
         }
 
         task();
     }
+}
+
+void ThreadPool::release_thread(const rc_ptr<Thread> &thread)
+{
+    // Should run under protection of lock
+    _threads.erase(_threads.find(thread));
+
+    if (_threads.size() == _idle_number)
+        _all_idle_condition.signal();
 }
 
 }

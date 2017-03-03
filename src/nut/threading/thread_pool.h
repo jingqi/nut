@@ -28,22 +28,20 @@ public:
 
 private:
     // 最大线程数，0 表示无限
-    size_t _max_thread_count = 0;
+    size_t _max_thread_number = 0;
     // 线程空闲多长时间后自我终止, 0 表示不自我终止
     unsigned _max_sleep_seconds = 0;
-    // 当前空闲线程数
-    size_t volatile _idle_count = 0;
     // 已经启动的线程
     typedef  std::set<rc_ptr<Thread> > threads_set_t;
     threads_set_t _threads;
+    // 当前空闲线程数
+    size_t volatile _idle_number = 0;
     // 是否正在被中断
-    bool volatile _interrupt = false;
-    // 是否正在等待所有任务完成
-    bool volatile _joined = false;
+    bool volatile _interrupted = false;
     // 任务队列和同步工具
     std::queue<task_type> _task_queue;
     Condition::condition_lock_type _lock;
-    Condition _condition;
+    Condition _wake_condition, _all_idle_condition;
 
 private:
     // Non-copyable
@@ -52,37 +50,36 @@ private:
 
 public:
     /**
-     * @param max_thread_count 最大线程数; 0 表示无限
+     * @param max_thread_number 最大线程数; 0 表示无限
      * @param max_sleep_seconds 线程空闲多长时间后自我终止; 0 表示一直等待
      */
-    explicit ThreadPool(size_t max_thread_count = 0,
+    explicit ThreadPool(size_t max_thread_number = 0,
                         unsigned max_sleep_seconds = 0);
     ~ThreadPool();
 
-    size_t get_max_thread_count() const
+    size_t get_max_thread_number() const
     {
-        return _max_thread_count;
+        return _max_thread_number;
     }
 
-    void set_max_thread_count(size_t max_thread_count)
-    {
-        _max_thread_count = max_thread_count;
-    }
+    void set_max_thread_number(size_t max_thread_number);
 
     unsigned get_max_sleep_seconds() const
     {
         return _max_sleep_seconds;
     }
 
-    void set_max_sleep_seconds(unsigned max_sleep_seconds)
-    {
-        _max_sleep_seconds = max_sleep_seconds;
-    }
+    void set_max_sleep_seconds(unsigned max_sleep_seconds);
 
     /**
      * 添加一个任务; 可能会启动新线程
      */
     bool add_task(const task_type& task);
+
+    /**
+     * 阻塞，直到所有线程都空闲
+     */
+    void wait_until_all_idle();
 
     /**
      * 给所有线程发送中断信号
@@ -101,6 +98,7 @@ public:
 
 private:
     void thread_process(const rc_ptr<Thread>& thread);
+    void release_thread(const rc_ptr<Thread>& thread);
 };
 
 }
