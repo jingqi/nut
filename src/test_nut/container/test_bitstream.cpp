@@ -35,6 +35,9 @@ NUT_FIXTURE(TestBitStream)
 
     void test_bug1()
     {
+        //
+        // BitStream.resize() 导致崩溃的问题
+        //
         BitStream bs;
         bs.resize(2, 1);
         NUT_TA(bs.to_string() == "11");
@@ -42,6 +45,9 @@ NUT_FIXTURE(TestBitStream)
 
     void test_bug2()
     {
+        //
+        // BitStream.resize()导致崩溃问题
+        //
         BitStream bs;
         bs.append_bit(0);
         bs.resize(3, 1);

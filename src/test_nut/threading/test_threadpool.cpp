@@ -16,37 +16,34 @@ using namespace nut;
 NUT_FIXTURE(TestThreadpool)
 {
     NUT_CASES_BEGIN()
-    NUT_CASE(test_manual)
+    NUT_CASE(test_smoke)
     NUT_CASE(test_auto_release)
+    NUT_CASE(test_bug1)
     NUT_CASES_END()
 
-    static void custom(char c)
-    {
-        printf("%c", c);
-    }
-
-    void test_manual()
+    void test_smoke()
     {
         rc_ptr<ThreadPool> tp = rc_new<ThreadPool>();
 
         printf("a");
-        tp->add_task([] { custom('A'); });
+        tp->add_task([] { printf("A"); });
         printf("b");
-        tp->add_task([] { custom('B'); });
+        tp->add_task([] { printf("B"); });
         printf("c");
-        tp->add_task([] { custom('C'); });
+        tp->add_task([] { printf("C"); });
 
-        Thread::sleep(1000);
+        Thread::sleep(500);
+        printf("|");
 
         printf("x");
-        tp->add_task([] { custom('X'); });
+        tp->add_task([] { printf("X"); });
         printf("y");
-        tp->add_task([] { custom('Y'); });
+        tp->add_task([] { printf("Y"); });
         printf("z");
-        tp->add_task([] { custom('Z'); });
+        tp->add_task([] { printf("Z"); });
 
         printf("i");
-        tp->add_task([] { custom('I'); });
+        tp->add_task([] { printf("I"); });
     }
 
     void test_auto_release()
@@ -54,23 +51,47 @@ NUT_FIXTURE(TestThreadpool)
         rc_ptr<ThreadPool> tp = rc_new<ThreadPool>(10, 1);
 
         printf("a");
-        tp->add_task([] { custom('A'); });
+        tp->add_task([] { printf("A"); });
         printf("b");
-        tp->add_task([] { custom('B'); });
+        tp->add_task([] { printf("B"); });
         printf("c");
-        tp->add_task([] { custom('C'); });
+        tp->add_task([] { printf("C"); });
 
-        Thread::sleep(5000); // 空闲线程会超时自动回收
+        Thread::sleep(2000); // 空闲线程会超时自动回收
 
         printf("x");
-        tp->add_task([] { custom('X'); });
+        tp->add_task([] { printf("X"); });
         printf("y");
-        tp->add_task([] { custom('Y'); });
+        tp->add_task([] { printf("Y"); });
         printf("z");
-        tp->add_task([] { custom('Z'); });
+        tp->add_task([] { printf("Z"); });
 
         printf("i");
-        tp->add_task([] { custom('I'); });
+        tp->add_task([] { printf("I"); });
+    }
+
+    void test_bug1()
+    {
+        // bug 描述:
+        //     一旦线程池的 join() 方法被调用，线程池就不会再创建新的工作线程了
+        //
+        rc_ptr<ThreadPool> tp = rc_new<ThreadPool>(10, 1);
+        bool should_be_set_by_new_thread = false, has_bug = false;
+        tp->add_task([&] {
+            // 确保主线程已经进入 join()
+            Thread::sleep(100);
+            // 创建新任务，看能否让线程池创建新的工作线程
+            tp->add_task([&] {
+                should_be_set_by_new_thread = true;
+            });
+            // 等待新线程完成任务
+            Thread::sleep(100);
+            has_bug = !should_be_set_by_new_thread;
+            // 终止线程池
+            tp->interrupt();
+        });
+        tp->join();
+        NUT_TA(!has_bug);
     }
 };
 

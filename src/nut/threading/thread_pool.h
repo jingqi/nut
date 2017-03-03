@@ -32,8 +32,9 @@ private:
     // 线程空闲多长时间后自我终止, 0 表示不自我终止
     unsigned _max_sleep_seconds = 0;
     // 已经启动的线程
-    typedef  std::set<rc_ptr<Thread> > threads_set_t;
-    threads_set_t _threads;
+    typedef std::set<rc_ptr<Thread> > thread_container_type;
+    typedef rc_ptr<Thread> thread_handle_type;
+    thread_container_type _threads;
     // 当前空闲线程数
     size_t volatile _idle_number = 0;
     // 是否正在被中断
@@ -54,7 +55,7 @@ public:
      * @param max_sleep_seconds 线程空闲多长时间后自我终止; 0 表示一直等待
      */
     explicit ThreadPool(size_t max_thread_number = 0,
-                        unsigned max_sleep_seconds = 0);
+                        unsigned max_sleep_seconds = 60);
     ~ThreadPool();
 
     size_t get_max_thread_number() const
@@ -97,8 +98,8 @@ public:
     void terminate();
 
 private:
-    void thread_process(const rc_ptr<Thread>& thread);
-    void release_thread(const rc_ptr<Thread>& thread);
+    void thread_process(const thread_handle_type& thread);
+    void release_thread(const thread_handle_type& thread);
 };
 
 }

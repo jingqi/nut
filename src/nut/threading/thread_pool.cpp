@@ -15,7 +15,9 @@ ThreadPool::ThreadPool(size_t max_thread_number, unsigned max_sleep_seconds)
 
 ThreadPool::~ThreadPool()
 {
-    // 避免内存问题
+    // 为避免内存问题，必须等所有线程退出后再析构
+    wait_until_all_idle();
+    interrupt();
     join();
 }
 
@@ -94,7 +96,7 @@ void ThreadPool::terminate()
 
     Guard<Condition::condition_lock_type> guard(&_lock);
 
-    for (threads_set_t::const_iterator iter = _threads.begin(),
+    for (thread_container_type::const_iterator iter = _threads.begin(),
          end = _threads.end(); iter != end; ++iter)
     {
         (*iter)->terminate();
@@ -103,7 +105,7 @@ void ThreadPool::terminate()
     _idle_number = 0;
 }
 
-void ThreadPool::thread_process(const rc_ptr<Thread>& thread)
+void ThreadPool::thread_process(const thread_handle_type& thread)
 {
     while (true)
     {
@@ -157,7 +159,7 @@ void ThreadPool::thread_process(const rc_ptr<Thread>& thread)
     }
 }
 
-void ThreadPool::release_thread(const rc_ptr<Thread> &thread)
+void ThreadPool::release_thread(const thread_handle_type& thread)
 {
     // Should run under protection of lock
     _threads.erase(_threads.find(thread));
