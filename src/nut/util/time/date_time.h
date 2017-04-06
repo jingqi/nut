@@ -23,21 +23,20 @@ protected:
 
 public:
     /**
-     * 获取当前时间
+     * 从1970年1月1日0时0分0秒
      */
     DateTime();
 
     /**
-     * 从1970年1月1日起算的时间(秒)
-     *
-     * @param s
+     * @param s 从1970年1月1日起算的时间(秒)
      */
-    DateTime(time_t s);
+    explicit DateTime(time_t s);
 
     /**
      * 使用具体时刻初始化
      */
-    DateTime(uint32_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec);
+    DateTime(uint32_t year, uint8_t month, uint8_t day,
+             uint8_t hour, uint8_t min, uint8_t sec);
 
     /**
      * 时刻比较
@@ -82,9 +81,14 @@ public:
     /**
      * 获得并存储当前时刻
      */
-    void update_to_current_time();
+    void set_to_now();
 
-    time_t get_ori_seconds() const;
+    static DateTime now();
+
+    /**
+     * @return 从1970年1月1日0时0分0秒开始计算的秒数
+     */
+    time_t get_raw_seconds() const;
 
     /**
      * 获得秒数
@@ -142,14 +146,14 @@ public:
      */
     uint16_t get_day_of_year() const;
 
-    // for example : "12:34:45"
-    std::string get_clock_str() const;
-
     // for example : "2007-3-12"
     std::string get_date_str() const;
 
+    // for example : "12:34:45"
+    std::string get_clock_str() const;
+
     // for example : "2007-3-4 8:33:57"
-    std::string get_time_str() const;
+    std::string get_datetime_str() const;
 
     std::string to_string() const;
 

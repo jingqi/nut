@@ -20,9 +20,9 @@ namespace nut
  * 获取当前时间
  */
 DateTime::DateTime()
+    : _seconds(0)
 {
-    ::time(&_seconds);
-    _time_info = *localtime(&_seconds);
+    _time_info = *::localtime(&_seconds);
 }
 
 /**
@@ -32,13 +32,14 @@ DateTime::DateTime()
 DateTime::DateTime(time_t s)
     : _seconds(s)
 {
-    _time_info = *localtime(&_seconds);
+    _time_info = *::localtime(&_seconds);
 }
 
 /**
  * 使用具体时刻初始化
  */
-DateTime::DateTime(uint32_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec)
+DateTime::DateTime(uint32_t year, uint8_t month, uint8_t day,
+                   uint8_t hour, uint8_t min, uint8_t sec)
 {
     ::memset(&_time_info, 0, sizeof(_time_info));
     _time_info.tm_year = year - 1900;
@@ -47,7 +48,7 @@ DateTime::DateTime(uint32_t year, uint8_t month, uint8_t day, uint8_t hour, uint
     _time_info.tm_hour = hour;
     _time_info.tm_min = min;
     _time_info.tm_sec = sec;
-    _seconds = mktime(&_time_info); /* '_time_info' is normalized also */
+    _seconds = ::mktime(&_time_info); /* '_time_info' is normalized also */
 
     /* 检查处理输入的结果 */
     assert(-1 != _seconds); /* 输入的数据有错误! */
@@ -113,13 +114,20 @@ time_t DateTime::operator-(const DateTime &another) const
 /**
  * 获得并存储当前时刻
  */
-void DateTime::update_to_current_time()
+void DateTime::set_to_now()
 {
     ::time(&_seconds);
-    _time_info = *localtime(&_seconds);
+    _time_info = *::localtime(&_seconds);
 }
 
-time_t DateTime::get_ori_seconds() const
+DateTime DateTime::now()
+{
+    time_t seconds = 0;
+    ::time(&seconds);
+    return DateTime(seconds);
+}
+
+time_t DateTime::get_raw_seconds() const
 {
     return _seconds;
 }
@@ -199,27 +207,27 @@ uint16_t DateTime::get_day_of_year() const
     return static_cast<uint16_t>(_time_info.tm_yday);
 }
 
-// for example : "12:34:45"
-std::string DateTime::get_clock_str() const
-{
-    return format_time("%H:%M:%S");
-}
-
 // for example : "2007-3-12"
 std::string DateTime::get_date_str() const
 {
     return format_time("%Y-%m-%d");
 }
 
+// for example : "12:34:45"
+std::string DateTime::get_clock_str() const
+{
+    return format_time("%H:%M:%S");
+}
+
 // for example : "2007-3-4 8:33:57"
-std::string DateTime::get_time_str() const
+std::string DateTime::get_datetime_str() const
 {
     return get_date_str() + " " + get_clock_str();
 }
 
 std::string DateTime::to_string() const
 {
-    return get_time_str();
+    return get_datetime_str();
 }
 
 /**

@@ -56,7 +56,7 @@ CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(const std::string& dir_pa
 
     // 构建日志文件名
     std::string file_name(prefix);
-    file_name += DateTime().format_time("%Y-%m-%d %H-%M-%S ");
+    file_name += DateTime::now().format_time("%Y%m%d %H%M%S ");
 #if NUT_PLATFORM_OS_WINDOWS
     long pid = ::GetCurrentProcessId();
 #else
