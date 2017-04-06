@@ -15,6 +15,7 @@ LogRecord::LogRecord(LogLevel level, const char *tag, const char *file_path, int
     _func(func), _message(message)
 {
     assert(nullptr != file_path && line >= 0 && nullptr != message);
+    _time.set_to_now();
 }
 
 LogRecord::~LogRecord()
