@@ -21,6 +21,7 @@ NUT_FIXTURE(TestPath)
     NUT_CASE(test_abs_pathw)
     NUT_CASE(test_relative_path)
     NUT_CASE(test_relative_pathw)
+    NUT_CASE(test_bug1)
     NUT_CASES_END()
 
     void test_split()
@@ -368,6 +369,44 @@ NUT_FIXTURE(TestPath)
         _H(L"/a/m/n", L"/a/m/n/", L".");
 
 #undef _H
+    }
+
+    void test_bug1()
+    {
+        // bug 描述:
+        //     在非 windows 平台，是允许文件名中出现 ':' 字符的
+        //
+#if NUT_PLATFORM_OS_WINDOWS
+        NUT_TA(Path::is_abs("c:/"));
+
+        NUT_TA(Path::abs_path("c:") == "c:\\");
+
+        string a, b;
+        Path::split("c:/a", &a, &b);
+        NUT_TA(a == "c:/" && b == "a");
+
+        a.clear();
+        b.clear();
+        Path::split_drive("c:/a/b", &a, &b);
+        NUT_TA(a == "c:/" && b == "a/b");
+
+        NUT_TA(Path::join("abc", "c:/") == "c:/");
+#else
+        NUT_TA(!Path::is_abs("c:/"));
+
+        NUT_TA(Path::abs_path("c:") != "c:\\");
+
+        string a, b;
+        Path::split("c:/a", &a, &b);
+        NUT_TA(a == "c:" && b == "a");
+
+        a.clear();
+        b.clear();
+        Path::split_drive("c:/a/b", &a, &b);
+        NUT_TA(a == "" && b == "c:/a/b");
+
+        NUT_TA(Path::join("abc", "c:/") == "abc/c:/");
+#endif
     }
 };
 

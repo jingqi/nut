@@ -13,7 +13,7 @@
 
 using namespace nut;
 
-NUT_FIXTURE(TestThreadpool)
+NUT_FIXTURE(TestThreadPool)
 {
     NUT_CASES_BEGIN()
     NUT_CASE(test_smoke)
@@ -95,4 +95,4 @@ NUT_FIXTURE(TestThreadpool)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestThreadpool, "threading")
+NUT_REGISTER_FIXTURE(TestThreadPool, "threading")

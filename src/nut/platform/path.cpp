@@ -140,16 +140,22 @@ bool Path::is_abs(const char *path)
     if (0 == path[0])
         return false;
 
-    if ('/' == path[0] || '~' == path[0]) // linux root
+    // Linux / Unix root or home
+    if ('/' == path[0] || '~' == path[0])
         return true;
+
+#if NUT_PLATFORM_OS_WINDOWS
+    // Windows partion root
     for (size_t i = 0; 0 != path[i]; ++i)
     {
         const char c = path[i];
-        if (':' == c) // windows partion root
+        if (':' == c)
             return true;
         else if (is_path_separator(c))
-            return false;
+            break;
     }
+#endif
+
     return false;
 }
 
@@ -159,16 +165,22 @@ bool Path::is_abs(const wchar_t *path)
     if (0 == path[0])
         return false;
 
-    if (L'/' == path[0] || L'~' == path[0]) // linux root or linux home
+    // Linux / Unix root or home
+    if (L'/' == path[0] || L'~' == path[0])
         return true;
+
+#if NUT_PLATFORM_OS_WINDOWS
+    // Windows partion root
     for (size_t i = 0; 0 != path[i]; ++i)
     {
         const wchar_t c = path[i];
-        if (L':' == c) // windows partion root
+        if (L':' == c)
             return true;
         else if (is_path_separator(c))
-            return false;
+            break;
     }
+#endif
+
     return false;
 }
 
@@ -213,7 +225,7 @@ void Path::abs_path(const char *path, std::string *result)
         {
             if (part.empty())
             {
-                // linux root
+                // Linux root
                 result->push_back('/');
                 continue;
             }
@@ -233,9 +245,9 @@ void Path::abs_path(const char *path, std::string *result)
             }
             else if (part.at(part.length() - 1) == ':')
             {
-                // windows partition root
+                // Windows partition root
                 *result += part;
-                result->push_back('\\');
+                result->push_back(seperator());
                 part.clear();
                 continue;
             }
@@ -305,7 +317,7 @@ void Path::abs_path(const wchar_t *path, std::wstring *result)
         {
             if (part.empty())
             {
-                // linux root
+                // Linux root
                 result->push_back(L'/');
                 continue;
             }
@@ -325,9 +337,9 @@ void Path::abs_path(const wchar_t *path, std::wstring *result)
             }
             else if (part.at(part.length() - 1) == L':')
             {
-                // windows partition root
+                // Windows partition root
                 *result += part;
-                result->push_back(L'\\');
+                result->push_back(wseperator());
                 part.clear();
                 continue;
             }
@@ -630,20 +642,17 @@ void Path::split(const char *path, std::string *parent_result, std::string *chil
         return;
     }
 
-    if (0 == pos || ':' == path[pos - 1]) // 磁盘号 + 根目录
+    if (nullptr != parent_result)
     {
-        if (nullptr != parent_result)
+#if NUT_PLATFORM_OS_WINDOWS
+        if (0 == pos || ':' == path[pos - 1]) // 磁盘号 + 根目录
             parent_result->append(path, pos + 1);
-        if (nullptr != child_result)
-            child_result->append(path + pos + 1);
-    }
-    else
-    {
-        if (nullptr != parent_result)
+        else
+#endif
             parent_result->append(path, pos);
-        if (nullptr != child_result)
-            child_result->append(path + pos + 1);
     }
+    if (nullptr != child_result)
+        child_result->append(path + pos + 1);
 }
 
 void Path::split(const wchar_t *path, std::wstring *parent_result, std::wstring *child_result)
@@ -664,20 +673,17 @@ void Path::split(const wchar_t *path, std::wstring *parent_result, std::wstring 
         return;
     }
 
-    if (0 == pos || L':' == path[pos - 1]) // 磁盘号 + 根目录
+    if (nullptr != parent_result)
     {
-        if (nullptr != parent_result)
+#if NUT_PLATFORM_OS_WINDOWS
+        if (0 == pos || L':' == path[pos - 1]) // 磁盘号 + 根目录
             parent_result->append(path, pos + 1);
-        if (nullptr != child_result)
-            child_result->append(path + pos + 1);
-    }
-    else
-    {
-        if (nullptr != parent_result)
+        else
+#endif
             parent_result->append(path, pos);
-        if (nullptr != child_result)
-            child_result->append(path + pos + 1);
     }
+    if (nullptr != child_result)
+        child_result->append(path + pos + 1);
 }
 
 void Path::split(const std::string& path, std::string *parent_result, std::string *child_result)
@@ -691,7 +697,7 @@ void Path::split(const std::wstring& path, std::wstring *parent_result, std::wst
 }
 
 /**
- * 从路径中划分出磁盘号和路径(linux路径的磁盘号假定为"")
+ * 从路径中划分出磁盘号和路径(Linux路径的磁盘号假定为"")
  *
  * 例如：
  * "c:\\mn\\p" -> "c:" "\\mn\\p"
@@ -701,6 +707,7 @@ void Path::split_drive(const char *path, std::string *drive_result, std::string 
 {
     assert(nullptr != path && (nullptr != drive_result || nullptr != rest_result));
 
+#if NUT_PLATFORM_OS_WINDOWS
     ssize_t pos = -1;
     for (ssize_t i = 0; 0 != path[i]; ++i)
     {
@@ -722,12 +729,17 @@ void Path::split_drive(const char *path, std::string *drive_result, std::string 
         drive_result->append(path, pos + 1);
     if (nullptr != rest_result)
         rest_result->append(path + pos + 1);
+#else
+    if (nullptr != rest_result)
+        *rest_result += path;
+#endif
 }
 
 void Path::split_drive(const wchar_t *path, std::wstring *drive_result, std::wstring *rest_result)
 {
     assert(nullptr != path && (nullptr != drive_result || nullptr != rest_result));
 
+#if NUT_PLATFORM_OS_WINDOWS
     ssize_t pos = -1;
     for (ssize_t i = 0; 0 != path[i]; ++i)
     {
@@ -749,6 +761,10 @@ void Path::split_drive(const wchar_t *path, std::wstring *drive_result, std::wst
         drive_result->append(path, pos + 1);
     if (nullptr != rest_result)
         rest_result->append(path + pos + 1);
+#else
+    if (nullptr != rest_result)
+        *rest_result += path;
+#endif
 }
 
 void Path::split_drive(const std::string& path, std::string *drive_result, std::string *rest_result)
@@ -1225,29 +1241,19 @@ void Path::join(const char *a, const char *b, std::string *result)
 {
     assert(nullptr != a && nullptr != b && nullptr != result);
 
-    if (0 == a[0])
-    {
-        *result += b;
-        return;
-    }
-
-    // 处理磁盘号
-    const size_t a_len = ::strlen(a);
-    if (':' == a[a_len - 1])
-    {
-        *result += a;
-        *result += b;
-        return;
-    }
-
     // 处理根目录 '/', 'c:\\'
-    if (is_path_separator(b[0]) || str_find(b, ':') >= 0)
+    if (0 == a[0] || is_path_separator(b[0])
+#if NUT_PLATFORM_OS_WINDOWS
+        || str_find(b, ':') >= 0
+#endif
+        )
     {
         *result += b;
         return;
     }
 
     // 连接
+    const size_t a_len = ::strlen(a);
     if (is_path_separator(a[a_len - 1]))
     {
         *result += a;
@@ -1265,29 +1271,19 @@ void Path::join(const wchar_t *a, const wchar_t *b, std::wstring *result)
 {
     assert(nullptr != a && nullptr != b && nullptr != result);
 
-    if (0 == a[0])
-    {
-        *result += b;
-        return;
-    }
-
-    // 处理磁盘号
-    const size_t a_len = ::wcslen(a);
-    if (L':' == a[a_len - 1])
-    {
-        *result += a;
-        *result += b;
-        return;
-    }
-
     // 处理根目录 '/', 'c:\\'
-    if (is_path_separator(b[0]) || str_find(b, L':') >= 0)
+    if (0 == a[0] || is_path_separator(b[0])
+#if NUT_PLATFORM_OS_WINDOWS
+        || str_find(b, L':') >= 0
+#endif
+        )
     {
         *result += b;
         return;
     }
 
     // 连接
+    const size_t a_len = ::wcslen(a);
     if (is_path_separator(a[a_len - 1]))
     {
         *result += a;
