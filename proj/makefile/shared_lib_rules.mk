@@ -1,7 +1,8 @@
 
 ## 生成动态链接库规则
 
-# CXX_FLAGS
+# FLAGS
+C_FLAGS += -fPIC
 CXX_FLAGS += -fPIC
 
 # LD_FLAGS

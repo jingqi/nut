@@ -46,8 +46,14 @@ OBJ_ROOT := ${OUT_DIR}/obj/${TARGET_NAME}
 
 # OBJS, DEPS
 DIRS := $(shell find ${SRC_ROOT} -maxdepth 100 -type d)
-CPPS := $(foreach dir,${DIRS},$(wildcard $(dir)/*.cpp))
-OBJS := $(patsubst ${SRC_ROOT}%.cpp,${OBJ_ROOT}%.o,${CPPS})
+
+C_SRCS := $(foreach dir,${DIRS},$(wildcard $(dir)/*.c))
+C_OBJS := $(patsubst ${SRC_ROOT}%.c,${OBJ_ROOT}%.o,${C_SRCS})
+
+CPP_SRCS := $(foreach dir,${DIRS},$(wildcard $(dir)/*.cpp))
+CPP_OBJS := $(patsubst ${SRC_ROOT}%.cpp,${OBJ_ROOT}%.o,${CPP_SRCS})
+
+OBJS := ${C_OBJS} ${CPP_OBJS}
 DEPS := ${OBJS:.o=.d}
 
 # mkdirs
