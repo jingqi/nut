@@ -645,10 +645,12 @@ void Path::split(const char *path, std::string *parent_result, std::string *chil
     if (nullptr != parent_result)
     {
 #if NUT_PLATFORM_OS_WINDOWS
-        if (0 == pos || ':' == path[pos - 1]) // 磁盘号 + 根目录
+        if (0 == pos || ':' == path[pos - 1]) // Unix 根目录; 磁盘号 + 根目录
+#else
+        if (0 == pos) // Unix 根目录
+#endif
             parent_result->append(path, pos + 1);
         else
-#endif
             parent_result->append(path, pos);
     }
     if (nullptr != child_result)
@@ -676,10 +678,12 @@ void Path::split(const wchar_t *path, std::wstring *parent_result, std::wstring 
     if (nullptr != parent_result)
     {
 #if NUT_PLATFORM_OS_WINDOWS
-        if (0 == pos || L':' == path[pos - 1]) // 磁盘号 + 根目录
+        if (0 == pos || L':' == path[pos - 1]) // Unix 根目录; 磁盘号 + 根目录
+#else
+        if (0 == pos) // Unix 根目录
+#endif
             parent_result->append(path, pos + 1);
         else
-#endif
             parent_result->append(path, pos);
     }
     if (nullptr != child_result)

@@ -40,8 +40,13 @@ NUT_FIXTURE(TestPath)
         p.clear();
         c.clear();
         Path::split("c:\\tmp", &p, &c);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(p == "c:\\");
         NUT_TA(c == "tmp");
+#else
+        NUT_TA(p == "c:"); // 并不是当成根目录，而是当成普通目录名
+        NUT_TA(c == "tmp");
+#endif
     }
 
     void test_splitw()
