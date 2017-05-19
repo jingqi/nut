@@ -45,7 +45,7 @@ wchar_t Path::wseperator()
 }
 
 /**
- * 检查字符是否是路径分隔符 '\\' '/'
+ * 检查字符是否是路径分隔符 '\' '/'
  */
 bool Path::is_path_separator(char c)
 {
@@ -134,6 +134,76 @@ void Path::chdir(const std::string& cwd)
     Path::chdir(cwd.c_str());
 }
 
+#if NUT_PLATFORM_OS_WINDOWS
+template <typename C>
+static ssize_t find_win_drive(const C *path)
+{
+    for (size_t i = 0; 0 != path[i]; ++i)
+    {
+        const C c = path[i];
+        if (((int) ':') == c)
+            return i > 0 ? i : -1; // 避免首个字符是 ':' 的情况
+        else if (Path::is_path_separator(c))
+            return -1;
+    }
+    return -1;
+}
+#endif
+
+bool Path::is_root(const char *path)
+{
+    assert(nullptr != path);
+    if (0 == path[0])
+        return false;
+    if (is_path_separator(path[0]) && 0 == path[1])
+        return true;
+
+#if NUT_PLATFORM_OS_WINDOWS
+    ssize_t colon_pos = find_win_drive(path);
+    if (colon_pos > 0)
+    {
+        if (0 == path[colon_pos + 1])
+            return true; // "c:"
+        if (is_path_separator(path[colon_pos + 1]) && 0 == path[colon_pos + 2])
+            return true; // "c:/"
+    }
+#endif
+
+    return false;
+}
+
+bool Path::is_root(const wchar_t *path)
+{
+    assert(nullptr != path);
+    if (0 == path[0])
+        return false;
+    if (is_path_separator(path[0]) && 0 == path[1])
+        return true;
+
+#if NUT_PLATFORM_OS_WINDOWS
+    ssize_t colon_pos = find_win_drive(path);
+    if (colon_pos > 0)
+    {
+        if (0 == path[colon_pos + 1])
+            return true; // "c:"
+        if (is_path_separator(path[colon_pos + 1]) && 0 == path[colon_pos + 2])
+            return true; // "c:/"
+    }
+#endif
+
+    return false;
+}
+
+bool Path::is_root(const std::string& path)
+{
+    return is_root(path.c_str());
+}
+
+bool Path::is_root(const std::wstring& path)
+{
+    return is_root(path.c_str());
+}
+
 bool Path::is_abs(const char *path)
 {
     assert(nullptr != path);
@@ -146,14 +216,8 @@ bool Path::is_abs(const char *path)
 
 #if NUT_PLATFORM_OS_WINDOWS
     // Windows partion root
-    for (size_t i = 0; 0 != path[i]; ++i)
-    {
-        const char c = path[i];
-        if (':' == c)
-            return true;
-        else if (is_path_separator(c))
-            break;
-    }
+    if (find_win_drive(path) > 0)
+        return true;
 #endif
 
     return false;
@@ -171,14 +235,8 @@ bool Path::is_abs(const wchar_t *path)
 
 #if NUT_PLATFORM_OS_WINDOWS
     // Windows partion root
-    for (size_t i = 0; 0 != path[i]; ++i)
-    {
-        const wchar_t c = path[i];
-        if (L':' == c)
-            return true;
-        else if (is_path_separator(c))
-            break;
-    }
+    if (find_win_drive(path))
+        return true;
 #endif
 
     return false;
@@ -622,7 +680,7 @@ std::wstring Path::relative_path(const std::wstring& input_path, const std::wstr
  * 例如：
  * "ab/c/d" -> "ab/c" "d"
  * "/ab.txt" -> "/" "ab.txt"
- * "c:\\tmp" -> "c:\\" "tmp"
+ * "c:\tmp" -> "c:\" "tmp"
  */
 void Path::split(const char *path, std::string *parent_result, std::string *child_result)
 {
@@ -704,7 +762,7 @@ void Path::split(const std::wstring& path, std::wstring *parent_result, std::wst
  * 从路径中划分出磁盘号和路径(Linux路径的磁盘号假定为"")
  *
  * 例如：
- * "c:\\mn\\p" -> "c:" "\\mn\\p"
+ * "c:\mn\p" -> "c:" "\mn\p"
  * "/mnt/sdcard" -> "" "/mnt/sdcard"
  */
 void Path::split_drive(const char *path, std::string *drive_result, std::string *rest_result)
@@ -1221,34 +1279,40 @@ bool Path::is_link(const std::wstring& path)
     return Path::is_link(path.c_str());
 }
 
-template <typename C>
-static ssize_t str_find(const C *str, C c)
-{
-    assert(nullptr != str);
-    for (size_t i = 0; 0 != str[i]; ++i)
-    {
-        if (str[i] == c)
-            return i;
-    }
-    return -1;
-}
-
 /**
  * 连接两个子路径
  *
  * 例如：
  * "a" "b" -> "a/b"
  * "/" "sd" -> "/sd"
- * "c:" "\\tmp" -> "c:\\tmp"
+ * "c:" "\tmp" -> "c:\tmp"
  */
 void Path::join(const char *a, const char *b, std::string *result)
 {
     assert(nullptr != a && nullptr != b && nullptr != result);
 
-    // 处理根目录 '/', 'c:\\'
+#if NUT_PLATFORM_OS_WINDOWS
+    // 处理 windows 盘符
+    // "c:" "b" -> "c:b"
+    // "c:" "\b" -> "c:\b"
+    ssize_t colon_pos = find_win_drive(a);
+    if (colon_pos > 0 &&
+        (0 == a[colon_pos + 1] ||
+         (is_path_separator(a[colon_pos + 1]) && 0 == a[colon_pos + 2])))
+    {
+        *result += a;
+        if (is_path_separator(a[colon_pos + 1]) && is_path_separator(b[0]))
+            *result += b + 1;
+        else
+            *result += b;
+        return;
+    }
+#endif
+
+    // 处理第二个参数是根目录的情况 '/', 'c:\'
     if (0 == a[0] || is_path_separator(b[0])
 #if NUT_PLATFORM_OS_WINDOWS
-        || str_find(b, ':') >= 0
+        || find_win_drive(b) > 0
 #endif
         )
     {
@@ -1275,10 +1339,28 @@ void Path::join(const wchar_t *a, const wchar_t *b, std::wstring *result)
 {
     assert(nullptr != a && nullptr != b && nullptr != result);
 
-    // 处理根目录 '/', 'c:\\'
+#if NUT_PLATFORM_OS_WINDOWS
+    // 处理 windows 盘符
+    // "c:" "b" -> "c:b"
+    // "c:" "\b" -> "c:\b"
+    ssize_t colon_pos = find_win_drive(a);
+    if (colon_pos > 0 &&
+        (0 == a[colon_pos + 1] ||
+         (is_path_separator(a[colon_pos + 1]) && 0 == a[colon_pos + 2])))
+    {
+        *result += a;
+        if (is_path_separator(a[colon_pos + 1]) && is_path_separator(b[0]))
+            *result += b + 1;
+        else
+            *result += b;
+        return;
+    }
+#endif
+    
+    // 处理第二个参数是根目录的情况 '/', 'c:\'
     if (0 == a[0] || is_path_separator(b[0])
 #if NUT_PLATFORM_OS_WINDOWS
-        || str_find(b, L':') >= 0
+        || find_win_drive(b) > 0
 #endif
         )
     {

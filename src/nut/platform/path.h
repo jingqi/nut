@@ -23,7 +23,7 @@ public:
     static wchar_t wseperator();
 
     /**
-     * 检查字符是否是路径分隔符 '\\' '/'
+     * 检查字符是否是路径分隔符 '\' '/'
      */
     static bool is_path_separator(char c);
     static bool is_path_separator(wchar_t c);
@@ -41,6 +41,20 @@ public:
      */
     static void chdir(const char *cwd);
     static void chdir(const std::string& cwd);
+
+    /**
+     * 是否为根目录
+     * eg,
+     *   "c:"      (only for windows)
+     *   "c:\"     (only for windows)
+     *   "c:/"     (only for windows)
+     *   "/"
+     *   "\"
+     */
+    static bool is_root(const char *path);
+    static bool is_root(const wchar_t *path);
+    static bool is_root(const std::string& path);
+    static bool is_root(const std::wstring& path);
 
     /**
      * 查看指定路径是否为绝对路径
@@ -86,7 +100,7 @@ public:
      * 例如：
      * "ab/c/d" -> "ab/c" "d"
      * "/ab.txt" -> "/" "ab.txt"
-     * "c:\\tmp" -> "c:\\" "tmp"
+     * "c:\tmp" -> "c:\" "tmp"
      */
     static void split(const char *path, std::string *parent_result, std::string *child_result);
     static void split(const wchar_t *path, std::wstring *parent_result, std::wstring *child_result);
@@ -97,7 +111,7 @@ public:
      * 从路径中划分出磁盘号和路径(linux路径的磁盘号假定为"")
      *
      * 例如：
-     * "c:\\mn\\p" -> "c:" "\\mn\\p"
+     * "c:\mn\p" -> "c:" "\mn\p"
      * "/mnt/sdcard" -> "" "/mnt/sdcard"
      */
     static void split_drive(const char *path, std::string *drive_result, std::string *rest_result);
@@ -189,7 +203,7 @@ public:
      * 例如：
      * "a" "b" -> "a/b"
      * "/" "sd" -> "/sd"
-     * "c:" "\\tmp" -> "c:\\tmp"
+     * "c:" "\tmp" -> "c:\tmp"
      */
     static void join(const char *a, const char *b, std::string *result);
     static void join(const wchar_t *a, const wchar_t *b, std::wstring *result);

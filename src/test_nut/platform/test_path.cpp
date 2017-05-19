@@ -9,6 +9,7 @@ using namespace nut;
 NUT_FIXTURE(TestPath)
 {
     NUT_CASES_BEGIN()
+    NUT_CASE(test_is_root)
     NUT_CASE(test_split)
     NUT_CASE(test_splitw)
     NUT_CASE(test_split_drive)
@@ -23,6 +24,25 @@ NUT_FIXTURE(TestPath)
     NUT_CASE(test_relative_pathw)
     NUT_CASE(test_bug1)
     NUT_CASES_END()
+
+    void test_is_root()
+    {
+        NUT_TA(Path::is_root("/"));
+        NUT_TA(Path::is_root("\\"));
+#if NUT_PLATFORM_OS_WINDOWS
+        NUT_TA(Path::is_root("c:"));
+        NUT_TA(Path::is_root("c:\\"));
+        NUT_TA(Path::is_root("c:/"));
+#else
+        NUT_TA(!Path::is_root("c:"));
+        NUT_TA(!Path::is_root("c:\\"));
+        NUT_TA(!Path::is_root("c:/"));
+#endif
+
+        NUT_TA(!Path::is_root("~"));
+        NUT_TA(!Path::is_root("/a"));
+        NUT_TA(!Path::is_root("c:\\a"));
+    }
 
     void test_split()
     {
@@ -456,7 +476,7 @@ NUT_FIXTURE(TestPath)
         a.clear();
         b.clear();
         Path::split_drive("c:/a/b", &a, &b);
-        NUT_TA(a == "c:/" && b == "a/b");
+        NUT_TA(a == "c:" && b == "/a/b");
 
         NUT_TA(Path::join("abc", "c:/") == "c:/");
 #else
