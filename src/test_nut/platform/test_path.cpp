@@ -65,16 +65,26 @@ NUT_FIXTURE(TestPath)
         p.clear();
         c.clear();
         Path::split(L"c:\\tmp", &p, &c);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(p == L"c:\\");
         NUT_TA(c == L"tmp");
+#else
+        NUT_TA(p == L"c:");
+        NUT_TA(c == L"tmp");
+#endif
     }
 
     void test_split_drive()
     {
         string d, r;
         Path::split_drive("c:\\mn\\p", &d, &r);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(d == "c:");
         NUT_TA(r == "\\mn\\p");
+#else
+        NUT_TA(d == "");
+        NUT_TA(r == "c:\\mn\\p"); // 冒号当作是普通文件名中的符号
+#endif
 
         d.clear();
         r.clear();
@@ -87,8 +97,13 @@ NUT_FIXTURE(TestPath)
     {
         wstring d, r;
         Path::split_drive(L"c:\\mn\\p", &d, &r);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(d == L"c:");
         NUT_TA(r == L"\\mn\\p");
+#else
+        NUT_TA(d == L"");
+        NUT_TA(r == L"c:\\mn\\p");
+#endif
 
         d.clear();
         r.clear();
@@ -129,7 +144,11 @@ NUT_FIXTURE(TestPath)
 
         tmp.clear();
         Path::join("c:", "\\tmp", &tmp);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "c:\\tmp");
+#else
+        NUT_TA(tmp == "\\tmp");
+#endif
     }
 
     void test_joinw()
@@ -148,7 +167,11 @@ NUT_FIXTURE(TestPath)
 
         tmp.clear();
         Path::join(L"c:", L"\\tmp", &tmp);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"c:\\tmp");
+#else
+        NUT_TA(tmp == L"\\tmp");
+#endif
     }
 
     void test_abs_path()
@@ -157,30 +180,50 @@ NUT_FIXTURE(TestPath)
 
         std::string tmp;
         Path::abs_path("e:\\", &tmp);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "e:\\");
+#else
+        NUT_TA(tmp == Path::get_cwd() + "/e:");
+#endif
 
         tmp.clear();
         Path::abs_path("e:", &tmp);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "e:\\");
+#else
+        NUT_TA(tmp == Path::get_cwd() + "/e:");
+#endif
 
         tmp.clear();
         Path::abs_path("e:\\..\\..", &tmp);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "e:\\");
+#else
+        NUT_TA(tmp == Path::abs_path(".."));
+#endif
 
         tmp.clear();
         Path::abs_path("e:\\..\\..\\a", &tmp);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "e:\\a");
+#else
+        NUT_TA(tmp == Path::abs_path("../a"));
+#endif
 
         tmp.clear();
         Path::abs_path("e:\\b\\..\\.\\a", &tmp);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "e:\\a");
+#else
+        NUT_TA(tmp == Path::get_cwd() + "/e:/a");
+#endif
 
         tmp.clear();
         Path::abs_path("e:\\b\\\\a", &tmp);
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "e:\\b\\a");
 #else
-        NUT_TA(tmp == "e:\\b/a");
+        NUT_TA(tmp == Path::get_cwd() + "/e:/b/a");
 #endif
 
         tmp.clear();
@@ -218,30 +261,50 @@ NUT_FIXTURE(TestPath)
 
         std::wstring tmp;
         Path::abs_path(L"e:\\", &tmp);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"e:\\");
+#else
+        NUT_TA(tmp == Path::get_wcwd() + L"/e:");
+#endif
 
         tmp.clear();
         Path::abs_path(L"e:", &tmp);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"e:\\");
+#else
+        NUT_TA(tmp == Path::get_wcwd() + L"/e:");
+#endif
 
         tmp.clear();
         Path::abs_path(L"e:\\..\\..", &tmp);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"e:\\");
+#else
+        NUT_TA(tmp == Path::abs_path(L".."));
+#endif
 
         tmp.clear();
         Path::abs_path(L"e:\\..\\..\\a", &tmp);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"e:\\a");
+#else
+        NUT_TA(tmp == Path::abs_path(L"../a"));
+#endif
 
         tmp.clear();
         Path::abs_path(L"e:\\b\\..\\.\\a", &tmp);
+#if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"e:\\a");
+#else
+        NUT_TA(tmp == Path::get_wcwd() + L"/e:/a");
+#endif
 
         tmp.clear();
         Path::abs_path(L"e:\\b\\\\a", &tmp);
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"e:\\b\\a");
 #else
-        NUT_TA(tmp == L"e:\\b/a");
+        NUT_TA(tmp == Path::get_wcwd() + L"/e:/b/a");
 #endif
 
         tmp.clear();
