@@ -2,15 +2,15 @@
 ## 生成动态链接库规则
 
 # FLAGS
-C_FLAGS += -fPIC
-CXX_FLAGS += -fPIC
+CFLAGS += -fPIC
+CXXFLAGS += -fPIC
 
-# LD_FLAGS
+# LDFLAGS
 ifeq (${HOST}, Darwin)
 	# 相当于执行 `install_name_tool -id @rpath/lib${TARGET_NAME}.dylib ${TARGET}`
-	LD_FLAGS += -install_name @rpath/lib${TARGET_NAME}.dylib
+	LDFLAGS += -install_name @rpath/lib${TARGET_NAME}.dylib
 endif
 
 # TARGET
 ${TARGET}: ${OBJS} ${LIB_DEPS}
-	$(CXX) ${OBJS} ${LIB} ${LD_FLAGS} -shared -o $@
+	${CXX} ${OBJS} ${LDFLAGS} -shared -o $@

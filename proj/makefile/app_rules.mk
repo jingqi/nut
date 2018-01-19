@@ -1,11 +1,11 @@
 
 ## 生成可执行文件规则
 
-# LD_FLAGS
+# LDFLAGS
 ifeq (${HOST},Darwin)
 	# 指定 rpath
-	LD_FLAGS += -Wl,-rpath,@executable_path
-	LD_FLAGS += -Wl,-rpath,@executable_path/../Frameworks
+	LDFLAGS += -Wl,-rpath,@executable_path
+	LDFLAGS += -Wl,-rpath,@executable_path/../Frameworks
 endif
 
 ## phony targets
@@ -35,6 +35,7 @@ valgrind: ${TARGET}
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${OUT_DIR} ;\
 	(cd ${OUT_DIR} ; valgrind -v --leak-check=full ./${TARGET_NAME})
 
-# NOTE: in linux, ${LIB} should be the last parameter of ${CXX}
+# NOTE In linux, '-l' should come behind '.o' files as command line argument \
+#      of ${CXX}
 ${TARGET}: ${OBJS} ${LIB_DEPS}
-	$(CXX) ${OBJS} ${LIB} ${LD_FLAGS} -o $@
+	${CXX} ${OBJS} ${LDFLAGS} -o $@

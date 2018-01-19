@@ -1,30 +1,32 @@
 
 ## 通用规则
 
-# CXX_FLAGS
-C_FLAGS += -Wall
-CXX_FLAGS += -Wall
+# CFLAGS, CXXFLAGS
+CFLAGS += -Wall
+CXXFLAGS += -Wall
 ifeq (${DEBUG}, 1)
-	C_FLAGS += -DDEBUG -g
-	CXX_FLAGS += -DDEBUG -g
+	CPPFLAGS += -DDEBUG
+	CFLAGS += -g
+	CXXFLAGS += -g
 else
-	C_FLAGS += -DNDEBUG -O2
-	CXX_FLAGS += -DNDEBUG -O2
+	CPPFLAGS += -DNDEBUG
+	CFLAGS += -O2
+	CXXFLAGS += -O2
 endif
 ifeq (${HOST}, Darwin)
-	CXX_FLAGS += -stdlib=libc++
+	CXXFLAGS += -stdlib=libc++
 else
 	ifeq (${HOST}, Linux)
-		C_FLAGS += -rdynamic
-		CXX_FLAGS += -rdynamic
+		CFLAGS += -rdynamic
+		CXXFLAGS += -rdynamic
 	endif
 endif
 
-# LIB
+# C++ standard library
 ifeq (${HOST}, Darwin)
-	LIB += -lc++
+	LDFLAGS += -lc++
 else
-	LIB += -lstdc++
+	LDFLAGS += -lstdc++
 endif
 
 # phony target used to mark force executing
@@ -33,26 +35,26 @@ endif
 ## *.c -> *.o
 ## *.cpp -> *.o
 define make-c-obj =
-	$(CC) ${INC} ${DEF} ${C_FLAGS} -c $< -o $@
+	${CC} ${CPPFLAGS} ${CFLAGS} -c $< -o $@
 endef
 
 define make-cxx-obj =
-	$(CXX) ${INC} ${DEF} ${CXX_FLAGS} -c $< -o $@
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -c $< -o $@
 endef
 
 ${OBJ_ROOT}/%.o: ${SRC_ROOT}/%.c
-	$(make-c-obj)
+	${make-c-obj}
 
 ${OBJ_ROOT}/%.o: ${SRC_ROOT}/%.cpp
-	$(make-cxx-obj)
+	${make-cxx-obj}
 
 ## automatically make dependence rules
 define make-c-dep =
-	@rm -f $@
+	@${RM} $@
 	@# 向 *.d.$ 中写入 "xx/xx/*.d xx/xx/*.o:\" 这样一个字符串
 	@echo '$@ $@.o:\' | sed 's/[.]d[.]o/.o/g' > $@.$$
 	@# 向 *.d.$.$ 中写入用 gcc -MM 生成的初始依赖关系
-	$(CC) ${INC} ${DEF} ${C_FLAGS} -MM $< > $@.$$.$$
+	${CC} ${CPPFLAGS} ${CFLAGS} -MM $< > $@.$$.$$
 	@# 将 *.d.$.$ 中内容去除冒号前的内容，剩余内容写入 *.d.$ 中
 	@sed 's/^.*[:]//g' < $@.$$.$$ >> $@.$$
 	@# 空行
@@ -66,16 +68,16 @@ define make-c-dep =
 	@sed -e 's/.*://' -e 's/\\$$//' < $@.$$.$$ | fmt -1 | \
 		sed -e 's/^ *//' -e 's/$$/:/' >> $@.$$
 	@# 最后清理
-	@rm -f $@.$$.$$
+	@${RM} $@.$$.$$
 	@mv $@.$$ $@
 endef
 
 define make-cxx-dep =
-	@rm -f $@
+	@${RM} $@
 	@# 向 *.d.$ 中写入 "xx/xx/*.d xx/xx/*.o:\" 这样一个字符串
 	@echo '$@ $@.o:\' | sed 's/[.]d[.]o/.o/g' > $@.$$
 	@# 向 *.d.$.$ 中写入用 gcc -MM 生成的初始依赖关系
-	$(CXX) ${INC} ${DEF} ${CXX_FLAGS} -MM $< > $@.$$.$$
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -MM $< > $@.$$.$$
 	@# 将 *.d.$.$ 中内容去除冒号前的内容，剩余内容写入 *.d.$ 中
 	@sed 's/^.*[:]//g' < $@.$$.$$ >> $@.$$
 	@# 空行
@@ -89,17 +91,17 @@ define make-cxx-dep =
 	@sed -e 's/.*://' -e 's/\\$$//' < $@.$$.$$ | fmt -1 | \
 		sed -e 's/^ *//' -e 's/$$/:/' >> $@.$$
 	@# 最后清理
-	@rm -f $@.$$.$$
+	@${RM} $@.$$.$$
 	@mv $@.$$ $@
 endef
 
 # %.d %.o: %.c
 ${OBJ_ROOT}/%.d: ${SRC_ROOT}/%.c
-	$(make-c-dep)
+	${make-c-dep}
 
 # %.d %.o: %.cpp
 ${OBJ_ROOT}/%.d: ${SRC_ROOT}/%.cpp
-	$(make-cxx-dep)
+	${make-cxx-dep}
 
 # 引入动态依赖关系
 #	起首的'-'符号表示忽略错误命令(这里忽略不存在的文件，不再打warning)

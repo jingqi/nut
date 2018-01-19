@@ -6,23 +6,20 @@ SRC_ROOT = ../../src/${TARGET_NAME}
 # preface rules
 include preface_rules.mk
 
-# INC
-INC += -I${SRC_ROOT}/..
+# Includes
+CPPFLAGS += -I${SRC_ROOT}/..
 
-# DEF
-DEF += -DBUILDING_NUT_DLL
+# Defines
+CPPFLAGS += -DBUILDING_NUT_DLL
 
-# CXX_FLAGS
-CXX_FLAGS += -std=c++11
+# C++ standard
+CXXFLAGS += -std=c++11
 
-# LIB LIB_DEPS
+# Libraries
 LIB_DEPS +=
 ifeq (${HOST}, Linux)
-	LIB += -lpthread -ldl
+	LDFLAGS += -lpthread -ldl
 endif
-
-# LD_FLAGS
-LD_FLAGS +=
 
 # TARGET
 TARGET = ${OUT_DIR}/lib${TARGET_NAME}.${DL_SUFFIX}
@@ -32,14 +29,12 @@ TARGET = ${OUT_DIR}/lib${TARGET_NAME}.${DL_SUFFIX}
 all: ${TARGET}
 
 clean:
-	rm -rf ${OBJS}
-	rm -rf ${DEPS}
-	rm -rf ${TARGET}
+	${RM} ${OBJS} ${DEPS} ${TARGET}
 
 rebuild:
 	# 顺序执行，不会并行
-	$(MAKE) -f nut.mk clean
-	$(MAKE) -f nut.mk all
+	${MAKE} -f nut.mk clean
+	${MAKE} -f nut.mk all
 
 # rules
 include common_rules.mk

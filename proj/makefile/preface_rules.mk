@@ -20,6 +20,8 @@ BISON ?= bison
 FLEX ?= flex
 RAGEL ?= ragel
 
+RM ?= rm -f
+
 # predefined variables
 HOST := $(shell uname -s)
 
@@ -41,19 +43,19 @@ endif
 
 # project things
 OUT_DIR_NAME := $(shell echo ${HOST} | tr '[:upper:]' '[:lower:]')-${DEBUG_MODE}
-OUT_DIR := $(CURDIR)/${OUT_DIR_NAME}
+OUT_DIR := ${CURDIR}/${OUT_DIR_NAME}
 OBJ_ROOT := ${OUT_DIR}/obj/${TARGET_NAME}
 
 # OBJS, DEPS
 DIRS := $(shell find ${SRC_ROOT} -maxdepth 100 -type d)
 
-C_SRCS := $(foreach dir,${DIRS},$(wildcard $(dir)/*.c))
+C_SRCS := $(foreach dir,${DIRS},$(wildcard ${dir}/*.c))
 C_OBJS := $(patsubst ${SRC_ROOT}%.c,${OBJ_ROOT}%.o,${C_SRCS})
 
-CPP_SRCS := $(foreach dir,${DIRS},$(wildcard $(dir)/*.cpp))
-CPP_OBJS := $(patsubst ${SRC_ROOT}%.cpp,${OBJ_ROOT}%.o,${CPP_SRCS})
+CXX_SRCS := $(foreach dir,${DIRS},$(wildcard ${dir}/*.cpp))
+CXX_OBJS := $(patsubst ${SRC_ROOT}%.cpp,${OBJ_ROOT}%.o,${CXX_SRCS})
 
-OBJS := ${C_OBJS} ${CPP_OBJS}
+OBJS := ${C_OBJS} ${CXX_OBJS}
 DEPS := ${OBJS:.o=.d}
 
 # mkdirs

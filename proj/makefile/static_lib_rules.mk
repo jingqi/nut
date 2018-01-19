@@ -3,5 +3,5 @@
 
 # TARGET
 ${TARGET}: ${OBJS}
-	rm -f $@
-	$(AR) cqs $@ ${OBJS}
+	${RM} $@
+	${AR} cqs ${ARFLAGS} $@ ${OBJS}
