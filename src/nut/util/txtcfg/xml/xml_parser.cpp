@@ -42,10 +42,7 @@ static bool is_name_char(char c)
     return false;
 }
 
-namespace
-{
-
-enum State
+enum class XmlParser::State
 {
     IN_TEXT, // 在 text 中
     IN_TEXT_ENCODE, // 在 text 的转义符中
@@ -71,23 +68,21 @@ enum State
     IN_ERROR // 出错
 };
 
-}
-
 bool XmlParser::input(char c)
 {
     switch (_state)
     {
-    case IN_TEXT:
+    case State::IN_TEXT:
         switch (c)
         {
         case '<':
             handle_text();
-            _state = JUST_AFTER_LESS_SIGN;
+            _state = State::JUST_AFTER_LESS_SIGN;
             break;
 
         case '&':
             _tmp_encoded.push_back('&');
-            _state = IN_TEXT_ENCODE;
+            _state = State::IN_TEXT_ENCODE;
             break;
 
         default:
@@ -97,12 +92,12 @@ bool XmlParser::input(char c)
         }
         break;
 
-    case IN_TEXT_ENCODE:
+    case State::IN_TEXT_ENCODE:
         switch (c)
         {
         case '<':
             handle_text();
-            _state = JUST_AFTER_LESS_SIGN;
+            _state = State::JUST_AFTER_LESS_SIGN;
             break;
 
         case '&':
@@ -119,7 +114,7 @@ bool XmlParser::input(char c)
                 decode_append(_tmp_encoded, &_tmp_value);
             }
             _tmp_encoded.clear();
-            _state = IN_TEXT;
+            _state = State::IN_TEXT;
             break;
 
         default:
@@ -129,37 +124,37 @@ bool XmlParser::input(char c)
                 if (should_handle_text())
                     _tmp_value += _tmp_encoded;
                 _tmp_encoded.clear();
-                _state = IN_TEXT;
+                _state = State::IN_TEXT;
             }
             break;
         }
         break;
 
-    case JUST_AFTER_LESS_SIGN:
+    case State::JUST_AFTER_LESS_SIGN:
         switch (c)
         {
         case '/':
-            _state = EXPECT_ELEM_NAME_FIRST_CHAR_AND_FINISH_ELEM;
+            _state = State::EXPECT_ELEM_NAME_FIRST_CHAR_AND_FINISH_ELEM;
             break;
 
         case '!':
-            _state = EXPECT_FIRST_BAR;
+            _state = State::EXPECT_FIRST_BAR;
             break;
 
         default:
             if (is_space(c))
             {
-                _state = EXPECT_ELEM_NAME_FIRST_CHAR;
+                _state = State::EXPECT_ELEM_NAME_FIRST_CHAR;
                 break;
             }
             if (is_name_char(c))
             {
                 if (should_handle_child())
                     _tmp_name.push_back(c);
-                _state = IN_ELEM_NAME;
+                _state = State::IN_ELEM_NAME;
                 break;
             }
-            _state = IN_ERROR;
+            _state = State::IN_ERROR;
             _tmp_value = "invalid charactor \'";
             _tmp_value.push_back(c);
             _tmp_value += "\' for start of element name";
@@ -167,40 +162,40 @@ bool XmlParser::input(char c)
         }
         break;
 
-    case EXPECT_ELEM_NAME_FIRST_CHAR:
+    case State::EXPECT_ELEM_NAME_FIRST_CHAR:
         if (is_space(c))
             break;
         if (is_name_char(c))
         {
             if (should_handle_child())
                 _tmp_name.push_back(c);
-            _state = IN_ELEM_NAME;
+            _state = State::IN_ELEM_NAME;
             break;
         }
-        _state = IN_ERROR;
+        _state = State::IN_ERROR;
         _tmp_value = "invalid charactor \'";
         _tmp_value.push_back(c);
         _tmp_value += "\' for start of element name";
         return false; // invalid state
 
-    case IN_ELEM_NAME:
+    case State::IN_ELEM_NAME:
         switch (c)
         {
         case '/':
             handle_child();
-            _state = EXPECT_IMMEDIAT_GREATER_SIGN_AND_FINISH_ELEM;
+            _state = State::EXPECT_IMMEDIAT_GREATER_SIGN_AND_FINISH_ELEM;
             break;
 
         case '>':
             handle_child();
-            _state = IN_TEXT;
+            _state = State::IN_TEXT;
             break;
 
         default:
             if (is_space(c))
             {
                 handle_child();
-                _state = EXPECT_ATTR_NAME_FIRST_CHAR;
+                _state = State::EXPECT_ATTR_NAME_FIRST_CHAR;
                 break;
             }
             if (is_name_char(c))
@@ -209,7 +204,7 @@ bool XmlParser::input(char c)
                     _tmp_name.push_back(c);
                 break;
             }
-            _state = IN_ERROR;
+            _state = State::IN_ERROR;
             _tmp_value = "invalid charactor \'";
             _tmp_value.push_back(c);
             _tmp_value += "\' in element name";
@@ -217,24 +212,24 @@ bool XmlParser::input(char c)
         }
         break;
 
-    case EXPECT_SPACE_BEFORE_ATTR_NAME_FIRST_CHAR:
+    case State::EXPECT_SPACE_BEFORE_ATTR_NAME_FIRST_CHAR:
         switch (c)
         {
         case '/':
-            _state = EXPECT_IMMEDIAT_GREATER_SIGN_AND_FINISH_ELEM;
+            _state = State::EXPECT_IMMEDIAT_GREATER_SIGN_AND_FINISH_ELEM;
             break;
 
         case '>':
-            _state = IN_TEXT;
+            _state = State::IN_TEXT;
             break;
 
         default:
             if (is_space(c))
             {
-                _state = EXPECT_ATTR_NAME_FIRST_CHAR;
+                _state = State::EXPECT_ATTR_NAME_FIRST_CHAR;
                 break;
             }
-            _state = IN_ERROR;
+            _state = State::IN_ERROR;
             _tmp_value = "expect SPACE but got a \'";
             _tmp_value.push_back(c);
             _tmp_value += "\'";
@@ -242,15 +237,15 @@ bool XmlParser::input(char c)
         }
         break;
 
-    case EXPECT_ATTR_NAME_FIRST_CHAR:
+    case State::EXPECT_ATTR_NAME_FIRST_CHAR:
         switch (c)
         {
         case '/':
-            _state = EXPECT_IMMEDIAT_GREATER_SIGN_AND_FINISH_ELEM;
+            _state = State::EXPECT_IMMEDIAT_GREATER_SIGN_AND_FINISH_ELEM;
             break;
 
         case '>':
-            _state = IN_TEXT;
+            _state = State::IN_TEXT;
             break;
 
         default:
@@ -260,10 +255,10 @@ bool XmlParser::input(char c)
             {
                 if (should_handle_attribute())
                     _tmp_name.push_back(c);
-                _state = IN_ATTR_NAME;
+                _state = State::IN_ATTR_NAME;
                 break;
             }
-            _state = IN_ERROR;
+            _state = State::IN_ERROR;
             _tmp_value = "invalid charactor \'";
             _tmp_value.push_back(c);
             _tmp_value += "\'";
@@ -271,15 +266,15 @@ bool XmlParser::input(char c)
         }
         break;
 
-    case IN_ATTR_NAME:
+    case State::IN_ATTR_NAME:
         if ('=' == c)
         {
-            _state = EXPECT_FIRST_QUOT;
+            _state = State::EXPECT_FIRST_QUOT;
             break;
         }
         if (is_space(c))
         {
-            _state = EXPECT_EQUAL;
+            _state = State::EXPECT_EQUAL;
             break;
         }
         if (is_name_char(c))
@@ -288,63 +283,63 @@ bool XmlParser::input(char c)
                 _tmp_name.push_back(c);
             break;
         }
-        _state = IN_ERROR;
+        _state = State::IN_ERROR;
         _tmp_value = "invalid charactor \'";
         _tmp_value.push_back(c);
         _tmp_value += "\' in attribute name";
         return false; // invalid state
 
-    case EXPECT_EQUAL:
+    case State::EXPECT_EQUAL:
         if ('=' == c)
         {
-            _state = EXPECT_FIRST_QUOT;
+            _state = State::EXPECT_FIRST_QUOT;
             break;
         }
         if (is_space(c))
             break;
-        _state = IN_ERROR;
+        _state = State::IN_ERROR;
         _tmp_value = "expect \'=\' but got a \'";
         _tmp_value.push_back(c);
         _tmp_value += "\'";
         return false; // invalid state
 
-    case EXPECT_FIRST_QUOT:
+    case State::EXPECT_FIRST_QUOT:
         if ('\"' == c)
         {
-            _state = IN_ATTR_VALUE;
+            _state = State::IN_ATTR_VALUE;
             break;
         }
         if (is_space(c))
             break;
-        _state = IN_ERROR;
+        _state = State::IN_ERROR;
         _tmp_value = "expect '\"' but got a \'";
         _tmp_value.push_back(c);
         _tmp_value += "\'";
         return false; // invalid state
 
-    case IN_ATTR_VALUE:
+    case State::IN_ATTR_VALUE:
         if ('&' == c)
         {
             _tmp_encoded.push_back(c);
-            _state = IN_ATTR_VALUE_ENCODE;
+            _state = State::IN_ATTR_VALUE_ENCODE;
             break;
         }
         if ('\"' == c)
         {
             handle_attribute();
-            _state = EXPECT_SPACE_BEFORE_ATTR_NAME_FIRST_CHAR;
+            _state = State::EXPECT_SPACE_BEFORE_ATTR_NAME_FIRST_CHAR;
             break;
         }
         if (should_handle_attribute())
             _tmp_value.push_back(c);
         break;
 
-    case IN_ATTR_VALUE_ENCODE:
+    case State::IN_ATTR_VALUE_ENCODE:
         switch (c)
         {
         case '\"':
             handle_attribute();
-            _state = EXPECT_SPACE_BEFORE_ATTR_NAME_FIRST_CHAR;
+            _state = State::EXPECT_SPACE_BEFORE_ATTR_NAME_FIRST_CHAR;
             break;
 
         case '&':
@@ -361,7 +356,7 @@ bool XmlParser::input(char c)
                 decode_append(_tmp_encoded, &_tmp_value);
             }
             _tmp_encoded.clear();
-            _state = IN_ATTR_VALUE;
+            _state = State::IN_ATTR_VALUE;
             break;
 
         default:
@@ -371,63 +366,63 @@ bool XmlParser::input(char c)
                 if (should_handle_attribute())
                     _tmp_value += _tmp_encoded;
                 _tmp_encoded.clear();
-                _state = IN_ATTR_VALUE;
+                _state = State::IN_ATTR_VALUE;
             }
             break;
         }
         break;
 
-    case EXPECT_IMMEDIAT_GREATER_SIGN_AND_FINISH_ELEM:
+    case State::EXPECT_IMMEDIAT_GREATER_SIGN_AND_FINISH_ELEM:
         if ('>' == c)
         {
             handle_finish();
-            _state = IN_TEXT;
+            _state = State::IN_TEXT;
             break;
         }
-        _state = IN_ERROR;
+        _state = State::IN_ERROR;
         _tmp_value = "expect \'>\' but got a \'";
         _tmp_value.push_back(c);
         _tmp_value += "\'";
         return false; // invalid state
 
-    case EXPECT_FIRST_BAR:
+    case State::EXPECT_FIRST_BAR:
         if ('-' == c)
         {
-            _state = EXPECT_SECOND_BAR;
+            _state = State::EXPECT_SECOND_BAR;
             break;
         }
-        _state = IN_ERROR;
+        _state = State::IN_ERROR;
         _tmp_value = "expect '-' but got a \'";
         _tmp_value.push_back(c);
         _tmp_value += "\'";
         return false; // invalid state
 
-    case EXPECT_SECOND_BAR:
+    case State::EXPECT_SECOND_BAR:
         if ('-' == c)
         {
-            _state = IN_COMMENT;
+            _state = State::IN_COMMENT;
             break;
         }
-        _state = IN_ERROR;
+        _state = State::IN_ERROR;
         _tmp_value = "expect '-' but got a \'";
         _tmp_value.push_back(c);
         _tmp_value += "\'";
         return false; // invalid state
 
-    case IN_COMMENT:
+    case State::IN_COMMENT:
         if ('-' == c)
         {
-            _state = EXPECT_LAST_BAR;
+            _state = State::EXPECT_LAST_BAR;
             break;
         }
         if (should_handle_comment())
             _tmp_value.push_back(c);
         break;
 
-    case EXPECT_LAST_BAR:
+    case State::EXPECT_LAST_BAR:
         if ('-' == c)
         {
-            _state = EXPECT_GREATER_SIGN_AND_FINISH_COMMENT;
+            _state = State::EXPECT_GREATER_SIGN_AND_FINISH_COMMENT;
             break;
         }
         if (should_handle_comment())
@@ -435,10 +430,10 @@ bool XmlParser::input(char c)
             _tmp_value.push_back('-');
             _tmp_value.push_back(c);
         }
-        _state = IN_COMMENT;
+        _state = State::IN_COMMENT;
         break;
 
-    case EXPECT_GREATER_SIGN_AND_FINISH_COMMENT:
+    case State::EXPECT_GREATER_SIGN_AND_FINISH_COMMENT:
         switch (c)
         {
         case '-':
@@ -448,7 +443,7 @@ bool XmlParser::input(char c)
 
         case '>':
             handle_comment();
-            _state = IN_TEXT;
+            _state = State::IN_TEXT;
             break;
 
         default:
@@ -457,53 +452,53 @@ bool XmlParser::input(char c)
                 _tmp_value.push_back('-');
                 _tmp_value.push_back('-');
                 _tmp_value.push_back(c);
-                _state = IN_COMMENT;
+                _state = State::IN_COMMENT;
             }
             break;
         }
         break;
 
-    case EXPECT_ELEM_NAME_FIRST_CHAR_AND_FINISH_ELEM:
+    case State::EXPECT_ELEM_NAME_FIRST_CHAR_AND_FINISH_ELEM:
         if (is_space(c))
             break;
         if (is_name_char(c))
         {
             _tmp_name.push_back(c);
-            _state = IN_ELEM_NAME_AND_FINISH_ELEM;
+            _state = State::IN_ELEM_NAME_AND_FINISH_ELEM;
             break;
         }
-        _state = IN_ERROR;
+        _state = State::IN_ERROR;
         _tmp_value = "invalid character \'";
         _tmp_value.push_back(c);
         _tmp_value += "\' for start of element name";
         return false; // invalid state
 
-    case IN_ELEM_NAME_AND_FINISH_ELEM:
+    case State::IN_ELEM_NAME_AND_FINISH_ELEM:
         if ('>' == c)
         {
             if (!check_finish())
             {
-                _state = IN_ERROR;
+                _state = State::IN_ERROR;
                 _tmp_value = "finish of element \"";
                 _tmp_value += _tmp_name;
                 _tmp_value += "\" unmatched";
                 return false;
             }
             handle_finish();
-            _state = IN_TEXT;
+            _state = State::IN_TEXT;
             break;
         }
         if (is_space(c))
         {
             if (!check_finish())
             {
-                _state = IN_ERROR;
+                _state = State::IN_ERROR;
                 _tmp_value = "finish of element \"";
                 _tmp_value += _tmp_name;
                 _tmp_value += "\" unmatched";
                 return false;
             }
-            _state = EXPECT_GREATER_SIGN_AND_FINISH_ELEM;
+            _state = State::EXPECT_GREATER_SIGN_AND_FINISH_ELEM;
             break;
         }
         if (is_name_char(c))
@@ -511,28 +506,28 @@ bool XmlParser::input(char c)
             _tmp_name.push_back(c);
             break;
         }
-        _state = IN_ERROR;
+        _state = State::IN_ERROR;
         _tmp_value = "invalid character \'";
         _tmp_value.push_back(c);
         _tmp_value += "\' in element name";
         return false; // invalid state
 
-    case EXPECT_GREATER_SIGN_AND_FINISH_ELEM:
+    case State::EXPECT_GREATER_SIGN_AND_FINISH_ELEM:
         if ('>' == c)
         {
             handle_finish();
-            _state = IN_TEXT;
+            _state = State::IN_TEXT;
             break;
         }
         if (is_space(c))
             break;
-        _state = IN_ERROR;
+        _state = State::IN_ERROR;
         _tmp_value = "expect \'>\' but got a \'";
         _tmp_value.push_back(c);
         _tmp_value += "\'";
         return false; // invalid state
 
-    case IN_ERROR:
+    case State::IN_ERROR:
         return false;
 
     default:
@@ -693,7 +688,7 @@ void XmlParser::force_finish()
  * NODE: 根 handler 的删除操作需要外部自己管理
  */
 XmlParser::XmlParser(XmlElementHandler *root_handler)
-    : _state(IN_TEXT)
+    : _state(State::IN_TEXT)
 {
     _elem_path.push_back(ElementInfo("", root_handler));
 }
@@ -705,7 +700,7 @@ void XmlParser::reset(XmlElementHandler *root_handler)
     _elem_path.push_back(ElementInfo("", root_handler));
     _line = 1;
     _column = 1;
-    _state = IN_TEXT;
+    _state = State::IN_TEXT;
     _tmp_name.clear();
     _tmp_value.clear();
     _tmp_encoded.clear();
@@ -728,7 +723,7 @@ bool XmlParser::input(const char *s, int len)
 
 bool XmlParser::finish()
 {
-    if (IN_ERROR == _state)
+    if (State::IN_ERROR == _state)
     {
         force_finish();
         return false;
@@ -737,7 +732,7 @@ bool XmlParser::finish()
     if (0 == _elem_path.size())
     {
         _tmp_value = "there are more context after root element";
-        _state = IN_ERROR;
+        _state = State::IN_ERROR;
         return false;
     }
     else if (_elem_path.size() > 1)
@@ -745,7 +740,7 @@ bool XmlParser::finish()
         _tmp_value = "element \"";
         _tmp_value += _elem_path.at(_elem_path.size() - 1).name;
         _tmp_value += "\" is not closed";
-        _state = IN_ERROR;
+        _state = State::IN_ERROR;
         force_finish();
         return false;
     }
@@ -754,7 +749,7 @@ bool XmlParser::finish()
 
 bool XmlParser::has_error() const
 {
-    return IN_ERROR == _state;
+    return State::IN_ERROR == _state;
 }
 
 std::string XmlParser::error_message() const

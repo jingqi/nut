@@ -13,7 +13,7 @@ namespace nut
 class SqliteParam
 {
 public:
-    enum ParamType
+    enum class ParamType
     {
         NONE,
         INTEGER,
@@ -26,20 +26,20 @@ public:
 
 private:
     SqliteParam()
-        : type(NONE)
+        : type(ParamType::NONE)
     {}
 
 public:
     SqliteParam(int arg)
-        : type(INTEGER), int_arg(arg)
+        : type(ParamType::INTEGER), int_arg(arg)
     {}
 
     SqliteParam(const char *arg)
-        : type(STRING), string_arg(rc_new<enrc<std::string> >(arg))
+        : type(ParamType::STRING), string_arg(rc_new<enrc<std::string> >(arg))
     {}
 
     SqliteParam(const std::string& arg)
-        : type(STRING), string_arg(rc_new<enrc<std::string> >(arg))
+        : type(ParamType::STRING), string_arg(rc_new<enrc<std::string> >(arg))
     {}
 
     static const SqliteParam& none()

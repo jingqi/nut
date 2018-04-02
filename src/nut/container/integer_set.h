@@ -66,7 +66,7 @@ private:
      *    y                  *****************
      *  ------------------------------------------> axis
      */
-    enum AxisState
+    enum class AxisState
     {
         NONE,        // none
         SINGLE_X,    // single x
@@ -507,7 +507,7 @@ public:
         result->clear();
 
         size_t index1 = 0, index2 = 0;
-        AxisState state = NONE;
+        AxisState state = AxisState::NONE;
         int_type first_of_interact = 0;
         while (index1 / 2 < x._ranges.size() && index2 / 2 < y._ranges.size())
         {
@@ -520,65 +520,65 @@ public:
             // 对于边界重叠的情况，优先进入状态 X_AND_Y
             switch (state)
             {
-            case NONE:
+            case AxisState::NONE:
                 assert(0 == (index1 % 2));
                 assert(0 == (index2 % 2));
                 if (value1 < value2)
                 {
-                    state = SINGLE_X;
+                    state = AxisState::SINGLE_X;
                     ++index1;
                 }
                 else
                 {
-                    state = SINGLE_Y;
+                    state = AxisState::SINGLE_Y;
                     ++index2;
                 }
                 break;
 
-            case SINGLE_X:
+            case AxisState::SINGLE_X:
                 assert(1 == (index1 % 2));
                 assert(0 == (index2 % 2));
                 if (value1 < value2)
                 {
-                    state = NONE;
+                    state = AxisState::NONE;
                     ++index1;
                 }
                 else
                 {
-                    state = X_AND_Y;
+                    state = AxisState::X_AND_Y;
                     ++index2;
                     first_of_interact = value2;
                 }
                 break;
 
-            case SINGLE_Y:
+            case AxisState::SINGLE_Y:
                 assert(0 == (index1 % 2));
                 assert(1 == (index2 % 2));
                 if (value1 <= value2)
                 {
-                    state = X_AND_Y;
+                    state = AxisState::X_AND_Y;
                     ++index1;
                     first_of_interact = value1;
                 }
                 else
                 {
-                    state = NONE;
+                    state = AxisState::NONE;
                     ++index2;
                 }
                 break;
 
-            case X_AND_Y:
+            case AxisState::X_AND_Y:
                 assert(1 == (index1 % 2));
                 assert(1 == (index2 % 2));
                 if (value1 < value2)
                 {
-                    state = SINGLE_Y;
+                    state = AxisState::SINGLE_Y;
                     ++index1;
                     result->_ranges.push_back(Range(first_of_interact, value1));
                 }
                 else
                 {
-                    state = SINGLE_X;
+                    state = AxisState::SINGLE_X;
                     ++index2;
                     result->_ranges.push_back(Range(first_of_interact, value2));
                 }
@@ -600,7 +600,7 @@ public:
 
         // 状态机基本上和intersectWith()方法中一样
         size_t index1 = 0, index2 = 0;
-        AxisState state = NONE;
+        AxisState state = AxisState::NONE;
         int_type first_of_merge = 0;
         while (index1 / 2 < x._ranges.size() || index2 / 2 < y._ranges.size())
         {
@@ -629,29 +629,29 @@ public:
             // 对于边界重叠的情况，优先进入状态 X_AND_Y
             switch (state)
             {
-            case NONE:
+            case AxisState::NONE:
                 assert(0 == (index1 % 2));
                 assert(0 == (index2 % 2));
                 if (value1 < value2)
                 {
-                    state = SINGLE_X;
+                    state = AxisState::SINGLE_X;
                     ++index1;
                     first_of_merge = value1;
                 }
                 else
                 {
-                    state = SINGLE_Y;
+                    state = AxisState::SINGLE_Y;
                     ++index2;
                     first_of_merge = value2;
                 }
                 break;
 
-            case SINGLE_X:
+            case AxisState::SINGLE_X:
                 assert(1 == (index1 % 2));
                 assert(0 == (index2 % 2));
                 if (value1 < value2)
                 {
-                    state = NONE;
+                    state = AxisState::NONE;
                     ++index1;
                     if (result->_ranges.size() > 0 && result->_ranges.at(result->_ranges.size() - 1).last + 1 == first_of_merge)
                         result->_ranges[result->_ranges.size() - 1].last = value1;
@@ -660,22 +660,22 @@ public:
                 }
                 else
                 {
-                    state = X_AND_Y;
+                    state = AxisState::X_AND_Y;
                     ++index2;
                 }
                 break;
 
-            case SINGLE_Y:
+            case AxisState::SINGLE_Y:
                 assert(0 == (index1 % 2));
                 assert(1 == (index2 % 2));
                 if (value1 <= value2)
                 {
-                    state = X_AND_Y;
+                    state = AxisState::X_AND_Y;
                     ++index1;
                 }
                 else
                 {
-                    state = NONE;
+                    state = AxisState::NONE;
                     ++index2;
                     if (result->_ranges.size() > 0 && result->_ranges.at(result->_ranges.size() - 1).last + 1 == first_of_merge)
                         result->_ranges[result->_ranges.size() - 1].last = value2;
@@ -684,17 +684,17 @@ public:
                 }
                 break;
 
-            case 3:
+            case AxisState::X_AND_Y:
                 assert(1 == (index1 % 2));
                 assert(1 == (index2 % 2));
                 if (value1 < value2)
                 {
-                    state = SINGLE_Y;
+                    state = AxisState::SINGLE_Y;
                     ++index1;
                 }
                 else
                 {
-                    state = SINGLE_X;
+                    state = AxisState::SINGLE_X;
                     ++index2;
                 }
                 break;
@@ -715,7 +715,7 @@ public:
         result->clear();
 
         size_t index1 = 0, index2 = 0;
-        AxisState state = NONE;
+        AxisState state = AxisState::NONE;
         int_type first_of_remainder = 0;
         while (index1 / 2 < x._ranges.size() || index2 / 2 < y._ranges.size())
         {
@@ -744,65 +744,65 @@ public:
             // 对于边界重叠的情况，优先进入状态 X_AND_Y 和 SINGLE_Y
             switch (state)
             {
-            case NONE:
+            case AxisState::NONE:
                 assert(0 == (index1 % 2));
                 assert(0 == (index2 % 2));
                 if (value1 < value2)
                 {
-                    state = SINGLE_X;
+                    state = AxisState::SINGLE_X;
                     ++index1;
                     first_of_remainder = value1;
                 }
                 else
                 {
-                    state = SINGLE_Y;
+                    state = AxisState::SINGLE_Y;
                     ++index2;
                 }
                 break;
 
-            case SINGLE_X:
+            case AxisState::SINGLE_X:
                 assert(1 == (index1 % 2));
                 assert(0 == (index2 % 2));
                 if (value1 < value2)
                 {
-                    state = NONE;
+                    state = AxisState::NONE;
                     ++index1;
                     result->_ranges.push_back(Range(first_of_remainder, value1));
                 }
                 else
                 {
-                    state = X_AND_Y;
+                    state = AxisState::X_AND_Y;
                     ++index2;
                     result->_ranges.push_back(Range(first_of_remainder, value2 - 1));
                 }
                 break;
 
-            case SINGLE_Y:
+            case AxisState::SINGLE_Y:
                 assert(0 == (index1 % 2));
                 assert(1 == (index2 % 2));
                 if (value1 <= value2)
                 {
-                    state = X_AND_Y;
+                    state = AxisState::X_AND_Y;
                     ++index1;
                 }
                 else
                 {
-                    state = NONE;
+                    state = AxisState::NONE;
                     ++index2;
                 }
                 break;
 
-            case X_AND_Y:
+            case AxisState::X_AND_Y:
                 assert(1 == (index1 % 2));
                 assert(1 == (index2 % 2));
                 if (value1 <= value2)
                 {
-                    state = SINGLE_Y;
+                    state = AxisState::SINGLE_Y;
                     ++index1;
                 }
                 else
                 {
-                    state = SINGLE_X;
+                    state = AxisState::SINGLE_X;
                     ++index2;
                     first_of_remainder = value2 + 1;
                 }

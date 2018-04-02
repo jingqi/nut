@@ -143,7 +143,7 @@ void CircleFileBySizeLogHandler::handle_log(const LogRecord& rec)
     _file_size += msg.length() + 1;
 
     // Flush to disk if needed
-    if (0 != (_flush_mask & rec.get_level()))
+    if (0 != (_flush_mask & static_cast<loglevel_mask_type>(rec.get_level())))
         _ofs.flush();
 
     // Change to new log file if needed

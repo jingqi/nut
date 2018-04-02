@@ -13,19 +13,19 @@ const char* log_level_to_str(LogLevel level)
     // 为了对齐，保持返回字符串长度一致
     switch (level)
     {
-    case LL_DEBUG:
+    case LogLevel::LL_DEBUG:
         return "DEBUG";
 
-    case LL_INFO:
+    case LogLevel::LL_INFO:
         return "INFO ";
 
-    case LL_WARN:
+    case LogLevel::LL_WARN:
         return "WARN ";
 
-    case LL_ERROR:
+    case LogLevel::LL_ERROR:
         return "ERROR";
 
-    case LL_FATAL:
+    case LogLevel::LL_FATAL:
         return "FATAL";
 
     default:
@@ -38,19 +38,19 @@ char log_level_to_char(LogLevel level)
     // 为了对齐，保持返回字符串长度一致
     switch (level)
     {
-    case LL_DEBUG:
+    case LogLevel::LL_DEBUG:
         return 'D';
 
-    case LL_INFO:
+    case LogLevel::LL_INFO:
         return 'I';
 
-    case LL_WARN:
+    case LogLevel::LL_WARN:
         return 'W';
 
-    case LL_ERROR:
+    case LogLevel::LL_ERROR:
         return 'E';
 
-    case LL_FATAL:
+    case LogLevel::LL_FATAL:
         return 'F';
 
     default:
@@ -61,17 +61,17 @@ char log_level_to_char(LogLevel level)
 LogLevel str_to_log_level(const char *str)
 {
     if (nullptr == str || 0 == strincmp(str, "DEBUG", 5))
-        return LL_DEBUG;
+        return LogLevel::LL_DEBUG;
     else if (0 == strincmp(str, "INFO", 4))
-        return LL_INFO;
+        return LogLevel::LL_INFO;
     else if (0 == strincmp(str, "WARN", 4))
-        return LL_WARN;
+        return LogLevel::LL_WARN;
     else if (0 == strincmp(str, "ERROR", 5))
-        return LL_ERROR;
+        return LogLevel::LL_ERROR;
     else if (0 == strincmp(str, "FATAL", 5))
-        return LL_FATAL;
+        return LogLevel::LL_FATAL;
 
-    return LL_DEBUG;
+    return LogLevel::LL_DEBUG;
 }
 
 }

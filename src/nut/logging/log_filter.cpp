@@ -24,7 +24,7 @@ void LogFilter::Node::swap(Node *x)
     if (this == x)
         return;
 
-    const ll_mask_type mask = forbid_mask;
+    const loglevel_mask_type mask = forbid_mask;
     forbid_mask = x->forbid_mask;
     x->forbid_mask = mask;
 
@@ -170,7 +170,7 @@ LogFilter::hashcode_type LogFilter::hash_to_dot(const char *s, int *char_accum)
     return hash;
 }
 
-void LogFilter::forbid(const char *tag, ll_mask_type mask)
+void LogFilter::forbid(const char *tag, loglevel_mask_type mask)
 {
     // dummy operation
     if (0 == mask)
@@ -216,7 +216,7 @@ void LogFilter::forbid(const char *tag, ll_mask_type mask)
     current->forbid_mask |= mask;
 }
 
-void LogFilter::unforbid(const char *tag, ll_mask_type mask)
+void LogFilter::unforbid(const char *tag, loglevel_mask_type mask)
 {
     // dummy operation
     if (0 == mask)
@@ -274,7 +274,7 @@ void LogFilter::clear_forbids()
 bool LogFilter::is_forbidden(const char *tag, LogLevel level) const
 {
     // root rule
-    if (0 != (_root.forbid_mask & level))
+    if (0 != (_root.forbid_mask & static_cast<loglevel_mask_type>(level)))
         return true;
     if (nullptr == tag || 0 == tag[0])
         return false;
@@ -297,7 +297,7 @@ bool LogFilter::is_forbidden(const char *tag, LogLevel level) const
 
         // apply rule
         assert(nullptr != current);
-        if (0 != (current->forbid_mask & level))
+        if (0 != (current->forbid_mask & static_cast<loglevel_mask_type>(level)))
             return true;
 
         if (0 != tag[i])

@@ -72,7 +72,7 @@ class ConcurrentQueue
     };
 
     // 尝试出队的结果
-    enum DequeueAttemptResult
+    enum class DequeueAttemptResult
     {
         DEQUEUE_SUCCESS, // 成功
         CONCURRENT_FAILURE, // 并发失败
@@ -233,9 +233,9 @@ public:
         while (true)
         {
             const DequeueAttemptResult rs = dequeue_attempt(p);
-            if (EMPTY_QUEUE_FAILURE == rs)
+            if (DequeueAttemptResult::EMPTY_QUEUE_FAILURE == rs)
                 return false;
-            else if (DEQUEUE_SUCCESS == rs || try_to_eliminate_dequeue(p))
+            else if (DequeueAttemptResult::DEQUEUE_SUCCESS == rs || try_to_eliminate_dequeue(p))
                 return true;
         }
     }
@@ -271,7 +271,7 @@ private:
             {
                 // 队列为空
                 if (old_tail == old_head)
-                    return EMPTY_QUEUE_FAILURE;
+                    return DequeueAttemptResult::EMPTY_QUEUE_FAILURE;
 
                 // 需要修正
                 if (first_node_prev.stamp_value() != old_head.stamp_value())
@@ -290,9 +290,9 @@ private:
                     if (nullptr != p)
                         *p = *reinterpret_cast<T*>(tmp);
                     _data_alloc.destroy(reinterpret_cast<T*>(tmp));
-                    return DEQUEUE_SUCCESS;
+                    return DequeueAttemptResult::DEQUEUE_SUCCESS;
                 }
-                return CONCURRENT_FAILURE;
+                return DequeueAttemptResult::CONCURRENT_FAILURE;
             }
         }
     }

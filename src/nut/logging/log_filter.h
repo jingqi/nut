@@ -20,7 +20,7 @@ class NUT_API LogFilter
     class NUT_API Node
     {
     public:
-        ll_mask_type forbid_mask = 0;
+        loglevel_mask_type forbid_mask = 0;
 
         Node *parent = nullptr;
         hashcode_type *children_hash = nullptr; // 升序排列
@@ -77,14 +77,16 @@ public:
      *
      * @param mask 禁用的 LogLevel 掩码
      */
-    void forbid(const char *tag, ll_mask_type mask = LL_ALL_MASK);
+    void forbid(const char *tag, loglevel_mask_type mask =
+                static_cast<loglevel_mask_type>(LogLevel::LL_ALL_LEVELS));
 
     /**
      * 解禁指定 tag
      *
      * @param mask 禁用的 LogLevel 掩码
      */
-    void unforbid(const char *tag, ll_mask_type mask = LL_ALL_MASK);
+    void unforbid(const char *tag, loglevel_mask_type mask =
+                  static_cast<loglevel_mask_type>(LogLevel::LL_ALL_LEVELS));
 
     void clear_forbids();
 

@@ -19,12 +19,12 @@ class NUT_API LogHandler
 
 protected:
     // 控制哪些日志触发立即刷新到磁盘
-    ll_mask_type _flush_mask = LL_FATAL;
+    loglevel_mask_type _flush_mask = static_cast<loglevel_mask_type>(LogLevel::LL_FATAL);
 
 public:
     NUT_REF_COUNTABLE
 
-    void set_flush_mask(ll_mask_type mask)
+    void set_flush_mask(loglevel_mask_type mask)
     {
         _flush_mask = mask;
     }

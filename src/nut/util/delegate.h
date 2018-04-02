@@ -24,7 +24,7 @@ class delegate<Ret (FUNCTION_ARGS)>                                     \
 {                                                                       \
     typedef delegate<Ret (FUNCTION_ARGS)> self_type;                    \
                                                                         \
-    enum HolderType                                                     \
+    enum class HolderType                                               \
     {                                                                   \
         FUNCTOR,                                                        \
         MEMBER_FUNCTION                                                 \
@@ -52,7 +52,7 @@ class delegate<Ret (FUNCTION_ARGS)>                                     \
                                                                         \
         virtual HolderType type() const                                 \
         {                                                               \
-            return FUNCTOR;                                             \
+            return HolderType::FUNCTOR;                                 \
         }                                                               \
                                                                         \
         virtual Ret operator()(FUNCTION_ARGS)                           \
@@ -81,7 +81,7 @@ class delegate<Ret (FUNCTION_ARGS)>                                     \
                                                                         \
         virtual HolderType type() const                                 \
         {                                                               \
-            return MEMBER_FUNCTION;                                     \
+            return HolderType::MEMBER_FUNCTION;                         \
         }                                                               \
                                                                         \
         virtual Ret operator()(FUNCTION_ARGS)                           \
@@ -151,7 +151,7 @@ public:                                                                 \
                 return false;                                           \
             switch (_holders[i - 1]->type())                            \
             {                                                           \
-            case FUNCTOR: {                                             \
+            case HolderType::FUNCTOR: {                                 \
                 typedef FunctorHolder<Ret(*)(FUNCTION_ARGS)> *holder_type; \
                 holder_type fh1 = dynamic_cast<holder_type>(_holders[i - 1]); \
                 holder_type fh2 = dynamic_cast<holder_type>(x._holders[i - 1]); \
@@ -161,7 +161,7 @@ public:                                                                 \
                 break;                                                  \
             }                                                           \
                                                                         \
-            case MEMBER_FUNCTION: {                                     \
+            case HolderType::MEMBER_FUNCTION: {                         \
                 typedef MemHolder<IHolder*, Ret(__THISCALL IHolder::*)(FUNCTION_ARGS)> *holder_type; \
                 holder_type mh1 = (holder_type)(_holders[i - 1]);       \
                 holder_type mh2 = (holder_type)(x._holders[i - 1]);     \
@@ -204,7 +204,7 @@ public:                                                                 \
         bool found = false;                                             \
         for (size_t i = 0; i < _holders.size(); ++i)                    \
         {                                                               \
-            if (_holders[i]->type() == FUNCTOR)                         \
+            if (_holders[i]->type() == HolderType::FUNCTOR)             \
             {                                                           \
                 FunctorHolder<FunctorPtr> *h = dynamic_cast<FunctorHolder<FunctorPtr>*>(_holders[i]); \
                 assert(nullptr != h);                                   \
@@ -226,7 +226,7 @@ public:                                                                 \
         bool found = false;                                             \
         for (size_t i = 0; i < _holders.size(); ++i)                    \
         {                                                               \
-            if (_holders[i]->type() == MEMBER_FUNCTION)                 \
+            if (_holders[i]->type() == HolderType::MEMBER_FUNCTION)     \
             {                                                           \
                 MemHolder<U,MemFun> *h = dynamic_cast<MemHolder<U,MemFun>*>(_holders[i]); \
                 assert(nullptr != h);                                   \

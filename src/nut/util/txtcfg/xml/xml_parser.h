@@ -29,8 +29,9 @@ class NUT_API XmlParser
     size_t _line = 1, _column = 1;
 
     // 状态机定义
+    enum class State;
+    State _state;
     std::string _tmp_name, _tmp_value, _tmp_encoded;
-    int _state = 0;
 
 private:
     bool input(char c);

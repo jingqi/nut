@@ -59,7 +59,7 @@ public:
     do                                                                  \
     {                                                                   \
         ::nut::Logger::get_instance()->log(                             \
-            nut::LL_DEBUG, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),      \
+            nut::LogLevel::LL_DEBUG, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), \
             ##__VA_ARGS__);                                             \
     } while (false)
 
@@ -67,7 +67,7 @@ public:
     do                                                                  \
     {                                                                   \
         ::nut::Logger::get_instance()->log(                             \
-            nut::LL_INFO, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),       \
+            nut::LogLevel::LL_INFO, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), \
             ##__VA_ARGS__);                                             \
     } while (false)
 
@@ -75,7 +75,7 @@ public:
     do                                                                  \
     {                                                                   \
         ::nut::Logger::get_instance()->log(                             \
-            nut::LL_WARN, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),       \
+            nut::LogLevel::LL_WARN, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), \
             ##__VA_ARGS__);                                             \
     } while (false)
 
@@ -83,7 +83,7 @@ public:
     do                                                                  \
     {                                                                   \
         ::nut::Logger::get_instance()->log(                             \
-            nut::LL_ERROR, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),      \
+            nut::LogLevel::LL_ERROR, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), \
             ##__VA_ARGS__);                                             \
     } while (false)
 
@@ -91,7 +91,7 @@ public:
     do                                                                  \
     {                                                                   \
         ::nut::Logger::get_instance()->log(                             \
-            nut::LL_FATAL, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),      \
+            nut::LogLevel::LL_FATAL, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), \
             ##__VA_ARGS__);                                             \
     } while (false)
 

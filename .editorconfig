@@ -1,0 +1,23 @@
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.py]
+indent_style = space
+indent_size = 4
+
+[*.{h,c,cpp}]
+charset = utf-8-bom
+indent_style = space
+indent_size = 4
+
+[*.{pro,pri}]
+charset = utf-8
+end_of_line = crlf
+indent_style = space
+indent_size = 4

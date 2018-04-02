@@ -15,7 +15,7 @@ void StreamLogHandler::handle_log(const LogRecord& rec)
             rec.get_file_name() << ":" << rec.get_line() << ") " <<
             rec.get_message() << std::endl;
 
-    if (0 != (_flush_mask & rec.get_level()))
+    if (0 != (_flush_mask & static_cast<loglevel_mask_type>(rec.get_level())))
         _os.flush();
 }
 

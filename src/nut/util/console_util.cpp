@@ -22,6 +22,8 @@
 namespace nut
 {
 
+using color_rep_type = std::underlying_type<ConsoleColor>::type;
+
 bool ConsoleUtil::isatty()
 {
 #if NUT_PLATFORM_OS_WINDOWS
@@ -58,7 +60,8 @@ void ConsoleUtil::set_text_color(ConsoleColor forecolor, ConsoleColor backcolor)
         BACKGROUND_BLUE | BACKGROUND_GREEN,                   /* 青 = 蓝 + 绿 */
         BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE,  /* 白 = 红 + 绿 + 蓝*/
     };
-    unsigned color = fgtable[forecolor] | bgtable[backcolor];
+    unsigned color = fgtable[static_cast<color_rep_type>(forecolor)] |
+        bgtable[static_cast<color_rep_type>(backcolor)];
     ::SetConsoleTextAttribute(::GetStdHandle(STD_OUTPUT_HANDLE), color);
 #else
     const unsigned fgtable[9] =
@@ -85,7 +88,8 @@ void ConsoleUtil::set_text_color(ConsoleColor forecolor, ConsoleColor backcolor)
         46,  /* 青 = 蓝 + 绿 */
         47   /* 白 = 红 + 绿 + 蓝*/
     };
-    ::printf("\33[%dm\33[%dm", fgtable[forecolor], bgtable[backcolor]);
+    ::printf("\33[%dm\33[%dm", fgtable[static_cast<color_rep_type>(forecolor)],
+             bgtable[static_cast<color_rep_type>(backcolor)]);
 #endif
 }
 
@@ -101,8 +105,8 @@ void ConsoleUtil::set_back_ground_color(ConsoleColor forecolor, ConsoleColor bac
         '0', '0', '4', '2', '1', '6', 'D', 'B', 'F'
     };
     char buf[9] = {'c', 'o', 'l', 'o', 'r', ' ', 0, 0, 0};
-    buf[6] = bgtable[backcolor];
-    buf[7] = fgtable[forecolor];
+    buf[6] = bgtable[static_cast<color_rep_type>(backcolor)];
+    buf[7] = fgtable[static_cast<color_rep_type>(forecolor)];
     ::system(buf);
 #else
     UNUSED(forecolor);

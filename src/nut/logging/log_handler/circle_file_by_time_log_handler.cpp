@@ -74,7 +74,7 @@ void CircleFileByTimeLogHandler::handle_log(const LogRecord& rec)
 {
     _ofs << rec.to_string() << std::endl;
 
-    if (0 != (_flush_mask & rec.get_level()))
+    if (0 != (_flush_mask & static_cast<loglevel_mask_type>(rec.get_level())))
         _ofs.flush();
 }
 

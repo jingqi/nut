@@ -20,24 +20,24 @@ void ConsoleLogHandler::handle_log(const LogRecord& rec)
     {
         switch (rec.get_level())
         {
-        case LL_DEBUG:
-            ConsoleUtil::set_text_color(ConsoleUtil::BLUE, ConsoleUtil::DEFAULT);
+        case LogLevel::LL_DEBUG:
+            ConsoleUtil::set_text_color(ConsoleColor::BLUE, ConsoleColor::DEFAULT);
             break;
 
-        case LL_INFO:
-            ConsoleUtil::set_text_color(ConsoleUtil::GREEN, ConsoleUtil::DEFAULT);
+        case LogLevel::LL_INFO:
+            ConsoleUtil::set_text_color(ConsoleColor::GREEN, ConsoleColor::DEFAULT);
             break;
 
-        case LL_WARN:
-            ConsoleUtil::set_text_color(ConsoleUtil::YELLOW, ConsoleUtil::DEFAULT);
+        case LogLevel::LL_WARN:
+            ConsoleUtil::set_text_color(ConsoleColor::YELLOW, ConsoleColor::DEFAULT);
             break;
 
-        case LL_ERROR:
-            ConsoleUtil::set_text_color(ConsoleUtil::PINK, ConsoleUtil::DEFAULT);
+        case LogLevel::LL_ERROR:
+            ConsoleUtil::set_text_color(ConsoleColor::PINK, ConsoleColor::DEFAULT);
             break;
 
-        case LL_FATAL:
-            ConsoleUtil::set_text_color(ConsoleUtil::RED, ConsoleUtil::DEFAULT);
+        case LogLevel::LL_FATAL:
+            ConsoleUtil::set_text_color(ConsoleColor::RED, ConsoleColor::DEFAULT);
             break;
 
         default:
@@ -63,7 +63,7 @@ void ConsoleLogHandler::handle_log(const LogRecord& rec)
             rec.get_message() << std::endl;
     }
 
-    if (0 != (_flush_mask & rec.get_level()))
+    if (0 != (_flush_mask & static_cast<loglevel_mask_type>(rec.get_level())))
         std::cout.flush();
 }
 

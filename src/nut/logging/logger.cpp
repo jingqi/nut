@@ -140,7 +140,7 @@ void Logger::load_xml_config(const std::string& config)
     {
         LogFilter *_filter = nullptr;
         std::string _tag_name;
-        ll_mask_type _forbid_mask = 0;
+        loglevel_mask_type _forbid_mask = 0;
 
     public:
         TagHandler()
@@ -166,7 +166,7 @@ void Logger::load_xml_config(const std::string& config)
 
                 _forbid_mask = 0;
                 for (size_t i = 0, sz = forbids.size(); i < sz; ++i)
-                    _forbid_mask |= str_to_log_level(forbids.at(i).c_str());
+                    _forbid_mask |= static_cast<loglevel_mask_type>(str_to_log_level(forbids.at(i).c_str()));
             }
         }
 
@@ -217,7 +217,7 @@ void Logger::load_xml_config(const std::string& config)
         bool _cross_file = true;
         size_t _circle = 10;
         long _max_file_size = 1 * 1024 * 1024;
-        ll_mask_type _flush_mask = LL_FATAL;
+        loglevel_mask_type _flush_mask = static_cast<loglevel_mask_type>(LogLevel::LL_FATAL);
         LogFilter _filter;
 
     public:
@@ -251,7 +251,7 @@ void Logger::load_xml_config(const std::string& config)
 
                 _flush_mask = 0;
                 for (size_t i = 0, sz = flushs.size(); i < sz; ++i)
-                    _flush_mask |= str_to_log_level(flushs.at(i).c_str());
+                    _flush_mask |= static_cast<loglevel_mask_type>(str_to_log_level(flushs.at(i).c_str()));
             }
             else if (name == "path")
             {

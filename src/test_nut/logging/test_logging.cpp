@@ -69,12 +69,13 @@ NUT_FIXTURE(TestLogging)
 
         l->add_handler(rc_new<StreamLogHandler>(std::cout));
 
-        l->get_filter().forbid(nullptr, LL_INFO);
-        l->get_filter().forbid("a.b", LL_ERROR | LL_FATAL);
-        l->get_filter().unforbid("a.b", LL_ERROR);
+        l->get_filter().forbid(nullptr, static_cast<loglevel_mask_type>(LogLevel::LL_INFO));
+        l->get_filter().forbid("a.b", static_cast<loglevel_mask_type>(LogLevel::LL_ERROR) |
+                               static_cast<loglevel_mask_type>(LogLevel::LL_FATAL));
+        l->get_filter().unforbid("a.b", static_cast<loglevel_mask_type>(LogLevel::LL_ERROR));
 
-        l->get_filter().forbid("a.b.c.m", LL_FATAL);
-        l->get_filter().unforbid("a.b.c.m", LL_ALL_MASK);
+        l->get_filter().forbid("a.b.c.m", static_cast<loglevel_mask_type>(LogLevel::LL_FATAL));
+        l->get_filter().unforbid("a.b.c.m", static_cast<loglevel_mask_type>(LogLevel::LL_ALL_LEVELS));
 
         NUT_LOG_D("a", "debug should show");
         NUT_LOG_I("a.b", "info should NOT show----------");
