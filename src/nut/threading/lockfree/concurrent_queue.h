@@ -74,9 +74,9 @@ class ConcurrentQueue
     // 尝试出队的结果
     enum class DequeueAttemptResult
     {
-        DEQUEUE_SUCCESS, // 成功
-        CONCURRENT_FAILURE, // 并发失败
-        EMPTY_QUEUE_FAILURE, // 空队列
+        DequeueSuccess,    // 成功
+        ConcurrentFailure, // 并发失败
+        EmptyQueueFailure, // 空队列
     };
 
     typedef AllocT                                        data_allocator_type;
@@ -233,9 +233,9 @@ public:
         while (true)
         {
             const DequeueAttemptResult rs = dequeue_attempt(p);
-            if (DequeueAttemptResult::EMPTY_QUEUE_FAILURE == rs)
+            if (DequeueAttemptResult::EmptyQueueFailure == rs)
                 return false;
-            else if (DequeueAttemptResult::DEQUEUE_SUCCESS == rs || try_to_eliminate_dequeue(p))
+            else if (DequeueAttemptResult::DequeueSuccess == rs || try_to_eliminate_dequeue(p))
                 return true;
         }
     }
@@ -271,7 +271,7 @@ private:
             {
                 // 队列为空
                 if (old_tail == old_head)
-                    return DequeueAttemptResult::EMPTY_QUEUE_FAILURE;
+                    return DequeueAttemptResult::EmptyQueueFailure;
 
                 // 需要修正
                 if (first_node_prev.stamp_value() != old_head.stamp_value())
@@ -290,9 +290,9 @@ private:
                     if (nullptr != p)
                         *p = *reinterpret_cast<T*>(tmp);
                     _data_alloc.destroy(reinterpret_cast<T*>(tmp));
-                    return DequeueAttemptResult::DEQUEUE_SUCCESS;
+                    return DequeueAttemptResult::DequeueSuccess;
                 }
-                return DequeueAttemptResult::CONCURRENT_FAILURE;
+                return DequeueAttemptResult::ConcurrentFailure;
             }
         }
     }

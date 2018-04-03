@@ -78,7 +78,7 @@ public:
      * @param mask 禁用的 LogLevel 掩码
      */
     void forbid(const char *tag, loglevel_mask_type mask =
-                static_cast<loglevel_mask_type>(LogLevel::LL_ALL_LEVELS));
+                static_cast<loglevel_mask_type>(LogLevel::AllLevels));
 
     /**
      * 解禁指定 tag
@@ -86,7 +86,7 @@ public:
      * @param mask 禁用的 LogLevel 掩码
      */
     void unforbid(const char *tag, loglevel_mask_type mask =
-                  static_cast<loglevel_mask_type>(LogLevel::LL_ALL_LEVELS));
+                  static_cast<loglevel_mask_type>(LogLevel::AllLevels));
 
     void clear_forbids();
 

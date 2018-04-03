@@ -217,7 +217,7 @@ void Logger::load_xml_config(const std::string& config)
         bool _cross_file = true;
         size_t _circle = 10;
         long _max_file_size = 1 * 1024 * 1024;
-        loglevel_mask_type _flush_mask = static_cast<loglevel_mask_type>(LogLevel::LL_FATAL);
+        loglevel_mask_type _flush_mask = static_cast<loglevel_mask_type>(LogLevel::Fatal);
         LogFilter _filter;
 
     public:

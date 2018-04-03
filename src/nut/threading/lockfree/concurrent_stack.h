@@ -56,9 +56,9 @@ class ConcurrentStack
     // 尝试出栈的结果
     enum class PopAttemptResult
     {
-        POP_SUCCESS, // 成功
-        CONCURRENT_FAILURE, // 并发失败
-        EMPTY_STACK_FAILURE, // 空栈
+        PopSuccess,        // 成功
+        ConcurrentFailure, // 并发失败
+        EmptyStackFailure, // 空栈
     };
 
     typedef AllocT                                        data_allocator_type;
@@ -145,9 +145,9 @@ public:
         while (true)
         {
             const PopAttemptResult rs = pop_attempt(p);
-            if (PopAttemptResult::EMPTY_STACK_FAILURE == rs)
+            if (PopAttemptResult::EmptyStackFailure == rs)
                 return false;
-            else if (PopAttemptResult::POP_SUCCESS == rs || try_to_eliminate_pop(p))
+            else if (PopAttemptResult::PopSuccess == rs || try_to_eliminate_pop(p))
                 return true;
         }
     }
@@ -165,7 +165,7 @@ private:
         const stamped_ptr<Node> old_top(_top);
 
         if (nullptr == old_top.pointer())
-            return PopAttemptResult::EMPTY_STACK_FAILURE;
+            return PopAttemptResult::EmptyStackFailure;
 
         if (_top.compare_and_set(old_top, old_top.pointer()->next))
         {
@@ -173,9 +173,9 @@ private:
                 *p = old_top.pointer()->data;
             _data_alloc.destroy(&(old_top.pointer()->data));
             _node_alloc.deallocate(old_top.pointer(), 1);
-            return PopAttemptResult::POP_SUCCESS;
+            return PopAttemptResult::PopSuccess;
         }
-        return PopAttemptResult::CONCURRENT_FAILURE;
+        return PopAttemptResult::ConcurrentFailure;
     }
 
     bool try_to_eliminate_push(Node *new_node)

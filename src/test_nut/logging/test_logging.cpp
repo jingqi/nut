@@ -69,13 +69,13 @@ NUT_FIXTURE(TestLogging)
 
         l->add_handler(rc_new<StreamLogHandler>(std::cout));
 
-        l->get_filter().forbid(nullptr, static_cast<loglevel_mask_type>(LogLevel::LL_INFO));
-        l->get_filter().forbid("a.b", static_cast<loglevel_mask_type>(LogLevel::LL_ERROR) |
-                               static_cast<loglevel_mask_type>(LogLevel::LL_FATAL));
-        l->get_filter().unforbid("a.b", static_cast<loglevel_mask_type>(LogLevel::LL_ERROR));
+        l->get_filter().forbid(nullptr, static_cast<loglevel_mask_type>(LogLevel::Info));
+        l->get_filter().forbid("a.b", static_cast<loglevel_mask_type>(LogLevel::Error) |
+                               static_cast<loglevel_mask_type>(LogLevel::Fatal));
+        l->get_filter().unforbid("a.b", static_cast<loglevel_mask_type>(LogLevel::Error));
 
-        l->get_filter().forbid("a.b.c.m", static_cast<loglevel_mask_type>(LogLevel::LL_FATAL));
-        l->get_filter().unforbid("a.b.c.m", static_cast<loglevel_mask_type>(LogLevel::LL_ALL_LEVELS));
+        l->get_filter().forbid("a.b.c.m", static_cast<loglevel_mask_type>(LogLevel::Fatal));
+        l->get_filter().unforbid("a.b.c.m", static_cast<loglevel_mask_type>(LogLevel::AllLevels));
 
         NUT_LOG_D("a", "debug should show");
         NUT_LOG_I("a.b", "info should NOT show----------");

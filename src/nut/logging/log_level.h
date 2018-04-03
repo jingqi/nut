@@ -13,14 +13,14 @@ namespace nut
  */
 enum class LogLevel : uint8_t
 {
-    LL_DEBUG = 0x01,
-    LL_INFO = 0x02,
-    LL_WARN = 0x04,
-    LL_ERROR = 0x08,
-    LL_FATAL = 0x10,
+    Debug = 0x01,
+    Info = 0x02,
+    Warn = 0x04,
+    Error = 0x08,
+    Fatal = 0x10,
 
     // 全部 LogLevel 掩码
-    LL_ALL_LEVELS = 0x1F
+    AllLevels = 0x1F
 };
 
 // LogLevel 掩码类型

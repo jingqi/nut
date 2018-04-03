@@ -20,24 +20,24 @@ void ConsoleLogHandler::handle_log(const LogRecord& rec)
     {
         switch (rec.get_level())
         {
-        case LogLevel::LL_DEBUG:
-            ConsoleUtil::set_text_color(ConsoleColor::BLUE, ConsoleColor::DEFAULT);
+        case LogLevel::Debug:
+            ConsoleUtil::set_text_color(ConsoleColor::Blue, ConsoleColor::Default);
             break;
 
-        case LogLevel::LL_INFO:
-            ConsoleUtil::set_text_color(ConsoleColor::GREEN, ConsoleColor::DEFAULT);
+        case LogLevel::Info:
+            ConsoleUtil::set_text_color(ConsoleColor::Green, ConsoleColor::Default);
             break;
 
-        case LogLevel::LL_WARN:
-            ConsoleUtil::set_text_color(ConsoleColor::YELLOW, ConsoleColor::DEFAULT);
+        case LogLevel::Warn:
+            ConsoleUtil::set_text_color(ConsoleColor::Yellow, ConsoleColor::Default);
             break;
 
-        case LogLevel::LL_ERROR:
-            ConsoleUtil::set_text_color(ConsoleColor::PINK, ConsoleColor::DEFAULT);
+        case LogLevel::Error:
+            ConsoleUtil::set_text_color(ConsoleColor::Pink, ConsoleColor::Default);
             break;
 
-        case LogLevel::LL_FATAL:
-            ConsoleUtil::set_text_color(ConsoleColor::RED, ConsoleColor::DEFAULT);
+        case LogLevel::Fatal:
+            ConsoleUtil::set_text_color(ConsoleColor::Red, ConsoleColor::Default);
             break;
 
         default:

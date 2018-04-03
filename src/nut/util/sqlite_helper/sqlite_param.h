@@ -15,31 +15,31 @@ class SqliteParam
 public:
     enum class Type
     {
-        NONE,
-        INTEGER,
-        STRING
+        None,
+        Integer,
+        String
     };
 
-    Type type = Type::NONE;
+    Type type = Type::None;
     rc_ptr<enrc<std::string> > string_arg;
     int int_arg = 0;
 
 private:
     SqliteParam()
-        : type(Type::NONE)
+        : type(Type::None)
     {}
 
 public:
     SqliteParam(int arg)
-        : type(Type::INTEGER), int_arg(arg)
+        : type(Type::Integer), int_arg(arg)
     {}
 
     SqliteParam(const char *arg)
-        : type(Type::STRING), string_arg(rc_new<enrc<std::string> >(arg))
+        : type(Type::String), string_arg(rc_new<enrc<std::string> >(arg))
     {}
 
     SqliteParam(const std::string& arg)
-        : type(Type::STRING), string_arg(rc_new<enrc<std::string> >(arg))
+        : type(Type::String), string_arg(rc_new<enrc<std::string> >(arg))
     {}
 
     static const SqliteParam& none()

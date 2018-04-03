@@ -17,7 +17,7 @@ class NUT_API LogRecord
 {
 private:
     DateTime _time;
-    LogLevel _level = LogLevel::LL_DEBUG;
+    LogLevel _level = LogLevel::Debug;
     const char *_tag = nullptr;            // Can be nullptr, which indicated a root tag
     const char *_file_path = nullptr;
     int _line = -1;
