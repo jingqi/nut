@@ -78,10 +78,10 @@ public:
         assert(is_valid());
         switch (param.type)
         {
-        case SqliteParam::ParamType::INTEGER:
+        case SqliteParam::Type::INTEGER:
             return SQLITE_OK == ::sqlite3_bind_int(_stmt, pos, param.int_arg);
 
-        case SqliteParam::ParamType::STRING:
+        case SqliteParam::Type::STRING:
             // NOTE sqlite3 只有在用到字符串时才会去取值，这里需要缓存一下字符串
             //      否则导致访问内存错误，或者其他未定义错误
             assert(!param.string_arg.is_null());

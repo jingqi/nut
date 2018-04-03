@@ -243,13 +243,13 @@ void TimeWheel::tick()
 
     // 找到所有需要操作的定时器
     Timer *timers = nullptr; // 单链表
-    for (int i = 0; i < WHEEL_COUNT; ++i)
+    for (unsigned i = 0; i < WHEEL_COUNT; ++i)
     {
         Wheel& w = _wheels[i];
 
-        for (int j = 1; j <= BUCKETS_PER_WHERE && j <= elapse_tick; ++j)
+        for (unsigned j = 1; j <= BUCKETS_PER_WHERE && j <= elapse_tick; ++j)
         {
-            const int bucket_index = (w.cursor + j) % BUCKETS_PER_WHERE;
+            const unsigned bucket_index = (w.cursor + j) % BUCKETS_PER_WHERE;
             Timer *t = w.buckets[bucket_index];
             while (nullptr != t)
             {
