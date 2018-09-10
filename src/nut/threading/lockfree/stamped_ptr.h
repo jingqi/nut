@@ -3,7 +3,7 @@
 #define ___HEADFILE_5B961A47_38A6_4B4F_AFAA_21B942953392_
 
 #include <nut/platform/platform.h>
-#include <nut/platform/stdint_traits.h>
+#include <nut/platform/int_type.h>
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>

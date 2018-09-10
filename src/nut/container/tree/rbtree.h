@@ -17,7 +17,7 @@ class RBTree
 {
 private:
     RBTree() = delete;
-    
+
 public:
     /**
      * 插入新节点到二叉查找树
@@ -53,7 +53,7 @@ public:
             parent->set_right_child(new_node);
 
         new_node->set_red(true);
-        root = _rb_insert_fixup(root, new_node);
+        root = _insert_fixup(root, new_node);
 
         return root;
     }
@@ -106,7 +106,7 @@ public:
         }
 
         if (!red_escaper)
-            root = _rb_delete_fixup(root, sublink, sublink_parent);
+            root = _remove_fixup(root, sublink, sublink_parent);
 
         return root;
     }
@@ -173,7 +173,7 @@ private:
         return root;
     }
 
-    static NODE* _rb_insert_fixup(NODE *root, NODE *x)
+    static NODE* _insert_fixup(NODE *root, NODE *x)
     {
         assert(nullptr != x && x->is_red());
         while (nullptr != x->get_parent() && x->get_parent()->is_red())
@@ -285,7 +285,7 @@ private:
         return root;
     }
 
-    static NODE* _rb_delete_fixup(NODE *root, NODE *sublink, NODE *sublink_parent)
+    static NODE* _remove_fixup(NODE *root, NODE *sublink, NODE *sublink_parent)
     {
         while (sublink != root && (nullptr == sublink || !sublink->is_red()))
         {

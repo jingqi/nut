@@ -11,7 +11,7 @@
 #include <algorithm>
 
 #include <nut/platform/platform.h>
-#include <nut/platform/stdint_traits.h>
+#include <nut/platform/int_type.h>
 #include <nut/mem/memory_allocator.h>
 
 // 优化程度，>= 0

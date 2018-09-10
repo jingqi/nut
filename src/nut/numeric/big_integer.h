@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <string>
 
-#include <nut/platform/stdint_traits.h>
+#include <nut/platform/int_type.h>
 
 #include "../nut_config.h"
 #include "word_array_integer.h"

@@ -7,7 +7,7 @@
 #include <wchar.h>
 
 #include <nut/platform/platform.h>
-#include <nut/platform/stdint_traits.h> // for ssize_t
+#include <nut/platform/int_type.h> // for ssize_t
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>

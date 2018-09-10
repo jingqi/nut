@@ -6,7 +6,7 @@
 
 // platform
 #include "platform/platform.h"
-#include "platform/stdint_traits.h"
+#include "platform/int_type.h"
 #include "platform/portable_endian.h"
 #include "platform/os.h"
 #include "platform/path.h"

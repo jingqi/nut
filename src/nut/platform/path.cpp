@@ -2,7 +2,7 @@
 #include <assert.h>
 
 #include "platform.h"
-#include "stdint_traits.h" // for ssize_t
+#include "int_type.h" // for ssize_t
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
