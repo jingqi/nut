@@ -1,4 +1,4 @@
-﻿
+
 #ifndef ___HEADFILE_0D8E9B0B_ACDC_4FD5_A0BE_71D75F7A5EFE_
 #define ___HEADFILE_0D8E9B0B_ACDC_4FD5_A0BE_71D75F7A5EFE_
 
@@ -379,14 +379,14 @@ public:
     /**
      * 使值恒为正数，且比特长度小于 bit_len
      *
-     * @return 注意，返回为正数
+     * @note 注意，结果为正数
      */
     void limit_positive_bits_to(size_type bit_len);
 
     /**
      * 乘以a, 然后将比特长限制为小于 bit_len 的正数
      *
-     * @return 注意，返回为正数
+     * @note 注意，结果为正数
      */
     void multiply_to_len(const self_type& a, size_type bit_len);
 

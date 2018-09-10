@@ -1,4 +1,4 @@
-﻿
+
 #ifndef ___HEADFILE_188D63C6_448B_4D88_A912_578978532F69_
 #define ___HEADFILE_188D63C6_448B_4D88_A912_578978532F69_
 
@@ -27,7 +27,7 @@ public:
     /**
      * 按照创建时间循环
      *
-     * @param directory 日志文件所在的目录
+     * @param dir_path 日志文件所在的目录
      * @param prefix 日志文件前缀
      * @param circle_size 循环周期(最多日志文件数)
      */

@@ -11,8 +11,7 @@ DEFINES += BUILDING_NUT_DLL
 
 # INCLUDE 路径
 SRC_ROOT = $$PWD/../../../../src/nut
-INCLUDEPATH += \
-    $${SRC_ROOT}/..
+INCLUDEPATH += $${SRC_ROOT}/..
 
 # 头文件
 HEADERS += $$files($${SRC_ROOT}/*.h*, true)

@@ -1,4 +1,4 @@
-﻿
+
 #ifndef ___HEADFILE_B694AC90_3B03_460A_A7B6_AAE8EF5A3560_
 #define ___HEADFILE_B694AC90_3B03_460A_A7B6_AAE8EF5A3560_
 
@@ -88,7 +88,7 @@ public:
      * 获取属性
      *
      * @param attr 用来存储返回的属性值，可以为 nullptr
-     * @param 改属性是否存在
+     * @return 该属性是否存在
      */
     bool get_attribute(const std::string& name, std::string *attr) const;
 

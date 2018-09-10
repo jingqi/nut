@@ -1,4 +1,4 @@
-﻿
+
 #ifndef ___HEADFILE_770F82A8_D4E3_45A1_A6B9_1790204ACF29_
 #define ___HEADFILE_770F82A8_D4E3_45A1_A6B9_1790204ACF29_
 
@@ -69,7 +69,7 @@ public:
     /**
      * 结束解密过程
      *
-     * @param 解密失败则返回 false
+     * @return 解密失败则返回 false
      */
     bool finish_decrypt();
 

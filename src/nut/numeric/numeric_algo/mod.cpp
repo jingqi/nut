@@ -1,4 +1,4 @@
-﻿
+
 #include "mod.h"
 #include "gcd.h"
 
@@ -102,7 +102,7 @@ static void _montgomery2(const BigInteger& t, const BigInteger& n, BigInteger::w
  * 参考文献：
  *      [1]雷明，叶新，张焕国. Montgomery算法及其快速实现[J]. 计算机工程，2003，29(14). 46
  *
- * @return rr, nn 都为正数
+ * @note 返回的 rr, nn 都为正数
  */
 static void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *rr, BigInteger *nn)
 {
