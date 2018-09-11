@@ -4,4 +4,4 @@
 # TARGET
 ${TARGET}: ${OBJS}
 	${RM} $@
-	${AR} cqs ${ARFLAGS} $@ ${OBJS}
+	${AR} ${ARFLAGS} $@ ${OBJS}
