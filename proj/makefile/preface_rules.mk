@@ -47,7 +47,11 @@ OUT_DIR := ${CURDIR}/${OUT_DIR_NAME}
 OBJ_ROOT := ${OUT_DIR}/obj/${TARGET_NAME}
 
 # OBJS, DEPS
-DIRS := $(shell find ${SRC_ROOT} -maxdepth 100 -type d)
+DIRS := $(shell find ${SRC_ROOT} -type d \
+	-not -path "*/linux-debug" -not -path "*/linux-debug/*" \
+	-not -path "*/linux-release" -not -path "*/linux-release/*" \
+	-not -path "*/darwin-debug" -not -path "*/darwin-debug/*" \
+	-not -path "*/darwin-release" -not -path "*/darwin-release/*")
 
 C_SRCS := $(foreach dir,${DIRS},$(wildcard ${dir}/*.c))
 C_OBJS := $(patsubst ${SRC_ROOT}%.c,${OBJ_ROOT}%.o,${C_SRCS})
