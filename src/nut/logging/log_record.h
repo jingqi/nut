@@ -36,19 +36,12 @@ public:
     ~LogRecord();
 
     const DateTime& get_time() const;
-
     LogLevel get_level() const;
-
     const char* get_tag() const;
-
     const char* get_file_path() const;
-
     const char* get_file_name() const;
-
     int get_line() const;
-
     const char* get_message() const;
-
     std::string to_string() const;
 };
 

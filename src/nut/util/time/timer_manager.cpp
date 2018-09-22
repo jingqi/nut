@@ -7,12 +7,6 @@
 #include <nut/threading/sync/guard.h>
 #include <nut/threading/thread.h>
 
-#if NUT_PLATFORM_OS_WINDOWS
-#   include <windows.h>
-#else
-#   include <sys/time.h>
-#endif
-
 #include "timer_manager.h"
 
 namespace nut
@@ -47,13 +41,13 @@ void TimerManager::delete_timer(Timer *t)
 bool TimerManager::timer_greater_than(const Timer *t1, const Timer *t2)
 {
     assert(nullptr != t1 && nullptr != t2);
-    return t1->time > t2->time; 
+    return t1->time > t2->time;
 }
 
 /**
  * 添加定时器
  */
-TimerManager::timer_id_type TimerManager::add_timer(const TimeVal& interval, const timer_task_type& task)
+TimerManager::timer_id_type TimerManager::add_timer(const TimeDiff& interval, const timer_task_type& task)
 {
     assert(task);
 
@@ -62,7 +56,7 @@ TimerManager::timer_id_type TimerManager::add_timer(const TimeVal& interval, con
     Timer *t = new_timer();
     t->task = task;
     t->id = _next_id++;
-    t->time = TimeVal::now() + interval;
+    t->time = DateTime::now() + interval;
 
     // 通知条件变量
     if (_timers.size() == 0 || t->time < _timers[0]->time)
@@ -113,21 +107,21 @@ void TimerManager::interupt()
 void TimerManager::run()
 {
     // 允许的定时误差，防止定时线程抖动厉害
-    const TimeVal min_interval(0, 10000);
+    const TimeDiff min_interval(0, 10000);
 
     Guard<lock_type> g(&_lock);
     _stopping = false;
     while (!_stopping)
     {
-        const TimeVal now = TimeVal::now();
+        const DateTime now = DateTime::now();
         if (_timers.empty())
         {
             _cond.wait(&_lock);
         }
         else if (_timers[0]->time > now + min_interval)
         {
-            const TimeVal wait = _timers[0]->time - now;
-            _cond.timedwait(&_lock, (unsigned) wait.sec, (unsigned) (wait.usec / 1000));
+            const TimeDiff wait = _timers[0]->time - now;
+            _cond.timedwait(&_lock, (unsigned) wait.get_seconds(), (unsigned) (wait.get_useconds() / 1000));
         }
         else
         {

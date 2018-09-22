@@ -11,14 +11,8 @@
 #include <nut/threading/sync/condition.h>
 #include <nut/threading/thread.h>
 
-#if NUT_PLATFORM_OS_WINDOWS
-#   include <windows.h>
-#else
-#   include <sys/time.h>
-#endif
-
 #include "../../nut_config.h"
-#include "time_val.h"
+#include "date_time.h"
 
 
 namespace nut
@@ -41,7 +35,7 @@ private:
     {
     public:
         timer_id_type id = 0;
-        TimeVal time;
+        DateTime time;
         timer_task_type task;
     };
 
@@ -70,10 +64,10 @@ public:
     /**
      * 添加定时器
      *
-     * @param interval 距离现在时间的间隔,单位毫秒
+     * @param interval 距离现在时间的间隔
      * @return 定时器 id
      */
-    timer_id_type add_timer(const TimeVal& interval, const timer_task_type& task);
+    timer_id_type add_timer(const TimeDiff& interval, const timer_task_type& task);
 
     bool cancel_timer(timer_id_type id);
 

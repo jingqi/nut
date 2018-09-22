@@ -2,7 +2,10 @@
 #include <assert.h>
 
 #include <nut/platform/platform.h>
-#include <nut/util/time/time_val.h>
+
+#if !NUT_PLATFORM_OS_WINDOWS
+#   include <sys/time.h>
+#endif
 
 #if NUT_PLATFORM_OS_MAC
 #   include <errno.h>

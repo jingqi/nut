@@ -16,8 +16,6 @@
 #   include <pthread.h>
 #endif
 
-#include <nut/util/time/time_val.h>
-
 #include "condition.h"
 
 namespace nut

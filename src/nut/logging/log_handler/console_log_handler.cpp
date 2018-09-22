@@ -8,14 +8,19 @@
 namespace nut
 {
 
-ConsoleLogHandler::ConsoleLogHandler()
+ConsoleLogHandler::ConsoleLogHandler(bool abbr_mode)
+    : _abbr_mode(abbr_mode)
 {
     _in_a_tty = ConsoleUtil::isatty();
 }
 
 void ConsoleLogHandler::handle_log(const LogRecord& rec)
 {
-    std::cout << "[" << rec.get_time().get_clock_str() << "] ";
+    if (_abbr_mode)
+        std::cout << "[" << rec.get_time().get_clock_str() << "] ";
+    else
+        std::cout << "[" << rec.get_time().to_string() << "] ";
+
     if (_in_a_tty)
     {
         switch (rec.get_level())
@@ -43,17 +48,17 @@ void ConsoleLogHandler::handle_log(const LogRecord& rec)
         default:
             break;
         }
+    }
+
+    if (_abbr_mode)
         std::cout << log_level_to_char(rec.get_level());
-    }
     else
-    {
         std::cout << log_level_to_str(rec.get_level());
-    }
 
     if (_in_a_tty)
         ConsoleUtil::set_text_color();
 
-    if (_in_a_tty)
+    if (_abbr_mode)
     {
         std::cout << " " << rec.get_message() << std::endl;
     }

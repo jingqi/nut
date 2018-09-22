@@ -16,9 +16,9 @@ NUT_FIXTURE(TestDateTime)
 
     void test_smoking()
     {
-        DateTime t(2015, 9, 20, 11, 12, 13);
+        DateTime t(2015, 9, 20, 11, 12, 13, 123456);
         // cout << t.to_string() << endl;
-        NUT_TA(t.to_string() == "2015-09-20 11:12:13");
+        NUT_TA(t.to_string() == "2015-09-20 11:12:13.123456");
     }
 };
 

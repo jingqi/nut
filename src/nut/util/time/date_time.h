@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "../../nut_config.h"
+#include "time_diff.h"
 
 
 namespace nut
@@ -18,65 +19,66 @@ namespace nut
 class NUT_API DateTime
 {
 protected:
-    time_t _seconds;        /* 从1970年1月1日起算的时间(秒) */
-    struct tm _time_info;   /* 时刻的细节 */
+    /* 从 1970年1月1日 0时0分0秒 起算的 UTC 时间 */
+    time_t _seconds = 0;
+    long _useconds = 0;
+
+    /* 结构化本地时间 */
+    mutable struct tm _time_info;
+    mutable bool _time_info_dirty = true;
+
+protected:
+    void normalize();
+    void check_time_info() const;
 
 public:
     /**
-     * 从1970年1月1日0时0分0秒
+     * @param s 从 1970/1/1 00:00:00 起算的时间
+     * @param us 微秒
      */
-    DateTime();
-
-    /**
-     * @param s 从1970年1月1日起算的时间(秒)
-     */
-    explicit DateTime(time_t s);
+    explicit DateTime(time_t s = 0, long us = 0);
 
     /**
      * 使用具体时刻初始化
+     *
+     * @param year, 年份，如 2018
+     * @param month, 月份，取值范围 [1,12]
+     * @param day, 取值范围 [1,31]
+     * @param hour, 取值范围 [0,23]
+     * @param min, 取值范围 [0,59]
+     * @param sec, 取值范围 [0,59]
+     * @param usec, 取值范围 [0,999999]
      */
-    DateTime(uint32_t year, uint8_t month, uint8_t day,
-             uint8_t hour, uint8_t min, uint8_t sec);
+    DateTime(uint32_t year, uint8_t month, uint8_t day, uint8_t hour = 0,
+             uint8_t min = 0, uint8_t sec = 0, uint32_t usec = 0);
 
-    /**
-     * 时刻比较
-     */
-    bool operator==(const DateTime &another) const;
+    bool operator==(const DateTime &x) const;
+    bool operator!=(const DateTime &x) const;
+    bool operator<(const DateTime &x) const;
+    bool operator>(const DateTime &x) const;
+    bool operator>=(const DateTime &x) const;
+    bool operator<=(const DateTime &x) const;
 
-    /**
-     * 时刻比较
-     */
-    bool operator!=(const DateTime &another) const;
+    DateTime operator+(const TimeDiff& diff) const;
+    DateTime operator-(const TimeDiff& diff) const;
+    TimeDiff operator-(const DateTime& x) const;
 
-    /**
-     * 时刻比较
-     */
-    bool operator>(const DateTime &another) const;
+    DateTime& operator+=(const TimeDiff& diff);
+    DateTime& operator-=(const TimeDiff& diff);
 
-    /**
-     * 时刻比较
-     */
-    bool operator<(const DateTime &another) const;
+    void set(time_t s, long us = 0);
+    void set(uint32_t year, uint8_t month, uint8_t day, uint8_t hour = 0,
+             uint8_t min = 0, uint8_t sec = 0, uint32_t usec = 0);
 
-    /**
-     * 时刻比较
-     */
-    bool operator>=(const DateTime &another) const;
-
-    /**
-     * 时刻比较
-     */
-    bool operator<=(const DateTime &another) const;
-
-    DateTime operator+(time_t period) const;
-
-    DateTime operator-(time_t period) const;
-
-    DateTime& operator+=(time_t period);
-
-    DateTime& operator-=(time_t period);
-
-    time_t operator-(const DateTime &another) const;
+#if NUT_PLATFORM_OS_WINDOWS
+    void set(const SYSTEMTIME& wtm);
+    void to_wtm(SYSTEMTIME *wtm);
+#else
+    void set(const struct timeval& tv);
+    void set(const struct timespec& tv);
+    void to_timeval(struct timeval *tv);
+    void to_timespec(struct timespec *tv);
+#endif
 
     /**
      * 获得并存储当前时刻
@@ -86,30 +88,25 @@ public:
     static DateTime now();
 
     /**
-     * @return 从1970年1月1日0时0分0秒开始计算的秒数
+     * 获得年份
+     *
+     * @return 范围 year number; 2009 for the year of 2009
      */
-    time_t get_raw_seconds() const;
+    uint32_t get_year() const;
 
     /**
-     * 获得秒数
+     * 获得月数
      *
-     * @return 范围 [0,59]
+     * @return 范围 [1,12];  1 for Junuary
      */
-    uint8_t get_second_of_minute() const;
+    uint8_t get_month() const;
 
     /**
-     * 获得分钟数
+     * 获得一年中的天数
      *
-     * @return 范围 [0,59]
+     * @return 范围 [0,365]; 0 for the first day in a year
      */
-    uint8_t get_minute_of_hour() const;
-
-    /**
-     * 获得小时数
-     *
-     * @return 范围 [0,23]
-     */
-    uint8_t get_hour_of_day() const;
+    uint16_t get_day_of_year() const;
 
     /**
      * 获得月之中的日子数
@@ -119,20 +116,6 @@ public:
     uint8_t get_day_of_month() const;
 
     /**
-     * 获得月数
-     *
-     * @return 范围 [1,12];  1 for Junuary
-     */
-    uint8_t get_month_of_year() const;
-
-    /**
-     * 获得年份
-     *
-     * @return 范围 year number; 2009 for the year of 2009
-     */
-    uint32_t get_year() const;
-
-    /**
      * 获得星期中的天数
      *
      * @return 范围 [0,6];   0 for Sunday
@@ -140,11 +123,37 @@ public:
     uint8_t get_day_of_week() const;
 
     /**
-     * 获得一年中的天数
+     * 获得小时数
      *
-     * @return 范围 [0,365]; 0 for the first day in a year
+     * @return 范围 [0,23]
      */
-    uint16_t get_day_of_year() const;
+    uint8_t get_hour() const;
+
+    /**
+     * 获得分钟数
+     *
+     * @return 范围 [0,59]
+     */
+    uint8_t get_minute() const;
+
+    /**
+     * 获得秒数
+     *
+     * @return 范围 [0,59]
+     */
+    uint8_t get_second() const;
+
+    /**
+     * 获得微秒数
+     *
+     * @return 范围 [0,999999]
+     */
+    uint32_t get_usecond() const;
+
+    /**
+     * @return 从1970年1月1日0时0分0秒开始计算的秒数
+     */
+    time_t get_raw_seconds() const;
 
     // for example : "2007-3-12"
     std::string get_date_str() const;
@@ -163,6 +172,16 @@ public:
      */
     std::string format_time(const char *format) const;
 };
+
+/**
+ * time between jan 1, 1601 and jan 1, 1970 in units of 100 nanoseconds
+ *
+ * mingw 没有定义clock_gettime(), 这里参考其pthread_mutex_timedlock.c ptw32_relmillisecs.c 的实现
+ * 相当于 ::clock_gettime(CLOCK_REALTIME, &ts);
+ */
+#if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_MINGW
+void clock_getrealtime(struct timespec *ts);
+#endif
 
 }
 
