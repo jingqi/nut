@@ -5,12 +5,15 @@
 #include <assert.h>
 #include <list>
 #include <queue>
+#include <functional>
+#include <thread>
+#include <mutex>
+#include <atomic>
+#include <condition_variable>
 
 #include <nut/rc/rc_new.h>
 
 #include "../nut_config.h"
-#include "thread.h"
-#include "sync/condition.h"
 
 
 namespace nut
@@ -24,7 +27,7 @@ class NUT_API ThreadPool
     NUT_REF_COUNTABLE
 
 public:
-    typedef Thread::task_type task_type;
+    typedef std::function<void()> task_type;
 
 private:
     // 最大线程数，0 表示无限
@@ -34,27 +37,21 @@ private:
     unsigned _max_sleep_seconds = 0;
 
     // 活动线程
-    typedef std::list<rc_ptr<Thread> > thread_list_type;
-    typedef typename thread_list_type::iterator thread_handle_type;
-    thread_list_type _active_threads;
+    typedef std::list<std::thread> thread_list_type;
+    typedef typename thread_list_type::iterator thread_iter_type;
+    thread_list_type _threads;
 
-    /**
-     * 上一个死亡线程
-     * NOTE 不能在线程中调用自身结构体的析构, 但是我们可以在当前线程中释放上一个
-     *      死亡线程的结构体
-     */
-    rc_ptr<Thread> _previous_dead_thread;
-
-    // 当前空闲线程数
-    size_t volatile _idle_number = 0;
+    // 线程数
+    std::atomic<size_t> _alive_number = ATOMIC_VAR_INIT(0);
+    std::atomic<size_t> _idle_number = ATOMIC_VAR_INIT(0);
 
     // 是否正在被中断
-    bool volatile _interrupted = false;
+    std::atomic<bool> _interrupted = ATOMIC_VAR_INIT(false);
 
     // 任务队列和同步工具
     std::queue<task_type> _task_queue;
-    Condition::condition_lock_type _lock;
-    Condition _wake_condition, _all_idle_condition;
+    std::mutex _lock;
+    std::condition_variable _wake_condition, _all_idle_condition;
 
 private:
     // Non-copyable
@@ -70,18 +67,10 @@ public:
                         unsigned max_sleep_seconds = 60);
     ~ThreadPool();
 
-    size_t get_max_thread_number() const
-    {
-        return _max_thread_number;
-    }
-
+    size_t get_max_thread_number() const;
     void set_max_thread_number(size_t max_thread_number);
 
-    unsigned get_max_sleep_seconds() const
-    {
-        return _max_sleep_seconds;
-    }
-
+    unsigned get_max_sleep_seconds() const;
     void set_max_sleep_seconds(unsigned max_sleep_seconds);
 
     /**
@@ -104,16 +93,9 @@ public:
      */
     void join();
 
-    /**
-     * 强制终止所有线程
-     */
-    void terminate();
-
 private:
-    void thread_process(const thread_handle_type& handle);
-
-    // Should run under protection of lock
-    void release_thread(const thread_handle_type& handle);
+    void thread_process();
+    void thread_finalize();
 };
 
 }

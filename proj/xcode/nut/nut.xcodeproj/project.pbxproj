@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2E5217862146E52F009F80AC /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2E5217852146E52F009F80AC /* Info.plist */; };
+		2E325755215760FF00405E61 /* performance_counter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E325751215760FF00405E61 /* performance_counter.cpp */; };
+		2E325756215760FF00405E61 /* time_diff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E325752215760FF00405E61 /* time_diff.cpp */; };
+		2E325757215760FF00405E61 /* time_diff.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E325753215760FF00405E61 /* time_diff.h */; };
+		2E325758215760FF00405E61 /* performance_counter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E325754215760FF00405E61 /* performance_counter.h */; };
 		2EE082F02146D4B2008E4587 /* nut.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2EE082152146B89E008E4587 /* nut.framework */; };
 		2EE083042146DBA8008E4587 /* ring_buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE083002146DBA8008E4587 /* ring_buffer.cpp */; };
 		2EE083052146DBA8008E4587 /* fragment_buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE083012146DBA8008E4587 /* fragment_buffer.cpp */; };
@@ -181,8 +184,6 @@
 		2EE084572146DE1D008E4587 /* timer_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE0844F2146DE1D008E4587 /* timer_manager.cpp */; };
 		2EE084582146DE1D008E4587 /* timer_manager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE084502146DE1D008E4587 /* timer_manager.h */; };
 		2EE084592146DE1D008E4587 /* date_time.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE084512146DE1D008E4587 /* date_time.h */; };
-		2EE0845A2146DE1D008E4587 /* time_val.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE084522146DE1D008E4587 /* time_val.h */; };
-		2EE0845B2146DE1D008E4587 /* time_val.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE084532146DE1D008E4587 /* time_val.cpp */; };
 		2EE084622146DE31008E4587 /* kmp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE0845C2146DE31008E4587 /* kmp.cpp */; };
 		2EE084632146DE31008E4587 /* string_util.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE0845D2146DE31008E4587 /* string_util.h */; };
 		2EE084642146DE31008E4587 /* to_string.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE0845E2146DE31008E4587 /* to_string.h */; };
@@ -272,6 +273,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2E325751215760FF00405E61 /* performance_counter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = performance_counter.cpp; path = ../../../src/nut/util/time/performance_counter.cpp; sourceTree = "<group>"; };
+		2E325752215760FF00405E61 /* time_diff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = time_diff.cpp; path = ../../../src/nut/util/time/time_diff.cpp; sourceTree = "<group>"; };
+		2E325753215760FF00405E61 /* time_diff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = time_diff.h; path = ../../../src/nut/util/time/time_diff.h; sourceTree = "<group>"; };
+		2E325754215760FF00405E61 /* performance_counter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = performance_counter.h; path = ../../../src/nut/util/time/performance_counter.h; sourceTree = "<group>"; };
 		2E5217852146E52F009F80AC /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = nut/Info.plist; sourceTree = "<group>"; };
 		2E6429DD1A1F76760037E554 /* test_nut */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_nut; sourceTree = BUILT_PRODUCTS_DIR; };
 		2EE082152146B89E008E4587 /* nut.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = nut.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -447,8 +452,6 @@
 		2EE0844F2146DE1D008E4587 /* timer_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = timer_manager.cpp; path = ../../../src/nut/util/time/timer_manager.cpp; sourceTree = "<group>"; };
 		2EE084502146DE1D008E4587 /* timer_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = timer_manager.h; path = ../../../src/nut/util/time/timer_manager.h; sourceTree = "<group>"; };
 		2EE084512146DE1D008E4587 /* date_time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = date_time.h; path = ../../../src/nut/util/time/date_time.h; sourceTree = "<group>"; };
-		2EE084522146DE1D008E4587 /* time_val.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = time_val.h; path = ../../../src/nut/util/time/time_val.h; sourceTree = "<group>"; };
-		2EE084532146DE1D008E4587 /* time_val.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = time_val.cpp; path = ../../../src/nut/util/time/time_val.cpp; sourceTree = "<group>"; };
 		2EE0845C2146DE31008E4587 /* kmp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kmp.cpp; path = ../../../src/nut/util/string/kmp.cpp; sourceTree = "<group>"; };
 		2EE0845D2146DE31008E4587 /* string_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = string_util.h; path = ../../../src/nut/util/string/string_util.h; sourceTree = "<group>"; };
 		2EE0845E2146DE31008E4587 /* to_string.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = to_string.h; path = ../../../src/nut/util/string/to_string.h; sourceTree = "<group>"; };
@@ -897,10 +900,12 @@
 		2E1927C41AD9017D00FDFFA6 /* time */ = {
 			isa = PBXGroup;
 			children = (
+				2E325751215760FF00405E61 /* performance_counter.cpp */,
+				2E325754215760FF00405E61 /* performance_counter.h */,
+				2E325752215760FF00405E61 /* time_diff.cpp */,
+				2E325753215760FF00405E61 /* time_diff.h */,
 				2EE0844C2146DE1D008E4587 /* date_time.cpp */,
 				2EE084512146DE1D008E4587 /* date_time.h */,
-				2EE084532146DE1D008E4587 /* time_val.cpp */,
-				2EE084522146DE1D008E4587 /* time_val.h */,
 				2EE0844D2146DE1D008E4587 /* time_wheel.cpp */,
 				2EE0844E2146DE1D008E4587 /* time_wheel.h */,
 				2EE0844F2146DE1D008E4587 /* timer_manager.cpp */,
@@ -1245,7 +1250,6 @@
 				2EE083CE2146DD3D008E4587 /* free_guard.h in Headers */,
 				2EE0837F2146DCC0008E4587 /* pconsole.h in Headers */,
 				2EE083CB2146DD2B008E4587 /* sys_ma.h in Headers */,
-				2EE0845A2146DE1D008E4587 /* time_val.h in Headers */,
 				2EE084632146DE31008E4587 /* string_util.h in Headers */,
 				2EE083072146DBA8008E4587 /* ring_buffer.h in Headers */,
 				2EE083CF2146DD3D008E4587 /* singleton.h in Headers */,
@@ -1287,6 +1291,7 @@
 				2EE083B72146DD0D008E4587 /* syslog_log_handler.h in Headers */,
 				2EE083EF2146DD6E008E4587 /* rwlock.h in Headers */,
 				2EE084102146DDB7008E4587 /* big_integer.h in Headers */,
+				2E325758215760FF00405E61 /* performance_counter.h in Headers */,
 				2EE084212146DDD6008E4587 /* testcase_failure_exception.h in Headers */,
 				2EE083192146DBE1008E4587 /* btree.h in Headers */,
 				2EE0831E2146DBF5008E4587 /* mdarea.h in Headers */,
@@ -1337,6 +1342,7 @@
 				2EE0846C2146DE47008E4587 /* sqlite_connection.h in Headers */,
 				2EE084482146DE03008E4587 /* txt_file.h in Headers */,
 				2EE083342146DC3A008E4587 /* skiplist_set.h in Headers */,
+				2E325757215760FF00405E61 /* time_diff.h in Headers */,
 				2EE084272146DDD6008E4587 /* stream_test_logger.h in Headers */,
 				2EE083B12146DD0D008E4587 /* circle_file_by_time_log_handler.h in Headers */,
 				2EE0843F2146DDF2008E4587 /* xml_writer.h in Headers */,
@@ -1436,7 +1442,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2E5217862146E52F009F80AC /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1519,11 +1524,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				2EE0844A2146DE03008E4587 /* txt_file.cpp in Sources */,
-				2EE0845B2146DE1D008E4587 /* time_val.cpp in Sources */,
 				2EE0838C2146DCD6008E4587 /* addr_map_mgr.cpp in Sources */,
 				2EE084542146DE1D008E4587 /* date_time.cpp in Sources */,
 				2EE083112146DBC4008E4587 /* output_stream.cpp in Sources */,
 				2EE083132146DBC4008E4587 /* byte_array_stream.cpp in Sources */,
+				2E325756215760FF00405E61 /* time_diff.cpp in Sources */,
 				2EE083142146DBC4008E4587 /* input_stream.cpp in Sources */,
 				2EE083812146DCC0008E4587 /* iconsole.cpp in Sources */,
 				2EE083052146DBA8008E4587 /* fragment_buffer.cpp in Sources */,
@@ -1565,6 +1570,7 @@
 				2EE084112146DDB7008E4587 /* big_integer.cpp in Sources */,
 				2EE084082146DDA2008E4587 /* gcd.cpp in Sources */,
 				2EE083EE2146DD6E008E4587 /* condition.cpp in Sources */,
+				2E325755215760FF00405E61 /* performance_counter.cpp in Sources */,
 				2EE0843A2146DDF2008E4587 /* xml_writer.cpp in Sources */,
 				2EE084552146DE1D008E4587 /* time_wheel.cpp in Sources */,
 				2EE0844B2146DE03008E4587 /* property_dom.cpp in Sources */,

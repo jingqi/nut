@@ -32,7 +32,8 @@ NUT_FIXTURE(TestThreadPool)
         printf("c");
         tp->add_task([] { printf("C"); });
 
-        Thread::sleep(500);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
         printf("|");
 
         printf("x");
@@ -57,7 +58,7 @@ NUT_FIXTURE(TestThreadPool)
         printf("c");
         tp->add_task([] { printf("C"); });
 
-        Thread::sleep(2000); // 空闲线程会超时自动回收
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // 空闲线程会超时自动回收
 
         printf("x");
         tp->add_task([] { printf("X"); });
@@ -79,13 +80,13 @@ NUT_FIXTURE(TestThreadPool)
         bool should_be_set_by_new_thread = false, has_bug = false;
         tp->add_task([&] {
             // 确保主线程已经进入 join()
-            Thread::sleep(100);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             // 创建新任务，看能否让线程池创建新的工作线程
             tp->add_task([&] {
                 should_be_set_by_new_thread = true;
             });
             // 等待新线程完成任务
-            Thread::sleep(100);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             has_bug = !should_be_set_by_new_thread;
             // 终止线程池
             tp->interrupt();
