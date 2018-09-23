@@ -2,24 +2,12 @@
 #ifndef ___HEADFILE_C020D343_98AA_41A4_AFE8_01825671348C_
 #define ___HEADFILE_C020D343_98AA_41A4_AFE8_01825671348C_
 
-#include <atomic>
-
-#include <nut/platform/platform.h>
-
 #include <assert.h>
 #include <string.h> // for memcpy()
 #include <stdlib.h> // for rand()
 
-#if NUT_PLATFORM_CC_VC
-#   include <allocators>
-#endif
-
-#include <nut/debugging/source_location.h>
-#include <nut/debugging/exception.h>
-
-#if NUT_PLATFORM_OS_WINDOWS
-#   include <windows.h>
-#endif
+#include <atomic>
+#include <thread>
 
 
 // 消隐数组的指针常量
@@ -43,7 +31,7 @@ namespace nut
  *   [1]钱立兵，陈波等. 多线程并发访问无锁队列的算法研究[J]. 先进技术研究通报，2009-8，3(8). 50-55
  *   [2]Danny Hendler, Nir Shavit, Lena Yerushalmi. A Scalable Lock-free Stack Algorithm[J]. SPAA. 2004-06-27. 206-215
  */
-template <typename T, typename AllocT = std::allocator<T> >
+template <typename T>
 class ConcurrentQueue
 {
     // 这里根据具体情况配置
@@ -89,11 +77,11 @@ class ConcurrentQueue
     {
         T data;
         stamp_type seg = 0; // 用于安全消隐的标记
-        std::atomic<StampedPtr> prev;
-        std::atomic<StampedPtr> next;
+        std::atomic<StampedPtr> prev = ATOMIC_VAR_INIT(StampedPtr());
+        std::atomic<StampedPtr> next = ATOMIC_VAR_INIT(StampedPtr());
 
         Node(const T& v)
-            : data(v), prev({nullptr, 0}), next({nullptr, 0})
+            : data(v)
         {}
     };
 
@@ -105,16 +93,11 @@ class ConcurrentQueue
         EmptyQueueFailure, // 空队列
     };
 
-    typedef AllocT                                        data_allocator_type;
-    typedef typename AllocT::template rebind<Node>::other node_allocator_type;
-
-    data_allocator_type _data_alloc;
-    node_allocator_type _node_alloc;
-    std::atomic<StampedPtr> _head;
-    std::atomic<StampedPtr> _tail;
+    std::atomic<StampedPtr> _head = ATOMIC_VAR_INIT(StampedPtr());
+    std::atomic<StampedPtr> _tail = ATOMIC_VAR_INIT(StampedPtr());
 
     // 用于消隐的碰撞数组
-    std::atomic<StampedPtr> _collisions[COLLISIONS_ARRAY_SIZE];
+    std::atomic<StampedPtr> *_collisions = nullptr;;
 
 private:
     ConcurrentQueue(const ConcurrentQueue&) = delete;
@@ -123,13 +106,16 @@ private:
 public:
     ConcurrentQueue()
     {
-        Node *dummy = _node_alloc.allocate(1);
+        Node *dummy = (Node*) ::malloc(sizeof(Node));
         dummy->next = {nullptr, 0};
         dummy->prev = {nullptr, 0};
         _head = {dummy, 0};
         _tail = {dummy, 0};
+
+        _collisions = (std::atomic<StampedPtr>*) ::malloc(sizeof(std::atomic<StampedPtr>) * COLLISIONS_ARRAY_SIZE);
+        StampedPtr init_value;
         for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
-            _collisions[i] = {nullptr, 0};
+            new (_collisions + i) std::atomic<StampedPtr>(init_value);
     }
 
     ~ConcurrentQueue()
@@ -138,7 +124,12 @@ public:
         while (optimistic_dequeue(nullptr))
         {}
         assert(_head.load() == _tail.load() && nullptr != _head.load().ptr);
-        _node_alloc.deallocate(_head.load().ptr, 1);
+        ::free(_head.load().ptr);
+
+        for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
+            (_collisions + i)->~atomic();
+        ::free(_collisions);
+        _collisions = nullptr;
     }
 
     bool is_empty() const
@@ -160,8 +151,8 @@ public:
      */
     void optimistic_enqueue(const T& v)
     {
-        Node *new_node = _node_alloc.allocate(1);
-        _data_alloc.construct(&(new_node->data), v);
+        Node *new_node = (Node*) ::malloc(sizeof(Node));
+        new (&(new_node->data)) T(v);
 
         while (true)
         {
@@ -214,10 +205,10 @@ public:
                 // 尝试CAS操作
                 if (_head.compare_exchange_weak(old_head, {first_node_prev.ptr, old_head.stamp + 1}))
                 {
-                    _node_alloc.deallocate(old_head.ptr, 1);
+                    ::free(old_head.ptr);
                     if (nullptr != p)
                         *p = *reinterpret_cast<T*>(tmp);
-                    _data_alloc.destroy(reinterpret_cast<T*>(tmp));
+                    ((T*) tmp)->~T();
                     return true;
                 }
             }
@@ -241,8 +232,8 @@ public:
     // 采用消隐策略的入队
     void eliminate_enqueue(const T& v)
     {
-        Node *new_node = _node_alloc.allocate(1);
-        _data_alloc.construct(&(new_node->data), v);
+        Node *new_node = (Node*) ::malloc(sizeof(Node));
+        new (&(new_node->data)) T(v);
 
         const stamp_type seen_tail = _tail.load().stamp;
         while (true)
@@ -314,10 +305,10 @@ private:
                 // 尝试CAS操作
                 if (_head.compare_exchange_weak(old_head, {first_node_prev.ptr, old_head.stamp + 1}))
                 {
-                    _node_alloc.deallocate(old_head.ptr, 1);
+                    ::free(old_head.ptr);
                     if (nullptr != p)
                         *p = *reinterpret_cast<T*>(tmp);
-                    _data_alloc.destroy(reinterpret_cast<T*>(tmp));
+                    ((T*) tmp)->~T();
                     return DequeueAttemptResult::DequeueSuccess;
                 }
                 return DequeueAttemptResult::ConcurrentFailure;
@@ -339,11 +330,8 @@ private:
             return false;
 
         // 等待一段时间
-#if NUT_PLATFORM_OS_WINDOWS
-        ::Sleep(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS);
-#elif NUT_PLATFORM_OS_LINUX
-        ::usleep(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS * 1000);
-#endif
+        std::this_thread::sleep_for(
+            std::chrono::milliseconds(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS));
 
         // 检查是否消隐成功
         StampedPtr old_collision_to_remove = _collisions[i];
@@ -376,8 +364,8 @@ private:
         {
             if (nullptr != p)
                 *p = old_collision.ptr->data;
-            _data_alloc.destroy(&(old_collision.ptr->data));
-            _node_alloc.deallocate(old_collision.ptr, 1);
+            (&(old_collision.ptr->data))->~T();
+            ::free(old_collision.ptr);
             return true;
         }
         return false;

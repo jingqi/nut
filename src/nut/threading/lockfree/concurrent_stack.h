@@ -2,20 +2,11 @@
 #ifndef ___HEADFILE_039EC871_866B_4C6A_AF26_747D92A9ADA7_
 #define ___HEADFILE_039EC871_866B_4C6A_AF26_747D92A9ADA7_
 
-#include <atomic>
-#include <thread>
-
-#include <nut/platform/platform.h>
-
 #include <assert.h>
 #include <stdlib.h> // for rand()
 
-#if NUT_PLATFORM_OS_WINDOWS
-#   include <windows.h>
-#endif
-#if NUT_PLATFORM_CC_VC
-#   include <allocators>
-#endif
+#include <atomic>
+#include <thread>
 
 
 // 消隐数组的指针常量
@@ -31,7 +22,7 @@ namespace nut
  * 参考文献：
  *   [1]Danny Hendler, Nir Shavit, Lena Yerushalmi. A Scalable Lock-free Stack Algorithm[J]. SPAA. 2004-06-27. 206-215
  */
-template <typename T, typename AllocT = std::allocator<T> >
+template <typename T>
 class ConcurrentStack
 {
     // 这里根据具体情况配置
@@ -76,15 +67,10 @@ class ConcurrentStack
         EmptyStackFailure, // 空栈
     };
 
-    typedef AllocT                                        data_allocator_type;
-    typedef typename AllocT::template rebind<Node>::other node_allocator_type;
-
-    data_allocator_type _data_alloc;
-    node_allocator_type _node_alloc;
-    std::atomic<StampedPtr> _top;
+    std::atomic<StampedPtr> _top = ATOMIC_VAR_INIT(StampedPtr());
 
     // 用于消隐的碰撞数组
-    std::atomic<StampedPtr> _collisions[COLLISIONS_ARRAY_SIZE];
+    std::atomic<StampedPtr> *_collisions = nullptr;
 
 private:
     ConcurrentStack(const ConcurrentStack&) = delete;
@@ -93,9 +79,10 @@ private:
 public:
     ConcurrentStack()
     {
-        _top = {nullptr, 0};
+        _collisions = (std::atomic<StampedPtr>*) ::malloc(sizeof(std::atomic<StampedPtr>) * COLLISIONS_ARRAY_SIZE);
+        StampedPtr init_value;
         for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
-            _collisions[i] = {nullptr, 0};
+            new (_collisions + i) std::atomic<StampedPtr>(init_value);
     }
 
     ~ConcurrentStack()
@@ -103,6 +90,11 @@ public:
         while (pop(nullptr))
         {}
         assert(nullptr == _top.load().ptr);
+
+        for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
+            (_collisions + i)->~atomic();
+        ::free(_collisions);
+        _collisions = nullptr;
     }
 
     bool is_empty() const
@@ -113,8 +105,8 @@ public:
 public:
     void push(const T& v)
     {
-        Node *new_node = _node_alloc.allocate(1);
-        _data_alloc.construct(&(new_node->data), v);
+        Node *new_node = (Node*) ::malloc(sizeof(Node));
+        new (&(new_node->data)) T(v);
 
         while (true)
         {
@@ -138,8 +130,8 @@ public:
             {
                 if (nullptr != p)
                     *p = old_top.ptr->data;
-                _data_alloc.destroy(&(old_top.ptr->data));
-                _node_alloc.deallocate(old_top.ptr, 1);
+                (&(old_top.ptr->data))->~T();
+                ::free(old_top.ptr);
                 return true;
             }
         }
@@ -148,8 +140,8 @@ public:
 public:
     void eliminate_push(const T& v)
     {
-        Node *new_node = _node_alloc.allocate(1);
-        _data_alloc.construct(&(new_node->data), v);
+        Node *new_node = (Node*) ::malloc(sizeof(Node));
+        new (&(new_node->data)) T(v);
 
         while (true)
         {
@@ -191,8 +183,8 @@ private:
         {
             if (nullptr != p)
                 *p = old_top.ptr->data;
-            _data_alloc.destroy(&(old_top.ptr->data));
-            _node_alloc.deallocate(old_top.ptr, 1);
+            (&(old_top.ptr->data))->~T();
+            ::free(old_top.ptr);
             return PopAttemptResult::PopSuccess;
         }
         return PopAttemptResult::ConcurrentFailure;
@@ -240,8 +232,8 @@ private:
         {
             if (nullptr != p)
                 *p = old_collision.ptr->data;
-            _data_alloc.destroy(&(old_collision.ptr->data));
-            _node_alloc.deallocate(old_collision.ptr, 1);
+            (&(old_collision.ptr->data))->~T();
+            ::free(old_collision.ptr);
             return true;
         }
         return false;

@@ -1,4 +1,6 @@
 ﻿
+#include <assert.h>
+
 #include "time_diff.h"
 
 

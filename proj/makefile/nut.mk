@@ -18,7 +18,7 @@ CXXFLAGS += -std=c++11
 # Libraries
 LIB_DEPS +=
 ifeq (${HOST}, Linux)
-	LDFLAGS += -lpthread -ldl
+	LDFLAGS += -lpthread -ldl -latomic
 endif
 
 # TARGET

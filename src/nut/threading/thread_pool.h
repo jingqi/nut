@@ -31,10 +31,10 @@ public:
 
 private:
     // 最大线程数，0 表示无限
-    size_t _max_thread_number = 0;
+    size_t volatile _max_thread_number = 0;
 
     // 线程空闲多长时间后自我终止, 0 表示不自我终止
-    unsigned _max_sleep_seconds = 0;
+    unsigned volatile _max_sleep_seconds = 0;
 
     // 活动线程
     typedef std::list<std::thread> thread_list_type;
@@ -42,11 +42,11 @@ private:
     thread_list_type _threads;
 
     // 线程数
-    std::atomic<size_t> _alive_number = ATOMIC_VAR_INIT(0);
-    std::atomic<size_t> _idle_number = ATOMIC_VAR_INIT(0);
+    size_t volatile _alive_number = 0;
+    size_t volatile _idle_number = 0;
 
     // 是否正在被中断
-    std::atomic<bool> _interrupted = ATOMIC_VAR_INIT(false);
+    bool volatile _interrupted = false;
 
     // 任务队列和同步工具
     std::queue<task_type> _task_queue;
@@ -96,6 +96,7 @@ public:
 private:
     void thread_process();
     void thread_finalize();
+    void clean_dead_threads();
 };
 
 }

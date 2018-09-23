@@ -17,7 +17,7 @@ CXXFLAGS += -std=c++11
 
 # Libraries
 ifeq (${HOST}, Linux)
-	LDFLAGS += -lpthread
+	LDFLAGS += -lpthread -latomic
 endif
 LIB_NUT = ${OUT_DIR}/libnut.${DL_SUFFIX}
 LIB_DEPS += ${LIB_NUT}
