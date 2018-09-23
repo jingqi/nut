@@ -80,11 +80,9 @@
 #include "threading/thread_pool.h"
 #include "threading/lockfree/concurrent_stack.h"
 #include "threading/lockfree/concurrent_queue.h"
-#include "threading/sync/mutex.h"
 #include "threading/sync/spinlock.h"
 #include "threading/sync/rwlock.h"
 #include "threading/sync/sem.h"
-#include "threading/sync/condition.h"
 #include "threading/sync/guard.h"
 
 // unittest
