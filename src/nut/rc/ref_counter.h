@@ -2,7 +2,8 @@
 #ifndef ___HEADFILE_8713481E_5804_4D0C_ADBD_C7D1A26203FE_
 #define ___HEADFILE_8713481E_5804_4D0C_ADBD_C7D1A26203FE_
 
-#include <nut/threading/lockfree/atomic.h>
+#include <atomic>
+
 
 namespace nut
 {
@@ -12,7 +13,7 @@ namespace nut
  */
 class SyncRefCounter
 {
-    int volatile _ref_count = 0;
+    std::atomic<int> _ref_count = ATOMIC_VAR_INIT(0);
 
 public:
     SyncRefCounter(int c)
@@ -21,12 +22,12 @@ public:
 
     int operator++()
     {
-        return atomic_add(&_ref_count, 1) + 1;
+        return ++_ref_count;
     }
 
     int operator--()
     {
-        return atomic_add(&_ref_count, -1) - 1;
+        return --_ref_count;
     }
 
     operator int() const

@@ -2,6 +2,9 @@
 #ifndef ___HEADFILE_039EC871_866B_4C6A_AF26_747D92A9ADA7_
 #define ___HEADFILE_039EC871_866B_4C6A_AF26_747D92A9ADA7_
 
+#include <atomic>
+#include <thread>
+
 #include <nut/platform/platform.h>
 
 #include <assert.h>
@@ -13,8 +16,6 @@
 #if NUT_PLATFORM_CC_VC
 #   include <allocators>
 #endif
-
-#include "stamped_ptr.h"
 
 
 // 消隐数组的指针常量
@@ -53,6 +54,20 @@ class ConcurrentStack
         {}
     };
 
+    struct StampedPtr
+    {
+        Node *ptr;
+        int stamp;
+
+        StampedPtr()
+            : ptr(nullptr), stamp(0)
+        {}
+
+        StampedPtr(Node *p, int s)
+            : ptr(p), stamp(s)
+        {}
+    };
+
     // 尝试出栈的结果
     enum class PopAttemptResult
     {
@@ -66,28 +81,33 @@ class ConcurrentStack
 
     data_allocator_type _data_alloc;
     node_allocator_type _node_alloc;
-    stamped_ptr<Node> _top;
+    std::atomic<StampedPtr> _top;
 
     // 用于消隐的碰撞数组
-    stamped_ptr<Node> _collisions[COLLISIONS_ARRAY_SIZE];
-    
+    std::atomic<StampedPtr> _collisions[COLLISIONS_ARRAY_SIZE];
+
 private:
     ConcurrentStack(const ConcurrentStack&) = delete;
     ConcurrentStack& operator=(const ConcurrentStack&) = delete;
 
 public:
-    ConcurrentStack() = default;
+    ConcurrentStack()
+    {
+        _top = {nullptr, 0};
+        for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
+            _collisions[i] = {nullptr, 0};
+    }
 
     ~ConcurrentStack()
     {
         while (pop(nullptr))
         {}
-        assert(nullptr == _top.pointer());
+        assert(nullptr == _top.load().ptr);
     }
 
     bool is_empty() const
     {
-        return nullptr == _top.pointer();
+        return nullptr == _top.load().ptr;
     }
 
 public:
@@ -98,9 +118,9 @@ public:
 
         while (true)
         {
-            const stamped_ptr<Node> old_top(_top);
-            new_node->next = old_top.pointer();
-            if (_top.compare_and_set(old_top, new_node))
+            StampedPtr old_top = _top;
+            new_node->next = old_top.ptr;
+            if (_top.compare_exchange_weak(old_top, {new_node, old_top.stamp + 1}))
                 return;
         }
     }
@@ -109,17 +129,17 @@ public:
     {
         while (true)
         {
-            const stamped_ptr<Node> old_top(_top);
+            StampedPtr old_top = _top;
 
-            if (nullptr == old_top.pointer())
+            if (nullptr == old_top.ptr)
                 return false;
 
-            if (_top.compare_and_set(old_top, old_top.pointer()->next))
+            if (_top.compare_exchange_weak(old_top, {old_top.ptr->next, old_top.stamp + 1}))
             {
                 if (nullptr != p)
-                    *p = old_top.pointer()->data;
-                _data_alloc.destroy(&(old_top.pointer()->data));
-                _node_alloc.deallocate(old_top.pointer(), 1);
+                    *p = old_top.ptr->data;
+                _data_alloc.destroy(&(old_top.ptr->data));
+                _node_alloc.deallocate(old_top.ptr, 1);
                 return true;
             }
         }
@@ -155,24 +175,24 @@ public:
 private:
     bool push_attempt(Node *new_node)
     {
-        const stamped_ptr<Node> old_top(_top);
-        new_node->next = old_top.pointer();
-        return _top.compare_and_set(old_top, new_node);
+        StampedPtr old_top = _top;
+        new_node->next = old_top.ptr;
+        return _top.compare_exchange_weak(old_top, {new_node, old_top.stamp + 1});
     }
 
     PopAttemptResult pop_attempt(T *p)
     {
-        const stamped_ptr<Node> old_top(_top);
+        StampedPtr old_top = _top;
 
-        if (nullptr == old_top.pointer())
+        if (nullptr == old_top.ptr)
             return PopAttemptResult::EmptyStackFailure;
 
-        if (_top.compare_and_set(old_top, old_top.pointer()->next))
+        if (_top.compare_exchange_weak(old_top, {old_top.ptr->next, old_top.stamp + 1}))
         {
             if (nullptr != p)
-                *p = old_top.pointer()->data;
-            _data_alloc.destroy(&(old_top.pointer()->data));
-            _node_alloc.deallocate(old_top.pointer(), 1);
+                *p = old_top.ptr->data;
+            _data_alloc.destroy(&(old_top.ptr->data));
+            _node_alloc.deallocate(old_top.ptr, 1);
             return PopAttemptResult::PopSuccess;
         }
         return PopAttemptResult::ConcurrentFailure;
@@ -181,30 +201,26 @@ private:
     bool try_to_eliminate_push(Node *new_node)
     {
         const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
-        const stamped_ptr<Node> old_collision_to_add(_collisions[i]);
-        if (COLLISION_EMPTY_PTR != old_collision_to_add.pointer())
+        StampedPtr old_collision_to_add = _collisions[i];
+        if (COLLISION_EMPTY_PTR != old_collision_to_add.ptr)
             return false;
 
         // 添加到碰撞数组
-        if (!_collisions[i].compare_and_set(old_collision_to_add, new_node))
+        if (!_collisions[i].compare_exchange_weak(old_collision_to_add, {new_node, old_collision_to_add.stamp + 1}))
             return false;
 
         // 等待一段时间
-#if NUT_PLATFORM_OS_WINDOWS
-        ::Sleep(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS);
-#elif NUT_PLATFORM_OS_LINUX
-        ::usleep(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS * 1000);
-#endif
+        std::this_thread::sleep_for(
+            std::chrono::milliseconds(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS));
 
         // 检查消隐是否成功
-        const stamped_ptr<Node> old_collision_to_remove(_collisions[i]);
-        if (COLLISION_DONE_PTR == old_collision_to_remove.pointer() ||
-            !_collisions[i].compare_and_set(old_collision_to_remove,
-                                            COLLISION_EMPTY_PTR,
-                                            old_collision_to_add.stamp_value() + 1))
+        StampedPtr old_collision_to_remove = _collisions[i];
+        if (COLLISION_DONE_PTR == old_collision_to_remove.ptr ||
+            !_collisions[i].compare_exchange_weak(
+                old_collision_to_remove,
+                {COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1}))
         {
-            _collisions[i].set(COLLISION_EMPTY_PTR,
-                               old_collision_to_add.stamp_value() + 1);
+            _collisions[i] = {COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1};
             return true;
         }
 
@@ -214,19 +230,18 @@ private:
     bool try_to_eliminate_pop(T *p)
     {
         const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
-        const stamped_ptr<Node> old_collision(_collisions[i]);
-        if (COLLISION_EMPTY_PTR == old_collision.pointer() ||
-            COLLISION_DONE_PTR == old_collision.pointer())
+        StampedPtr old_collision = _collisions[i];
+        if (COLLISION_EMPTY_PTR == old_collision.ptr ||
+            COLLISION_DONE_PTR == old_collision.ptr)
             return false;
 
-        if (_collisions[i].compare_and_set(old_collision,
-                                           COLLISION_DONE_PTR,
-                                           old_collision.stamp_value()))
+        if (_collisions[i].compare_exchange_weak(
+                old_collision, {COLLISION_DONE_PTR, old_collision.stamp}))
         {
             if (nullptr != p)
-                *p = old_collision.pointer()->data;
-            _data_alloc.destroy(&(old_collision.pointer()->data));
-            _node_alloc.deallocate(old_collision.pointer(), 1);
+                *p = old_collision.ptr->data;
+            _data_alloc.destroy(&(old_collision.ptr->data));
+            _node_alloc.deallocate(old_collision.ptr, 1);
             return true;
         }
         return false;

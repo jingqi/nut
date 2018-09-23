@@ -2,7 +2,8 @@
 #ifndef ___HEADFILE_155BBE6F_6F7B_4B42_A097_B9C87EE5EEE0_
 #define ___HEADFILE_155BBE6F_6F7B_4B42_A097_B9C87EE5EEE0_
 
-#include <nut/threading/lockfree/stamped_ptr.h>
+#include <atomic>
+
 #include <nut/debugging/destroy_checker.h>
 
 #include "../nut_config.h"
@@ -65,7 +66,8 @@ class NUT_API lengthfixed_mtmp : public memory_allocator
     const rc_ptr<memory_allocator> _alloc;
     const size_t _granularity; // 粒度
     int volatile _free_num = 0;
-    stamped_ptr<void> _head;
+    std::atomic<void*> _head = ATOMIC_VAR_INIT(nullptr);
+
     NUT_DEBUGGING_DESTROY_CHECKER
 
 private:

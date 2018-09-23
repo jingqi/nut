@@ -2,6 +2,8 @@
 #ifndef ___HEADFILE_C020D343_98AA_41A4_AFE8_01825671348C_
 #define ___HEADFILE_C020D343_98AA_41A4_AFE8_01825671348C_
 
+#include <atomic>
+
 #include <nut/platform/platform.h>
 
 #include <assert.h>
@@ -18,8 +20,6 @@
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #endif
-
-#include "stamped_ptr.h"
 
 
 // 消隐数组的指针常量
@@ -56,18 +56,44 @@ class ConcurrentQueue
         ELIMINATE_ENQUEUE_DELAY_MICROSECONDS = 10,
     };
 
-    typedef typename stamped_ptr<void>::stamp_type stamp_type;
+    typedef int stamp_type;
+
+    struct Node;
+
+    struct StampedPtr
+    {
+        Node *ptr;
+        stamp_type stamp;
+
+        StampedPtr()
+            : ptr(nullptr), stamp(0)
+        {}
+
+        StampedPtr(Node *p, stamp_type s)
+            : ptr(p), stamp(s)
+        {}
+
+        bool operator==(const StampedPtr& x) const
+        {
+            return ptr == x.ptr && stamp == x.stamp;
+        }
+
+        bool operator!=(const StampedPtr& x) const
+        {
+            return !(*this == x);
+        }
+    };
 
     // 节点
     struct Node
     {
         T data;
         stamp_type seg = 0; // 用于安全消隐的标记
-        stamped_ptr<Node> prev;
-        stamped_ptr<Node> next;
+        std::atomic<StampedPtr> prev;
+        std::atomic<StampedPtr> next;
 
         Node(const T& v)
-            : data(v)
+            : data(v), prev({nullptr, 0}), next({nullptr, 0})
         {}
     };
 
@@ -84,12 +110,12 @@ class ConcurrentQueue
 
     data_allocator_type _data_alloc;
     node_allocator_type _node_alloc;
-    stamped_ptr<Node> _head;
-    stamped_ptr<Node> _tail;
+    std::atomic<StampedPtr> _head;
+    std::atomic<StampedPtr> _tail;
 
     // 用于消隐的碰撞数组
-    stamped_ptr<Node> _collisions[COLLISIONS_ARRAY_SIZE];
-    
+    std::atomic<StampedPtr> _collisions[COLLISIONS_ARRAY_SIZE];
+
 private:
     ConcurrentQueue(const ConcurrentQueue&) = delete;
     ConcurrentQueue& operator=(const ConcurrentQueue&) = delete;
@@ -98,10 +124,12 @@ public:
     ConcurrentQueue()
     {
         Node *dummy = _node_alloc.allocate(1);
-        dummy->next.clear();
-        dummy->prev.clear();
-        _head.set_pointer(dummy);
-        _tail.set_pointer(dummy);
+        dummy->next = {nullptr, 0};
+        dummy->prev = {nullptr, 0};
+        _head = {dummy, 0};
+        _tail = {dummy, 0};
+        for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
+            _collisions[i] = {nullptr, 0};
     }
 
     ~ConcurrentQueue()
@@ -109,13 +137,13 @@ public:
         // Clear elements
         while (optimistic_dequeue(nullptr))
         {}
-        assert(_head == _tail && nullptr != _head.pointer());
-        _node_alloc.deallocate(_head.pointer(), 1);
+        assert(_head.load() == _tail.load() && nullptr != _head.load().ptr);
+        _node_alloc.deallocate(_head.load().ptr, 1);
     }
 
     bool is_empty() const
     {
-        return _head == _tail;
+        return _head.load() == _tail.load();
     }
 
 public:
@@ -138,16 +166,16 @@ public:
         while (true)
         {
             // 获取旧值
-            const stamped_ptr<Node> old_tail(_tail);
+            StampedPtr old_tail = _tail;
 
             // 基于旧值的操作
-            new_node->next.set(old_tail.pointer(), old_tail.stamp_value() + 1);
+            new_node->next = {old_tail.ptr, old_tail.stamp + 1};
 
             // 尝试CAS
-            if (_tail.compare_and_set(old_tail, new_node))
+            if (_tail.compare_exchange_weak(old_tail, {new_node, old_tail.stamp + 1}))
             {
                 // 收尾操作
-                old_tail.pointer()->prev.set(new_node, old_tail.stamp_value());
+                old_tail.ptr->prev = {new_node, old_tail.stamp};
                 break;
             }
         }
@@ -163,9 +191,9 @@ public:
         while (true)
         {
             // 保留旧值
-            const stamped_ptr<Node> old_head(_head);
-            const stamped_ptr<Node> old_tail(_tail);
-            const stamped_ptr<Node> first_node_prev(old_head.pointer()->prev);
+            StampedPtr old_head = _head;
+            const StampedPtr old_tail = _tail;
+            const StampedPtr first_node_prev = old_head.ptr->prev;
 
             if (old_head == _head) // 先取head, 然后取tail和其他，再验证head是否改变，以保证取到的值是可靠的
             {
@@ -174,19 +202,19 @@ public:
                     return false;
 
                 // 需要修正
-                if (first_node_prev.stamp_value() != old_head.stamp_value())
+                if (first_node_prev.stamp != old_head.stamp)
                 {
                     fix_list(old_tail, old_head);
                     continue;
                 }
 
                 // 基于旧值的操作
-                ::memcpy(tmp, &(first_node_prev.pointer()->data), sizeof(T));
+                ::memcpy(tmp, &(first_node_prev.ptr->data), sizeof(T));
 
                 // 尝试CAS操作
-                if (_head.compare_and_set(old_head, first_node_prev.pointer()))
+                if (_head.compare_exchange_weak(old_head, {first_node_prev.ptr, old_head.stamp + 1}))
                 {
-                    _node_alloc.deallocate(old_head.pointer(), 1);
+                    _node_alloc.deallocate(old_head.ptr, 1);
                     if (nullptr != p)
                         *p = *reinterpret_cast<T*>(tmp);
                     _data_alloc.destroy(reinterpret_cast<T*>(tmp));
@@ -198,14 +226,14 @@ public:
 
 private:
     // 修复
-    void fix_list(const stamped_ptr<Node>& tail, const stamped_ptr<Node>& head)
+    void fix_list(const StampedPtr& tail, const StampedPtr& head)
     {
-        stamped_ptr<Node> cur_node = tail;
+        StampedPtr cur_node = tail;
         while ((head == _head) && (cur_node != head))
         {
-            stamped_ptr<Node> cur_node_next(cur_node.pointer()->next);
-            cur_node_next.pointer()->prev.set(cur_node.pointer(), cur_node.stamp_value() - 1);
-            cur_node.set(cur_node_next.pointer(), cur_node.stamp_value() - 1);
+            StampedPtr cur_node_next = cur_node.ptr->next;
+            cur_node_next.ptr->prev = {cur_node.ptr, cur_node.stamp - 1};
+            cur_node = {cur_node_next.ptr, cur_node.stamp - 1};
         }
     }
 
@@ -216,12 +244,12 @@ public:
         Node *new_node = _node_alloc.allocate(1);
         _data_alloc.construct(&(new_node->data), v);
 
-        const stamp_type seen_tail = _tail.stamp_value();
+        const stamp_type seen_tail = _tail.load().stamp;
         while (true)
         {
             if (enqueue_attempt(new_node))
                 return;
-            if (seen_tail <= _head.stamp_value() &&
+            if (seen_tail <= _head.load().stamp &&
                 try_to_eliminate_enqueue(new_node, seen_tail))
                 return;
         }
@@ -244,12 +272,12 @@ private:
     // 尝试入队
     bool enqueue_attempt(Node *new_node)
     {
-        const stamped_ptr<Node> old_tail(_tail);
-        new_node->next.set(old_tail.pointer(), old_tail.stamp_value() + 1);
+        StampedPtr old_tail = _tail;
+        new_node->next = {old_tail.ptr, old_tail.stamp + 1};
 
-        if (_tail.compare_and_set(old_tail, new_node))
+        if (_tail.compare_exchange_weak(old_tail, {new_node, old_tail.stamp + 1}))
         {
-            old_tail.pointer()->prev.set(new_node, old_tail.stamp_value());
+            old_tail.ptr->prev = {new_node, old_tail.stamp};
             return true;
         }
         return false;
@@ -263,9 +291,9 @@ private:
         while (true)
         {
             // 保留旧值
-            const stamped_ptr<Node> old_head(_head);
-            const stamped_ptr<Node> old_tail(_tail);
-            const stamped_ptr<Node> first_node_prev(old_head.pointer()->prev);
+            StampedPtr old_head = _head;
+            const StampedPtr old_tail = _tail;
+            const StampedPtr first_node_prev = old_head.ptr->prev;
 
             if (old_head == _head)
             {
@@ -274,19 +302,19 @@ private:
                     return DequeueAttemptResult::EmptyQueueFailure;
 
                 // 需要修正
-                if (first_node_prev.stamp_value() != old_head.stamp_value())
+                if (first_node_prev.stamp != old_head.stamp)
                 {
                     fix_list(old_tail, old_head);
                     continue;
                 }
 
                 // 基于旧值的操作
-                ::memcpy(tmp, &(first_node_prev.pointer()->data), sizeof(T));
+                ::memcpy(tmp, &(first_node_prev.ptr->data), sizeof(T));
 
                 // 尝试CAS操作
-                if (_head.compare_and_set(old_head, first_node_prev.pointer()))
+                if (_head.compare_exchange_weak(old_head, {first_node_prev.ptr, old_head.stamp + 1}))
                 {
-                    _node_alloc.deallocate(old_head.pointer(), 1);
+                    _node_alloc.deallocate(old_head.ptr, 1);
                     if (nullptr != p)
                         *p = *reinterpret_cast<T*>(tmp);
                     _data_alloc.destroy(reinterpret_cast<T*>(tmp));
@@ -301,12 +329,13 @@ private:
     {
         new_node->seg = seen_tail;
         const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
-        const stamped_ptr<Node> old_collision_to_add(_collisions[i]);
-        if (COLLISION_EMPTY_PTR != old_collision_to_add.pointer())
+        StampedPtr old_collision_to_add = _collisions[i];
+        if (COLLISION_EMPTY_PTR != old_collision_to_add.ptr)
             return false;
 
         // 添加到碰撞数组
-        if (!_collisions[i].compare_and_set(old_collision_to_add, new_node))
+        if (!_collisions[i].compare_exchange_weak(
+                old_collision_to_add, {new_node, old_collision_to_add.stamp + 1}))
             return false;
 
         // 等待一段时间
@@ -317,13 +346,12 @@ private:
 #endif
 
         // 检查是否消隐成功
-        const stamped_ptr<Node> old_collision_to_remove(_collisions[i]);
-        if (COLLISION_DONE_PTR == old_collision_to_remove.pointer() ||
-            !_collisions[i].compare_and_set(old_collision_to_remove,
-                                            COLLISION_EMPTY_PTR,
-                                            old_collision_to_add.stamp_value() + 1))
+        StampedPtr old_collision_to_remove = _collisions[i];
+        if (COLLISION_DONE_PTR == old_collision_to_remove.ptr ||
+            !_collisions[i].compare_exchange_weak(
+                old_collision_to_remove, {COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1}))
         {
-            _collisions[i].set(COLLISION_EMPTY_PTR, old_collision_to_add.stamp_value() + 1);
+            _collisions[i] = {COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1};
             return true;
         }
 
@@ -332,24 +360,24 @@ private:
 
     bool try_to_eliminate_dequeue(T *p)
     {
-        const stamp_type seen_head = _head.stamp_value();
+        const stamp_type seen_head = _head.load().stamp;
         const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
-        const stamped_ptr<Node> old_collision(_collisions[i]);
-        if (COLLISION_EMPTY_PTR == old_collision.pointer() ||
-            COLLISION_DONE_PTR == old_collision.pointer())
+        StampedPtr old_collision = _collisions[i];
+        if (COLLISION_EMPTY_PTR == old_collision.ptr ||
+            COLLISION_DONE_PTR == old_collision.ptr)
             return false;
 
-        if (old_collision.pointer()->seg > seen_head)
+        if (old_collision.ptr->seg > seen_head)
             return false;
 
-        if (_collisions[i].compare_and_set(old_collision,
-                                           COLLISION_DONE_PTR,
-                                           old_collision.stamp_value()))
+        if (_collisions[i].compare_exchange_weak(
+                old_collision,
+                {COLLISION_DONE_PTR, old_collision.stamp}))
         {
             if (nullptr != p)
-                *p = old_collision.pointer()->data;
-            _data_alloc.destroy(&(old_collision.pointer()->data));
-            _node_alloc.deallocate(old_collision.pointer(), 1);
+                *p = old_collision.ptr->data;
+            _data_alloc.destroy(&(old_collision.ptr->data));
+            _node_alloc.deallocate(old_collision.ptr, 1);
             return true;
         }
         return false;

@@ -78,8 +78,6 @@
 // threading
 #include "threading/threading.h"
 #include "threading/thread_pool.h"
-#include "threading/lockfree/atomic.h"
-#include "threading/lockfree/stamped_ptr.h"
 #include "threading/lockfree/concurrent_stack.h"
 #include "threading/lockfree/concurrent_queue.h"
 #include "threading/sync/mutex.h"

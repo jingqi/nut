@@ -91,14 +91,14 @@ void lengthfixed_mtmp::clear()
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
 
-    void *p = _head.pointer();
+    void *p = _head;
     while (nullptr != p)
     {
         void *next = *reinterpret_cast<void**>(p);
         ma_free(_alloc, p, _granularity);
         p = next;
     }
-    _head.set_pointer(nullptr);
+    _head = nullptr;
     _free_num = 0;
 }
 
@@ -109,16 +109,16 @@ void* lengthfixed_mtmp::alloc(size_t sz)
 
     while (true)
     {
-        const stamped_ptr<void> old_head(_head);
+        void *old_head = _head;
 
-        if (nullptr == old_head.pointer())
+        if (nullptr == old_head)
             return ma_alloc(_alloc, _granularity);
 
-        void *next = *reinterpret_cast<void**>(old_head.pointer());
-        if (_head.compare_and_set(old_head, next))
+        void *next = *reinterpret_cast<void**>(old_head);
+        if (_head.compare_exchange_weak(old_head, next))
         {
             _free_num = (std::max)(0, _free_num - 1); // NOTE _free_num 在多线程下并不可靠
-            return old_head.pointer();
+            return old_head;
         }
     }
 }
@@ -145,12 +145,12 @@ void lengthfixed_mtmp::free(void *p, size_t sz)
             return;
         }
 
-        const stamped_ptr<void> old_head(_head);
-        *reinterpret_cast<void**>(p) = old_head.pointer();
-        if (_head.compare_and_set(old_head, p))
+        void *old_head = _head;
+        *reinterpret_cast<void**>(p) = old_head;
+        if (_head.compare_exchange_weak(old_head, p))
         {
             // NOTE _free_num 在多线程下并不可靠
-            if (nullptr == old_head.pointer())
+            if (nullptr == old_head)
                 _free_num = 1;
             else
                 ++_free_num;

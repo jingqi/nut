@@ -1,4 +1,6 @@
 ﻿
+#include <iostream>
+
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_OS_LINUX

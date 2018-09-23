@@ -7,9 +7,9 @@
 
 #include <nut/rc/rc_new.h>
 #include <nut/debugging/destroy_checker.h>
-#include <nut/threading/lockfree/atomic.h>
 
 #include "lengthfixed_mp.h"
+
 
 namespace nut
 {
