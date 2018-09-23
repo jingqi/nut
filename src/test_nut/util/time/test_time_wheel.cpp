@@ -10,10 +10,10 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <thread>
 
 #include <nut/unittest/unit_test.h>
 #include <nut/util/time/time_wheel.h>
-#include <nut/threading/thread.h>
 
 using namespace std;
 using namespace nut;
@@ -50,7 +50,8 @@ NUT_FIXTURE(TestTimeWheel)
         {
             tw.tick();
             // cout << "." << flush;
-            Thread::sleep(TimeWheel::TICK_GRANULARITY_MS);
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(TimeWheel::TICK_GRANULARITY_MS));
         }
     }
 
@@ -63,12 +64,12 @@ NUT_FIXTURE(TestTimeWheel)
         LARGE_INTEGER freq, start, finish;
         ::QueryPerformanceFrequency(&freq);
 
-#   define BEGIN \
-        ::QueryPerformanceCounter(&start); \
+#   define BEGIN                                \
+        ::QueryPerformanceCounter(&start);      \
         for (size_t i = 0; i < MAX_COUNT; ++i)
 
-#   define END(name) \
-        ::QueryPerformanceCounter(&finish); \
+#   define END(name)                                                    \
+        ::QueryPerformanceCounter(&finish);                             \
         cout << name << " " << (finish.QuadPart - start.QuadPart) * 1000000 / freq.QuadPart << "us" << endl;
 
         BEGIN
@@ -89,12 +90,12 @@ NUT_FIXTURE(TestTimeWheel)
 #else
         struct timespec start, finish;
 
-#   define BEGIN \
-        ::clock_gettime(CLOCK_MONOTONIC_RAW, &start); \
+#   define BEGIN                                        \
+        ::clock_gettime(CLOCK_MONOTONIC_RAW, &start);   \
         for (size_t i = 0; i < MAX_COUNT; ++i)
 
-#   define END(name) \
-        ::clock_gettime(CLOCK_MONOTONIC_RAW, &finish); \
+#   define END(name)                                                    \
+        ::clock_gettime(CLOCK_MONOTONIC_RAW, &finish);                  \
         cout << name << " " << (finish.tv_sec - start.tv_sec) * 1000000 + (finish.tv_nsec - start.tv_nsec) / 1000 << "us" << endl;
 
         BEGIN

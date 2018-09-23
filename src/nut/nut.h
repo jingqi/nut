@@ -77,7 +77,6 @@
 
 // threading
 #include "threading/threading.h"
-#include "threading/thread.h"
 #include "threading/thread_pool.h"
 #include "threading/lockfree/atomic.h"
 #include "threading/lockfree/stamped_ptr.h"

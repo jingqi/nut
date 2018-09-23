@@ -4,8 +4,6 @@
 #include <algorithm>
 
 #include <nut/platform/platform.h>
-#include <nut/threading/sync/guard.h>
-#include <nut/threading/thread.h>
 
 #include "timer_manager.h"
 
@@ -51,7 +49,7 @@ TimerManager::timer_id_type TimerManager::add_timer(const TimeDiff& interval, co
 {
     assert(task);
 
-    Guard<lock_type> g(&_lock);
+    std::lock_guard<std::mutex> g(_lock);
 
     Timer *t = new_timer();
     t->task = task;
@@ -60,7 +58,7 @@ TimerManager::timer_id_type TimerManager::add_timer(const TimeDiff& interval, co
 
     // 通知条件变量
     if (_timers.size() == 0 || t->time < _timers[0]->time)
-        _cond.signal();
+        _cond.notify_one();
 
     // 插入小头堆
     _timers.push_back(t);
@@ -71,14 +69,14 @@ TimerManager::timer_id_type TimerManager::add_timer(const TimeDiff& interval, co
 
 bool TimerManager::cancel_timer(timer_id_type id)
 {
-    Guard<lock_type> g(&_lock);
+    std::lock_guard<std::mutex> g(_lock);
     size_t i = 0;
     while (i < _timers.size() && _timers[i]->id != id)
         ++i;
     if (i >= _timers.size())
         return false;
     else if (0 == i)
-        _cond.signal(); // 通知条件变量
+        _cond.notify_one(); // 通知条件变量
 
     // 从堆中移除
     _timers[i]->time.set(0,0); // 使之成为最小的元素
@@ -96,9 +94,9 @@ bool TimerManager::cancel_timer(timer_id_type id)
 
 void TimerManager::interupt()
 {
-    Guard<lock_type> g(&_lock);
+    std::lock_guard<std::mutex> g(_lock);
     _stopping = true;
-    _cond.signal();
+    _cond.notify_one();
 }
 
 /**
@@ -109,19 +107,22 @@ void TimerManager::run()
     // 允许的定时误差，防止定时线程抖动厉害
     const TimeDiff min_interval(0, 10000);
 
-    Guard<lock_type> g(&_lock);
+    std::unique_lock<std::mutex> unique_guard(_lock);
     _stopping = false;
     while (!_stopping)
     {
         const DateTime now = DateTime::now();
         if (_timers.empty())
         {
-            _cond.wait(&_lock);
+            _cond.wait(unique_guard);
         }
         else if (_timers[0]->time > now + min_interval)
         {
             const TimeDiff wait = _timers[0]->time - now;
-            _cond.timedwait(&_lock, (unsigned) wait.get_seconds(), (unsigned) (wait.get_useconds() / 1000));
+            _cond.wait_for(
+                unique_guard,
+                std::chrono::milliseconds(
+                    wait.get_seconds() * 1000 + wait.get_useconds() / 1000));
         }
         else
         {

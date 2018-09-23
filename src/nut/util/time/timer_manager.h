@@ -5,11 +5,11 @@
 #include <assert.h>
 #include <time.h>
 #include <vector>
+#include <mutex>
+#include <condition_variable>
 #include <functional>
 
 #include <nut/platform/platform.h>
-#include <nut/threading/sync/condition.h>
-#include <nut/threading/thread.h>
 
 #include "../../nut_config.h"
 #include "date_time.h"
@@ -41,9 +41,8 @@ private:
 
     timer_id_type volatile _next_id = 1;  // 用于生成不重复的 timer id
     std::vector<Timer*> _timers; // 小头堆
-    Condition _cond;
-    typedef Condition::condition_lock_type lock_type;
-    lock_type _lock;
+    std::mutex _lock;
+    std::condition_variable _cond;
     bool volatile _stopping = false; // 是否停止所有计时器
 
 private:
