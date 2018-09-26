@@ -13,6 +13,15 @@ namespace nut
 
 const TimeDiff TimeDiff::ZERO;
 
+TimeDiff::TimeDiff()
+{}
+
+TimeDiff::TimeDiff(double s)
+    : _seconds((time_t) s)
+{
+    _useconds = (long) ((s - _seconds) * USECS_PER_SEC);
+}
+
 TimeDiff::TimeDiff(time_t s, long us)
     : _seconds(s), _useconds(us)
 {
@@ -168,6 +177,13 @@ void TimeDiff::to_timespec(struct timespec *tv)
 time_t TimeDiff::get_seconds() const
 {
     return _seconds;
+}
+
+double TimeDiff::get_float_seconds() const
+{
+    double ret = _seconds;
+    ret += ((double) _useconds) / USECS_PER_SEC;
+    return ret;
 }
 
 long TimeDiff::get_useconds() const

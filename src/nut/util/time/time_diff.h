@@ -33,7 +33,9 @@ public:
     static const TimeDiff ZERO;
 
 public:
-    explicit TimeDiff(time_t s = 0, long us = 0);
+    TimeDiff();
+    explicit TimeDiff(double s);
+    explicit TimeDiff(time_t s, long us);
 
     bool operator==(const TimeDiff& x) const;
     bool operator!=(const TimeDiff& x) const;
@@ -63,6 +65,7 @@ public:
 #endif
 
     time_t get_seconds() const;
+    double get_float_seconds() const;
     long get_useconds() const;
 
     // example: "12.2345"
