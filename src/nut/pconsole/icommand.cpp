@@ -47,13 +47,13 @@ std::vector<std::string> ICommand::parse_comand_line(const char *cmd_line)
         else if ('\0' == quot && ' ' == c)
         {
             if (last_position + 1 < current_position)
-                ret.push_back(std::string(cmd_line + (last_position + 1), cmd_line + current_position));
+                ret.emplace_back(cmd_line + (last_position + 1), cmd_line + current_position);
             last_position = current_position;
         }
         ++current_position;
     }
     if (last_position + 1 < current_position)
-        ret.push_back(std::string(cmd_line + (last_position + 1), cmd_line + current_position));
+        ret.emplace_back(cmd_line + (last_position + 1), cmd_line + current_position);
 
     return ret;
 }
@@ -88,13 +88,13 @@ void ICommand::parse_comand_line(const wchar_t *cmd_line, std::vector<std::wstri
         else if (L'\0' == quot && L' ' == c)
         {
             if (last_position + 1 < current_position)
-                appended->push_back(std::wstring(cmd_line + (last_position + 1), cmd_line + current_position));
+                appended->emplace_back(cmd_line + (last_position + 1), cmd_line + current_position);
             last_position = current_position;
         }
         ++current_position;
     }
     if (last_position + 1 < current_position)
-        appended->push_back(std::wstring(cmd_line + (last_position + 1), cmd_line + current_position));
+        appended->emplace_back(cmd_line + (last_position + 1), cmd_line + current_position);
 }
 
 }

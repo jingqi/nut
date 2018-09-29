@@ -43,7 +43,7 @@ NUT_API void str_split(const char *str, const char *sep_str,
     while (end >= 0)
     {
         if (!ignore_empty || begin != (size_t) end)
-            result->push_back(std::string(str + begin, end - begin));
+            result->emplace_back(str + begin, end - begin);
         begin = end + sep_len;
         end = kmp_search(str, str_len, begin, sep_str, next, sep_len);
     }
@@ -74,7 +74,7 @@ NUT_API void str_split(const wchar_t *str, const wchar_t *sep_str,
     while (end >= 0)
     {
         if (!ignore_empty || begin != (size_t) end)
-            result->push_back(std::wstring(str + begin, end - begin));
+            result->emplace_back(str + begin, end - begin);
         begin = end + sep_len;
         end = kmp_search(str, str_len, begin, sep_str, next, sep_len);
     }

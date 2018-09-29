@@ -73,7 +73,7 @@ void OS::list_dir(const char *path, std::vector<std::string> *result,
         if (exclude_dir && (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
             continue;
 
-        result->push_back(wfd.cFileName);
+        result->emplace_back(wfd.cFileName);
     } while (::FindNextFileA(hfind, &wfd));
 
     // 关闭查找句柄
@@ -102,7 +102,7 @@ void OS::list_dir(const char *path, std::vector<std::string> *result,
                 continue;
         }
 
-        result->push_back(dirp->d_name);
+        result->emplace_back(dirp->d_name);
     }
 
     // 释放DIR (struct dirent是由DIR维护的，无需额外释放)
@@ -137,7 +137,7 @@ void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *result,
         if (exclude_dir && (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
             continue;
 
-        result->push_back(wfd.cFileName);
+        result->emplace_back(wfd.cFileName);
     } while (::FindNextFileW(hfind, &wfd));
 
     // 关闭查找句柄

@@ -63,7 +63,7 @@ bool ThreadPool::add_task(const task_type& task)
         if (_threads.size() > _alive_number * 2 + 10)
             clean_dead_threads();
 
-        _threads.push_back(std::thread([=] { thread_process(); }));
+        _threads.emplace_back([=] { thread_process(); });
         ++_alive_number;
     }
 

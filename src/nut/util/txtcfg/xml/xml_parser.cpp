@@ -578,7 +578,7 @@ void XmlParser::handle_child()
     }
 
     // Push stack
-    _elem_path.push_back(ElementInfo(_tmp_name, child));
+    _elem_path.emplace_back(_tmp_name, child);
     _tmp_name.clear();
 }
 
@@ -664,14 +664,14 @@ void XmlParser::force_finish()
 XmlParser::XmlParser(XmlElementHandler *root_handler)
     : _state(State::InText)
 {
-    _elem_path.push_back(ElementInfo("", root_handler));
+    _elem_path.emplace_back("", root_handler);
 }
 
 void XmlParser::reset(XmlElementHandler *root_handler)
 {
     force_finish();
     _elem_path.clear();
-    _elem_path.push_back(ElementInfo("", root_handler));
+    _elem_path.emplace_back("", root_handler);
     _line = 1;
     _column = 1;
     _state = State::InText;
