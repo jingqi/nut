@@ -12,6 +12,7 @@ NUT_FIXTURE(TestStringUtil)
 {
     NUT_CASES_BEGIN()
     NUT_CASE(test_split)
+    NUT_CASE(test_safe_snprintf)
     NUT_CASE(test_format)
     NUT_CASE(test_trim)
     NUT_CASE(test_stricmp)
@@ -64,6 +65,29 @@ NUT_FIXTURE(TestStringUtil)
 
         NUT_TA(format(L"%d,%s,%c,%f", 1, L"am", L's', 1.23) == L"1,am,s,1.230000");
 #endif
+    }
+
+    void test_safe_snprintf()
+    {
+        char buf[10];
+        wchar_t wbuf[10];
+        NUT_TA(8 == safe_snprintf(buf, 10, "abcde%d", 123));
+        NUT_TA(0 == ::strcmp(buf, "abcde123"));
+
+        NUT_TA(8 == safe_snprintf(wbuf, 10, L"abcde%d", 123));
+        NUT_TA(0 == ::wcscmp(wbuf, L"abcde123"));
+
+        NUT_TA(9 == safe_snprintf(buf, 10, "abcde%d", 1234));
+        NUT_TA(0 == ::strcmp(buf, "abcde1234"));
+
+        NUT_TA(9 == safe_snprintf(wbuf, 10, L"abcde%d", 1234));
+        NUT_TA(0 == ::wcscmp(wbuf, L"abcde1234"));
+
+        NUT_TA(9 == safe_snprintf(buf, 10, "abcde%d", 12345));
+        NUT_TA(0 == ::strcmp(buf, "abcde1234"));
+
+        NUT_TA(0 == safe_snprintf(wbuf, 10, L"abcde%d", 12345));
+        NUT_TA(0 == ::wcscmp(wbuf, L""));
     }
 
     void test_trim()

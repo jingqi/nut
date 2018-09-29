@@ -54,6 +54,14 @@ NUT_API void chr_split(const wchar_t *str, wchar_t c, std::vector<std::wstring> 
 NUT_API void chr_split(const std::wstring& str, wchar_t c, std::vector<std::wstring> *result,
                        bool ignore_empty = false);
 
+/** 
+ * 安全格式化
+ *
+ * @return >=0, 格式化后的字符串长度(可能被截断格式化)
+ */
+NUT_API int safe_snprintf(char *buf, int buf_size, const char *fmt, ...);
+NUT_API int safe_snprintf(wchar_t *buf, int buf_size, const wchar_t *fmt, ...);
+
 /** 格式化 */
 NUT_API std::string format(const char *fmt, ...);
 NUT_API std::wstring format(const wchar_t *fmt, ...);

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E135372215FCB5000270AD5 /* element_handler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E135371215FCB5000270AD5 /* element_handler.cpp */; };
 		2E325755215760FF00405E61 /* performance_counter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E325751215760FF00405E61 /* performance_counter.cpp */; };
 		2E325756215760FF00405E61 /* time_diff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E325752215760FF00405E61 /* time_diff.cpp */; };
 		2E325757215760FF00405E61 /* time_diff.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E325753215760FF00405E61 /* time_diff.h */; };
@@ -119,15 +120,11 @@
 		2EE083D62146DD58008E4587 /* concurrent_queue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083D12146DD58008E4587 /* concurrent_queue.h */; };
 		2EE083D92146DD58008E4587 /* concurrent_stack.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083D42146DD58008E4587 /* concurrent_stack.h */; };
 		2EE083E52146DD6E008E4587 /* spinlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE083DA2146DD6E008E4587 /* spinlock.cpp */; };
-		2EE083E62146DD6E008E4587 /* condition.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083DB2146DD6E008E4587 /* condition.h */; };
 		2EE083E72146DD6E008E4587 /* guard.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083DC2146DD6E008E4587 /* guard.h */; };
-		2EE083E82146DD6E008E4587 /* mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083DD2146DD6E008E4587 /* mutex.h */; };
 		2EE083E92146DD6E008E4587 /* sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE083DE2146DD6E008E4587 /* sem.cpp */; };
-		2EE083EA2146DD6E008E4587 /* mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE083DF2146DD6E008E4587 /* mutex.cpp */; };
 		2EE083EB2146DD6E008E4587 /* rwlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE083E02146DD6E008E4587 /* rwlock.cpp */; };
 		2EE083EC2146DD6E008E4587 /* sem.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083E12146DD6E008E4587 /* sem.h */; };
 		2EE083ED2146DD6E008E4587 /* spinlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083E22146DD6E008E4587 /* spinlock.h */; };
-		2EE083EE2146DD6E008E4587 /* condition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE083E32146DD6E008E4587 /* condition.cpp */; };
 		2EE083EF2146DD6E008E4587 /* rwlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083E42146DD6E008E4587 /* rwlock.h */; };
 		2EE083F52146DD80008E4587 /* threading.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083F02146DD80008E4587 /* threading.h */; };
 		2EE083F72146DD80008E4587 /* thread_pool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE083F22146DD80008E4587 /* thread_pool.cpp */; };
@@ -267,6 +264,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2E135371215FCB5000270AD5 /* element_handler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = element_handler.cpp; path = ../../../src/nut/util/txtcfg/xml/element_handler.cpp; sourceTree = "<group>"; };
 		2E325751215760FF00405E61 /* performance_counter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = performance_counter.cpp; path = ../../../src/nut/util/time/performance_counter.cpp; sourceTree = "<group>"; };
 		2E325752215760FF00405E61 /* time_diff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = time_diff.cpp; path = ../../../src/nut/util/time/time_diff.cpp; sourceTree = "<group>"; };
 		2E325753215760FF00405E61 /* time_diff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = time_diff.h; path = ../../../src/nut/util/time/time_diff.h; sourceTree = "<group>"; };
@@ -381,15 +379,11 @@
 		2EE083D12146DD58008E4587 /* concurrent_queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = concurrent_queue.h; path = ../../../src/nut/threading/lockfree/concurrent_queue.h; sourceTree = "<group>"; };
 		2EE083D42146DD58008E4587 /* concurrent_stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = concurrent_stack.h; path = ../../../src/nut/threading/lockfree/concurrent_stack.h; sourceTree = "<group>"; };
 		2EE083DA2146DD6E008E4587 /* spinlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = spinlock.cpp; path = ../../../src/nut/threading/sync/spinlock.cpp; sourceTree = "<group>"; };
-		2EE083DB2146DD6E008E4587 /* condition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = condition.h; path = ../../../src/nut/threading/sync/condition.h; sourceTree = "<group>"; };
 		2EE083DC2146DD6E008E4587 /* guard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = guard.h; path = ../../../src/nut/threading/sync/guard.h; sourceTree = "<group>"; };
-		2EE083DD2146DD6E008E4587 /* mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mutex.h; path = ../../../src/nut/threading/sync/mutex.h; sourceTree = "<group>"; };
 		2EE083DE2146DD6E008E4587 /* sem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sem.cpp; path = ../../../src/nut/threading/sync/sem.cpp; sourceTree = "<group>"; };
-		2EE083DF2146DD6E008E4587 /* mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mutex.cpp; path = ../../../src/nut/threading/sync/mutex.cpp; sourceTree = "<group>"; };
 		2EE083E02146DD6E008E4587 /* rwlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rwlock.cpp; path = ../../../src/nut/threading/sync/rwlock.cpp; sourceTree = "<group>"; };
 		2EE083E12146DD6E008E4587 /* sem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sem.h; path = ../../../src/nut/threading/sync/sem.h; sourceTree = "<group>"; };
 		2EE083E22146DD6E008E4587 /* spinlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = spinlock.h; path = ../../../src/nut/threading/sync/spinlock.h; sourceTree = "<group>"; };
-		2EE083E32146DD6E008E4587 /* condition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = condition.cpp; path = ../../../src/nut/threading/sync/condition.cpp; sourceTree = "<group>"; };
 		2EE083E42146DD6E008E4587 /* rwlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rwlock.h; path = ../../../src/nut/threading/sync/rwlock.h; sourceTree = "<group>"; };
 		2EE083F02146DD80008E4587 /* threading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = threading.h; path = ../../../src/nut/threading/threading.h; sourceTree = "<group>"; };
 		2EE083F22146DD80008E4587 /* thread_pool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = thread_pool.cpp; path = ../../../src/nut/threading/thread_pool.cpp; sourceTree = "<group>"; };
@@ -797,11 +791,7 @@
 		2E1927681AD900E100FDFFA6 /* sync */ = {
 			isa = PBXGroup;
 			children = (
-				2EE083E32146DD6E008E4587 /* condition.cpp */,
-				2EE083DB2146DD6E008E4587 /* condition.h */,
 				2EE083DC2146DD6E008E4587 /* guard.h */,
-				2EE083DF2146DD6E008E4587 /* mutex.cpp */,
-				2EE083DD2146DD6E008E4587 /* mutex.h */,
 				2EE083E02146DD6E008E4587 /* rwlock.cpp */,
 				2EE083E42146DD6E008E4587 /* rwlock.h */,
 				2EE083DE2146DD6E008E4587 /* sem.cpp */,
@@ -914,6 +904,7 @@
 		2E1927DA1AD901AA00FDFFA6 /* xml */ = {
 			isa = PBXGroup;
 			children = (
+				2E135371215FCB5000270AD5 /* element_handler.cpp */,
 				2EE084342146DDF2008E4587 /* element_handler.h */,
 				2EE084302146DDF2008E4587 /* xml_dom.cpp */,
 				2EE084352146DDF2008E4587 /* xml_dom.h */,
@@ -1253,7 +1244,6 @@
 				2EE0834B2146DC7A008E4587 /* rsa.h in Headers */,
 				2EE084052146DDA2008E4587 /* gcd.h in Headers */,
 				2EE083C72146DD2B008E4587 /* scoped_gc.h in Headers */,
-				2EE083E62146DD6E008E4587 /* condition.h in Headers */,
 				2EE0834C2146DC7A008E4587 /* aes.h in Headers */,
 				2EE0830F2146DBC4008E4587 /* output_stream.h in Headers */,
 				2EE084742146DE5E008E4587 /* delegate.h in Headers */,
@@ -1312,7 +1302,6 @@
 				2EE084202146DDD6008E4587 /* test_logger.h in Headers */,
 				2EE0842D2146DDD6008E4587 /* test_register.h in Headers */,
 				2EE083352146DC3A008E4587 /* skiplist.h in Headers */,
-				2EE083E82146DD6E008E4587 /* mutex.h in Headers */,
 				2EE0839B2146DCF0008E4587 /* logger.h in Headers */,
 				2EE083912146DCD6008E4587 /* backtrace.h in Headers */,
 				2EE083292146DC0C008E4587 /* integer_set.h in Headers */,
@@ -1536,7 +1525,6 @@
 				2EE083B42146DD0D008E4587 /* syslog_log_handler.cpp in Sources */,
 				2EE083A12146DCF0008E4587 /* log_record.cpp in Sources */,
 				2EE083482146DC7A008E4587 /* aes_cbc_pkcs5.cpp in Sources */,
-				2EE083EA2146DD6E008E4587 /* mutex.cpp in Sources */,
 				2EE083C62146DD2B008E4587 /* scoped_gc.cpp in Sources */,
 				2EE0839A2146DCF0008E4587 /* logger.cpp in Sources */,
 				2EE083EB2146DD6E008E4587 /* rwlock.cpp in Sources */,
@@ -1545,11 +1533,11 @@
 				2EE0834D2146DC7A008E4587 /* aes.cpp in Sources */,
 				2EE084112146DDB7008E4587 /* big_integer.cpp in Sources */,
 				2EE084082146DDA2008E4587 /* gcd.cpp in Sources */,
-				2EE083EE2146DD6E008E4587 /* condition.cpp in Sources */,
 				2E325755215760FF00405E61 /* performance_counter.cpp in Sources */,
 				2EE0843A2146DDF2008E4587 /* xml_writer.cpp in Sources */,
 				2EE084552146DE1D008E4587 /* time_wheel.cpp in Sources */,
 				2EE0844B2146DE03008E4587 /* property_dom.cpp in Sources */,
+				2E135372215FCB5000270AD5 /* element_handler.cpp in Sources */,
 				2EE083492146DC7A008E4587 /* rsa.cpp in Sources */,
 				2EE0837E2146DCC0008E4587 /* icommand.cpp in Sources */,
 				2EE084042146DDA2008E4587 /* bit_sieve.cpp in Sources */,

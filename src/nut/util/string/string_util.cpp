@@ -177,6 +177,52 @@ NUT_API void chr_split(const std::wstring& str, wchar_t c, std::vector<std::wstr
     chr_split(str.c_str(), c, result, ignore_empty);
 }
 
+NUT_API int safe_snprintf(char *buf, int buf_size, const char *fmt, ...)
+{
+    assert(nullptr != fmt);
+    if (nullptr == buf || buf_size <= 0)
+        return 0;
+
+    va_list ap;
+    va_start(ap, fmt);
+    int n = ::vsnprintf(buf, buf_size, fmt, ap);
+    va_end(ap);
+
+    if (n < 0)
+        n = 0; /* glibc 2.0 */
+    else if (n >= buf_size)
+        n = buf_size - 1; /* glibc 2.1 */
+
+    buf[n] = 0; /* linux版的vsnprintf能保证'\0'结尾，windows版的vsnprintf不能保证'\0'结尾 */
+    return n;
+}
+
+NUT_API int safe_snprintf(wchar_t *buf, int buf_size, const wchar_t *fmt, ...)
+{
+    assert(nullptr != fmt);
+    if (nullptr == buf || buf_size <= 0)
+        return 0;
+
+    va_list ap;
+    va_start(ap, fmt);
+#if NUT_PLATFORM_CC_VC
+    int n = ::_vsnwprintf(buf, buf_size, fmt, ap);
+#elif NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
+    int n = ::vswprintf(buf, buf_size, fmt, ap);
+#else
+    int n = ::vsnwprintf(buf, buf_size, fmt, ap);
+#endif
+    va_end(ap);
+
+    if (n < 0)
+        n = 0; /* glibc 2.0 */
+    else if (n >= buf_size)
+        n = buf_size - 1; /* glibc 2.1 */
+
+    buf[n] = 0; /* linux版的vsnprintf能保证'\0'结尾，windows版的vsnprintf不能保证'\0'结尾 */
+    return n;
+}
+
 NUT_API std::string format(const char *fmt, ...)
 {
     assert(nullptr != fmt);
@@ -198,10 +244,10 @@ NUT_API std::string format(const char *fmt, ...)
             break;
         }
 
-        if (n > -1)
-            size = n + 1; /* glibc 2.1 */
+        if (n < 0)
+            size *= 2; /* glibc 2.0 */
         else
-            size *= 2;    /* glib 2.0 */
+            size = n + 1; /* glibc 2.1 */
         ret.resize(size);
     }
 
@@ -234,11 +280,11 @@ NUT_API std::wstring format(const wchar_t *fmt, ...)
             ret.resize(n);
             break;
         }
-
-        if (n > -1)
-            size = n + 1; /* glibc 2.1 */
+        
+        if (n < 0)
+            size *= 2; /* glibc 2.0 */
         else
-            size *= 2;    /* glib 2.0 */
+            size = n + 1; /* glibc 2.1 */
         ret.resize(size);
     }
 
