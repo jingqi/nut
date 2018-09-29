@@ -20,7 +20,6 @@ public:
     virtual void handle_log(const LogRecord& l) override;
 };
 
-
 }
 
 #endif

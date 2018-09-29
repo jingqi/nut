@@ -32,19 +32,14 @@ private:
 
 public:
     RwLock();
-
     ~RwLock();
 
     void lock_read();
-
     bool try_lock_read();
-
-    void lock_write();
-
-    bool try_lock_write();
-
     void unlock_read();
 
+    void lock_write();
+    bool try_lock_write();
     void unlock_write();
 };
 

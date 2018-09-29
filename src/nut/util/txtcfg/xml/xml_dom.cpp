@@ -35,6 +35,11 @@ void XmlDom::set_dirty(bool dirty)
         _root->set_dirty(false);
 }
 
+const std::string& XmlDom::get_version() const
+{
+    return _version;
+}
+
 void XmlDom::set_version(const std::string& version)
 {
     if (version != _version)
@@ -44,6 +49,11 @@ void XmlDom::set_version(const std::string& version)
     }
 }
 
+const std::string& XmlDom::get_encoding() const
+{
+    return _encoding;
+}
+
 void XmlDom::set_encoding(const std::string& encoding)
 {
     if (encoding != _encoding)
@@ -51,6 +61,11 @@ void XmlDom::set_encoding(const std::string& encoding)
         _encoding = encoding;
         _dirty = true;
     }
+}
+
+rc_ptr<XmlElement> XmlDom::get_root() const
+{
+    return _root;
 }
 
 void XmlDom::set_root(rc_ptr<XmlElement> root)

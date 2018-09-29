@@ -721,6 +721,16 @@ bool XmlParser::finish()
     return true;
 }
 
+size_t XmlParser::line() const
+{
+    return _line;
+}
+
+size_t XmlParser::column() const
+{
+    return _column;
+}
+
 bool XmlParser::has_error() const
 {
     return State::InError == _state;

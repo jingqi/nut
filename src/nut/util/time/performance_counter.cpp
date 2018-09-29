@@ -5,8 +5,8 @@ namespace nut
 {
 
 #if NUT_PLATFORM_OS_WINDOWS
-static LARGE_INTEGER PerformanceCounter::_frequency;
-static bool PerformanceCounter::_frequency_initialized = false;
+LARGE_INTEGER PerformanceCounter::_frequency;
+bool PerformanceCounter::_frequency_initialized = false;
 #endif
 
 PerformanceCounter::PerformanceCounter()

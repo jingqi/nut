@@ -81,19 +81,18 @@ public:
 
     void reset(XmlElementHandler *root_handler);
 
+    /**
+     * @return false if error
+     */
     bool input(const char *s, int len = -1);
 
+    /**
+     * @return false if error
+     */
     bool finish();
 
-    size_t line() const
-    {
-        return _line;
-    }
-
-    size_t column() const
-    {
-        return _column;
-    }
+    size_t line() const;
+    size_t column() const;
 
     bool has_error() const;
 

@@ -74,7 +74,7 @@ public:
      *         2 第一个、第二个指针有效
      */
     size_t writable_pointers(void **buf_ptr1, size_t *len_ptr1,
-                          void **buf_ptr2, size_t *len_ptr2);
+                             void **buf_ptr2, size_t *len_ptr2);
 };
 
 }

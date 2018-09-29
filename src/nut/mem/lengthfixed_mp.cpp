@@ -18,6 +18,12 @@ lengthfixed_stmp::~lengthfixed_stmp()
     clear();
 }
 
+bool lengthfixed_stmp::is_empty() const
+{
+    NUT_DEBUGGING_ASSERT_ALIVE;
+    return 0 == _free_num;
+}
+
 void lengthfixed_stmp::clear()
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
@@ -85,6 +91,12 @@ lengthfixed_mtmp::~lengthfixed_mtmp()
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     clear();
+}
+
+bool lengthfixed_mtmp::is_empty() const
+{
+    NUT_DEBUGGING_ASSERT_ALIVE;
+    return 0 == _free_num;
 }
 
 void lengthfixed_mtmp::clear()

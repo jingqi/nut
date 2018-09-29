@@ -6,6 +6,12 @@
 #include <string>
 #include <stdint.h>
 
+#include <nut/platform/platform.h>
+
+#if NUT_PLATFORM_OS_WINDOWS
+#   include <windows.h>
+#endif
+
 #include "../../nut_config.h"
 #include "time_diff.h"
 

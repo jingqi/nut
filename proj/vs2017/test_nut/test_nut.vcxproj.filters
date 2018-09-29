@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="test">
+      <UniqueIdentifier>{b129aabe-c64c-49ef-9536-2fcf8a099994}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\container">
+      <UniqueIdentifier>{8973ea2d-fc2e-4f6e-ae64-ee7786d9fd77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\container\skiplist">
+      <UniqueIdentifier>{78fd29d6-0785-4c62-90b0-110106bcb6a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\container\tree">
+      <UniqueIdentifier>{fdde341e-d2e7-4e0f-99e8-3ad7a87619fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\container\tree\rtree">
+      <UniqueIdentifier>{2afcbfa4-2dda-4e53-b6d5-40f7c0269b8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\debugging">
+      <UniqueIdentifier>{c1f693ec-4145-4fc1-aa47-94073f1720ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\rc">
+      <UniqueIdentifier>{418a9a82-94fd-4de8-a072-1d62342be915}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\logging">
+      <UniqueIdentifier>{3e0bf2d4-8010-4214-ac1b-0e70c52c18c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\mem">
+      <UniqueIdentifier>{6b83dac2-e94c-4732-a69e-29209516e992}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\numeric">
+      <UniqueIdentifier>{1683fa83-fda3-41d3-90e8-29de04e7c86a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\pconsole">
+      <UniqueIdentifier>{64eebca3-61c9-4a36-8c63-e368c866cabc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\platform">
+      <UniqueIdentifier>{8cd8587b-a399-4397-bb9b-e2ec6571b7e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\security">
+      <UniqueIdentifier>{c91a87bf-a9aa-470c-bca9-52664e9e8409}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\security\digest">
+      <UniqueIdentifier>{e332306d-bff8-4992-ac28-7ca4b9f4f26f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\security\encrypt">
+      <UniqueIdentifier>{8c225593-2950-4ee5-ae1a-769add1fecf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\threading">
+      <UniqueIdentifier>{b3b36d0e-a628-4f2d-a471-75b8e0ff3998}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\threading\lockfree">
+      <UniqueIdentifier>{dba245f2-fa15-4da0-b83d-887953c158d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\util">
+      <UniqueIdentifier>{2165dfbf-382e-4396-86a2-6f7d6b8cae89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\util\txtcfg">
+      <UniqueIdentifier>{8d6bbdb2-a1bd-461b-b7d5-a61c58a3dba0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\util\txtcfg\xml">
+      <UniqueIdentifier>{634e2b97-b1d8-4566-a843-784779eabe6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\container\bytestream">
+      <UniqueIdentifier>{a54a5924-7d7e-499a-b87b-b56f9fdf5292}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\util\time">
+      <UniqueIdentifier>{621719c1-6775-461a-b0bf-0f44e72180c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\util\string">
+      <UniqueIdentifier>{e315eb3c-fb74-4c53-acae-5c9df16c0eb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\container\rwbuffer">
+      <UniqueIdentifier>{dd0c6153-fbf8-4f93-99cd-93e509e0e8ed}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\test_nut\container\bytestream\test_bytearraystream.cpp">
+      <Filter>test\container\bytestream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\test_array.cpp">
+      <Filter>test\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\test_bitstream.cpp">
+      <Filter>test\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\test_bundle.cpp">
+      <Filter>test\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\test_integer_set.cpp">
+      <Filter>test\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\test_lru_cache.cpp">
+      <Filter>test\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\test_lru_data_cache.cpp">
+      <Filter>test\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\skiplist\test_skiplist.cpp">
+      <Filter>test\container\skiplist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\tree\rtree\test_rtree.cpp">
+      <Filter>test\container\tree\rtree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\tree\test_bst.cpp">
+      <Filter>test\container\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\debugging\test_backtrace.cpp">
+      <Filter>test\debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\logging\test_logging.cpp">
+      <Filter>test\logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\mem\test_lengthfixed_mp.cpp">
+      <Filter>test\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\mem\test_scoped_gc.cpp">
+      <Filter>test\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\numeric\test_biginteger.cpp">
+      <Filter>test\numeric</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\numeric\test_numeric_algo.cpp">
+      <Filter>test\numeric</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\pconsole\test_pconsole.cpp">
+      <Filter>test\pconsole</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\platform\test_os.cpp">
+      <Filter>test\platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\platform\test_path.cpp">
+      <Filter>test\platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\rc\test_rc.cpp">
+      <Filter>test\rc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\security\digest\test_adler32.cpp">
+      <Filter>test\security\digest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\security\digest\test_md5.cpp">
+      <Filter>test\security\digest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\security\encrypt\test_aes.cpp">
+      <Filter>test\security\encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\security\encrypt\test_aes_cbc_pkcs5.cpp">
+      <Filter>test\security\encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\security\encrypt\test_rsa.cpp">
+      <Filter>test\security\encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_queue.cpp">
+      <Filter>test\threading\lockfree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_stack.cpp">
+      <Filter>test\threading\lockfree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\threading\test_threadpool.cpp">
+      <Filter>test\threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\util\string\test_kmp.cpp">
+      <Filter>test\util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\util\string\test_stringutil.cpp">
+      <Filter>test\util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\util\time\test_date_time.cpp">
+      <Filter>test\util\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\xml\test_xml_element.cpp">
+      <Filter>test\util\txtcfg\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\xml\test_xml_parser.cpp">
+      <Filter>test\util\txtcfg\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\xml\test_xml_writer.cpp">
+      <Filter>test\util\txtcfg\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\test_ini_dom.cpp">
+      <Filter>test\util\txtcfg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\test_property_dom.cpp">
+      <Filter>test\util\txtcfg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\util\test_delegate.cpp">
+      <Filter>test\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\main.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\util\string\test_tostring.cpp">
+      <Filter>test\util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\mem\test_segments_mp.cpp">
+      <Filter>test\mem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\rwbuffer\test_fragment_buffer.cpp">
+      <Filter>test\container\rwbuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\rwbuffer\test_ring_buffer.cpp">
+      <Filter>test\container\rwbuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\util\time\test_time_wheel.cpp">
+      <Filter>test\util\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\security\digest\test_sha1.cpp">
+      <Filter>test\security\digest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\threading\test_threading.cpp">
+      <Filter>test\threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\platform\test_endian.cpp">
+      <Filter>test\platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\platform\test_sys.cpp">
+      <Filter>test\platform</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,4 +1,4 @@
-
+﻿
 #ifndef ___HEADFILE_B694AC90_3B03_460A_A7B6_AAE8EF5A3560_
 #define ___HEADFILE_B694AC90_3B03_460A_A7B6_AAE8EF5A3560_
 
@@ -50,36 +50,21 @@ public:
     explicit XmlElement(const std::string& name);
 
     bool is_dirty() const;
-
     void set_dirty(bool dirty);
 
-    const std::string& get_name() const
-    {
-        return _name;
-    }
-
+    const std::string& get_name() const;
     void set_name(const std::string& name);
 
-    const std::string& get_text() const
-    {
-        return _text;
-    }
-
+    const std::string& get_text() const;
     void set_text(const std::string& text);
 
-    size_t get_children_count() const
-    {
-        return _children.size();
-    }
+    size_t get_children_count() const;
 
     rc_ptr<XmlElement> get_child(size_t i) const;
-
     rc_ptr<XmlElement> get_child(const std::string& name) const;
 
     void append_child(rc_ptr<XmlElement> child);
-
     void insert_child(size_t pos, rc_ptr<XmlElement> child);
-
     void remove_child(size_t pos);
 
     void clear_children();

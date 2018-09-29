@@ -40,6 +40,23 @@ SpinLock::~SpinLock()
 #endif
 }
 
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
+CRITICAL_SECTION* SpinLock::inner_mutex()
+{
+    return &_critical_section;
+}
+#elif NUT_PLATFORM_OS_MAC
+pthread_mutex_t* SpinLock::inner_mutex()
+{
+    return &_spinlock;
+}
+#else
+pthread_spinlock_t* SpinLock::inner_mutex()
+{
+    return &_spinlock;
+}
+#endif
+
 void SpinLock::lock()
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW

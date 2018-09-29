@@ -39,12 +39,7 @@ public:
     lengthfixed_stmp(size_t granularity, memory_allocator *ma = nullptr);
     virtual ~lengthfixed_stmp();
 
-    bool is_empty() const
-    {
-        NUT_DEBUGGING_ASSERT_ALIVE;
-        return 0 == _free_num;
-    }
-
+    bool is_empty() const;
     void clear();
 
     virtual void* alloc(size_t sz) override;
@@ -79,12 +74,7 @@ public:
     lengthfixed_mtmp(size_t granularity, memory_allocator *ma = nullptr);
     virtual ~lengthfixed_mtmp();
 
-    bool is_empty() const
-    {
-        NUT_DEBUGGING_ASSERT_ALIVE;
-        return 0 == _free_num;
-    }
-
+    bool is_empty() const;
     void clear();
 
     virtual void* alloc(size_t sz) override;

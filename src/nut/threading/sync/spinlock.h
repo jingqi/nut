@@ -25,7 +25,7 @@ class NUT_API SpinLock
 #else
     pthread_spinlock_t _spinlock;
 #endif
-    
+
 private:
     // Non-copyable
     SpinLock(const SpinLock&) = delete;
@@ -33,30 +33,18 @@ private:
 
 public:
     SpinLock();
-
     ~SpinLock();
 
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
-    CRITICAL_SECTION* inner_mutex()
-    {
-        return &_critical_section;
-    }
+    CRITICAL_SECTION* inner_mutex();
 #elif NUT_PLATFORM_OS_MAC
-    pthread_mutex_t* inner_mutex()
-    {
-        return &_spinlock;
-    }
+    pthread_mutex_t* inner_mutex();
 #else
-    pthread_spinlock_t* inner_mutex()
-    {
-        return &_spinlock;
-    }
+    pthread_spinlock_t* inner_mutex();
 #endif
 
     void lock();
-
     bool trylock();
-
     void unlock();
 };
 

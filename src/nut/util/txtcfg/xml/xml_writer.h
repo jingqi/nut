@@ -31,24 +31,14 @@ class NUT_API XmlWriter
 public:
     explicit XmlWriter(std::ostream *os = nullptr);
 
-    std::ostream* get_output_stream() const
-    {
-        return _os;
-    }
-
-    void set_output_stream(std::ostream *os)
-    {
-        _os = os;
-    }
+    std::ostream* get_output_stream() const;
+    void set_output_stream(std::ostream *os);
 
     void start_element(const char *name);
-
     void end_element();
 
     void write_attribute(const char *name, const char *value);
-
     void write_text(const char *text);
-
     void write_comment(const char *comment);
 
 private:

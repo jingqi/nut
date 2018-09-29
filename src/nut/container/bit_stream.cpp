@@ -28,6 +28,11 @@ void BitStream::_ensure_cap(size_t new_bit_size)
     _word_cap = new_word_cap;
 }
 
+size_t BitStream::_word_size() const
+{
+    return (_bit_size + sizeof(word_type) * 8 - 1) / (sizeof(word_type) * 8);
+}
+
 BitStream::BitStream(size_t bit_size, int fill_bit)
 {
     assert(0 == fill_bit || 1 == fill_bit);
@@ -172,6 +177,11 @@ bool BitStream::operator==(const BitStream& x) const
     return true;
 }
 
+bool BitStream::operator!=(const BitStream& x) const
+{
+    return !(*this == x);
+}
+
 BitStream BitStream::operator+(const BitStream& x) const
 {
     BitStream ret;
@@ -179,6 +189,12 @@ BitStream BitStream::operator+(const BitStream& x) const
     ret.append(*this);
     ret.append(x);
     return ret;
+}
+
+BitStream& BitStream::operator+=(const BitStream& x)
+{
+    append(x);
+    return *this;
 }
 
 BitStream BitStream::operator&(const BitStream& x) const
@@ -334,6 +350,16 @@ BitStream& BitStream::operator^=(const BitStream& x)
     return *this;
 }
 
+int BitStream::operator[](size_t i) const
+{
+    return bit_at(i);
+}
+
+size_t BitStream::size() const
+{
+    return _bit_size;
+}
+
 void BitStream::resize(size_t new_bit_size, int fill_bit)
 {
     assert(0 == fill_bit || 1 == fill_bit);
@@ -348,6 +374,11 @@ void BitStream::resize(size_t new_bit_size, int fill_bit)
     const size_t old_bit_size = _bit_size;
     _bit_size = new_bit_size;
     fill_bits(old_bit_size, new_bit_size - old_bit_size, fill_bit);
+}
+
+void BitStream::clear()
+{
+    _bit_size = 0;
 }
 
 int BitStream::bit_at(size_t i) const
@@ -424,6 +455,11 @@ size_t BitStream::bit1_count()
     for (size_t i = word_count * (sizeof(word_type) * 8); i < _bit_size; ++i)
         ret += (0 == bit_at(i) ? 0 : 1);
     return ret;
+}
+
+size_t BitStream::bit0_count()
+{
+    return _bit_size - bit1_count();
 }
 
 std::string BitStream::to_string()

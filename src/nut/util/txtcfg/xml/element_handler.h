@@ -5,7 +5,8 @@
 #include <stdint.h>
 #include <string>
 
-#include <nut/platform/platform.h>
+#include "../../../nut_config.h"
+
 
 namespace nut
 {
@@ -13,7 +14,7 @@ namespace nut
 /**
  * 读取 xml 时处理各个 XML element 的 handler
  */
-class XmlElementHandler
+class NUT_API XmlElementHandler
 {
 public:
     // 控制处理哪些子元素
@@ -30,76 +31,37 @@ private:
     std::string _name;
 
     // 控制处理哪些子元素
-    const uint8_t _handle_mask = 0xFF;
+    const uint8_t _handle_mask = 0xff;
 
     // 防止递归路径上的重复使用
     bool _busy = false;
 
 public:
-    explicit XmlElementHandler(uint8_t mask = 0xFF)
-        : _handle_mask(mask)
-    {}
-
+    explicit XmlElementHandler(uint8_t mask = 0xff);
     virtual ~XmlElementHandler() = default;
 
-    void set_name(const std::string& name)
-    {
-        _name = name;
-    }
+    void set_name(const std::string& name);
+    const std::string& get_name() const;
 
-    const std::string& get_name() const
-    {
-        return _name;
-    }
+    uint8_t get_handle_mask() const;
 
-    uint8_t get_handle_mask() const
-    {
-        return _handle_mask;
-    }
-
-    void set_busy(bool busy)
-    {
-        _busy = busy;
-    }
-
-    bool is_busy() const
-    {
-        return _busy;
-    }
+    void set_busy(bool busy);
+    bool is_busy() const;
 
 public:
-    virtual void handle_attribute(const std::string& name, const std::string& value)
-    {
-        UNUSED(name);
-        UNUSED(value);
-    }
+    virtual void handle_attribute(const std::string& name, const std::string& value);
 
-    virtual void handle_text(const std::string& text)
-    {
-        UNUSED(text);
-    }
+    virtual void handle_text(const std::string& text);
 
-    virtual void handle_comment(const std::string& comment)
-    {
-        UNUSED(comment);
-    }
+    virtual void handle_comment(const std::string& comment);
 
     // 返回新的 handler
-    virtual XmlElementHandler* handle_child(const std::string& name)
-    {
-        UNUSED(name);
-        return nullptr;
-    }
+    virtual XmlElementHandler* handle_child(const std::string& name);
 
     // 回收旧的 handler
-    virtual void handle_child_finish(XmlElementHandler *child)
-    {
-        UNUSED(child);
-    }
+    virtual void handle_child_finish(XmlElementHandler *child);
 
-    virtual void handle_finish()
-    {}
-
+    virtual void handle_finish();
 };
 
 }

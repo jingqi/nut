@@ -10,6 +10,16 @@ XmlWriter::XmlWriter(std::ostream *os)
     : _os(os)
 {}
 
+std::ostream* XmlWriter::get_output_stream() const
+{
+    return _os;
+}
+
+void XmlWriter::set_output_stream(std::ostream *os)
+{
+    _os = os;
+}
+
 void XmlWriter::start_element(const char *name)
 {
     assert(nullptr != name && '\0' != name[0]);

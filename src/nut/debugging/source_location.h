@@ -24,11 +24,9 @@ public:
     SourceLocation(const char *file, int line, const char *func);
 
     bool operator==(const SourceLocation& x) const;
-
     bool operator!=(const SourceLocation& x) const;
 
     const char* get_file_path() const;
-
     const char* get_file_name() const;
 
     int get_line_number() const;

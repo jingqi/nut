@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <stdlib.h> // for rand()
 
+#define _ENABLE_ATOMIC_ALIGNMENT_FIX // VS2015 SP2 BUG
 #include <atomic>
 #include <thread>
 

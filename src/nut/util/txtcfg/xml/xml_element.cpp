@@ -39,6 +39,11 @@ void XmlElement::set_dirty(bool dirty)
         _children.at(i)->set_dirty(false);
 }
 
+const std::string& XmlElement::get_name() const
+{
+    return _name;
+}
+
 void XmlElement::set_name(const std::string& name)
 {
     if (name != _name)
@@ -48,6 +53,11 @@ void XmlElement::set_name(const std::string& name)
     }
 }
 
+const std::string& XmlElement::get_text() const
+{
+    return _text;
+}
+
 void XmlElement::set_text(const std::string& text)
 {
     if (text != _text)
@@ -55,6 +65,11 @@ void XmlElement::set_text(const std::string& text)
         _text = text;
         _dirty = true;
     }
+}
+
+size_t XmlElement::get_children_count() const
+{
+    return _children.size();
 }
 
 rc_ptr<XmlElement> XmlElement::get_child(size_t i) const

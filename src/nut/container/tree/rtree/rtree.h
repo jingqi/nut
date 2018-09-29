@@ -11,19 +11,19 @@
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_CC_VC
-#   include <allocators>
-#   include <xutility>
+#   include <xutility> // for std::min() and so on
 #endif
 
 #include <nut/container/tuple.h>
 
 #include "mdarea.h"
 
+
 namespace nut
 {
 
 /**
- * 多维rtree
+ * 多维空间 rtree
  *
  * 参考资料：
  *      R-Trees - A Dynamic index structure for spatial searching. Antonin Guttman. University of California Berkeley
@@ -34,11 +34,9 @@ namespace nut
  * @param RealNumT 实数，避免乘法运算溢出，常用的是float，double等
  * @param MAX_ENTRY_COUNT 节点最大孩子数; 大于等于2
  * @param MIN_ENTRY_COUNT 节点最小孩子数; 小于最大孩子数
- * @param AllocT 内存分配器
  */
 template <typename DataT, typename NumT, size_t DIMENSIONS = 2, typename RealNumT = double,
-    size_t MAX_ENTRY_COUNT = 5, size_t MIN_ENTRY_COUNT = MAX_ENTRY_COUNT / 2,
-    typename AllocT = std::allocator<DataT> >
+          size_t MAX_ENTRY_COUNT = 5, size_t MIN_ENTRY_COUNT = MAX_ENTRY_COUNT / 2>
 class RTree
 {
     static_assert(DIMENSIONS >= 2, "rtree 空间维数");
@@ -189,13 +187,8 @@ private:
     };
 
 private:
-    typedef RTree<DataT, NumT, DIMENSIONS, RealNumT, MAX_ENTRY_COUNT, MIN_ENTRY_COUNT, AllocT>  self_type;
-    typedef AllocT                                                                              data_allocator_type;
-    typedef typename AllocT::template rebind<TreeNode>::other                                   treenode_allocator_type;
-    typedef typename AllocT::template rebind<DataNode>::other                                   datanode_allocator_type;
+    typedef RTree<DataT, NumT, DIMENSIONS, RealNumT, MAX_ENTRY_COUNT, MIN_ENTRY_COUNT>  self_type;
 
-    treenode_allocator_type _tree_node_alloc;
-    datanode_allocator_type _data_node_alloc;
     TreeNode *_root = nullptr; // 根节点
     size_t _height = 0; // 高度，TreeNode的层数
     size_t _size = 0; // 容量
@@ -216,16 +209,15 @@ private:
 public:
     RTree()
     {
-        _root = _tree_node_alloc.allocate(1);
+        _root = (TreeNode*) ::malloc(sizeof(TreeNode));
         assert(nullptr != _root);
         new (_root) TreeNode();
         _height = 1;
     }
 
     RTree(const RTree& x)
-        : _tree_node_alloc(x._tree_node_alloc), _data_node_alloc(x._data_node_alloc)
     {
-        _root = _tree_node_alloc.allocate(1);
+        _root = (TreeNode*) ::malloc(sizeof(TreeNode));
         assert(nullptr != _root);
         new (_root) TreeNode();
         _height = 1;
@@ -234,7 +226,6 @@ public:
     }
 
     RTree(RTree&& x)
-        : _tree_node_alloc(x._tree_node_alloc), _data_node_alloc(x._data_node_alloc)
     {
         _root = x._root;
         _height = x._height;
@@ -251,7 +242,7 @@ public:
         if (nullptr != _root)
         {
             _root->~TreeNode();
-            _tree_node_alloc.deallocate(_root, 1);
+            ::free(_root);
             _root = nullptr;
         }
     }
@@ -285,7 +276,7 @@ public:
                 {
                     TreeNode *t2 = dynamic_cast<TreeNode*>(c2);
 
-                    TreeNode *t1 = _tree_node_alloc.allocate(1);
+                    TreeNode *t1 = (TreeNode*) ::malloc(sizeof(TreeNode));
                     assert(nullptr != t1);
                     new (t1) TreeNode(*t2);
 
@@ -299,7 +290,7 @@ public:
                 {
                     DataNode *d2 = dynamic_cast<DataNode*>(c2);
 
-                    DataNode *d1 = _data_node_alloc.allocate(1);
+                    DataNode *d1 = (DataNode*) ::malloc(sizeof(DataNode));
                     assert(nullptr != d1);
                     new (d1) DataNode(*d2);
 
@@ -321,7 +312,7 @@ public:
         if (nullptr != _root)
         {
             _root->~TreeNode();
-            _tree_node_alloc.deallocate(_root, 1);
+            ::free(_root);
             _root = nullptr;
         }
 
@@ -341,7 +332,7 @@ public:
      */
     void insert(const area_type& rect, const data_type& data)
     {
-        DataNode *data_node = _data_node_alloc.allocate(1);
+        DataNode *data_node = (DataNode*) ::malloc(sizeof(DataNode));
         assert(nullptr != data_node);
         new (data_node) DataNode(rect, data);
         insert(data_node, _height);
@@ -366,7 +357,7 @@ public:
 
         // 释放内存
         dn->~DataNode();
-        _data_node_alloc.deallocate(dn, 1);
+        ::free(dn);
 
         // 调整树
         condense_tree(l);
@@ -379,7 +370,7 @@ public:
 
             // 释放内存
             tobedel->~TreeNode();
-            _tree_node_alloc.deallocate(tobedel, 1);
+            ::free(tobedel);
         }
         --_size;
         return true;
@@ -403,7 +394,7 @@ public:
 
         // 释放内存
         dn->~DataNode();
-        _data_node_alloc.deallocate(dn, 1);
+        ::free(dn);
 
         // 调整树
         condense_tree(l);
@@ -416,7 +407,7 @@ public:
 
             // 释放内存
             tobedel->~TreeNode();
-            _tree_node_alloc.deallocate(tobedel, 1);
+            ::free(tobedel);
         }
         --_size;
         return true;
@@ -452,13 +443,13 @@ public:
                 {
                     DataNode *dn = dynamic_cast<DataNode*>(c);
                     dn->~DataNode();
-                    _data_node_alloc.deallocate(dn, 1);
+                    ::free(dn);
                 }
             }
             if (n != _root)
             {
                 n->~TreeNode();
-                _tree_node_alloc.deallocate(n, 1);
+                ::free(n);
             }
         }
         _root->area.clear();
@@ -586,7 +577,7 @@ private:
         if (nullptr != r)
         {
             // new root
-            TreeNode *nln = _tree_node_alloc.allocate(1);
+            TreeNode *nln = (TreeNode*) ::malloc(sizeof(TreeNode));
             assert(nullptr != nln);
             new (nln) TreeNode();
             nln->append_child(_root);
@@ -656,7 +647,7 @@ private:
         parent->clear_children();
         parent->area = seed1->area;
         parent->append_child(seed1);
-        TreeNode *uncle = _tree_node_alloc.allocate(1);
+        TreeNode *uncle = (TreeNode*) ::malloc(sizeof(TreeNode));
         assert(nullptr != uncle);
         new (uncle) TreeNode();
         uncle->append_child(seed2);
@@ -954,7 +945,7 @@ private:
 
             // 释放内存
             n->~TreeNode();
-            _tree_node_alloc.deallocate(n, 1);
+            ::free(n);
         }
         assert(qd.empty());
     }

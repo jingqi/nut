@@ -5,8 +5,9 @@
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_CC_VC
-#   include <xutility>
+#   include <xutility> // for std::min() and so on
 #endif
+
 
 namespace nut
 {

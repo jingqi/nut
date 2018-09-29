@@ -28,28 +28,15 @@ public:
     XmlDom();
 
     bool is_dirty() const;
-
     void set_dirty(bool dirty);
 
-    const std::string& get_version() const
-    {
-        return _version;
-    }
-
+    const std::string& get_version() const;
     void set_version(const std::string& version);
 
-    const std::string& get_encoding() const
-    {
-        return _encoding;
-    }
-
+    const std::string& get_encoding() const;
     void set_encoding(const std::string& encoding);
 
-    rc_ptr<XmlElement> get_root() const
-    {
-        return _root;
-    }
-
+    rc_ptr<XmlElement> get_root() const;
     void set_root(rc_ptr<XmlElement> root);
 
     /**

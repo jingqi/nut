@@ -25,10 +25,7 @@ class NUT_API BitStream
 private:
     void _ensure_cap(size_t new_bit_size);
 
-    size_t _word_size() const
-    {
-        return (_bit_size + sizeof(word_type) * 8 - 1) / (sizeof(word_type) * 8);
-    }
+    size_t _word_size() const;
 
     // 使最后一个有效的 word 空位为 0
     void _normalize_tail();
@@ -56,19 +53,10 @@ public:
     BitStream& operator=(BitStream&& x);
 
     bool operator==(const BitStream& x) const;
-
-    bool operator!=(const BitStream& x) const
-    {
-        return !(*this == x);
-    }
+    bool operator!=(const BitStream& x) const;
 
     BitStream operator+(const BitStream& x) const;
-
-    BitStream& operator+=(const BitStream& x)
-    {
-        append(x);
-        return *this;
-    }
+    BitStream& operator+=(const BitStream& x);
 
     BitStream operator&(const BitStream& x) const;
     BitStream& operator&=(const BitStream& x);
@@ -82,25 +70,16 @@ public:
     /**
      * @return 1 或者 0
      */
-    int operator[](size_t i) const
-    {
-        return bit_at(i);
-    }
+    int operator[](size_t i) const;
 
-    size_t size() const
-    {
-        return _bit_size;
-    }
+    size_t size() const;
 
     /**
      * @param fill_bit 填充比特值，只能是 1 或者 0
      */
     void resize(size_t new_bit_size, int fill_bit = 0);
 
-    void clear()
-    {
-        _bit_size = 0;
-    }
+    void clear();
 
     /**
      * @return 1 或者 0
@@ -130,11 +109,7 @@ public:
 
 public:
     size_t bit1_count();
-
-    size_t bit0_count()
-    {
-        return _bit_size - bit1_count();
-    }
+    size_t bit0_count();
 
     std::string to_string();
     std::wstring to_wstring();
