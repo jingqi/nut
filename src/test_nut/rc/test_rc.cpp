@@ -8,7 +8,7 @@ using namespace nut;
 
 static int obj_count = 0;
 
-NUT_FIXTURE(TestGC)
+NUT_FIXTURE(TestRC)
 {
     NUT_CASES_BEGIN()
     NUT_CASE(test_smoking)
@@ -75,4 +75,4 @@ NUT_FIXTURE(TestGC)
     }
 };
 
-NUT_REGISTER_FIXTURE(TestGC, "gc, quiet")
+NUT_REGISTER_FIXTURE(TestRC, "rc, quiet")
