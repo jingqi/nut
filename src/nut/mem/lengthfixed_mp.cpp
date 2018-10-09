@@ -96,22 +96,29 @@ lengthfixed_mtmp::~lengthfixed_mtmp()
 bool lengthfixed_mtmp::is_empty() const
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
-    return 0 == _free_num;
+    return 0 == _free_num.load(std::memory_order_relaxed);
 }
 
 void lengthfixed_mtmp::clear()
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
 
-    void *p = _head;
-    while (nullptr != p)
+    void *old_head = _head.load(std::memory_order_relaxed);
+    while (true)
     {
-        void *next = *reinterpret_cast<void**>(p);
-        ma_free(_alloc, p, _granularity);
-        p = next;
+        if (nullptr == old_head)
+            return;
+
+        void *next = *reinterpret_cast<void**>(old_head);
+        if (_head.compare_exchange_weak(
+                old_head, next,
+                std::memory_order_release, std::memory_order_relaxed))
+        {
+            ma_free(_alloc, old_head, _granularity);
+            _free_num.fetch_sub(1, std::memory_order_relaxed);
+            old_head = next;
+        }
     }
-    _head = nullptr;
-    _free_num = 0;
 }
 
 void* lengthfixed_mtmp::alloc(size_t sz)
@@ -119,20 +126,18 @@ void* lengthfixed_mtmp::alloc(size_t sz)
     NUT_DEBUGGING_ASSERT_ALIVE;
     assert(_granularity == (std::max)(sz, sizeof(void*)));
 
-    while (true)
+    void *old_head = _head.load(std::memory_order_relaxed);
+    do
     {
-        void *old_head = _head;
-
         if (nullptr == old_head)
             return ma_alloc(_alloc, _granularity);
+    } while (!_head.compare_exchange_weak(
+                 old_head, *reinterpret_cast<void**>(old_head),
+                 std::memory_order_release, std::memory_order_relaxed));
 
-        void *next = *reinterpret_cast<void**>(old_head);
-        if (_head.compare_exchange_weak(old_head, next))
-        {
-            _free_num = (std::max)(0, _free_num - 1); // NOTE _free_num 在多线程下并不可靠
-            return old_head;
-        }
-    }
+    _free_num.fetch_sub(1, std::memory_order_relaxed);
+
+    return old_head;
 }
 
 void* lengthfixed_mtmp::realloc(void *p, size_t old_sz, size_t new_sz)
@@ -149,26 +154,19 @@ void lengthfixed_mtmp::free(void *p, size_t sz)
     NUT_DEBUGGING_ASSERT_ALIVE;
     assert(nullptr != p && _granularity == (std::max)(sz, sizeof(void*)));
 
-    while(true)
+    if (_free_num.load(std::memory_order_relaxed) >= (int) MAX_FREE_NUM)
     {
-        if (_free_num >= (int) MAX_FREE_NUM) // NOTE _free_num 只起参考作用
-        {
-            ma_free(_alloc, p, _granularity);
-            return;
-        }
-
-        void *old_head = _head;
-        *reinterpret_cast<void**>(p) = old_head;
-        if (_head.compare_exchange_weak(old_head, p))
-        {
-            // NOTE _free_num 在多线程下并不可靠
-            if (nullptr == old_head)
-                _free_num = 1;
-            else
-                ++_free_num;
-            return;
-        }
+        ma_free(_alloc, p, _granularity);
+        return;
     }
+
+    *reinterpret_cast<void**>(p) = _head.load(std::memory_order_relaxed);
+    while (!_head.compare_exchange_weak(
+               *reinterpret_cast<void**>(p), p,
+               std::memory_order_release, std::memory_order_relaxed))
+    {}
+
+    _free_num.fetch_add(1, std::memory_order_relaxed);
 }
 
 }

@@ -60,7 +60,7 @@ class NUT_API lengthfixed_mtmp : public memory_allocator
 
     const rc_ptr<memory_allocator> _alloc;
     const size_t _granularity; // 粒度
-    int volatile _free_num = 0;
+    std::atomic<int> _free_num = ATOMIC_VAR_INIT(0);
     std::atomic<void*> _head = ATOMIC_VAR_INIT(nullptr);
 
     NUT_DEBUGGING_DESTROY_CHECKER
