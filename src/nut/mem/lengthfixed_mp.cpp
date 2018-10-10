@@ -104,20 +104,17 @@ void lengthfixed_mtmp::clear()
     NUT_DEBUGGING_ASSERT_ALIVE;
 
     void *old_head = _head.load(std::memory_order_relaxed);
-    while (true)
-    {
-        if (nullptr == old_head)
-            return;
+    while (!_head.compare_exchange_weak(
+               old_head, nullptr,
+               std::memory_order_release, std::memory_order_relaxed))
+    {}
 
+    while (nullptr != old_head)
+    {
         void *next = *reinterpret_cast<void**>(old_head);
-        if (_head.compare_exchange_weak(
-                old_head, next,
-                std::memory_order_release, std::memory_order_relaxed))
-        {
-            ma_free(_alloc, old_head, _granularity);
-            _free_num.fetch_sub(1, std::memory_order_relaxed);
-            old_head = next;
-        }
+        ma_free(_alloc, old_head, _granularity);
+        _free_num.fetch_sub(1, std::memory_order_relaxed);
+        old_head = next;
     }
 }
 
@@ -127,16 +124,15 @@ void* lengthfixed_mtmp::alloc(size_t sz)
     assert(_granularity == (std::max)(sz, sizeof(void*)));
 
     void *old_head = _head.load(std::memory_order_relaxed);
-    do
-    {
-        if (nullptr == old_head)
-            return ma_alloc(_alloc, _granularity);
-    } while (!_head.compare_exchange_weak(
-                 old_head, *reinterpret_cast<void**>(old_head),
-                 std::memory_order_release, std::memory_order_relaxed));
+    while (nullptr != old_head && !_head.compare_exchange_weak(
+               old_head, *reinterpret_cast<void**>(old_head),
+               std::memory_order_release, std::memory_order_relaxed))
+    {}
+
+    if (nullptr == old_head)
+        return ma_alloc(_alloc, _granularity);
 
     _free_num.fetch_sub(1, std::memory_order_relaxed);
-
     return old_head;
 }
 
