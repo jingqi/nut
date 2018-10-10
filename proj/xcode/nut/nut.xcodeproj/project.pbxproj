@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2E135372215FCB5000270AD5 /* element_handler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E135371215FCB5000270AD5 /* element_handler.cpp */; };
+		2E27ED44216E7BC80072840B /* stamped_ptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E27ED43216E7BC80072840B /* stamped_ptr.h */; };
 		2E325755215760FF00405E61 /* performance_counter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E325751215760FF00405E61 /* performance_counter.cpp */; };
 		2E325756215760FF00405E61 /* time_diff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E325752215760FF00405E61 /* time_diff.cpp */; };
 		2E325757215760FF00405E61 /* time_diff.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E325753215760FF00405E61 /* time_diff.h */; };
@@ -265,6 +266,7 @@
 
 /* Begin PBXFileReference section */
 		2E135371215FCB5000270AD5 /* element_handler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = element_handler.cpp; path = ../../../src/nut/util/txtcfg/xml/element_handler.cpp; sourceTree = "<group>"; };
+		2E27ED43216E7BC80072840B /* stamped_ptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stamped_ptr.h; path = ../../../src/nut/threading/lockfree/stamped_ptr.h; sourceTree = "<group>"; };
 		2E325751215760FF00405E61 /* performance_counter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = performance_counter.cpp; path = ../../../src/nut/util/time/performance_counter.cpp; sourceTree = "<group>"; };
 		2E325752215760FF00405E61 /* time_diff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = time_diff.cpp; path = ../../../src/nut/util/time/time_diff.cpp; sourceTree = "<group>"; };
 		2E325753215760FF00405E61 /* time_diff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = time_diff.h; path = ../../../src/nut/util/time/time_diff.h; sourceTree = "<group>"; };
@@ -805,6 +807,7 @@
 		2E1927811AD900F000FDFFA6 /* lockfree */ = {
 			isa = PBXGroup;
 			children = (
+				2E27ED43216E7BC80072840B /* stamped_ptr.h */,
 				2EE083D12146DD58008E4587 /* concurrent_queue.h */,
 				2EE083D42146DD58008E4587 /* concurrent_stack.h */,
 			);
@@ -1295,6 +1298,7 @@
 				2EE084472146DE03008E4587 /* property_dom.h in Headers */,
 				2EE083692146DCA9008E4587 /* path.h in Headers */,
 				2EE084562146DE1D008E4587 /* time_wheel.h in Headers */,
+				2E27ED44216E7BC80072840B /* stamped_ptr.h in Headers */,
 				2EE0831B2146DBE1008E4587 /* rbtree.h in Headers */,
 				2EE083F52146DD80008E4587 /* threading.h in Headers */,
 				2EE083AF2146DD0D008E4587 /* file_log_handler.h in Headers */,

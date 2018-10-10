@@ -53,7 +53,7 @@ public:
     void set(T *p, stamp_type s)
     {
         ptr = p;
-        stamp = p;
+        stamp = s;
     }
 };
 

@@ -61,6 +61,22 @@ class ConcurrentQueue
         Node(const T& v)
             : data(v)
         {}
+
+        // 构造 dummy 节点：初始化除了 data 以外的其他字段
+        void construct_dummy()
+        {
+            seg = 0;
+            StampedPtr<Node> init_value;
+            new (&prev) std::atomic<StampedPtr<Node>>(init_value);
+            new (&next) std::atomic<StampedPtr<Node>>(init_value);
+        }
+
+        // 析构 dummy 节点
+        void destruct_dummy()
+        {
+            (&prev)->~atomic();
+            (&next)->~atomic();
+        }
     };
 
     // 尝试出队的结果
@@ -85,8 +101,8 @@ public:
     ConcurrentQueue()
     {
         Node *dummy = (Node*) ::malloc(sizeof(Node));
-        dummy->next.store({nullptr, 0}, std::memory_order_relaxed);
-        dummy->prev.store({nullptr, 0}, std::memory_order_relaxed);
+        dummy->construct_dummy();
+
         _head.store({dummy, 0}, std::memory_order_relaxed);
         _tail.store({dummy, 0}, std::memory_order_relaxed);
 
@@ -104,8 +120,10 @@ public:
         {}
         assert(is_empty());
 
-        assert(nullptr != _head.load(std::memory_order_relaxed).ptr);
-        ::free(_head.load(std::memory_order_relaxed).ptr);
+        Node *dummy = _head.load(std::memory_order_relaxed).ptr;
+        assert(nullptr != dummy);
+        dummy->destruct_dummy();
+        ::free(dummy);
 
         for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
             (_collisions + i)->~atomic();
@@ -133,7 +151,7 @@ public:
     void optimistic_enqueue(const T& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
-        new (&(new_node->data)) T(v);
+        new (new_node) Node(v);
 
         // 获取旧值
         StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
@@ -193,10 +211,12 @@ public:
                         old_head, {first_node_prev.ptr, old_head.stamp + 1},
                         std::memory_order_release, std::memory_order_relaxed))
                 {
+                    // NOTE first_node_prev.ptr 成为新的 dummy 节点
+                    old_head.ptr->destruct_dummy();
                     ::free(old_head.ptr);
                     if (nullptr != p)
                         *p = *reinterpret_cast<T*>(tmp);
-                    ((T*) tmp)->~T();
+                    reinterpret_cast<T*>(tmp)->~T();
                     return true;
                 }
             }
@@ -222,7 +242,7 @@ public:
     void eliminate_enqueue(const T& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
-        new (&(new_node->data)) T(v);
+        new (new_node) Node(v);
 
         const stamp_type seen_tail = _tail.load(std::memory_order_relaxed).stamp;
         while (true)
@@ -301,10 +321,12 @@ private:
                         old_head, {first_node_prev.ptr, old_head.stamp + 1},
                         std::memory_order_release, std::memory_order_relaxed))
                 {
+                    // NOTE first_node_prev.ptr 成为新的 dummy 节点
+                    old_head.ptr->destruct_dummy();
                     ::free(old_head.ptr);
                     if (nullptr != p)
                         *p = *reinterpret_cast<T*>(tmp);
-                    ((T*) tmp)->~T();
+                    reinterpret_cast<T*>(tmp)->~T();
                     return DequeueAttemptResult::DequeueSuccess;
                 }
                 return DequeueAttemptResult::ConcurrentFailure;
@@ -363,7 +385,7 @@ private:
         {
             if (nullptr != p)
                 *p = old_collision.ptr->data;
-            (&(old_collision.ptr->data))->~T();
+            old_collision.ptr->~Node();
             ::free(old_collision.ptr);
             return true;
         }
