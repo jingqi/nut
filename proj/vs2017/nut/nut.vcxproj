@@ -202,6 +202,7 @@
     <ClInclude Include="..\..\..\src\nut\security\encrypt\rsa.h" />
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_queue.h" />
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_stack.h" />
+    <ClInclude Include="..\..\..\src\nut\threading\lockfree\stamped_ptr.h" />
     <ClInclude Include="..\..\..\src\nut\threading\sync\guard.h" />
     <ClInclude Include="..\..\..\src\nut\threading\sync\rwlock.h" />
     <ClInclude Include="..\..\..\src\nut\threading\sync\sem.h" />

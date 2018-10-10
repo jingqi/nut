@@ -10,10 +10,11 @@
 #include <atomic>
 #include <thread>
 
+#include "stamped_ptr.h"
 
 // 消隐数组的指针常量
 #define COLLISION_EMPTY_PTR nullptr
-#define COLLISION_DONE_PTR reinterpret_cast<Node*>(-1)
+#define COLLISION_DONE_PTR (reinterpret_cast<Node*>(-1))
 
 namespace nut
 {
@@ -29,8 +30,10 @@ namespace nut
  *   消隐(shavit and Touitou)
  *
  * 参考文献：
- *   [1]钱立兵，陈波等. 多线程并发访问无锁队列的算法研究[J]. 先进技术研究通报，2009-8，3(8). 50-55
- *   [2]Danny Hendler, Nir Shavit, Lena Yerushalmi. A Scalable Lock-free Stack Algorithm[J]. SPAA. 2004-06-27. 206-215
+ *   [1] 钱立兵，陈波等. 多线程并发访问无锁队列的算法研究[J]. 先进技术研究通报，
+ *       2009-8，3(8). 50-55
+ *   [2] Danny Hendler, Nir Shavit, Lena Yerushalmi. A Scalable Lock-free Stack
+ *       Algorithm[J]. SPAA. 2004-06-27. 206-215
  */
 template <typename T>
 class ConcurrentQueue
@@ -45,41 +48,15 @@ class ConcurrentQueue
         ELIMINATE_ENQUEUE_DELAY_MICROSECONDS = 10,
     };
 
-    typedef int stamp_type;
-
-    struct Node;
-
-    struct StampedPtr
-    {
-        Node *ptr;
-        stamp_type stamp;
-
-        StampedPtr()
-            : ptr(nullptr), stamp(0)
-        {}
-
-        StampedPtr(Node *p, stamp_type s)
-            : ptr(p), stamp(s)
-        {}
-
-        bool operator==(const StampedPtr& x) const
-        {
-            return ptr == x.ptr && stamp == x.stamp;
-        }
-
-        bool operator!=(const StampedPtr& x) const
-        {
-            return !(*this == x);
-        }
-    };
+    typedef typename StampedPtr<void>::stamp_type stamp_type;
 
     // 节点
     struct Node
     {
         T data;
         stamp_type seg = 0; // 用于安全消隐的标记
-        std::atomic<StampedPtr> prev = ATOMIC_VAR_INIT(StampedPtr());
-        std::atomic<StampedPtr> next = ATOMIC_VAR_INIT(StampedPtr());
+        std::atomic<StampedPtr<Node>> prev = ATOMIC_VAR_INIT(StampedPtr<Node>());
+        std::atomic<StampedPtr<Node>> next = ATOMIC_VAR_INIT(StampedPtr<Node>());
 
         Node(const T& v)
             : data(v)
@@ -94,11 +71,11 @@ class ConcurrentQueue
         EmptyQueueFailure, // 空队列
     };
 
-    std::atomic<StampedPtr> _head = ATOMIC_VAR_INIT(StampedPtr());
-    std::atomic<StampedPtr> _tail = ATOMIC_VAR_INIT(StampedPtr());
+    std::atomic<StampedPtr<Node>> _head = ATOMIC_VAR_INIT(StampedPtr<Node>());
+    std::atomic<StampedPtr<Node>> _tail = ATOMIC_VAR_INIT(StampedPtr<Node>());
 
     // 用于消隐的碰撞数组
-    std::atomic<StampedPtr> *_collisions = nullptr;;
+    std::atomic<StampedPtr<Node>> *_collisions = nullptr;;
 
 private:
     ConcurrentQueue(const ConcurrentQueue&) = delete;
@@ -108,15 +85,16 @@ public:
     ConcurrentQueue()
     {
         Node *dummy = (Node*) ::malloc(sizeof(Node));
-        dummy->next = {nullptr, 0};
-        dummy->prev = {nullptr, 0};
-        _head = {dummy, 0};
-        _tail = {dummy, 0};
+        dummy->next.store({nullptr, 0}, std::memory_order_relaxed);
+        dummy->prev.store({nullptr, 0}, std::memory_order_relaxed);
+        _head.store({dummy, 0}, std::memory_order_relaxed);
+        _tail.store({dummy, 0}, std::memory_order_relaxed);
 
-        _collisions = (std::atomic<StampedPtr>*) ::malloc(sizeof(std::atomic<StampedPtr>) * COLLISIONS_ARRAY_SIZE);
-        StampedPtr init_value;
+        _collisions = (std::atomic<StampedPtr<Node>>*) ::malloc(
+            sizeof(std::atomic<StampedPtr<Node>>) * COLLISIONS_ARRAY_SIZE);
+        StampedPtr<Node> init_value;
         for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
-            new (_collisions + i) std::atomic<StampedPtr>(init_value);
+            new (_collisions + i) std::atomic<StampedPtr<Node>>(init_value);
     }
 
     ~ConcurrentQueue()
@@ -124,8 +102,10 @@ public:
         // Clear elements
         while (optimistic_dequeue(nullptr))
         {}
-        assert(_head.load() == _tail.load() && nullptr != _head.load().ptr);
-        ::free(_head.load().ptr);
+        assert(is_empty());
+
+        assert(nullptr != _head.load(std::memory_order_relaxed).ptr);
+        ::free(_head.load(std::memory_order_relaxed).ptr);
 
         for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
             (_collisions + i)->~atomic();
@@ -135,39 +115,42 @@ public:
 
     bool is_empty() const
     {
-        return _head.load() == _tail.load();
+        return _head.load(std::memory_order_relaxed) == _tail.load(std::memory_order_relaxed);
     }
 
 public:
     /**
      * Optimistic算法入队
      *
-     *    在满负荷并发的情况下，为了能提高吞吐量，即要减少两次成功的CAS操作之间的时间间隔，
-     *    则等同于要减少(第1步)获取旧值与(第4步)CAS操作之间的耗时，因为成功操作的(第1步)获
-     *    取旧值必定紧接着上次成功的CAS操作。
+     *   在满负荷并发的情况下，为了能提高吞吐量，即要减少两次成功的CAS操作之间的
+     *   时间间隔，则等同于要减少(第1步)获取旧值与(第4步)CAS操作之间的耗时，因为
+     *   成功操作的(第1步)获取旧值必定紧接着上次成功的CAS操作。
      *
-     *    (第2步)基于旧值的操作与(第5步)收尾操作之间的操作之间的不同点在于：由于尚未插入到
-     *    队列中，(第2步)无须考虑并发操作的影响，其结果是可靠的；但是(第5步)则要考虑操作延
-     *    时对其他的并发操作的影响，所以有fixList()操作。
+     *   (第2步)基于旧值的操作与(第5步)收尾操作之间的操作之间的不同点在于：由于
+     *   尚未插入到队列中，(第2步)无须考虑并发操作的影响，其结果是可靠的；但是(
+     *   第5步)则要考虑操作延时对其他的并发操作的影响，所以有fixList()操作。
      */
     void optimistic_enqueue(const T& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new (&(new_node->data)) T(v);
 
+        // 获取旧值
+        StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
         while (true)
         {
-            // 获取旧值
-            StampedPtr old_tail = _tail;
-
             // 基于旧值的操作
-            new_node->next = {old_tail.ptr, old_tail.stamp + 1};
+            new_node->next.store({old_tail.ptr, old_tail.stamp + 1},
+                                 std::memory_order_relaxed);
 
-            // 尝试CAS
-            if (_tail.compare_exchange_weak(old_tail, {new_node, old_tail.stamp + 1}))
+            // 尝试CAS，失败则自动获取旧值到 old_tail
+            if (_tail.compare_exchange_weak(
+                    old_tail, {new_node, old_tail.stamp + 1},
+                    std::memory_order_release, std::memory_order_relaxed))
             {
                 // 收尾操作
-                old_tail.ptr->prev = {new_node, old_tail.stamp};
+                old_tail.ptr->prev.store({new_node, old_tail.stamp},
+                                         std::memory_order_relaxed);
                 break;
             }
         }
@@ -183,11 +166,13 @@ public:
         while (true)
         {
             // 保留旧值
-            StampedPtr old_head = _head;
-            const StampedPtr old_tail = _tail;
-            const StampedPtr first_node_prev = old_head.ptr->prev;
+            // NOTE 先取 head, 然后取 tail 和其他，再验证 head 是否改变，以保证
+            //      取到的值是可靠的
+            StampedPtr<Node> old_head = _head.load(std::memory_order_relaxed);
+            const StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
+            const StampedPtr<Node> first_node_prev = old_head.ptr->prev.load(std::memory_order_relaxed);
 
-            if (old_head == _head) // 先取head, 然后取tail和其他，再验证head是否改变，以保证取到的值是可靠的
+            if (old_head == _head.load(std::memory_order_relaxed))
             {
                 // 队列为空
                 if (old_tail == old_head)
@@ -204,7 +189,9 @@ public:
                 ::memcpy(tmp, &(first_node_prev.ptr->data), sizeof(T));
 
                 // 尝试CAS操作
-                if (_head.compare_exchange_weak(old_head, {first_node_prev.ptr, old_head.stamp + 1}))
+                if (_head.compare_exchange_weak(
+                        old_head, {first_node_prev.ptr, old_head.stamp + 1},
+                        std::memory_order_release, std::memory_order_relaxed))
                 {
                     ::free(old_head.ptr);
                     if (nullptr != p)
@@ -218,14 +205,15 @@ public:
 
 private:
     // 修复
-    void fix_list(const StampedPtr& tail, const StampedPtr& head)
+    void fix_list(const StampedPtr<Node>& tail, const StampedPtr<Node>& head)
     {
-        StampedPtr cur_node = tail;
-        while ((head == _head) && (cur_node != head))
+        StampedPtr<Node> cur_node = tail;
+        while ((head == _head.load(std::memory_order_relaxed)) && (cur_node != head))
         {
-            StampedPtr cur_node_next = cur_node.ptr->next;
-            cur_node_next.ptr->prev = {cur_node.ptr, cur_node.stamp - 1};
-            cur_node = {cur_node_next.ptr, cur_node.stamp - 1};
+            StampedPtr<Node> cur_node_next = cur_node.ptr->next.load(std::memory_order_relaxed);
+            cur_node_next.ptr->prev.store({cur_node.ptr, cur_node.stamp - 1},
+                                          std::memory_order_relaxed);
+            cur_node.set(cur_node_next.ptr, cur_node.stamp - 1);
         }
     }
 
@@ -236,12 +224,12 @@ public:
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new (&(new_node->data)) T(v);
 
-        const stamp_type seen_tail = _tail.load().stamp;
+        const stamp_type seen_tail = _tail.load(std::memory_order_relaxed).stamp;
         while (true)
         {
             if (enqueue_attempt(new_node))
                 return;
-            if (seen_tail <= _head.load().stamp &&
+            if (seen_tail <= _head.load(std::memory_order_relaxed).stamp &&
                 try_to_eliminate_enqueue(new_node, seen_tail))
                 return;
         }
@@ -255,7 +243,8 @@ public:
             const DequeueAttemptResult rs = dequeue_attempt(p);
             if (DequeueAttemptResult::EmptyQueueFailure == rs)
                 return false;
-            else if (DequeueAttemptResult::DequeueSuccess == rs || try_to_eliminate_dequeue(p))
+            else if (DequeueAttemptResult::DequeueSuccess == rs ||
+                     try_to_eliminate_dequeue(p))
                 return true;
         }
     }
@@ -264,12 +253,16 @@ private:
     // 尝试入队
     bool enqueue_attempt(Node *new_node)
     {
-        StampedPtr old_tail = _tail;
-        new_node->next = {old_tail.ptr, old_tail.stamp + 1};
+        StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
+        new_node->next.store({old_tail.ptr, old_tail.stamp + 1},
+                             std::memory_order_relaxed);
 
-        if (_tail.compare_exchange_weak(old_tail, {new_node, old_tail.stamp + 1}))
+        if (_tail.compare_exchange_weak(
+                old_tail, {new_node, old_tail.stamp + 1},
+                std::memory_order_release, std::memory_order_relaxed))
         {
-            old_tail.ptr->prev = {new_node, old_tail.stamp};
+            old_tail.ptr->prev.store({new_node, old_tail.stamp},
+                                     std::memory_order_relaxed);
             return true;
         }
         return false;
@@ -283,11 +276,11 @@ private:
         while (true)
         {
             // 保留旧值
-            StampedPtr old_head = _head;
-            const StampedPtr old_tail = _tail;
-            const StampedPtr first_node_prev = old_head.ptr->prev;
+            StampedPtr<Node> old_head = _head.load(std::memory_order_relaxed);
+            const StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
+            const StampedPtr<Node> first_node_prev = old_head.ptr->prev.load(std::memory_order_relaxed);
 
-            if (old_head == _head)
+            if (old_head == _head.load(std::memory_order_relaxed))
             {
                 // 队列为空
                 if (old_tail == old_head)
@@ -304,7 +297,9 @@ private:
                 ::memcpy(tmp, &(first_node_prev.ptr->data), sizeof(T));
 
                 // 尝试CAS操作
-                if (_head.compare_exchange_weak(old_head, {first_node_prev.ptr, old_head.stamp + 1}))
+                if (_head.compare_exchange_weak(
+                        old_head, {first_node_prev.ptr, old_head.stamp + 1},
+                        std::memory_order_release, std::memory_order_relaxed))
                 {
                     ::free(old_head.ptr);
                     if (nullptr != p)
@@ -320,14 +315,15 @@ private:
     bool try_to_eliminate_enqueue(Node *new_node, stamp_type seen_tail)
     {
         new_node->seg = seen_tail;
-        const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
-        StampedPtr old_collision_to_add = _collisions[i];
+        const unsigned int i = ::rand() % COLLISIONS_ARRAY_SIZE;
+        StampedPtr<Node> old_collision_to_add = _collisions[i].load(std::memory_order_relaxed);
         if (COLLISION_EMPTY_PTR != old_collision_to_add.ptr)
             return false;
 
         // 添加到碰撞数组
         if (!_collisions[i].compare_exchange_weak(
-                old_collision_to_add, {new_node, old_collision_to_add.stamp + 1}))
+                old_collision_to_add, {new_node, old_collision_to_add.stamp + 1},
+                std::memory_order_release, std::memory_order_relaxed))
             return false;
 
         // 等待一段时间
@@ -335,12 +331,14 @@ private:
             std::chrono::milliseconds(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS));
 
         // 检查是否消隐成功
-        StampedPtr old_collision_to_remove = _collisions[i];
+        StampedPtr<Node> old_collision_to_remove = _collisions[i].load(std::memory_order_relaxed);
         if (COLLISION_DONE_PTR == old_collision_to_remove.ptr ||
             !_collisions[i].compare_exchange_weak(
-                old_collision_to_remove, {COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1}))
+                old_collision_to_remove, {COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1},
+                std::memory_order_release, std::memory_order_relaxed))
         {
-            _collisions[i] = {COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1};
+            _collisions[i].store({COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1},
+                                 std::memory_order_relaxed);
             return true;
         }
 
@@ -349,9 +347,9 @@ private:
 
     bool try_to_eliminate_dequeue(T *p)
     {
-        const stamp_type seen_head = _head.load().stamp;
-        const unsigned int i = rand() % COLLISIONS_ARRAY_SIZE;
-        StampedPtr old_collision = _collisions[i];
+        const stamp_type seen_head = _head.load(std::memory_order_relaxed).stamp;
+        const unsigned int i = ::rand() % COLLISIONS_ARRAY_SIZE;
+        StampedPtr<Node> old_collision = _collisions[i].load(std::memory_order_relaxed);
         if (COLLISION_EMPTY_PTR == old_collision.ptr ||
             COLLISION_DONE_PTR == old_collision.ptr)
             return false;
@@ -360,8 +358,8 @@ private:
             return false;
 
         if (_collisions[i].compare_exchange_weak(
-                old_collision,
-                {COLLISION_DONE_PTR, old_collision.stamp}))
+                old_collision, {COLLISION_DONE_PTR, old_collision.stamp},
+                std::memory_order_release, std::memory_order_relaxed))
         {
             if (nullptr != p)
                 *p = old_collision.ptr->data;
