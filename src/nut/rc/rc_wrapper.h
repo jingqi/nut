@@ -26,7 +26,7 @@ class RCWrapper final : public T
 {
 protected:
     // 引用计数器
-    RefCounter _ref_count;
+    mutable RefCounter _ref_count;
 
     // 避免多次销毁的检查器
     NUT_DEBUGGING_DESTROY_CHECKER
@@ -114,13 +114,13 @@ public:
     {}
 #endif
 
-    virtual int add_ref() override final
+    virtual int add_ref() const override final
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         return ++_ref_count;
     }
 
-    virtual int release_ref() override final
+    virtual int release_ref() const override final
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         const int ret = --_ref_count; // memory_order release
@@ -128,7 +128,7 @@ public:
         {
             std::atomic_thread_fence(std::memory_order_acquire); // memory_order acquire
             this->~RCWrapper();
-            ::free(this);
+            ::free(const_cast<RCWrapper<T>*>(this));
         }
         return ret;
     }
