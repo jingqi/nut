@@ -29,28 +29,26 @@ namespace nut
  */
 class BitSieve
 {
+public:
     /**
-     * Stores the bits in this BitSieve.
+     * Construct a bit sieve of search_len bits used for finding prime number
+     * candidates. The new sieve begins at the specified base, which must
+     * be even.
      */
-    int64_t *_bits = nullptr;
-    int _bits_cap = 0;
+    BitSieve(const BigInteger& base, int search_len);
+
+    ~BitSieve();
 
     /**
-     * Length is how many bits this sieve holds.
+     * Test probable primes in the sieve and return successful candidates.
      */
-    int _length = 0;
-
-    /**
-     * A small sieve used to filter out multiples of small primes in a search
-     * sieve.
-     */
-    static BitSieve _small_sieve;
+    BigInteger retrieve(const BigInteger& init_value, int certainty);
 
 private:
     // Non-copyable
     BitSieve(const BitSieve&) = delete;
     BitSieve& operator=(const BitSieve&) = delete;
-    
+
     /**
      * Construct a "small sieve" with a base of 0.  This constructor is
      * used internally to generate the set of "small primes" whose multiples
@@ -64,17 +62,6 @@ private:
      */
     BitSieve();
 
-public:
-    /**
-     * Construct a bit sieve of search_len bits used for finding prime number
-     * candidates. The new sieve begins at the specified base, which must
-     * be even.
-     */
-    BitSieve(const BigInteger& base, int search_len);
-
-    ~BitSieve();
-
-private:
     /**
      * Get the value of the bit at the specified index.
      */
@@ -99,11 +86,23 @@ private:
      */
     void sieve_single(int limit, int start, int step);
 
-public:
+private:
     /**
-     * Test probable primes in the sieve and return successful candidates.
+     * Stores the bits in this BitSieve.
      */
-    BigInteger retrieve(const BigInteger& init_value, int certainty);
+    int64_t *_bits = nullptr;
+    int _bits_cap = 0;
+
+    /**
+     * Length is how many bits this sieve holds.
+     */
+    int _length = 0;
+
+    /**
+     * A small sieve used to filter out multiples of small primes in a search
+     * sieve.
+     */
+    static BitSieve _small_sieve;
 };
 
 }

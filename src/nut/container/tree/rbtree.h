@@ -15,9 +15,6 @@ namespace nut
 template <typename K, typename NODE>
 class RBTree
 {
-private:
-    RBTree() = delete;
-
 public:
     /**
      * 插入新节点到二叉查找树
@@ -112,6 +109,8 @@ public:
     }
 
 private:
+    RBTree() = delete;
+
     /**
      * 左旋转
      */

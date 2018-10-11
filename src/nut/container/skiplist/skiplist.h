@@ -27,9 +27,6 @@ namespace nut
 template <typename K, typename NODE, typename SL>
 class SkipList
 {
-private:
-    SkipList() = delete;
-
 public:
     enum
     {
@@ -170,6 +167,10 @@ public:
                 pre_lv[i]->set_next(i, n->get_next(i));
         }
     }
+
+private:
+    SkipList() = delete;
+
 };
 
 }

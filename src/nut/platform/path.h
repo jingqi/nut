@@ -12,9 +12,6 @@ namespace nut
 
 class NUT_API Path
 {
-private:
-    Path() = delete;
-
 public:
     /**
      * 路径分隔符
@@ -231,6 +228,9 @@ public:
     static std::wstring join(const wchar_t *a, const wchar_t *b, const wchar_t *c, const wchar_t *d);
     static std::string join(const std::string& a, const std::string& b, const std::string& c, const std::string& d);
     static std::wstring join(const std::wstring& a, const std::wstring& b, const std::wstring& c, const std::wstring& d);
+
+private:
+    Path() = delete;
 };
 
 }

@@ -1,4 +1,4 @@
-
+﻿
 #ifndef ___HEADFILE_770F82A8_D4E3_45A1_A6B9_1790204ACF29_
 #define ___HEADFILE_770F82A8_D4E3_45A1_A6B9_1790204ACF29_
 
@@ -22,17 +22,6 @@ namespace nut
  */
 class NUT_API AES_CBC_PKCS5
 {
-    enum
-    {
-        READY,
-        IN_ENCRYPT,
-        IN_DECRYPT
-    } _state = READY;
-    uint8_t _data_buf[16], _iv[16];
-    size_t _data_buf_size = 0;
-    COWArray<uint8_t> _result;
-    AES _aes;
-
 public:
     /**
      * 开始加密
@@ -53,11 +42,12 @@ public:
      */
     void finish_encrypt();
 
-public:
     /**
-    * @param key       密钥
-    * @param key_bits  密钥的比特长度，只能取128, 192, 256
-    * @param iv        16字节初始化向量，必须与加密时使用的是相同的
+     * 开始解密
+     *
+     * @param key       密钥
+     * @param key_bits  密钥的比特长度，只能取128, 192, 256
+     * @param iv        16字节初始化向量，必须与加密时使用的是相同的
      */
     void start_decrypt(const void *key, int key_bits, const void *iv);
 
@@ -73,11 +63,22 @@ public:
      */
     bool finish_decrypt();
 
-public:
     /**
      * 获取加密或者解密结果
      */
     COWArray<uint8_t> get_result() const;
+
+private:
+    enum
+    {
+        READY,
+        IN_ENCRYPT,
+        IN_DECRYPT
+    } _state = READY;
+    uint8_t _data_buf[16], _iv[16];
+    size_t _data_buf_size = 0;
+    COWArray<uint8_t> _result;
+    AES _aes;
 };
 
 }

@@ -26,6 +26,7 @@ public:
         BigInteger d, n;
     };
 
+public:
     static void gen_key(size_t bit_count, PublicKey *public_key, PrivateKey *private_key);
 
     static void encode(const BigInteger& m, const PublicKey& k, BigInteger *rs);

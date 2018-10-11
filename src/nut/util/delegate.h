@@ -22,6 +22,7 @@ template <typename T> class delegate;
 template <typename Ret TEMPLATE_ARGS>                                   \
 class delegate<Ret (FUNCTION_ARGS)>                                     \
 {                                                                       \
+private:                                                                \
     typedef delegate<Ret (FUNCTION_ARGS)> self_type;                    \
                                                                         \
     enum class HolderType                                               \
@@ -30,20 +31,19 @@ class delegate<Ret (FUNCTION_ARGS)>                                     \
         MemberFunction                                                  \
     };                                                                  \
                                                                         \
-    struct IHolder                                                      \
+    class IHolder                                                       \
     {                                                                   \
+    public:                                                             \
         virtual ~IHolder() = default;                                   \
         virtual HolderType type() const = 0;                            \
         virtual Ret operator() (FUNCTION_ARGS) = 0;                     \
         virtual IHolder* clone() const = 0;                             \
     };                                                                  \
-    std::vector<IHolder*> _holders;                                     \
                                                                         \
     template <typename FunctorPtr>                                      \
-    struct FunctorHolder : public IHolder                               \
+    class FunctorHolder : public IHolder                                \
     {                                                                   \
-        FunctorPtr func = nullptr;                                      \
-                                                                        \
+    public:                                                             \
         FunctorHolder(FunctorPtr pfunc)                                 \
             : func(pfunc)                                               \
         {                                                               \
@@ -65,14 +65,15 @@ class delegate<Ret (FUNCTION_ARGS)>                                     \
         {                                                               \
             return new FunctorHolder<FunctorPtr>(*this);                \
         }                                                               \
+                                                                        \
+    public:                                                             \
+        FunctorPtr func = nullptr;                                      \
     };                                                                  \
                                                                         \
     template <typename U, typename MemFun>                              \
-    struct MemHolder : public IHolder                                   \
+    class MemHolder : public IHolder                                    \
     {                                                                   \
-        U obj = nullptr;                                                \
-        MemFun mem_func = nullptr;                                      \
-                                                                        \
+    public:                                                             \
         MemHolder(U o, MemFun f)                                        \
             : obj(o), mem_func(f)                                       \
         {                                                               \
@@ -94,6 +95,10 @@ class delegate<Ret (FUNCTION_ARGS)>                                     \
         {                                                               \
             return new MemHolder<U,MemFun>(*this);                      \
         }                                                               \
+                                                                        \
+    public:                                                             \
+        U obj = nullptr;                                                \
+        MemFun mem_func = nullptr;                                      \
     };                                                                  \
                                                                         \
 public:                                                                 \
@@ -268,6 +273,9 @@ public:                                                                 \
         }                                                               \
         return Ret();                                                   \
     }                                                                   \
+                                                                        \
+private:                                                                \
+    std::vector<IHolder*> _holders;                                     \
 };
 
 

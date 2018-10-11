@@ -22,13 +22,6 @@ namespace nut
  */
 class NUT_API PConsole : public IConsole
 {
-    char _prompt_char = '>';
-    std::string _prompt_string;
-    std::string _console_name;
-    std::vector<rc_ptr<ICommand> > _commands;
-    bool _exit = false;
-    int _exit_value = 0;
-
 public:
     explicit PConsole(const std::string& name = "PConsole");
 
@@ -60,6 +53,14 @@ public:
 
 private:
     void execute_line(const char* l);
+
+private:
+    char _prompt_char = '>';
+    std::string _prompt_string;
+    std::string _console_name;
+    std::vector<rc_ptr<ICommand> > _commands;
+    bool _exit = false;
+    int _exit_value = 0;
 };
 
 }

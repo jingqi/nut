@@ -21,51 +21,28 @@ class SqliteConnection
 {
     NUT_REF_COUNTABLE
 
-    sqlite3 *_sqlite = nullptr;
-    bool _auto_commit = true;
-    bool _throw_exceptions = false;
-    int _last_error = SQLITE_OK;
-    std::string _last_error_msg;
-
+private:
     class Sqlite3Freer
     {
-        void *_ptr = nullptr;
-
     public:
         Sqlite3Freer(void *p = nullptr)
             : _ptr(p)
         {}
-
-        void attach(void *p)
-        {
-            _ptr = p;
-        }
 
         ~Sqlite3Freer()
         {
             if (nullptr != _ptr)
                 ::sqlite3_free(_ptr);
         }
-    };
 
-    void on_error(int err = SQLITE_OK, const char *msg = nullptr)
-    {
-        _last_error = err;
-        if (SQLITE_OK == err && nullptr != _sqlite)
-            _last_error = ::sqlite3_errcode(_sqlite);
-
-        if (nullptr == msg)
+        void attach(void *p)
         {
-            if (nullptr != _sqlite)
-                msg = ::sqlite3_errmsg(_sqlite); // XXX memory of "msg" is managed internally by sqlite3
-            else if (SQLITE_OK != _last_error)
-                msg = ::sqlite3_errstr(_last_error);
+            _ptr = p;
         }
-        _last_error_msg = (nullptr == msg ? "no error detected" : msg);
 
-        if (_throw_exceptions)
-            throw ExceptionA(_last_error, _last_error_msg, __FILE__, __LINE__, __FUNCTION__);
-    }
+    private:
+        void *_ptr = nullptr;
+    };
 
 public:
     SqliteConnection() = default;
@@ -79,7 +56,7 @@ public:
     /**
      * @param dbfilepath File path encoded in UTF-8
      */
-    SqliteConnection(const char *db_file)
+    explicit SqliteConnection(const char *db_file)
     {
         assert(nullptr != db_file);
         open(db_file);
@@ -456,6 +433,33 @@ public:
         // 执行
         return rc_new<SqliteResultSet>(stmt);
     }
+
+private:
+    void on_error(int err = SQLITE_OK, const char *msg = nullptr)
+    {
+        _last_error = err;
+        if (SQLITE_OK == err && nullptr != _sqlite)
+            _last_error = ::sqlite3_errcode(_sqlite);
+
+        if (nullptr == msg)
+        {
+            if (nullptr != _sqlite)
+                msg = ::sqlite3_errmsg(_sqlite); // XXX memory of "msg" is managed internally by sqlite3
+            else if (SQLITE_OK != _last_error)
+                msg = ::sqlite3_errstr(_last_error);
+        }
+        _last_error_msg = (nullptr == msg ? "no error detected" : msg);
+
+        if (_throw_exceptions)
+            throw ExceptionA(_last_error, _last_error_msg, __FILE__, __LINE__, __FUNCTION__);
+    }
+
+private:
+    sqlite3 *_sqlite = nullptr;
+    bool _auto_commit = true;
+    bool _throw_exceptions = false;
+    int _last_error = SQLITE_OK;
+    std::string _last_error_msg;
 };
 
 }

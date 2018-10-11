@@ -56,7 +56,6 @@ void Logger::add_handler(LogHandler *handler)
     assert(nullptr != handler);
     NUT_DEBUGGING_ASSERT_ALIVE;
 
-    handler->add_ref();
     _handlers.push_back(handler);
 }
 
@@ -67,10 +66,9 @@ void Logger::remove_handler(LogHandler *handler)
 
     for (size_t i = 0, sz = _handlers.size(); i < sz; ++i)
     {
-        if (_handlers.at(i) == handler)
+        if (_handlers.at(i).pointer() == handler)
         {
             _handlers.erase(_handlers.begin() + i);
-            handler->release_ref();
             return;
         }
     }
@@ -80,12 +78,6 @@ void Logger::clear_handlers()
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
 
-    for (size_t i = 0, sz = _handlers.size(); i < sz; ++i)
-    {
-        LogHandler *handler = _handlers.at(i);
-        assert(nullptr != handler);
-        handler->release_ref();
-    }
     _handlers.clear();
 }
 
@@ -138,10 +130,6 @@ void Logger::load_xml_config(const std::string& config)
 {
     class TagHandler : public XmlElementHandler
     {
-        LogFilter *_filter = nullptr;
-        std::string _tag_name;
-        loglevel_mask_type _forbid_mask = 0;
-
     public:
         TagHandler()
             : XmlElementHandler(HANDLE_ATTRIBUTE)
@@ -174,13 +162,15 @@ void Logger::load_xml_config(const std::string& config)
         {
             _filter->forbid(_tag_name.c_str(), _forbid_mask);
         }
+
+    private:
+        LogFilter *_filter = nullptr;
+        std::string _tag_name;
+        loglevel_mask_type _forbid_mask = 0;
     } tag_xml_handler;
 
     class FilterHandler : public XmlElementHandler
     {
-        TagHandler *_tag_xml_handler = nullptr;
-        LogFilter *_filter = nullptr;
-
     public:
         FilterHandler(TagHandler *tag_xml_handler)
             : XmlElementHandler(HANDLE_CHILD), _tag_xml_handler(tag_xml_handler)
@@ -203,23 +193,14 @@ void Logger::load_xml_config(const std::string& config)
             }
             return nullptr;
         }
+
+    private:
+        TagHandler *_tag_xml_handler = nullptr;
+        LogFilter *_filter = nullptr;
     } filter_xml_handler(&tag_xml_handler);
 
     class HandlerHandler : public XmlElementHandler
     {
-        FilterHandler *_filter_xml_handler = nullptr;
-
-        std::string _type;
-        std::string _path;
-        std::string _file_prefix;
-        bool _append = false;
-        bool _close_syslog_on_exit = false;
-        bool _cross_file = true;
-        size_t _circle = 10;
-        long _max_file_size = 1 * 1024 * 1024;
-        loglevel_mask_type _flush_mask = static_cast<loglevel_mask_type>(LogLevel::Fatal);
-        LogFilter _filter;
-
     public:
         HandlerHandler(FilterHandler *filter_xml_handler)
             : XmlElementHandler(HANDLE_ATTRIBUTE | HANDLE_CHILD),
@@ -345,13 +326,24 @@ void Logger::load_xml_config(const std::string& config)
             }
 #endif
         }
+
+    private:
+        FilterHandler *_filter_xml_handler = nullptr;
+
+        std::string _type;
+        std::string _path;
+        std::string _file_prefix;
+        bool _append = false;
+        bool _close_syslog_on_exit = false;
+        bool _cross_file = true;
+        size_t _circle = 10;
+        long _max_file_size = 1 * 1024 * 1024;
+        loglevel_mask_type _flush_mask = static_cast<loglevel_mask_type>(LogLevel::Fatal);
+        LogFilter _filter;
     } handler_xml_handler(&filter_xml_handler);
 
     class LoggerHandler : public XmlElementHandler
     {
-        FilterHandler *_filter_xml_handler = nullptr;
-        HandlerHandler *_handler_xml_handler = nullptr;
-
     public:
         LoggerHandler(FilterHandler *filter_xml_handler, HandlerHandler *handler_xml_handler)
             : XmlElementHandler(HANDLE_CHILD), _filter_xml_handler(filter_xml_handler),
@@ -373,12 +365,14 @@ void Logger::load_xml_config(const std::string& config)
             }
             return nullptr;
         }
+
+    private:
+        FilterHandler *_filter_xml_handler = nullptr;
+        HandlerHandler *_handler_xml_handler = nullptr;
     } logger_xml_handler(&filter_xml_handler, &handler_xml_handler);
 
     class RootHandler : public XmlElementHandler
     {
-        LoggerHandler *_logger_xml_handler = nullptr;
-
     public:
         RootHandler(LoggerHandler *logger_xml_handler)
             : XmlElementHandler(HANDLE_CHILD), _logger_xml_handler(logger_xml_handler)
@@ -392,6 +386,9 @@ void Logger::load_xml_config(const std::string& config)
                 return _logger_xml_handler;
             return nullptr;
         }
+
+    private:
+        LoggerHandler *_logger_xml_handler = nullptr;
     } root_handler(&logger_xml_handler);
 
     _filter.clear_forbids();

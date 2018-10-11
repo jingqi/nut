@@ -13,9 +13,6 @@ namespace nut
 
 class NUT_API OS
 {
-private:
-    OS() = delete;
-
 public:
     /**
      * 枚举目录下的文件/文件夹
@@ -111,6 +108,9 @@ public:
     static bool rename(const wchar_t *from, const wchar_t *to);
     static bool rename(const std::string& from, const std::string& to);
     static bool rename(const std::wstring& from, const std::wstring& to);
+
+private:
+    OS() = delete;
 };
 
 }

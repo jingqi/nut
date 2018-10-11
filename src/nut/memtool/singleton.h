@@ -8,8 +8,13 @@ namespace nut
 template <typename T>
 class singleton
 {
-    struct object_creator
+public:
+    typedef T object_type;
+
+private:
+    class object_creator
     {
+    public:
         object_creator()
         {
             singleton<T>::instance();
@@ -19,16 +24,16 @@ class singleton
         {}
     };
 
-    static object_creator _create_object;
-
 public:
-    typedef T object_type;
     static object_type& instance()
     {
         static object_type obj;
         _create_object.do_nothing();
         return obj;
     }
+
+private:
+    static object_creator _create_object;
 };
 
 template <typename T>

@@ -16,10 +16,6 @@ namespace nut
  */
 class NUT_API SourceLocation
 {
-    const char *_path = nullptr;    // source file path
-    int _line = -1;            // source file line
-    const char *_func = nullptr;    // source function
-
 public:
     SourceLocation(const char *file, int line, const char *func);
 
@@ -37,6 +33,11 @@ public:
     const char* get_function_name() const;
 
     std::string to_string() const;
+
+private:
+    const char *_path = nullptr;    // source file path
+    int _line = -1;                 // source file line
+    const char *_func = nullptr;    // source function
 };
 
 }

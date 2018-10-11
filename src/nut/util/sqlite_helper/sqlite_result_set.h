@@ -19,22 +19,6 @@ class SqliteResultSet
 {
     NUT_REF_COUNTABLE
 
-    rc_ptr<SqliteStatement> _stmt;
-
-    int get_column_index(const char *column_name)
-    {
-        assert(nullptr != column_name && nullptr != _stmt);
-        const int c = ::sqlite3_column_count(_stmt->get_raw_stmt());
-        for (int i = 0; i < c; ++i)
-        {
-            const char *n = ::sqlite3_column_name(_stmt->get_raw_stmt(), i);
-            assert(nullptr != n);
-            if (0 == stricmp(n, column_name))
-                return i;
-        }
-        return -1;
-    }
-
 public:
     SqliteResultSet() = default;
 
@@ -86,6 +70,24 @@ public:
         assert(i >= 0);
         return get_string(i);
     }
+
+private:
+    int get_column_index(const char *column_name)
+    {
+        assert(nullptr != column_name && nullptr != _stmt);
+        const int c = ::sqlite3_column_count(_stmt->get_raw_stmt());
+        for (int i = 0; i < c; ++i)
+        {
+            const char *n = ::sqlite3_column_name(_stmt->get_raw_stmt(), i);
+            assert(nullptr != n);
+            if (0 == stricmp(n, column_name))
+                return i;
+        }
+        return -1;
+    }
+
+private:
+    rc_ptr<SqliteStatement> _stmt;
 };
 
 }

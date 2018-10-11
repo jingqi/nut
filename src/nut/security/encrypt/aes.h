@@ -15,13 +15,6 @@ namespace nut
  */
 class NUT_API AES
 {
-    /** Encryption round keys */
-    uint32_t _erk[64];
-    /** Decryption round keys */
-    uint32_t _drk[64];
-    /** Number of rounds */
-    int _nr = 10;
-
 public:
     AES();
 
@@ -48,6 +41,14 @@ public:
      * @param output 16 bytes output buffer
      */
     void decrypt(const void *input, void *output) const;
+
+private:
+    /** Encryption round keys */
+    uint32_t _erk[64];
+    /** Decryption round keys */
+    uint32_t _drk[64];
+    /** Number of rounds */
+    int _nr = 10;
 };
 
 }

@@ -1,4 +1,4 @@
-
+﻿
 #ifndef ___HEADFILE_188D63C6_448B_4D88_A912_578978532F69_
 #define ___HEADFILE_188D63C6_448B_4D88_A912_578978532F69_
 
@@ -17,12 +17,6 @@ namespace nut
  */
 class NUT_API CircleFileByTimeLogHandler : public LogHandler
 {
-    std::ofstream _ofs;
-    
-private:
-    CircleFileByTimeLogHandler(const CircleFileByTimeLogHandler&) = delete;
-    CircleFileByTimeLogHandler& operator=(const CircleFileByTimeLogHandler&) = delete;
-
 public:
     /**
      * 按照创建时间循环
@@ -35,6 +29,13 @@ public:
                                const std::string& prefix, size_t circle_size);
 
     virtual void handle_log(const LogRecord& rec) override;
+
+private:
+    CircleFileByTimeLogHandler(const CircleFileByTimeLogHandler&) = delete;
+    CircleFileByTimeLogHandler& operator=(const CircleFileByTimeLogHandler&) = delete;
+
+private:
+    std::ofstream _ofs;
 };
 
 }

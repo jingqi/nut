@@ -16,9 +16,6 @@ template <typename NODE>
 class BTree
 {
 private:
-    BTree() = delete;
-    
-private:
     /**
      * 中序遍历迭代器
      *
@@ -28,10 +25,6 @@ private:
      */
     class InorderTraversalIterator
     {
-        const NODE *_parent_of_sub_root = nullptr;
-        NODE *_current = nullptr;
-        bool _eof = false;
-
     public:
         typedef std::bidirectional_iterator_tag iterator_category;
         typedef NODE                            value_type;
@@ -137,6 +130,11 @@ private:
         {
             return !(*this == i);
         }
+
+    private:
+        const NODE *_parent_of_sub_root = nullptr;
+        NODE *_current = nullptr;
+        bool _eof = false;
     };
 
 public:
@@ -197,10 +195,6 @@ private:
      */
     class PreorderTraversalIterator
     {
-        const NODE *_parent_of_sub_root = nullptr;
-        NODE *_current = nullptr;
-        bool _eof = false;
-
     public:
         typedef std::bidirectional_iterator_tag iterator_category;
         typedef NODE                            value_type;
@@ -315,6 +309,11 @@ private:
         {
             return !(*this == i);
         }
+
+    private:
+        const NODE *_parent_of_sub_root = nullptr;
+        NODE *_current = nullptr;
+        bool _eof = false;
     };
 
 public:
@@ -371,10 +370,6 @@ private:
      */
     class PostorderTraversalIterator
     {
-        const NODE *_parent_of_sub_root = nullptr;
-        NODE *_current = nullptr;
-        bool _eof = false;
-
     public:
         typedef std::bidirectional_iterator_tag iterator_category;
         typedef NODE                            value_type;
@@ -487,6 +482,11 @@ private:
         {
             return !(*this == i);
         }
+
+    private:
+        const NODE *_parent_of_sub_root = nullptr;
+        NODE *_current = nullptr;
+        bool _eof = false;
     };
 
 public:
@@ -532,6 +532,9 @@ public:
     {
         return postorder_reverse_iterator(postorder_traversal_begin(sub_root));
     }
+
+private:
+    BTree() = delete;
 };
 
 }

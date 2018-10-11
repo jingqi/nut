@@ -24,6 +24,7 @@ class NUT_API scoped_gc
 {
     NUT_REF_COUNTABLE
 
+private:
     typedef scoped_gc self_type;
 
     enum
@@ -54,48 +55,10 @@ class NUT_API scoped_gc
         destruct_func_type destruct_func = nullptr;
     };
 
-    Block *_current_block = nullptr;
-    uint8_t *_end = nullptr;
-    DestructorNode *_destruct_chain = nullptr;
-    NUT_DEBUGGING_DESTROY_CHECKER
-
-private:
-    // Non-copyable
-    scoped_gc(const self_type&) = delete;
-    self_type& operator=(const self_type&) = delete;
-
 public:
     scoped_gc() = default;
     ~scoped_gc();
 
-private:
-    template <typename T>
-    static void destruct_single(void *p)
-    {
-        assert(nullptr != p);
-        ((T*) p)->~T();
-    }
-
-    template <typename T>
-    static void destruct_array(void *p)
-    {
-        assert(nullptr != p);
-        size_t count = *(size_t*)p;
-        T *pd = (T*)(((size_t*) p) + 1);
-        for (int i = 0; i < (int) count; ++i)
-        {
-            pd->~T();
-            ++pd;
-        }
-    }
-
-    void* raw_alloc(size_t sz);
-
-    void* alloc(size_t sz, destruct_func_type func);
-
-    void* alloc(size_t sz, size_t count, destruct_func_type func);
-
-public:
     void clear();
 
     void* gc_alloc(size_t sz);
@@ -247,6 +210,43 @@ public:
             new (ret + i) T;
         return ret;
     }
+
+private:
+    // Non-copyable
+    scoped_gc(const self_type&) = delete;
+    self_type& operator=(const self_type&) = delete;
+
+    template <typename T>
+    static void destruct_single(void *p)
+    {
+        assert(nullptr != p);
+        ((T*) p)->~T();
+    }
+
+    template <typename T>
+    static void destruct_array(void *p)
+    {
+        assert(nullptr != p);
+        size_t count = *(size_t*)p;
+        T *pd = (T*)(((size_t*) p) + 1);
+        for (int i = 0; i < (int) count; ++i)
+        {
+            pd->~T();
+            ++pd;
+        }
+    }
+
+    void* raw_alloc(size_t sz);
+
+    void* alloc(size_t sz, destruct_func_type func);
+
+    void* alloc(size_t sz, size_t count, destruct_func_type func);
+
+private:
+    Block *_current_block = nullptr;
+    uint8_t *_end = nullptr;
+    DestructorNode *_destruct_chain = nullptr;
+    NUT_DEBUGGING_DESTROY_CHECKER
 };
 
 }

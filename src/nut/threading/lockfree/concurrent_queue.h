@@ -46,6 +46,7 @@ namespace nut
 template <typename T>
 class ConcurrentQueue
 {
+private:
     // 这里根据具体情况配置
     enum
     {
@@ -59,13 +60,9 @@ class ConcurrentQueue
     typedef typename StampedPtr<void>::stamp_type stamp_type;
 
     // 节点
-    struct Node
+    class Node
     {
-        T data;
-        stamp_type seg = 0; // 用于安全消隐的标记
-        std::atomic<StampedPtr<Node>> prev = ATOMIC_VAR_INIT(StampedPtr<Node>());
-        std::atomic<StampedPtr<Node>> next = ATOMIC_VAR_INIT(StampedPtr<Node>());
-
+    public:
         Node(const T& v)
             : data(v)
         {}
@@ -85,6 +82,12 @@ class ConcurrentQueue
             (&prev)->~atomic();
             (&next)->~atomic();
         }
+
+    public:
+        T data;
+        stamp_type seg = 0; // 用于安全消隐的标记
+        std::atomic<StampedPtr<Node>> prev = ATOMIC_VAR_INIT(StampedPtr<Node>());
+        std::atomic<StampedPtr<Node>> next = ATOMIC_VAR_INIT(StampedPtr<Node>());
     };
 
     // 尝试出队的结果
@@ -94,16 +97,6 @@ class ConcurrentQueue
         ConcurrentFailure, // 并发失败
         EmptyQueueFailure, // 空队列
     };
-
-    std::atomic<StampedPtr<Node>> _head = ATOMIC_VAR_INIT(StampedPtr<Node>());
-    std::atomic<StampedPtr<Node>> _tail = ATOMIC_VAR_INIT(StampedPtr<Node>());
-
-    // 用于消隐的碰撞数组
-    std::atomic<StampedPtr<Node>> *_collisions = nullptr;;
-
-private:
-    ConcurrentQueue(const ConcurrentQueue&) = delete;
-    ConcurrentQueue& operator=(const ConcurrentQueue&) = delete;
 
 public:
     ConcurrentQueue()
@@ -144,7 +137,6 @@ public:
         return _head.load(std::memory_order_relaxed) == _tail.load(std::memory_order_relaxed);
     }
 
-public:
     /**
      * Optimistic算法入队
      *
@@ -231,21 +223,6 @@ public:
         }
     }
 
-private:
-    // 修复
-    void fix_list(const StampedPtr<Node>& head, const StampedPtr<Node>& tail)
-    {
-        StampedPtr<Node> cur_node = head;
-        while ((tail == _tail.load(std::memory_order_relaxed)) && (cur_node != tail))
-        {
-            StampedPtr<Node> cur_node_next = cur_node.ptr->next.load(std::memory_order_relaxed);
-            cur_node_next.ptr->prev.store({cur_node.ptr, cur_node.stamp - 1},
-                                          std::memory_order_relaxed);
-            cur_node.set(cur_node_next.ptr, cur_node.stamp - 1);
-        }
-    }
-
-public:
     // 采用消隐策略的入队
     void eliminate_enqueue(const T& v)
     {
@@ -278,6 +255,22 @@ public:
     }
 
 private:
+    ConcurrentQueue(const ConcurrentQueue&) = delete;
+    ConcurrentQueue& operator=(const ConcurrentQueue&) = delete;
+
+    // 修复
+    void fix_list(const StampedPtr<Node>& head, const StampedPtr<Node>& tail)
+    {
+        StampedPtr<Node> cur_node = head;
+        while ((tail == _tail.load(std::memory_order_relaxed)) && (cur_node != tail))
+        {
+            StampedPtr<Node> cur_node_next = cur_node.ptr->next.load(std::memory_order_relaxed);
+            cur_node_next.ptr->prev.store({cur_node.ptr, cur_node.stamp - 1},
+                                          std::memory_order_relaxed);
+            cur_node.set(cur_node_next.ptr, cur_node.stamp - 1);
+        }
+    }
+
     // 尝试入队
     bool enqueue_attempt(Node *new_node)
     {
@@ -399,6 +392,13 @@ private:
         }
         return false;
     }
+
+private:
+    std::atomic<StampedPtr<Node>> _head = ATOMIC_VAR_INIT(StampedPtr<Node>());
+    std::atomic<StampedPtr<Node>> _tail = ATOMIC_VAR_INIT(StampedPtr<Node>());
+
+    // 用于消隐的碰撞数组
+    std::atomic<StampedPtr<Node>> *_collisions = nullptr;;
 };
 
 }

@@ -14,8 +14,6 @@ namespace nut
 
 class NUT_API ConsoleTestLogger : public ITestLogger
 {
-    bool _in_a_tty = false;
-
 public:
     ConsoleTestLogger();
 
@@ -28,6 +26,9 @@ public:
     virtual void on_enter_case(const char *case_name) override;
     virtual void on_leave_case() override;
     virtual void on_failed_case(const TestCaseFailureException& e) override;
+
+private:
+    bool _in_a_tty = false;
 };
 
 }

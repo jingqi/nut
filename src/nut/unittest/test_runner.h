@@ -15,14 +15,15 @@ namespace nut
 
 class NUT_API TestRunner
 {
-    ITestLogger *_logger = nullptr;
-
 public:
     TestRunner(ITestLogger *logger);
 
     void run_group(const char *group_name);
     void run_fixture(const char *fixture_name);
     void run_case(const char *fixture_name, const char *case_name);
+
+private:
+    ITestLogger *_logger = nullptr;
 };
 
 }

@@ -21,27 +21,9 @@ namespace nut
 class NUT_API BigInteger
 {
 public:
-    typedef size_t size_type;
-    typedef unsigned int word_type;
+    typedef size_t                                  size_type;
+    typedef unsigned int                            word_type;
     typedef StdInt<word_type>::double_unsigned_type dword_type;
-
-private:
-    word_type *_data = nullptr; // 缓冲区, little-endian, 带符号
-    size_type _capacity = 0;
-    size_type _significant_len = 0; // 有效字长度
-
-private:
-    void ensure_cap(size_type new_size);
-
-    /**
-     * 确保有效字节长度足够长，不够长则进行符号扩展
-     */
-    void ensure_significant_len(size_type siglen);
-
-    /**
-     * 最小化有效字节长度
-     */
-    void minimize_significant_len();
 
 public:
     explicit BigInteger(long long v = 0);
@@ -69,7 +51,6 @@ public:
 
     ~BigInteger();
 
-public:
     BigInteger& operator=(const BigInteger& x);
     BigInteger& operator=(BigInteger&& x);
     BigInteger& operator=(long long v);
@@ -141,7 +122,6 @@ public:
 
     BigInteger& operator>>=(size_type count);
 
-public:
     static void add(const BigInteger& a, const BigInteger& b, BigInteger *x);
     static void add(const BigInteger& a, long long b, BigInteger *x);
     static void add(long long a, const BigInteger& b, BigInteger *x);
@@ -168,7 +148,6 @@ public:
     static void shift_left(const BigInteger& a, size_type count, BigInteger *x);
     static void shift_right(const BigInteger& a, size_type count, BigInteger *x);
 
-public:
     void set_zero();
 
     bool is_zero() const;
@@ -239,12 +218,29 @@ public:
      */
     static void swap(BigInteger *a, BigInteger *b);
 
-public:
     std::string to_string(size_type radix = 10) const;
     std::wstring to_wstring(size_type radix = 10) const;
 
     static BigInteger value_of(const std::string& s, size_type radix = 10);
     static BigInteger value_of(const std::wstring& s, size_type radix = 10);
+
+private:
+    void ensure_cap(size_type new_size);
+
+    /**
+     * 确保有效字节长度足够长，不够长则进行符号扩展
+     */
+    void ensure_significant_len(size_type siglen);
+
+    /**
+     * 最小化有效字节长度
+     */
+    void minimize_significant_len();
+
+private:
+    word_type *_data = nullptr; // 缓冲区, little-endian, 带符号
+    size_type _capacity = 0;
+    size_type _significant_len = 0; // 有效字长度
 };
 
 }

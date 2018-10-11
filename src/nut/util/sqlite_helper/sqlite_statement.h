@@ -19,9 +19,6 @@ class SqliteStatement
 {
     NUT_REF_COUNTABLE
 
-    sqlite3_stmt *_stmt = nullptr;
-    std::vector<rc_ptr<enrc<std::string> > > _strings;
-
 public:
     SqliteStatement() = default;
 
@@ -97,6 +94,10 @@ public:
     {
         return _stmt;
     }
+
+private:
+    sqlite3_stmt *_stmt = nullptr;
+    std::vector<rc_ptr<enrc<std::string> > > _strings;
 };
 
 }

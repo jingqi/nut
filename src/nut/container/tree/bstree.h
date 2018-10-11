@@ -13,11 +13,7 @@ namespace nut
 template <typename K, typename NODE>
 class BSTree
 {
-private:
-    BSTree() = delete;
-    
 public:
-
     /**
      * 查找数据所在的节点
      *
@@ -174,6 +170,9 @@ public:
         }
         return parent;
     }
+
+private:
+    BSTree() = delete;
 };
 
 }

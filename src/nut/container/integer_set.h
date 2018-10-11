@@ -20,14 +20,15 @@ namespace nut
 template <typename IntType = int>
 class IntegerSet
 {
+private:
+    typedef IntegerSet<IntType> self_type;
+
 public:
     typedef IntType int_type;
 
     class Range
     {
     public:
-        int_type first = 0, last = 0;
-
         Range() = default;
 
         Range(int_type f, int_type l)
@@ -51,13 +52,107 @@ public:
             first = f;
             last = l;
         }
+
+    public:
+        int_type first = 0, last = 0;
+    };
+
+    class const_iterator
+    {
+        const self_type *_container = nullptr;
+        int_type _value = 0;
+        ssize_t _index = 0;
+
+    public:
+        typedef std::bidirectional_iterator_tag iterator_category;
+        typedef int_type                        value_type;
+        typedef ptrdiff_t                       difference_type;
+        typedef int_type                        reference;       // FIXME 这里实际上无法返回引用
+        typedef int_type*                       pointer;
+
+    public:
+        const_iterator(const self_type *container, int_type value, ssize_t index)
+            : _container(container), _value(value), _index(index)
+        {
+            assert(nullptr != _container);
+        }
+
+        int_type operator*() const
+        {
+            assert(nullptr != _container);
+            assert(0 <= _index && _index < (ssize_t) _container->_ranges.size());
+            return _value;
+        }
+
+        const_iterator& operator++()
+        {
+            assert(nullptr != _container);
+            assert(0 <= _index && _index < (ssize_t) _container->_ranges.size());
+
+            const Range& rg = _container->_ranges.at(_index);
+            if (_value < rg.last)
+            {
+                ++_value;
+            }
+            else
+            {
+                ++_index;
+                if (_index < (ssize_t) _container->_ranges.size())
+                    _value = _container->_ranges.at(_index).first;
+            }
+            return *this;
+        }
+
+        const_iterator& operator--()
+        {
+            assert(nullptr != _container);
+            assert(0 <= _index && _index < (ssize_t) _container->_ranges.size());
+
+            const Range& rg = _container->_ranges.at(_index);
+            if (_value > rg.first)
+            {
+                --_value;
+            }
+            else
+            {
+                --_index;
+                if (_index >= 0)
+                    _value = _container->_ranges.at(_index).last;
+            }
+            return *this;
+        }
+
+        const_iterator operator++(int)
+        {
+            const_iterator ret = *this;
+            ++*this;
+            return ret;
+        }
+
+        const_iterator operator--(int)
+        {
+            const_iterator ret = *this;
+            --*this;
+            return ret;
+        }
+
+        bool operator==(const const_iterator& x) const
+        {
+            assert(nullptr != _container && _container == x._container);
+            if (_index != x._index)
+                return false;
+            if (0 <= _index && _index < (ssize_t) _container->_ranges.size())
+                return _value == x._value;
+            return true;
+        }
+
+        bool operator!=(const const_iterator& x) const
+        {
+            return !(*this == x);
+        }
     };
 
 private:
-    typedef IntegerSet<int_type> self_type;
-
-    std::vector<Range> _ranges;
-
     /**
      * 将两个集合 x、y 放到数据轴上，每一个轴坐标的状态
      *
@@ -73,30 +168,6 @@ private:
         SingleY,     // single y
         XAndY        // x and y
     };
-
-private:
-    /**
-     * 使用值做二分查找，如果找到则返回找到的位置(>=0)，否则返回 (-insertPoint-1)，
-     * insertPoint 是用来做插入的位置
-     *
-     * @return 找到则返回 >=0，否则 <0
-     */
-    ssize_t binary_search(int_type value)
-    {
-        ssize_t left = -1, right = _ranges.size();
-        while (left + 1 < right)
-        {
-            ssize_t middle = (left + right) / 2;
-            const Range& range = _ranges.at(middle);
-            if (value > range.last)
-                left = middle;
-            else if (value < range.first)
-                right = middle;
-            else
-                return middle;
-        }
-        return -(right + 1);
-    }
 
 public:
     IntegerSet() = default;
@@ -323,101 +394,6 @@ public:
         // Index out of range
         assert(false);
     }
-
-    class const_iterator
-    {
-        const self_type *_container = nullptr;
-        int_type _value = 0;
-        ssize_t _index = 0;
-
-    public:
-        typedef std::bidirectional_iterator_tag iterator_category;
-        typedef int_type                        value_type;
-        typedef ptrdiff_t                       difference_type;
-        typedef int_type                        reference;       // FIXME 这里实际上无法返回引用
-        typedef int_type*                       pointer;
-
-    public:
-        const_iterator(const self_type *container, int_type value, ssize_t index)
-            : _container(container), _value(value), _index(index)
-        {
-            assert(nullptr != _container);
-        }
-
-        int_type operator*() const
-        {
-            assert(nullptr != _container);
-            assert(0 <= _index && _index < (ssize_t) _container->_ranges.size());
-            return _value;
-        }
-
-        const_iterator& operator++()
-        {
-            assert(nullptr != _container);
-            assert(0 <= _index && _index < (ssize_t) _container->_ranges.size());
-
-            const Range& rg = _container->_ranges.at(_index);
-            if (_value < rg.last)
-            {
-                ++_value;
-            }
-            else
-            {
-                ++_index;
-                if (_index < (ssize_t) _container->_ranges.size())
-                    _value = _container->_ranges.at(_index).first;
-            }
-            return *this;
-        }
-
-        const_iterator& operator--()
-        {
-            assert(nullptr != _container);
-            assert(0 <= _index && _index < (ssize_t) _container->_ranges.size());
-
-            const Range& rg = _container->_ranges.at(_index);
-            if (_value > rg.first)
-            {
-                --_value;
-            }
-            else
-            {
-                --_index;
-                if (_index >= 0)
-                    _value = _container->_ranges.at(_index).last;
-            }
-            return *this;
-        }
-
-        const_iterator operator++(int)
-        {
-            const_iterator ret = *this;
-            ++*this;
-            return ret;
-        }
-
-        const_iterator operator--(int)
-        {
-            const_iterator ret = *this;
-            --*this;
-            return ret;
-        }
-
-        bool operator==(const const_iterator& x) const
-        {
-            assert(nullptr != _container && _container == x._container);
-            if (_index != x._index)
-                return false;
-            if (0 <= _index && _index < (ssize_t) _container->_ranges.size())
-                return _value == x._value;
-            return true;
-        }
-
-        bool operator!=(const const_iterator& x) const
-        {
-            return !(*this == x);
-        }
-    };
 
     const_iterator begin() const
     {
@@ -813,6 +789,33 @@ public:
             }
         }
     }
+
+private:
+    /**
+     * 使用值做二分查找，如果找到则返回找到的位置(>=0)，否则返回 (-insertPoint-1)，
+     * insertPoint 是用来做插入的位置
+     *
+     * @return 找到则返回 >=0，否则 <0
+     */
+    ssize_t binary_search(int_type value)
+    {
+        ssize_t left = -1, right = _ranges.size();
+        while (left + 1 < right)
+        {
+            ssize_t middle = (left + right) / 2;
+            const Range& range = _ranges.at(middle);
+            if (value > range.last)
+                left = middle;
+            else if (value < range.first)
+                right = middle;
+            else
+                return middle;
+        }
+        return -(right + 1);
+    }
+
+private:
+    std::vector<Range> _ranges;
 };
 
 }

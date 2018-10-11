@@ -13,18 +13,17 @@ namespace nut
  */
 class NUT_API TestCaseFailureException
 {
-    const char *_description = nullptr;
-    const char *_file = nullptr;
-    int _line = -1;
-
 public:
     TestCaseFailureException(const char *des, const char *file, int line);
 
     const char* get_description() const;
-
     const char* get_file() const;
-
     int get_line() const;
+
+private:
+    const char *_description = nullptr;
+    const char *_file = nullptr;
+    int _line = -1;
 };
 
 }

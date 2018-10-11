@@ -13,12 +13,9 @@ namespace nut
 template <typename T>
 class SkipListSet
 {
+private:
     class Node
     {
-        T _key;
-        Node **_next = nullptr;
-        int _level = -1; // 0-based
-
     public:
         Node(const T& k)
             : _key(k)
@@ -72,52 +69,16 @@ class SkipListSet
             assert(nullptr != _next && 0 <= lv && lv <= _level);
             _next[lv] = n;
         }
+
+    private:
+        T _key;
+        Node **_next = nullptr;
+        int _level = -1; // 0-based
     };
 
-    int _level = -1; // 0-based
-    Node **_head = nullptr;
-    size_t _size = 0;
-
-private:
     typedef SkipListSet<T>             self_type;
     typedef SkipList<T,Node,self_type> algo_type;
     friend class SkipList<T,Node,self_type>;
-
-    int get_level() const
-    {
-        return _level;
-    }
-
-    void set_level(int lv)
-    {
-        assert(lv >= 0);
-        if (nullptr != _head)
-        {
-            assert(_level >= 0);
-            _head = (Node**) ::realloc(_head, sizeof(Node*) * (lv + 1));
-            if (lv > _level)
-                ::memset(_head + _level + 1, 0, sizeof(Node*) * (lv - _level));
-        }
-        else
-        {
-            assert(_level < 0);
-            _head = (Node**) ::malloc(sizeof(Node*) * (lv + 1));
-            ::memset(_head, 0, sizeof(Node*) * (lv + 1));
-        }
-        _level = lv;
-    }
-
-    Node* get_head(int lv) const
-    {
-        assert(nullptr != _head && 0 <= lv && lv <= _level);
-        return _head[lv];
-    }
-
-    void set_head(int lv, Node *n)
-    {
-        assert(nullptr != _head && 0 <= lv && lv <= _level);
-        _head[lv] = n;
-    }
 
 public:
     SkipListSet() = default;
@@ -158,7 +119,7 @@ public:
         _level = x._level;
         _head = x._head;
         _size = x._size;
-        
+
         x._level = -1;
         x._head = nullptr;
         x._size = 0;
@@ -224,19 +185,19 @@ public:
     {
         if (this == &x)
             return *this;
-        
+
         clear();
         if (nullptr != _head)
             ::free(_head);
-        
+
         _level = x._level;
         _head = x._head;
         _size = x._size;
-        
+
         x._level = -1;
         x._head = nullptr;
         x._size = 0;
-        
+
         return *this;
     }
 
@@ -358,6 +319,48 @@ public:
         --_size;
         return true;
     }
+
+private:
+    int get_level() const
+    {
+        return _level;
+    }
+
+    void set_level(int lv)
+    {
+        assert(lv >= 0);
+        if (nullptr != _head)
+        {
+            assert(_level >= 0);
+            _head = (Node**) ::realloc(_head, sizeof(Node*) * (lv + 1));
+            if (lv > _level)
+                ::memset(_head + _level + 1, 0, sizeof(Node*) * (lv - _level));
+        }
+        else
+        {
+            assert(_level < 0);
+            _head = (Node**) ::malloc(sizeof(Node*) * (lv + 1));
+            ::memset(_head, 0, sizeof(Node*) * (lv + 1));
+        }
+        _level = lv;
+    }
+
+    Node* get_head(int lv) const
+    {
+        assert(nullptr != _head && 0 <= lv && lv <= _level);
+        return _head[lv];
+    }
+
+    void set_head(int lv, Node *n)
+    {
+        assert(nullptr != _head && 0 <= lv && lv <= _level);
+        _head[lv] = n;
+    }
+
+private:
+    int _level = -1; // 0-based
+    Node **_head = nullptr;
+    size_t _size = 0;
 };
 
 }

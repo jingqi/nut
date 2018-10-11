@@ -14,17 +14,6 @@ namespace nut
 
 class NUT_API ITestLogger
 {
-protected:
-    size_t _count_of_fixtures = 0;
-    size_t _count_of_failed_fixtures = 0;
-    bool _current_fixture_failed = false;
-
-    size_t _count_of_cases = 0;
-    size_t _count_of_failed_cases = 0;
-    bool _current_case_failed = false;
-
-    std::vector<TestCaseFailureException> _failures;
-
 public:
     virtual ~ITestLogger() = default;
 
@@ -43,7 +32,6 @@ public:
     void failed_case(const TestCaseFailureException& e);
     void leave_case();
 
-public:
     virtual void on_start(const char *group_name, const char *fixture_name, const char *case_name) = 0;
     virtual void on_finish() = 0;
 
@@ -53,6 +41,17 @@ public:
     virtual void on_enter_case(const char *case_name) = 0;
     virtual void on_failed_case(const TestCaseFailureException& e) = 0;
     virtual void on_leave_case() = 0;
+
+protected:
+    size_t _count_of_fixtures = 0;
+    size_t _count_of_failed_fixtures = 0;
+    bool _current_fixture_failed = false;
+
+    size_t _count_of_cases = 0;
+    size_t _count_of_failed_cases = 0;
+    bool _current_case_failed = false;
+
+    std::vector<TestCaseFailureException> _failures;
 };
 
 }

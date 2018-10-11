@@ -20,6 +20,9 @@ namespace nut
 template <typename lengthfixed_mp_type>
 class segments_mp : public memory_allocator
 {
+    NUT_DEBUGGING_DESTROY_CHECKER
+
+private:
     enum
     {
         // 粒度
@@ -28,15 +31,6 @@ class segments_mp : public memory_allocator
         FREE_LIST_COUNT = 128,
     };
     static_assert(GRANULARITY >= sizeof(void*), "Granularity should greater then or equal to a pointer");
-
-    const rc_ptr<memory_allocator> _alloc;
-    rc_ptr<lengthfixed_mp_type> _freelists[FREE_LIST_COUNT];
-    NUT_DEBUGGING_DESTROY_CHECKER
-
-private:
-    // Non-copyable
-    segments_mp(const segments_mp&) = delete;
-    segments_mp& operator=(const segments_mp&) = delete;
 
 public:
     segments_mp(memory_allocator *ma = nullptr)
@@ -116,6 +110,15 @@ public:
         const size_t idx = (sz - 1) / GRANULARITY;
         _freelists[idx]->free(p, GRANULARITY * (idx + 1));
     }
+
+private:
+    // Non-copyable
+    segments_mp(const segments_mp&) = delete;
+    segments_mp& operator=(const segments_mp&) = delete;
+
+private:
+    const rc_ptr<memory_allocator> _alloc;
+    rc_ptr<lengthfixed_mp_type> _freelists[FREE_LIST_COUNT];
 };
 
 typedef segments_mp<lengthfixed_stmp> segments_stmp;

@@ -17,11 +17,11 @@ namespace nut
  * 模乘之前的预计算表计算
  */
 template <size_t C>
-struct ModMultiplyPreBuildTable
+class ModMultiplyPreBuildTable
 {
+public:
+
 #if (OPTIMIZE_LEVEL == 0)
-    size_t hight = 0, width = 0;
-    BigInteger *table = nullptr;
 
     ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n)
     {
@@ -75,10 +75,8 @@ struct ModMultiplyPreBuildTable
         assert(i < hight && j < width);
         return table[i * width + j];
     }
+
 #else
-    size_t hight = 0, width = 0;
-    BigInteger **table = nullptr;
-    BigInteger mod;
 
     ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n)
     {
@@ -141,10 +139,21 @@ struct ModMultiplyPreBuildTable
         }
         return *table[base_off + j];
     }
+
 #endif
 
 private:
     ModMultiplyPreBuildTable(const ModMultiplyPreBuildTable<C>&);
+
+public:
+#if (OPTIMIZE_LEVEL == 0)
+    size_t hight = 0, width = 0;
+    BigInteger *table = nullptr;
+#else
+    size_t hight = 0, width = 0;
+    BigInteger **table = nullptr;
+    BigInteger mod;
+#endif
 };
 
 /**

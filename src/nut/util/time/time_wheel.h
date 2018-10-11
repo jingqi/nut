@@ -45,9 +45,8 @@ private:
         WHEEL_COUNT = 5,         // wheel 数
     };
 
-    class Timer
+    struct Timer
     {
-    public:
         uint32_t valid_mask = 0;
 
         uint64_t when_ms = 0;
@@ -58,41 +57,11 @@ private:
         Timer *next = nullptr;     // 链指针
     };
 
-    class Wheel
+    struct Wheel
     {
-    public:
         uint64_t cursor = 0; // NOTE cursor 取宽字是为了避免加减法时溢出
         Timer *buckets[BUCKETS_PER_WHERE];
     };
-
-    Wheel _wheels[WHEEL_COUNT];
-
-    // 计时起点
-#if NUT_PLATFORM_OS_WINDOWS
-    LARGE_INTEGER _clock_freq, _first_clock;
-#else
-    struct timespec _first_clock;
-#endif
-
-    uint64_t _last_tick = 0;  // 上一个 tick
-    size_t _size = 0;         // 定时器数量
-    bool _ticking = false;
-    std::vector<Timer*> _to_be_canceled; // 延迟取消列表
-
-private:
-    // Non-copyable
-    TimeWheel(const TimeWheel&) = delete;
-    TimeWheel& operator=(const TimeWheel&) = delete;
-
-    static Timer* new_timer(uint64_t when_ms, uint64_t repeat_ms,
-                            const timer_task_type& task);
-    static void delete_timer(Timer *t);
-
-    timer_id_type add_timer(Timer *t);
-    bool do_cancel_timer(Timer *t);
-
-    static bool timer_less(const Timer *t1, const Timer *t2);
-    static Timer* reverse_link(Timer *t);
 
 public:
     TimeWheel();
@@ -114,6 +83,36 @@ public:
     void cancel_timer(timer_id_type timer_id);
 
     void tick();
+
+private:
+    // Non-copyable
+    TimeWheel(const TimeWheel&) = delete;
+    TimeWheel& operator=(const TimeWheel&) = delete;
+
+    static Timer* new_timer(uint64_t when_ms, uint64_t repeat_ms,
+                            const timer_task_type& task);
+    static void delete_timer(Timer *t);
+
+    timer_id_type add_timer(Timer *t);
+    bool do_cancel_timer(Timer *t);
+
+    static bool timer_less(const Timer *t1, const Timer *t2);
+    static Timer* reverse_link(Timer *t);
+
+private:
+    Wheel _wheels[WHEEL_COUNT];
+
+    // 计时起点
+#if NUT_PLATFORM_OS_WINDOWS
+    LARGE_INTEGER _clock_freq, _first_clock;
+#else
+    struct timespec _first_clock;
+#endif
+
+    uint64_t _last_tick = 0;  // 上一个 tick
+    size_t _size = 0;         // 定时器数量
+    bool _ticking = false;
+    std::vector<Timer*> _to_be_canceled; // 延迟取消列表
 };
 
 }

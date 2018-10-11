@@ -13,8 +13,6 @@ namespace nut
  */
 class RefCounter
 {
-    std::atomic<int> _ref_count = ATOMIC_VAR_INIT(0);
-
 public:
     int operator++()
     {
@@ -30,6 +28,9 @@ public:
     {
         return _ref_count.load(std::memory_order_relaxed);
     }
+
+private:
+    std::atomic<int> _ref_count = ATOMIC_VAR_INIT(0);
 };
 
 }

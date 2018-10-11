@@ -33,6 +33,7 @@ namespace nut
 template <typename T>
 class ConcurrentStack
 {
+private:
     // 这里根据具体情况配置
     enum
     {
@@ -43,14 +44,16 @@ class ConcurrentStack
         ELIMINATE_ENQUEUE_DELAY_MICROSECONDS = 10,
     };
 
-    struct Node
+    class Node
     {
-        T data;
-        Node *next = nullptr;
-
+    public:
         Node(const T& v)
             : data(v)
         {}
+
+    public:
+        T data;
+        Node *next = nullptr;
     };
 
     // 尝试出栈的结果
@@ -60,15 +63,6 @@ class ConcurrentStack
         ConcurrentFailure, // 并发失败
         EmptyStackFailure, // 空栈
     };
-
-    std::atomic<StampedPtr<Node>> _top = ATOMIC_VAR_INIT(StampedPtr<Node>());
-
-    // 用于消隐的碰撞数组
-    std::atomic<StampedPtr<Node>> *_collisions = nullptr;
-
-private:
-    ConcurrentStack(const ConcurrentStack&) = delete;
-    ConcurrentStack& operator=(const ConcurrentStack&) = delete;
 
 public:
     ConcurrentStack()
@@ -97,7 +91,6 @@ public:
         return nullptr == _top.load(std::memory_order_relaxed).ptr;
     }
 
-public:
     void push(const T& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
@@ -135,7 +128,6 @@ public:
         }
     }
 
-public:
     void eliminate_push(const T& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
@@ -163,6 +155,9 @@ public:
     }
 
 private:
+    ConcurrentStack(const ConcurrentStack&) = delete;
+    ConcurrentStack& operator=(const ConcurrentStack&) = delete;
+
     bool push_attempt(Node *new_node)
     {
         StampedPtr<Node> old_top = _top.load(std::memory_order_relaxed);
@@ -244,6 +239,12 @@ private:
         }
         return false;
     }
+
+private:
+    std::atomic<StampedPtr<Node>> _top = ATOMIC_VAR_INIT(StampedPtr<Node>());
+
+    // 用于消隐的碰撞数组
+    std::atomic<StampedPtr<Node>> *_collisions = nullptr;
 };
 
 }

@@ -25,9 +25,6 @@ enum class ConsoleColor
 
 class NUT_API ConsoleUtil
 {
-private:
-    ConsoleUtil() = delete;
-    
 public:
     // 判断是否运行在终端中
     static bool isatty();
@@ -45,6 +42,9 @@ public:
 
     // 从终端中读取密码
     static std::string get_password();
+
+private:
+    ConsoleUtil() = delete;
 };
 
 }

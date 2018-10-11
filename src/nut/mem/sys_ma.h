@@ -19,18 +19,7 @@ namespace nut
  */
 class NUT_API sys_ma : public memory_allocator
 {
-
-#ifndef NDEBUG
-    uint32_t _left_tag = 0, _right_tag = 0;
-    size_t _alloc_count = 0, _free_count = 0;
-    size_t _total_alloc_sz = 0, _total_free_sz = 0;
     NUT_DEBUGGING_DESTROY_CHECKER
-#endif
-
-private:
-    // Non-copyable
-    sys_ma(const sys_ma&) = delete;
-    sys_ma& operator=(const sys_ma&) = delete;
 
 public:
     sys_ma();
@@ -39,7 +28,6 @@ public:
     ~sys_ma();
 #endif
 
-public:
     virtual void* alloc(size_t sz) override;
     virtual void* realloc(void *p, size_t old_sz, size_t new_sz) override;
     virtual void free(void *p, size_t sz) override;
@@ -50,6 +38,17 @@ public:
 
     size_t get_total_alloc_size() const;
     size_t get_total_free_size() const;
+#endif
+
+private:
+    // Non-copyable
+    sys_ma(const sys_ma&) = delete;
+    sys_ma& operator=(const sys_ma&) = delete;
+
+#ifndef NDEBUG
+    uint32_t _left_tag = 0, _right_tag = 0;
+    size_t _alloc_count = 0, _free_count = 0;
+    size_t _total_alloc_sz = 0, _total_free_sz = 0;
 #endif
 };
 

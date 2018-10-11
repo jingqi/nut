@@ -15,20 +15,6 @@ namespace nut
 
 class NUT_API LogRecord
 {
-private:
-    DateTime _time;
-    LogLevel _level = LogLevel::Debug;
-    const char *_tag = nullptr;            // Can be nullptr, which indicated a root tag
-    const char *_file_path = nullptr;
-    int _line = -1;
-    const char *_func = nullptr;           // Can be nullptr, when the source location is out of any function
-    char *_message = nullptr;
-
-private:
-    // Non-copyable
-    LogRecord(const LogRecord&) = delete;
-    LogRecord& operator=(const LogRecord&) = delete;
-
 public:
     LogRecord(LogLevel level, const char *tag, const char *file_path, int line,
         const char *func, char *message);
@@ -43,6 +29,20 @@ public:
     int get_line() const;
     const char* get_message() const;
     std::string to_string() const;
+
+private:
+    // Non-copyable
+    LogRecord(const LogRecord&) = delete;
+    LogRecord& operator=(const LogRecord&) = delete;
+
+private:
+    DateTime _time;
+    LogLevel _level = LogLevel::Debug;
+    const char *_tag = nullptr;            // Can be nullptr, which indicated a root tag
+    const char *_file_path = nullptr;
+    int _line = -1;
+    const char *_func = nullptr;           // Can be nullptr, when the source location is out of any function
+    char *_message = nullptr;
 };
 
 }

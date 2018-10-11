@@ -15,15 +15,62 @@ namespace nut
 
 class NUT_API XmlParser
 {
-    struct ElementInfo
+private:
+    class ElementInfo
     {
-        std::string name;
-        XmlElementHandler *handler = nullptr;
-
+    public:
         ElementInfo(const std::string& n, XmlElementHandler *h)
             : name(n), handler(h)
         {}
+
+    public:
+        std::string name;
+        XmlElementHandler *handler = nullptr;
     };
+
+public:
+    /**
+     * NODE: 根 handler 的删除操作需要外部自己管理
+     */
+    explicit XmlParser(XmlElementHandler *root_handler);
+
+    void reset(XmlElementHandler *root_handler);
+
+    /**
+     * @return false if error
+     */
+    bool input(const char *s, int len = -1);
+
+    /**
+     * @return false if error
+     */
+    bool finish();
+
+    size_t line() const;
+    size_t column() const;
+
+    bool has_error() const;
+
+    std::string error_message() const;
+
+private:
+    bool input(char c);
+
+    bool should_handle_child() const;
+    bool should_handle_attribute() const;
+    bool should_handle_text() const;
+    bool should_handle_comment() const;
+
+    void handle_child();
+    void handle_attribute();
+    void handle_text();
+    void handle_comment();
+    void handle_finish();
+    bool check_finish();
+
+    void force_finish();
+
+private:
     std::vector<ElementInfo> _elem_path;
 
     size_t _line = 1, _column = 1;
@@ -55,48 +102,6 @@ class NUT_API XmlParser
         InError // 出错
     } _state;
     std::string _tmp_name, _tmp_value, _tmp_encoded;
-
-private:
-    bool input(char c);
-
-    bool should_handle_child() const;
-    bool should_handle_attribute() const;
-    bool should_handle_text() const;
-    bool should_handle_comment() const;
-
-    void handle_child();
-    void handle_attribute();
-    void handle_text();
-    void handle_comment();
-    void handle_finish();
-    bool check_finish();
-
-    void force_finish();
-
-public:
-    /**
-     * NODE: 根 handler 的删除操作需要外部自己管理
-     */
-    explicit XmlParser(XmlElementHandler *root_handler);
-
-    void reset(XmlElementHandler *root_handler);
-
-    /**
-     * @return false if error
-     */
-    bool input(const char *s, int len = -1);
-
-    /**
-     * @return false if error
-     */
-    bool finish();
-
-    size_t line() const;
-    size_t column() const;
-
-    bool has_error() const;
-
-    std::string error_message() const;
 };
 
 }

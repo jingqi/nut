@@ -20,15 +20,6 @@ public:
         String
     };
 
-    Type type = Type::None;
-    rc_ptr<enrc<std::string> > string_arg;
-    int int_arg = 0;
-
-private:
-    SqliteParam()
-        : type(Type::None)
-    {}
-
 public:
     SqliteParam(int arg)
         : type(Type::Integer), int_arg(arg)
@@ -47,6 +38,16 @@ public:
         static SqliteParam ret;
         return ret;
     }
+
+private:
+    SqliteParam()
+        : type(Type::None)
+    {}
+
+public:
+    Type type = Type::None;
+    rc_ptr<enrc<std::string> > string_arg;
+    int int_arg = 0;
 };
 
 }

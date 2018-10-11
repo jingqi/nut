@@ -24,19 +24,6 @@ namespace nut
  */
 class NUT_API DateTime
 {
-protected:
-    /* 从 1970年1月1日 0时0分0秒 起算的 UTC 时间 */
-    time_t _seconds = 0;
-    long _useconds = 0;
-
-    /* 结构化本地时间 */
-    mutable struct tm _time_info;
-    mutable bool _time_info_dirty = true;
-
-protected:
-    void normalize();
-    void check_time_info() const;
-
 public:
     /**
      * @param s 从 1970/1/1 00:00:00 起算的时间
@@ -177,6 +164,19 @@ public:
      * for example : "%m-%d %H:%M" -> "2-28 8:57"
      */
     std::string format_time(const char *format) const;
+
+protected:
+    void normalize();
+    void check_time_info() const;
+
+protected:
+    /* 从 1970年1月1日 0时0分0秒 起算的 UTC 时间 */
+    time_t _seconds = 0;
+    long _useconds = 0;
+
+    /* 结构化本地时间 */
+    mutable struct tm _time_info;
+    mutable bool _time_info_dirty = true;
 };
 
 /**

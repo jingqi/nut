@@ -16,14 +16,9 @@ namespace nut
 
 class NUT_API memory_allocator
 {
-private:
-    // Non-copyable
-    memory_allocator(const memory_allocator&) = delete;
-    memory_allocator& operator=(const memory_allocator&) = delete;
-
-public:
     NUT_REF_COUNTABLE
 
+public:
     memory_allocator() = default;
     virtual ~memory_allocator() = default;
 
@@ -44,6 +39,11 @@ public:
      * @param sz Should greater then 0
      */
     virtual void free(void *p, size_t sz) = 0;
+
+private:
+    // Non-copyable
+    memory_allocator(const memory_allocator&) = delete;
+    memory_allocator& operator=(const memory_allocator&) = delete;
 };
 
 

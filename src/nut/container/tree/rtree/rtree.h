@@ -54,18 +54,13 @@ private:
     class TreeNode;
     class Node
     {
-        bool tree_node = true; // 是树节点还是数据节点
-
     public:
-        area_type area;
-        TreeNode *parent = nullptr;
-
         explicit Node(bool tn)
             : tree_node(tn)
         {}
 
         Node(bool tn, const area_type& rt)
-            : tree_node(tn), area(rt)
+            : area(rt), tree_node(tn) 
         {}
 
         virtual ~Node() = default;
@@ -74,6 +69,13 @@ private:
         {
             return tree_node;
         }
+
+    public:
+        area_type area;
+        TreeNode *parent = nullptr;
+
+    private:
+        bool tree_node = true; // 是树节点还是数据节点
     };
 
     /**
@@ -82,9 +84,6 @@ private:
     class TreeNode : public Node
     {
     public:
-        using Node::area;
-        Node *children[MAX_ENTRY_COUNT];
-
         TreeNode()
             : Node(true)
         {
@@ -167,6 +166,10 @@ private:
             for (size_t i = 1; i < MAX_ENTRY_COUNT && nullptr != children[i]; ++i)
                 area.expand_to_contain(children[i]->area);
         }
+
+    public:
+        using Node::area;
+        Node *children[MAX_ENTRY_COUNT];
     };
 
     /**
@@ -175,8 +178,6 @@ private:
     class DataNode : public Node
     {
     public:
-        data_type data;
-
         explicit DataNode(const data_type& v)
             : Node(false), data(v)
         {}
@@ -184,27 +185,12 @@ private:
         DataNode(const area_type& rt, const data_type& v)
             : Node(false, rt), data(v)
         {}
+
+    public:
+        data_type data;
     };
 
-private:
-    typedef RTree<DataT, NumT, DIMENSIONS, RealNumT, MAX_ENTRY_COUNT, MIN_ENTRY_COUNT>  self_type;
-
-    TreeNode *_root = nullptr; // 根节点
-    size_t _height = 0; // 高度，TreeNode的层数
-    size_t _size = 0; // 容量
-
-    /**
-     * 扩展到包容指定的区域所需要扩展的空间
-     */
-    static RealNumT acreage_needed(const area_type& x, const area_type& y)
-    {
-        RealNumT new_acr = 1;
-        for (size_t i = 0; i < DIMENSIONS; ++i)
-        {
-            new_acr *= std::max(x.higher[i], y.higher[i]) - std::min(x.lower[i], y.lower[i]);
-        }
-        return new_acr - x.acreage();
-    }
+    typedef RTree<DataT, NumT, DIMENSIONS, RealNumT, MAX_ENTRY_COUNT, MIN_ENTRY_COUNT> self_type;
 
 public:
     RTree()
@@ -563,7 +549,76 @@ public:
         }
     }
 
+    /**
+     * 元素个数
+     */
+    size_t size() const
+    {
+        return _size;
+    }
+
+    /**
+     * 树高，大于等于1
+     */
+    size_t height() const
+    {
+        return _height;
+    }
+
+    /**
+     * 检查 rtree 结构是否错误
+     */
+    bool is_valid(Node *e = nullptr, size_t depth = 1)
+    {
+        if (nullptr == e)
+        {
+            e = _root;
+            depth = 1;
+        }
+        assert(nullptr != e && 1 <= depth && depth <= _height + 1);
+
+        if (depth == _height + 1)
+        {
+            if (e->is_tree_node())
+                return false; // wrong node type with depth
+            return true;
+        }
+
+        if (!e->is_tree_node())
+            return false; // wrong node type with depth
+
+        TreeNode *n = dynamic_cast<TreeNode*>(e);
+        const size_t cc = n->child_count();
+        if (depth != 1 && cc < MIN_ENTRY_COUNT)
+            return false; // under fill
+        for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
+        {
+            Node *ee = n->child_at(i);
+            if (nullptr == ee)
+                break;
+            if (!n->area.contains(ee->area))
+                return false; // area error
+            if (!is_valid(ee, depth + 1))
+                return false;
+        }
+
+        return true;
+    }
+
 private:
+    /**
+     * 扩展到包容指定的区域所需要扩展的空间
+     */
+    static RealNumT acreage_needed(const area_type& x, const area_type& y)
+    {
+        RealNumT new_acr = 1;
+        for (size_t i = 0; i < DIMENSIONS; ++i)
+        {
+            new_acr *= std::max(x.higher[i], y.higher[i]) - std::min(x.lower[i], y.lower[i]);
+        }
+        return new_acr - x.acreage();
+    }
+
     /**
      * 将节点插入深度为 depth 的位置
      */
@@ -950,62 +1005,10 @@ private:
         assert(qd.empty());
     }
 
-public:
-    /**
-     * 元素个数
-     */
-    size_t size() const
-    {
-        return _size;
-    }
-
-    /**
-     * 树高，大于等于1
-     */
-    size_t height() const
-    {
-        return _height;
-    }
-
-    /**
-     * 检查 rtree 结构是否错误
-     */
-    bool is_valid(Node *e = nullptr, size_t depth = 1)
-    {
-        if (nullptr == e)
-        {
-            e = _root;
-            depth = 1;
-        }
-        assert(nullptr != e && 1 <= depth && depth <= _height + 1);
-
-        if (depth == _height + 1)
-        {
-            if (e->is_tree_node())
-                return false; // wrong node type with depth
-            return true;
-        }
-
-        if (!e->is_tree_node())
-            return false; // wrong node type with depth
-
-        TreeNode *n = dynamic_cast<TreeNode*>(e);
-        const size_t cc = n->child_count();
-        if (depth != 1 && cc < MIN_ENTRY_COUNT)
-            return false; // under fill
-        for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
-        {
-            Node *ee = n->child_at(i);
-            if (nullptr == ee)
-                break;
-            if (!n->area.contains(ee->area))
-                return false; // area error
-            if (!is_valid(ee, depth + 1))
-                return false;
-        }
-
-        return true;
-    }
+private:
+    TreeNode *_root = nullptr; // 根节点
+    size_t _height = 0; // 高度，TreeNode的层数
+    size_t _size = 0; // 容量
 };
 
 }

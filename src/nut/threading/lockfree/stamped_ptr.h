@@ -22,9 +22,6 @@ class StampedPtr
 public:
     typedef int stamp_type;
 
-    T *ptr;
-    stamp_type stamp;
-
 public:
     StampedPtr()
         : ptr(nullptr), stamp(0)
@@ -55,6 +52,10 @@ public:
         ptr = p;
         stamp = s;
     }
+
+public:
+    T *ptr;
+    stamp_type stamp;
 };
 
 }

@@ -20,42 +20,6 @@ class NUT_API PropertyDom
 {
     NUT_REF_COUNTABLE
 
-    /**
-     * 每一行是这样构成的
-     * space0 key space1 '=' space2 value space3 comment
-     */
-    struct Line
-    {
-        NUT_REF_COUNTABLE
-
-        std::string _space0;
-        std::string _key;
-        std::string _space1;
-        bool _equal_sign = false;
-        std::string _space2;
-        std::string _value;
-        std::string _space3;
-        std::string _comment;
-
-        void clear();
-
-        /**
-         * @param line 单行字符串，不包含回车换行
-         * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
-         * @param space_chars 空白字符，其中出现的字符将被视为空白
-         */
-        void parse(const std::string& line, const char *line_comment_chars = ";#", const char *space_chars = " \t");
-
-        /**
-         * 序列化，不包含尾部的 '\n'
-         */
-        std::string serielize();
-    };
-    friend class IniDom;
-
-    std::vector<rc_ptr<Line> > _lines;
-    bool _dirty = false;
-
 public:
     PropertyDom() = default;
 
@@ -91,6 +55,45 @@ public:
     void set_num(const char *key, long value);
     void set_decimal(const char *key, double value);
     void set_list(const char *key, const std::vector<std::string>& values, char split_char = ',');
+
+private:
+    /**
+     * 每一行是这样构成的
+     * space0 key space1 '=' space2 value space3 comment
+     */
+    class Line
+    {
+        NUT_REF_COUNTABLE
+
+    public:
+        void clear();
+
+        /**
+         * @param line 单行字符串，不包含回车换行
+         * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
+         * @param space_chars 空白字符，其中出现的字符将被视为空白
+         */
+        void parse(const std::string& line, const char *line_comment_chars = ";#", const char *space_chars = " \t");
+
+        /**
+         * 序列化，不包含尾部的 '\n'
+         */
+        std::string serielize();
+
+    public:
+        std::string _space0;
+        std::string _key;
+        std::string _space1;
+        bool _equal_sign = false;
+        std::string _space2;
+        std::string _value;
+        std::string _space3;
+        std::string _comment;
+    };
+    friend class IniDom;
+
+    std::vector<rc_ptr<Line> > _lines;
+    bool _dirty = false;
 };
 
 }

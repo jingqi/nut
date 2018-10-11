@@ -19,7 +19,7 @@ namespace nut
 template <typename T>
 class enrc : public T
 {
-public:
+public: // NOTE 暴露给外部，使其能手动操作引用计数，比如 Copy-On-Write 算法
     NUT_REF_COUNTABLE
 
 // _MSC_VER == 1700 for Visual Studio 2012

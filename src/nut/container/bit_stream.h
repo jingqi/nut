@@ -17,18 +17,8 @@ namespace nut
 
 class NUT_API BitStream
 {
-    typedef unsigned int word_type;
-    word_type *_buf = nullptr; // 缓冲区
-    size_t _word_cap = 0; // 缓冲区长度
-    size_t _bit_size = 0; // bit 长度
-
 private:
-    void _ensure_cap(size_t new_bit_size);
-
-    size_t _word_size() const;
-
-    // 使最后一个有效的 word 空位为 0
-    void _normalize_tail();
+    typedef unsigned int word_type;
 
 public:
     BitStream() = default;
@@ -107,12 +97,24 @@ public:
 
     BitStream substream(size_t i, size_t nbit);
 
-public:
     size_t bit1_count();
     size_t bit0_count();
 
     std::string to_string();
     std::wstring to_wstring();
+
+private:
+    void _ensure_cap(size_t new_bit_size);
+
+    size_t _word_size() const;
+
+    // 使最后一个有效的 word 空位为 0
+    void _normalize_tail();
+
+private:
+    word_type *_buf = nullptr; // 缓冲区
+    size_t _word_cap = 0; // 缓冲区长度
+    size_t _bit_size = 0; // bit 长度
 };
 
 }

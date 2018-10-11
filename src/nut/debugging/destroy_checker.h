@@ -10,13 +10,12 @@ namespace nut
 
 class DestroyChecker
 {
+private:
     enum
     {
         CONSTRUCTED = 0x12344321,
         DESTRUCTED = 0xDEADBEEF /* magic dead-beaf */
     };
-
-    int32_t _tag = CONSTRUCTED;
 
 public:
     DestroyChecker() = default;
@@ -31,6 +30,9 @@ public:
     {
         assert(CONSTRUCTED == _tag);
     }
+
+private:
+    int32_t _tag = CONSTRUCTED;
 };
 
 }

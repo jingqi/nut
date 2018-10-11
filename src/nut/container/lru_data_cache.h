@@ -18,13 +18,12 @@ namespace nut
 template <typename K>
 class LRUDataCache
 {
-    struct Node
-    {
-        K key;
-        void *data = nullptr;
-        size_t size = 0;
-        Node *pre = nullptr, *next = nullptr;
+private:
+    enum { DEFAULT_BYTES_CAPACITY = 5 * 1024 * 1024 }; // 单位: 字节
 
+    class Node
+    {
+    public:
         Node(const K& k, const void *buf, size_t cb)
             : key(k), size(cb)
         {
@@ -75,76 +74,15 @@ class LRUDataCache
         // Non-copyable
         Node(const Node&) = delete;
         Node& operator=(const Node&) = delete;
+
+    public:
+        K key;
+        void *data = nullptr;
+        size_t size = 0;
+        Node *pre = nullptr, *next = nullptr;
     };
 
-    enum { DEFAULT_BYTES_CAPACITY = 5 * 1024 * 1024 }; // 单位: 字节
     typedef std::map<K,Node*> map_type;
-
-    size_t _bytes_size = 0, _bytes_capacity = 0;
-    map_type _map;
-    Node *_list_head = nullptr, *_list_end = nullptr;
-    SpinLock _lock; // 注意，linux下自旋锁不可重入
-
-#ifndef NDEBUG
-    size_t _hit_count = 0, _hit_size = 0, _miss_count = 0;
-#endif
-
-    static Node* alloc_node()
-    {
-        return (Node*)::malloc(sizeof(Node));
-    }
-
-    static void dealloc_node(Node *p)
-    {
-        assert(nullptr != p);
-        ::free(p);
-    }
-
-    static Node* new_node(const K& k, const void *buf, size_t cb)
-    {
-        Node *p = alloc_node();
-        assert(nullptr != p);
-        new (p) Node(k, buf, cb);
-        return p;
-    }
-
-    static void delete_node(Node *p)
-    {
-        assert(nullptr != p);
-        p->~Node();
-        dealloc_node(p);
-    }
-
-    void remove_from_list(Node *p)
-    {
-        assert(nullptr != p);
-        if (nullptr != p->pre)
-            p->pre->next = p->next;
-        else
-            _list_head = p->next;
-
-        if (nullptr != p->next)
-            p->next->pre = p->pre;
-        else
-            _list_end = p->pre;
-    }
-
-    void push_list_head(Node *p)
-    {
-        assert(nullptr != p);
-        p->next = _list_head;
-        p->pre = nullptr;
-        if (nullptr != _list_head)
-            _list_head->pre = p;
-        else
-            _list_end = p;
-        _list_head = p;
-    }
-
-private:
-    // Non-copyable
-    LRUDataCache(const LRUDataCache<K>&) = delete;
-    LRUDataCache<K>& operator=(const LRUDataCache<K>&) = delete;
 
 public:
     LRUDataCache()
@@ -291,6 +229,73 @@ public:
         _miss_count = 0;
 #endif
     }
+
+private:
+    // Non-copyable
+    LRUDataCache(const LRUDataCache<K>&) = delete;
+    LRUDataCache<K>& operator=(const LRUDataCache<K>&) = delete;
+
+    static Node* alloc_node()
+    {
+        return (Node*)::malloc(sizeof(Node));
+    }
+
+    static void dealloc_node(Node *p)
+    {
+        assert(nullptr != p);
+        ::free(p);
+    }
+
+    static Node* new_node(const K& k, const void *buf, size_t cb)
+    {
+        Node *p = alloc_node();
+        assert(nullptr != p);
+        new (p) Node(k, buf, cb);
+        return p;
+    }
+
+    static void delete_node(Node *p)
+    {
+        assert(nullptr != p);
+        p->~Node();
+        dealloc_node(p);
+    }
+
+    void remove_from_list(Node *p)
+    {
+        assert(nullptr != p);
+        if (nullptr != p->pre)
+            p->pre->next = p->next;
+        else
+            _list_head = p->next;
+
+        if (nullptr != p->next)
+            p->next->pre = p->pre;
+        else
+            _list_end = p->pre;
+    }
+
+    void push_list_head(Node *p)
+    {
+        assert(nullptr != p);
+        p->next = _list_head;
+        p->pre = nullptr;
+        if (nullptr != _list_head)
+            _list_head->pre = p;
+        else
+            _list_end = p;
+        _list_head = p;
+    }
+
+private:
+    size_t _bytes_size = 0, _bytes_capacity = 0;
+    map_type _map;
+    Node *_list_head = nullptr, *_list_end = nullptr;
+    SpinLock _lock; // 注意，linux下自旋锁不可重入
+
+#ifndef NDEBUG
+    size_t _hit_count = 0, _hit_size = 0, _miss_count = 0;
+#endif
 };
 
 

@@ -22,8 +22,6 @@ template <typename T>
 class _BundleElement : public _BundleElementBase
 {
 public:
-    T value;
-
     _BundleElement(const T& v)
         : value(v)
     {}
@@ -31,21 +29,19 @@ public:
     _BundleElement(T&& v)
         : value(std::forward<T>(v))
     {}
+
+public:
+    T value;
 };
 
 class Bundle
 {
-    typedef std::map<std::string, rc_ptr<_BundleElementBase> > map_type;
-    map_type _values;
-
-private:
-    // Non-copyable
-    Bundle(const Bundle&) = delete;
-    Bundle& operator=(const Bundle&) = delete;
-
-public:
     NUT_REF_COUNTABLE
 
+private:
+    typedef std::map<std::string, rc_ptr<_BundleElementBase>> map_type;
+
+public:
     Bundle() = default;
 
     bool has_key(const std::string& key) const
@@ -84,6 +80,14 @@ public:
     {
         _values.clear();
     }
+
+private:
+    // Non-copyable
+    Bundle(const Bundle&) = delete;
+    Bundle& operator=(const Bundle&) = delete;
+
+private:
+    map_type _values;
 };
 
 }

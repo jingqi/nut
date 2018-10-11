@@ -22,12 +22,10 @@ namespace nut
 template <typename NumT, size_t DIMENSIONS = 2, typename RealNumT = double>
 class MDArea
 {
+private:
     typedef MDArea<NumT, DIMENSIONS, RealNumT> self_type;
 
 public:
-    NumT lower[DIMENSIONS]; // 低边界
-    NumT higher[DIMENSIONS]; // 高边界
-
     MDArea()
     {
         for (size_t i = 0; i < DIMENSIONS; ++i)
@@ -126,6 +124,10 @@ public:
         }
         return true;
     }
+
+public:
+    NumT lower[DIMENSIONS]; // 低边界
+    NumT higher[DIMENSIONS]; // 高边界
 };
 
 }

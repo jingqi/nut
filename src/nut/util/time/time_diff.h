@@ -19,16 +19,6 @@ namespace nut
 
 class NUT_API TimeDiff
 {
-protected:
-    time_t _seconds = 0;
-    long _useconds = 0;
-
-protected:
-    /**
-     * 规范化
-     */
-    void normalize();
-
 public:
     static const TimeDiff ZERO;
 
@@ -70,6 +60,16 @@ public:
 
     // example: "12.2345"
     std::string to_string() const;
+
+protected:
+    /**
+     * 规范化
+     */
+    void normalize();
+
+protected:
+    time_t _seconds = 0;
+    long _useconds = 0;
 };
 
 }

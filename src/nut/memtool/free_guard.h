@@ -10,17 +10,15 @@ namespace nut
 
 class FreeGuard
 {
-    void *_ptr = nullptr;
-
-private:
-    // Non-copyable
-    FreeGuard(const FreeGuard&) = delete;
-    FreeGuard& operator=(const FreeGuard&) = delete;
-
 public:
     explicit FreeGuard(void *p = nullptr)
         : _ptr(p)
     {}
+
+    ~FreeGuard()
+    {
+        release();
+    }
 
     void* get() const
     {
@@ -44,21 +42,27 @@ public:
         _ptr = nullptr;
     }
 
-    ~FreeGuard()
-    {
-        release();
-    }
+private:
+    // Non-copyable
+    FreeGuard(const FreeGuard&) = delete;
+    FreeGuard& operator=(const FreeGuard&) = delete;
+
+private:
+    void *_ptr = nullptr;
 };
 
 template <typename T>
 class DeleteGuard
 {
-    T *_ptr = nullptr;
-
 public:
     explicit DeleteGuard(T *p = nullptr)
         : _ptr(p)
     {}
+
+    ~DeleteGuard()
+    {
+        release();
+    }
 
     T* get() const
     {
@@ -82,10 +86,8 @@ public:
         _ptr = nullptr;
     }
 
-    ~DeleteGuard()
-    {
-        release();
-    }
+private:
+    T *_ptr = nullptr;
 };
 
 };

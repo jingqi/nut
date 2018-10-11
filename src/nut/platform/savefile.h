@@ -19,6 +19,16 @@ namespace nut
  */
 class NUT_API SaveFile
 {
+public:
+    SaveFile(const std::string& path);
+    ~SaveFile();
+
+    bool open();
+    bool write(const void *buf, size_t len);
+    void cancel();
+    bool commit();
+
+private:
     std::string _path, _tmp_path;
 
 #if NUT_PLATFORM_OS_WINDOWS
@@ -28,15 +38,6 @@ class NUT_API SaveFile
     // -1 is an invalid value returned by ::open()
     int _fd = -1;
 #endif
-
-public:
-    SaveFile(const std::string& path);
-    ~SaveFile();
-
-    bool open();
-    bool write(const void *buf, size_t len);
-    void cancel();
-    bool commit();
 };
 
 }

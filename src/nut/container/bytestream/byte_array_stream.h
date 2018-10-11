@@ -21,17 +21,9 @@ class NUT_API ByteArrayStream : public InputStream, public OutputStream, public 
 {
     NUT_REF_COUNTABLE_OVERRIDE
 
+private:
     typedef Array<uint8_t> byte_array_type;
     typedef enrc<byte_array_type> byte_rcarray_type;
-
-    rc_ptr<byte_rcarray_type> _data;
-    size_t _index = 0;
-    bool _little_endian = true;
-
-private:
-    // Non-copyable
-    ByteArrayStream(const ByteArrayStream&) = delete;
-    ByteArrayStream& operator=(const ByteArrayStream&) = delete;
 
 public:
     ByteArrayStream();
@@ -54,6 +46,16 @@ public:
     virtual size_t write(const void *buf, size_t cb) override;
 
     size_t write(const byte_array_type& ba);
+
+private:
+    // Non-copyable
+    ByteArrayStream(const ByteArrayStream&) = delete;
+    ByteArrayStream& operator=(const ByteArrayStream&) = delete;
+
+private:
+    rc_ptr<byte_rcarray_type> _data;
+    size_t _index = 0;
+    bool _little_endian = true;
 };
 
 }

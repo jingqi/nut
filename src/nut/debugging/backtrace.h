@@ -22,15 +22,15 @@ namespace nut
  */
 class NUT_API Backtrace
 {
-private:
-    Backtrace() = delete;
-
 public:
     /**
      * @return >=0， 调用栈层数
      *         <0， 出错
      */
     static int backtrace(std::string *appended);
+
+private:
+    Backtrace() = delete;
 };
 
 }

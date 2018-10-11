@@ -20,15 +20,7 @@ namespace nut
 
 class NUT_API Logger
 {
-    LogFilter _filter;
-    std::vector<LogHandler*> _handlers;
-
     NUT_DEBUGGING_DESTROY_CHECKER
-
-private:
-    // Non-copyable
-    Logger(const Logger&) = delete;
-    Logger& operator=(const Logger&) = delete;
 
 public:
     Logger() = default;
@@ -51,6 +43,15 @@ public:
      * 加载配置文件
      */
     void load_xml_config(const std::string& config);
+
+private:
+    // Non-copyable
+    Logger(const Logger&) = delete;
+    Logger& operator=(const Logger&) = delete;
+
+private:
+    LogFilter _filter;
+    std::vector<rc_ptr<LogHandler>> _handlers;
 };
 
 }

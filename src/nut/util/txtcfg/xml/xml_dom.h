@@ -19,11 +19,6 @@ class NUT_API XmlDom
 {
     NUT_REF_COUNTABLE
 
-    std::string _version;
-    std::string _encoding;
-    rc_ptr<XmlElement> _root;
-    bool _dirty = false;
-
 public:
     XmlDom();
 
@@ -52,6 +47,12 @@ public:
      * @param format 格式化输出，以便于阅读
      */
     std::string serielize(bool format = true) const;
+
+private:
+    std::string _version;
+    std::string _encoding;
+    rc_ptr<XmlElement> _root;
+    bool _dirty = false;
 };
 
 }

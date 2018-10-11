@@ -14,24 +14,12 @@ namespace nut
  */
 class NUT_API LogFilter
 {
+private:
     typedef unsigned hashcode_type;
 
     // 字典树节点
     class NUT_API Node
     {
-    public:
-        loglevel_mask_type forbid_mask = 0;
-
-        Node *parent = nullptr;
-        hashcode_type *children_hash = nullptr; // 升序排列
-        Node **children = nullptr;
-        int children_size = 0, children_cap = 0;
-
-    private:
-        // Non-copyable
-        Node(const Node&) = delete;
-        Node& operator=(const Node&) = delete;
-
     public:
         explicit Node(Node *p);
         ~Node();
@@ -54,18 +42,20 @@ class NUT_API LogFilter
         void remove(Node *child);
 
         void clear();
+
+    private:
+        // Non-copyable
+        Node(const Node&) = delete;
+        Node& operator=(const Node&) = delete;
+
+    public:
+        loglevel_mask_type forbid_mask = 0;
+
+        Node *parent = nullptr;
+        hashcode_type *children_hash = nullptr; // 升序排列
+        Node **children = nullptr;
+        int children_size = 0, children_cap = 0;
     };
-    Node _root;
-
-private:
-    // Non-copyable
-    LogFilter(const LogFilter&) = delete;
-    LogFilter& operator=(const LogFilter&) = delete;
-
-    /**
-     * 哈稀字符串，直到遇到结尾或者 '.' 字符
-     */
-    static hashcode_type hash_to_dot(const char *s, int *char_accum);
 
 public:
     LogFilter();
@@ -94,6 +84,19 @@ public:
      * 查询是否被禁用掉
      */
     bool is_forbidden(const char *tag, LogLevel level) const;
+
+private:
+    // Non-copyable
+    LogFilter(const LogFilter&) = delete;
+    LogFilter& operator=(const LogFilter&) = delete;
+
+    /**
+     * 哈稀字符串，直到遇到结尾或者 '.' 字符
+     */
+    static hashcode_type hash_to_dot(const char *s, int *char_accum);
+
+private:
+    Node _root;
 };
 
 }

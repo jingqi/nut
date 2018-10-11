@@ -13,10 +13,6 @@ namespace nut
 
 class NUT_API MD5
 {
-    uint32_t _state[4]; // State ABCD
-    uint8_t _buffer[64];
-    uint64_t _bytes_len = 0; // Length of bytes
-
 public:
     MD5();
 
@@ -36,6 +32,11 @@ public:
 
 private:
     void transform512bits(const void *block);
+
+private:
+    uint32_t _state[4]; // State ABCD
+    uint8_t _buffer[64];
+    uint64_t _bytes_len = 0; // Length of bytes
 };
 
 }

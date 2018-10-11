@@ -28,35 +28,6 @@ class NUT_API ThreadPool
 public:
     typedef std::function<void()> task_type;
 
-private:
-    // 最大线程数，0 表示无限
-    size_t volatile _max_thread_number = 0;
-
-    // 线程空闲多长时间后自我终止, 0 表示不自我终止
-    unsigned volatile _max_sleep_seconds = 0;
-
-    // 活动线程
-    typedef std::list<std::thread> thread_list_type;
-    typedef typename thread_list_type::iterator thread_iter_type;
-    thread_list_type _threads;
-
-    // 线程数
-    size_t volatile _alive_number = 0;
-    size_t volatile _idle_number = 0;
-
-    // 是否正在被中断
-    bool volatile _interrupted = false;
-
-    // 任务队列和同步工具
-    std::queue<task_type> _task_queue;
-    std::mutex _lock;
-    std::condition_variable _wake_condition, _all_idle_condition;
-
-private:
-    // Non-copyable
-    ThreadPool(const ThreadPool& x) = delete;
-    ThreadPool& operator=(const ThreadPool& x) = delete;
-
 public:
     /**
      * @param max_thread_number 最大线程数; 0 表示无限个
@@ -93,9 +64,37 @@ public:
     void join();
 
 private:
+    // Non-copyable
+    ThreadPool(const ThreadPool& x) = delete;
+    ThreadPool& operator=(const ThreadPool& x) = delete;
+
     void thread_process();
     void thread_finalize();
     void clean_dead_threads();
+
+private:
+    // 最大线程数，0 表示无限
+    size_t volatile _max_thread_number = 0;
+
+    // 线程空闲多长时间后自我终止, 0 表示不自我终止
+    unsigned volatile _max_sleep_seconds = 0;
+
+    // 活动线程
+    typedef std::list<std::thread> thread_list_type;
+    typedef typename thread_list_type::iterator thread_iter_type;
+    thread_list_type _threads;
+
+    // 线程数
+    size_t volatile _alive_number = 0;
+    size_t volatile _idle_number = 0;
+
+    // 是否正在被中断
+    bool volatile _interrupted = false;
+
+    // 任务队列和同步工具
+    std::queue<task_type> _task_queue;
+    std::mutex _lock;
+    std::condition_variable _wake_condition, _all_idle_condition;
 };
 
 }

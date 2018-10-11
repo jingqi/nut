@@ -15,14 +15,13 @@ namespace nut
 template <typename T>
 class Array
 {
-    typedef Array<T> self_type;
-
 public:
-    typedef size_t size_type;
+    typedef size_t   size_type;
+    typedef T*       iterator;
+    typedef const T* const_iterator;
 
 private:
-    T *_buf = nullptr;
-    size_type _size = 0, _cap = 0;
+    typedef Array<T> self_type;
 
 public:
     explicit Array(size_type init_cap = 16)
@@ -78,33 +77,17 @@ public:
         _cap = 0;
     }
 
-private:
-    void ensure_cap(size_type new_size)
-    {
-        if (new_size <= _cap)
-            return;
-
-        size_type new_cap = _cap * 3 / 2;
-        if (new_cap < new_size)
-            new_cap = new_size;
-
-        _buf = (T*) ::realloc(_buf, sizeof(T) * new_cap);
-        assert(nullptr != _buf);
-        _cap = new_cap;
-    }
-
-public:
     self_type& operator=(const self_type& x)
     {
         if (this == &x)
             return *this;
-        
+
         clear();
-        
+
         ensure_cap(x._size);
         std::uninitialized_copy(x._buf, x._buf + x._size, _buf);
         _size = x._size;
-        
+
         return *this;
     }
 
@@ -112,7 +95,7 @@ public:
     {
         if (this == &x)
             return *this;
-        
+
         clear();
         if (nullptr != _buf)
             ::free(_buf);
@@ -120,11 +103,11 @@ public:
         _buf = x._buf;
         _size = x._size;
         _cap = x._cap;
-        
+
         x._buf = nullptr;
         x._size = 0;
         x._cap = 0;
-        
+
         return *this;
     }
 
@@ -159,10 +142,6 @@ public:
         return const_cast<T&>(static_cast<const self_type&>(*this)[i]);
     }
 
-public:
-    typedef T* iterator;
-    typedef const T* const_iterator;
-
     const_iterator begin() const
     {
         return _buf;
@@ -183,7 +162,6 @@ public:
         return _buf + _size;
     }
 
-public:
     size_type size() const
     {
         return _size;
@@ -293,6 +271,25 @@ public:
     {
         return const_cast<T*>(static_cast<const self_type&>(*this).data());
     }
+
+private:
+    void ensure_cap(size_type new_size)
+    {
+        if (new_size <= _cap)
+            return;
+
+        size_type new_cap = _cap * 3 / 2;
+        if (new_cap < new_size)
+            new_cap = new_size;
+
+        _buf = (T*) ::realloc(_buf, sizeof(T) * new_cap);
+        assert(nullptr != _buf);
+        _cap = new_cap;
+    }
+
+private:
+    T *_buf = nullptr;
+    size_type _size = 0, _cap = 0;
 };
 
 /**
@@ -301,29 +298,15 @@ public:
 template <typename T>
 class COWArray
 {
-    typedef Array<T> array_type;
-    typedef enrc<array_type> rcarray_type;
-    typedef COWArray<T> self_type;
-
 public:
-    typedef typename array_type::size_type size_type;
-    typedef typename array_type::iterator iterator;
-    typedef typename array_type::const_iterator const_iterator;
+    typedef typename Array<T>::size_type      size_type;
+    typedef typename Array<T>::iterator       iterator;
+    typedef typename Array<T>::const_iterator const_iterator;
 
 private:
-    rc_ptr<rcarray_type> _array;
-
-    /**
-     * 写时复制
-     */
-    void copy_on_write()
-    {
-        assert(_array.is_not_null());
-        const int rc = _array->get_ref();
-        assert(rc >= 1);
-        if (rc > 1)
-            _array = rc_new<rcarray_type>(*_array);
-    }
+    typedef Array<T>         array_type;
+    typedef enrc<array_type> rcarray_type;
+    typedef COWArray<T>      self_type;
 
 public:
     COWArray(size_type init_cap = 16)
@@ -482,6 +465,22 @@ public:
         copy_on_write();
         return _array->data();
     }
+
+private:
+    /**
+     * 写时复制
+     */
+    void copy_on_write()
+    {
+        assert(_array.is_not_null());
+        const int rc = _array->get_ref();
+        assert(rc >= 1);
+        if (rc > 1)
+            _array = rc_new<rcarray_type>(*_array);
+    }
+
+private:
+    rc_ptr<rcarray_type> _array;
 };
 
 }

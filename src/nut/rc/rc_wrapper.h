@@ -24,10 +24,6 @@ namespace nut
 template <typename T>
 class RCWrapper final : public T
 {
-protected:
-    // 引用计数器
-    mutable RefCounter _ref_count;
-
     // 避免多次销毁的检查器
     NUT_DEBUGGING_DESTROY_CHECKER
 
@@ -138,6 +134,10 @@ public:
         NUT_DEBUGGING_ASSERT_ALIVE;
         return _ref_count;
     }
+
+protected:
+    // 引用计数器
+    mutable RefCounter _ref_count;
 };
 
 }

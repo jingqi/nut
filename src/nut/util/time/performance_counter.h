@@ -21,6 +21,14 @@ namespace nut
  */
 class NUT_API PerformanceCounter
 {
+public:
+    PerformanceCounter();
+
+    double operator-(const PerformanceCounter& x) const;
+
+    void set_to_now();
+
+private:
 #if NUT_PLATFORM_OS_WINDOWS
     static LARGE_INTEGER _frequency;
     static bool _frequency_initialized;
@@ -29,13 +37,6 @@ class NUT_API PerformanceCounter
     /* 自程序启动的计时 */
     clock_t _clock;
 #endif
-
-public:
-    PerformanceCounter();
-
-    double operator-(const PerformanceCounter& x) const;
-
-    void set_to_now();
 };
 
 }

@@ -26,16 +26,6 @@ public:
         HANDLE_CHILD = 0x08
     };
 
-private:
-    // 名称
-    std::string _name;
-
-    // 控制处理哪些子元素
-    const uint8_t _handle_mask = 0xff;
-
-    // 防止递归路径上的重复使用
-    bool _busy = false;
-
 public:
     explicit XmlElementHandler(uint8_t mask = 0xff);
     virtual ~XmlElementHandler() = default;
@@ -48,7 +38,6 @@ public:
     void set_busy(bool busy);
     bool is_busy() const;
 
-public:
     virtual void handle_attribute(const std::string& name, const std::string& value);
 
     virtual void handle_text(const std::string& text);
@@ -62,6 +51,16 @@ public:
     virtual void handle_child_finish(XmlElementHandler *child);
 
     virtual void handle_finish();
+
+private:
+    // 名称
+    std::string _name;
+
+    // 控制处理哪些子元素
+    const uint8_t _handle_mask = 0xff;
+
+    // 防止递归路径上的重复使用
+    bool _busy = false;
 };
 
 }

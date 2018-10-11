@@ -18,22 +18,13 @@ namespace nut
 
 class NUT_API SpinLock
 {
-#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
-    CRITICAL_SECTION _critical_section;
-#elif NUT_PLATFORM_OS_MAC
-    pthread_mutex_t _spinlock; // TODO mac 系统没有spinlock
-#else
-    pthread_spinlock_t _spinlock;
-#endif
-
-private:
-    // Non-copyable
-    SpinLock(const SpinLock&) = delete;
-    SpinLock& operator=(const SpinLock&) = delete;
-
 public:
     SpinLock();
     ~SpinLock();
+
+    void lock();
+    bool trylock();
+    void unlock();
 
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     CRITICAL_SECTION* inner_mutex();
@@ -43,9 +34,19 @@ public:
     pthread_spinlock_t* inner_mutex();
 #endif
 
-    void lock();
-    bool trylock();
-    void unlock();
+private:
+    // Non-copyable
+    SpinLock(const SpinLock&) = delete;
+    SpinLock& operator=(const SpinLock&) = delete;
+
+private:
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
+    CRITICAL_SECTION _critical_section;
+#elif NUT_PLATFORM_OS_MAC
+    pthread_mutex_t _spinlock; // TODO mac 系统没有spinlock
+#else
+    pthread_spinlock_t _spinlock;
+#endif
 };
 
 }

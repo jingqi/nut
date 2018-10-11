@@ -17,33 +17,6 @@ namespace nut
  */
 class NUT_API CircleFileBySizeLogHandler : public LogHandler
 {
-    // 输出流
-    std::ofstream _ofs;
-    // 当前文件大小
-    long long _file_size = 0;
-
-    // 输出目录
-    std::string _dir_path;
-    // 文件名前缀
-    std::string _file_prefix;
-    // 循环周期
-    size_t _circle_size = 1;
-    // 最大文件大小
-    long long _max_file_size = 0;
-    // 是否允许跨越文件
-    bool _cross_file = true;
-
-private:
-    // Non-copyable
-    CircleFileBySizeLogHandler(const CircleFileBySizeLogHandler&) = delete;
-    CircleFileBySizeLogHandler& operator=(const CircleFileBySizeLogHandler&) = delete;
-    
-    // 重新打开输出流
-    void reopen(const char *file);
-
-    // 新一轮循环
-    void circle_once();
-
 public:
     /**
      * 按照文件大小循环
@@ -59,6 +32,34 @@ public:
                                bool cross_file = true);
 
     virtual void handle_log(const LogRecord& rec) override;
+
+private:
+    // Non-copyable
+    CircleFileBySizeLogHandler(const CircleFileBySizeLogHandler&) = delete;
+    CircleFileBySizeLogHandler& operator=(const CircleFileBySizeLogHandler&) = delete;
+
+    // 重新打开输出流
+    void reopen(const char *file);
+
+    // 新一轮循环
+    void circle_once();
+
+private:
+    // 输出流
+    std::ofstream _ofs;
+    // 当前文件大小
+    long long _file_size = 0;
+
+    // 输出目录
+    std::string _dir_path;
+    // 文件名前缀
+    std::string _file_prefix;
+    // 循环周期
+    size_t _circle_size = 1;
+    // 最大文件大小
+    long long _max_file_size = 0;
+    // 是否允许跨越文件
+    bool _cross_file = true;
 };
 
 }

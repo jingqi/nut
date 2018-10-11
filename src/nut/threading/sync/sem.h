@@ -18,17 +18,6 @@ namespace nut
 
 class NUT_API Semaphore
 {
-#if NUT_PLATFORM_OS_WINDOWS
-    HANDLE _sem = nullptr;
-#else
-    sem_t _sem;
-#endif
-    
-private:
-    // Non-copyable
-    Semaphore(const Semaphore&) = delete;
-    Semaphore& operator=(const Semaphore&) = delete;
-
 public:
     explicit Semaphore(int init_value);
     ~Semaphore();
@@ -40,6 +29,18 @@ public:
     bool trywait();
 
     bool timedwait(unsigned s, unsigned ms);
+
+private:
+    // Non-copyable
+    Semaphore(const Semaphore&) = delete;
+    Semaphore& operator=(const Semaphore&) = delete;
+
+private:
+#if NUT_PLATFORM_OS_WINDOWS
+    HANDLE _sem = nullptr;
+#else
+    sem_t _sem;
+#endif
 };
 
 }

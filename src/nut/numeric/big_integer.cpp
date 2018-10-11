@@ -847,10 +847,13 @@ void BigInteger::swap(BigInteger *a, BigInteger *b)
     ::free(tmp);
 }
 
+#ifndef NDEBUG
+// currently only used in DEBUG mode
 static bool is_valid_radix(size_t radix)
 {
     return 1 < radix && radix <= 36;
 }
+#endif
 
 static char num2char(size_t n)
 {

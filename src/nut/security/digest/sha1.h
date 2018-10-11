@@ -13,10 +13,6 @@ namespace nut
 
 class NUT_API SHA1
 {
-    uint32_t _state[5];
-    uint8_t _buffer[64];
-    uint32_t _bytes_len = 0;
-
 public:
     SHA1();
 
@@ -36,6 +32,11 @@ public:
 
 private:
     void transform512bits(const void *block);
+
+private:
+    uint32_t _state[5];
+    uint8_t _buffer[64];
+    uint32_t _bytes_len = 0;
 };
 
 }

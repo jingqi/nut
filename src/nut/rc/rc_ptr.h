@@ -14,10 +14,6 @@ namespace nut
 template <typename T>
 class rc_ptr
 {
-protected:
-    template <typename U> friend class rc_ptr;
-    T *_ptr = nullptr;
-
 public:
     rc_ptr() = default;
 
@@ -62,7 +58,6 @@ public:
         set_null();
     }
 
-public:
     rc_ptr<T>& operator=(T *p)
     {
         assign(p);
@@ -141,7 +136,6 @@ public:
         return *_ptr;
     }
 
-public:
     void assign(T *p)
     {
         if (_ptr == p)
@@ -178,6 +172,10 @@ public:
             _ptr = nullptr;
         }
     }
+
+protected:
+    template <typename U> friend class rc_ptr;
+    T *_ptr = nullptr;
 };
 
 /* ******************************************************************/
@@ -226,12 +224,14 @@ struct dynamic_rc_ptr_cast : public rc_ptr<typename RCPtrTraits<T>::plain_type>
 
 /**
  * 声明可引用计数
- * @note 多继承中如：
+ *
+ * @note
+ *  多继承中如：
  *      A   B
  *       \ /
  *        C
- * 如果在A,B中使用了 DECLARE_GC_ENABLE 声明， 那么 C 中也要使用，
- * 否则会出现有歧义的调用
+ *  如果在A,B中声明了 NUT_REF_COUNTABLE 声明，那么 C 中也要声明，否则会出现有歧
+ *  义的函数调用
  *
  * @return 引用计数更改之后的值
  */

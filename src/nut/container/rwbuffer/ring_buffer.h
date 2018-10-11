@@ -13,30 +13,22 @@ namespace nut
 
 /**
  * Ring buffer
+ *
+ * 环形存储:
+ *
+ *    一般状态下
+ *            |=>>>>>>>>>>>>>|
+ *    |-------|++++++++++++++|-------------|
+ *    0   read_index   write_index      capacity
+ *
+ *    环写状态下
+ *    |>>>>>>>>>|                  |=>>>>>>>>>>|
+ *    |+++++++++|------------------|+++++++++++|
+ *    0    write_index         read_index    capacity
+ *
  */
 class NUT_API RingBuffer
 {
-    /* 环形存储:
-     *
-      一般状态下
-              |=>>>>>>>>>>>>>|
-      |-------|++++++++++++++|-------------|
-      0   read_index   write_index      capacity
-
-      环写状态下
-      |>>>>>>>>>|                  |=>>>>>>>>>>|
-      |+++++++++|------------------|+++++++++++|
-      0    write_index         read_index    capacity
-
-     */
-
-    void *_buffer = nullptr;
-    size_t _capacity = 0;
-    size_t _read_index = 0, _write_index = 0;
-
-private:
-    void ensure_writable_size(size_t write_size);
-
 public:
     RingBuffer() = default;
     RingBuffer(const RingBuffer& x);
@@ -75,6 +67,14 @@ public:
      */
     size_t writable_pointers(void **buf_ptr1, size_t *len_ptr1,
                              void **buf_ptr2, size_t *len_ptr2);
+
+private:
+    void ensure_writable_size(size_t write_size);
+
+private:
+    void *_buffer = nullptr;
+    size_t _capacity = 0;
+    size_t _read_index = 0, _write_index = 0;
 };
 
 }

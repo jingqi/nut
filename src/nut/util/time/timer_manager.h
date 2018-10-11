@@ -31,30 +31,12 @@ public:
 
 private:
     // 定时器
-    class Timer
+    struct Timer
     {
-    public:
         timer_id_type id = 0;
         DateTime time;
         timer_task_type task;
     };
-
-    timer_id_type volatile _next_id = 1;  // 用于生成不重复的 timer id
-    std::vector<Timer*> _timers; // 小头堆
-    std::mutex _lock;
-    std::condition_variable _cond;
-    bool volatile _stopping = false; // 是否停止所有计时器
-
-private:
-    // Non-copyable
-    TimerManager(const TimerManager& x) = delete;
-    TimerManager& operator=(const TimerManager& x) = delete;
-
-    Timer* new_timer();
-    void delete_timer(Timer *t);
-
-    // Greater-Than 操作符用于维护小头堆算法
-    static bool timer_greater_than(const Timer *t1, const Timer *t2);
 
 public:
     TimerManager() = default;
@@ -76,6 +58,24 @@ public:
      * 主定时器线程，将阻塞线程，直到 interupt() 被调用
      */
     void run();
+
+private:
+    // Non-copyable
+    TimerManager(const TimerManager& x) = delete;
+    TimerManager& operator=(const TimerManager& x) = delete;
+
+    Timer* new_timer();
+    void delete_timer(Timer *t);
+
+    // Greater-Than 操作符用于维护小头堆算法
+    static bool timer_greater_than(const Timer *t1, const Timer *t2);
+
+private:
+    timer_id_type volatile _next_id = 1;  // 用于生成不重复的 timer id
+    std::vector<Timer*> _timers; // 小头堆
+    std::mutex _lock;
+    std::condition_variable _cond;
+    bool volatile _stopping = false; // 是否停止所有计时器
 };
 
 }

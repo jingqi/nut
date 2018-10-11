@@ -13,8 +13,6 @@ namespace nut
 
 class NUT_API Adler32
 {
-    uint32_t _result = 1;
-
 public:
     Adler32() = default;
 
@@ -23,6 +21,9 @@ public:
     void update(const void *buf, size_t len);
 
     uint32_t digest() const;
+
+private:
+    uint32_t _result = 1;
 };
 
 /**
@@ -30,11 +31,6 @@ public:
  */
 class NUT_API RollingAdler32
 {
-    uint32_t _result = 1;
-    const size_t _window_size = 16;
-    uint8_t *_buf = nullptr;
-    size_t _count = 0;
-
 public:
     explicit RollingAdler32(size_t window);
     ~RollingAdler32();
@@ -44,6 +40,12 @@ public:
     void update(const void *buf, size_t len);
 
     uint32_t get_result() const;
+
+private:
+    uint32_t _result = 1;
+    const size_t _window_size = 16;
+    uint8_t *_buf = nullptr;
+    size_t _count = 0;
 };
 
 }

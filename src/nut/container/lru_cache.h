@@ -18,85 +18,23 @@ namespace nut
 template <typename K, typename V>
 class LRUCache
 {
-    struct Node
-    {
-        K key;
-        V value;
-        Node *pre = nullptr, *next = nullptr;
+private:
+    enum { DEFAULT_CAPACITY = 50 };
 
+    class Node
+    {
+    public:
         Node(const K& k, V&& v)
             : key(k), value(std::forward<V>(v))
         {}
+
+    public:
+        K key;
+        V value;
+        Node *pre = nullptr, *next = nullptr;
     };
 
-    enum { DEFAULT_CAPACITY = 50 };
     typedef std::map<K,Node*> map_type;
-
-    size_t _capacity = 0;
-    map_type _map;
-    Node *_list_head = nullptr, *_list_end = nullptr;
-    SpinLock _lock; // 注意，linux下自旋锁不可重入
-
-#ifndef NDEBUG
-    size_t _hit_count = 0, _miss_count = 0;
-#endif
-
-    static Node* alloc_node()
-    {
-        return (Node*)::malloc(sizeof(Node));
-    }
-
-    static void dealloc_node(Node *p)
-    {
-        assert(nullptr != p);
-        ::free(p);
-    }
-
-    static Node* new_node(const K& k, V&& v)
-    {
-        Node *p = alloc_node();
-        assert(nullptr != p);
-        new (p) Node(k,std::forward<V>(v));
-        return p;
-    }
-
-    static void delete_node(Node *p)
-    {
-        assert(nullptr != p);
-        p->~Node();
-        dealloc_node(p);
-    }
-
-    void remove_from_list(Node *p)
-    {
-        assert(nullptr != p);
-        if (nullptr != p->pre)
-            p->pre->next = p->next;
-        else
-            _list_head = p->next;
-
-        if (nullptr != p->next)
-            p->next->pre = p->pre;
-        else
-            _list_end = p->pre;
-    }
-
-    void push_list_head(Node *p)
-    {
-        assert(nullptr != p);
-        p->next = _list_head;
-        p->pre = nullptr;
-        if (nullptr != _list_head)
-            _list_head->pre = p;
-        else
-            _list_end = p;
-        _list_head = p;
-    }
-
-private:
-    // Non-copyable
-    LRUCache(const LRUCache<K,V>&) = delete;
-    LRUCache<K,V>& operator=(const LRUCache<K,V>&) = delete;
 
 public:
     LRUCache()
@@ -228,6 +166,73 @@ public:
         _miss_count = 0;
 #endif
     }
+
+private:
+    // Non-copyable
+    LRUCache(const LRUCache<K,V>&) = delete;
+    LRUCache<K,V>& operator=(const LRUCache<K,V>&) = delete;
+
+    static Node* alloc_node()
+    {
+        return (Node*)::malloc(sizeof(Node));
+    }
+
+    static void dealloc_node(Node *p)
+    {
+        assert(nullptr != p);
+        ::free(p);
+    }
+
+    static Node* new_node(const K& k, V&& v)
+    {
+        Node *p = alloc_node();
+        assert(nullptr != p);
+        new (p) Node(k,std::forward<V>(v));
+        return p;
+    }
+
+    static void delete_node(Node *p)
+    {
+        assert(nullptr != p);
+        p->~Node();
+        dealloc_node(p);
+    }
+
+    void remove_from_list(Node *p)
+    {
+        assert(nullptr != p);
+        if (nullptr != p->pre)
+            p->pre->next = p->next;
+        else
+            _list_head = p->next;
+
+        if (nullptr != p->next)
+            p->next->pre = p->pre;
+        else
+            _list_end = p->pre;
+    }
+
+    void push_list_head(Node *p)
+    {
+        assert(nullptr != p);
+        p->next = _list_head;
+        p->pre = nullptr;
+        if (nullptr != _list_head)
+            _list_head->pre = p;
+        else
+            _list_end = p;
+        _list_head = p;
+    }
+
+private:
+    size_t _capacity = 0;
+    map_type _map;
+    Node *_list_head = nullptr, *_list_end = nullptr;
+    SpinLock _lock; // 注意，linux下自旋锁不可重入
+
+#ifndef NDEBUG
+    size_t _hit_count = 0, _miss_count = 0;
+#endif
 };
 
 }

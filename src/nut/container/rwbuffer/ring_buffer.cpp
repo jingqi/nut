@@ -25,7 +25,7 @@ RingBuffer::RingBuffer(RingBuffer&& x)
     _capacity = x._capacity;
     _read_index = x._read_index;
     _write_index = x._write_index;
-    
+
     x._buffer = nullptr;
     x._capacity = 0;
     x._read_index = 0;
@@ -63,55 +63,21 @@ RingBuffer& RingBuffer::operator=(RingBuffer&& x)
 {
     if (this == &x)
         return *this;
-    
+
     if (nullptr != _buffer)
         ::free(_buffer);
-    
+
     _buffer = x._buffer;
     _capacity = x._capacity;
     _read_index = x._read_index;
     _write_index = x._write_index;
-    
+
     x._buffer = nullptr;
     x._capacity = 0;
     x._read_index = 0;
     x._write_index = 0;
-    
+
     return *this;
-}
-
-void RingBuffer::ensure_writable_size(size_t write_size)
-{
-    VALIDATE_MEMBERS();
-    if (writable_size() >= write_size)
-        return;
-
-    const size_t rd_sz = readable_size();
-    size_t new_cap = _capacity * 3 / 2;
-    if (new_cap < rd_sz + write_size + 1)
-        new_cap = rd_sz + write_size + 1;
-
-    if (_write_index >= _read_index)
-    {
-        assert(rd_sz == _write_index - _read_index);
-        _buffer = ::realloc(_buffer, new_cap);
-        assert(nullptr != _buffer);
-        _capacity = new_cap;
-    }
-    else
-    {
-        assert(rd_sz == _capacity - _read_index + _write_index);
-        void *new_buffer = ::malloc(new_cap);
-        assert(nullptr != new_buffer);
-        const size_t trunk_sz = _capacity - _read_index;
-        ::memcpy(new_buffer, (const uint8_t*) _buffer + _read_index, trunk_sz);
-        ::memcpy((uint8_t*) new_buffer + trunk_sz, _buffer, _write_index);
-        ::free(_buffer);
-        _buffer = new_buffer;
-        _capacity = new_cap;
-        _read_index = 0;
-        _write_index = rd_sz;
-    }
 }
 
 void RingBuffer::clear()
@@ -284,6 +250,40 @@ size_t RingBuffer::writable_pointers(void **buf_ptr1, size_t *len_ptr1,
     if (nullptr != len_ptr2)
         *len_ptr2 = _read_index - 1;
     return 2;
+}
+
+void RingBuffer::ensure_writable_size(size_t write_size)
+{
+    VALIDATE_MEMBERS();
+    if (writable_size() >= write_size)
+        return;
+
+    const size_t rd_sz = readable_size();
+    size_t new_cap = _capacity * 3 / 2;
+    if (new_cap < rd_sz + write_size + 1)
+        new_cap = rd_sz + write_size + 1;
+
+    if (_write_index >= _read_index)
+    {
+        assert(rd_sz == _write_index - _read_index);
+        _buffer = ::realloc(_buffer, new_cap);
+        assert(nullptr != _buffer);
+        _capacity = new_cap;
+    }
+    else
+    {
+        assert(rd_sz == _capacity - _read_index + _write_index);
+        void *new_buffer = ::malloc(new_cap);
+        assert(nullptr != new_buffer);
+        const size_t trunk_sz = _capacity - _read_index;
+        ::memcpy(new_buffer, (const uint8_t*) _buffer + _read_index, trunk_sz);
+        ::memcpy((uint8_t*) new_buffer + trunk_sz, _buffer, _write_index);
+        ::free(_buffer);
+        _buffer = new_buffer;
+        _capacity = new_cap;
+        _read_index = 0;
+        _write_index = rd_sz;
+    }
 }
 
 }

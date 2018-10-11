@@ -18,18 +18,6 @@ namespace nut
 
 class NUT_API RwLock
 {
-#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
-    /** NOTE windows 下的共享锁是在 Windows Vista/Server 2008 及其以后的版本中提供的 */
-    SRWLOCK _rwlock;
-#else
-    pthread_rwlock_t _rwlock;
-#endif
-    
-private:
-    // Non-copyable
-    RwLock(const RwLock&) = delete;
-    RwLock& operator=(const RwLock&) = delete;
-
 public:
     RwLock();
     ~RwLock();
@@ -41,6 +29,19 @@ public:
     void lock_write();
     bool try_lock_write();
     void unlock_write();
+
+private:
+    // Non-copyable
+    RwLock(const RwLock&) = delete;
+    RwLock& operator=(const RwLock&) = delete;
+
+private:
+#if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
+    /** NOTE windows 下的共享锁是在 Windows Vista/Server 2008 及其以后的版本中提供的 */
+    SRWLOCK _rwlock;
+#else
+    pthread_rwlock_t _rwlock;
+#endif
 };
 
 }

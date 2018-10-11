@@ -15,8 +15,6 @@ namespace nut
 
 class NUT_API CmdExit : public ICommand
 {
-    IConsole *_console = nullptr;
-
 public:
     explicit CmdExit(IConsole *c);
 
@@ -27,6 +25,9 @@ public:
     virtual const char* get_detail_info() const override;
 
     virtual void execute(const char* command_line) override;
+
+private:
+    IConsole *_console = nullptr;
 };
 
 }

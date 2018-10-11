@@ -15,8 +15,6 @@ namespace nut
 
 class NUT_API StreamTestLogger : public ITestLogger
 {
-    std::ostream *_out_stream = nullptr;
-
 public:
     StreamTestLogger(std::ostream *os);
 
@@ -29,6 +27,9 @@ public:
     virtual void on_enter_case(const char *case_name) override;
     virtual void on_failed_case(const TestCaseFailureException& e) override;
     virtual void on_leave_case() override;
+
+private:
+    std::ostream *_out_stream = nullptr;
 };
 
 }

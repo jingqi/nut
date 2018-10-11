@@ -43,7 +43,6 @@ public:
     OutputStream& operator<<(const wchar_t *s);
     OutputStream& operator<<(const std::wstring& s);
 
-public:
     virtual bool is_little_endian() const = 0;
     virtual void set_little_endian(bool le) = 0;
 

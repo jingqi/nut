@@ -10,9 +10,6 @@ namespace nut
 
 class NUT_API Sys
 {
-private:
-    Sys() = delete;
-
 public:
     /**
      * 获得 CPU 核心数
@@ -20,6 +17,9 @@ public:
      * 2. 对于某些 CPU 使用虚拟核心，则返回虚拟核心数
      */
     static unsigned get_processor_num();
+
+private:
+    Sys() = delete;
 };
 
 }

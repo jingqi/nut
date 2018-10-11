@@ -35,26 +35,6 @@ class NUT_API AddrMapManager
 public:
     typedef unsigned int addr_type;
 
-private:
-    // 析构检查字段
-    uint32_t _destruct_tag = 0;
-
-    /**
-     * key 为动态链接库实际绝对路径（不是软链接，也不是相对路径）
-     * value为动态链接库加载地址
-     */
-    typedef std::map<std::string, addr_type> addr_map_type;
-    addr_map_type _addr_map;
-
-    // 程序的绝对路径
-    std::string _exec_path;
-
-    /**
-     * 文件"/proc/xxx/maps"的路径，其中xxx为进程ID.
-     * 该文件保存着共享库在进程空间的映射地址.
-     */
-    std::string _maps_path;
-
 public:
     AddrMapManager();
     ~AddrMapManager();
@@ -86,6 +66,26 @@ private:
      * 它表示共享库在程序中的加载地址
      */
     bool parse_line(const std::string& str_line, bool fappoint_path = false, const std::string& path = std::string());
+
+private:
+    // 析构检查字段
+    uint32_t _destruct_tag = 0;
+
+    /**
+     * key 为动态链接库实际绝对路径（不是软链接，也不是相对路径）
+     * value为动态链接库加载地址
+     */
+    typedef std::map<std::string, addr_type> addr_map_type;
+    addr_map_type _addr_map;
+
+    // 程序的绝对路径
+    std::string _exec_path;
+
+    /**
+     * 文件"/proc/xxx/maps"的路径，其中xxx为进程ID.
+     * 该文件保存着共享库在进程空间的映射地址.
+     */
+    std::string _maps_path;
 };
 
 }

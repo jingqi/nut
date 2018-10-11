@@ -15,19 +15,6 @@ namespace nut
 
 class NUT_API XmlWriter
 {
-    struct ElemState
-    {
-        std::string name;
-        bool has_child = false;
-
-        ElemState(const char *n)
-            : name(n)
-        {}
-    };
-
-    std::ostream *_os = nullptr;
-    std::vector<ElemState> _elem_path;
-
 public:
     explicit XmlWriter(std::ostream *os = nullptr);
 
@@ -44,6 +31,22 @@ public:
 private:
     void write(const char *s, int len = -1);
     void write_encode(const char *s, int len = -1);
+
+private:
+    class ElemState
+    {
+    public:
+        ElemState(const char *n)
+            : name(n)
+        {}
+
+    public:
+        std::string name;
+        bool has_child = false;
+    };
+
+    std::ostream *_os = nullptr;
+    std::vector<ElemState> _elem_path;
 };
 
 }

@@ -25,14 +25,14 @@ public:
 
     /**
      * 命令名缩写
-     * 
+     *
      * @return 最后一项必须是 nullptr
      */
     virtual const char** get_command_nick_names() const;
 
     /**
      * 查询命令的简要描述
-     * 
+     *
      * @return 简要描述，例如
      *     "这是一个测试命令"
      */
@@ -40,7 +40,7 @@ public:
 
     /**
      * 查询命令的详细描述
-     * 
+     *
      * @return 详细描述，例如
      *    "testCommand Msg\n
      *     ep.:\n
@@ -57,7 +57,6 @@ public:
      */
     virtual void execute(const char* command_line) = 0;
 
-public:
     /**
      * 分析命令行
      */
@@ -72,5 +71,3 @@ public:
 }
 
 #endif
-
-

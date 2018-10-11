@@ -8,14 +8,6 @@ namespace nut
 template <typename T>
 class Guard
 {
-    T *_lock = nullptr;
-    bool _need_unlock = true;
-
-private:
-    // Non-copyable
-    Guard(const Guard<T>&) = delete;
-    Guard& operator=(const Guard<T>&) = delete;
-
 public:
     /**
      * @param lock
@@ -37,6 +29,15 @@ public:
         if (nullptr != _lock && _need_unlock)
             _lock->unlock();
     }
+
+private:
+    // Non-copyable
+    Guard(const Guard<T>&) = delete;
+    Guard& operator=(const Guard<T>&) = delete;
+
+private:
+    T *_lock = nullptr;
+    bool _need_unlock = true;
 };
 
 }

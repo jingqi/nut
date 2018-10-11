@@ -20,29 +20,27 @@ class NUT_API XmlElement
 {
     NUT_REF_COUNTABLE
 
+private:
+    typedef std::map<std::string, std::string> attr_map_type;
+
+public:
+    typedef attr_map_type::iterator       attr_iter_type;
+    typedef attr_map_type::const_iterator const_attr_iter_type;
+
+private:
     class Comment
     {
     public:
-        size_t pos = 0;
-        std::string text;
-
         Comment() = default;
 
         Comment(size_t _pos, const std::string& _text)
             : pos(_pos), text(_text)
         {}
+
+    public:
+        size_t pos = 0;
+        std::string text;
     };
-
-    std::string _name, _text;
-    typedef std::map<std::string, std::string> attr_map_type;
-    attr_map_type _attrs;
-    std::vector<rc_ptr<XmlElement> > _children;
-    std::vector<Comment> _comments; // sorted ascending
-    bool _dirty = false;
-
-public:
-    typedef attr_map_type::iterator attr_iter_type;
-    typedef attr_map_type::const_iterator const_attr_iter_type;
 
 public:
     XmlElement() = default;
@@ -112,6 +110,13 @@ public:
     std::string serielize(bool format = true) const;
 
     void serielize(XmlWriter &writer, int tab) const;
+
+private:
+    std::string _name, _text;
+    attr_map_type _attrs;
+    std::vector<rc_ptr<XmlElement> > _children;
+    std::vector<Comment> _comments; // sorted ascending
+    bool _dirty = false;
 };
 
 }
