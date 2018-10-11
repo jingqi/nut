@@ -167,20 +167,20 @@ bool TimeWheel::do_cancel_timer(Timer *t)
         if (expires_tick <= BUCKETS_PER_WHERE)
         {
             const int bucket_index = (w.cursor + expires_tick) % BUCKETS_PER_WHERE;
-            Timer *pre = nullptr, *p = w.buckets[bucket_index];
+            Timer *prev = nullptr, *p = w.buckets[bucket_index];
             while (nullptr != p)
             {
                 if (t == p)
                 {
-                    if (nullptr == pre)
+                    if (nullptr == prev)
                         w.buckets[bucket_index] = t->next;
                     else
-                        pre->next = t->next;
+                        prev->next = t->next;
                     delete_timer(t);
                     --_size;
                     return true;
                 }
-                pre = p;
+                prev = p;
                 p = p->next;
             }
         }

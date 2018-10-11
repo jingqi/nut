@@ -121,7 +121,7 @@ public:
         {}
         assert(is_empty());
 
-        Node *dummy = _head.load(std::memory_order_relaxed).ptr;
+        Node *dummy = _tail.load(std::memory_order_relaxed).ptr;
         assert(nullptr != dummy);
         dummy->destruct_dummy();
         ::free(dummy);

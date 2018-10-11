@@ -79,7 +79,8 @@ private:
         K key;
         void *data = nullptr;
         size_t size = 0;
-        Node *pre = nullptr, *next = nullptr;
+        Node *prev = nullptr;
+        Node *next = nullptr;
     };
 
     typedef std::map<K,Node*> map_type;
@@ -264,24 +265,24 @@ private:
     void remove_from_list(Node *p)
     {
         assert(nullptr != p);
-        if (nullptr != p->pre)
-            p->pre->next = p->next;
+        if (nullptr != p->prev)
+            p->prev->next = p->next;
         else
             _list_head = p->next;
 
         if (nullptr != p->next)
-            p->next->pre = p->pre;
+            p->next->prev = p->prev;
         else
-            _list_end = p->pre;
+            _list_end = p->prev;
     }
 
     void push_list_head(Node *p)
     {
         assert(nullptr != p);
         p->next = _list_head;
-        p->pre = nullptr;
+        p->prev = nullptr;
         if (nullptr != _list_head)
-            _list_head->pre = p;
+            _list_head->prev = p;
         else
             _list_end = p;
         _list_head = p;

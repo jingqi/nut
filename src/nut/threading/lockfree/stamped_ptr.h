@@ -6,6 +6,11 @@
 namespace nut
 {
 
+// FIXME 在 MacOs 上，要么指定内存 pack(1) 对齐，要么保证 sizeof(stamp_type) ==
+//       sizeof(void*)。否则即使两个对象的 .ptr 和 .stamp 是相等的，结构体末尾的
+//       填充数据也会有一定机率导致 std::atomic.compare_exchange_weak() 失败，表
+//       现上是(即使是单线程下)某个循环 CAS 被无限循环卡住
+
 /**
  * 为了避免 atomic ABA 问题而引入的带标签的指针
  *
@@ -16,6 +21,7 @@ namespace nut
  * 2. 在指针后附加一个大字段来表示时间戳，也就是下面的方案。
  *    缺点是，操作位数变长，性能有所损失
  */
+#pragma pack(1)
 template <typename T>
 class StampedPtr
 {
@@ -57,6 +63,7 @@ public:
     T *ptr;
     stamp_type stamp;
 };
+#pragma pack()
 
 }
 
