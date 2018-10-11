@@ -22,6 +22,10 @@ namespace nut
 /**
  * 无锁并发栈
  *
+ *        +------+-> next
+ * top -> | node |   ->   .....
+ *        +------+
+ *
  * 参考文献：
  *   [1] Danny Hendler, Nir Shavit, Lena Yerushalmi. A Scalable Lock-free Stack
  *       Algorithm[J]. SPAA. 2004-06-27. 206-215
