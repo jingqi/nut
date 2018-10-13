@@ -53,11 +53,7 @@ void OS::list_dir(const char *path, std::vector<std::string> *result,
 
 #if NUT_PLATFORM_OS_WINDOWS
     char search_path[MAX_PATH];
-#   if NUT_PLATFORM_CC_VC
-    ::sprintf_s(search_path, MAX_PATH, "%s\\*", path);
-#   else
-    ::sprintf(search_path, "%s\\*", path); /* 加上通配符 */
-#   endif
+    safe_snprintf(search_path, MAX_PATH, "%s\\*", path); /* 加上通配符 */
 
     WIN32_FIND_DATAA wfd;
     const HANDLE hfind = ::FindFirstFileA(search_path, &wfd);
@@ -92,7 +88,7 @@ void OS::list_dir(const char *path, std::vector<std::string> *result,
         if (exclude_file || exclude_dir)
         {
             char file_path[PATH_MAX];
-            ::sprintf(file_path, "%s/%s", path, dirp->d_name);
+            safe_snprintf(file_path, PATH_MAX, "%s/%s", path, dirp->d_name);
             struct stat buf;
             if (::lstat(file_path, &buf) < 0)
                 continue;
@@ -433,11 +429,7 @@ bool OS::remove_tree(const char *path)
 
     // 遍历文件夹
     char full_path[MAX_PATH];
-#   if NUT_PLATFORM_CC_VC
-    ::sprintf_s(full_path, MAX_PATH, "%s\\*", path);
-#   else
-    ::sprintf(full_path, "%s\\*", path); /* 加上通配符 */
-#   endif
+    safe_snprintf(full_path, MAX_PATH, "%s\\*", path); /* 加上通配符 */
 
     WIN32_FIND_DATAA wfd;
     const HANDLE hfind = ::FindFirstFileA(full_path, &wfd);
@@ -452,11 +444,7 @@ bool OS::remove_tree(const char *path)
             ('.' == wfd.cFileName[0] && '.' == wfd.cFileName[1] && '\0' == wfd.cFileName[2]))
             continue;
 
-#   if NUT_PLATFORM_CC_VC
-        ::sprintf_s(full_path, MAX_PATH, "%s\\%s", path, wfd.cFileName);
-#   else
-        ::sprintf(full_path, "%s\\%s", path, wfd.cFileName);
-#   endif
+        safe_snprintf(full_path, MAX_PATH, "%s\\%s", path, wfd.cFileName);
         ret = remove_tree(full_path);
     } while (ret && ::FindNextFileA(hfind, &wfd));
 
@@ -491,7 +479,7 @@ bool OS::remove_tree(const char *path)
             ('.' == dirp->d_name[0] && '.' == dirp->d_name[1] && '\0' == dirp->d_name[2]))
             continue;
 
-        ::sprintf(full_path, "%s/%s", path, dirp->d_name);
+        safe_snprintf(full_path, PATH_MAX, "%s/%s", path, dirp->d_name);
         ret = OS::remove_tree(full_path);
     }
 

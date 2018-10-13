@@ -12,6 +12,7 @@
 #endif
 
 #include "date_time.h"
+#include "../string/string_util.h"
 
 
 #define USECS_PER_SEC (1000 * 1000)
@@ -343,7 +344,7 @@ std::string DateTime::get_clock_str() const
     if (0 != _useconds)
     {
         char buf[20];
-        ::sprintf(buf, "%.6f", ((double) _useconds) / USECS_PER_SEC);
+        safe_snprintf(buf, 20, "%.6f", ((double) _useconds) / USECS_PER_SEC);
         int i = 0;
         while ('.' != buf[i])
             ++i;

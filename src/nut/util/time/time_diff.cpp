@@ -2,6 +2,7 @@
 #include <assert.h>
 
 #include "time_diff.h"
+#include "../string/string_util.h"
 
 
 #define USECS_PER_SEC (1000 * 1000)
@@ -196,7 +197,7 @@ std::string TimeDiff::to_string() const
     double sec = _seconds * USECS_PER_SEC + _useconds;
     sec /= USECS_PER_SEC;
     char buf[128];
-    ::sprintf(buf, "%lf", sec);
+    safe_snprintf(buf, 128, "%lf", sec);
     return buf;
 }
 

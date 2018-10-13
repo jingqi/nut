@@ -472,11 +472,10 @@ void IniDom::set_num(const char *sector, const char *key, long value)
     assert(nullptr != key);
     const int BUF_LEN = 30;
     char buf[BUF_LEN];
-    ::memset(buf, 0, BUF_LEN);
 #if NUT_PLATFORM_OS_WINDOWS
     ::ltoa(value, buf, 10);
 #else
-    ::sprintf(buf, "%ld", value);
+    safe_snprintf(buf, BUF_LEN, "%ld", value);
 #endif
     set_string(sector, key, buf);
 }
@@ -486,8 +485,7 @@ void IniDom::set_decimal(const char *sector, const char *key, double value)
     assert(nullptr != key);
     const int BUF_LEN = 30;
     char buf[BUF_LEN];
-    ::memset(buf, 0, BUF_LEN);
-    ::sprintf(buf, "%lf", value);
+    safe_snprintf(buf, BUF_LEN, "%lf", value);
     set_string(sector, key, buf);
 }
 

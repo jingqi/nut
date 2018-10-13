@@ -8,6 +8,8 @@
 #include <nut/platform/platform.h>
 
 #include "to_string.h"
+#include "string_util.h"
+
 
 #if NUT_PLATFORM_CC_VC
 #   pragma warning(push)
@@ -70,16 +72,15 @@ NUT_API std::string llong_to_str(long long i)
 {
     const int BUF_SIZE = 60;
     char buf[BUF_SIZE];
-    ::memset(buf, 0, BUF_SIZE);
 #if defined(_MSC_VER) && _MSC_VER <= 1310
     // for VS2003 or ealier, "%lld" was not supported
-    ::sprintf(buf, "%I64d", i);
+    safe_snprintf(buf, BUF_SIZE, "%I64d", i);
     // ::ltoa(i, buf, 10);
 #elif NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_MINGW
     assert(sizeof(long long) == 8);
-    ::sprintf(buf, "%I64d", i);
+    safe_snprintf(buf, BUF_SIZE, "%I64d", i);
 #else
-    ::sprintf(buf, "%lld", i);
+    safe_snprintf(buf, BUF_SIZE, "%lld", i);
 #endif
     return buf;
 }
@@ -101,8 +102,7 @@ NUT_API std::string double_to_str(double d)
 {
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
-    ::memset(buf, 0, BUF_SIZE);
-    ::sprintf(buf, "%lf", d);
+    safe_snprintf(buf, BUF_SIZE, "%lf", d);
     return buf;
 }
 
@@ -111,8 +111,7 @@ NUT_API std::string float_to_str(float f)
 {
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
-    ::memset(buf, 0, BUF_SIZE);
-    ::sprintf(buf, "%f", f);
+    safe_snprintf(buf, BUF_SIZE, "%f", f);
     return buf;
 }
 
@@ -121,11 +120,10 @@ NUT_API std::string ptr_to_str(const void *p)
 {
     const int BUF_SIZE = 30;
     char buf[BUF_SIZE];
-    ::memset(buf, 0, BUF_SIZE);
 #if NUT_PLATFORM_OS_WINDOWS
-    ::sprintf(buf,"0x%p",p);    // windows: 0x002E459F
+    safe_snprintf(buf, BUF_SIZE, "0x%p",p);    // windows: 0x002E459F
 #else
-    ::sprintf(buf,"%p",p);      // linux: 0x2e459f
+    safe_snprintf(buf, BUF_SIZE, "%p",p);      // linux: 0x2e459f
 #endif
     return buf;
 }
@@ -148,8 +146,7 @@ NUT_API std::string mem_to_str(const void *p, size_t align, size_t count)
         std::string single;
         for (size_t j = 0; j < align; ++j)
         {
-            ::memset(buf, 0, BUF_SIZE);
-            sprintf(buf, "%02X", *current);
+            safe_snprintf(buf, BUF_SIZE, "%02X", *current);
             single = std::string(buf) + single;
             ++current;
         }

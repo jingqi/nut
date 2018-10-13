@@ -17,13 +17,13 @@ namespace nut
 AddrMapManager::AddrMapManager()
     : _destruct_tag(CONSTRUCTED_TAG)
 {
-    char file_path[PATH_MAX + 1] = {0};
-    ::sprintf(file_path, "/proc/%d/maps", getpid());
+    char file_path[PATH_MAX];
+    safe_snprintf(file_path, PATH_MAX, "/proc/%d/maps", getpid());
     _maps_path = file_path;
 
-    char link_path[PATH_MAX + 1] = {0};
-    char actual_path[PATH_MAX + 1] = {0};
-    ::sprintf(link_path, "/proc/%d/exe",getpid());
+    char link_path[PATH_MAX];
+    char actual_path[PATH_MAX] = {0};
+    safe_snprintf(link_path, PATH_MAX, "/proc/%d/exe",getpid());
     ::readlink(link_path, actual_path, PATH_MAX);
     _exec_path = actual_path;
 

@@ -40,7 +40,7 @@ static AddrMapManager& get_addr_map_mgr()
 static std::string make_addr2line_cmd(addr_type addr, const std::string& str_path)
 {
     char buf[50] = {0};
-    sprintf(buf, "0x%X", addr);
+    safe_snprintf(buf, 50, "0x%X", addr);
     std::string cmd = "addr2line ";
     cmd += buf;
     cmd += " -C -f -e ";
