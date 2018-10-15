@@ -340,17 +340,7 @@ std::string DateTime::get_date_str() const
 // for example : "12:34:45"
 std::string DateTime::get_clock_str() const
 {
-    std::string ret = format_time("%H:%M:%S");
-    if (0 != _useconds)
-    {
-        char buf[20];
-        safe_snprintf(buf, 20, "%.6f", ((double) _useconds) / USECS_PER_SEC);
-        int i = 0;
-        while ('.' != buf[i])
-            ++i;
-        ret += buf + i;
-    }
-    return ret;
+    return format_time("%H:%M:%S.%f");
 }
 
 // for example : "2007-3-4 8:33:57"
@@ -371,12 +361,38 @@ std::string DateTime::to_string() const
 std::string DateTime::format_time(const char *format) const
 {
     assert(nullptr != format);
-    size_t new_size = ::strlen(format) * 3;
-    char *buf = (char*) ::malloc(new_size);
+
     check_time_info();
-    ::strftime(buf, new_size, format, &_time_info);
-    std::string ret(buf);
-    ::free(buf);
+
+    std::string ret;
+    if (0 == format[0])
+        return ret;
+    size_t size = ::strlen(format) * 3;
+    ret.resize(size);
+    while (true)
+    {
+        const int n = ::strftime((char*) ret.data(), size, format, &_time_info);
+        if (n > 0)
+        {
+            ret.resize(n);
+            break;
+        }
+        size *= 2;
+        ret.resize(size);
+    }
+
+    const size_t start = ret.find("%f");
+    if (std::string::npos != start)
+    {
+        char buf[32];
+        safe_snprintf(buf, 32, "%.6f", ((double) _useconds) / USECS_PER_SEC);
+        char *decimal = buf;
+        while ('.' != *decimal)
+            ++decimal;
+        ++decimal;
+        ret.replace(start, 2, decimal);
+    }
+
     return ret;
 }
 
