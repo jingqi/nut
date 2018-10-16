@@ -65,12 +65,12 @@ public:
 
 #if NUT_PLATFORM_OS_WINDOWS
     void set(const SYSTEMTIME& wtm);
-    void to_wtm(SYSTEMTIME *wtm);
+    void to_wtm(SYSTEMTIME *wtm) const;
 #else
     void set(const struct timeval& tv);
     void set(const struct timespec& tv);
-    void to_timeval(struct timeval *tv);
-    void to_timespec(struct timespec *tv);
+    void to_timeval(struct timeval *tv) const;
+    void to_timespec(struct timespec *tv) const;
 #endif
 
     /**

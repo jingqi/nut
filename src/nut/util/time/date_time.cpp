@@ -124,6 +124,7 @@ DateTime& DateTime::operator+=(const TimeDiff& diff)
     _seconds += diff.get_seconds();
     _useconds += diff.get_useconds();
     normalize();
+    _time_info_dirty = true;
     return *this;
 }
 
@@ -131,6 +132,7 @@ DateTime& DateTime::operator-=(const TimeDiff& diff)
 {
     _seconds -= diff.get_seconds();
     _useconds -= diff.get_useconds();
+    _time_info_dirty = true;
     normalize();
     return *this;
 }
@@ -170,7 +172,7 @@ void DateTime::set(const SYSTEMTIME& wtm)
         wtm.wMilliseconds * USECS_PER_MSEC);
 }
 
-void DateTime::to_wtm(SYSTEMTIME *wtm)
+void DateTime::to_wtm(SYSTEMTIME *wtm) const
 {
     assert(nullptr != wtm);
     check_time_info();
@@ -195,14 +197,14 @@ void DateTime::set(const struct timespec &tv)
     set(tv.tv_sec, tv.tv_nsec / NSECS_PER_USEC);
 }
 
-void DateTime::to_timeval(struct timeval *tv)
+void DateTime::to_timeval(struct timeval *tv) const
 {
     assert(nullptr != tv);
     tv->tv_sec = _seconds;
     tv->tv_usec = _useconds;
 }
 
-void DateTime::to_timespec(struct timespec *tv)
+void DateTime::to_timespec(struct timespec *tv) const
 {
     assert(nullptr != tv);
     tv->tv_sec = _seconds;
