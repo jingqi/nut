@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <map>
 
-#include <nut/threading/sync/spinlock.h>
+#include <nut/threading/sync/dummylock.h>
 #include <nut/threading/sync/guard.h>
 
 namespace nut
@@ -15,7 +15,7 @@ namespace nut
 /**
  * most-recently-used data cache
  */
-template <typename K>
+template <typename K, typename LOCK_TYPE = DummyLock>
 class LRUDataCache
 {
 private:
@@ -121,7 +121,7 @@ public:
     bool put(const K& k, const void *buf, size_t cb)
     {
         assert(nullptr != buf || 0 == cb);
-        Guard<SpinLock> g(&_lock);
+        Guard<LOCK_TYPE> g(&_lock);
 
         typename map_type::const_iterator const n = _map.find(k);
         if (n == _map.end())
@@ -158,7 +158,7 @@ public:
 
     bool remove(const K& k)
     {
-        Guard<SpinLock> g(&_lock);
+        Guard<LOCK_TYPE> g(&_lock);
 
         typename map_type::iterator const n = _map.find(k);
         if (n == _map.end())
@@ -181,7 +181,7 @@ public:
     bool get(const K& k, const void **pdata, size_t *psize)
     {
         assert(nullptr != pdata && nullptr != psize);
-        Guard<SpinLock> g(&_lock);
+        Guard<LOCK_TYPE> g(&_lock);
 
         typename map_type::const_iterator const n = _map.find(k);
         if (n == _map.end())
@@ -208,7 +208,7 @@ public:
 
     void clear()
     {
-        Guard<SpinLock> g(&_lock);
+        Guard<LOCK_TYPE> g(&_lock);
 
         Node *p = _list_head;
         while (nullptr != p)
@@ -290,7 +290,7 @@ private:
     size_t _bytes_size = 0, _bytes_capacity = 0;
     map_type _map;
     Node *_list_head = nullptr, *_list_end = nullptr;
-    SpinLock _lock; // 注意，linux下自旋锁不可重入
+    LOCK_TYPE _lock; // 注意，linux下自旋锁不可重入
 
 #ifndef NDEBUG
     size_t _hit_count = 0, _hit_size = 0, _miss_count = 0;
