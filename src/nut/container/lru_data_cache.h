@@ -86,11 +86,7 @@ private:
     typedef std::map<K,Node*> map_type;
 
 public:
-    LRUDataCache()
-        : _bytes_capacity(DEFAULT_BYTES_CAPACITY)
-    {}
-
-    LRUDataCache(size_t bytes_capacity)
+    explicit LRUDataCache(size_t bytes_capacity = DEFAULT_BYTES_CAPACITY)
         : _bytes_capacity(bytes_capacity)
     {
         assert(bytes_capacity > 0);
@@ -122,7 +118,7 @@ public:
         _bytes_capacity = bytes_capacity;
     }
 
-    void put(const K& k, const void *buf, size_t cb)
+    bool put(const K& k, const void *buf, size_t cb)
     {
         assert(nullptr != buf || 0 == cb);
         Guard<SpinLock> g(&_lock);
@@ -147,7 +143,7 @@ public:
                 remove_from_list(pp);
                 delete_node(pp);
             }
-            return;
+            return true;
         }
 
         Node *const p = n->second;
@@ -157,15 +153,16 @@ public:
         remove_from_list(p);
         push_list_head(p);
         _bytes_size += cb;
+        return false;
     }
 
-    void remove(const K& k)
+    bool remove(const K& k)
     {
         Guard<SpinLock> g(&_lock);
 
         typename map_type::iterator const n = _map.find(k);
         if (n == _map.end())
-            return;
+            return false;
 
         Node *const p = n->second;
         assert(nullptr != p && _bytes_size >= p->size);
@@ -173,6 +170,7 @@ public:
         _map.erase(n);
         remove_from_list(p);
         delete_node(p);
+        return true;
     }
 
     bool has_key(const K& k)

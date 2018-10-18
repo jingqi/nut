@@ -20,6 +20,11 @@ NUT_FIXTURE(TestDateTime)
         DateTime t(2015, 9, 20, 11, 12, 13, 123456);
         // cout << t.to_string() << endl;
         NUT_TA(t.to_string() == "2015-09-20 11:12:13.123456");
+
+        NUT_TA(t.format_time("%S.%f") == "13.123456");
+        NUT_TA(t.format_time("%S.%1f") == "13.1");
+        NUT_TA(t.format_time("%S.%5f") == "13.12346");
+        NUT_TA(t.format_time("%S.%9f") == "13.123456000");
     }
 
     void test_bug1()

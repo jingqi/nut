@@ -342,7 +342,7 @@ std::string DateTime::get_date_str() const
 // for example : "12:34:45"
 std::string DateTime::get_clock_str() const
 {
-    return format_time("%H:%M:%S.%f");
+    return format_time("%H:%M:%S.%6f");
 }
 
 // for example : "2007-3-4 8:33:57"
@@ -354,6 +354,60 @@ std::string DateTime::get_datetime_str() const
 std::string DateTime::to_string() const
 {
     return get_datetime_str();
+}
+
+// 获取浮点数小数部分，例如 "%.3f", 0.1234 -> 123
+static std::string format_decimal_tail(const char *format, double decimal)
+{
+    assert(nullptr != format);
+    char buf[128];
+    safe_snprintf(buf, 128, format, decimal);
+    const char *tail = buf;
+    while ('.' != *tail)
+        ++tail;
+    ++tail;
+    return tail;
+}
+
+// 格式化浮点，例如 "%3f", 0.1234 -> 123
+static std::string format_decimal_tails(const char *format, double decimal)
+{
+    assert(nullptr != format);
+
+    std::string ret;
+    std::string fmt;
+    for (const char *p = format; 0 != *p; ++p)
+    {
+        const char c = *p;
+        if (fmt.empty())
+        {
+            if ('%' == c)
+                fmt.push_back(c);
+            else
+                ret.push_back(c);
+        }
+        else if ('0' <= c && c <= '9')
+        {
+            fmt.push_back(c);
+        }
+        else if ('f' == c)
+        {
+            fmt.push_back(c);
+            if (fmt.size() > 2)
+                fmt.insert(1, ".");
+            ret += format_decimal_tail(fmt.c_str(), decimal);
+            fmt.clear();
+        }
+        else
+        {
+            ret += fmt;
+            ret.push_back(c);
+            fmt.clear();
+        }
+    }
+    if (!fmt.empty())
+        ret += fmt;
+    return ret;
 }
 
 /**
@@ -369,11 +423,17 @@ std::string DateTime::format_time(const char *format) const
     std::string ret;
     if (0 == format[0])
         return ret;
-    size_t size = ::strlen(format) * 3;
+
+    // 先格式化浮点数部分，因为 mac 下的 strftime() 会错误处理 %f
+    const double f = ((double) _useconds) / USECS_PER_SEC;
+    const std::string fmt = format_decimal_tails(format, f);
+
+    // 格式化其他部分
+    size_t size = fmt.length() * 3;
     ret.resize(size);
     while (true)
     {
-        const int n = ::strftime((char*) ret.data(), size, format, &_time_info);
+        const int n = ::strftime((char*) ret.data(), size, fmt.c_str(), &_time_info);
         if (n > 0)
         {
             ret.resize(n);

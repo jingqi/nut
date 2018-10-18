@@ -38,11 +38,7 @@ private:
     typedef std::map<K,Node*> map_type;
 
 public:
-    LRUCache()
-        : _capacity(DEFAULT_CAPACITY)
-    {}
-
-    LRUCache(size_t capacity)
+    explicit LRUCache(size_t capacity = DEFAULT_CAPACITY)
         : _capacity(capacity)
     {
         assert(capacity > 0);
@@ -69,7 +65,7 @@ public:
         _capacity = capacity;
     }
 
-    void put(const K& k, V&& v)
+    bool put(const K& k, V&& v)
     {
         Guard<SpinLock> g(&_lock);
 
@@ -91,7 +87,7 @@ public:
                 remove_from_list(pp);
                 delete_node(pp);
             }
-            return;
+            return true;
         }
 
         Node *const p = n->second;
@@ -99,21 +95,23 @@ public:
         p->value = v;
         remove_from_list(p);
         push_list_head(p);
+        return false;
     }
 
-    void remove(const K& k)
+    bool remove(const K& k)
     {
         Guard<SpinLock> g(&_lock);
 
         typename map_type::iterator const n = _map.find(k);
         if (n == _map.end())
-            return;
+            return false;
 
         Node *const p = n->second;
         assert(nullptr != p);
         _map.erase(n);
         remove_from_list(p);
         delete_node(p);
+        return true;
     }
 
     bool has_key(const K& k)
