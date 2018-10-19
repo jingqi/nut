@@ -7,7 +7,7 @@
 #include <vector>
 
 #include <nut/rc/rc_new.h>
-#include <nut/util/string/string_util.h>
+#include <nut/util/string/string_utils.h>
 
 #include "../nut_config.h"
 #include "icommand.h"

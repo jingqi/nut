@@ -16,7 +16,7 @@
 #   include <limits.h> // for PATH_MAX
 #endif
 
-#include <nut/util/string/string_util.h>
+#include <nut/util/string/string_utils.h>
 
 #include "path.h"
 

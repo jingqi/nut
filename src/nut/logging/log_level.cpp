@@ -1,7 +1,7 @@
 ﻿
 #include <string.h>
 
-#include <nut/util/string/string_util.h>
+#include <nut/util/string/string_utils.h>
 
 #include "log_level.h"
 
@@ -75,4 +75,3 @@ LogLevel str_to_log_level(const char *str)
 }
 
 }
-

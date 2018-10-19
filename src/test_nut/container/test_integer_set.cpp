@@ -1,7 +1,7 @@
 ﻿
 #include <iostream>
 
-#include <nut/unittest/unit_test.h>
+#include <nut/unittest/unittest.h>
 
 #include <nut/container/integer_set.h>
 #include <nut/util/string/to_string.h>
@@ -65,7 +65,7 @@ NUT_FIXTURE(TestIntegerSet)
         NUT_TA(s.size_of_values() == 17);
         NUT_TA(s.size_of_ranges() == 2);
     }
-    
+
     void check_add_one_range(int first, int last, const char *expected)
     {
         assert(nullptr != expected);
@@ -185,14 +185,14 @@ NUT_FIXTURE(TestIntegerSet)
         IntegerSet<int> rs = x.remainder_with(y);
         NUT_TA(to_string(rs) == "[1,14]");
     }
-    
+
     void test_iterator()
     {
         IntegerSet<int> x;
         x.add_value_range(1,3);
         x.add_value_range(5,10);
         x.add_value_range(13,15);
-        
+
         int i = 0;
         int arr[] = {2,3,5,6,7,8,9,10};
         for (IntegerSet<int>::const_iterator iter = x.value_iterator(2),

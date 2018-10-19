@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <sstream>
 
-#include <nut/util/string/string_util.h>
+#include <nut/util/string/string_utils.h>
 
 #include "xml_element.h"
 #include "xml_parser.h"

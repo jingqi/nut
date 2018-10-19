@@ -19,7 +19,7 @@
 #include <fstream>
 #include <stdint.h>
 
-#include <nut/util/string/string_util.h>
+#include <nut/util/string/string_utils.h>
 
 #include "../nut_config.h"
 

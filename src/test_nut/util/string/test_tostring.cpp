@@ -1,8 +1,8 @@
 ﻿
-#include <nut/unittest/unit_test.h>
+#include <nut/unittest/unittest.h>
 
 #include <iostream>
-#include <nut/util/string/string_util.h>
+#include <nut/util/string/string_utils.h>
 #include <nut/util/string/to_string.h>
 
 using namespace std;

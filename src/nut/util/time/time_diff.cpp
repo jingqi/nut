@@ -2,7 +2,7 @@
 #include <assert.h>
 
 #include "time_diff.h"
-#include "../string/string_util.h"
+#include "../string/string_utils.h"
 
 
 #define USECS_PER_SEC (1000 * 1000)

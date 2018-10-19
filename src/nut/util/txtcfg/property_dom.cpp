@@ -7,7 +7,7 @@
 #include <nut/platform/platform.h>
 
 #include "property_dom.h"
-#include "../string/string_util.h"
+#include "../string/string_utils.h"
 
 #if NUT_PLATFORM_CC_VC
 #   pragma warning(push)

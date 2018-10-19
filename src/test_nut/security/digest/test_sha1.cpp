@@ -1,7 +1,7 @@
-
+﻿
 #include <iostream>
 
-#include <nut/unittest/unit_test.h>
+#include <nut/unittest/unittest.h>
 
 #include <nut/security/digest/sha1.h>
 

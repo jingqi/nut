@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <map>
 
-#include <nut/threading/sync/dummylock.h>
+#include <nut/threading/sync/dummy_lock.h>
 #include <nut/threading/sync/guard.h>
 
 namespace nut
@@ -19,8 +19,6 @@ template <typename K, typename LOCK_TYPE = DummyLock>
 class LRUDataCache
 {
 private:
-    enum { DEFAULT_BYTES_CAPACITY = 5 * 1024 * 1024 }; // 单位: 字节
-
     class Node
     {
     public:
@@ -86,7 +84,7 @@ private:
     typedef std::map<K,Node*> map_type;
 
 public:
-    explicit LRUDataCache(size_t bytes_capacity = DEFAULT_BYTES_CAPACITY)
+    explicit LRUDataCache(size_t bytes_capacity = 2 * 1024 * 1024) // 2M
         : _bytes_capacity(bytes_capacity)
     {
         assert(bytes_capacity > 0);

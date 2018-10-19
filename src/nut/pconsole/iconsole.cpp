@@ -1,7 +1,7 @@
 ﻿
 #include <assert.h>
 
-#include <nut/util/string/string_util.h>
+#include <nut/util/string/string_utils.h>
 
 #include "iconsole.h"
 

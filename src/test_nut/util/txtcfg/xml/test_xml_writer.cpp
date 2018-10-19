@@ -1,7 +1,7 @@
 ﻿
 #include <sstream>
 
-#include <nut/unittest/unit_test.h>
+#include <nut/unittest/unittest.h>
 
 #include <nut/util/txtcfg/xml/xml_writer.h>
 
@@ -23,16 +23,16 @@ NUT_FIXTURE(TestXmlWriter)
         w.start_element("a");
         w.write_attribute("b","c&");
         w.write_attribute("c","\"");
-    
+
         w.start_element("d");
         w.write_attribute("e","<");
         w.end_element();
-        
+
         w.write_comment("efg");
         w.write_text("h>i");
-        
+
         w.end_element();
-        
+
         //printf("%s", s.c_str());
         const char *s =
             "<a b=\"c&amp;\" c=\"&quot;\">"

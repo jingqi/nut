@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <map>
 
-#include <nut/threading/sync/dummylock.h>
+#include <nut/threading/sync/dummy_lock.h>
 #include <nut/threading/sync/guard.h>
 
 
@@ -20,8 +20,6 @@ template <typename K, typename V, typename LOCK_TYPE = DummyLock>
 class LRUCache
 {
 private:
-    enum { DEFAULT_CAPACITY = 50 };
-
     class Node
     {
     public:
@@ -39,7 +37,7 @@ private:
     typedef std::map<K,Node*> map_type;
 
 public:
-    explicit LRUCache(size_t capacity = DEFAULT_CAPACITY)
+    explicit LRUCache(size_t capacity = 50)
         : _capacity(capacity)
     {
         assert(capacity > 0);

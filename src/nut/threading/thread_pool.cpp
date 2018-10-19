@@ -31,6 +31,12 @@ void ThreadPool::set_max_thread_number(size_t max_thread_number)
     _wake_condition.notify_all();
 }
 
+size_t ThreadPool::get_busy_thread_number()
+{
+    std::lock_guard<std::mutex> guard(_lock);
+    return _alive_number - _idle_number;
+}
+
 unsigned ThreadPool::get_max_sleep_seconds() const
 {
     return _max_sleep_seconds;

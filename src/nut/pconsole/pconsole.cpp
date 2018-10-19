@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include <nut/util/string/string_util.h>
+#include <nut/util/string/string_utils.h>
 
 #include "pconsole.h"
 #include "cmd_exit.h"
@@ -84,7 +84,7 @@ void PConsole::print_general_info() const
         assert(!cmd.is_null());
         const char* cmd_name = cmd->get_command_name();
         const char* cmd_info = cmd->get_general_info();
-        printf("\t%s %s\n", (nullptr == cmd_name ? "(null)" : cmd_name), 
+        printf("\t%s %s\n", (nullptr == cmd_name ? "(null)" : cmd_name),
                (nullptr == cmd_info ? "" : cmd_info));
     }
 }

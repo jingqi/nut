@@ -1,6 +1,6 @@
 ﻿
 #include <iostream>
-#include <nut/unittest/unit_test.h>
+#include <nut/unittest/unittest.h>
 
 #include <nut/container/tree/btree.h>
 #include <nut/container/tree/bstree.h>
@@ -47,7 +47,7 @@ NUT_FIXTURE(TestBSTree)
     };
 
     Node *root;
-    
+
     virtual void set_up() override
     {
         /*

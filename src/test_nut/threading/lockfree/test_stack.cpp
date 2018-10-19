@@ -7,7 +7,7 @@
 #   include <unistd.h>
 #endif
 
-#include <nut/unittest/unit_test.h>
+#include <nut/unittest/unittest.h>
 
 #include <nut/threading/lockfree/concurrent_stack.h>
 

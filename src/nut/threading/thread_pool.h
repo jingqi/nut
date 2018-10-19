@@ -34,11 +34,13 @@ public:
      * @param max_sleep_seconds 线程空闲多长时间后自我终止; 0 表示无限长时间
      */
     explicit ThreadPool(size_t max_thread_number = 0,
-                        unsigned max_sleep_seconds = 60);
+                        unsigned max_sleep_seconds = 300);
     ~ThreadPool();
 
     size_t get_max_thread_number() const;
     void set_max_thread_number(size_t max_thread_number);
+
+    size_t get_busy_thread_number();
 
     unsigned get_max_sleep_seconds() const;
     void set_max_sleep_seconds(unsigned max_sleep_seconds);

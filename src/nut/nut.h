@@ -80,13 +80,14 @@
 #include "threading/thread_pool.h"
 #include "threading/lockfree/concurrent_stack.h"
 #include "threading/lockfree/concurrent_queue.h"
+#include "threading/sync/dummy_lock.h"
 #include "threading/sync/spinlock.h"
 #include "threading/sync/rwlock.h"
 #include "threading/sync/sem.h"
 #include "threading/sync/guard.h"
 
 // unittest
-#include "unittest/unit_test.h"
+#include "unittest/unittest.h"
 #include "unittest/console_test_logger.h"
 #include "unittest/stream_test_logger.h"
 
@@ -108,7 +109,7 @@
 #include "util/console_util.h"
 #include "util/string/kmp.h"
 #include "util/string/to_string.h"
-#include "util/string/string_util.h"
+#include "util/string/string_utils.h"
 #include "util/time/date_time.h"
 #include "util/time/time_diff.h"
 #include "util/time/performance_counter.h"

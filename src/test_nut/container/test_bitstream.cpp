@@ -1,6 +1,6 @@
 ﻿#include <iostream>
 
-#include <nut/unittest/unit_test.h>
+#include <nut/unittest/unittest.h>
 
 #include <nut/container/bit_stream.h>
 
@@ -59,7 +59,7 @@ NUT_FIXTURE(TestBitStream)
         BitStream bs("1100");
         NUT_TA(bs.substream(1,2).to_string() == "10");
     }
-    
+
     void test_bitop()
     {
         BitStream a("010001001");

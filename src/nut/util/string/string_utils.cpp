@@ -15,7 +15,7 @@
 
 #include "kmp.h"
 #include "to_string.h"
-#include "string_util.h"
+#include "string_utils.h"
 
 #if NUT_PLATFORM_CC_VC
 #   pragma warning(push)

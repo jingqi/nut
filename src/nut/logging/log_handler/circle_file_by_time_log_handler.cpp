@@ -11,7 +11,7 @@
 #include <nut/platform/path.h>
 #include <nut/util/time/date_time.h>
 #include <nut/util/string/to_string.h>
-#include <nut/util/string/string_util.h>
+#include <nut/util/string/string_utils.h>
 
 #include "circle_file_by_time_log_handler.h"
 

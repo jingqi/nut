@@ -12,7 +12,7 @@
 #endif
 
 #include "date_time.h"
-#include "../string/string_util.h"
+#include "../string/string_utils.h"
 
 
 #define USECS_PER_SEC (1000 * 1000)

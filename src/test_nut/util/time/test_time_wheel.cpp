@@ -12,7 +12,7 @@
 #include <iostream>
 #include <thread>
 
-#include <nut/unittest/unit_test.h>
+#include <nut/unittest/unittest.h>
 #include <nut/util/time/time_wheel.h>
 
 using namespace std;

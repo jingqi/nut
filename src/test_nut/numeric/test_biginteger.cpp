@@ -2,7 +2,7 @@
 #include <iostream>
 #include <time.h>
 #include <stdio.h>
-#include <nut/unittest/unit_test.h>
+#include <nut/unittest/unittest.h>
 #include <nut/numeric/big_integer.h>
 
 using namespace std;

@@ -6,7 +6,7 @@
 
 使用示例：
 
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 
 NUT_FIXTURE(TestTestUnit)
 {
@@ -26,7 +26,7 @@ NUT_FIXTURE(TestTestUnit)
 NUT_REGISTER_FIXTURE(TestTestUnit, "test,quiet")
 
 
-#include <nut/unittest/unittest.hpp>
+#include <nut/unittest/unittest.h>
 int main()
 {
     nut::TestRunner runner(std::cout);

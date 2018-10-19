@@ -1,7 +1,7 @@
 ﻿
 #include <iostream>
 
-#include <nut/unittest/unit_test.h>
+#include <nut/unittest/unittest.h>
 
 #include <nut/container/rwbuffer/ring_buffer.h>
 

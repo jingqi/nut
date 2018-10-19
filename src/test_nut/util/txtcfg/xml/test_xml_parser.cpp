@@ -1,5 +1,5 @@
 ﻿
-#include <nut/unittest/unit_test.h>
+#include <nut/unittest/unittest.h>
 
 #include <nut/util/txtcfg/xml/xml_parser.h>
 

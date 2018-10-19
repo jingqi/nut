@@ -1,5 +1,5 @@
 ﻿
-#include <nut/unittest/unit_test.h>
+#include <nut/unittest/unittest.h>
 
 #include <nut/rc/rc_new.h>
 #include <nut/logging/logger.h>
@@ -39,7 +39,7 @@ NUT_FIXTURE(TestLogging)
         NUT_LOG_E("b.c", "error msg");
         NUT_LOG_F("a.b.m", "fatal msg");
     }
-    
+
     void test_console_handler()
     {
         Logger *l = Logger::get_instance();
