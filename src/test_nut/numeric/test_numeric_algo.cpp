@@ -17,17 +17,18 @@ using namespace nut;
 #   pragma warning(disable: 4307)
 #endif
 
-NUT_FIXTURE(TestNumericAlgo)
+class TestNumericAlgo : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_bugs)
-    NUT_CASE(test_gcd)
-    NUT_CASE(test_extend_euclid)
-    NUT_CASE(test_mod_multiply)
-    NUT_CASE(test_mod_pow)
-    NUT_CASE(test_prime)
-    NUT_CASE(test_karatsuba_multiply)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_bugs);
+        NUT_REGISTER_CASE(test_gcd);
+        NUT_REGISTER_CASE(test_extend_euclid);
+        NUT_REGISTER_CASE(test_mod_multiply);
+        NUT_REGISTER_CASE(test_mod_pow);
+        NUT_REGISTER_CASE(test_prime);
+        NUT_REGISTER_CASE(test_karatsuba_multiply);
+    }
 
     void test_bugs()
     {

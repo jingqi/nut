@@ -7,12 +7,13 @@
 using namespace std;
 using namespace nut;
 
-NUT_FIXTURE(TestKMP)
+class TestKMP : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_kmp_search)
-    NUT_CASE(test_kmp_searchw)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_kmp_search);
+        NUT_REGISTER_CASE(test_kmp_searchw);
+    }
 
     void test_kmp_search()
     {

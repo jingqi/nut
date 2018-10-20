@@ -8,22 +8,23 @@
 using namespace std;
 using namespace nut;
 
-NUT_FIXTURE(TestStringUtil)
+class TestStringUtil : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_split)
-    NUT_CASE(test_safe_snprintf)
-    NUT_CASE(test_format)
-    NUT_CASE(test_trim)
-    NUT_CASE(test_stricmp)
-    NUT_CASE(test_wstr)
-    NUT_CASE(test_utf8_ascii_convert)
-    NUT_CASE(test_xml_encoding)
-    NUT_CASE(test_url_encoding)
-    NUT_CASE(test_hex_encoding)
-    NUT_CASE(test_cstyle_encoding)
-    NUT_CASE(test_base64_encoding)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_split);
+        NUT_REGISTER_CASE(test_safe_snprintf);
+        NUT_REGISTER_CASE(test_format);
+        NUT_REGISTER_CASE(test_trim);
+        NUT_REGISTER_CASE(test_stricmp);
+        NUT_REGISTER_CASE(test_wstr);
+        NUT_REGISTER_CASE(test_utf8_ascii_convert);
+        NUT_REGISTER_CASE(test_xml_encoding);
+        NUT_REGISTER_CASE(test_url_encoding);
+        NUT_REGISTER_CASE(test_hex_encoding);
+        NUT_REGISTER_CASE(test_cstyle_encoding);
+        NUT_REGISTER_CASE(test_base64_encoding);
+    }
 
     void test_split()
     {

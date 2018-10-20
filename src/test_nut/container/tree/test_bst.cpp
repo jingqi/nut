@@ -8,14 +8,15 @@
 using namespace nut;
 
 
-NUT_FIXTURE(TestBSTree)
+class TestBSTree : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoking)
-    NUT_CASE(test_inorder_iterator)
-    NUT_CASE(test_preorder_iterator)
-    NUT_CASE(test_postorder_iterator)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoking);
+        NUT_REGISTER_CASE(test_inorder_iterator);
+        NUT_REGISTER_CASE(test_preorder_iterator);
+        NUT_REGISTER_CASE(test_postorder_iterator);
+    }
 
     struct Node
     {

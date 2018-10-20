@@ -6,24 +6,25 @@
 using namespace std;
 using namespace nut;
 
-NUT_FIXTURE(TestPath)
+class TestPath : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_is_root)
-    NUT_CASE(test_split)
-    NUT_CASE(test_splitw)
-    NUT_CASE(test_split_drive)
-    NUT_CASE(test_split_drivew)
-    NUT_CASE(test_split_ext)
-    NUT_CASE(test_split_extw)
-    NUT_CASE(test_join)
-    NUT_CASE(test_joinw)
-    NUT_CASE(test_abs_path)
-    NUT_CASE(test_abs_pathw)
-    NUT_CASE(test_relative_path)
-    NUT_CASE(test_relative_pathw)
-    NUT_CASE(test_bug1)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_is_root);
+        NUT_REGISTER_CASE(test_split);
+        NUT_REGISTER_CASE(test_splitw);
+        NUT_REGISTER_CASE(test_split_drive);
+        NUT_REGISTER_CASE(test_split_drivew);
+        NUT_REGISTER_CASE(test_split_ext);
+        NUT_REGISTER_CASE(test_split_extw);
+        NUT_REGISTER_CASE(test_join);
+        NUT_REGISTER_CASE(test_joinw);
+        NUT_REGISTER_CASE(test_abs_path);
+        NUT_REGISTER_CASE(test_abs_pathw);
+        NUT_REGISTER_CASE(test_relative_path);
+        NUT_REGISTER_CASE(test_relative_pathw);
+        NUT_REGISTER_CASE(test_bug1);
+    }
 
     void test_is_root()
     {

@@ -7,16 +7,18 @@
 
 
 using namespace std;
+using namespace nut;
 
-NUT_FIXTURE(TestSHA1)
+class TestSHA1 : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoking)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoking);
+    }
 
     void check_sha1(const char *msg, const char *rs)
     {
-        nut::SHA1 digest;
+        SHA1 digest;
         digest.reset();
         digest.update(msg, ::strlen(msg));
         digest.digest();

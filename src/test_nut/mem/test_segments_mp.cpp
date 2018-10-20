@@ -9,14 +9,15 @@
 
 using namespace nut;
 
-NUT_FIXTURE(TestSegmentsMP)
+class TestSegmentsMP : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoking<segments_stmp>)
-    NUT_CASE(test_smoking<segments_mtmp>)
-    NUT_CASE(test_profile<segments_stmp>)
-    NUT_CASE(test_profile<segments_mtmp>)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoking<segments_stmp>);
+        NUT_REGISTER_CASE(test_smoking<segments_mtmp>);
+        NUT_REGISTER_CASE(test_profile<segments_stmp>);
+        NUT_REGISTER_CASE(test_profile<segments_mtmp>);
+    }
 
     template <typename mp_type>
     void test_smoking()

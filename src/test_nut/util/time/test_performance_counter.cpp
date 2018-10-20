@@ -9,11 +9,12 @@
 using namespace std;
 using namespace nut;
 
-NUT_FIXTURE(TestPerformanceCounter)
+class TestPerformanceCounter : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoking)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoking);
+    }
 
     void test_smoking()
     {

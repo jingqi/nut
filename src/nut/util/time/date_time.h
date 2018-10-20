@@ -152,9 +152,9 @@ public:
     uint32_t get_nanosecond() const;
 
     /**
-     * @return 是否是1970年1月1日0时0分0秒
+     * 是否是有效状态
      */
-    bool is_zero() const;
+    bool is_valid() const;
 
     /**
      * @return 从1970年1月1日0时0分0秒开始计算的秒数

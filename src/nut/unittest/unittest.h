@@ -14,11 +14,14 @@ NUT_FIXTURE(TestTestUnit)
     NUT_CASE(smoking_test)
     NUT_CASES_END()
 
-    void set_up() {}
+    void set_up()
+    {}
 
-    void tear_down() {}
+    void tear_down()
+    {}
 
-    void smoking_test () {
+    void smoking_test ()
+    {
         NUT_TA(5 > 4);
     }
 };
@@ -51,65 +54,33 @@ int main()
 #include "test_register.h"
 #include "test_runner.h"
 
-/** fixture */
-#define NUT_FIXTURE(fixture_name)               \
-class fixture_name : public ::nut::TestFixture
-
-/** cases begin */
-#define NUT_CASES_BEGIN()                                               \
-    virtual int ___run_case(::nut::ITestLogger *logger, const int op, const char *case_name) override \
-    {                                                                   \
-        assert(nullptr != logger);                                      \
-        int index = -1;
-
-/** case */
-#define NUT_CASE(case_func)                                             \
-        ++index;                                                        \
-        if (op == index || ((__NUT_UNITTEST_RUN_NAMED_CASE_OP == op) && (0 == ::strcmp(#case_func, case_name)))) \
-        {                                                               \
-            logger->enter_case(#case_func);                             \
-            try                                                         \
-            {                                                           \
-                set_up();                                               \
-                case_func();                                            \
-                tear_down();                                            \
-            }                                                           \
-            catch (::nut::TestCaseFailureException& e)                  \
-            {                                                           \
-                logger->failed_case(e);                                 \
-            }                                                           \
-            catch (...)                                                 \
-            {                                                           \
-                ::nut::TestCaseFailureException e("Unhandled exception", __FILE__, __LINE__); \
-                logger->failed_case(e);                                 \
-            }                                                           \
-            logger->leave_case();                                       \
-        }
-
-/** cases end */
-#define NUT_CASES_END()     \
-        return index + 1;   \
-    }
+/** register case */
+#define NUT_REGISTER_CASE(case_func)                                    \
+    do { register_case(#case_func, [=] { case_func(); }); } while (false)
 
 /** test assert */
-#define NUT_TA(exp) do { if (!(exp)) throw ::nut::TestCaseFailureException(#exp, __FILE__, __LINE__); } while (false)
+#define NUT_TA(exp)                                                     \
+    do                                                                  \
+    {                                                                   \
+        if (!(exp))                                                     \
+            throw nut::TestCaseFailureException(#exp, __FILE__, __LINE__); \
+    } while (false)
 
 /** fixture register */
-#define NUT_REGISTER_FIXTURE(fixture, groups)                           \
-    static ::nut::TestFixture* ___new##fixture()                        \
-    {                                                                   \
-        fixture *p = (fixture*) ::malloc(sizeof(fixture));              \
-        assert(nullptr != p);                                           \
-        new (p) fixture();                                              \
-        return p;                                                       \
-    }                                                                   \
-    static void ___delete##fixture(::nut::TestFixture *p)               \
-    {                                                                   \
-        assert(nullptr != p);                                           \
-        p->~TestFixture();                                              \
-        ::free(p);                                                      \
-    }                                                                   \
-    static ::nut::TestRegister ___register##fixture(#fixture, groups, ___new##fixture, ___delete##fixture);
+#define NUT_REGISTER_FIXTURE(fixture, groups)                   \
+    static nut::TestRegister ___register##fixture(              \
+        #fixture, groups,                                       \
+        [] {                                                    \
+            fixture *p = (fixture*) ::malloc(sizeof(fixture));  \
+            assert(nullptr != p);                               \
+            new (p) fixture();                                  \
+            return p;                                           \
+        },                                                      \
+        [] (nut::TestFixture*p) {                               \
+            assert(nullptr != p);                               \
+            p->~TestFixture();                                  \
+            ::free(p);                                          \
+        });
 
 
 #endif /* head file guarder */

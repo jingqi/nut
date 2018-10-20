@@ -67,13 +67,10 @@ static void split_groups(const char *groups, std::vector<std::string> *rs)
 }
 
 TestRegister::TestRegister(const char *fixture_name, const char *groups,
-                           new_fixture_func n, delete_fixture_func d)
+                           new_fixture_func&& n, delete_fixture_func&& d)
     : _new_func(n), _delete_func(d), _fixture_name(fixture_name)
 {
-    assert(nullptr != fixture_name);
-    assert(nullptr != groups);
-    assert(nullptr != n);
-    assert(nullptr != d);
+    assert(nullptr != fixture_name && nullptr != groups && n && d);
 
     // 分离出组别
     split_groups(groups, &_groups);

@@ -341,9 +341,9 @@ uint32_t DateTime::get_nanosecond() const
     return _nanoseconds;
 }
 
-bool DateTime::is_zero() const
+bool DateTime::is_valid() const
 {
-    return 0 == _seconds && 0 == _nanoseconds;
+    return 0 != _seconds || 0 != _nanoseconds;
 }
 
 time_t DateTime::to_integer() const

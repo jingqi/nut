@@ -18,12 +18,13 @@
 using namespace std;
 using namespace nut;
 
-NUT_FIXTURE(TestTimeWheel)
+class TestTimeWheel : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoke)
-    NUT_CASE(test_time_func)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoke);
+        NUT_REGISTER_CASE(test_time_func);
+    }
 
     TimeWheel tw;
     TimeWheel::timer_id_type id;

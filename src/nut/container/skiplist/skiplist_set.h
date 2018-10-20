@@ -17,6 +17,10 @@ private:
     class Node
     {
     public:
+        Node(T&& k)
+            : _key(std::forward<T>(k))
+        {}
+
         Node(const T& k)
             : _key(k)
         {}
@@ -83,6 +87,17 @@ private:
 public:
     SkipListSet() = default;
 
+    SkipListSet(self_type&& x)
+    {
+        _level = x._level;
+        _head = x._head;
+        _size = x._size;
+
+        x._level = -1;
+        x._head = nullptr;
+        x._size = 0;
+    }
+
     SkipListSet(const self_type& x)
     {
         if (x._size == 0)
@@ -114,17 +129,6 @@ public:
         _size = x._size;
     }
 
-    SkipListSet(self_type&& x)
-    {
-        _level = x._level;
-        _head = x._head;
-        _size = x._size;
-
-        x._level = -1;
-        x._head = nullptr;
-        x._size = 0;
-    }
-
     ~SkipListSet()
     {
         clear();
@@ -132,6 +136,26 @@ public:
             ::free(_head);
         _head = nullptr;
         _level = -1;
+    }
+
+    self_type& operator=(self_type&& x)
+    {
+        if (this == &x)
+            return *this;
+
+        clear();
+        if (nullptr != _head)
+            ::free(_head);
+
+        _level = x._level;
+        _head = x._head;
+        _size = x._size;
+
+        x._level = -1;
+        x._head = nullptr;
+        x._size = 0;
+
+        return *this;
     }
 
     self_type& operator=(const self_type& x)
@@ -177,26 +201,6 @@ public:
         }
         ::free(pre_lv);
         _size = x._size;
-
-        return *this;
-    }
-
-    self_type& operator=(self_type&& x)
-    {
-        if (this == &x)
-            return *this;
-
-        clear();
-        if (nullptr != _head)
-            ::free(_head);
-
-        _level = x._level;
-        _head = x._head;
-        _size = x._size;
-
-        x._level = -1;
-        x._head = nullptr;
-        x._size = 0;
 
         return *this;
     }
@@ -259,6 +263,41 @@ public:
         assert(nullptr != _head && _level >= 0);
 
         return nullptr != algo_type::search_node(k, *this, nullptr);
+    }
+
+    bool add(T&& k)
+    {
+        if (nullptr == _head)
+        {
+            assert(_level < 0 && _size == 0);
+            Node *n = (Node*) ::malloc(sizeof(Node));
+            new (n) Node(std::forward<T>(k));
+            _head = (Node**) ::malloc(sizeof(Node*) * 1);
+            _level = 0;
+            _head[0] = n;
+            n->set_level(0);
+            n->set_next(0, nullptr);
+            _size = 1;
+            return true;
+        }
+        assert(_level >= 0);
+
+        // Search
+        Node **pre_lv = (Node **) ::malloc(sizeof(Node*) * (_level + 1));
+        Node *n = algo_type::search_node(k, *this, pre_lv);
+        if (nullptr != n)
+        {
+            ::free(pre_lv);
+            return false;
+        }
+
+        // Insert
+        n = (Node*) ::malloc(sizeof(Node));
+        new (n) Node(std::forward<T>(k));
+        algo_type::insert_node(n, *this, pre_lv);
+        ::free(pre_lv);
+        ++_size;
+        return true;
     }
 
     bool add(const T& k)

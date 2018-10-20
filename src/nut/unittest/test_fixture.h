@@ -2,6 +2,9 @@
 #ifndef ___HEADFILE___E93561C3_AF61_47A7_A9AB_87CF78307C80_
 #define ___HEADFILE___E93561C3_AF61_47A7_A9AB_87CF78307C80_
 
+#include <vector>
+#include <functional>
+
 #include "test_logger.h"
 #include "testcase_failure_exception.h"
 
@@ -10,19 +13,39 @@ namespace nut
 
 class TestFixture
 {
+protected:
+    typedef std::function<void()> case_func_type;
+
+private:
+    class Case
+    {
+    public:
+        const char *name = nullptr;
+        case_func_type func;
+
+    public:
+        Case(const char *n, case_func_type&& f)
+            : name(n), func(f)
+        {}
+
+        Case(const Case&) = default;
+    };
+
 public:
     virtual ~TestFixture() = default;
 
-    virtual void set_up()
-    {}
+    virtual void register_cases() = 0;
 
-    virtual void tear_down()
-    {}
+    void run_case(ITestLogger *logger, const char *case_name);
+
+protected:
+    virtual void set_up() {}
+    virtual void tear_down() {}
+
+    void register_case(const char *name, case_func_type&& func);
 
 private:
-    friend class TestRunner;
-
-    virtual int ___run_case(ITestLogger *logger, const int op, const char *case_name) = 0;
+    std::vector<Case> _cases;
 };
 
 }

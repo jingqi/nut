@@ -53,19 +53,19 @@ public:
         _size = sz;
     }
 
-    Array(const self_type& x)
-    {
-        ensure_cap(x._size);
-        std::uninitialized_copy(x._buf, x._buf + x._size, _buf);
-        _size = x._size;
-    }
-
     Array(self_type&& x)
         : _buf(x._buf), _size(x._size), _cap(x._cap)
     {
         x._buf = nullptr;
         x._size = 0;
         x._cap = 0;
+    }
+
+    Array(const self_type& x)
+    {
+        ensure_cap(x._size);
+        std::uninitialized_copy(x._buf, x._buf + x._size, _buf);
+        _size = x._size;
     }
 
     ~Array()
@@ -75,20 +75,6 @@ public:
             ::free(_buf);
         _buf = nullptr;
         _cap = 0;
-    }
-
-    self_type& operator=(const self_type& x)
-    {
-        if (this == &x)
-            return *this;
-
-        clear();
-
-        ensure_cap(x._size);
-        std::uninitialized_copy(x._buf, x._buf + x._size, _buf);
-        _size = x._size;
-
-        return *this;
     }
 
     self_type& operator=(self_type&& x)
@@ -107,6 +93,20 @@ public:
         x._buf = nullptr;
         x._size = 0;
         x._cap = 0;
+
+        return *this;
+    }
+
+    self_type& operator=(const self_type& x)
+    {
+        if (this == &x)
+            return *this;
+
+        clear();
+
+        ensure_cap(x._size);
+        std::uninitialized_copy(x._buf, x._buf + x._size, _buf);
+        _size = x._size;
 
         return *this;
     }
@@ -184,6 +184,13 @@ public:
         return const_cast<T&>(static_cast<const self_type&>(*this).at(i));
     }
 
+    void push_back(T&& e)
+    {
+        ensure_cap(_size + 1);
+        new (_buf + _size) T(std::forward<T>(e));
+        ++_size;
+    }
+
     void push_back(const T& e)
     {
         ensure_cap(_size + 1);
@@ -196,6 +203,16 @@ public:
         assert(_size > 0);
         --_size;
         (_buf + _size)->~T();
+    }
+
+    void insert(size_type index, T&& e)
+    {
+        assert(index <= _size);
+        ensure_cap(_size + 1);
+        if (index < _size)
+            ::memmove(_buf + index + 1, _buf + index, sizeof(T) * (_size - index));
+        new (_buf + index) T(std::forward<T>(e));
+        ++_size;
     }
 
     void insert(size_type index, const T& e)
@@ -395,6 +412,12 @@ public:
         return _array->at(i);
     }
 
+    void push_back(T&& e)
+    {
+        copy_on_write();
+        _array->push_back(std::forward<T>(e));
+    }
+
     void push_back(const T& e)
     {
         copy_on_write();
@@ -405,6 +428,12 @@ public:
     {
         copy_on_write();
         _array->pop_back();
+    }
+
+    void insert(size_type index, T&& e)
+    {
+        copy_on_write();
+        _array->insert(index, std::forward<T>(e));
     }
 
     void insert(size_type index, const T& e)

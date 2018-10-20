@@ -6,12 +6,13 @@
 
 using namespace nut;
 
-NUT_FIXTURE(TestLengthFixedMP)
+class TestLengthFixedMP : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoking<lengthfixed_stmp>)
-    NUT_CASE(test_smoking<lengthfixed_mtmp>)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoking<lengthfixed_stmp>);
+        NUT_REGISTER_CASE(test_smoking<lengthfixed_mtmp>);
+    }
 
     struct A
     {

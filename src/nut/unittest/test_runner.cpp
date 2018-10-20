@@ -21,31 +21,23 @@ void TestRunner::run_group(const char *group_name)
 
     _logger->start(group_name, nullptr, nullptr);
 
-    TestRegister *pregister = *TestRegister::get_link_header();
-    while (nullptr != pregister)
+    for (TestRegister *reg = *TestRegister::get_link_header();
+         nullptr != reg; reg = reg->get_next_register())
     {
-        if (pregister->match_group(group_name))
-        {
-            _logger->enter_fixture(pregister->get_fixture_name());
+        if (!reg->match_group(group_name))
+            continue;
 
-            TestFixture *fixture = pregister->new_fixture();
-            assert(nullptr != fixture);
-            int total = fixture->___run_case(_logger, __NUT_UNITTEST_SUM_CASES_OP, nullptr);
+        _logger->enter_fixture(reg->get_fixture_name());
 
-            for (int i = 0; i < total; ++i)
-            {
-                if (nullptr == fixture)
-                    fixture = pregister->new_fixture();
-                fixture->___run_case(_logger, i, nullptr);
-                pregister->delete_fixture(fixture);
-                fixture = nullptr;
-            }
-            if (nullptr != fixture)
-                pregister->delete_fixture(fixture);
+        TestFixture *fixture = reg->new_fixture();
+        assert(nullptr != fixture);
 
-            _logger->leave_fixture();
-        }
-        pregister = pregister->get_next_register();
+        fixture->register_cases();
+        fixture->run_case(_logger, nullptr);
+
+        reg->delete_fixture(fixture);
+
+        _logger->leave_fixture();
     }
 
     _logger->finish();
@@ -57,32 +49,23 @@ void TestRunner::run_fixture(const char *fixture_name)
 
     _logger->start(nullptr, fixture_name, nullptr);
 
-    TestRegister *pregister = *TestRegister::get_link_header();
-    while (nullptr != pregister)
+    for (TestRegister *reg = *TestRegister::get_link_header();
+         nullptr != reg; reg = reg->get_next_register())
     {
-        if (0 == ::strcmp(fixture_name, pregister->get_fixture_name()))
-        {
-            _logger->enter_fixture(fixture_name);
+        if (0 != ::strcmp(fixture_name, reg->get_fixture_name()))
+            continue;
 
-            TestFixture *fixture = pregister->new_fixture();
-            assert(nullptr != fixture);
-            int total = fixture->___run_case(_logger, __NUT_UNITTEST_SUM_CASES_OP, nullptr);
+        _logger->enter_fixture(fixture_name);
 
-            for (int i = 0; i < total; ++i)
-            {
-                if (nullptr == fixture)
-                    fixture = pregister->new_fixture();
-                fixture->___run_case(_logger, i, nullptr);
-                pregister->delete_fixture(fixture);
-                fixture = nullptr;
-            }
-            if (nullptr != fixture)
-                pregister->delete_fixture(fixture);
+        TestFixture *fixture = reg->new_fixture();
+        assert(nullptr != fixture);
 
-            _logger->leave_fixture();
-            break;
-        }
-        pregister = pregister->get_next_register();
+        fixture->register_cases();
+        fixture->run_case(_logger, nullptr);
+
+        reg->delete_fixture(fixture);
+
+        _logger->leave_fixture();
     }
 
     _logger->finish();
@@ -94,21 +77,23 @@ void TestRunner::run_case(const char *fixture_name, const char *case_name)
 
     _logger->start(nullptr, fixture_name, case_name);
 
-    TestRegister *pregister = *TestRegister::get_link_header();
-    while (nullptr != pregister)
+    for (TestRegister *reg = *TestRegister::get_link_header();
+         nullptr != reg; reg = reg->get_next_register())
     {
-        if (0 == ::strcmp(fixture_name, pregister->get_fixture_name()))
-        {
-            _logger->enter_fixture(fixture_name);
+        if (0 != ::strcmp(fixture_name, reg->get_fixture_name()))
+            continue;
 
-            TestFixture *fixture = pregister->new_fixture();
-            fixture->___run_case(_logger, __NUT_UNITTEST_RUN_NAMED_CASE_OP, case_name);
-            pregister->delete_fixture(fixture);
+        _logger->enter_fixture(fixture_name);
 
-            _logger->leave_fixture();
-            break;
-        }
-        pregister = pregister->get_next_register();
+        TestFixture *fixture = reg->new_fixture();
+        assert(nullptr != fixture);
+
+        fixture->register_cases();
+        fixture->run_case(_logger, case_name);
+
+        reg->delete_fixture(fixture);
+
+        _logger->leave_fixture();
     }
 
     _logger->finish();

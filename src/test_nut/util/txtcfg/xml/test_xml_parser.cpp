@@ -66,11 +66,12 @@ public:
 
 }
 
-NUT_FIXTURE(TestXmlParser)
+class TestXmlParser : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoke)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoke);
+    }
 
     virtual void set_up() override
     {

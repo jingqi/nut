@@ -30,6 +30,11 @@ public:
 
     static PerformanceCounter now();
 
+    /**
+     * 是否是有效状态
+     */
+    bool is_valid() const;
+
 private:
 #if NUT_PLATFORM_OS_WINDOWS
     static LARGE_INTEGER _frequency;

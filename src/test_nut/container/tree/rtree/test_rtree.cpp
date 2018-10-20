@@ -11,14 +11,15 @@ using namespace nut;
 
 typedef RTree<int, int>::area_type Area;
 
-NUT_FIXTURE(TestRTree)
+class TestRTree : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoking)
-    NUT_CASE(test_random)
-    NUT_CASE(test_simple)
-    NUT_CASE(test_copy)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoking);
+        NUT_REGISTER_CASE(test_random);
+        NUT_REGISTER_CASE(test_simple);
+        NUT_REGISTER_CASE(test_copy);
+    }
 
     static Area mkrect(int x1, int x2, int y1, int y2)
     {

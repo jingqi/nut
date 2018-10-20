@@ -12,20 +12,21 @@ using namespace nut;
 #   pragma warning(disable: 4307)
 #endif
 
-NUT_FIXTURE(TestBigInteger)
+class TestBigInteger : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoking)
-    NUT_CASE(test_bugs)
-    NUT_CASE(test_comparator)
-    NUT_CASE(test_math_operator)
-    NUT_CASE(test_square)
-    NUT_CASE(test_divide)
-    NUT_CASE(test_mod)
-    NUT_CASE(test_bit_operator)
-    NUT_CASE(test_to_string)
-    NUT_CASE(test_value_of)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoking);
+        NUT_REGISTER_CASE(test_bugs);
+        NUT_REGISTER_CASE(test_comparator);
+        NUT_REGISTER_CASE(test_math_operator);
+        NUT_REGISTER_CASE(test_square);
+        NUT_REGISTER_CASE(test_divide);
+        NUT_REGISTER_CASE(test_mod);
+        NUT_REGISTER_CASE(test_bit_operator);
+        NUT_REGISTER_CASE(test_to_string);
+        NUT_REGISTER_CASE(test_value_of);
+    }
 
     void test_smoking()
     {

@@ -6,14 +6,15 @@
 using namespace std;
 using namespace nut;
 
-NUT_FIXTURE(TestByteArrayStream)
+class TestByteArrayStream : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_little_endian)
-    NUT_CASE(test_big_endian)
-    NUT_CASE(test_operators)
-    NUT_CASE(test_bug1)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_little_endian);
+        NUT_REGISTER_CASE(test_big_endian);
+        NUT_REGISTER_CASE(test_operators);
+        NUT_REGISTER_CASE(test_bug1);
+    }
 
     void test_little_endian()
     {

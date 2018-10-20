@@ -7,12 +7,13 @@
 using namespace std;
 using namespace nut;
 
-NUT_FIXTURE(TestDateTime)
+class TestDateTime : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoking)
-    NUT_CASE(test_bug1)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoking);
+        NUT_REGISTER_CASE(test_bug1);
+    }
 
     void test_smoking()
     {

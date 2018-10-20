@@ -4,16 +4,19 @@
 #include <nut/security/digest/adler32.h>
 
 
-NUT_FIXTURE(TestAdler32)
+using namespace nut;
+
+class TestAdler32 : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_adler32)
-    NUT_CASE(test_rolling_adler32)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_adler32);
+        NUT_REGISTER_CASE(test_rolling_adler32);
+    }
 
     void check_adler32(const char *msg, uint32_t expected)
     {
-        nut::Adler32 ad;
+        Adler32 ad;
         ad.reset();
         ad.update(msg, strlen(msg));
         NUT_TA(ad.digest() == expected);
@@ -26,7 +29,7 @@ NUT_FIXTURE(TestAdler32)
 
     void test_rolling_adler32()
     {
-        nut::RollingAdler32 ad(3);
+        RollingAdler32 ad(3);
         ad.initialize();
         ad.update("abcd", 4);
         uint32_t v = ad.get_result();

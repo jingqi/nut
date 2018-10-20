@@ -15,12 +15,13 @@ int tf(int a)
     return a + 1;
 }
 
-NUT_FIXTURE(TestDelegate)
+class TestDelegate : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoking)
-    NUT_CASE(test_copy_and_const)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoking);
+        NUT_REGISTER_CASE(test_copy_and_const);
+    }
 
     int tm(int a)
     {

@@ -8,12 +8,13 @@
 using namespace std;
 using namespace nut;
 
-NUT_FIXTURE(TestToString)
+class TestToString : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoke)
-    NUT_CASE(test_read_str)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoke);
+        NUT_REGISTER_CASE(test_read_str);
+    }
 
     void test_smoke()
     {

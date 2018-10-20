@@ -10,12 +10,13 @@
 
 using namespace nut;
 
-NUT_FIXTURE(TestRSA)
+class TestRSA : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoking)
-    NUT_CASE(test_bugs)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoking);
+        NUT_REGISTER_CASE(test_bugs);
+    }
 
     void test_smoking()
     {

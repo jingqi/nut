@@ -63,4 +63,13 @@ PerformanceCounter PerformanceCounter::now()
     return ret;
 }
 
+bool PerformanceCounter::is_valid() const
+{
+#if NUT_PLATFORM_OS_WINDOWS
+    return 0 != _counter;
+#else
+    return 0 != _tv.tv_sec || 0 != _tv.tv_nsec;
+#endif
+}
+
 }

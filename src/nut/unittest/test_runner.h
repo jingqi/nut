@@ -6,10 +6,6 @@
 #include "test_logger.h"
 
 
-/* magic number, do NOT change them */
-#define __NUT_UNITTEST_SUM_CASES_OP -2
-#define __NUT_UNITTEST_RUN_NAMED_CASE_OP -1
-
 namespace nut
 {
 

@@ -5,11 +5,12 @@
 
 using namespace nut;
 
-NUT_FIXTURE(TestThreading)
+class TestThreading : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoke)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoke);
+    }
 
     void test_smoke()
     {

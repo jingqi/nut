@@ -8,13 +8,14 @@
 using namespace std;
 using namespace nut;
 
-NUT_FIXTURE(TestXmlElement)
+class TestXmlElement : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_write)
-    NUT_CASE(test_write_single)
-    NUT_CASE(test_read)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_write);
+        NUT_REGISTER_CASE(test_write_single);
+        NUT_REGISTER_CASE(test_read);
+    }
 
     void test_write()
     {

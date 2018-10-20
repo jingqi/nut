@@ -7,15 +7,16 @@
 using namespace std;
 using namespace nut;
 
-NUT_FIXTURE(TestBitStream)
+class TestBitStream : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoking)
-    NUT_CASE(test_bug1)
-    NUT_CASE(test_bug2)
-    NUT_CASE(test_substream)
-    NUT_CASE(test_bitop)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoking);
+        NUT_REGISTER_CASE(test_bug1);
+        NUT_REGISTER_CASE(test_bug2);
+        NUT_REGISTER_CASE(test_substream);
+        NUT_REGISTER_CASE(test_bitop);
+    }
 
     void test_smoking()
     {

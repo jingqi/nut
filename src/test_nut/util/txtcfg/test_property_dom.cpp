@@ -7,13 +7,14 @@
 using namespace std;
 using namespace nut;
 
-NUT_FIXTURE(TestPropertyDom)
+class TestPropertyDom : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_read_string)
-    NUT_CASE(test_read_num)
-    NUT_CASE(test_read_list)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_read_string);
+        NUT_REGISTER_CASE(test_read_num);
+        NUT_REGISTER_CASE(test_read_list);
+    }
 
     rc_ptr<PropertyDom> pf;
 

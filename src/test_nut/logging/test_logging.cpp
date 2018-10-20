@@ -10,14 +10,15 @@
 
 using namespace nut;
 
-NUT_FIXTURE(TestLogging)
+class TestLogging : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoking)
-    NUT_CASE(test_console_handler)
-    NUT_CASE(test_filter)
-    NUT_CASE(test_xml_config)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoking);
+        NUT_REGISTER_CASE(test_console_handler);
+        NUT_REGISTER_CASE(test_filter);
+        NUT_REGISTER_CASE(test_xml_config);
+    }
 
     void test_smoking()
     {

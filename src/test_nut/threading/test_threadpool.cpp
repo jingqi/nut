@@ -13,13 +13,14 @@
 
 using namespace nut;
 
-NUT_FIXTURE(TestThreadPool)
+class TestThreadPool : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoke)
-    NUT_CASE(test_auto_release)
-    NUT_CASE(test_bug1)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoke);
+        NUT_REGISTER_CASE(test_auto_release);
+        NUT_REGISTER_CASE(test_bug1);
+    }
 
     void test_smoke()
     {

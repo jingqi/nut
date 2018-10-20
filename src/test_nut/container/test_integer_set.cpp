@@ -34,18 +34,19 @@ static string to_string(const IntegerSet<int> s)
     return sb;
 }
 
-NUT_FIXTURE(TestIntegerSet)
+class TestIntegerSet : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_smoking)
-    NUT_CASE(test_size)
-    NUT_CASE(test_add_range)
-    NUT_CASE(test_remove_range)
-    NUT_CASE(test_intersect)
-    NUT_CASE(test_merge)
-    NUT_CASE(test_remainder)
-    NUT_CASE(test_iterator)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_smoking);
+        NUT_REGISTER_CASE(test_size);
+        NUT_REGISTER_CASE(test_add_range);
+        NUT_REGISTER_CASE(test_remove_range);
+        NUT_REGISTER_CASE(test_intersect);
+        NUT_REGISTER_CASE(test_merge);
+        NUT_REGISTER_CASE(test_remainder);
+        NUT_REGISTER_CASE(test_iterator);
+    }
 
     void test_smoking()
     {

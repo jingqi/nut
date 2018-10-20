@@ -8,13 +8,14 @@ using namespace nut;
 
 typedef enrc<Array<int> > rcarray;
 
-NUT_FIXTURE(TestArray)
+class TestArray : public TestFixture
 {
-    NUT_CASES_BEGIN()
-    NUT_CASE(test_array_smoking)
-    NUT_CASE(test_array_insert_erase)
-    NUT_CASE(test_cowarray)
-    NUT_CASES_END()
+    virtual void register_cases() override
+    {
+        NUT_REGISTER_CASE(test_array_smoking);
+        NUT_REGISTER_CASE(test_array_insert_erase);
+        NUT_REGISTER_CASE(test_cowarray);
+    }
 
     void test_array_smoking()
     {

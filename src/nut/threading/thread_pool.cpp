@@ -48,6 +48,34 @@ void ThreadPool::set_max_sleep_seconds(unsigned max_sleep_seconds)
     _wake_condition.notify_all();
 }
 
+bool ThreadPool::add_task(task_type&& task)
+{
+    assert(task);
+
+    if (_interrupted)
+        return false;
+
+    std::lock_guard<std::mutex> guard(_lock);
+
+    // 将任务入队
+    _task_queue.push(std::forward<task_type>(task));
+    _wake_condition.notify_one();
+
+    // 启动新线程
+    if (!_interrupted &&
+        (0 == _max_thread_number || _alive_number < _max_thread_number) &&
+        0 == _idle_number)
+    {
+        if (_threads.size() > _alive_number * 2 + 10)
+            clean_dead_threads();
+
+        _threads.emplace_back([=] { thread_process(); });
+        ++_alive_number;
+    }
+
+    return true;
+}
+
 bool ThreadPool::add_task(const task_type& task)
 {
     assert(task);

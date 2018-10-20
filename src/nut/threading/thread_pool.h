@@ -48,6 +48,7 @@ public:
     /**
      * 添加一个任务; 可能会启动新线程
      */
+    bool add_task(task_type&& task);
     bool add_task(const task_type& task);
 
     /**
