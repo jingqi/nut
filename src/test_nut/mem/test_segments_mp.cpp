@@ -2,7 +2,7 @@
 #include <time.h>
 
 #include <nut/unittest/unittest.h>
-
+#include <nut/util/time/performance_counter.h>
 #include <nut/mem/segments_mp.h>
 #include <nut/mem/sys_ma.h>
 #include <nut/rc/rc_new.h>
@@ -44,8 +44,8 @@ NUT_FIXTURE(TestSegmentsMP)
     template <typename mp_type>
     void test_profile()
     {
-        clock_t start = clock();
-        const int ROUND = 20000, MAX_SZ = 8 * 128;
+        const PerformanceCounter start = PerformanceCounter::now();
+        const int ROUND = 5000, MAX_SZ = 8 * 128;
         {
             rc_ptr<mp_type> mp = rc_new<mp_type>();
             // rc_ptr<sys_ma> mp = rc_new<sys_ma>();
@@ -58,7 +58,7 @@ NUT_FIXTURE(TestSegmentsMP)
                 }
             }
         }
-        clock_t middle = clock();
+        const PerformanceCounter middle = PerformanceCounter::now();
         {
             for (size_t i = 0; i < ROUND; ++i)
             {
@@ -69,9 +69,8 @@ NUT_FIXTURE(TestSegmentsMP)
                 }
             }
         }
-        clock_t finish = clock();
-        printf(" %ld ms(sys %ld ms)", (middle - start) * 1000 / CLOCKS_PER_SEC,
-               (finish - middle) * 1000 / CLOCKS_PER_SEC);
+        const PerformanceCounter finish = PerformanceCounter::now();
+        printf(" %.6fs(sys %.6fs)", middle - start, finish - middle);
     }
 };
 

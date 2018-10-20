@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include <nut/unittest/unittest.h>
-
 #include <nut/util/time/date_time.h>
 
 using namespace std;

@@ -3,7 +3,7 @@
 
 
 #include <nut/unittest/unittest.h>
-
+#include <nut/util/time/performance_counter.h>
 #include <nut/security/encrypt/rsa.h>
 
 #include <time.h>
@@ -21,7 +21,7 @@ NUT_FIXTURE(TestRSA)
     {
         // 性能测试
         {
-            clock_t s = clock();
+            const PerformanceCounter s = PerformanceCounter::now();
             RSA::PublicKey pk;
             RSA::PrivateKey vk;
             RSA::gen_key(1024, &pk, &vk);
@@ -35,8 +35,8 @@ NUT_FIXTURE(TestRSA)
             RSA::encode(a, pk, &b);
             NUT_TA(b == 0x457a);
 
-            clock_t t = clock() - s;
-            printf(" %ld ms ", t * 1000 / CLOCKS_PER_SEC);
+            const double t = PerformanceCounter::now() - s;
+            printf(" %.6fs ", t);
         }
     }
 

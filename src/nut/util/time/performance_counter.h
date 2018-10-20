@@ -28,14 +28,16 @@ public:
 
     void set_to_now();
 
+    static PerformanceCounter now();
+
 private:
 #if NUT_PLATFORM_OS_WINDOWS
     static LARGE_INTEGER _frequency;
     static bool _frequency_initialized;
-    LARGE_INTEGER _counter;
+    LARGE_INTEGER _counter = 0;
 #else
     /* 自程序启动的计时 */
-    clock_t _clock;
+    clock_t _clock = 0;
 #endif
 };
 

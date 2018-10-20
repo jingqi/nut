@@ -5,6 +5,7 @@
 #include <nut/numeric/numeric_algo/mod.h>
 #include <nut/numeric/numeric_algo/prime.h>
 #include <nut/numeric/numeric_algo/karatsuba.h>
+#include <nut/util/time/performance_counter.h>
 #include <nut/rc/rc_new.h>
 
 #include <time.h>
@@ -61,14 +62,14 @@ NUT_FIXTURE(TestNumericAlgo)
             BigInteger b = BigInteger::rand_between(bound, bound << 1);
             BigInteger d;
 
-            clock_t s = clock();
+            const PerformanceCounter s = PerformanceCounter::now();
             for (int i = 0; i < 10; ++i)
             {
                 d = gcd(a, b);
                 NUT_TA(a % d == 0 && b % d == 0);
             }
-            clock_t t = clock() - s;
-            printf(" %ld ms ", t * 1000 / CLOCKS_PER_SEC);
+            const double t = PerformanceCounter::now() - s;
+            printf(" %.6fs ", t);
         }
     }
 
@@ -82,14 +83,14 @@ NUT_FIXTURE(TestNumericAlgo)
             BigInteger b = BigInteger::rand_between(bound, bound << 1);
             BigInteger d, x, y;
 
-            clock_t s = clock();
+            const PerformanceCounter s = PerformanceCounter::now();
             for (int i = 0; i < 10; ++i)
             {
                 extended_euclid(a, b, &d, &x, &y);
                 NUT_TA(d == a * x + b * y);
             }
-            clock_t t = clock() - s;
-            printf(" %ld ms ", t * 1000 / CLOCKS_PER_SEC);
+            const double t = PerformanceCounter::now() - s;
+            printf(" %.6fs ", t);
         }
     }
 
@@ -117,16 +118,16 @@ NUT_FIXTURE(TestNumericAlgo)
             BigInteger n = BigInteger::rand_between(bound, bound << 1);
             BigInteger x;
 
-            clock_t s = clock();
+            const PerformanceCounter s = PerformanceCounter::now();
             for (int i = 0; i < 1; ++i)
             {
                 // x = mod_multiply(a, b, n);
                 x = (a * b) % n;
             }
-            clock_t t = clock() - s;
+            const double t = PerformanceCounter::now() - s;
             // printf("\n%s\n%s\n%s\n%s\n", a.toString().c_str(), b.toString().c_str(), n.toString().c_str(), x.toString().c_str());
             NUT_TA(x == (a * b) % n);
-            printf(" %ld ms ", t * 1000 / CLOCKS_PER_SEC);
+            printf(" %.6fs ", t);
         }
     }
 
@@ -157,18 +158,18 @@ NUT_FIXTURE(TestNumericAlgo)
             BigInteger x1, x2;
 
             const int iteration = 1;
-            clock_t s = clock();
+            const PerformanceCounter s = PerformanceCounter::now();
             for (int i = 0; i < iteration; ++i)
             {
                 mod_pow(a, b, n, &x1);
             }
-            clock_t t1 = clock() - s;
+            const PerformanceCounter t1 = PerformanceCounter::now();
             for (int i = 0; i < iteration; ++i)
             {
                 x2 = mod_pow2(a, b, n);
             }
-            clock_t t2 = clock() - t1;
-            printf(" %ld ms < %ld ms ", t1 * 1000 / CLOCKS_PER_SEC, t2 * 1000 / CLOCKS_PER_SEC);
+            const double t2 = PerformanceCounter::now() - t1;
+            printf(" %.6fs < %.6fs ", t1 - s, t2);
             NUT_TA(x1 == x2);
         }
     }
@@ -179,10 +180,10 @@ NUT_FIXTURE(TestNumericAlgo)
         BigInteger bound(1);
         bound <<= 512;
 
-        clock_t s = clock();
+        const PerformanceCounter s = PerformanceCounter::now();
         BigInteger a = next_prime(bound);
-        clock_t t = clock() - s;
-        printf(" %ld ms ", t * 1000 / CLOCKS_PER_SEC);
+        const double t = PerformanceCounter::now() - s;
+        printf(" %.6fs ", t);
     }
 
     void test_karatsuba_multiply()
@@ -200,21 +201,21 @@ NUT_FIXTURE(TestNumericAlgo)
         ::memset(x, 0, sizeof(word_type) * x_len);
         ::memset(y, 0, sizeof(word_type) * x_len);
 
-        clock_t s = clock();
+        PerformanceCounter s = PerformanceCounter::now();
         signed_multiply<word_type>(a, a_len, b, b_len, x, x_len);
-        clock_t f1 = clock();
+        PerformanceCounter f1 = PerformanceCounter::now();
         signed_karatsuba_multiply<word_type>(a, a_len, b, b_len, y, x_len);
-        clock_t f2 = clock();
-        printf(" %ld ms(origin %ld ms)", (f2 - f1) * 1000 / CLOCKS_PER_SEC, (f1 - s) * 1000 / CLOCKS_PER_SEC);
+        PerformanceCounter f2 = PerformanceCounter::now();
+        printf(" %.6fs(origin %.6fs)", f2 - f1, f1 - s);
         NUT_TA(0 == ::memcmp(x, y, sizeof(word_type) * x_len));
 
         x_len = 156; // x 变小，应该对此做优化
-        s = clock();
+        s = PerformanceCounter::now();
         signed_multiply<word_type>(a, a_len, b, b_len, x, x_len);
-        f1 = clock();
+        f1 = PerformanceCounter::now();
         signed_karatsuba_multiply<word_type>(a, a_len, b, b_len, y, x_len);
-        f2 = clock();
-        printf(" %ld ms(orgin %ld ms)", (f2 - f1) * 1000 / CLOCKS_PER_SEC, (f1 - s) * 1000 / CLOCKS_PER_SEC);
+        f2 = PerformanceCounter::now();
+        printf(" %.6fs(orgin %.6fs)", f2 - f1, f1 - s);
         NUT_TA(0 == ::memcmp(x, y, sizeof(word_type) * x_len));
 
         ::free(a);

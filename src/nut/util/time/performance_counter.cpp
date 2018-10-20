@@ -18,8 +18,6 @@ PerformanceCounter::PerformanceCounter()
         _frequency_initialized = true;
     }
 #endif
-
-    set_to_now();
 }
 
 double PerformanceCounter::operator-(const PerformanceCounter& x) const
@@ -38,6 +36,13 @@ void PerformanceCounter::set_to_now()
 #else
     _clock = ::clock();
 #endif
+}
+
+PerformanceCounter PerformanceCounter::now()
+{
+    PerformanceCounter ret;
+    ret.set_to_now();
+    return ret;
 }
 
 }
