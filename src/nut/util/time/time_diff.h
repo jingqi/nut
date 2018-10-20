@@ -20,12 +20,14 @@ namespace nut
 class NUT_API TimeDiff
 {
 public:
-    static const TimeDiff ZERO;
-
-public:
     TimeDiff();
     explicit TimeDiff(double s);
-    explicit TimeDiff(time_t s, long us);
+
+    /**
+     * @param s 秒
+     * @param ns 纳秒
+     */
+    explicit TimeDiff(time_t s, long ns);
 
     bool operator==(const TimeDiff& x) const;
     bool operator!=(const TimeDiff& x) const;
@@ -45,7 +47,8 @@ public:
     TimeDiff& operator*=(double scale);
     TimeDiff& operator/=(double scale);
 
-    void set(time_t s, long us = 0);
+    void set(double s);
+    void set(time_t s, long ns);
 
 #if !NUT_PLATFORM_OS_WINDOWS
     void set(const struct timeval& tv);
@@ -55,8 +58,9 @@ public:
 #endif
 
     time_t get_seconds() const;
-    double get_float_seconds() const;
-    long get_useconds() const;
+    long get_nanoseconds() const;
+
+    double to_double() const;
 
     // example: "12.2345"
     std::string to_string() const;
@@ -67,9 +71,12 @@ protected:
      */
     void normalize();
 
+public:
+    static const TimeDiff ZERO;
+
 protected:
-    time_t _seconds = 0;
-    long _useconds = 0;
+    time_t _seconds;
+    long _nanoseconds;
 };
 
 }

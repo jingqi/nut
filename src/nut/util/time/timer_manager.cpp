@@ -122,7 +122,7 @@ void TimerManager::run()
             _cond.wait_for(
                 unique_guard,
                 std::chrono::milliseconds(
-                    wait.get_seconds() * 1000 + wait.get_useconds() / 1000));
+                    wait.get_seconds() * 1000 + wait.get_nanoseconds() / 1000000));
         }
         else
         {

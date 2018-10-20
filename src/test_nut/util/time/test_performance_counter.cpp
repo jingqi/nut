@@ -1,7 +1,10 @@
 ﻿
+#include <iostream>
+
 #include <nut/unittest/unittest.h>
 #include <nut/util/time/performance_counter.h>
 #include <nut/security/encrypt/rsa.h>
+
 
 using namespace std;
 using namespace nut;
@@ -17,9 +20,10 @@ NUT_FIXTURE(TestPerformanceCounter)
         const PerformanceCounter s = PerformanceCounter::now();
         RSA::PublicKey pubk;
         RSA::PrivateKey prik;
-        RSA::gen_key(100, &pubk, &prik);
-        const PerformanceCounter e = PerformanceCounter::now();
-        NUT_TA(s - e > 0);
+        RSA::gen_key(20, &pubk, &prik);
+        const double elapse = PerformanceCounter::now() - s;
+        cout << " " << elapse;
+        NUT_TA(elapse > 0);
     }
 };
 

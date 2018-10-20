@@ -5,9 +5,8 @@
 #include "../string/string_utils.h"
 
 
-#define USECS_PER_SEC (1000 * 1000)
-#define USECS_PER_MSEC 1000
-#define NSECS_PER_USEC 1000
+#define NSECS_PER_SEC  1000000000L
+#define NSECS_PER_USEC 1000L
 
 namespace nut
 {
@@ -15,48 +14,47 @@ namespace nut
 const TimeDiff TimeDiff::ZERO;
 
 TimeDiff::TimeDiff()
+    : _seconds(0), _nanoseconds(0)
 {}
 
 TimeDiff::TimeDiff(double s)
-    : _seconds((time_t) s)
-{
-    _useconds = (long) ((s - _seconds) * USECS_PER_SEC);
-}
+    : _seconds(s), _nanoseconds((s - (time_t) s) * NSECS_PER_SEC)
+{}
 
-TimeDiff::TimeDiff(time_t s, long us)
-    : _seconds(s), _useconds(us)
+TimeDiff::TimeDiff(time_t s, long ns)
+    : _seconds(s), _nanoseconds(ns)
 {
     normalize();
 }
 
 void TimeDiff::normalize()
 {
-    if (_useconds >= USECS_PER_SEC)
+    if (_nanoseconds >= NSECS_PER_SEC)
     {
-        _seconds += _useconds / USECS_PER_SEC;
-        _useconds %= USECS_PER_SEC;
+        _seconds += _nanoseconds / NSECS_PER_SEC;
+        _nanoseconds %= NSECS_PER_SEC;
     }
-    else if (_useconds <= -USECS_PER_SEC)
+    else if (_nanoseconds <= -NSECS_PER_SEC)
     {
-        _seconds -= (-_useconds) / USECS_PER_SEC;
-        _useconds = -((-_useconds) % USECS_PER_SEC);
+        _seconds -= (-_nanoseconds) / NSECS_PER_SEC;
+        _nanoseconds = -((-_nanoseconds) % NSECS_PER_SEC);
     }
 
-    if (_seconds > 0 && _useconds < 0)
+    if (_seconds > 0 && _nanoseconds < 0)
     {
         --_seconds;
-        _useconds += USECS_PER_SEC;
+        _nanoseconds += NSECS_PER_SEC;
     }
-    else if (_seconds < 0 && _useconds > 0)
+    else if (_seconds < 0 && _nanoseconds > 0)
     {
         ++_seconds;
-        _useconds -= USECS_PER_SEC;
+        _nanoseconds -= NSECS_PER_SEC;
     }
 }
 
 bool TimeDiff::operator==(const TimeDiff& x) const
 {
-    return _seconds == x._seconds && _useconds == x._useconds;
+    return _seconds == x._seconds && _nanoseconds == x._nanoseconds;
 }
 
 bool TimeDiff::operator!=(const TimeDiff& x) const
@@ -67,7 +65,7 @@ bool TimeDiff::operator!=(const TimeDiff& x) const
 bool TimeDiff::operator<(const TimeDiff& x) const
 {
     return ((_seconds < x._seconds) ||
-            (_seconds == x._seconds && _useconds < x._useconds));
+            (_seconds == x._seconds && _nanoseconds < x._nanoseconds));
 }
 
 bool TimeDiff::operator>(const TimeDiff& x) const
@@ -87,33 +85,33 @@ bool TimeDiff::operator>=(const TimeDiff& x) const
 
 TimeDiff TimeDiff::operator+(const TimeDiff& x) const
 {
-    return TimeDiff(_seconds + x._seconds, _useconds + x._useconds);
+    return TimeDiff(_seconds + x._seconds, _nanoseconds + x._nanoseconds);
 }
 
 TimeDiff TimeDiff::operator-(const TimeDiff& x) const
 {
-    return TimeDiff(_seconds - x._seconds, _useconds - x._useconds);
+    return TimeDiff(_seconds - x._seconds, _nanoseconds - x._nanoseconds);
 }
 
 TimeDiff TimeDiff::operator*(double scale) const
 {
-    return TimeDiff(_seconds * scale, _useconds * scale);
+    return TimeDiff(_seconds * scale, _nanoseconds * scale);
 }
 
 TimeDiff TimeDiff::operator/(double scale) const
 {
-    return TimeDiff(_seconds / scale, _useconds / scale);
+    return TimeDiff(_seconds / scale, _nanoseconds / scale);
 }
 
 TimeDiff TimeDiff::operator-() const
 {
-    return TimeDiff(-_seconds, -_useconds);
+    return TimeDiff(-_seconds, -_nanoseconds);
 }
 
 TimeDiff& TimeDiff::operator+=(const TimeDiff& x)
 {
     _seconds += x._seconds;
-    _useconds += x._useconds;
+    _nanoseconds += x._nanoseconds;
     normalize();
     return *this;
 }
@@ -121,7 +119,7 @@ TimeDiff& TimeDiff::operator+=(const TimeDiff& x)
 TimeDiff& TimeDiff::operator-=(const TimeDiff& x)
 {
     _seconds -= x._seconds;
-    _useconds -= x._useconds;
+    _nanoseconds -= x._nanoseconds;
     normalize();
     return *this;
 }
@@ -129,7 +127,7 @@ TimeDiff& TimeDiff::operator-=(const TimeDiff& x)
 TimeDiff& TimeDiff::operator*=(double scale)
 {
     _seconds *= scale;
-    _useconds *= scale;
+    _nanoseconds *= scale;
     normalize();
     return *this;
 }
@@ -137,41 +135,47 @@ TimeDiff& TimeDiff::operator*=(double scale)
 TimeDiff& TimeDiff::operator/=(double scale)
 {
     _seconds /= scale;
-    _useconds /= scale;
+    _nanoseconds /= scale;
     normalize();
     return *this;
 }
 
-void TimeDiff::set(time_t s, long us)
+void TimeDiff::set(double s)
+{
+    _seconds = (time_t) s;
+    _nanoseconds = (long) ((s - _seconds) * NSECS_PER_SEC);
+}
+
+void TimeDiff::set(time_t s, long ns)
 {
     _seconds = s;
-    _useconds = us;
+    _nanoseconds = ns;
     normalize();
 }
 
 #if !NUT_PLATFORM_OS_WINDOWS
 void TimeDiff::set(const struct timeval& tv)
 {
-    set(tv.tv_sec, tv.tv_usec);
+    set(tv.tv_sec, tv.tv_usec * NSECS_PER_USEC);
 }
 
 void TimeDiff::set(const struct timespec& tv)
 {
-    set(tv.tv_sec, tv.tv_nsec / NSECS_PER_USEC);
+    set(tv.tv_sec, tv.tv_nsec);
 }
 
 void TimeDiff::to_timeval(struct timeval *tv)
 {
     assert(nullptr != tv);
     tv->tv_sec = _seconds;
-    tv->tv_usec = _useconds;
+    tv->tv_usec = _nanoseconds / NSECS_PER_USEC;
 }
 
 void TimeDiff::to_timespec(struct timespec *tv)
 {
     assert(nullptr != tv);
     tv->tv_sec = _seconds;
-    tv->tv_nsec = _useconds * NSECS_PER_USEC;
+    tv->tv_nsec = _nanoseconds;
 }
 #endif
 
@@ -180,24 +184,23 @@ time_t TimeDiff::get_seconds() const
     return _seconds;
 }
 
-double TimeDiff::get_float_seconds() const
+long TimeDiff::get_nanoseconds() const
 {
-    double ret = _seconds;
-    ret += ((double) _useconds) / USECS_PER_SEC;
-    return ret;
+    return _nanoseconds;
 }
 
-long TimeDiff::get_useconds() const
+double TimeDiff::to_double() const
 {
-    return _useconds;
+    double ret = _seconds;
+    ret += _nanoseconds / (double) NSECS_PER_SEC;
+    return ret;
 }
 
 std::string TimeDiff::to_string() const
 {
-    double sec = _seconds * USECS_PER_SEC + _useconds;
-    sec /= USECS_PER_SEC;
+    const double f = to_double();
     char buf[128];
-    safe_snprintf(buf, 128, "%lf", sec);
+    safe_snprintf(buf, 128, "%lf", f);
     return buf;
 }
 

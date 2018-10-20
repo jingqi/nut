@@ -25,11 +25,18 @@ namespace nut
 class NUT_API DateTime
 {
 public:
+    DateTime();
+
     /**
-     * @param s 从 1970/1/1 00:00:00 起算的时间
-     * @param us 微秒
+     * @param s 秒，从 1970/1/1 00:00:00 起算的时间
      */
-    explicit DateTime(time_t s = 0, long us = 0);
+    explicit DateTime(double s);
+
+    /**
+     * @param s 秒，从 1970/1/1 00:00:00 起算的时间
+     * @param ns 纳秒
+     */
+    explicit DateTime(time_t s, long ns);
 
     /**
      * 使用具体时刻初始化
@@ -40,10 +47,10 @@ public:
      * @param hour, 取值范围 [0,23]
      * @param min, 取值范围 [0,59]
      * @param sec, 取值范围 [0,59]
-     * @param usec, 取值范围 [0,999999]
+     * @param nsec, 取值范围 [0,999999999]
      */
     DateTime(uint32_t year, uint8_t month, uint8_t day, uint8_t hour = 0,
-             uint8_t min = 0, uint8_t sec = 0, uint32_t usec = 0);
+             uint8_t min = 0, uint8_t sec = 0, uint32_t nsec = 0);
 
     bool operator==(const DateTime &x) const;
     bool operator!=(const DateTime &x) const;
@@ -59,9 +66,10 @@ public:
     DateTime& operator+=(const TimeDiff& diff);
     DateTime& operator-=(const TimeDiff& diff);
 
-    void set(time_t s, long us = 0);
+    void set(double s);
+    void set(time_t s, long ns);
     void set(uint32_t year, uint8_t month, uint8_t day, uint8_t hour = 0,
-             uint8_t min = 0, uint8_t sec = 0, uint32_t usec = 0);
+             uint8_t min = 0, uint8_t sec = 0, uint32_t nsec = 0);
 
 #if NUT_PLATFORM_OS_WINDOWS
     void set(const SYSTEMTIME& wtm);
@@ -99,21 +107,21 @@ public:
      *
      * @return 范围 [0,365]; 0 for the first day in a year
      */
-    uint16_t get_day_of_year() const;
+    uint16_t get_yday() const;
 
     /**
      * 获得月之中的日子数
      *
      * @return 范围 [1,31];  1 for the first day in a month
      */
-    uint8_t get_day_of_month() const;
+    uint8_t get_mday() const;
 
     /**
      * 获得星期中的天数
      *
      * @return 范围 [0,6];   0 for Sunday
      */
-    uint8_t get_day_of_week() const;
+    uint8_t get_wday() const;
 
     /**
      * 获得小时数
@@ -139,22 +147,28 @@ public:
     /**
      * 获得微秒数
      *
-     * @return 范围 [0,999999]
+     * @return 范围 [0,999999999]
      */
-    uint32_t get_usecond() const;
+    uint32_t get_nanosecond() const;
+
+    /**
+     * @return 是否是1970年1月1日0时0分0秒
+     */
+    bool is_zero() const;
 
     /**
      * @return 从1970年1月1日0时0分0秒开始计算的秒数
      */
-    time_t get_raw_seconds() const;
+    time_t to_integer() const;
+    double to_double() const;
 
     // for example : "2007-3-12"
     std::string get_date_str() const;
 
-    // for example : "12:34:45"
+    // for example : "12:34:45.572936192"
     std::string get_clock_str() const;
 
-    // for example : "2007-3-4 8:33:57"
+    // for example : "2007-3-4 8:33:57.762917263"
     std::string get_datetime_str() const;
 
     std::string to_string() const;
@@ -171,8 +185,8 @@ protected:
 
 protected:
     /* 从 1970年1月1日 0时0分0秒 起算的 UTC 时间 */
-    time_t _seconds = 0;
-    long _useconds = 0;
+    time_t _seconds;
+    long _nanoseconds;
 
     /* 结构化本地时间 */
     mutable struct tm _time_info;

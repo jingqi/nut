@@ -36,8 +36,7 @@ private:
     static bool _frequency_initialized;
     LARGE_INTEGER _counter = 0;
 #else
-    /* 自程序启动的计时 */
-    clock_t _clock = 0;
+    struct timespec _tv;
 #endif
 };
 

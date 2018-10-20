@@ -15,53 +15,56 @@
 #include "../string/string_utils.h"
 
 
-#define USECS_PER_SEC (1000 * 1000)
-#define USECS_PER_MSEC 1000
-#define NSECS_PER_USEC 1000
+#define NSECS_PER_SEC  1000000000L
+#define NSECS_PER_MSEC 1000000L
+#define NSECS_PER_USEC 1000L
 
 namespace nut
 {
 
-/**
- * 从1970年1月1日起算的时间(秒)
- * @param s
- */
-DateTime::DateTime(time_t s, long us)
+DateTime::DateTime()
+    : _seconds(0), _nanoseconds(0), _time_info_dirty(true)
+{}
+
+DateTime::DateTime(double s)
+    : _seconds(s), _nanoseconds((s - (time_t) s) * NSECS_PER_SEC),
+      _time_info_dirty(true)
+{}
+
+DateTime::DateTime(time_t s, long ns)
+    : _seconds(s), _nanoseconds(ns), _time_info_dirty(true)
 {
-    set(s, us);
+    normalize();
 }
 
-/**
- * 使用具体时刻初始化
- */
 DateTime::DateTime(uint32_t year, uint8_t month, uint8_t day,
-                   uint8_t hour, uint8_t min, uint8_t sec, uint32_t usec)
+                   uint8_t hour, uint8_t min, uint8_t sec, uint32_t nsec)
 {
-    set(year, month, day, hour, min, sec, usec);
+    set(year, month, day, hour, min, sec, nsec);
 }
 
 void DateTime::normalize()
 {
-    if (_useconds >= USECS_PER_SEC)
+    if (_nanoseconds >= NSECS_PER_SEC)
     {
-        _seconds += _useconds / USECS_PER_SEC;
-        _useconds %= USECS_PER_SEC;
+        _seconds += _nanoseconds / NSECS_PER_SEC;
+        _nanoseconds %= NSECS_PER_SEC;
     }
-    else if (_useconds <= -USECS_PER_SEC)
+    else if (_nanoseconds <= -NSECS_PER_SEC)
     {
-        _seconds -= (-_useconds) / USECS_PER_SEC;
-        _useconds = -((-_useconds) % USECS_PER_SEC);
+        _seconds -= (-_nanoseconds) / NSECS_PER_SEC;
+        _nanoseconds = -((-_nanoseconds) % NSECS_PER_SEC);
     }
 
-    if (_seconds > 0 && _useconds < 0)
+    if (_seconds > 0 && _nanoseconds < 0)
     {
         --_seconds;
-        _useconds += USECS_PER_SEC;
+        _nanoseconds += NSECS_PER_SEC;
     }
-    else if (_seconds < 0 && _useconds > 0)
+    else if (_seconds < 0 && _nanoseconds > 0)
     {
         ++_seconds;
-        _useconds -= USECS_PER_SEC;
+        _nanoseconds -= NSECS_PER_SEC;
     }
 }
 
@@ -75,7 +78,7 @@ void DateTime::check_time_info() const
 
 bool DateTime::operator==(const DateTime &x) const
 {
-    return _seconds == x._seconds && _useconds == x._useconds;
+    return _seconds == x._seconds && _nanoseconds == x._nanoseconds;
 }
 
 bool DateTime::operator!=(const DateTime &x) const
@@ -86,7 +89,7 @@ bool DateTime::operator!=(const DateTime &x) const
 bool DateTime::operator<(const DateTime &x) const
 {
     return (_seconds < x._seconds ||
-            (_seconds == x._seconds && _useconds < x._useconds));
+            (_seconds == x._seconds && _nanoseconds < x._nanoseconds));
 }
 
 bool DateTime::operator>(const DateTime &x) const
@@ -106,23 +109,25 @@ bool DateTime::operator<=(const DateTime &x) const
 
 DateTime DateTime::operator+(const TimeDiff& diff) const
 {
-    return DateTime(_seconds + diff.get_seconds(), _useconds + diff.get_useconds());
+    return DateTime(_seconds + diff.get_seconds(),
+                    _nanoseconds + diff.get_nanoseconds());
 }
 
 DateTime DateTime::operator-(const TimeDiff& diff) const
 {
-    return DateTime(_seconds - diff.get_seconds(), _useconds - diff.get_useconds());
+    return DateTime(_seconds - diff.get_seconds(),
+                    _nanoseconds - diff.get_nanoseconds());
 }
 
 TimeDiff DateTime::operator-(const DateTime& x) const
 {
-    return TimeDiff(_seconds - x._seconds, _useconds - x._useconds);
+    return TimeDiff(_seconds - x._seconds, _nanoseconds - x._nanoseconds);
 }
 
 DateTime& DateTime::operator+=(const TimeDiff& diff)
 {
     _seconds += diff.get_seconds();
-    _useconds += diff.get_useconds();
+    _nanoseconds += diff.get_nanoseconds();
     normalize();
     _time_info_dirty = true;
     return *this;
@@ -131,22 +136,29 @@ DateTime& DateTime::operator+=(const TimeDiff& diff)
 DateTime& DateTime::operator-=(const TimeDiff& diff)
 {
     _seconds -= diff.get_seconds();
-    _useconds -= diff.get_useconds();
+    _nanoseconds -= diff.get_nanoseconds();
     _time_info_dirty = true;
     normalize();
     return *this;
 }
 
-void DateTime::set(time_t s, long us)
+void DateTime::set(double s)
+{
+    _seconds = (time_t) s;
+    _nanoseconds = (long) ((s - _seconds) * NSECS_PER_SEC);
+    _time_info_dirty = true;
+}
+
+void DateTime::set(time_t s, long ns)
 {
     _seconds = s;
-    _useconds = us;
+    _nanoseconds = ns;
     _time_info_dirty = true;
     normalize();
 }
 
 void DateTime::set(uint32_t year, uint8_t month, uint8_t day, uint8_t hour,
-                   uint8_t min, uint8_t sec, uint32_t usec)
+                   uint8_t min, uint8_t sec, uint32_t nsec)
 {
     ::memset(&_time_info, 0, sizeof(_time_info));
     _time_info.tm_year = year - 1900;
@@ -154,12 +166,12 @@ void DateTime::set(uint32_t year, uint8_t month, uint8_t day, uint8_t hour,
     _time_info.tm_mday = day;
     _time_info.tm_hour = hour;
     _time_info.tm_min = min;
-    _time_info.tm_sec = sec + usec / USECS_PER_SEC;
+    _time_info.tm_sec = sec + nsec / NSECS_PER_SEC;
     _time_info.tm_isdst = -1;
     _time_info_dirty = false;
 
     _seconds = ::mktime(&_time_info); /* '_time_info' is normalized also */
-    _useconds = usec % USECS_PER_SEC;
+    _nanoseconds = nsec % NSECS_PER_SEC;
 
     /* 检查处理输入的结果 */
     assert(-1 != _seconds); /* 输入的数据有错误! */
@@ -169,7 +181,7 @@ void DateTime::set(uint32_t year, uint8_t month, uint8_t day, uint8_t hour,
 void DateTime::set(const SYSTEMTIME& wtm)
 {
     set(wtm.wYear, wtm.wMonth, wtm.wDay, wtm.wHour, wtm.wMinute, wtm.wSecond,
-        wtm.wMilliseconds * USECS_PER_MSEC);
+        wtm.wMilliseconds * NSECS_PER_MSEC);
 }
 
 void DateTime::to_wtm(SYSTEMTIME *wtm) const
@@ -184,31 +196,31 @@ void DateTime::to_wtm(SYSTEMTIME *wtm) const
     wtm->wHour = _time_info.tm_hour;
     wtm->wMinute = _time_info.tm_min;
     wtm->wSecond = _time_info.tm_sec;
-    wtm->wMilliseconds = _useconds / USECS_PER_MSEC;
+    wtm->wMilliseconds = _nanoseconds / NSECS_PER_MSEC;
 }
 #else
 void DateTime::set(const struct timeval &tv)
 {
-    set(tv.tv_sec, tv.tv_usec);
+    set(tv.tv_sec, tv.tv_usec * NSECS_PER_USEC);
 }
 
 void DateTime::set(const struct timespec &tv)
 {
-    set(tv.tv_sec, tv.tv_nsec / NSECS_PER_USEC);
+    set(tv.tv_sec, tv.tv_nsec);
 }
 
 void DateTime::to_timeval(struct timeval *tv) const
 {
     assert(nullptr != tv);
     tv->tv_sec = _seconds;
-    tv->tv_usec = _useconds;
+    tv->tv_usec = _nanoseconds / NSECS_PER_USEC;
 }
 
 void DateTime::to_timespec(struct timespec *tv) const
 {
     assert(nullptr != tv);
     tv->tv_sec = _seconds;
-    tv->tv_nsec = _useconds * NSECS_PER_USEC;
+    tv->tv_nsec = _nanoseconds;
 }
 #endif
 
@@ -217,19 +229,20 @@ void DateTime::to_timespec(struct timespec *tv) const
  */
 void DateTime::set_to_now()
 {
+    // NOTE 各个墙上时间函数信息:
+    // - time(), POSIX, UTC, 实际精度 1s
+    // - GetLocalTime(), Windows, local tz, 实际精度 1ms
+    // - gettimeofday(), POSIX(obsolete), local tz, 实际精度 1us,
+    // - clock_gettime(CLOCK_REALTIME), POSIX, UTC, 实际精度 1ns
+
 #if NUT_PLATFORM_OS_WINDOWS
     SYSTEMTIME wtm;
     ::GetLocalTime(&wtm);
     set(wtm);
-#elif 1
-    struct timeval tv;
-    ::gettimeofday(&tv, nullptr);
-    set(tv);
 #else
-    // time() 只能精确到秒
-    ::time(&_seconds);
-    _useconds = 0;
-    _time_info_dirty = true;
+    struct timespec tv;
+    ::clock_gettime(CLOCK_REALTIME, &tv);
+    set(tv);
 #endif
 }
 
@@ -267,7 +280,7 @@ uint8_t DateTime::get_month() const
  *
  * @return 范围 [0,365]; 0 for the first day in a year
  */
-uint16_t DateTime::get_day_of_year() const
+uint16_t DateTime::get_yday() const
 {
     check_time_info();
     return static_cast<uint16_t>(_time_info.tm_yday);
@@ -278,7 +291,7 @@ uint16_t DateTime::get_day_of_year() const
  *
  * @return 范围 [1,31];  1 for the first day in a month
  */
-uint8_t DateTime::get_day_of_month() const
+uint8_t DateTime::get_mday() const
 {
     check_time_info();
     return static_cast<uint8_t>(_time_info.tm_mday);
@@ -289,7 +302,7 @@ uint8_t DateTime::get_day_of_month() const
  *
  * @return 范围 [0,6];   0 for Sunday
  */
-uint8_t DateTime::get_day_of_week() const
+uint8_t DateTime::get_wday() const
 {
     check_time_info();
     return static_cast<uint8_t>(_time_info.tm_wday);
@@ -323,14 +336,24 @@ uint8_t DateTime::get_second() const
     return static_cast<uint8_t>(_time_info.tm_sec);
 }
 
-uint32_t DateTime::get_usecond() const
+uint32_t DateTime::get_nanosecond() const
 {
-    return _useconds;
+    return _nanoseconds;
 }
 
-time_t DateTime::get_raw_seconds() const
+bool DateTime::is_zero() const
+{
+    return 0 == _seconds && 0 == _nanoseconds;
+}
+
+time_t DateTime::to_integer() const
 {
     return _seconds;
+}
+
+double DateTime::to_double() const
+{
+    return _seconds + _nanoseconds / (double) NSECS_PER_SEC;
 }
 
 // for example : "2007-3-12"
@@ -339,13 +362,13 @@ std::string DateTime::get_date_str() const
     return format_time("%Y-%m-%d");
 }
 
-// for example : "12:34:45"
+// for example : "12:34:45.572936192"
 std::string DateTime::get_clock_str() const
 {
-    return format_time("%H:%M:%S.%6f");
+    return format_time("%H:%M:%S.%9f");
 }
 
-// for example : "2007-3-4 8:33:57"
+// for example : "2007-3-4 8:33:57.762917263"
 std::string DateTime::get_datetime_str() const
 {
     return get_date_str() + " " + get_clock_str();
@@ -417,18 +440,17 @@ static std::string format_decimal_tails(const char *format, double decimal)
 std::string DateTime::format_time(const char *format) const
 {
     assert(nullptr != format);
+    if (0 == format[0])
+        return "";
 
     check_time_info();
 
-    std::string ret;
-    if (0 == format[0])
-        return ret;
-
     // 先格式化浮点数部分，因为 mac 下的 strftime() 会错误处理 %f
-    const double f = ((double) _useconds) / USECS_PER_SEC;
+    const double f = _nanoseconds / (double) NSECS_PER_SEC;
     const std::string fmt = format_decimal_tails(format, f);
 
     // 格式化其他部分
+    std::string ret;
     size_t size = fmt.length() * 3;
     ret.resize(size);
     while (true)
@@ -441,18 +463,6 @@ std::string DateTime::format_time(const char *format) const
         }
         size *= 2;
         ret.resize(size);
-    }
-
-    const size_t start = ret.find("%f");
-    if (std::string::npos != start)
-    {
-        char buf[32];
-        safe_snprintf(buf, 32, "%.6f", ((double) _useconds) / USECS_PER_SEC);
-        char *decimal = buf;
-        while ('.' != *decimal)
-            ++decimal;
-        ++decimal;
-        ret.replace(start, 2, decimal);
     }
 
     return ret;
