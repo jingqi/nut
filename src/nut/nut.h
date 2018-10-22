@@ -78,6 +78,7 @@
 // threading
 #include "threading/threading.h"
 #include "threading/thread_pool.h"
+#include "threading/priority_thread_pool.h"
 #include "threading/lockfree/concurrent_stack.h"
 #include "threading/lockfree/concurrent_queue.h"
 #include "threading/sync/dummy_lock.h"

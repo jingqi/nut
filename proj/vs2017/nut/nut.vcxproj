@@ -203,6 +203,8 @@
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_queue.h" />
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_stack.h" />
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\stamped_ptr.h" />
+    <ClInclude Include="..\..\..\src\nut\threading\priority_thread_pool.h" />
+    <ClInclude Include="..\..\..\src\nut\threading\sync\dummy_lock.h" />
     <ClInclude Include="..\..\..\src\nut\threading\sync\guard.h" />
     <ClInclude Include="..\..\..\src\nut\threading\sync\rwlock.h" />
     <ClInclude Include="..\..\..\src\nut\threading\sync\sem.h" />
@@ -216,7 +218,7 @@
     <ClInclude Include="..\..\..\src\nut\unittest\test_logger.h" />
     <ClInclude Include="..\..\..\src\nut\unittest\test_register.h" />
     <ClInclude Include="..\..\..\src\nut\unittest\test_runner.h" />
-    <ClInclude Include="..\..\..\src\nut\unittest\unit_test.h" />
+    <ClInclude Include="..\..\..\src\nut\unittest\unittest.h" />
     <ClInclude Include="..\..\..\src\nut\util\console_util.h" />
     <ClInclude Include="..\..\..\src\nut\util\delegate.h" />
     <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\connection.h" />
@@ -224,7 +226,7 @@
     <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\result_set.h" />
     <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\wrapers.h" />
     <ClInclude Include="..\..\..\src\nut\util\string\kmp.h" />
-    <ClInclude Include="..\..\..\src\nut\util\string\string_util.h" />
+    <ClInclude Include="..\..\..\src\nut\util\string\string_utils.h" />
     <ClInclude Include="..\..\..\src\nut\util\string\to_string.h" />
     <ClInclude Include="..\..\..\src\nut\util\time\date_time.h" />
     <ClInclude Include="..\..\..\src\nut\util\time\performance_counter.h" />
@@ -283,6 +285,7 @@
     <ClCompile Include="..\..\..\src\nut\security\encrypt\aes.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\encrypt\aes_cbc_pkcs5.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\encrypt\rsa.cpp" />
+    <ClCompile Include="..\..\..\src\nut\threading\priority_thread_pool.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\sync\rwlock.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\sync\sem.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\sync\spinlock.cpp" />
@@ -290,12 +293,13 @@
     <ClCompile Include="..\..\..\src\nut\unittest\console_test_logger.cpp" />
     <ClCompile Include="..\..\..\src\nut\unittest\stream_test_logger.cpp" />
     <ClCompile Include="..\..\..\src\nut\unittest\testcase_failure_exception.cpp" />
+    <ClCompile Include="..\..\..\src\nut\unittest\test_fixture.cpp" />
     <ClCompile Include="..\..\..\src\nut\unittest\test_logger.cpp" />
     <ClCompile Include="..\..\..\src\nut\unittest\test_register.cpp" />
     <ClCompile Include="..\..\..\src\nut\unittest\test_runner.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\console_util.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\string\kmp.cpp" />
-    <ClCompile Include="..\..\..\src\nut\util\string\string_util.cpp" />
+    <ClCompile Include="..\..\..\src\nut\util\string\string_utils.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\string\to_string.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\time\date_time.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\time\performance_counter.cpp" />

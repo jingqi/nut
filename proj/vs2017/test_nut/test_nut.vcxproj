@@ -175,10 +175,12 @@
     <ClCompile Include="..\..\..\src\test_nut\threading\test_threading.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\threading\test_threadpool.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\string\test_kmp.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\util\string\test_stringutil.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\util\string\test_stringutils.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\string\test_tostring.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\test_delegate.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\time\test_date_time.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\util\time\test_performance_counter.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\util\time\test_time_diff.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\time\test_time_wheel.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\test_ini_dom.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\test_property_dom.cpp" />

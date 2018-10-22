@@ -202,9 +202,6 @@
     <ClInclude Include="..\..\..\src\nut\util\string\kmp.h">
       <Filter>nut\util\string</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\string\string_util.h">
-      <Filter>nut\util\string</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\string\to_string.h">
       <Filter>nut\util\string</Filter>
     </ClInclude>
@@ -355,9 +352,6 @@
     <ClInclude Include="..\..\..\src\nut\unittest\testcase_failure_exception.h">
       <Filter>nut\unittest</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\unittest\unit_test.h">
-      <Filter>nut\unittest</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\bytestream\byte_array_stream.h">
       <Filter>nut\container\bytestream</Filter>
     </ClInclude>
@@ -439,6 +433,18 @@
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\stamped_ptr.h">
       <Filter>nut\threading\lockfree</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\sync\dummy_lock.h">
+      <Filter>nut\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\unittest\unittest.h">
+      <Filter>nut\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\string\string_utils.h">
+      <Filter>nut\util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\priority_thread_pool.h">
+      <Filter>nut\threading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">
@@ -484,9 +490,6 @@
       <Filter>nut\util\time</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\util\string\kmp.cpp">
-      <Filter>nut\util\string</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\util\string\string_util.cpp">
       <Filter>nut\util\string</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\util\string\to_string.cpp">
@@ -647,6 +650,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\util\txtcfg\xml\element_handler.cpp">
       <Filter>nut\util\txtcfg\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\string\string_utils.cpp">
+      <Filter>nut\util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\unittest\test_fixture.cpp">
+      <Filter>nut\unittest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\threading\priority_thread_pool.cpp">
+      <Filter>nut\threading</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
