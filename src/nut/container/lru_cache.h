@@ -16,7 +16,7 @@ namespace nut
 /**
  * least-recently-used cache
  */
-template <typename K, typename V, typename LOCK_TYPE = DummyLock>
+template <typename K, typename V>
 class LRUCache
 {
 private:
@@ -66,8 +66,6 @@ public:
 
     bool put(const K& k, V&& v)
     {
-        Guard<LOCK_TYPE> g(&_lock);
-
         typename map_type::const_iterator const n = _map.find(k);
         if (n == _map.end())
         {
@@ -99,8 +97,6 @@ public:
 
     bool remove(const K& k)
     {
-        Guard<LOCK_TYPE> g(&_lock);
-
         typename map_type::iterator const n = _map.find(k);
         if (n == _map.end())
             return false;
@@ -121,8 +117,6 @@ public:
     bool get(const K& k, V *v)
     {
         assert(nullptr != v);
-        Guard<LOCK_TYPE> g(&_lock);
-
         typename map_type::const_iterator const n = _map.find(k);
         if (n == _map.end())
         {
@@ -146,8 +140,6 @@ public:
 
     void clear()
     {
-        Guard<LOCK_TYPE> g(&_lock);
-
         Node *p = _list_head;
         while (nullptr != p)
         {
@@ -226,7 +218,6 @@ private:
     size_t _capacity = 0;
     map_type _map;
     Node *_list_head = nullptr, *_list_end = nullptr;
-    LOCK_TYPE _lock; // 注意，linux 下自旋锁不可重入
 
 #ifndef NDEBUG
     size_t _hit_count = 0, _miss_count = 0;
