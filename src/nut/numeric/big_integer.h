@@ -45,9 +45,9 @@ public:
     // 上述模板函数的一个特化
     BigInteger(const word_type *buf, size_type len, bool with_sign);
 
-    BigInteger(const BigInteger& x);
-
     BigInteger(BigInteger&& x);
+
+    BigInteger(const BigInteger& x);
 
     ~BigInteger();
 

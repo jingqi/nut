@@ -11,6 +11,63 @@
 namespace nut
 {
 
+BigInteger::BigInteger(long long v)
+{
+    static_assert(sizeof(v) % sizeof(word_type) == 0, "Unexpected integer size");
+
+    ensure_cap(sizeof(v) / sizeof(word_type));
+    ::memcpy(_data, &v, sizeof(v));
+    _significant_len = sizeof(v) / sizeof(word_type);
+    minimize_significant_len();
+}
+
+BigInteger::BigInteger(const word_type *buf, size_type len, bool with_sign)
+{
+    assert(nullptr != buf && len > 0);
+
+    if (with_sign || nut::is_positive(buf, len))
+    {
+        ensure_cap(len);
+        ::memcpy(_data, buf, sizeof(word_type) * len);
+        _significant_len = len;
+    }
+    else
+    {
+        ensure_cap(len + 1);
+        ::memcpy(_data, buf, sizeof(word_type) * len);
+        _data[len] = 0;
+        _significant_len = len + 1;
+    }
+    minimize_significant_len();
+}
+
+BigInteger::BigInteger(BigInteger&& x)
+{
+    _data = x._data;
+    _capacity = x._capacity;
+    _significant_len = x._significant_len;
+
+    x._data = nullptr;
+    x._capacity = 0;
+    x._significant_len = 0;
+}
+
+BigInteger::BigInteger(const BigInteger& x)
+{
+    ensure_cap(x._significant_len);
+    ::memcpy(_data, x._data, sizeof(word_type) * x._significant_len);
+    _significant_len = x._significant_len;
+}
+
+BigInteger::~BigInteger()
+{
+    if (nullptr != _data)
+        ::free(_data);
+    _data = nullptr;
+    _capacity = 0;
+    _significant_len = 0;
+}
+
 void BigInteger::ensure_cap(size_type new_size)
 {
     if (new_size <= _capacity)
@@ -42,63 +99,6 @@ void BigInteger::ensure_significant_len(size_type siglen)
 void BigInteger::minimize_significant_len()
 {
     _significant_len = nut::signed_significant_size(_data, _significant_len);
-}
-
-BigInteger::BigInteger(long long v)
-{
-    static_assert(sizeof(v) % sizeof(word_type) == 0, "Unexpected integer size");
-
-    ensure_cap(sizeof(v) / sizeof(word_type));
-    ::memcpy(_data, &v, sizeof(v));
-    _significant_len = sizeof(v) / sizeof(word_type);
-    minimize_significant_len();
-}
-
-BigInteger::BigInteger(const word_type *buf, size_type len, bool with_sign)
-{
-    assert(nullptr != buf && len > 0);
-
-    if (with_sign || nut::is_positive(buf, len))
-    {
-        ensure_cap(len);
-        ::memcpy(_data, buf, sizeof(word_type) * len);
-        _significant_len = len;
-    }
-    else
-    {
-        ensure_cap(len + 1);
-        ::memcpy(_data, buf, sizeof(word_type) * len);
-        _data[len] = 0;
-        _significant_len = len + 1;
-    }
-    minimize_significant_len();
-}
-
-BigInteger::BigInteger(const BigInteger& x)
-{
-    ensure_cap(x._significant_len);
-    ::memcpy(_data, x._data, sizeof(word_type) * x._significant_len);
-    _significant_len = x._significant_len;
-}
-
-BigInteger::BigInteger(BigInteger&& x)
-{
-    _data = x._data;
-    _capacity = x._capacity;
-    _significant_len = x._significant_len;
-
-    x._data = nullptr;
-    x._capacity = 0;
-    x._significant_len = 0;
-}
-
-BigInteger::~BigInteger()
-{
-    if (nullptr != _data)
-        ::free(_data);
-    _data = nullptr;
-    _capacity = 0;
-    _significant_len = 0;
 }
 
 BigInteger& BigInteger::operator=(const BigInteger& x)

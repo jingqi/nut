@@ -47,6 +47,10 @@ private:
     class Node
     {
     public:
+        Node(T&& v)
+            : data(std::forward<T>(v))
+        {}
+
         Node(const T& v)
             : data(v)
         {}
@@ -91,6 +95,22 @@ public:
         return nullptr == _top.load(std::memory_order_relaxed).ptr;
     }
 
+    void push(T&& v)
+    {
+        Node *new_node = (Node*) ::malloc(sizeof(Node));
+        new (&(new_node->data)) T(std::forward<T>(v));
+
+        StampedPtr<Node> old_top = _top.load(std::memory_order_relaxed);
+        while (true)
+        {
+            new_node->next = old_top.ptr;
+            if (_top.compare_exchange_weak(
+                    old_top, {new_node, old_top.stamp + 1},
+                    std::memory_order_release, std::memory_order_relaxed))
+                return;
+        }
+    }
+
     void push(const T& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
@@ -125,6 +145,20 @@ public:
                 ::free(old_top.ptr);
                 return true;
             }
+        }
+    }
+
+    void eliminate_push(T&& v)
+    {
+        Node *new_node = (Node*) ::malloc(sizeof(Node));
+        new (&(new_node->data)) T(std::forward<T>(v));
+
+        while (true)
+        {
+            if (push_attempt(new_node))
+                return;
+            if (try_to_eliminate_push(new_node))
+                return;
         }
     }
 

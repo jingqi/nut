@@ -22,13 +22,14 @@ namespace nut
 /**
  * 无锁并发队列
  *
- *                     dequeue
- *                        ↑
- *                        |         +-------+-> next
- * head -> ................    ->   | dummy |    ->  tail
- *         ↑                 prev <-+-------+
- *         |
- *      enqueue
+ * 从队尾入队，从队头出队：
+ *                           dequeue
+ *                              ↑
+ *      prev <-+-------+        |
+ * head    -   | dummy |   -    < .............. <  tail
+ *             +-------+-> next                  ↑
+ *                                               |
+ *                                            enqueue
  *
  * 关键字：
  *   CAS(Compare-And-Swap)
@@ -63,6 +64,10 @@ private:
     class Node
     {
     public:
+        Node(T&& v)
+            : data(std::forward<T>(v))
+        {}
+
         Node(const T& v)
             : data(v)
         {}
@@ -121,7 +126,7 @@ public:
         {}
         assert(is_empty());
 
-        Node *dummy = _tail.load(std::memory_order_relaxed).ptr;
+        Node *dummy = _head.load(std::memory_order_relaxed).ptr;
         assert(nullptr != dummy);
         dummy->destruct_dummy();
         ::free(dummy);
@@ -148,26 +153,52 @@ public:
      *   尚未插入到队列中，(第2步)无须考虑并发操作的影响，其结果是可靠的；但是(
      *   第5步)则要考虑操作延时对其他的并发操作的影响，所以有fixList()操作。
      */
+    void optimistic_enqueue(T&& v)
+    {
+        Node *new_node = (Node*) ::malloc(sizeof(Node));
+        new (new_node) Node(std::forward<T>(v));
+
+        // 获取旧值
+        StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
+        while (true)
+        {
+            // 基于旧值的操作
+            new_node->prev.store({old_tail.ptr, old_tail.stamp + 1},
+                                 std::memory_order_relaxed);
+
+            // 尝试CAS，失败则自动获取旧值到 old_tail
+            if (_tail.compare_exchange_weak(
+                    old_tail, {new_node, old_tail.stamp + 1},
+                    std::memory_order_release, std::memory_order_relaxed))
+            {
+                // 收尾操作
+                old_tail.ptr->next.store({new_node, old_tail.stamp},
+                                         std::memory_order_relaxed);
+                break;
+            }
+        }
+    }
+
     void optimistic_enqueue(const T& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new (new_node) Node(v);
 
         // 获取旧值
-        StampedPtr<Node> old_head = _head.load(std::memory_order_relaxed);
+        StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
         while (true)
         {
             // 基于旧值的操作
-            new_node->next.store({old_head.ptr, old_head.stamp + 1},
+            new_node->prev.store({old_tail.ptr, old_tail.stamp + 1},
                                  std::memory_order_relaxed);
 
-            // 尝试CAS，失败则自动获取旧值到 old_head
-            if (_head.compare_exchange_weak(
-                    old_head, {new_node, old_head.stamp + 1},
+            // 尝试CAS，失败则自动获取旧值到 old_tail
+            if (_tail.compare_exchange_weak(
+                    old_tail, {new_node, old_tail.stamp + 1},
                     std::memory_order_release, std::memory_order_relaxed))
             {
                 // 收尾操作
-                old_head.ptr->prev.store({new_node, old_head.stamp},
+                old_tail.ptr->next.store({new_node, old_tail.stamp},
                                          std::memory_order_relaxed);
                 break;
             }
@@ -184,36 +215,36 @@ public:
         while (true)
         {
             // 保留旧值
-            // NOTE 先取 tail, 然后取 head 和其他，再验证 tail 是否改变，以保证
+            // NOTE 先取 head, 然后取 tail 和其他，再验证 head 是否改变，以保证
             //      取到的值是一致的
-            StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
-            const StampedPtr<Node> old_head = _head.load(std::memory_order_relaxed);
-            const StampedPtr<Node> first_node_prev = old_tail.ptr->prev.load(std::memory_order_relaxed);
+            StampedPtr<Node> old_head = _head.load(std::memory_order_relaxed);
+            const StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
+            const StampedPtr<Node> first_node_next = old_head.ptr->next.load(std::memory_order_relaxed);
 
-            if (old_tail == _tail.load(std::memory_order_relaxed))
+            if (old_head == _head.load(std::memory_order_relaxed))
             {
                 // 队列为空
                 if (old_head == old_tail)
                     return false;
 
                 // 需要修正
-                if (first_node_prev.stamp != old_tail.stamp)
+                if (first_node_next.stamp != old_head.stamp)
                 {
                     fix_list(old_head, old_tail);
                     continue;
                 }
 
                 // 基于旧值的操作
-                ::memcpy(tmp, &(first_node_prev.ptr->data), sizeof(T));
+                ::memcpy(tmp, &(first_node_next.ptr->data), sizeof(T));
 
                 // 尝试CAS操作
-                if (_tail.compare_exchange_weak(
-                        old_tail, {first_node_prev.ptr, old_tail.stamp + 1},
+                if (_head.compare_exchange_weak(
+                        old_head, {first_node_next.ptr, old_head.stamp + 1},
                         std::memory_order_release, std::memory_order_relaxed))
                 {
-                    // NOTE first_node_prev.ptr 成为新的 dummy 节点
-                    old_tail.ptr->destruct_dummy();
-                    ::free(old_tail.ptr);
+                    // NOTE first_node_next.ptr 成为新的 dummy 节点
+                    old_head.ptr->destruct_dummy();
+                    ::free(old_head.ptr);
                     if (nullptr != p)
                         *p = *reinterpret_cast<T*>(tmp);
                     reinterpret_cast<T*>(tmp)->~T();
@@ -224,18 +255,34 @@ public:
     }
 
     // 采用消隐策略的入队
+    void eliminate_enqueue(T&& v)
+    {
+        Node *new_node = (Node*) ::malloc(sizeof(Node));
+        new (new_node) Node(std::forward<T>(v));
+
+        const stamp_type seen_tail = _tail.load(std::memory_order_relaxed).stamp;
+        while (true)
+        {
+            if (enqueue_attempt(new_node))
+                return;
+            if (seen_tail <= _head.load(std::memory_order_relaxed).stamp &&
+                try_to_eliminate_enqueue(new_node, seen_tail))
+                return;
+        }
+    }
+
     void eliminate_enqueue(const T& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new (new_node) Node(v);
 
-        const stamp_type seen_head = _head.load(std::memory_order_relaxed).stamp;
+        const stamp_type seen_tail = _tail.load(std::memory_order_relaxed).stamp;
         while (true)
         {
             if (enqueue_attempt(new_node))
                 return;
-            if (seen_head <= _tail.load(std::memory_order_relaxed).stamp &&
-                try_to_eliminate_enqueue(new_node, seen_head))
+            if (seen_tail <= _head.load(std::memory_order_relaxed).stamp &&
+                try_to_eliminate_enqueue(new_node, seen_tail))
                 return;
         }
     }
@@ -261,28 +308,28 @@ private:
     // 修复
     void fix_list(const StampedPtr<Node>& head, const StampedPtr<Node>& tail)
     {
-        StampedPtr<Node> cur_node = head;
-        while ((tail == _tail.load(std::memory_order_relaxed)) && (cur_node != tail))
+        StampedPtr<Node> cur_node = tail;
+        while ((head == _head.load(std::memory_order_relaxed)) && (cur_node != head))
         {
-            StampedPtr<Node> cur_node_next = cur_node.ptr->next.load(std::memory_order_relaxed);
-            cur_node_next.ptr->prev.store({cur_node.ptr, cur_node.stamp - 1},
+            StampedPtr<Node> cur_node_prev = cur_node.ptr->prev.load(std::memory_order_relaxed);
+            cur_node_prev.ptr->next.store({cur_node.ptr, cur_node.stamp - 1},
                                           std::memory_order_relaxed);
-            cur_node.set(cur_node_next.ptr, cur_node.stamp - 1);
+            cur_node.set(cur_node_prev.ptr, cur_node.stamp - 1);
         }
     }
 
     // 尝试入队
     bool enqueue_attempt(Node *new_node)
     {
-        StampedPtr<Node> old_head = _head.load(std::memory_order_relaxed);
-        new_node->next.store({old_head.ptr, old_head.stamp + 1},
+        StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
+        new_node->prev.store({old_tail.ptr, old_tail.stamp + 1},
                              std::memory_order_relaxed);
 
-        if (_head.compare_exchange_weak(
-                old_head, {new_node, old_head.stamp + 1},
+        if (_tail.compare_exchange_weak(
+                old_tail, {new_node, old_tail.stamp + 1},
                 std::memory_order_release, std::memory_order_relaxed))
         {
-            old_head.ptr->prev.store({new_node, old_head.stamp},
+            old_tail.ptr->next.store({new_node, old_tail.stamp},
                                      std::memory_order_relaxed);
             return true;
         }
@@ -297,34 +344,34 @@ private:
         while (true)
         {
             // 保留旧值
-            StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
-            const StampedPtr<Node> old_head = _head.load(std::memory_order_relaxed);
-            const StampedPtr<Node> first_node_prev = old_tail.ptr->prev.load(std::memory_order_relaxed);
+            StampedPtr<Node> old_head = _head.load(std::memory_order_relaxed);
+            const StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
+            const StampedPtr<Node> first_node_next = old_head.ptr->next.load(std::memory_order_relaxed);
 
-            if (old_tail == _tail.load(std::memory_order_relaxed))
+            if (old_head == _head.load(std::memory_order_relaxed))
             {
                 // 队列为空
                 if (old_head == old_tail)
                     return DequeueAttemptResult::EmptyQueueFailure;
 
                 // 需要修正
-                if (first_node_prev.stamp != old_tail.stamp)
+                if (first_node_next.stamp != old_head.stamp)
                 {
                     fix_list(old_head, old_tail);
                     continue;
                 }
 
                 // 基于旧值的操作
-                ::memcpy(tmp, &(first_node_prev.ptr->data), sizeof(T));
+                ::memcpy(tmp, &(first_node_next.ptr->data), sizeof(T));
 
                 // 尝试CAS操作
-                if (_tail.compare_exchange_weak(
-                        old_tail, {first_node_prev.ptr, old_tail.stamp + 1},
+                if (_head.compare_exchange_weak(
+                        old_head, {first_node_next.ptr, old_head.stamp + 1},
                         std::memory_order_release, std::memory_order_relaxed))
                 {
-                    // NOTE first_node_prev.ptr 成为新的 dummy 节点
-                    old_tail.ptr->destruct_dummy();
-                    ::free(old_tail.ptr);
+                    // NOTE first_node_next.ptr 成为新的 dummy 节点
+                    old_head.ptr->destruct_dummy();
+                    ::free(old_head.ptr);
                     if (nullptr != p)
                         *p = *reinterpret_cast<T*>(tmp);
                     reinterpret_cast<T*>(tmp)->~T();
@@ -335,9 +382,9 @@ private:
         }
     }
 
-    bool try_to_eliminate_enqueue(Node *new_node, stamp_type seen_head)
+    bool try_to_eliminate_enqueue(Node *new_node, stamp_type seen_tail)
     {
-        new_node->seg = seen_head;
+        new_node->seg = seen_tail;
         const unsigned int i = ::rand() % COLLISIONS_ARRAY_SIZE;
         StampedPtr<Node> old_collision_to_add = _collisions[i].load(std::memory_order_relaxed);
         if (COLLISION_EMPTY_PTR != old_collision_to_add.ptr)
@@ -370,14 +417,14 @@ private:
 
     bool try_to_eliminate_dequeue(T *p)
     {
-        const stamp_type seen_tail = _tail.load(std::memory_order_relaxed).stamp;
+        const stamp_type seen_head = _head.load(std::memory_order_relaxed).stamp;
         const unsigned int i = ::rand() % COLLISIONS_ARRAY_SIZE;
         StampedPtr<Node> old_collision = _collisions[i].load(std::memory_order_relaxed);
         if (COLLISION_EMPTY_PTR == old_collision.ptr ||
             COLLISION_DONE_PTR == old_collision.ptr)
             return false;
 
-        if (old_collision.ptr->seg > seen_tail)
+        if (old_collision.ptr->seg > seen_head)
             return false;
 
         if (_collisions[i].compare_exchange_weak(

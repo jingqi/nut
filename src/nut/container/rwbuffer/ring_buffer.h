@@ -31,11 +31,11 @@ class NUT_API RingBuffer
 {
 public:
     RingBuffer() = default;
-    RingBuffer(const RingBuffer& x);
     RingBuffer(RingBuffer&& x);
+    RingBuffer(const RingBuffer& x);
     ~RingBuffer();
-    RingBuffer& operator=(const RingBuffer& x);
     RingBuffer& operator=(RingBuffer&& x);
+    RingBuffer& operator=(const RingBuffer& x);
 
     void clear();
 

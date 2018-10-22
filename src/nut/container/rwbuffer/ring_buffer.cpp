@@ -14,11 +14,6 @@
 namespace nut
 {
 
-RingBuffer::RingBuffer(const RingBuffer& x)
-{
-    *this = x;
-}
-
 RingBuffer::RingBuffer(RingBuffer&& x)
 {
     _buffer = x._buffer;
@@ -32,6 +27,11 @@ RingBuffer::RingBuffer(RingBuffer&& x)
     x._write_index = 0;
 }
 
+RingBuffer::RingBuffer(const RingBuffer& x)
+{
+    *this = x;
+}
+
 RingBuffer::~RingBuffer()
 {
     if (nullptr != _buffer)
@@ -40,23 +40,6 @@ RingBuffer::~RingBuffer()
     _capacity = 0;
     _read_index = 0;
     _write_index = 0;
-}
-
-RingBuffer& RingBuffer::operator=(const RingBuffer& x)
-{
-    if (this == &x)
-        return *this;
-
-    clear();
-    ensure_writable_size(x.readable_size());
-
-    const void *buffers[2];
-    size_t lens[2];
-    const size_t n = x.readable_pointers(buffers, lens, buffers + 1, lens + 1);
-    for (size_t i = 0; i < n; ++i)
-        write(buffers[i], lens[i]);
-
-    return *this;
 }
 
 RingBuffer& RingBuffer::operator=(RingBuffer&& x)
@@ -76,6 +59,23 @@ RingBuffer& RingBuffer::operator=(RingBuffer&& x)
     x._capacity = 0;
     x._read_index = 0;
     x._write_index = 0;
+
+    return *this;
+}
+
+RingBuffer& RingBuffer::operator=(const RingBuffer& x)
+{
+    if (this == &x)
+        return *this;
+
+    clear();
+    ensure_writable_size(x.readable_size());
+
+    const void *buffers[2];
+    size_t lens[2];
+    const size_t n = x.readable_pointers(buffers, lens, buffers + 1, lens + 1);
+    for (size_t i = 0; i < n; ++i)
+        write(buffers[i], lens[i]);
 
     return *this;
 }

@@ -68,13 +68,14 @@ public:
     Fragment* write_fragment(Fragment *frag);
 
 private:
+    void enqueue(Fragment *frag);
+
+private:
     Fragment *_read_fragment = nullptr;
     Fragment *_write_fragment = nullptr;
 
     size_t _read_index = 0;
     size_t _read_available = 0;
-
-    void enqueue(Fragment *frag);
 };
 
 }
