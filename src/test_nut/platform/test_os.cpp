@@ -17,14 +17,12 @@ class TestOS : public TestFixture
     void test_smoking()
     {
         //cout << endl;
-        vector<string> subs;
-        OS::list_dir(".", &subs);
+        vector<string> subs = OS::list_dir(".");
         //for (size_t i = 0, sz = subs.size(); i < sz; ++i)
             //cout << subs.at(i) << endl;
 
         //wcout << endl;
-        vector<wstring> subsw;
-        OS::list_dir(L".", &subsw);
+        vector<wstring> subsw = OS::list_dir(L".");
         //for (size_t i = 0, sz = subsw.size(); i < sz; ++i)
             //wcout << subsw.at(i) << endl;
         NUT_TA(subs.size() == subsw.size());

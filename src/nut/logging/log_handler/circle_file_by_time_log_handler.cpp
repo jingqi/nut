@@ -25,9 +25,8 @@ CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(const std::string& dir_pa
 
     // 找到相同目录下所有的日志文件
     const std::string log_suffix(".log");
-    std::vector<std::string> file_names, logfile_names;
-    OS::list_dir(dir_path, &file_names, false, true, true);
-
+    const std::vector<std::string> file_names = OS::list_dir(dir_path, false, true, true);
+    std::vector<std::string> logfile_names;
     for (size_t i = 0; i < file_names.size(); ++i)
     {
         const std::string& name = file_names.at(i);
@@ -48,8 +47,7 @@ CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(const std::string& dir_pa
         for (size_t i = 0, del_count = logfile_names.size() - circle_size + 1;
              i < del_count; ++i)
         {
-            std::string full_path;
-            Path::join(dir_path, logfile_names.at(i), &full_path);
+            const std::string full_path = Path::join(dir_path, logfile_names.at(i));
             OS::remove_file(full_path);
         }
     }
@@ -65,8 +63,7 @@ CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(const std::string& dir_pa
     file_name += llong_to_str(pid);
     file_name += log_suffix;
 
-    std::string full_path;
-    Path::join(dir_path, file_name, &full_path);
+    const std::string full_path = Path::join(dir_path, file_name);
     _ofs.open(full_path.c_str(), std::ios::trunc);
 }
 

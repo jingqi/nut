@@ -176,19 +176,14 @@ public:
         : _ranges(std::forward<std::vector<Range>>(x._ranges))
     {}
 
-    IntegerSet(const IntegerSet& x)
-        : _ranges(x._ranges)
-    {}
+    IntegerSet(const IntegerSet& x) = default;
 
     IntegerSet& operator=(IntegerSet&& x)
     {
         _ranges = std::forward<std::vector<Range>>(x._ranges);
     }
 
-    IntegerSet& operator=(const IntegerSet& x)
-    {
-        _ranges = x._ranges;
-    }
+    IntegerSet& operator=(const IntegerSet& x) = default;
 
     bool operator==(const self_type& x) const
     {

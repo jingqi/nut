@@ -14,8 +14,6 @@
 #   include <xutility> // for std::min() and so on
 #endif
 
-#include <nut/container/tuple.h>
-
 #include "mdarea.h"
 
 

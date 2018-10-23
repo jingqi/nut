@@ -28,8 +28,6 @@ public:
     /**
      * 获取当前工作目录路径
      */
-    static void get_cwd(std::string *result);
-    static void get_cwd(std::wstring *result);
     static std::string get_cwd();
     static std::wstring get_wcwd();
 
@@ -37,7 +35,9 @@ public:
      * 设置当前工作路径
      */
     static void chdir(const char *cwd);
+    static void chdir(const wchar_t *cwd);
     static void chdir(const std::string& cwd);
+    static void chdir(const std::wstring& cwd);
 
     /**
      * 是否为根目录
@@ -64,10 +64,6 @@ public:
     /**
      * 将相对路径转换为绝对路径
      */
-    static void abs_path(const char *path, std::string *result);
-    static void abs_path(const wchar_t *path, std::wstring *result);
-    static void abs_path(const std::string& path, std::string *result);
-    static void abs_path(const std::wstring& path, std::wstring *result);
     static std::string abs_path(const char *path);
     static std::wstring abs_path(const wchar_t *path);
     static std::string abs_path(const std::string& path);
@@ -76,14 +72,6 @@ public:
     /**
      * 将路径转换为相对路径
      */
-    static void relative_path(const char *input_path, const char *ref_path,
-                              std::string *result);
-    static void relative_path(const wchar_t *input_path, const wchar_t *ref_path,
-                              std::wstring *result);
-    static void relative_path(const std::string& input_path, const std::string& ref_path,
-                              std::string *result);
-    static void relative_path(const std::wstring& input_path, const std::wstring& ref_path,
-                              std::wstring *result);
     static std::string relative_path(const char *input_path, const char *ref_path);
     static std::wstring relative_path(const wchar_t *input_path, const wchar_t *ref_path);
     static std::string relative_path(const std::string& input_path, const std::string& ref_path);
@@ -202,28 +190,16 @@ public:
      * "/" "sd" -> "/sd"
      * "c:" "\tmp" -> "c:\tmp"
      */
-    static void join(const char *a, const char *b, std::string *result);
-    static void join(const wchar_t *a, const wchar_t *b, std::wstring *result);
-    static void join(const std::string& a, const std::string& b, std::string *result);
-    static void join(const std::wstring& a, const std::wstring& b, std::wstring *result);
     static std::string join(const char *a, const char *b);
     static std::wstring join(const wchar_t *a, const wchar_t *b);
     static std::string join(const std::string& a, const std::string& b);
     static std::wstring join(const std::wstring& a, const std::wstring& b);
 
-    static void join(const char *a, const char *b, const char *c, std::string *result);
-    static void join(const wchar_t *a, const wchar_t *b, const wchar_t *c, std::wstring *result);
-    static void join(const std::string& a, const std::string& b, const std::string& c, std::string *result);
-    static void join(const std::wstring& a, const std::wstring& b, const std::wstring& c, std::wstring *result);
     static std::string join(const char *a, const char *b, const char *c);
     static std::wstring join(const wchar_t *a, const wchar_t *b, const wchar_t *c);
     static std::string join(const std::string& a, const std::string& b, const std::string& c);
     static std::wstring join(const std::wstring& a, const std::wstring& b, const std::wstring& c);
 
-    static void join(const char *a, const char *b, const char *c, const char *d, std::string *result);
-    static void join(const wchar_t *a, const wchar_t *b, const wchar_t *c, const wchar_t *d, std::wstring *result);
-    static void join(const std::string& a, const std::string& b, const std::string& c, const std::string& d, std::string *result);
-    static void join(const std::wstring& a, const std::wstring& b, const std::wstring& c, const std::wstring& d, std::wstring *result);
     static std::string join(const char *a, const char *b, const char *c, const char *d);
     static std::wstring join(const wchar_t *a, const wchar_t *b, const wchar_t *c, const wchar_t *d);
     static std::string join(const std::string& a, const std::string& b, const std::string& c, const std::string& d);

@@ -28,10 +28,10 @@ namespace nut
 /**
  * 用整个字符串来分割字符串
  */
-NUT_API void str_split(const char *str, const char *sep_str,
-                       std::vector<std::string> *result, bool ignore_empty)
+NUT_API std::vector<std::string> str_split(const char *str, const char *sep_str,
+                                           bool ignore_empty)
 {
-    assert(nullptr != str && nullptr != sep_str && 0 != sep_str[0] && nullptr != result);
+    assert(nullptr != str && nullptr != sep_str && 0 != sep_str[0]);
 
     const size_t sep_len = ::strlen(sep_str);
     int *next = (int*) ::malloc(sizeof(int) * sep_len);
@@ -40,29 +40,30 @@ NUT_API void str_split(const char *str, const char *sep_str,
     const size_t str_len = ::strlen(str);
     size_t begin = 0;
     ssize_t end = kmp_search(str, str_len, 0, sep_str, next, sep_len);
+    std::vector<std::string> result;
     while (end >= 0)
     {
         if (!ignore_empty || begin != (size_t) end)
-            result->emplace_back(str + begin, end - begin);
+            result.emplace_back(str + begin, end - begin);
         begin = end + sep_len;
         end = kmp_search(str, str_len, begin, sep_str, next, sep_len);
     }
     if (!ignore_empty || begin < str_len)
-        result->push_back(str + begin);
+        result.push_back(str + begin);
     ::free(next);
+    return result;
 }
 
-NUT_API void str_split(const std::string& str, const std::string& sep_str,
-                       std::vector<std::string> *result, bool ignore_empty)
+NUT_API std::vector<std::string> str_split(
+    const std::string& str, const std::string& sep_str, bool ignore_empty)
 {
-    assert(nullptr != result);
-    str_split(str.c_str(), sep_str.c_str(), result, ignore_empty);
+    return str_split(str.c_str(), sep_str.c_str(), ignore_empty);
 }
 
-NUT_API void str_split(const wchar_t *str, const wchar_t *sep_str,
-                       std::vector<std::wstring> *result, bool ignore_empty)
+NUT_API std::vector<std::wstring> str_split(
+    const wchar_t *str, const wchar_t *sep_str, bool ignore_empty)
 {
-    assert(nullptr != str && nullptr != sep_str && 0 != sep_str[0] && nullptr != result);
+    assert(nullptr != str && nullptr != sep_str && 0 != sep_str[0]);
 
     const size_t sep_len = ::wcslen(sep_str);
     int *next = (int*) ::malloc(sizeof(int) * sep_len);
@@ -71,110 +72,110 @@ NUT_API void str_split(const wchar_t *str, const wchar_t *sep_str,
     const size_t str_len = ::wcslen(str);
     size_t begin = 0;
     ssize_t end = kmp_search(str, str_len, 0, sep_str, next, sep_len);
+    std::vector<std::wstring> result;
     while (end >= 0)
     {
         if (!ignore_empty || begin != (size_t) end)
-            result->emplace_back(str + begin, end - begin);
+            result.emplace_back(str + begin, end - begin);
         begin = end + sep_len;
         end = kmp_search(str, str_len, begin, sep_str, next, sep_len);
     }
     if (!ignore_empty || begin < str_len)
-        result->push_back(str + begin);
+        result.push_back(str + begin);
     ::free(next);
+    return result;
 }
 
-NUT_API void str_split(const std::wstring& str, const std::wstring& sep_str,
-                       std::vector<std::wstring> *result, bool ignore_empty)
+NUT_API std::vector<std::wstring> str_split(
+    const std::wstring& str, const std::wstring& sep_str, bool ignore_empty)
 {
-    assert(nullptr != result);
-    str_split(str.c_str(), sep_str.c_str(), result, ignore_empty);
+    return str_split(str.c_str(), sep_str.c_str(), ignore_empty);
 }
 
 /**
  * @param sep_chars
  *      该字符串中的每一个字符都是分割字符
- */
-NUT_API void chr_split(const char *str_, const char *sep_chars,
-                       std::vector<std::string> *result, bool ignore_empty)
+ */ 
+NUT_API std::vector<std::string> chr_split(
+    const char *str_, const char *sep_chars, bool ignore_empty)
 {
-    assert(nullptr != str_ && nullptr != sep_chars && 0 != sep_chars[0] && nullptr != result);
+    assert(nullptr != str_ && nullptr != sep_chars && 0 != sep_chars[0]);
 
     const std::string str(str_);
     std::string::size_type begin = 0, end = str.find_first_of(sep_chars);
+    std::vector<std::string> result;
     while (std::string::npos != end)
     {
         if (!ignore_empty || begin != end)
-            result->push_back(str.substr(begin, end - begin));
+            result.push_back(str.substr(begin, end - begin));
         begin = end + 1;
         end = str.find_first_of(sep_chars, begin);
     }
     if (!ignore_empty || begin < str.length())
-        result->push_back(str.substr(begin));
+        result.push_back(str.substr(begin));
+    return result;
 }
 
-NUT_API void chr_split(const std::string& str, const std::string& sep_chars,
-                       std::vector<std::string> *result, bool ignore_empty)
+NUT_API std::vector<std::string> chr_split(
+    const std::string& str, const std::string& sep_chars, bool ignore_empty)
 {
-    assert(nullptr != result);
-    chr_split(str.c_str(), sep_chars.c_str(), result, ignore_empty);
+    return chr_split(str.c_str(), sep_chars.c_str(), ignore_empty);
 }
 
-NUT_API void chr_split(const wchar_t *str_, const wchar_t *sep_chars,
-                       std::vector<std::wstring> *result, bool ignore_empty)
+NUT_API std::vector<std::wstring> chr_split(
+    const wchar_t *str_, const wchar_t *sep_chars, bool ignore_empty)
 {
-    assert(nullptr != str_ && nullptr != sep_chars && 0 != sep_chars[0] && nullptr != result);
+    assert(nullptr != str_ && nullptr != sep_chars && 0 != sep_chars[0]);
 
     const std::wstring str(str_);
     std::wstring::size_type begin = 0, end = str.find_first_of(sep_chars);
+    std::vector<std::wstring> result;
     while (std::wstring::npos != end)
     {
         if (!ignore_empty || begin != end)
-            result->push_back(str.substr(begin, end - begin));
+            result.push_back(str.substr(begin, end - begin));
         begin = end + 1;
         end = str.find_first_of(sep_chars, begin);
     }
     if (!ignore_empty || begin < str.length())
-        result->push_back(str.substr(begin));
+        result.push_back(str.substr(begin));
+    return result;
 }
 
-NUT_API void chr_split(const std::wstring& str, const std::wstring& sep_chars,
-                       std::vector<std::wstring> *result, bool ignore_empty)
+NUT_API std::vector<std::wstring> chr_split(
+    const std::wstring& str, const std::wstring& sep_chars, bool ignore_empty)
 {
-    assert(nullptr != result);
-    chr_split(str.c_str(), sep_chars.c_str(), result, ignore_empty);
+    return chr_split(str.c_str(), sep_chars.c_str(), ignore_empty);
 }
 
 /**
  * split the string
  */
-NUT_API void chr_split(const char *str, char c, std::vector<std::string> *result,
-                       bool ignore_empty)
+NUT_API std::vector<std::string> chr_split(
+    const char *str, char c, bool ignore_empty)
 {
-    assert(nullptr != str && nullptr != result);
+    assert(nullptr != str);
     char seps[2] = {c, 0};
-    chr_split(str, seps, result, ignore_empty);
+    return chr_split(str, seps, ignore_empty);
 }
 
-NUT_API void chr_split(const std::string& str, char c, std::vector<std::string> *result,
-                       bool ignore_empty)
+NUT_API std::vector<std::string> chr_split(
+    const std::string& str, char c, bool ignore_empty)
 {
-    assert(nullptr != result);
-    chr_split(str.c_str(), c, result, ignore_empty);
+    return chr_split(str.c_str(), c, ignore_empty);
 }
 
-NUT_API void chr_split(const wchar_t *str, wchar_t c, std::vector<std::wstring> *result,
-                       bool ignore_empty)
+NUT_API std::vector<std::wstring> chr_split(
+    const wchar_t *str, wchar_t c, bool ignore_empty)
 {
-    assert(nullptr != result);
     wchar_t seps[2] = {c, 0};
-    chr_split(str, seps, result, ignore_empty);
+    return chr_split(str, seps, ignore_empty);
 }
 
-NUT_API void chr_split(const std::wstring& str, wchar_t c, std::vector<std::wstring> *result,
-                       bool ignore_empty)
+NUT_API std::vector<std::wstring> chr_split(
+    const std::wstring& str, wchar_t c, bool ignore_empty)
 {
-    assert(nullptr != result);
-    chr_split(str.c_str(), c, result, ignore_empty);
+    return chr_split(str.c_str(), c, ignore_empty);
 }
 
 NUT_API int safe_snprintf(char *buf, int buf_size, const char *fmt, ...)
@@ -533,9 +534,11 @@ NUT_API bool ends_with(const std::wstring& s, const std::wstring& tail)
     return ends_with(s.c_str(), tail.c_str());
 }
 
-NUT_API bool ascii_to_wstr(const char *str, std::wstring *result)
+NUT_API std::wstring ascii_to_wstr(const char *str)
 {
-    assert(nullptr != str && nullptr != result);
+    assert(nullptr != str);
+
+    std::wstring result;
 
 #if NUT_PLATFORM_OS_WINDOWS
     const int n = ::MultiByteToWideChar(CP_ACP,
@@ -545,38 +548,39 @@ NUT_API bool ascii_to_wstr(const char *str, std::wstring *result)
                                         nullptr,
                                         0);      // 返回值包含了 '\0'
     if (n <= 0)
-        return false;
-    const int old_len = (int) result->length();
-    result->resize(old_len + n - 1);
+        return result; // failed
+    result.resize(n - 1);
     const int rs = ::MultiByteToWideChar(CP_ACP,
                                          0,
                                          str,
                                          -1,
-                                         (wchar_t*) (result->data() + old_len),
+                                         (wchar_t*) result.data(),
                                          n);
-    assert(((int) result->length()) == old_len + n - 1);
-    return rs > 0;
+    assert(rs > 0); // success
+    assert(((int) result.length()) == n - 1);
+    return result;
 #else
     const size_t n = ::mbstowcs(nullptr, str, 0); // 返回值未包含 '\0'
     if (n == (size_t) -1)
-        return false;
-    const size_t old_len = result->length();
-    result->resize(old_len + n);
-    const size_t rs = ::mbstowcs((wchar_t*) (result->data() + old_len), str, n); // 未包含 '\0'
-    assert(result->length() == old_len + n);
-    return rs != (size_t) -1;
+        return result; // failed
+    result.resize(n);
+    const size_t rs = ::mbstowcs((wchar_t*) result.data(), str, n); // 未包含 '\0'
+    assert(rs != (size_t) -1); // success
+    assert(result.length() == n);
+    return result;
 #endif
 }
 
-NUT_API bool ascii_to_wstr(const std::string& str, std::wstring *result)
+NUT_API std::wstring ascii_to_wstr(const std::string& str)
 {
-    assert(nullptr != result);
-    return ascii_to_wstr(str.c_str(), result);
+    return ascii_to_wstr(str.c_str());
 }
 
-NUT_API bool wstr_to_ascii(const wchar_t *wstr, std::string *result)
+NUT_API std::string wstr_to_ascii(const wchar_t *wstr)
 {
-    assert(nullptr != wstr && nullptr != result);
+    assert(nullptr != wstr);
+
+    std::string result;
 
 #if NUT_PLATFORM_OS_WINDOWS
     const int n = ::WideCharToMultiByte(CP_ACP,
@@ -588,40 +592,41 @@ NUT_API bool wstr_to_ascii(const wchar_t *wstr, std::string *result)
                                         nullptr,
                                         nullptr);
     if (n <= 0)
-        return false;
-    const int old_len = (int) result->length();
-    result->resize(old_len + n - 1);
+        return result; // failed
+    result.resize(n - 1);
     const int rs = ::WideCharToMultiByte(CP_ACP,
                                          0,
                                          wstr,
                                          -1,
-                                         (char*) (result->data() + old_len),
+                                         (char*) result.data(),
                                          n,
                                          nullptr,
                                          nullptr);
-    assert(((int) result->length()) == old_len + n - 1);
-    return rs > 0;
+    assert(rs > 0); // success
+    assert(((int) result.length()) == n - 1);
+    return result;
 #else
     const size_t n = ::wcstombs(nullptr, wstr, 0);
     if (n == (size_t) -1)
-        return false;
-    const size_t old_len = result->length();
-    result->resize(old_len + n);
-    const size_t rs = ::wcstombs((char*) (result->data() + old_len), wstr, n);
-    assert(result->length() == old_len + n);
-    return rs != (size_t) -1;
+        return result; // failed
+    result.resize(n);
+    const size_t rs = ::wcstombs((char*) result.data(), wstr, n);
+    assert(rs != (size_t) -1); // success
+    assert(result.length() == n);
+    return result;
 #endif
 }
 
-NUT_API bool wstr_to_ascii(const std::wstring& wstr, std::string *result)
+NUT_API std::string wstr_to_ascii(const std::wstring& wstr)
 {
-    assert(nullptr != result);
-    return wstr_to_ascii(wstr.c_str(), result);
+    return wstr_to_ascii(wstr.c_str());
 }
 
-NUT_API bool utf8_to_wstr(const char *str, std::wstring *result)
+NUT_API std::wstring utf8_to_wstr(const char *str)
 {
-    assert(nullptr != str && nullptr != result);
+    assert(nullptr != str);
+
+    std::wstring result;
 
 #if NUT_PLATFORM_OS_WINDOWS
     const int n = ::MultiByteToWideChar(CP_UTF8,
@@ -631,31 +636,32 @@ NUT_API bool utf8_to_wstr(const char *str, std::wstring *result)
                                         nullptr,
                                         0);
     if (n <= 0)
-        return false;
-    const int old_len = (int) result->length();
-    result->resize(old_len + n - 1);
+        return result; // failed
+    result.resize(n - 1);
     const int rs = ::MultiByteToWideChar(CP_UTF8,
                                          0,
                                          str,
                                          -1,
-                                         (wchar_t*) (result->data() + old_len),
+                                         (wchar_t*) result.data(),
                                          n);
-    assert(((int) result->length()) == old_len + n - 1);
-    return rs > 0;
+    assert(rs > 0); // success
+    assert(((int) result.length()) == n - 1);
+    return result;
 #else
-    return ascii_to_wstr(str, result);
+    return ascii_to_wstr(str);
 #endif
 }
 
-NUT_API bool utf8_to_wstr(const std::string& str, std::wstring *result)
+NUT_API std::wstring utf8_to_wstr(const std::string& str)
 {
-    assert(nullptr != result);
-    return utf8_to_wstr(str.c_str(), result);
+    return utf8_to_wstr(str.c_str());
 }
 
-NUT_API bool wstr_to_utf8(const wchar_t *wstr, std::string *result)
+NUT_API std::string wstr_to_utf8(const wchar_t *wstr)
 {
-    assert(nullptr != wstr && nullptr != result);
+    assert(nullptr != wstr);
+
+    std::string result;
 
 #if NUT_PLATFORM_OS_WINDOWS
     const int n = ::WideCharToMultiByte(CP_UTF8,
@@ -667,70 +673,59 @@ NUT_API bool wstr_to_utf8(const wchar_t *wstr, std::string *result)
                                         nullptr,
                                         nullptr);
     if (n <= 0)
-        return false;
-    const int old_len = (int) result->length();
-    result->resize(old_len + n - 1);
+        return result; // failed
+    result.resize(n - 1);
     const int rs = ::WideCharToMultiByte(CP_UTF8,
                                          0,
                                          wstr,
                                          -1,
-                                         (char*) (result->data() + old_len),
+                                         (char*) result.data(),
                                          n,
                                          nullptr,
                                          nullptr);
-    assert(((int) result->length()) == old_len + n - 1);
-    return rs > 0;
+    assert(rs > 0); // success
+    assert(((int) result.length()) == n - 1);
+    return result;
 #else
-    return wstr_to_ascii(wstr, result);
+    return wstr_to_ascii(wstr);
 #endif
 }
 
-NUT_API bool wstr_to_utf8(const std::wstring& wstr, std::string *result)
+NUT_API std::string wstr_to_utf8(const std::wstring& wstr)
 {
-    assert(nullptr != result);
-    return wstr_to_utf8(wstr.c_str(), result);
+    return wstr_to_utf8(wstr.c_str());
 }
 
-NUT_API bool ascii_to_utf8(const char *str, std::string *result)
+NUT_API std::string ascii_to_utf8(const char *str)
 {
-    assert(nullptr != str && nullptr != result);
+    assert(nullptr != str);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    std::wstring tmp;
-    if (!ascii_to_wstr(str, &tmp))
-        return false;
-    return wstr_to_utf8(tmp.c_str(), result);
+    return wstr_to_utf8(acsii_to_wstr(str));
 #else
-    *result += str;
-    return true;
+    return str;
 #endif
 }
 
-NUT_API bool ascii_to_utf8(const std::string& str, std::string *result)
+NUT_API std::string ascii_to_utf8(const std::string& str)
 {
-    assert(nullptr != result);
-    return ascii_to_utf8(str.c_str(), result);
+    return ascii_to_utf8(str.c_str());
 }
 
-NUT_API bool utf8_to_ascii(const char *str, std::string *result)
+NUT_API std::string utf8_to_ascii(const char *str)
 {
-    assert(nullptr != str && nullptr != result);
+    assert(nullptr != str);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    std::wstring tmp;
-    if (!utf8_to_wstr(str, &tmp))
-        return false;
-    return wstr_to_ascii(tmp.c_str(), result);
+    return wstr_to_ascii(utf8_to_wstr(str));
 #else
-    *result += str;
-    return true;
+    return str;
 #endif
 }
 
-NUT_API bool utf8_to_ascii(const std::string& str, std::string *result)
+NUT_API std::string utf8_to_ascii(const std::string& str)
 {
-    assert(nullptr != result);
-    return utf8_to_ascii(str.c_str(), result);
+    return utf8_to_ascii(str.c_str());
 }
 
 NUT_API char int_to_hex_char(int i)
@@ -752,118 +747,106 @@ NUT_API int hex_char_to_int(char c)
     return -1;
 }
 
-NUT_API int xml_encode(const char *s, int len, std::string *result)
+NUT_API std::string xml_encode(const char *s, int len)
 {
-    assert(nullptr != s && nullptr != result);
+    assert(nullptr != s);
 
-    int ret = 0;
+    std::string result;
     for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
     {
         switch (s[i])
         {
         case '&':
-            *result += "&amp;";
-            ret += 5;
+            result += "&amp;";
             break;
 
         case '"':
-            *result += "&quot;";
-            ret += 6;
+            result += "&quot;";
             break;
 
         case '<':
-            *result += "&lt;";
-            ret += 4;
+            result += "&lt;";
             break;
 
         case '>':
-            *result += "&gt;";
-            ret += 4;
+            result += "&gt;";
             break;
 
         default:
-            result->push_back(s[i]);
-            ++ret;
+            result.push_back(s[i]);
             break;
         }
     }
-    return ret;
+    return result;
 }
 
-NUT_API int xml_decode(const char *s, int len, std::string *result)
+NUT_API std::string xml_decode(const char *s, int len)
 {
-    assert(nullptr != s && nullptr != result);
+    assert(nullptr != s);
 
-    int ret = 0;
+    std::string result;
     for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
     {
         if ('&' == s[i])
         {
             if (0 == ::strncmp(s + i + 1, "amp;", 4))
             {
-                result->push_back('&');
+                result.push_back('&');
                 i += 4;
-                ++ret;
                 continue;
             }
             else if (0 == ::strncmp(s + i + 1, "quot;", 5))
             {
-                result->push_back('"');
+                result.push_back('"');
                 i += 5;
-                ++ret;
                 continue;
             }
             else if (0 == ::strncmp(s + i + 1, "lt;", 3))
             {
-                result->push_back('<');
+                result.push_back('<');
                 i += 3;
-                ++ret;
                 continue;
             }
             else if (0 == ::strncmp(s + i + 1, "gt;", 3))
             {
-                result->push_back('>');
+                result.push_back('>');
                 i += 3;
-                ++ret;
                 continue;
             }
         }
 
-        result->push_back(s[i]);
-        ++ret;
+        result.push_back(s[i]);
     }
-    return ret;
+    return result;
 }
 
-NUT_API int url_encode(const char *s, int len, std::string *result)
+NUT_API std::string url_encode(const char *s, int len)
 {
-    assert(nullptr != s && nullptr != result);
+    assert(nullptr != s);
 
-    int ret = 0;
+    std::string result;
     for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
     {
         const char c = s[i];
         if (('0' <= c && c <= '9') || ('a' <= c && c <= 'z') ||
                 ('A' <= c && c <= 'Z'))
         {
-            result->push_back(c);
-            ++ret;
+            result.push_back(c);
             continue;
         }
 
-        result->push_back('%');
-        result->push_back(int_to_hex_char((c >> 4) & 0x0F));
-        result->push_back(int_to_hex_char(c & 0x0F));
-        ret += 3;
+        result.push_back('%');
+        result.push_back(int_to_hex_char((c >> 4) & 0x0F));
+        result.push_back(int_to_hex_char(c & 0x0F));
     }
-    return ret;
+    return result;
 }
 
-NUT_API int url_decode(const char *s, int len, std::string *result)
+NUT_API std::string url_decode(const char *s, int len)
 {
-    assert(nullptr != s && nullptr != result);
+    assert(nullptr != s);
 
-    int ret = 0;
+    std::string result;
     for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
     {
         if ('%' == s[i] && (len < 0 || i + 2 < len))
@@ -871,37 +854,36 @@ NUT_API int url_decode(const char *s, int len, std::string *result)
             const int high = hex_char_to_int(s[i + 1]), low = hex_char_to_int(s[i + 2]);
             if (high >= 0 && low >= 0)
             {
-                result->push_back((char) ((high << 4) | low));
+                result.push_back((char) ((high << 4) | low));
                 i += 2;
-                ret += 2;
                 continue;
             }
         }
 
-        result->push_back(s[i]);
-        ++ret;
+        result.push_back(s[i]);
     }
-    return ret;
+    return result;
 }
 
-NUT_API int hex_encode(const void *data, size_t cb, std::string *result)
+NUT_API std::string hex_encode(const void *data, size_t cb)
 {
-    assert(nullptr != data && nullptr != result);
+    assert(nullptr != data);
 
+    std::string result;
     for (size_t i = 0; i < cb; ++i)
     {
         const uint8_t b = ((const uint8_t*) data)[i];
-        result->push_back(int_to_hex_char((b >> 4) & 0x0F));
-        result->push_back(int_to_hex_char(b & 0x0F));
+        result.push_back(int_to_hex_char((b >> 4) & 0x0F));
+        result.push_back(int_to_hex_char(b & 0x0F));
     }
-    return (int) cb * 2;
+    return result;
 }
 
-NUT_API int hex_decode(const char *s, int len, Array<uint8_t> *result)
+NUT_API Array<uint8_t> hex_decode(const char *s, int len)
 {
-    assert(nullptr != s && nullptr != result);
+    assert(nullptr != s);
 
-    int ret = 0;
+    Array<uint8_t> result;
     uint8_t v = 0;
     bool one_byte = true;
     for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
@@ -914,105 +896,91 @@ NUT_API int hex_decode(const char *s, int len, Array<uint8_t> *result)
             one_byte = !one_byte;
             if (one_byte)
             {
-                result->push_back(v);
-                ++ret;
+                result.push_back(v);
             }
         }
     }
-    return ret;
+    return result;
 }
 
-NUT_API int cstyle_encode(const char *s, int len, std::string *result)
+NUT_API std::string cstyle_encode(const char *s, int len)
 {
-    assert(nullptr != s && nullptr != result);
+    assert(nullptr != s);
 
-    int ret = 0;
+    std::string result;
     for (int i = 0; i < len || (len < 0 && 0 != s[i]); ++i)
     {
         const char c = s[i];
         switch (c)
         {
         case '\a':
-            *result += "\\a";
-            ret += 2;
+            result += "\\a";
             break;
 
         case '\b':
-            *result += "\\b";
-            ret += 2;
+            result += "\\b";
             break;
 
         case '\f':
-            *result += "\\f";
-            ret += 2;
+            result += "\\f";
             break;
 
         case '\n':
-            *result += "\\n";
-            ret += 2;
+            result += "\\n";
             break;
 
         case '\r':
-            *result += "\\r";
-            ret += 2;
+            result += "\\r";
             break;
 
         case '\t':
-            *result += "\\t";
-            ret += 2;
+            result += "\\t";
             break;
 
         case '\v':
-            *result += "\\v";
-            ret += 2;
+            result += "\\v";
             break;
 
         case '\\':
-            *result += "\\\\";
-            ret += 2;
+            result += "\\\\";
             break;
 
         case '\"':
-            *result += "\\\"";
-            ret += 2;
+            result += "\\\"";
             break;
 
         case '\'':
-            *result += "\\\'";
-            ret += 2;
+            result += "\\\'";
             break;
 
         default:
             if (' ' <= c && c <= '~')
             {
                 // 32 ~ 126 是可见字符
-                result->push_back(c);
-                ++ret;
+                result.push_back(c);
             }
             else
             {
-                *result += "\\x";
-                result->push_back(int_to_hex_char((c >> 4) & 0x0f));
-                result->push_back(int_to_hex_char(c & 0x0f));
-                ret += 4;
+                result += "\\x";
+                result.push_back(int_to_hex_char((c >> 4) & 0x0f));
+                result.push_back(int_to_hex_char(c & 0x0f));
             }
         }
     }
-    return ret;
+    return result;
 }
 
-NUT_API int cstyle_decode(const char *s, int len, std::string *result)
+NUT_API std::string cstyle_decode(const char *s, int len)
 {
-    assert(nullptr != s && nullptr != result);
+    assert(nullptr != s);
 
-    int ret = 0;
+    std::string result;
     for (int i = 0; i < len || (len < 0 && 0 != s[i]); ++i)
     {
         char c = s[i];
         if ('\\' != c || i + 1 == len || 0 == s[i + 1])
         {
-            result->push_back(c);
-            ++ret;
+            result.push_back(c);
             continue;
         }
 
@@ -1021,53 +989,43 @@ NUT_API int cstyle_decode(const char *s, int len, std::string *result)
         switch (c)
         {
         case 'a':
-            result->push_back('\a');
-            ++ret;
+            result.push_back('\a');
             break;
 
         case 'b':
-            result->push_back('\b');
-            ++ret;
+            result.push_back('\b');
             break;
 
         case 'f':
-            result->push_back('\f');
-            ++ret;
+            result.push_back('\f');
             break;
 
         case 'n':
-            result->push_back('\n');
-            ++ret;
+            result.push_back('\n');
             break;
 
         case 'r':
-            result->push_back('\r');
-            ++ret;
+            result.push_back('\r');
             break;
 
         case 't':
-            result->push_back('\t');
-            ++ret;
+            result.push_back('\t');
             break;
 
         case 'v':
-            result->push_back('\v');
-            ++ret;
+            result.push_back('\v');
             break;
 
         case '\\':
-            result->push_back('\\');
-            ++ret;
+            result.push_back('\\');
             break;
 
         case '\"':
-            result->push_back('\"');
-            ++ret;
+            result.push_back('\"');
             break;
 
         case '\'':
-            result->push_back('\'');
-            ++ret;
+            result.push_back('\'');
             break;
 
         case 'x': // 16进制转义
@@ -1093,8 +1051,7 @@ NUT_API int cstyle_decode(const char *s, int len, std::string *result)
                     break;
                 }
             }
-            result->push_back(c);
-            ++ret;
+            result.push_back(c);
             break;
 
         case '0':
@@ -1119,18 +1076,16 @@ NUT_API int cstyle_decode(const char *s, int len, std::string *result)
                     break;
                 }
             }
-            result->push_back(c);
-            ++ret;
+            result.push_back(c);
             break;
 
         default:
-            result->push_back('\\');
-            result->push_back(c);
-            ret += 2;
+            result.push_back('\\');
+            result.push_back(c);
             break;
         }
     }
-    return ret;
+    return result;
 }
 
 static char int_to_base64_char(int i)
@@ -1158,54 +1113,55 @@ static int base64_char_to_int(char c)
     return -1;
 }
 
-NUT_API int base64_encode(const void *data, size_t cb, std::string *result)
+NUT_API std::string base64_encode(const void *data, size_t cb)
 {
-    assert(nullptr != data && nullptr != result);
+    assert(nullptr != data);
 
+    std::string result;
     const uint8_t *bytes = (const uint8_t*) data;
     for (size_t i = 0; i < cb; i += 3)
     {
         // every 3 bytes convert to 4 bytes, 6bit per byte
 
         // first 6 bit
-        result->push_back(int_to_base64_char(bytes[i] >> 2));
+        result.push_back(int_to_base64_char(bytes[i] >> 2));
 
         // second 6 bit
         if (i + 1 < cb)
         {
-            result->push_back(int_to_base64_char(((bytes[i] & 0x03) << 4) ^ (bytes[i + 1] >> 4)));
+            result.push_back(int_to_base64_char(((bytes[i] & 0x03) << 4) ^ (bytes[i + 1] >> 4)));
         }
         else
         {
-            result->push_back(int_to_base64_char(((bytes[i] & 0x03) << 4)));
-            result->push_back('=');
-            result->push_back('=');
+            result.push_back(int_to_base64_char(((bytes[i] & 0x03) << 4)));
+            result.push_back('=');
+            result.push_back('=');
             break;
         }
 
         // third 6 bit
         if (i + 2 < cb)
         {
-            result->push_back(int_to_base64_char(((bytes[i + 1] & 0x0f) << 2) ^ (bytes[i + 2] >> 6)));
+            result.push_back(int_to_base64_char(((bytes[i + 1] & 0x0f) << 2) ^ (bytes[i + 2] >> 6)));
         }
         else
         {
-            result->push_back(int_to_base64_char(((bytes[i + 1] & 0x0f) << 2)));
-            result->push_back('=');
+            result.push_back(int_to_base64_char(((bytes[i + 1] & 0x0f) << 2)));
+            result.push_back('=');
             break;
         }
 
         // last 6 bit
-        result->push_back(int_to_base64_char(bytes[i + 2] & 0x3f));
+        result.push_back(int_to_base64_char(bytes[i + 2] & 0x3f));
     }
-    return (int) ((cb + 2) / 3) * 4;
+    return result;
 }
 
-NUT_API int base64_decode(const char *s, int len, Array<uint8_t> *result)
+NUT_API Array<uint8_t> base64_decode(const char *s, int len)
 {
-    assert(nullptr != s && nullptr != result);
+    assert(nullptr != s);
 
-    int ret = 0;
+    Array<uint8_t> result;
     int buff[4], state = 0;
     for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
     {
@@ -1216,27 +1172,24 @@ NUT_API int base64_decode(const char *s, int len, Array<uint8_t> *result)
             if (4 == state)
             {
                 // first byte
-                result->push_back((uint8_t) ((buff[0] << 2) ^ ((buff[1] & 0x30) >> 4)));
-                ++ret;
+                result.push_back((uint8_t) ((buff[0] << 2) ^ ((buff[1] & 0x30) >> 4)));
 
                 // second byte
                 if (64 == buff[2])
                     break;
-                result->push_back((uint8_t) ((buff[1] << 4) ^ ((buff[2] & 0x3c) >> 2)));
-                ++ret;
+                result.push_back((uint8_t) ((buff[1] << 4) ^ ((buff[2] & 0x3c) >> 2)));
 
                 // third byte
                 if (64 == buff[3])
                     break;
-                result->push_back((uint8_t) ((buff[2] << 6) ^ buff[3]));
-                ++ret;
+                result.push_back((uint8_t) ((buff[2] << 6) ^ buff[3]));
 
                 // reset state
                 state = 0;
             }
         }
     }
-    return ret;
+    return result;
 }
 
 }

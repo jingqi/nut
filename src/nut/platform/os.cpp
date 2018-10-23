@@ -46,10 +46,12 @@ namespace nut
  * @parma exclude_dir 如果传入true, 则返回值不会包含文件夹
  * @parma exclude_initial_dot 如果传入true, 则返回值不会包含以'.'开头的文件/文件夹
  */
-void OS::list_dir(const char *path, std::vector<std::string> *result,
-                  bool exclude_file, bool exclude_dir, bool exclude_initial_dot)
+std::vector<std::string> OS::list_dir(const char *path, bool exclude_file,
+                                      bool exclude_dir, bool exclude_initial_dot)
 {
-    assert(nullptr != path && nullptr != result);
+    assert(nullptr != path);
+
+    std::vector<std::string> result;
 
 #if NUT_PLATFORM_OS_WINDOWS
     char search_path[MAX_PATH];
@@ -58,7 +60,7 @@ void OS::list_dir(const char *path, std::vector<std::string> *result,
     WIN32_FIND_DATAA wfd;
     const HANDLE hfind = ::FindFirstFileA(search_path, &wfd);
     if (hfind == INVALID_HANDLE_VALUE)
-        return;
+        return result;
 
     do
     {
@@ -69,7 +71,7 @@ void OS::list_dir(const char *path, std::vector<std::string> *result,
         if (exclude_dir && (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
             continue;
 
-        result->emplace_back(wfd.cFileName);
+        result.emplace_back(wfd.cFileName);
     } while (::FindNextFileA(hfind, &wfd));
 
     // 关闭查找句柄
@@ -78,7 +80,7 @@ void OS::list_dir(const char *path, std::vector<std::string> *result,
     DIR *dp = nullptr;
     struct dirent *dirp = nullptr;
     if ((dp = ::opendir(path)) == nullptr)
-        return;
+        return result;
 
     while ((dirp = ::readdir(dp)) != nullptr)
     {
@@ -98,18 +100,22 @@ void OS::list_dir(const char *path, std::vector<std::string> *result,
                 continue;
         }
 
-        result->emplace_back(dirp->d_name);
+        result.emplace_back(dirp->d_name);
     }
 
     // 释放DIR (struct dirent是由DIR维护的，无需额外释放)
     ::closedir(dp);
 #endif
+
+    return result;
 }
 
-void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *result,
-                  bool exclude_file, bool exclude_dir, bool exclude_initial_dot)
+std::vector<std::wstring> OS::list_dir(const wchar_t *path, bool exclude_file,
+                                       bool exclude_dir, bool exclude_initial_dot)
 {
-    assert(nullptr != path && nullptr != result);
+    assert(nullptr != path);
+
+    std::vector<std::wstring> result;
 
 #if NUT_PLATFORM_OS_WINDOWS
     wchar_t search_path[MAX_PATH];
@@ -122,7 +128,7 @@ void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *result,
     WIN32_FIND_DATAW wfd;
     const HANDLE hfind = ::FindFirstFileW(search_path, &wfd);
     if (hfind == INVALID_HANDLE_VALUE)
-        return;
+        return result;
 
     do
     {
@@ -133,36 +139,34 @@ void OS::list_dir(const wchar_t *path, std::vector<std::wstring> *result,
         if (exclude_dir && (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
             continue;
 
-        result->emplace_back(wfd.cFileName);
+        result.emplace_back(wfd.cFileName);
     } while (::FindNextFileW(hfind, &wfd));
 
     // 关闭查找句柄
     ::FindClose(hfind);
 #else
-    std::string p;
-    wstr_to_ascii(path, &p);
-    std::vector<std::string> dirs;
-    OS::list_dir(p.c_str(), &dirs, exclude_file, exclude_dir, exclude_initial_dot);
-    std::wstring s;
+    const std::string p = wstr_to_ascii(path);
+    const std::vector<std::string> dirs = OS::list_dir(
+        p.c_str(), exclude_file, exclude_dir, exclude_initial_dot);
     for (size_t i = 0, size = dirs.size(); i < size; ++i)
     {
-        s.clear();
-        ascii_to_wstr(dirs.at(i).c_str(), &s);
-        result->push_back(s);
+        result.push_back(ascii_to_wstr(dirs.at(i).c_str()));
     }
 #endif
+
+    return result;
 }
 
-void OS::list_dir(const std::string& path, std::vector<std::string> *result,
-                  bool exclude_file, bool exclude_dir, bool exclude_initial_dot)
+std::vector<std::string> OS::list_dir(const std::string& path, bool exclude_file,
+    bool exclude_dir, bool exclude_initial_dot)
 {
-    OS::list_dir(path.c_str(), result, exclude_file, exclude_dir, exclude_initial_dot);
+    return OS::list_dir(path.c_str(), exclude_file, exclude_dir, exclude_initial_dot);
 }
 
-void OS::list_dir(const std::wstring& path, std::vector<std::wstring> *result,
-                  bool exclude_file, bool exclude_dir, bool exclude_initial_dot)
+std::vector<std::wstring> OS::list_dir(const std::wstring& path, bool exclude_file,
+    bool exclude_dir, bool exclude_initial_dot)
 {
-    OS::list_dir(path.c_str(), result, exclude_file, exclude_dir, exclude_initial_dot);
+    return OS::list_dir(path.c_str(), exclude_file, exclude_dir, exclude_initial_dot);
 }
 
 /**
@@ -257,9 +261,8 @@ bool OS::copy_file(const wchar_t *src, const wchar_t *dst)
 #if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::CopyFileW(src, dst, FALSE);
 #else
-    std::string s, d;
-    wstr_to_ascii(src, &s);
-    wstr_to_ascii(dst, &d);
+    const std::string s = wstr_to_ascii(src);
+    const std::string d = wstr_to_ascii(dst);
     return OS::copy_file(s.c_str(), d.c_str());
 #endif
 }
@@ -287,9 +290,7 @@ bool OS::remove_file(const wchar_t *path)
 #if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::DeleteFileW(path);
 #else
-    std::string p;
-    wstr_to_ascii(path, &p);
-    return OS::remove_file(p.c_str());
+    return OS::remove_file(wstr_to_ascii(path).c_str());
 #endif
 }
 
@@ -321,9 +322,7 @@ bool OS::mkdir(const wchar_t *path)
 #if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::CreateDirectoryW(path, nullptr);
 #else
-    std::string p;
-    wstr_to_ascii(path, &p);
-    return OS::mkdir(p.c_str());
+    return OS::mkdir(wstr_to_ascii(path).c_str());
 #endif
 }
 
@@ -346,8 +345,7 @@ bool OS::mkdirs(const char *path)
         return Path::is_dir(path);
 
     // 可能是根目录
-    std::string fullpath;
-    Path::abs_path(path, &fullpath);
+    const std::string fullpath = Path::abs_path(path);
     std::string parent, name;
     Path::split(fullpath.c_str(), &parent, &name);
     if (parent.length() == fullpath.length() || name.empty())
@@ -362,10 +360,7 @@ bool OS::mkdirs(const char *path)
 bool OS::mkdirs(const wchar_t *path)
 {
     assert(nullptr != path);
-
-    std::string p;
-    wstr_to_ascii(path, &p);
-    return OS::mkdirs(p.c_str());
+    return OS::mkdirs(wstr_to_ascii(path).c_str());
 }
 
 bool OS::mkdirs(const std::string& path)
@@ -399,9 +394,7 @@ bool OS::rmdir(const wchar_t *path)
 #if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::RemoveDirectoryW(path);
 #else
-    std::string p;
-    wstr_to_ascii(path, &p);
-    return OS::rmdir(p.c_str());
+    return OS::rmdir(wstr_to_ascii(path).c_str());
 #endif
 }
 
@@ -539,9 +532,7 @@ bool OS::remove_tree(const wchar_t *path)
         ret = (FALSE != ::RemoveDirectoryW(path));
     return ret;
 #else
-    std::string p;
-    wstr_to_ascii(path, &p);
-    return OS::remove_tree(p.c_str());
+    return OS::remove_tree(wstr_to_ascii(path).c_str());
 #endif
 }
 
@@ -555,53 +546,49 @@ bool OS::remove_tree(const std::wstring& path)
     return OS::remove_tree(path.c_str());
 }
 
-bool OS::read_link(const char *path, std::string *result)
+std::string OS::read_link(const char *path)
 {
-    assert(nullptr != path && nullptr != result);
+    assert(nullptr != path);
+
+    std::string result;
 
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
-    UNUSED(result);
-    return false; // windows 上没有软链接功能
+    return result; // windows 上没有软链接功能
 #else
     const size_t buf_len = 1024;
     char buf[buf_len + 1];
     const ssize_t rs = ::readlink(path, buf, buf_len);
     if (rs < 0)
-        return false;
+        return result; // failed
     buf[rs] = 0;
-    *result += buf;
-    return true;
+    result += buf;
+    return result;
 #endif
 }
 
-bool OS::read_link(const wchar_t *path, std::wstring *result)
+std::wstring OS::read_link(const wchar_t *path)
 {
-    assert(nullptr != path && nullptr != result);
+    assert(nullptr != path);
 
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
-    UNUSED(result);
-    return false; // windows 上没有软链接功能
+    return L""; // windows 上没有软链接功能
 #else
-    std::string p;
-    wstr_to_ascii(path, &p);
-    std::string lk;
-    if (!OS::read_link(p.c_str(), &lk))
-        return false;
-    ascii_to_wstr(lk.c_str(), result);
-    return true;
+    const std::string p = wstr_to_ascii(path);
+    const std::string lk = OS::read_link(p.c_str());
+    return ascii_to_wstr(lk.c_str());
 #endif
 }
 
-bool OS::read_link(const std::string& path, std::string *result)
+std::string OS::read_link(const std::string& path)
 {
-    return OS::read_link(path.c_str(), result);
+    return OS::read_link(path.c_str());
 }
 
-bool OS::read_link(const std::wstring& path, std::wstring *result)
+std::wstring OS::read_link(const std::wstring& path)
 {
-    return OS::read_link(path.c_str(), result);
+    return OS::read_link(path.c_str());
 }
 
 bool OS::symlink(const char *link, const char *path)
@@ -626,9 +613,8 @@ bool OS::symlink(const wchar_t *link, const wchar_t *path)
     UNUSED(path);
     return false; // windows 上没有软链接功能
 #else
-    std::string l, p;
-    wstr_to_ascii(link, &l);
-    wstr_to_ascii(path, &p);
+    const std::string l = wstr_to_ascii(link);
+    const std::string p = wstr_to_ascii(path);
     return OS::symlink(l.c_str(), p.c_str());
 #endif
 }
@@ -653,9 +639,8 @@ bool OS::rename(const wchar_t *from, const wchar_t *to)
 {
     assert(nullptr != from && nullptr != to);
 
-    std::string f, t;
-    wstr_to_ascii(from, &f);
-    wstr_to_ascii(to, &t);
+    const std::string f = wstr_to_ascii(from);
+    const std::string t = wstr_to_ascii(to);
     return 0 == ::rename(f.c_str(), t.c_str());
 }
 

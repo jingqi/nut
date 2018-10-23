@@ -20,41 +20,55 @@ namespace nut
 /**
  * 用整个字符串来分割字符串
  */
-NUT_API void str_split(const char *str, const char *sep_str,
-                       std::vector<std::string> *result, bool ignore_empty = false);
-NUT_API void str_split(const std::string& str, const std::string& sep_str,
-                       std::vector<std::string> *result, bool ignore_empty = false);
-NUT_API void str_split(const wchar_t *str, const wchar_t *sep_str,
-                       std::vector<std::wstring> *result, bool ignore_empty = false);
-NUT_API void str_split(const std::wstring& str, const std::wstring& sep_str,
-                       std::vector<std::wstring> *result, bool ignore_empty = false);
+NUT_API std::vector<std::string> str_split(
+    const char *str, const char *sep_str, bool ignore_empty = false);
+
+NUT_API std::vector<std::string> str_split(
+    const std::string& str, const std::string& sep_str,
+    bool ignore_empty = false);
+
+NUT_API std::vector<std::wstring> str_split(
+    const wchar_t *str, const wchar_t *sep_str, bool ignore_empty = false);
+
+NUT_API std::vector<std::wstring> str_split(
+    const std::wstring& str, const std::wstring& sep_str,
+    bool ignore_empty = false);
 
 /**
  * @param sep_chars
  *      该字符串中的每一个字符都是分割字符
  */
-NUT_API void chr_split(const char *str, const char *sep_chars,
-                       std::vector<std::string> *result, bool ignore_empty = false);
-NUT_API void chr_split(const std::string& str, const std::string& sep_chars,
-                       std::vector<std::string> *result, bool ignore_empty = false);
-NUT_API void chr_split(const wchar_t *str, const wchar_t *sep_chars,
-                       std::vector<std::wstring> *result, bool ignore_empty = false);
-NUT_API void chr_split(const std::wstring& str, const std::wstring& sep_chars,
-                       std::vector<std::wstring> *result, bool ignore_empty = false);
+NUT_API std::vector<std::string> chr_split(
+    const char *str, const char *sep_chars, bool ignore_empty = false);
+
+NUT_API std::vector<std::string> chr_split(
+    const std::string& str, const std::string& sep_chars,
+    bool ignore_empty = false);
+
+NUT_API std::vector<std::wstring> chr_split(
+    const wchar_t *str, const wchar_t *sep_chars,
+    bool ignore_empty = false);
+
+NUT_API std::vector<std::wstring> chr_split(
+    const std::wstring& str, const std::wstring& sep_chars,
+    bool ignore_empty = false);
 
 /**
  * Split the string
  */
-NUT_API void chr_split(const char *str, char c, std::vector<std::string> *result,
-                       bool ignore_empty = false);
-NUT_API void chr_split(const std::string& str, char c, std::vector<std::string> *result,
-                       bool ignore_empty = false);
-NUT_API void chr_split(const wchar_t *str, wchar_t c, std::vector<std::wstring> *result,
-                       bool ignore_empty = false);
-NUT_API void chr_split(const std::wstring& str, wchar_t c, std::vector<std::wstring> *result,
-                       bool ignore_empty = false);
+NUT_API std::vector<std::string> chr_split(
+    const char *str, char c, bool ignore_empty = false);
 
-/** 
+NUT_API std::vector<std::string> chr_split(
+    const std::string& str, char c, bool ignore_empty = false);
+
+NUT_API std::vector<std::wstring> chr_split(
+    const wchar_t *str, wchar_t c, bool ignore_empty = false);
+
+NUT_API std::vector<std::wstring> chr_split(
+    const std::wstring& str, wchar_t c, bool ignore_empty = false);
+
+/**
  * 安全格式化
  *
  * @return >=0, 格式化后的字符串长度(可能被截断格式化)
@@ -115,20 +129,20 @@ NUT_API bool ends_with(const std::wstring& s, const std::wstring& tail);
 /**
  * 字符编码转换
  */
-NUT_API bool ascii_to_wstr(const char *str, std::wstring *result);
-NUT_API bool ascii_to_wstr(const std::string& str, std::wstring *result);
-NUT_API bool wstr_to_ascii(const wchar_t *wstr, std::string *result);
-NUT_API bool wstr_to_ascii(const std::wstring& wstr, std::string *result);
+NUT_API std::wstring ascii_to_wstr(const char *str);
+NUT_API std::wstring ascii_to_wstr(const std::string& str);
+NUT_API std::string wstr_to_ascii(const wchar_t *wstr);
+NUT_API std::string wstr_to_ascii(const std::wstring& wstr);
 
-NUT_API bool utf8_to_wstr(const char *str, std::wstring *result);
-NUT_API bool utf8_to_wstr(const std::string& str, std::wstring *result);
-NUT_API bool wstr_to_utf8(const wchar_t *wstr, std::string *result);
-NUT_API bool wstr_to_utf8(const std::wstring& wstr, std::string *result);
+NUT_API std::wstring utf8_to_wstr(const char *str);
+NUT_API std::wstring utf8_to_wstr(const std::string& str);
+NUT_API std::string wstr_to_utf8(const wchar_t *wstr);
+NUT_API std::string wstr_to_utf8(const std::wstring& wstr);
 
-NUT_API bool ascii_to_utf8(const char *str, std::string *result);
-NUT_API bool ascii_to_utf8(const std::string& str, std::string *result);
-NUT_API bool utf8_to_ascii(const char *str, std::string *result);
-NUT_API bool utf8_to_ascii(const std::string& str, std::string *result);
+NUT_API std::string ascii_to_utf8(const char *str);
+NUT_API std::string ascii_to_utf8(const std::string& str);
+NUT_API std::string utf8_to_ascii(const char *str);
+NUT_API std::string utf8_to_ascii(const std::string& str);
 
 /**
  * @return '\0' if invalid
@@ -143,32 +157,32 @@ NUT_API int hex_char_to_int(char c);
 /**
  * 将 & " < > 转换为 &amp; &quot; &lt; &gt;
  */
-NUT_API int xml_encode(const char *s, int len, std::string *result);
-NUT_API int xml_decode(const char *s, int len, std::string *result);
+NUT_API std::string xml_encode(const char *s, int len);
+NUT_API std::string xml_decode(const char *s, int len);
 
 /**
  * url 转义，例如 "http://search?ab%20c%20"
  */
-NUT_API int url_encode(const char *s, int len, std::string *result);
-NUT_API int url_decode(const char *s, int len, std::string *result);
+NUT_API std::string url_encode(const char *s, int len);
+NUT_API std::string url_decode(const char *s, int len);
 
 /**
  * 16进制编码转换，例如 "4FC012B" 等
  */
-NUT_API int hex_encode(const void *data, size_t cb, std::string *result);
-NUT_API int hex_decode(const char *s, int len, Array<uint8_t> *result);
+NUT_API std::string hex_encode(const void *data, size_t cb);
+NUT_API Array<uint8_t> hex_decode(const char *s, int len);
 
 /**
  * C 常量风格编码转换
  */
-NUT_API int cstyle_encode(const char *s, int len, std::string *result);
-NUT_API int cstyle_decode(const char *s, int len, std::string *result);
+NUT_API std::string cstyle_encode(const char *s, int len);
+NUT_API std::string cstyle_decode(const char *s, int len);
 
 /**
  * base64 编码
  */
-NUT_API int base64_encode(const void *data, size_t cb, std::string *result);
-NUT_API int base64_decode(const char *s, int len, Array<uint8_t> *result);
+NUT_API std::string base64_encode(const void *data, size_t cb);
+NUT_API Array<uint8_t> base64_decode(const char *s, int len);
 
 }
 

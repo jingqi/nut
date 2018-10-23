@@ -149,8 +149,7 @@ void Logger::load_xml_config(const std::string& config)
             }
             else if (name == "forbids")
             {
-                std::vector<std::string> forbids;
-                chr_split(value.c_str(), ',', &forbids, true);
+                std::vector<std::string> forbids = chr_split(value.c_str(), ',', true);
 
                 _forbid_mask = 0;
                 for (size_t i = 0, sz = forbids.size(); i < sz; ++i)
@@ -227,8 +226,7 @@ void Logger::load_xml_config(const std::string& config)
             }
             else if (name == "flushs")
             {
-                std::vector<std::string> flushs;
-                chr_split(value.c_str(), ',', &flushs, true);
+                std::vector<std::string> flushs = chr_split(value.c_str(), ',', true);
 
                 _flush_mask = 0;
                 for (size_t i = 0, sz = flushs.size(); i < sz; ++i)

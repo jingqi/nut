@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E047C90217F5D1E00C10E14 /* priority_thread_pool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E047C8E217F5D1E00C10E14 /* priority_thread_pool.cpp */; };
+		2E047C91217F5D1E00C10E14 /* priority_thread_pool.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E047C8F217F5D1E00C10E14 /* priority_thread_pool.h */; };
+		2E047C93217F5D8B00C10E14 /* test_priority_threadpool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E047C92217F5D8B00C10E14 /* test_priority_threadpool.cpp */; };
 		2E135372215FCB5000270AD5 /* element_handler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E135371215FCB5000270AD5 /* element_handler.cpp */; };
 		2E27ED44216E7BC80072840B /* stamped_ptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E27ED43216E7BC80072840B /* stamped_ptr.h */; };
 		2E325755215760FF00405E61 /* performance_counter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E325751215760FF00405E61 /* performance_counter.cpp */; };
@@ -44,7 +47,6 @@
 		2EE0832B2146DC0C008E4587 /* lru_cache.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083232146DC0C008E4587 /* lru_cache.h */; };
 		2EE0832C2146DC0C008E4587 /* lru_data_cache.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083242146DC0C008E4587 /* lru_data_cache.h */; };
 		2EE0832D2146DC0C008E4587 /* array.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083252146DC0C008E4587 /* array.h */; };
-		2EE0832E2146DC0C008E4587 /* tuple.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083262146DC0C008E4587 /* tuple.h */; };
 		2EE0832F2146DC0C008E4587 /* bit_stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE083272146DC0C008E4587 /* bit_stream.cpp */; };
 		2EE083332146DC3A008E4587 /* skiplist_map.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083302146DC3A008E4587 /* skiplist_map.h */; };
 		2EE083342146DC3A008E4587 /* skiplist_set.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083312146DC3A008E4587 /* skiplist_set.h */; };
@@ -193,7 +195,6 @@
 		2EE0846E2146DE47008E4587 /* sqlite_statement.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE0846A2146DE47008E4587 /* sqlite_statement.h */; };
 		2EE0846F2146DE47008E4587 /* sqlite_result_set.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE0846B2146DE47008E4587 /* sqlite_result_set.h */; };
 		2EE084732146DE5E008E4587 /* console_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE084702146DE5E008E4587 /* console_util.cpp */; };
-		2EE084742146DE5E008E4587 /* delegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE084712146DE5E008E4587 /* delegate.h */; };
 		2EE084752146DE5E008E4587 /* console_util.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE084722146DE5E008E4587 /* console_util.h */; };
 		2EE084782146DEBF008E4587 /* nut_config.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE084762146DEBE008E4587 /* nut_config.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2EE084792146DEBF008E4587 /* nut.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE084772146DEBE008E4587 /* nut.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -241,7 +242,6 @@
 		2EE084D12146E03D008E4587 /* test_xml_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE084CE2146E03D008E4587 /* test_xml_writer.cpp */; };
 		2EE084D42146E056008E4587 /* test_ini_dom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE084D22146E056008E4587 /* test_ini_dom.cpp */; };
 		2EE084D52146E056008E4587 /* test_property_dom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE084D32146E056008E4587 /* test_property_dom.cpp */; };
-		2EE084D72146E065008E4587 /* test_delegate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE084D62146E065008E4587 /* test_delegate.cpp */; };
 		2EE084D92146E0A5008E4587 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE084D82146E0A5008E4587 /* main.cpp */; };
 /* End PBXBuildFile section */
 
@@ -269,6 +269,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2E047C8E217F5D1E00C10E14 /* priority_thread_pool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = priority_thread_pool.cpp; path = ../../../src/nut/threading/priority_thread_pool.cpp; sourceTree = "<group>"; };
+		2E047C8F217F5D1E00C10E14 /* priority_thread_pool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = priority_thread_pool.h; path = ../../../src/nut/threading/priority_thread_pool.h; sourceTree = "<group>"; };
+		2E047C92217F5D8B00C10E14 /* test_priority_threadpool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_priority_threadpool.cpp; path = ../../../src/test_nut/threading/test_priority_threadpool.cpp; sourceTree = "<group>"; };
 		2E135371215FCB5000270AD5 /* element_handler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = element_handler.cpp; path = ../../../src/nut/util/txtcfg/xml/element_handler.cpp; sourceTree = "<group>"; };
 		2E27ED43216E7BC80072840B /* stamped_ptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stamped_ptr.h; path = ../../../src/nut/threading/lockfree/stamped_ptr.h; sourceTree = "<group>"; };
 		2E325751215760FF00405E61 /* performance_counter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = performance_counter.cpp; path = ../../../src/nut/util/time/performance_counter.cpp; sourceTree = "<group>"; };
@@ -308,7 +311,6 @@
 		2EE083232146DC0C008E4587 /* lru_cache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lru_cache.h; path = ../../../src/nut/container/lru_cache.h; sourceTree = "<group>"; };
 		2EE083242146DC0C008E4587 /* lru_data_cache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lru_data_cache.h; path = ../../../src/nut/container/lru_data_cache.h; sourceTree = "<group>"; };
 		2EE083252146DC0C008E4587 /* array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = array.h; path = ../../../src/nut/container/array.h; sourceTree = "<group>"; };
-		2EE083262146DC0C008E4587 /* tuple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tuple.h; path = ../../../src/nut/container/tuple.h; sourceTree = "<group>"; };
 		2EE083272146DC0C008E4587 /* bit_stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bit_stream.cpp; path = ../../../src/nut/container/bit_stream.cpp; sourceTree = "<group>"; };
 		2EE083302146DC3A008E4587 /* skiplist_map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = skiplist_map.h; path = ../../../src/nut/container/skiplist/skiplist_map.h; sourceTree = "<group>"; };
 		2EE083312146DC3A008E4587 /* skiplist_set.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = skiplist_set.h; path = ../../../src/nut/container/skiplist/skiplist_set.h; sourceTree = "<group>"; };
@@ -457,7 +459,6 @@
 		2EE0846A2146DE47008E4587 /* sqlite_statement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sqlite_statement.h; path = ../../../src/nut/util/sqlite_helper/sqlite_statement.h; sourceTree = "<group>"; };
 		2EE0846B2146DE47008E4587 /* sqlite_result_set.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sqlite_result_set.h; path = ../../../src/nut/util/sqlite_helper/sqlite_result_set.h; sourceTree = "<group>"; };
 		2EE084702146DE5E008E4587 /* console_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = console_util.cpp; path = ../../../src/nut/util/console_util.cpp; sourceTree = "<group>"; };
-		2EE084712146DE5E008E4587 /* delegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = delegate.h; path = ../../../src/nut/util/delegate.h; sourceTree = "<group>"; };
 		2EE084722146DE5E008E4587 /* console_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = console_util.h; path = ../../../src/nut/util/console_util.h; sourceTree = "<group>"; };
 		2EE084762146DEBE008E4587 /* nut_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = nut_config.h; path = ../../../src/nut/nut_config.h; sourceTree = "<group>"; };
 		2EE084772146DEBE008E4587 /* nut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = nut.h; path = ../../../src/nut/nut.h; sourceTree = "<group>"; };
@@ -505,7 +506,6 @@
 		2EE084CE2146E03D008E4587 /* test_xml_writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_xml_writer.cpp; path = ../../../src/test_nut/util/txtcfg/xml/test_xml_writer.cpp; sourceTree = "<group>"; };
 		2EE084D22146E056008E4587 /* test_ini_dom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_ini_dom.cpp; path = ../../../src/test_nut/util/txtcfg/test_ini_dom.cpp; sourceTree = "<group>"; };
 		2EE084D32146E056008E4587 /* test_property_dom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_property_dom.cpp; path = ../../../src/test_nut/util/txtcfg/test_property_dom.cpp; sourceTree = "<group>"; };
-		2EE084D62146E065008E4587 /* test_delegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_delegate.cpp; path = ../../../src/test_nut/util/test_delegate.cpp; sourceTree = "<group>"; };
 		2EE084D82146E0A5008E4587 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../../src/test_nut/main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -587,7 +587,6 @@
 				2EE083212146DC0C008E4587 /* integer_set.h */,
 				2EE083232146DC0C008E4587 /* lru_cache.h */,
 				2EE083242146DC0C008E4587 /* lru_data_cache.h */,
-				2EE083262146DC0C008E4587 /* tuple.h */,
 			);
 			name = container;
 			sourceTree = "<group>";
@@ -789,8 +788,10 @@
 		2E19275F1AD900CF00FDFFA6 /* threading */ = {
 			isa = PBXGroup;
 			children = (
-				2E1927811AD900F000FDFFA6 /* lockfree */,
 				2E1927681AD900E100FDFFA6 /* sync */,
+				2E1927811AD900F000FDFFA6 /* lockfree */,
+				2E047C8E217F5D1E00C10E14 /* priority_thread_pool.cpp */,
+				2E047C8F217F5D1E00C10E14 /* priority_thread_pool.h */,
 				2EE083F22146DD80008E4587 /* thread_pool.cpp */,
 				2EE083F32146DD80008E4587 /* thread_pool.h */,
 				2EE083F02146DD80008E4587 /* threading.h */,
@@ -854,7 +855,6 @@
 				2E1927AE1AD9014400FDFFA6 /* sqlite_helper */,
 				2EE084702146DE5E008E4587 /* console_util.cpp */,
 				2EE084722146DE5E008E4587 /* console_util.h */,
-				2EE084712146DE5E008E4587 /* delegate.h */,
 			);
 			name = util;
 			sourceTree = "<group>";
@@ -937,7 +937,6 @@
 				2E1928001AD9028100FDFFA6 /* string */,
 				2EEDA8E81C2C3E760022BE4E /* time */,
 				2E1927F41AD9025200FDFFA6 /* txtcfg */,
-				2EE084D62146E065008E4587 /* test_delegate.cpp */,
 			);
 			name = util;
 			sourceTree = "<group>";
@@ -976,6 +975,7 @@
 			isa = PBXGroup;
 			children = (
 				2E1928081AD902CA00FDFFA6 /* lockfree */,
+				2E047C92217F5D8B00C10E14 /* test_priority_threadpool.cpp */,
 				2EE084BE2146DFF9008E4587 /* test_threading.cpp */,
 				2EE084BF2146DFF9008E4587 /* test_threadpool.cpp */,
 			);
@@ -1261,7 +1261,6 @@
 				2EE083C72146DD2B008E4587 /* scoped_gc.h in Headers */,
 				2EE0834C2146DC7A008E4587 /* aes.h in Headers */,
 				2EE0830F2146DBC4008E4587 /* output_stream.h in Headers */,
-				2EE084742146DE5E008E4587 /* delegate.h in Headers */,
 				2EE0846D2146DE47008E4587 /* sqlite_param.h in Headers */,
 				2EE083B52146DD0D008E4587 /* console_log_handler.h in Headers */,
 				2EE084072146DDA2008E4587 /* prime.h in Headers */,
@@ -1303,7 +1302,6 @@
 				2EE0842C2146DDD6008E4587 /* test_runner.h in Headers */,
 				2EE084092146DDA2008E4587 /* mod.h in Headers */,
 				2EE083682146DCA9008E4587 /* savefile.h in Headers */,
-				2EE0832E2146DC0C008E4587 /* tuple.h in Headers */,
 				2EE0834A2146DC7A008E4587 /* aes_cbc_pkcs5.h in Headers */,
 				2EE0846F2146DE47008E4587 /* sqlite_result_set.h in Headers */,
 				2EE084382146DDF2008E4587 /* xml_parser.h in Headers */,
@@ -1329,6 +1327,7 @@
 				2EE084482146DE03008E4587 /* txt_file.h in Headers */,
 				2EE083342146DC3A008E4587 /* skiplist_set.h in Headers */,
 				2E325757215760FF00405E61 /* time_diff.h in Headers */,
+				2E047C91217F5D1E00C10E14 /* priority_thread_pool.h in Headers */,
 				2EE084272146DDD6008E4587 /* stream_test_logger.h in Headers */,
 				2EE083B12146DD0D008E4587 /* circle_file_by_time_log_handler.h in Headers */,
 				2EE0843F2146DDF2008E4587 /* xml_writer.h in Headers */,
@@ -1497,10 +1496,10 @@
 				2EE084952146DF5D008E4587 /* test_logging.cpp in Sources */,
 				2EE0848C2146DF3B008E4587 /* test_lru_cache.cpp in Sources */,
 				2EE084AF2146DFC4008E4587 /* test_adler32.cpp in Sources */,
-				2EE084D72146E065008E4587 /* test_delegate.cpp in Sources */,
 				2EE084A82146DF9F008E4587 /* test_endian.cpp in Sources */,
 				2EB66B44217AE14C00C603CA /* test_performance_counter.cpp in Sources */,
 				2EE0849F2146DF80008E4587 /* test_numeric_algo.cpp in Sources */,
+				2E047C93217F5D8B00C10E14 /* test_priority_threadpool.cpp in Sources */,
 				2EE084992146DF6D008E4587 /* test_lengthfixed_mp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1513,6 +1512,7 @@
 				2EE0838C2146DCD6008E4587 /* addr_map_mgr.cpp in Sources */,
 				2EE084542146DE1D008E4587 /* date_time.cpp in Sources */,
 				2EE083112146DBC4008E4587 /* output_stream.cpp in Sources */,
+				2E047C90217F5D1E00C10E14 /* priority_thread_pool.cpp in Sources */,
 				2EE083132146DBC4008E4587 /* byte_array_stream.cpp in Sources */,
 				2E325756215760FF00405E61 /* time_diff.cpp in Sources */,
 				2EE083142146DBC4008E4587 /* input_stream.cpp in Sources */,
