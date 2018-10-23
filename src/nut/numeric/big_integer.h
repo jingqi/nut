@@ -51,8 +51,8 @@ public:
 
     ~BigInteger();
 
-    BigInteger& operator=(const BigInteger& x);
     BigInteger& operator=(BigInteger&& x);
+    BigInteger& operator=(const BigInteger& x);
     BigInteger& operator=(long long v);
 
     bool operator==(const BigInteger& x) const;

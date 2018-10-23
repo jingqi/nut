@@ -123,7 +123,9 @@ public:
         typename map_type::const_iterator const n = _map.find(k);
         if (n == _map.end())
         {
-            Node *const p = new_node(k, buf, cb);
+            Node *const p = (Node*) ::malloc(sizeof(Node));
+            assert(nullptr != p);
+            new (p) Node(k, buf, cb);
             _map.insert(std::pair<K,Node*>(k,p));
             push_list_head(p);
             _bytes_size += cb;
@@ -138,7 +140,8 @@ public:
                 _bytes_size -= pp->size;
                 _map.erase(nn);
                 remove_from_list(pp);
-                delete_node(pp);
+                pp->~Node();
+                ::free(pp);
             }
             return true;
         }
@@ -164,7 +167,8 @@ public:
         _bytes_size -= p->size;
         _map.erase(n);
         remove_from_list(p);
-        delete_node(p);
+        p->~Node();
+        ::free(p);
         return true;
     }
 
@@ -206,7 +210,8 @@ public:
         while (nullptr != p)
         {
             Node *const n = p->next;
-            delete_node(p);
+            p->~Node();
+            ::free(p);
             p = n;
         }
         _list_head = nullptr;
@@ -225,32 +230,6 @@ private:
     // Non-copyable
     LRUDataCache(const LRUDataCache<K>&) = delete;
     LRUDataCache<K>& operator=(const LRUDataCache<K>&) = delete;
-
-    static Node* alloc_node()
-    {
-        return (Node*)::malloc(sizeof(Node));
-    }
-
-    static void dealloc_node(Node *p)
-    {
-        assert(nullptr != p);
-        ::free(p);
-    }
-
-    static Node* new_node(const K& k, const void *buf, size_t cb)
-    {
-        Node *p = alloc_node();
-        assert(nullptr != p);
-        new (p) Node(k, buf, cb);
-        return p;
-    }
-
-    static void delete_node(Node *p)
-    {
-        assert(nullptr != p);
-        p->~Node();
-        dealloc_node(p);
-    }
 
     void remove_from_list(Node *p)
     {

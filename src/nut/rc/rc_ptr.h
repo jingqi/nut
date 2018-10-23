@@ -48,8 +48,8 @@ public:
 
     template <typename U>
     rc_ptr(rc_ptr<U>&& p)
+        : _ptr(p._ptr)
     {
-        _ptr = p._ptr;
         p._ptr = nullptr;
     }
 

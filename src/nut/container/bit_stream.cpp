@@ -89,6 +89,14 @@ BitStream::BitStream(const std::wstring& s)
     }
 }
 
+BitStream::BitStream(BitStream&& x)
+    : _buf(x._buf), _word_cap(x._word_cap), _bit_size(x._bit_size)
+{
+    x._buf = nullptr;
+    x._word_cap = 0;
+    x._bit_size = 0;
+}
+
 BitStream::BitStream(const BitStream& x)
 {
     if (0 == x._bit_size)
@@ -97,17 +105,6 @@ BitStream::BitStream(const BitStream& x)
     _ensure_cap(x._bit_size);
     ::memcpy(_buf, x._buf, (x._bit_size + 7) >> 3);
     _bit_size = x._bit_size;
-}
-
-BitStream::BitStream(BitStream&& x)
-{
-    _buf = x._buf;
-    _word_cap = x._word_cap;
-    _bit_size = x._bit_size;
-
-    x._buf = nullptr;
-    x._word_cap = 0;
-    x._bit_size = 0;
 }
 
 BitStream::~BitStream()
@@ -129,17 +126,6 @@ void BitStream::_normalize_tail()
     }
 }
 
-BitStream& BitStream::operator=(const BitStream& x)
-{
-    if (this == &x)
-        return *this;
-
-    _ensure_cap(x._bit_size);
-    ::memcpy(_buf, x._buf, (x._bit_size + 7) >> 3);
-    _bit_size = x._bit_size;
-    return *this;
-}
-
 BitStream& BitStream::operator=(BitStream&& x)
 {
     if (this == &x)
@@ -156,6 +142,17 @@ BitStream& BitStream::operator=(BitStream&& x)
     x._word_cap = 0;
     x._bit_size = 0;
 
+    return *this;
+}
+
+BitStream& BitStream::operator=(const BitStream& x)
+{
+    if (this == &x)
+        return *this;
+
+    _ensure_cap(x._bit_size);
+    ::memcpy(_buf, x._buf, (x._bit_size + 7) >> 3);
+    _bit_size = x._bit_size;
     return *this;
 }
 

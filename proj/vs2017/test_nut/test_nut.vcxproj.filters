@@ -180,9 +180,6 @@
     <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\test_property_dom.cpp">
       <Filter>test\util\txtcfg</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\test_nut\util\test_delegate.cpp">
-      <Filter>test\util</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\test_nut\main.cpp">
       <Filter>test</Filter>
     </ClCompile>
@@ -221,6 +218,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\test_nut\util\time\test_time_diff.cpp">
       <Filter>test\util\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\threading\test_priority_threadpool.cpp">
+      <Filter>test\threading</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

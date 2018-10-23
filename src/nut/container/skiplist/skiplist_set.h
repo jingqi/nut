@@ -88,11 +88,8 @@ public:
     SkipListSet() = default;
 
     SkipListSet(self_type&& x)
+        : _level(x._level), _head(x._head), _size(x._size)
     {
-        _level = x._level;
-        _head = x._head;
-        _size = x._size;
-
         x._level = -1;
         x._head = nullptr;
         x._size = 0;

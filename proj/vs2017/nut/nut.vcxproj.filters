@@ -133,9 +133,6 @@
     <ClInclude Include="..\..\..\src\nut\container\lru_data_cache.h">
       <Filter>nut\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\container\tuple.h">
-      <Filter>nut\container</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\debugging\addr_map_mgr.h">
       <Filter>nut\debugging</Filter>
     </ClInclude>
@@ -218,9 +215,6 @@
       <Filter>nut\util\sqlite3helper</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\console_util.h">
-      <Filter>nut\util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\delegate.h">
       <Filter>nut\util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_queue.h">

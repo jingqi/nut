@@ -144,7 +144,6 @@
     <ClInclude Include="..\..\..\src\nut\container\tree\rbtree.h" />
     <ClInclude Include="..\..\..\src\nut\container\tree\rtree\mdarea.h" />
     <ClInclude Include="..\..\..\src\nut\container\tree\rtree\rtree.h" />
-    <ClInclude Include="..\..\..\src\nut\container\tuple.h" />
     <ClInclude Include="..\..\..\src\nut\debugging\addr_map_mgr.h" />
     <ClInclude Include="..\..\..\src\nut\debugging\backtrace.h" />
     <ClInclude Include="..\..\..\src\nut\debugging\destroy_checker.h" />
@@ -220,7 +219,6 @@
     <ClInclude Include="..\..\..\src\nut\unittest\test_runner.h" />
     <ClInclude Include="..\..\..\src\nut\unittest\unittest.h" />
     <ClInclude Include="..\..\..\src\nut\util\console_util.h" />
-    <ClInclude Include="..\..\..\src\nut\util\delegate.h" />
     <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\connection.h" />
     <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\prepared_statement.h" />
     <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\result_set.h" />

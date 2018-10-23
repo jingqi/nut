@@ -37,7 +37,6 @@
 
 // container
 #include "container/array.h"
-#include "container/tuple.h"
 #include "container/bundle.h"
 #include "container/integer_set.h"
 #include "container/bit_stream.h"
@@ -106,7 +105,6 @@
 #include "logging/log_handler/circle_file_by_size_log_handler.h"
 
 // util
-#include "util/delegate.h"
 #include "util/console_util.h"
 #include "util/string/kmp.h"
 #include "util/string/to_string.h"

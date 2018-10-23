@@ -34,13 +34,13 @@ public:
 
     explicit BitStream(const std::wstring& s);
 
-    BitStream(const BitStream& x);
     BitStream(BitStream&& x);
+    BitStream(const BitStream& x);
 
     ~BitStream();
 
-    BitStream& operator=(const BitStream& x);
     BitStream& operator=(BitStream&& x);
+    BitStream& operator=(const BitStream& x);
 
     bool operator==(const BitStream& x) const;
     bool operator!=(const BitStream& x) const;

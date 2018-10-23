@@ -42,11 +42,8 @@ BigInteger::BigInteger(const word_type *buf, size_type len, bool with_sign)
 }
 
 BigInteger::BigInteger(BigInteger&& x)
+    : _data(x._data), _capacity(x._capacity), _significant_len(x._significant_len)
 {
-    _data = x._data;
-    _capacity = x._capacity;
-    _significant_len = x._significant_len;
-
     x._data = nullptr;
     x._capacity = 0;
     x._significant_len = 0;
@@ -101,17 +98,6 @@ void BigInteger::minimize_significant_len()
     _significant_len = nut::signed_significant_size(_data, _significant_len);
 }
 
-BigInteger& BigInteger::operator=(const BigInteger& x)
-{
-    if (this == &x)
-        return *this;
-
-    ensure_cap(x._significant_len);
-    ::memcpy(_data, x._data, sizeof(word_type) * x._significant_len);
-    _significant_len = x._significant_len;
-    return *this;
-}
-
 BigInteger& BigInteger::operator=(BigInteger&& x)
 {
     if (this == &x)
@@ -128,6 +114,17 @@ BigInteger& BigInteger::operator=(BigInteger&& x)
     x._capacity = 0;
     x._significant_len = 0;
 
+    return *this;
+}
+
+BigInteger& BigInteger::operator=(const BigInteger& x)
+{
+    if (this == &x)
+        return *this;
+
+    ensure_cap(x._significant_len);
+    ::memcpy(_data, x._data, sizeof(word_type) * x._significant_len);
+    _significant_len = x._significant_len;
     return *this;
 }
 

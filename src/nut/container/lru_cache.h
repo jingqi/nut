@@ -27,6 +27,10 @@ private:
             : key(k), value(std::forward<V>(v))
         {}
 
+        Node(const K& k, const V& v)
+            : key(k), value(v)
+        {}
+
     public:
         K key;
         V value;
@@ -69,7 +73,9 @@ public:
         typename map_type::const_iterator const n = _map.find(k);
         if (n == _map.end())
         {
-            Node *const p = new_node(k,std::forward<V>(v));
+            Node *const p = (Node*) ::malloc(sizeof(Node));
+            assert(nullptr != p);
+            new (p) Node(k, std::forward<V>(v));
             _map.insert(std::pair<K,Node*>(k,p));
             push_list_head(p);
 
@@ -82,7 +88,42 @@ public:
                 assert(nullptr != pp);
                 _map.erase(nn);
                 remove_from_list(pp);
-                delete_node(pp);
+                pp->~Node();
+                ::free(pp);
+            }
+            return true;
+        }
+
+        Node *const p = n->second;
+        assert(nullptr != p);
+        p->value = std::forward<V>(v);
+        remove_from_list(p);
+        push_list_head(p);
+        return false;
+    }
+
+    bool put(const K& k, const V& v)
+    {
+        typename map_type::const_iterator const n = _map.find(k);
+        if (n == _map.end())
+        {
+            Node *const p = (Node*) ::malloc(sizeof(Node));
+            assert(nullptr != p);
+            new (p) Node(k, v);
+            _map.insert(std::pair<K,Node*>(k,p));
+            push_list_head(p);
+
+            while (_map.size() > _capacity)
+            {
+                assert(nullptr != _list_end);
+                typename map_type::iterator const nn = _map.find(_list_end->key);
+                assert(nn != _map.end());
+                Node *const pp = nn->second;
+                assert(nullptr != pp);
+                _map.erase(nn);
+                remove_from_list(pp);
+                pp->~Node();
+                ::free(pp);
             }
             return true;
         }
@@ -105,7 +146,8 @@ public:
         assert(nullptr != p);
         _map.erase(n);
         remove_from_list(p);
-        delete_node(p);
+        p->~Node();
+        ::free(p);
         return true;
     }
 
@@ -144,7 +186,8 @@ public:
         while (nullptr != p)
         {
             Node *const n = p->next;
-            delete_node(p);
+            p->~Node();
+            ::free(p);
             p = n;
         }
         _list_head = nullptr;
@@ -161,32 +204,6 @@ private:
     // Non-copyable
     LRUCache(const LRUCache<K,V>&) = delete;
     LRUCache<K,V>& operator=(const LRUCache<K,V>&) = delete;
-
-    static Node* alloc_node()
-    {
-        return (Node*)::malloc(sizeof(Node));
-    }
-
-    static void dealloc_node(Node *p)
-    {
-        assert(nullptr != p);
-        ::free(p);
-    }
-
-    static Node* new_node(const K& k, V&& v)
-    {
-        Node *p = alloc_node();
-        assert(nullptr != p);
-        new (p) Node(k,std::forward<V>(v));
-        return p;
-    }
-
-    static void delete_node(Node *p)
-    {
-        assert(nullptr != p);
-        p->~Node();
-        dealloc_node(p);
-    }
 
     void remove_from_list(Node *p)
     {
