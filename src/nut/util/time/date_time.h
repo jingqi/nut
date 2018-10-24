@@ -59,6 +59,11 @@ public:
     bool operator>=(const DateTime &x) const;
     bool operator<=(const DateTime &x) const;
 
+    DateTime operator+(double seconds) const;
+    DateTime operator-(double seconds) const;
+    DateTime& operator+=(double seconds);
+    DateTime& operator-=(double seconds);
+
     DateTime operator+(const TimeDiff& diff) const;
     DateTime operator-(const TimeDiff& diff) const;
     TimeDiff operator-(const DateTime& x) const;

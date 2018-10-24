@@ -274,7 +274,10 @@ public:
         return nullptr != algo_type::search_node(k, *this, nullptr);
     }
 
-    bool add(K&& k, V&& v)
+    /**
+     * @return true if new data inserted, else old data replaced
+     */
+    bool put(K&& k, V&& v)
     {
         if (nullptr == _head)
         {
@@ -297,6 +300,7 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
+            n->data = std::forward<V>(v);
             return false;
         }
 
@@ -309,7 +313,10 @@ public:
         return true;
     }
 
-    bool add(const K& k, V&& v)
+    /**
+     * @return true if new data inserted, else old data replaced
+     */
+    bool put(const K& k, V&& v)
     {
         if (nullptr == _head)
         {
@@ -332,6 +339,7 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
+            n->data = std::forward<V>(v);
             return false;
         }
 
@@ -344,7 +352,10 @@ public:
         return true;
     }
 
-    bool add(K&& k, const V& v)
+    /**
+     * @return true if new data inserted, else old data replaced
+     */
+    bool put(K&& k, const V& v)
     {
         if (nullptr == _head)
         {
@@ -367,6 +378,7 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
+            n->data = v;
             return false;
         }
 
@@ -379,7 +391,10 @@ public:
         return true;
     }
 
-    bool add(const K& k, const V& v)
+    /**
+     * @return true if new data inserted, else old data replaced
+     */
+    bool put(const K& k, const V& v)
     {
         if (nullptr == _head)
         {
@@ -402,6 +417,7 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
+            n->data = v;
             return false;
         }
 
@@ -414,6 +430,9 @@ public:
         return true;
     }
 
+    /**
+     * @return true if data removed, else nothing happened
+     */
     bool remove(const K& k)
     {
         if (0 == _size)
@@ -435,6 +454,20 @@ public:
         n->~Node();
         ::free(n);
         --_size;
+        return true;
+    }
+
+    bool get(const K& k, V *v)
+    {
+        assert(nullptr != v);
+
+        if (0 == _size)
+            return false;
+        assert(nullptr != _head && _level >= 0);
+        Node *n = algo_type::search_node(k, *this, nullptr);
+        if (nullptr == n)
+            return false;
+        *v = n->_value;
         return true;
     }
 

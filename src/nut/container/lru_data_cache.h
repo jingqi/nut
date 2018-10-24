@@ -116,6 +116,9 @@ public:
         _bytes_capacity = bytes_capacity;
     }
 
+    /**
+     * @return true if new data inserted, else old data replaced
+     */
     bool put(const K& k, const void *buf, size_t cb)
     {
         assert(nullptr != buf || 0 == cb);
@@ -156,6 +159,9 @@ public:
         return false;
     }
 
+    /**
+     * @return true if remove succeeded
+     */
     bool remove(const K& k)
     {
         typename map_type::iterator const n = _map.find(k);

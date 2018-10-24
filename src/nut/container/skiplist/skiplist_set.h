@@ -262,6 +262,9 @@ public:
         return nullptr != algo_type::search_node(k, *this, nullptr);
     }
 
+    /**
+     * @return true if new data inserted, else nothing happened
+     */
     bool add(T&& k)
     {
         if (nullptr == _head)
@@ -297,6 +300,9 @@ public:
         return true;
     }
 
+    /**
+     * @return true if new data inserted, else nothing happened
+     */
     bool add(const T& k)
     {
         if (nullptr == _head)
@@ -332,6 +338,9 @@ public:
         return true;
     }
 
+    /**
+     * @return true if data removed, else nothing happened
+     */
     bool remove(const T& k)
     {
         if (0 == _size)

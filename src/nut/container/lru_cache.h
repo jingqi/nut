@@ -68,6 +68,9 @@ public:
         _capacity = capacity;
     }
 
+    /**
+     * @return true if new data inserted, else old data replaced
+     */
     bool put(const K& k, V&& v)
     {
         typename map_type::const_iterator const n = _map.find(k);
@@ -102,6 +105,9 @@ public:
         return false;
     }
 
+    /**
+     * @return true if new data inserted, else old data replaced
+     */
     bool put(const K& k, const V& v)
     {
         typename map_type::const_iterator const n = _map.find(k);
@@ -136,6 +142,9 @@ public:
         return false;
     }
 
+    /**
+     * @return true if remove succeeded
+     */
     bool remove(const K& k)
     {
         typename map_type::iterator const n = _map.find(k);
