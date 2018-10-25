@@ -107,6 +107,12 @@ bool DateTime::operator<=(const DateTime &x) const
     return !(x < *this);
 }
 
+DateTime DateTime::operator+(const TimeDiff& diff) const
+{
+    return DateTime(_seconds + diff.get_seconds(),
+                    _nanoseconds + diff.get_nanoseconds());
+}
+
 DateTime DateTime::operator+(double seconds) const
 {
     const time_t int_seconds = (time_t) seconds;
@@ -115,46 +121,18 @@ DateTime DateTime::operator+(double seconds) const
                     _nanoseconds + dec_seconds * NSECS_PER_SEC);
 }
 
+DateTime DateTime::operator-(const TimeDiff& diff) const
+{
+    return DateTime(_seconds - diff.get_seconds(),
+                    _nanoseconds - diff.get_nanoseconds());
+}
+
 DateTime DateTime::operator-(double seconds) const
 {
     const time_t int_seconds = (time_t) seconds;
     const double dec_seconds = seconds - int_seconds;
     return DateTime(_seconds - int_seconds,
                     _nanoseconds - dec_seconds * NSECS_PER_SEC);
-}
-
-DateTime& DateTime::operator+=(double seconds)
-{
-    const time_t int_seconds = (time_t) seconds;
-    const double dec_seconds = seconds - int_seconds;
-    _seconds += int_seconds;
-    _nanoseconds += dec_seconds * NSECS_PER_SEC;
-    normalize();
-    _time_info_dirty = true;
-    return *this;
-}
-
-DateTime& DateTime::operator-=(double seconds)
-{
-    const time_t int_seconds = (time_t) seconds;
-    const double dec_seconds = seconds - int_seconds;
-    _seconds -= int_seconds;
-    _nanoseconds -= dec_seconds;
-    normalize();
-    _time_info_dirty = true;
-    return *this;
-}
-
-DateTime DateTime::operator+(const TimeDiff& diff) const
-{
-    return DateTime(_seconds + diff.get_seconds(),
-                    _nanoseconds + diff.get_nanoseconds());
-}
-
-DateTime DateTime::operator-(const TimeDiff& diff) const
-{
-    return DateTime(_seconds - diff.get_seconds(),
-                    _nanoseconds - diff.get_nanoseconds());
 }
 
 TimeDiff DateTime::operator-(const DateTime& x) const
@@ -171,12 +149,34 @@ DateTime& DateTime::operator+=(const TimeDiff& diff)
     return *this;
 }
 
+DateTime& DateTime::operator+=(double seconds)
+{
+    const time_t int_seconds = (time_t) seconds;
+    const double dec_seconds = seconds - int_seconds;
+    _seconds += int_seconds;
+    _nanoseconds += dec_seconds * NSECS_PER_SEC;
+    normalize();
+    _time_info_dirty = true;
+    return *this;
+}
+
 DateTime& DateTime::operator-=(const TimeDiff& diff)
 {
     _seconds -= diff.get_seconds();
     _nanoseconds -= diff.get_nanoseconds();
     _time_info_dirty = true;
     normalize();
+    return *this;
+}
+
+DateTime& DateTime::operator-=(double seconds)
+{
+    const time_t int_seconds = (time_t) seconds;
+    const double dec_seconds = seconds - int_seconds;
+    _seconds -= int_seconds;
+    _nanoseconds -= dec_seconds;
+    normalize();
+    _time_info_dirty = true;
     return *this;
 }
 

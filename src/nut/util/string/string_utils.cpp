@@ -701,7 +701,7 @@ NUT_API std::string ascii_to_utf8(const char *str)
     assert(nullptr != str);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    return wstr_to_utf8(acsii_to_wstr(str));
+    return wstr_to_utf8(ascii_to_wstr(str));
 #else
     return str;
 #endif

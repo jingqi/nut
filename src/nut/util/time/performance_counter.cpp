@@ -20,6 +20,7 @@ PerformanceCounter::PerformanceCounter()
         ::QueryPerformanceFrequency(&_frequency);
         _frequency_initialized = true;
     }
+    _counter.QuadPart = 0;
 #else
     _tv.tv_sec = 0;
     _tv.tv_nsec = 0;
@@ -66,7 +67,7 @@ PerformanceCounter PerformanceCounter::now()
 bool PerformanceCounter::is_valid() const
 {
 #if NUT_PLATFORM_OS_WINDOWS
-    return 0 != _counter;
+    return 0 != _counter.QuadPart;
 #else
     return 0 != _tv.tv_sec || 0 != _tv.tv_nsec;
 #endif

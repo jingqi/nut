@@ -59,17 +59,18 @@ public:
     bool operator>=(const DateTime &x) const;
     bool operator<=(const DateTime &x) const;
 
-    DateTime operator+(double seconds) const;
-    DateTime operator-(double seconds) const;
-    DateTime& operator+=(double seconds);
-    DateTime& operator-=(double seconds);
-
     DateTime operator+(const TimeDiff& diff) const;
+    DateTime operator+(double seconds) const;
+
     DateTime operator-(const TimeDiff& diff) const;
+    DateTime operator-(double seconds) const;
     TimeDiff operator-(const DateTime& x) const;
 
     DateTime& operator+=(const TimeDiff& diff);
+    DateTime& operator+=(double seconds);
+
     DateTime& operator-=(const TimeDiff& diff);
+    DateTime& operator-=(double seconds);
 
     void set(double s);
     void set(time_t s, long ns);

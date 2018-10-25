@@ -5,13 +5,15 @@
 #include <vector>
 #include <functional>
 
+#include "../nut_config.h"
 #include "test_logger.h"
 #include "testcase_failure_exception.h"
+
 
 namespace nut
 {
 
-class TestFixture
+class NUT_API TestFixture
 {
 protected:
     typedef std::function<void()> case_func_type;

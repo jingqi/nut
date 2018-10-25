@@ -37,9 +37,15 @@ public:
     bool operator>=(const TimeDiff& x) const;
 
     TimeDiff operator+(const TimeDiff& x) const;
+    TimeDiff operator+(double seconds) const;
+
     TimeDiff operator-(const TimeDiff& x) const;
+    TimeDiff operator-(double seconds) const;
+
     TimeDiff operator*(double scale) const;
+
     TimeDiff operator/(double scale) const;
+
     TimeDiff operator-() const;
 
     TimeDiff& operator+=(const TimeDiff& x);

@@ -39,7 +39,7 @@ private:
 #if NUT_PLATFORM_OS_WINDOWS
     static LARGE_INTEGER _frequency;
     static bool _frequency_initialized;
-    LARGE_INTEGER _counter = 0;
+    LARGE_INTEGER _counter;
 #else
     struct timespec _tv;
 #endif

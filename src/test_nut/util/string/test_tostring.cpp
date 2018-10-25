@@ -36,7 +36,7 @@ class TestToString : public TestFixture
 
         string s = ptr_to_str((void*)0x122e);
         // cout << s << endl;
-        NUT_TA(s == "0x0000122E" || s == "0x122e" || s == "0x0000122e");
+        NUT_TA(s == "0x0000122E" || s == "0x122e" || s == "0x0000122e" || s == "0x000000000000122E");
     }
 
     void test_read_str()

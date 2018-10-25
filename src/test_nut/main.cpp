@@ -1,15 +1,17 @@
 ﻿
+#include <stdio.h>
+#include <time.h> // for time()
+#include <iostream>
+
 #include <nut/platform/platform.h>
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <conio.h>
 #endif
 
-#include <stdio.h>
-#include <iostream>
-
 #include <nut/unittest/unittest.h>
 #include <nut/unittest/console_test_logger.h>
+#include <nut/util/console_util.h>
 
 
 using namespace std;

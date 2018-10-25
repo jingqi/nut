@@ -285,7 +285,14 @@ std::string Path::abs_path(const char *path)
             {
 #if NUT_PLATFORM_OS_WINDOWS
                 // Windows c:\Users\xxx
-                result += ::getenv("USERPROFILE");
+                // NOTE getenv() may not safe, replaced by _dupenv_s()
+                char *buf = nullptr;
+                ::_dupenv_s(&buf, nullptr, "USERPROFILE");
+                if (nullptr != buf)
+                {
+                    result += buf;
+                    ::free(buf);
+                }
 #else
                 // MacOS /Users/xxx
                 // Linux /home/xxx
@@ -380,7 +387,14 @@ std::wstring Path::abs_path(const wchar_t *path)
             {
 #if NUT_PLATFORM_OS_WINDOWS
                 // Windows c:\Users\xxx
-                result += ascii_to_wstr(::getenv("USERPROFILE"));
+                // NOTE getenv() may not safe, replaced by _dupenv_s()
+                char *buf = nullptr;
+                ::_dupenv_s(&buf, nullptr, "USERPROFILE");
+                if (nullptr != buf)
+                {
+                    result += ascii_to_wstr(buf);
+                    ::free(buf);
+                }
 #else
                 // MacOS /Users/xxx
                 // Linux /home/xxx

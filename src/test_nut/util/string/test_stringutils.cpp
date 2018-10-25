@@ -82,8 +82,8 @@ class TestStringUtil : public TestFixture
         NUT_TA(9 == safe_snprintf(buf, 10, "abcde%d", 12345));
         NUT_TA(0 == ::strcmp(buf, "abcde1234"));
 
-        NUT_TA(0 == safe_snprintf(wbuf, 10, L"abcde%d", 12345));
-        NUT_TA(0 == ::wcscmp(wbuf, L""));
+        NUT_TA(10 > safe_snprintf(wbuf, 10, L"abcde%d", 12345));
+        NUT_TA(0 != ::wcscmp(wbuf, L"abcde12345"));
     }
 
     void test_trim()

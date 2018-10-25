@@ -88,9 +88,25 @@ TimeDiff TimeDiff::operator+(const TimeDiff& x) const
     return TimeDiff(_seconds + x._seconds, _nanoseconds + x._nanoseconds);
 }
 
+TimeDiff TimeDiff::operator+(double seconds) const
+{
+    const time_t int_seconds = (time_t) seconds;
+    const double dec_seconds = seconds - int_seconds;
+    return TimeDiff(_seconds + int_seconds,
+                    _nanoseconds + dec_seconds * NSECS_PER_SEC);
+}
+
 TimeDiff TimeDiff::operator-(const TimeDiff& x) const
 {
     return TimeDiff(_seconds - x._seconds, _nanoseconds - x._nanoseconds);
+}
+
+TimeDiff TimeDiff::operator-(double seconds) const
+{
+    const time_t int_seconds = (time_t) seconds;
+    const double dec_seconds = seconds - int_seconds;
+    return TimeDiff(_seconds - int_seconds,
+                    _nanoseconds - dec_seconds * NSECS_PER_SEC);
 }
 
 TimeDiff TimeDiff::operator*(double scale) const

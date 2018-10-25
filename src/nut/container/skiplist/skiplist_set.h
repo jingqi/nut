@@ -113,14 +113,13 @@ public:
         while (nullptr != n)
         {
             Node *c = (Node*) ::malloc(sizeof(Node));
-            new (c) Node(n->_key);
-            c->_level = n->_level;
-            c->_next = (Node**) ::malloc(sizeof(Node*) * (c->_level + 1));
+            new (c) Node(n->get_key());
+            c->set_level(n->get_level());
             algo_type::insert_node(c, *this, pre_lv);
-            for (size_t i = 0; i <= c->_level; ++i)
+            for (size_t i = 0; i <= c->get_level(); ++i)
                 pre_lv[i] = c;
 
-            n = n->_next[0];
+            n = n->get_next(0);
         }
         ::free(pre_lv);
         _size = x._size;
@@ -187,14 +186,13 @@ public:
         while (nullptr != n)
         {
             Node *c = (Node*) ::malloc(sizeof(Node));
-            new (c) Node(n->_key);
-            c->_level = n->_level;
-            c->_next = (Node**) ::malloc(sizeof(Node*) * (c->_level + 1));
+            new (c) Node(n->get_key());
+            c->set_level(n->get_level());
             algo_type::insert_node(c, *this, pre_lv);
-            for (size_t i = 0; i <= c->_level; ++i)
+            for (size_t i = 0; i <= c->get_level(); ++i)
                 pre_lv[i] = c;
 
-            n = n->_next[0];
+            n = n->get_next(0);
         }
         ::free(pre_lv);
         _size = x._size;
@@ -216,10 +214,10 @@ public:
         while (nullptr != current1)
         {
             assert(nullptr != current2);
-            if (current1->_key != current2->_key)
+            if (current1->get_key() != current2->get_key())
                 return false;
-            current1 = current1->_next[0];
-            current2 = current2->_next[0];
+            current1 = current1->get_next(0);
+            current2 = current2->get_next(0);
         }
         assert(nullptr == current2);
         return true;

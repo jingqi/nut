@@ -42,10 +42,10 @@ class TestSkipList : public TestFixture
         SkipListMap<int, int> sl;
         NUT_TA(sl.size() == 0);
 
-        NUT_TA(sl.add(1, 1));
-        NUT_TA(sl.add(4 ,4));
-        NUT_TA(sl.add(3, 3));
-        NUT_TA(!sl.add(4, 4));
+        NUT_TA(sl.put(1, 1));
+        NUT_TA(sl.put(4 ,4));
+        NUT_TA(sl.put(3, 3));
+        NUT_TA(!sl.put(4, 4));
         NUT_TA(sl.size() == 3);
         NUT_TA(sl.contains_key(1) && sl.contains_key(3) && sl.contains_key(4));
         NUT_TA(!sl.remove(2));

@@ -1,4 +1,4 @@
-
+﻿
 #include "mod.h"
 #include "gcd.h"
 

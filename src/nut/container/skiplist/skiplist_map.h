@@ -49,6 +49,21 @@ private:
             return _key;
         }
 
+        const V& get_value() const
+        {
+            return _value;
+        }
+
+        void set_value(V&& v)
+        {
+            _value = std::forward<V>(v);
+        }
+
+        void set_value(const V& v)
+        {
+            _value = v;
+        }
+
         int get_level() const
         {
             return _level;
@@ -125,14 +140,13 @@ public:
         while (nullptr != n)
         {
             Node *c = (Node*) ::malloc(sizeof(Node));
-            new (c) Node(n->_key, n->_value);
-            c->_level = n->_level;
-            c->_next = (Node**) ::malloc(sizeof(Node*) * (c->_level + 1));
+            new (c) Node(n->get_key(), n->get_value());
+            c->set_level(n->get_level());
             algo_type::insert_node(c, *this, pre_lv);
-            for (size_t i = 0; i <= c->_level; ++i)
+            for (size_t i = 0; i <= c->get_level(); ++i)
                 pre_lv[i] = c;
 
-            n = n->_next[0];
+            n = n->get_next(0);
         }
         ::free(pre_lv);
         _size = x._size;
@@ -199,14 +213,13 @@ public:
         while (nullptr != n)
         {
             Node *c = (Node*) ::malloc(sizeof(Node));
-            new (c) Node(n->_key, n->_value);
-            c->_level = n->_level;
-            c->_next = (Node**) ::malloc(sizeof(Node*) * (c->_level + 1));
+            new (c) Node(n->get_key(), n->get_value());
+            c->set_level(n->get_level());
             algo_type::insert_node(c, *this, pre_lv);
-            for (size_t i = 0; i <= c->_level; ++i)
+            for (size_t i = 0; i <= c->get_level(); ++i)
                 pre_lv[i] = c;
 
-            n = n->_next[0];
+            n = n->get_next(0);
         }
         ::free(pre_lv);
         _size = x._size;
@@ -228,10 +241,11 @@ public:
         while (nullptr != current1)
         {
             assert(nullptr != current2);
-            if (current1->_key != current2->_key || current1->_value != current2->_value)
+            if (current1->get_key() != current2->get_key() ||
+                current1->get_value() != current2->get_value())
                 return false;
-            current1 = current1->_next[0];
-            current2 = current2->_next[0];
+            current1 = current1->get_next(0);
+            current2 = current2->get_next(0);
         }
         assert(nullptr == current2);
         return true;
@@ -300,7 +314,7 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
-            n->data = std::forward<V>(v);
+            n->set_value(std::forward<V>(v));
             return false;
         }
 
@@ -339,7 +353,7 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
-            n->data = std::forward<V>(v);
+            n->set_value(std::forward<V>(v));
             return false;
         }
 
@@ -378,7 +392,7 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
-            n->data = v;
+            n->set_value(v);
             return false;
         }
 
@@ -417,7 +431,7 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
-            n->data = v;
+            n->set_value(v);
             return false;
         }
 
@@ -467,7 +481,7 @@ public:
         Node *n = algo_type::search_node(k, *this, nullptr);
         if (nullptr == n)
             return false;
-        *v = n->_value;
+        *v = n->get_value();
         return true;
     }
 
