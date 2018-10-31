@@ -4,7 +4,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
-#include <map>
+#include <unordered_map>
 
 #include <nut/threading/sync/dummy_lock.h>
 #include <nut/threading/sync/guard.h>
@@ -16,7 +16,7 @@ namespace nut
 /**
  * least-recently-used cache
  */
-template <typename K, typename V>
+template <typename K, typename V, typename HASH = std::hash<K>>
 class LRUCache
 {
 private:
@@ -38,7 +38,7 @@ private:
         Node *next = nullptr;
     };
 
-    typedef std::map<K,Node*> map_type;
+    typedef std::unordered_map<K,Node*,HASH> map_type;
 
 public:
     explicit LRUCache(size_t capacity = 50)

@@ -14,8 +14,9 @@ template <typename K, typename V>
 class SkipListMap
 {
 private:
-    // 最大 level 数, >0
-    enum { MAX_LEVEL = 16 };
+    class Node;
+    typedef SkipListMap<K,V>                 self_type;
+    typedef SkipList<K,Node,self_type>       algo_type;
 
     class Node
     {
@@ -41,7 +42,7 @@ private:
             if (nullptr != _next)
                 ::free(_next);
             _next = nullptr;
-            _level = -1;
+            _level = algo_type::INVALID_LEVEL;
         }
 
         const K& get_key() const
@@ -104,11 +105,9 @@ private:
         K _key;
         V _value;
         Node **_next = nullptr;
-        int _level = -1; // 0-based
+        int _level = algo_type::INVALID_LEVEL; // 0-based
     };
 
-    typedef SkipListMap<K,V>                 self_type;
-    typedef SkipList<K,Node,self_type>       algo_type;
     friend class SkipList<K,Node,self_type>;
 
 public:
@@ -117,7 +116,7 @@ public:
     SkipListMap(self_type&& x)
         : _level(x._level), _head(x._head), _size(x._size)
     {
-        x._level = -1;
+        x._level = algo_type::INVALID_LEVEL;
         x._head = nullptr;
         x._size = 0;
     }
@@ -158,7 +157,7 @@ public:
         if (nullptr != _head)
             ::free(_head);
         _head = nullptr;
-        _level = -1;
+        _level = algo_type::INVALID_LEVEL;
     }
 
     self_type& operator=(self_type&& x)
@@ -174,7 +173,7 @@ public:
         _head = x._head;
         _size = x._size;
 
-        x._level = -1;
+        x._level = algo_type::INVALID_LEVEL;
         x._head = nullptr;
         x._size = 0;
 
@@ -523,7 +522,7 @@ private:
     }
 
 private:
-    int _level = -1; // 0-based
+    int _level = algo_type::INVALID_LEVEL; // 0-based
     Node **_head = nullptr;
     size_t _size = 0;
 };

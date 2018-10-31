@@ -30,10 +30,9 @@ class SkipList
 public:
     enum
     {
-        // 最大level数, 0-based
-        MAX_LEVEL = 16,
-        // 无效level
-        INVALID_LEVEL = -1
+        LEVEL_FACTOR = 2, /* 底层节点是上层的多少倍(>1) */
+        MAX_LEVEL = 16, /* 最大level数, 0-based */
+        INVALID_LEVEL = -1, /* 无效level */
     };
 
     /**
@@ -43,10 +42,11 @@ public:
      */
     static int random_level()
     {
-        int k = 0;
-        while (k < MAX_LEVEL && 0 != (rand() & 0x01))
-            ++k;
-        return k;
+        const int r = ::rand();
+        int level = 0;
+        for (int f = LEVEL_FACTOR; r < RAND_MAX / f && level < MAX_LEVEL; f *= LEVEL_FACTOR)
+            ++level;
+        return level;
     }
 
     /**

@@ -14,6 +14,10 @@ template <typename T>
 class SkipListSet
 {
 private:
+    class Node;
+    typedef SkipListSet<T>             self_type;
+    typedef SkipList<T,Node,self_type> algo_type;
+
     class Node
     {
     public:
@@ -30,7 +34,7 @@ private:
             if (nullptr != _next)
                 ::free(_next);
             _next = nullptr;
-            _level = -1;
+            _level = SkipList<T,Node,self_type>::INVALID_LEVEL;
         }
 
         const T& get_key() const
@@ -77,11 +81,9 @@ private:
     private:
         T _key;
         Node **_next = nullptr;
-        int _level = -1; // 0-based
+        int _level = SkipList<T,Node,self_type>::INVALID_LEVEL; // 0-based
     };
 
-    typedef SkipListSet<T>             self_type;
-    typedef SkipList<T,Node,self_type> algo_type;
     friend class SkipList<T,Node,self_type>;
 
 public:
@@ -90,7 +92,7 @@ public:
     SkipListSet(self_type&& x)
         : _level(x._level), _head(x._head), _size(x._size)
     {
-        x._level = -1;
+        x._level = SkipList<T,Node,self_type>::INVALID_LEVEL;
         x._head = nullptr;
         x._size = 0;
     }
@@ -131,7 +133,7 @@ public:
         if (nullptr != _head)
             ::free(_head);
         _head = nullptr;
-        _level = -1;
+        _level = SkipList<T,Node,self_type>::INVALID_LEVEL;
     }
 
     self_type& operator=(self_type&& x)
@@ -147,7 +149,7 @@ public:
         _head = x._head;
         _size = x._size;
 
-        x._level = -1;
+        x._level = SkipList<T,Node,self_type>::INVALID_LEVEL;
         x._head = nullptr;
         x._size = 0;
 
@@ -401,7 +403,7 @@ private:
     }
 
 private:
-    int _level = -1; // 0-based
+    int _level = SkipList<T,Node,self_type>::INVALID_LEVEL; // 0-based
     Node **_head = nullptr;
     size_t _size = 0;
 };

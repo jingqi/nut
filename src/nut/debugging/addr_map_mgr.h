@@ -7,7 +7,7 @@
 #if NUT_PLATFORM_OS_LINUX
 
 #include <assert.h>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <cstring>
 #include <unistd.h>
@@ -75,7 +75,7 @@ private:
      * key 为动态链接库实际绝对路径（不是软链接，也不是相对路径）
      * value为动态链接库加载地址
      */
-    typedef std::map<std::string, addr_type> addr_map_type;
+    typedef std::unordered_map<std::string, addr_type> addr_map_type;
     addr_map_type _addr_map;
 
     // 程序的绝对路径

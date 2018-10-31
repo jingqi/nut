@@ -3,7 +3,7 @@
 #define ___HEADFILE_AFDE8618_B4CF_4EE0_AD20_626B05BE65B3_
 
 #include <assert.h>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <stdint.h>
 #include <utility>
@@ -39,7 +39,7 @@ class Bundle
     NUT_REF_COUNTABLE
 
 private:
-    typedef std::map<std::string, rc_ptr<_BundleElementBase>> map_type;
+    typedef std::unordered_map<std::string, rc_ptr<_BundleElementBase>> map_type;
 
 public:
     Bundle() = default;
