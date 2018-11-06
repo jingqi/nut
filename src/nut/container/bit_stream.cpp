@@ -448,7 +448,7 @@ size_t BitStream::bit1_count()
     const size_t word_count = _bit_size / (sizeof(word_type) * 8);
     size_t ret = 0;
     for (size_t i = 0; i < word_count; ++i)
-        ret += _bit_count(_buf[i]);
+        ret += nut::bit1_count(_buf[i]);
     for (size_t i = word_count * (sizeof(word_type) * 8); i < _bit_size; ++i)
         ret += (0 == bit_at(i) ? 0 : 1);
     return ret;

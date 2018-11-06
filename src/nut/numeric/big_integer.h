@@ -197,6 +197,9 @@ public:
 
     void set_word(size_type i, word_type v);
 
+    /**
+     * 正数(负数)返回从高位到低位第一个 bit 1 (bit 0) 的位置 + 1
+     */
     size_type bit_length() const;
 
     /**

@@ -27,7 +27,7 @@ public:
      * @param s 秒
      * @param ns 纳秒
      */
-    explicit TimeDiff(time_t s, long ns);
+    explicit TimeDiff(time_t s, int64_t ns);
 
     bool operator==(const TimeDiff& x) const;
     bool operator!=(const TimeDiff& x) const;
@@ -54,7 +54,7 @@ public:
     TimeDiff& operator/=(double scale);
 
     void set(double s);
-    void set(time_t s, long ns);
+    void set(time_t s, int64_t ns);
 
 #if !NUT_PLATFORM_OS_WINDOWS
     void set(const struct timeval& tv);
@@ -64,7 +64,7 @@ public:
 #endif
 
     time_t get_seconds() const;
-    long get_nanoseconds() const;
+    int64_t get_nanoseconds() const;
 
     double to_double() const;
 
@@ -82,7 +82,7 @@ public:
 
 protected:
     time_t _seconds;
-    long _nanoseconds;
+    int64_t _nanoseconds; // NOTE 'long' in Windows is 4 bytes, may overflow in calculation
 };
 
 }

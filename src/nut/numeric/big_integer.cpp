@@ -763,7 +763,7 @@ void BigInteger::set_word(size_type i, word_type v)
 BigInteger::size_type BigInteger::bit_length() const
 {
     if (BigInteger::is_positive())
-        return nut::bit_length((uint8_t*)_data, sizeof(word_type) * _significant_len);
+        return nut::bit1_length((uint8_t*)_data, sizeof(word_type) * _significant_len);
     else
         return nut::bit0_length((uint8_t*)_data, sizeof(word_type) * _significant_len);
 }
@@ -773,7 +773,7 @@ BigInteger::size_type BigInteger::bit_length() const
  */
 BigInteger::size_type BigInteger::bit_count() const
 {
-    const size_type bc = nut::bit_count((uint8_t*)_data, sizeof(word_type) * _significant_len);
+    const size_type bc = nut::bit1_count((uint8_t*)_data, sizeof(word_type) * _significant_len);
     if (BigInteger::is_positive())
         return bc;
     return 8 * sizeof(word_type) * _significant_len - bc;
@@ -781,7 +781,7 @@ BigInteger::size_type BigInteger::bit_count() const
 
 int BigInteger::lowest_bit() const
 {
-    return nut::lowest_bit((uint8_t*)_data, sizeof(word_type) * _significant_len);
+    return nut::lowest_bit1((uint8_t*)_data, sizeof(word_type) * _significant_len);
 }
 
 long long BigInteger::llong_value() const

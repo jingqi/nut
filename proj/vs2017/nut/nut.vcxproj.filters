@@ -654,5 +654,8 @@
     <ClCompile Include="..\..\..\src\nut\threading\priority_thread_pool.cpp">
       <Filter>nut\threading</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\numeric\word_array_integer.cpp">
+      <Filter>nut\numeric</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -268,6 +268,7 @@
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\gcd.cpp" />
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\mod.cpp" />
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\prime.cpp" />
+    <ClCompile Include="..\..\..\src\nut\numeric\word_array_integer.cpp" />
     <ClCompile Include="..\..\..\src\nut\pconsole\cmd_exit.cpp" />
     <ClCompile Include="..\..\..\src\nut\pconsole\cmd_help.cpp" />
     <ClCompile Include="..\..\..\src\nut\pconsole\icommand.cpp" />

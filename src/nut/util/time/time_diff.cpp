@@ -21,7 +21,7 @@ TimeDiff::TimeDiff(double s)
     : _seconds(s), _nanoseconds((s - (time_t) s) * NSECS_PER_SEC)
 {}
 
-TimeDiff::TimeDiff(time_t s, long ns)
+TimeDiff::TimeDiff(time_t s, int64_t ns)
     : _seconds(s), _nanoseconds(ns)
 {
     normalize();
@@ -159,10 +159,10 @@ TimeDiff& TimeDiff::operator/=(double scale)
 void TimeDiff::set(double s)
 {
     _seconds = (time_t) s;
-    _nanoseconds = (long) ((s - _seconds) * NSECS_PER_SEC);
+    _nanoseconds = (int64_t) ((s - _seconds) * NSECS_PER_SEC);
 }
 
-void TimeDiff::set(time_t s, long ns)
+void TimeDiff::set(time_t s, int64_t ns)
 {
     _seconds = s;
     _nanoseconds = ns;
@@ -200,7 +200,7 @@ time_t TimeDiff::get_seconds() const
     return _seconds;
 }
 
-long TimeDiff::get_nanoseconds() const
+int64_t TimeDiff::get_nanoseconds() const
 {
     return _nanoseconds;
 }

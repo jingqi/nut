@@ -31,7 +31,6 @@ public:
     BitStream(const void *buf, size_t bit_size);
 
     explicit BitStream(const std::string& s);
-
     explicit BitStream(const std::wstring& s);
 
     BitStream(BitStream&& x);

@@ -4,8 +4,6 @@
 
 #include <atomic>
 
-#include <nut/debugging/destroy_checker.h>
-
 #include "../nut_config.h"
 #include "memory_allocator.h"
 
@@ -18,8 +16,6 @@ namespace nut
  */
 class NUT_API lengthfixed_stmp : public memory_allocator
 {
-    NUT_DEBUGGING_DESTROY_CHECKER
-
 private:
     enum { MAX_FREE_NUM = 50 }; // 最多缓存的空闲块数
 
@@ -51,8 +47,6 @@ private:
  */
 class NUT_API lengthfixed_mtmp : public memory_allocator
 {
-    NUT_DEBUGGING_DESTROY_CHECKER
-
 private:
     enum { MAX_FREE_NUM = 50 }; // 最多缓存的空闲块数
 
