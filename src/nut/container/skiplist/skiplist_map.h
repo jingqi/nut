@@ -55,6 +55,11 @@ private:
             return _value;
         }
 
+        V& get_value()
+        {
+            return _value;
+        }
+
         void set_value(V&& v)
         {
             _value = std::forward<V>(v);
@@ -230,9 +235,9 @@ public:
     {
         if (this == &x)
             return true;
-        if (_size != x._size)
+        else if (_size != x._size)
             return false;
-        if (0 == _size)
+        else if (0 == _size)
             return true;
         assert(nullptr != _head && _level >= 0 && nullptr != x._head && x._level >= 0);
 
@@ -253,6 +258,122 @@ public:
     bool operator!=(const self_type& x) const
     {
         return !(*this == x);
+    }
+
+    bool operator<(const self_type& x) const
+    {
+        if (this == &x)
+            return false;
+        else if (0 == _size)
+            return x._size > 0;
+        else if (0 == x._size)
+            return false;
+        assert(nullptr != _head && _level >= 0 && nullptr != x._head && x._level >= 0);
+
+        Node *current1 = _head[0], current2 = x._head[0];
+        while (true)
+        {
+            if (nullptr == current1)
+                return nullptr != current2;
+            else if (nullptr == current2)
+                return false;
+            else if (current1->get_key() < current2->get_key())
+                return true;
+            else if (current2->get_key() < current1->get_key())
+                return false;
+            else if (current1->get_value() < current2->get_value())
+                return true;
+            else if (current2->get_value() < current1->get_value())
+                return false;
+            current1 = current1->get_next(0);
+            current2 = current2->get_next(0);
+        }
+        return false; // dead code
+    }
+
+    bool operator>(const self_type& x) const
+    {
+        return x < *this;
+    }
+
+    bool operator<=(const self_type& x) const
+    {
+        return !(x < *this);
+    }
+
+    bool operator>=(const self_type& x) const
+    {
+        return !(*this < x);
+    }
+
+    V& operator[](K&& k)
+    {
+        if (nullptr == _head)
+        {
+            assert(_level < 0 && _size == 0);
+            Node *n = (Node*) ::malloc(sizeof(Node));
+            new (n) Node(std::forward<K>(k), V());
+            _head = (Node**) ::malloc(sizeof(Node*) * 1);
+            _level = 0;
+            _head[0] = n;
+            n->set_level(0);
+            n->set_next(0, nullptr);
+            _size = 1;
+            return n->get_value();
+        }
+        assert(_level >= 0);
+
+        // Search
+        Node **pre_lv = (Node **) ::malloc(sizeof(Node*) * (_level + 1));
+        Node *n = algo_type::search_node(k, *this, pre_lv);
+        if (nullptr != n)
+        {
+            ::free(pre_lv);
+            return n->get_value();
+        }
+
+        // Insert
+        n = (Node*) ::malloc(sizeof(Node));
+        new (n) Node(std::forward<K>(k), V());
+        algo_type::insert_node(n, *this, pre_lv);
+        ::free(pre_lv);
+        ++_size;
+        return n->get_value();
+    }
+
+    V& operator[](const K& k)
+    {
+        if (nullptr == _head)
+        {
+            assert(_level < 0 && _size == 0);
+            Node *n = (Node*) ::malloc(sizeof(Node));
+            new (n) Node(k, V());
+            _head = (Node**) ::malloc(sizeof(Node*) * 1);
+            _level = 0;
+            _head[0] = n;
+            n->set_level(0);
+            n->set_next(0, nullptr);
+            _size = 1;
+            return n->get_value();
+        }
+        assert(_level >= 0);
+
+        // Search
+        Node **pre_lv = (Node **) ::malloc(sizeof(Node*) * (_level + 1));
+        Node *n = algo_type::search_node(k, *this, pre_lv);
+        if (nullptr != n)
+        {
+            ::free(pre_lv);
+            return n->get_value();
+        }
+
+        // Insert
+        n = (Node*) ::malloc(sizeof(Node));
+        new (n) Node(k, V());
+        algo_type::insert_node(n, *this, pre_lv);
+        ::free(pre_lv);
+        ++_size;
+        return n->get_value();
     }
 
     size_t size() const
@@ -288,9 +409,41 @@ public:
     }
 
     /**
+     * @return true if insert success, else old data found
+     */
+    bool insert(K&& k, V&& v)
+    {
+        return put(std::forward<K>(k), std::forward<V>(v), false);
+    }
+
+    /**
+     * @return true if insert success, else old data found
+     */
+    bool insert(const K& k, V&& v)
+    {
+        return put(k, std::forward<V>(v), false);
+    }
+
+    /**
+     * @return true if insert success, else old data found
+     */
+    bool insert(K&& k, const V& v)
+    {
+        return put(std::forward<K>(k), v, false);
+    }
+
+    /**
+     * @return true if insert success, else old data found
+     */
+    bool insert(const K& k, const V& v)
+    {
+        return put(k, v, false);
+    }
+
+    /**
      * @return true if new data inserted, else old data replaced
      */
-    bool put(K&& k, V&& v)
+    bool put(K&& k, V&& v, bool replace = true)
     {
         if (nullptr == _head)
         {
@@ -313,7 +466,8 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
-            n->set_value(std::forward<V>(v));
+            if (replace)
+                n->set_value(std::forward<V>(v));
             return false;
         }
 
@@ -329,7 +483,7 @@ public:
     /**
      * @return true if new data inserted, else old data replaced
      */
-    bool put(const K& k, V&& v)
+    bool put(const K& k, V&& v, bool replace = true)
     {
         if (nullptr == _head)
         {
@@ -352,7 +506,8 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
-            n->set_value(std::forward<V>(v));
+            if (replace)
+                n->set_value(std::forward<V>(v));
             return false;
         }
 
@@ -368,7 +523,7 @@ public:
     /**
      * @return true if new data inserted, else old data replaced
      */
-    bool put(K&& k, const V& v)
+    bool put(K&& k, const V& v, bool replace = true)
     {
         if (nullptr == _head)
         {
@@ -391,7 +546,8 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
-            n->set_value(v);
+            if (replace)
+                n->set_value(v);
             return false;
         }
 
@@ -407,7 +563,7 @@ public:
     /**
      * @return true if new data inserted, else old data replaced
      */
-    bool put(const K& k, const V& v)
+    bool put(const K& k, const V& v, bool replace = true)
     {
         if (nullptr == _head)
         {
@@ -430,7 +586,8 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
-            n->set_value(v);
+            if (replace)
+                n->set_value(v);
             return false;
         }
 
@@ -470,7 +627,7 @@ public:
         return true;
     }
 
-    bool get(const K& k, V *v)
+    bool get(const K& k, V *v) const
     {
         assert(nullptr != v);
 

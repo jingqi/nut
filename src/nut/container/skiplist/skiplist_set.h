@@ -206,9 +206,9 @@ public:
     {
         if (this == &x)
             return true;
-        if (_size != x._size)
+        else if (_size != x._size)
             return false;
-        if (0 == _size)
+        else if (0 == _size)
             return true;
         assert(nullptr != _head && _level >= 0 && nullptr != x._head && x._level >= 0);
 
@@ -228,6 +228,48 @@ public:
     bool operator!=(const self_type& x) const
     {
         return !(*this == x);
+    }
+
+    bool operator<(const self_type& x) const
+    {
+        if (this == &x)
+            return false;
+        else if (0 == _size)
+            return x._size > 0;
+        else if (0 == x._size)
+            return false;
+        assert(nullptr != _head && _level >= 0 && nullptr != x._head && x._level >= 0);
+
+        Node *current1 = _head[0], current2 = x._head[0];
+        while (true)
+        {
+            if (nullptr == current1)
+                return nullptr != current2;
+            else if (nullptr == current2)
+                return false;
+            else if (current1->get_key() < current2->get_key())
+                return true;
+            else if (current2->get_key() < current1->get_key())
+                return false;
+            current1 = current1->get_next(0);
+            current2 = current2->get_next(0);
+        }
+        return false; // dead code
+    }
+
+    bool operator>(const self_type& x) const
+    {
+        return x < *this;
+    }
+
+    bool operator<=(const self_type& x) const
+    {
+        return !(x < *this);
+    }
+
+    bool operator>=(const self_type& x) const
+    {
+        return !(*this < x);
     }
 
     size_t size() const
