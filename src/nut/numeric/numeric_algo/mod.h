@@ -7,9 +7,6 @@
 #include "gcd.h"
 
 
-// 优化程度，>= 0
-#define OPTIMIZE_LEVEL 1000
-
 namespace nut
 {
 
@@ -21,7 +18,7 @@ class ModMultiplyPreBuildTable
 {
 public:
 
-#if (OPTIMIZE_LEVEL == 0)
+#if 0 // unoptimized
 
     ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n)
     {
@@ -146,7 +143,7 @@ private:
     ModMultiplyPreBuildTable(const ModMultiplyPreBuildTable<C>&);
 
 public:
-#if (OPTIMIZE_LEVEL == 0)
+#if 0 // unoptimized
     size_t hight = 0, width = 0;
     BigInteger *table = nullptr;
 #else
@@ -200,7 +197,5 @@ void mod_multiply(const BigInteger& b, const BigInteger& n, const ModMultiplyPre
 NUT_API void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n, BigInteger *rs);
 
 }
-
-#undef OPTIMIZE_LEVEL
 
 #endif

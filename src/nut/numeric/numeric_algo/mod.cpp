@@ -2,8 +2,6 @@
 #include "mod.h"
 #include "gcd.h"
 
-// 优化程度，>= 0
-#define OPTIMIZE_LEVEL 1000
 
 namespace nut
 {
@@ -36,7 +34,7 @@ static void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, c
     *rs = std::move(s);
 }
 
-#if OPTIMIZE_LEVEL == 1
+#if 0 // unoptimized
 /**
  * 变形的蒙哥马利算法
  *
@@ -238,7 +236,7 @@ static void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
     assert(a.is_positive() && b.is_positive() && n.is_positive());
     assert(a < n && n.bit_at(0) == 1);
 
-#if (OPTIMIZE_LEVEL == 0)
+#if 0 // unoptimized
     // 预运算
     const size_t rlen = n.bit_length();
     BigInteger r(1), nn;
@@ -262,7 +260,7 @@ static void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
     // 处理返回值
     _montgomery(ret, rlen, n, nn, rs);
     return;
-#elif (OPTIMIZE_LEVEL == 1)
+#elif 0 // unoptimized
     /**
      * 变形的蒙哥马利算法
      *      在这里其效率低于原始的蒙哥马利算法, 可能是非等长的大整数运算效率高于定长大整数运算的缘故
@@ -291,7 +289,7 @@ static void _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInte
     // 处理返回值
     _montgomery2(ret, n, nnn, rs);
     return;
-#elif (OPTIMIZE_LEVEL == 2)
+#elif 0 // unoptimized
     /**
      * 特殊的扩展欧几里得算法
      */
@@ -441,7 +439,7 @@ NUT_API void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger&
         return;
     }
 
-#if (OPTIMIZE_LEVEL == 0)
+#if 0 // unoptimized
     BigInteger ret(1);
     for (size_t i = b.bit_length(); i > 0; --i) // 从高位向低有效位取bit
     {
@@ -451,7 +449,7 @@ NUT_API void mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger&
     }
     *rs = std::move(ret);
     return;
-#elif (OPTIMIZE_LEVEL == 1)
+#elif 0 // unoptimized
     const size_t bbc = b.bit_count();
      if (bbc > 400) // 400 是一个经验数据
     {

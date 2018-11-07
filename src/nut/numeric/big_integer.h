@@ -23,10 +23,26 @@ class NUT_API BigInteger
 public:
     typedef size_t                                  size_type;
     typedef unsigned int                            word_type;
+    typedef long long                               native_int_type;
     typedef StdInt<word_type>::double_unsigned_type dword_type;
 
+    static_assert(sizeof(native_int_type) % sizeof(word_type) == 0, "Unexpected integer size");
+
+    friend bool operator==(native_int_type a, const BigInteger& b);
+    friend bool operator!=(native_int_type a, const BigInteger& b);
+    friend bool operator<(native_int_type a, const BigInteger& b);
+    friend bool operator>(native_int_type a, const BigInteger& b);
+    friend bool operator<=(native_int_type a, const BigInteger& b);
+    friend bool operator>=(native_int_type a, const BigInteger& b);
+
+    friend BigInteger operator+(native_int_type a, const BigInteger& b);
+    friend BigInteger operator-(native_int_type a, const BigInteger& b);
+    friend BigInteger operator*(native_int_type a, const BigInteger& b);
+    friend BigInteger operator/(native_int_type a, const BigInteger& b);
+    friend BigInteger operator%(native_int_type a, const BigInteger& b);
+
 public:
-    explicit BigInteger(long long v = 0);
+    explicit BigInteger(native_int_type v = 0);
 
     template <typename U>
     BigInteger(const U *buf, size_type len, bool with_sign)
@@ -46,64 +62,63 @@ public:
     BigInteger(const word_type *buf, size_type len, bool with_sign);
 
     BigInteger(BigInteger&& x);
-
     BigInteger(const BigInteger& x);
 
     ~BigInteger();
 
     BigInteger& operator=(BigInteger&& x);
     BigInteger& operator=(const BigInteger& x);
-    BigInteger& operator=(long long v);
+    BigInteger& operator=(native_int_type v);
 
     bool operator==(const BigInteger& x) const;
-    bool operator==(long long v) const;
+    bool operator==(native_int_type v) const;
 
     bool operator!=(const BigInteger& x) const;
-    bool operator!=(long long v) const;
+    bool operator!=(native_int_type v) const;
 
     bool operator<(const BigInteger& x) const;
-    bool operator<(long long v) const;
+    bool operator<(native_int_type v) const;
 
     bool operator>(const BigInteger& x) const;
-    bool operator>(long long v) const;
+    bool operator>(native_int_type v) const;
 
     bool operator<=(const BigInteger& x) const;
-    bool operator<=(long long v) const;
+    bool operator<=(native_int_type v) const;
 
     bool operator>=(const BigInteger& x) const;
-    bool operator>=(long long v) const;
+    bool operator>=(native_int_type v) const;
 
     BigInteger operator+(const BigInteger& x) const;
-    BigInteger operator+(long long v) const;
+    BigInteger operator+(native_int_type v) const;
 
     BigInteger operator-(const BigInteger& x) const;
-    BigInteger operator-(long long v) const;
+    BigInteger operator-(native_int_type v) const;
 
     BigInteger operator-() const;
 
     BigInteger operator*(const BigInteger& x) const;
-    BigInteger operator*(long long v) const;
+    BigInteger operator*(native_int_type v) const;
 
     BigInteger operator/(const BigInteger& x) const;
-    BigInteger operator/(long long v) const;
+    BigInteger operator/(native_int_type v) const;
 
     BigInteger operator%(const BigInteger& x) const;
-    BigInteger operator%(long long v) const;
+    BigInteger operator%(native_int_type v) const;
 
     BigInteger& operator+=(const BigInteger& x);
-    BigInteger& operator+=(long long v);
+    BigInteger& operator+=(native_int_type v);
 
     BigInteger& operator-=(const BigInteger& x);
-    BigInteger& operator-=(long long v);
+    BigInteger& operator-=(native_int_type v);
 
     BigInteger& operator*=(const BigInteger& x);
-    BigInteger& operator*=(long long v);
+    BigInteger& operator*=(native_int_type v);
 
     BigInteger& operator/=(const BigInteger& x);
-    BigInteger& operator/=(long long v);
+    BigInteger& operator/=(native_int_type v);
 
     BigInteger& operator%=(const BigInteger& x);
-    BigInteger& operator%=(long long v);
+    BigInteger& operator%=(native_int_type v);
 
     BigInteger& operator++();
     BigInteger operator++(int);
@@ -119,34 +134,13 @@ public:
     BigInteger operator>>(size_type count) const;
 
     BigInteger& operator<<=(size_type count);
-
     BigInteger& operator>>=(size_type count);
-
-    static void add(const BigInteger& a, const BigInteger& b, BigInteger *x);
-    static void add(const BigInteger& a, long long b, BigInteger *x);
-    static void add(long long a, const BigInteger& b, BigInteger *x);
-
-    static void sub(const BigInteger& a, const BigInteger& b, BigInteger *x);
-    static void sub(const BigInteger& a, long long b, BigInteger *x);
-    static void sub(long long a, const BigInteger& b, BigInteger *x);
-
-    static void negate(const BigInteger &a, BigInteger *x);
-
-    static void increase(BigInteger *x);
-    static void decrease(BigInteger *x);
-
-    static void multiply(const BigInteger& a, const BigInteger& b, BigInteger *x);
-    static void multiply(const BigInteger& a, long long b, BigInteger *x);
-    static void multiply(long long a, const BigInteger& b, BigInteger *x);
 
     /**
      * @param result 商
      * @param remainder 余数
      */
     static void divide(const BigInteger& a, const BigInteger& b, BigInteger *result, BigInteger *remainder);
-
-    static void shift_left(const BigInteger& a, size_type count, BigInteger *x);
-    static void shift_right(const BigInteger& a, size_type count, BigInteger *x);
 
     void set_zero();
 
@@ -209,8 +203,6 @@ public:
 
     int lowest_bit() const;
 
-    long long llong_value() const;
-
     /**
      * 取 [a, b) 范围内的随机数
      */
@@ -220,6 +212,11 @@ public:
      * 值交换
      */
     static void swap(BigInteger *a, BigInteger *b);
+
+    /**
+     * 如果超出返回值类型范围，返回值会被截断；否则做符号扩展
+     */
+    native_int_type to_integer() const;
 
     std::string to_string(size_type radix = 10) const;
     std::wstring to_wstring(size_type radix = 10) const;
@@ -243,8 +240,21 @@ private:
 private:
     word_type *_data = nullptr; // 缓冲区, little-endian, 带符号
     size_type _capacity = 0;
-    size_type _significant_len = 0; // 有效字长度
+    size_type _significant_len = 0; // 有效 word 长度
 };
+
+bool operator==(BigInteger::native_int_type a, const BigInteger& b);
+bool operator!=(BigInteger::native_int_type a, const BigInteger& b);
+bool operator<(BigInteger::native_int_type a, const BigInteger& b);
+bool operator>(BigInteger::native_int_type a, const BigInteger& b);
+bool operator<=(BigInteger::native_int_type a, const BigInteger& b);
+bool operator>=(BigInteger::native_int_type a, const BigInteger& b);
+
+BigInteger operator+(BigInteger::native_int_type a, const BigInteger& b);
+BigInteger operator-(BigInteger::native_int_type a, const BigInteger& b);
+BigInteger operator*(BigInteger::native_int_type a, const BigInteger& b);
+BigInteger operator/(BigInteger::native_int_type a, const BigInteger& b);
+BigInteger operator%(BigInteger::native_int_type a, const BigInteger& b);
 
 }
 

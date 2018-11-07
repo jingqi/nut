@@ -3,8 +3,6 @@
 #include "bit_sieve.h"
 #include "mod.h"
 
-// 优化程度，>= 0
-#define OPTIMIZE_LEVEL 1000
 
 namespace nut
 {
@@ -24,7 +22,7 @@ bool psedoprime(const BigInteger& n)
     return true; // 可能是素数
 }
 
-#if OPTIMIZE_LEVEL == 0
+#if 0 // unoptimized
 static bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n)
 {
     BigInteger d(1), b(n);
@@ -55,7 +53,7 @@ bool miller_rabin(const BigInteger& n, unsigned s)
 {
     assert(s > 0);
 
-#if (OPTIMIZE_LEVEL == 0)
+#if 0 // unoptimized
     /**
      * 米勒-拉宾(Miller-Rabin)素数测试
      *
@@ -133,7 +131,7 @@ NUT_API BigInteger next_prime(const BigInteger& n)
             // Do cheap "pre-test" if applicable
             if (result.bit_length() > 6)
             {
-                const int64_t r = (int64_t) (result % SMALL_PRIME_PRODUCT).llong_value();
+                const int64_t r = (int64_t) (result % SMALL_PRIME_PRODUCT).to_integer();
                 if ((0 == r % 3)  || (0 == r % 5)  || (0 == r % 7)  || (0 == r % 11) ||
                     (0 == r % 13) || (0 == r % 17) || (0 == r % 19) || (0 == r % 23) ||
                     (0 == r % 29) || (0 == r % 31) || (0 == r % 37) || (0 == r % 41))

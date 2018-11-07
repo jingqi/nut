@@ -31,19 +31,19 @@ class TestBigInteger : public TestFixture
     void test_smoking()
     {
         // +
-        NUT_TA((BigInteger(12) + BigInteger(13)).llong_value() == 12 + 13);
-        NUT_TA((BigInteger(12) + BigInteger(-11)).llong_value() == 12 - 11);
-        NUT_TA((BigInteger(12) + BigInteger(-13)).llong_value() == 12 - 13);
+        NUT_TA((BigInteger(12) + BigInteger(13)).to_integer() == 12 + 13);
+        NUT_TA((BigInteger(12) + BigInteger(-11)).to_integer() == 12 - 11);
+        NUT_TA((BigInteger(12) + BigInteger(-13)).to_integer() == 12 - 13);
 
         // -
-        NUT_TA((BigInteger(12) - BigInteger(1)).llong_value() == 12 - 1);
-        NUT_TA((BigInteger(12) - BigInteger(-1)).llong_value() == 12 - -1);
-        NUT_TA((BigInteger(12) - BigInteger(13)).llong_value() == 12 - 13);
+        NUT_TA((BigInteger(12) - BigInteger(1)).to_integer() == 12 - 1);
+        NUT_TA((BigInteger(12) - BigInteger(-1)).to_integer() == 12 - -1);
+        NUT_TA((BigInteger(12) - BigInteger(13)).to_integer() == 12 - 13);
 
         // *
-        NUT_TA((BigInteger(12) * BigInteger(1)).llong_value() == 12 * 1);
-        NUT_TA((BigInteger(12) * BigInteger(24)).llong_value() == 12 * 24);
-        NUT_TA(((BigInteger(0x12345LL) * BigInteger(0x12345LL)).llong_value() & 0xFFFFFFLL) ==
+        NUT_TA((BigInteger(12) * BigInteger(1)).to_integer() == 12 * 1);
+        NUT_TA((BigInteger(12) * BigInteger(24)).to_integer() == 12 * 24);
+        NUT_TA(((BigInteger(0x12345LL) * BigInteger(0x12345LL)).to_integer() & 0xFFFFFFLL) ==
             ((0x12345LL * 0x12345LL) & 0xFFFFFFLL));
 
         // /
@@ -190,23 +190,23 @@ class TestBigInteger : public TestFixture
 
     void test_value_of()
     {
-        NUT_TA(BigInteger::value_of("0").llong_value() == 0);
-        NUT_TA(BigInteger::value_of(L"0").llong_value() == 0);
+        NUT_TA(BigInteger::value_of("0").to_integer() == 0);
+        NUT_TA(BigInteger::value_of(L"0").to_integer() == 0);
 
-        NUT_TA(BigInteger::value_of("10").llong_value() == 10);
-        NUT_TA(BigInteger::value_of(L"10").llong_value() == 10);
+        NUT_TA(BigInteger::value_of("10").to_integer() == 10);
+        NUT_TA(BigInteger::value_of(L"10").to_integer() == 10);
 
-        NUT_TA(BigInteger::value_of("-14").llong_value() == -14);
-        NUT_TA(BigInteger::value_of(L"-14").llong_value() == -14);
+        NUT_TA(BigInteger::value_of("-14").to_integer() == -14);
+        NUT_TA(BigInteger::value_of(L"-14").to_integer() == -14);
 
-        NUT_TA(BigInteger::value_of("4a", 0x10).llong_value() == 0x4a);
-        NUT_TA(BigInteger::value_of(L"4a", 0x10).llong_value() == 0x4a);
+        NUT_TA(BigInteger::value_of("4a", 0x10).to_integer() == 0x4a);
+        NUT_TA(BigInteger::value_of(L"4a", 0x10).to_integer() == 0x4a);
 
-        NUT_TA(BigInteger::value_of("15", 8).llong_value() == 13);
-        NUT_TA(BigInteger::value_of(L"15", 8).llong_value() == 13);
+        NUT_TA(BigInteger::value_of("15", 8).to_integer() == 13);
+        NUT_TA(BigInteger::value_of(L"15", 8).to_integer() == 13);
 
-        NUT_TA(BigInteger::value_of("101",2).llong_value() == 5);
-        NUT_TA(BigInteger::value_of(L"101",2).llong_value() == 5);
+        NUT_TA(BigInteger::value_of("101",2).to_integer() == 5);
+        NUT_TA(BigInteger::value_of(L"101",2).to_integer() == 5);
     }
 };
 

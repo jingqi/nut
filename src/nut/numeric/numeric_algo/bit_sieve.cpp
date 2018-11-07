@@ -82,7 +82,7 @@ BitSieve::BitSieve(const BigInteger& base, int search_len)
     do
     {
         // Calculate base mod converted_step
-        start = (int) (base % converted_step).llong_value();
+        start = (int) (base % converted_step).to_integer();
 
         // Take each multiple of step out of sieve
         start = converted_step - start;

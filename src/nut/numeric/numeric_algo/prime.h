@@ -8,9 +8,6 @@
 #include "mod.h"
 
 
-// 优化程度，>= 0
-#define OPTIMIZE_LEVEL 1000
-
 namespace nut
 {
 
@@ -34,7 +31,5 @@ bool miller_rabin(const BigInteger& n, unsigned s);
 NUT_API BigInteger next_prime(const BigInteger& n);
 
 }
-
-#undef OPTIMIZE_LEVEL
 
 #endif

@@ -6,15 +6,12 @@
 #include "big_integer.h"
 #include "word_array_integer.h"
 
-#define OPTIMIZE_LEVEL 1000
 
 namespace nut
 {
 
-BigInteger::BigInteger(long long v)
+BigInteger::BigInteger(native_int_type v)
 {
-    static_assert(sizeof(v) % sizeof(word_type) == 0, "Unexpected integer size");
-
     ensure_cap(sizeof(v) / sizeof(word_type));
     ::memcpy(_data, &v, sizeof(v));
     _significant_len = sizeof(v) / sizeof(word_type);
@@ -128,10 +125,8 @@ BigInteger& BigInteger::operator=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator=(long long v)
+BigInteger& BigInteger::operator=(native_int_type v)
 {
-    static_assert(sizeof(v) % sizeof(word_type) == 0, "Unexpected integer size");
-
     ensure_cap(sizeof(v) / sizeof(word_type));
     ::memcpy(_data, &v, sizeof(v));
     _significant_len = sizeof(v) / sizeof(word_type);
@@ -142,15 +137,15 @@ BigInteger& BigInteger::operator=(long long v)
 
 bool BigInteger::operator==(const BigInteger& x) const
 {
-    if (&x == this)
+    if (this == &x)
         return true;
     return signed_equals(_data, _significant_len, x._data, x._significant_len);
 }
 
-bool BigInteger::operator==(long long v) const
+bool BigInteger::operator==(native_int_type v) const
 {
-    static_assert(sizeof(v) % sizeof(word_type) == 0, "整数长度对齐问题");
-    return signed_equals(_data, _significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
+    return signed_equals(_data, _significant_len,
+                         (word_type*)&v, sizeof(v) / sizeof(word_type));
 }
 
 bool BigInteger::operator!=(const BigInteger& x) const
@@ -158,7 +153,7 @@ bool BigInteger::operator!=(const BigInteger& x) const
     return !(*this == x);
 }
 
-bool BigInteger::operator!=(long long v) const
+bool BigInteger::operator!=(native_int_type v) const
 {
     return !(*this == v);
 }
@@ -168,10 +163,10 @@ bool BigInteger::operator<(const BigInteger& x) const
     return signed_less_than(_data, _significant_len, x._data, x._significant_len);
 }
 
-bool BigInteger::operator<(long long v) const
+bool BigInteger::operator<(native_int_type v) const
 {
-    static_assert(sizeof(v) % sizeof(word_type) == 0, "整数长度对齐问题");
-    return signed_less_than(_data, _significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type));
+    return signed_less_than(_data, _significant_len,
+                            (word_type*)&v, sizeof(v) / sizeof(word_type));
 }
 
 bool BigInteger::operator>(const BigInteger& x) const
@@ -179,10 +174,10 @@ bool BigInteger::operator>(const BigInteger& x) const
     return x < *this;
 }
 
-bool BigInteger::operator>(long long v) const
+bool BigInteger::operator>(native_int_type v) const
 {
-    static_assert(sizeof(v) % sizeof(word_type) == 0, "整数长度对齐问题");
-    return signed_less_than((word_type*)&v, sizeof(v) / sizeof(word_type), _data, _significant_len);
+    return signed_less_than((word_type*)&v, sizeof(v) / sizeof(word_type),
+                            _data, _significant_len);
 }
 
 bool BigInteger::operator<=(const BigInteger& x) const
@@ -190,7 +185,7 @@ bool BigInteger::operator<=(const BigInteger& x) const
     return !(x < *this);
 }
 
-bool BigInteger::operator<=(long long v) const
+bool BigInteger::operator<=(native_int_type v) const
 {
     return !(*this > v);
 }
@@ -200,71 +195,102 @@ bool BigInteger::operator>=(const BigInteger& x) const
     return !(*this < x);
 }
 
-bool BigInteger::operator>=(long long v) const
+bool BigInteger::operator>=(native_int_type v) const
 {
     return !(*this < v);
 }
 
 BigInteger BigInteger::operator+(const BigInteger& x) const
 {
-    BigInteger ret(0);
-    BigInteger::add(*this, x, &ret);
+    BigInteger ret;
+    const size_type max_len = (std::max)(_significant_len, x._significant_len);
+    ret.ensure_cap(max_len + 1);
+    signed_add(_data, _significant_len, x._data, x._significant_len,
+               ret._data, max_len + 1);
+    ret._significant_len = max_len + 1;
+    ret.minimize_significant_len();
     return ret;
 }
 
-BigInteger BigInteger::operator+(long long v) const
+BigInteger BigInteger::operator+(native_int_type v) const
 {
-    BigInteger ret(0);
-    BigInteger::add(*this, v, &ret);
+    BigInteger ret;
+    const size_type max_len = (std::max)(_significant_len, sizeof(v) / sizeof(word_type));
+    ret.ensure_cap(max_len + 1);
+    signed_add(_data, _significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type),
+               ret._data, max_len + 1);
+    ret._significant_len = max_len + 1;
+    ret.minimize_significant_len();
     return ret;
 }
 
 BigInteger BigInteger::operator-(const BigInteger& x) const
 {
-    BigInteger ret(0);
-    BigInteger::sub(*this, x, &ret);
+    BigInteger ret;
+    const size_type max_len = (std::max)(_significant_len, x._significant_len);
+    ret.ensure_cap(max_len + 1);
+    signed_sub(_data, _significant_len, x._data, x._significant_len,
+               ret._data, max_len + 1);
+    ret._significant_len = max_len + 1;
+    ret.minimize_significant_len();
     return ret;
 }
 
-BigInteger BigInteger::operator-(long long v) const
+BigInteger BigInteger::operator-(native_int_type v) const
 {
-    BigInteger ret(0);
-    BigInteger::sub(*this, v, &ret);
+    BigInteger ret;
+    const size_type max_len = (std::max)(_significant_len, sizeof(v) / sizeof(word_type));
+    ret.ensure_cap(max_len + 1);
+    signed_sub(_data, _significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type),
+               ret._data, max_len + 1);
+    ret._significant_len = max_len + 1;
+    ret.minimize_significant_len();
     return ret;
 }
 
 BigInteger BigInteger::operator-() const
 {
-    BigInteger ret(0);
-    BigInteger::negate(*this, &ret);
+    BigInteger ret;
+    ret.ensure_cap(_significant_len + 1);
+    signed_negate(_data, _significant_len, ret._data, _significant_len + 1);
+    ret._significant_len = _significant_len + 1;
+    ret.minimize_significant_len();
     return ret;
 }
 
 BigInteger BigInteger::operator*(const BigInteger& x) const
 {
-    BigInteger ret(0);
-    BigInteger::multiply(*this, x, &ret);
+    BigInteger ret;
+    ret.ensure_cap(_significant_len + x._significant_len);
+    signed_multiply(_data, _significant_len, x._data, x._significant_len,
+                    ret._data, _significant_len + x._significant_len);
+    ret._significant_len = _significant_len + x._significant_len;
+    ret.minimize_significant_len();
     return ret;
 }
 
-BigInteger BigInteger::operator*(long long v) const
+BigInteger BigInteger::operator*(native_int_type v) const
 {
-    BigInteger ret(0);
-    BigInteger::multiply(*this, v, &ret);
+    BigInteger ret;
+    ret.ensure_cap(_significant_len + sizeof(v) / sizeof(word_type));
+    signed_multiply(_data, _significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type),
+                    ret._data, _significant_len + sizeof(v) / sizeof(word_type));
+    ret._significant_len = _significant_len + sizeof(v) / sizeof(word_type);
+    ret.minimize_significant_len();
     return ret;
 }
 
 BigInteger BigInteger::operator/(const BigInteger& x) const
 {
-    BigInteger ret(0);
+    BigInteger ret;
     BigInteger::divide(*this, x, &ret, nullptr);
     return ret;
 }
 
-BigInteger BigInteger::operator/(long long v) const
+BigInteger BigInteger::operator/(native_int_type v) const
 {
-    BigInteger divider(v), ret(0);
-    BigInteger::divide(*this, divider, &ret, nullptr);
+    BigInteger ret;
+    BigInteger::divide(*this, BigInteger(v), &ret, nullptr);
     return ret;
 }
 
@@ -281,54 +307,79 @@ BigInteger BigInteger::operator%(const BigInteger& x) const
             return *this - x;
     }
 
-    BigInteger ret(0);
+    BigInteger ret;
     BigInteger::divide(*this, x, nullptr, &ret);
     return ret;
 }
 
-BigInteger BigInteger::operator%(long long v) const
+BigInteger BigInteger::operator%(native_int_type v) const
 {
-    static_assert(sizeof(v) % sizeof(word_type) == 0, "整数长度对齐问题");
     assert(0 != v);
 
-    BigInteger divider(v), ret(0);
-    BigInteger::divide(*this, divider, nullptr, &ret);
+    BigInteger ret;
+    BigInteger::divide(*this, BigInteger(v), nullptr, &ret);
     return ret;
 }
 
 BigInteger& BigInteger::operator+=(const BigInteger& x)
 {
-    BigInteger::add(*this, x, this);
+    const size_type max_len = (std::max)(_significant_len, x._significant_len);
+    ensure_cap(max_len + 1);
+    signed_add(_data, _significant_len, x._data, x._significant_len, _data, max_len + 1);
+    _significant_len = max_len + 1;
+    minimize_significant_len();
     return *this;
 }
 
-BigInteger& BigInteger::operator+=(long long v)
+BigInteger& BigInteger::operator+=(native_int_type v)
 {
-    BigInteger::add(*this, v, this);
+    const size_type max_len = (std::max)(_significant_len, sizeof(v) / sizeof(word_type));
+    ensure_cap(max_len + 1);
+    signed_add(_data, _significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type),
+               _data, max_len + 1);
+    _significant_len = max_len + 1;
+    minimize_significant_len();
     return *this;
 }
 
 BigInteger& BigInteger::operator-=(const BigInteger& x)
 {
-    BigInteger::sub(*this, x, this);
+    const size_type max_len = (std::max)(_significant_len, x._significant_len);
+    ensure_cap(max_len + 1);
+    signed_sub(_data, _significant_len, x._data, x._significant_len, _data, max_len + 1);
+    _significant_len = max_len + 1;
+    minimize_significant_len();
     return *this;
 }
 
-BigInteger& BigInteger::operator-=(long long v)
+BigInteger& BigInteger::operator-=(native_int_type v)
 {
-    BigInteger::sub(*this, v, this);
+    const size_type max_len = (std::max)(_significant_len, sizeof(v) / sizeof(word_type));
+    ensure_cap(max_len + 1);
+    signed_sub(_data, _significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type),
+               _data, max_len + 1);
+    _significant_len = max_len + 1;
+    minimize_significant_len();
     return *this;
 }
 
 BigInteger& BigInteger::operator*=(const BigInteger& x)
 {
-    BigInteger::multiply(*this, x, this);
+    ensure_cap(_significant_len + x._significant_len);
+    signed_multiply(_data, _significant_len, x._data, x._significant_len,
+                    _data, _significant_len + x._significant_len);
+    _significant_len += x._significant_len;
+    minimize_significant_len();
     return *this;
 }
 
-BigInteger& BigInteger::operator*=(long long v)
+BigInteger& BigInteger::operator*=(native_int_type v)
 {
-    BigInteger::multiply(*this, v, this);
+    ensure_cap(_significant_len + sizeof(v) / sizeof(word_type));
+    signed_multiply(_data, _significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type),
+                    _data, _significant_len + sizeof(v) / sizeof(word_type));
+    _significant_len += sizeof(v) / sizeof(word_type);
+    minimize_significant_len();
     return *this;
 }
 
@@ -338,10 +389,9 @@ BigInteger& BigInteger::operator/=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator/=(long long v)
+BigInteger& BigInteger::operator/=(native_int_type v)
 {
-    BigInteger divider(v);
-    BigInteger::divide(*this, divider, this, nullptr);
+    BigInteger::divide(*this, BigInteger(v), this, nullptr);
     return *this;
 }
 
@@ -362,17 +412,18 @@ BigInteger& BigInteger::operator%=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator%=(long long v)
+BigInteger& BigInteger::operator%=(native_int_type v)
 {
     assert(0 != v);
-    BigInteger divider(v);
-    BigInteger::divide(*this, divider, nullptr, this);
+    BigInteger::divide(*this, BigInteger(v), nullptr, this);
     return *this;
 }
 
 BigInteger& BigInteger::operator++()
 {
-    BigInteger::increase(this);
+    ensure_significant_len(_significant_len + 1); // NOTE '_significant_len' changed
+    nut::increase(_data, _significant_len);
+    minimize_significant_len();
     return *this;
 }
 
@@ -385,7 +436,9 @@ BigInteger BigInteger::operator++(int)
 
 BigInteger& BigInteger::operator--()
 {
-    BigInteger::decrease(this);
+    ensure_significant_len(_significant_len + 1); // NOTE '_significant_len' changed
+    nut::decrease(_data, _significant_len);
+    minimize_significant_len();
     return *this;
 }
 
@@ -402,7 +455,11 @@ BigInteger BigInteger::operator<<(size_type count) const
         return *this;
 
     BigInteger ret;
-    BigInteger::shift_left(*this, count, &ret);
+    const size_type min_sig = _significant_len + (count - 1) / (8 * sizeof(word_type)) + 1;
+    ret.ensure_cap(min_sig);
+    signed_shift_left(_data, _significant_len, ret._data, min_sig, count);
+    ret._significant_len = min_sig;
+    ret.minimize_significant_len();
     return ret;
 }
 
@@ -415,7 +472,10 @@ BigInteger BigInteger::operator>>(size_type count) const
         return *this;
 
     BigInteger ret;
-    BigInteger::shift_right(*this, count, &ret);
+    ret.ensure_cap(_significant_len);
+    signed_shift_right(_data, _significant_len, ret._data, _significant_len, count);
+    ret._significant_len = _significant_len;
+    ret.minimize_significant_len();
     return ret;
 }
 
@@ -424,7 +484,11 @@ BigInteger& BigInteger::operator<<=(size_type count)
     if (0 == count)
         return *this;
 
-    BigInteger::shift_left(*this, count, this);
+    const size_type min_sig = _significant_len + (count - 1) / (8 * sizeof(word_type)) + 1;
+    ensure_cap(min_sig);
+    signed_shift_left(_data, _significant_len, _data, min_sig, count);
+    _significant_len = min_sig;
+    minimize_significant_len();
     return *this;
 }
 
@@ -433,146 +497,17 @@ BigInteger& BigInteger::operator>>=(size_type count)
     if (0 == count)
         return *this;
 
-    BigInteger::shift_right(*this, count, this);
+    signed_shift_right(_data, _significant_len, _data, _significant_len, count);
+    minimize_significant_len();
     return *this;
-}
-
-void BigInteger::add(const BigInteger& a, const BigInteger& b, BigInteger *x)
-{
-    assert(nullptr != x);
-
-    const size_type max_len = (a._significant_len > b._significant_len ? a._significant_len : b._significant_len);
-    x->ensure_cap(max_len + 1);
-    signed_add(a._data, a._significant_len, b._data, b._significant_len, x->_data, max_len + 1);
-    x->_significant_len = max_len + 1;
-    x->minimize_significant_len();
-}
-
-void BigInteger::add(const BigInteger& a, long long b, BigInteger *x)
-{
-    static_assert(sizeof(b) % sizeof(word_type) == 0, "Unexpected integer size");
-    assert(nullptr != x);
-
-    const size_type max_len = (a._significant_len > sizeof(b) / sizeof(word_type) ? a._significant_len : sizeof(b) / sizeof(word_type));
-    x->ensure_cap(max_len + 1);
-    signed_add(a._data, a._significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->_data, max_len + 1);
-    x->_significant_len = max_len + 1;
-    x->minimize_significant_len();
-}
-
-void BigInteger::add(long long a, const BigInteger& b, BigInteger *x)
-{
-    static_assert(sizeof(a) % sizeof(word_type) == 0, "Unexpected integer size");
-    assert(nullptr != x);
-
-    const size_type max_len = (sizeof(a) / sizeof(word_type) > b._significant_len ? sizeof(a) / sizeof(word_type) : b._significant_len);
-    x->ensure_cap(max_len + 1);
-    signed_add((word_type*)&a, sizeof(a) / sizeof(word_type), b._data, b._significant_len, x->_data, max_len + 1);
-    x->_significant_len = max_len + 1;
-    x->minimize_significant_len();
-}
-
-void BigInteger::sub(const BigInteger& a, const BigInteger& b, BigInteger *x)
-{
-    assert(nullptr != x);
-
-    const size_type max_len = (a._significant_len > b._significant_len ? a._significant_len : b._significant_len);
-    x->ensure_cap(max_len + 1);
-    signed_sub(a._data, a._significant_len, b._data, b._significant_len, x->_data, max_len + 1);
-    x->_significant_len = max_len + 1;
-    x->minimize_significant_len();
-}
-
-void BigInteger::sub(const BigInteger& a, long long b, BigInteger *x)
-{
-    static_assert(sizeof(b) % sizeof(word_type) == 0, "Unexpected integer size");
-    assert(nullptr != x);
-
-    const size_type max_len = (a._significant_len > sizeof(b) / sizeof(word_type) ? a._significant_len : sizeof(b) / sizeof(word_type));
-    x->ensure_cap(max_len + 1);
-    signed_sub(a._data, a._significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type), x->_data, max_len + 1);
-    x->_significant_len = max_len + 1;
-    x->minimize_significant_len();
-}
-
-void BigInteger::sub(long long a, const BigInteger& b, BigInteger *x)
-{
-    static_assert(sizeof(a) % sizeof(word_type) == 0, "Unexpected integer size");
-    assert(nullptr != x);
-
-    const size_type max_len = (sizeof(a) / sizeof(word_type) > b._significant_len ? sizeof(a) / sizeof(word_type) : b._significant_len);
-    x->ensure_cap(max_len + 1);
-    signed_sub((word_type*)&a, sizeof(a) / sizeof(word_type), b._data, b._significant_len, x->_data, max_len + 1);
-    x->_significant_len = max_len + 1;
-    x->minimize_significant_len();
-}
-
-void BigInteger::negate(const BigInteger &a, BigInteger *x)
-{
-    assert(nullptr != x);
-
-    x->ensure_cap(a._significant_len + 1);
-    signed_negate(a._data, a._significant_len, x->_data, a._significant_len + 1);
-    x->_significant_len = a._significant_len + 1;
-    x->minimize_significant_len();
-}
-
-void BigInteger::increase(BigInteger *x)
-{
-    assert(nullptr != x);
-    x->ensure_significant_len(x->_significant_len + 1);
-    nut::increase(x->_data, x->_significant_len);
-    x->minimize_significant_len();
-}
-
-void BigInteger::decrease(BigInteger *x)
-{
-    assert(nullptr != x);
-    x->ensure_significant_len(x->_significant_len + 1);
-    nut::decrease(x->_data, x->_significant_len);
-    x->minimize_significant_len();
-}
-
-void BigInteger::multiply(const BigInteger& a, const BigInteger& b, BigInteger *x)
-{
-    assert(nullptr != x);
-
-    x->ensure_cap(a._significant_len + b._significant_len);
-    signed_multiply(a._data, a._significant_len, b._data, b._significant_len,
-        x->_data, a._significant_len + b._significant_len);
-    x->_significant_len = a._significant_len + b._significant_len;
-    x->minimize_significant_len();
-}
-
-void BigInteger::multiply(const BigInteger& a, long long b, BigInteger *x)
-{
-    static_assert(sizeof(b) % sizeof(word_type) == 0, "Unexpected integer size");
-    assert(nullptr != x);
-
-    x->ensure_cap(a._significant_len + sizeof(b) / sizeof(word_type));
-    signed_multiply(a._data, a._significant_len, (word_type*)&b, sizeof(b) / sizeof(word_type),
-        x->_data, a._significant_len + sizeof(b) / sizeof(word_type));
-    x->_significant_len = a._significant_len + sizeof(b) / sizeof(word_type);
-    x->minimize_significant_len();
-}
-
-void BigInteger::multiply(long long a, const BigInteger& b, BigInteger *x)
-{
-    static_assert(sizeof(a) % sizeof(word_type) == 0, "Unexpected integer size");
-    assert(nullptr != x);
-
-    x->ensure_cap(sizeof(a) / sizeof(word_type) + b._significant_len);
-    signed_multiply((word_type*)&a, sizeof(a) / sizeof(word_type), b._data, b._significant_len,
-        x->_data, sizeof(a) / sizeof(word_type) + b._significant_len);
-    x->_significant_len = sizeof(a) / sizeof(word_type) + b._significant_len;
-    x->minimize_significant_len();
 }
 
 /**
  * @param result 商
  * @param remainder 余数
  */
-void BigInteger::divide(const BigInteger& a, const BigInteger& b, BigInteger *result, BigInteger *remainder)
+void BigInteger::divide(const BigInteger& a, const BigInteger& b,
+                        BigInteger *result, BigInteger *remainder)
 {
     assert(nullptr != result || nullptr != remainder);
     assert(!b.is_zero());
@@ -596,23 +531,6 @@ void BigInteger::divide(const BigInteger& a, const BigInteger& b, BigInteger *re
         remainder->_significant_len = b._significant_len;
         remainder->minimize_significant_len();
     }
-}
-
-void BigInteger::shift_left(const BigInteger& a, size_type count, BigInteger *x)
-{
-    const size_type min_sig = a._significant_len + (count - 1) / (8 * sizeof(word_type)) + 1;
-    x->ensure_cap(min_sig);
-    signed_shift_left(a._data, a._significant_len, x->_data, min_sig, count);
-    x->_significant_len = min_sig;
-    x->minimize_significant_len();
-}
-
-void BigInteger::shift_right(const BigInteger& a, size_type count, BigInteger *x)
-{
-    x->ensure_cap(a._significant_len);
-    signed_shift_right(a._data, a._significant_len, x->_data, a._significant_len, count);
-    x->_significant_len = a._significant_len;
-    x->minimize_significant_len();
 }
 
 void BigInteger::set_zero()
@@ -647,7 +565,7 @@ void BigInteger::limit_positive_bits_to(size_type bit_len)
 {
     assert(bit_len > 0);
 
-#if (OPTIMIZE_LEVEL == 0)
+#if 0 // unoptimized
     const size_type new_sig = bit_len / (8 * sizeof(word_type)) + 1;
     ensure_significant_len(new_sig);
     const size_type bits_shift = 8 * sizeof(word_type) - bit_len % (8 * sizeof(word_type));
@@ -725,7 +643,7 @@ int BigInteger::bit_at(size_type i) const
 {
     if (i / (8 * sizeof(word_type)) >= _significant_len)
     {
-#if (OPTIMIZE_LEVEL == 0)
+#if 0 // unoptimized
         return BigInteger::is_positive() ? 0 : 1;
 #else
         return _data[_significant_len - 1] >> (8 * sizeof(word_type) - 1);
@@ -784,15 +702,6 @@ int BigInteger::lowest_bit() const
     return nut::lowest_bit1((uint8_t*)_data, sizeof(word_type) * _significant_len);
 }
 
-long long BigInteger::llong_value() const
-{
-    static_assert(sizeof(long long) % sizeof(word_type) == 0, "Unexpected integer size");
-
-    long long ret = 0;
-    signed_expand(_data, _significant_len, (word_type*)&ret, sizeof(ret) / sizeof(word_type));
-    return ret;
-}
-
 /**
  * 取 [a, b) 范围内的随机数
  */
@@ -844,6 +753,13 @@ void BigInteger::swap(BigInteger *a, BigInteger *b)
     ::free(tmp);
 }
 
+BigInteger::native_int_type BigInteger::to_integer() const
+{
+    native_int_type ret = 0;
+    signed_expand(_data, _significant_len, (word_type*)&ret, sizeof(ret) / sizeof(word_type));
+    return ret;
+}
+
 #ifndef NDEBUG
 // currently only used in DEBUG mode
 static bool is_valid_radix(size_t radix)
@@ -871,13 +787,13 @@ std::string BigInteger::to_string(size_type radix) const
     BigInteger tmp(*this);
     const bool positive = tmp.is_positive();
     if (!positive)
-        BigInteger::negate(tmp, &tmp);
+        tmp = -tmp;
 
     std::string s;
     const BigInteger RADIX(radix);
     do
     {
-        const size_type n = (size_t) (tmp % RADIX).llong_value();
+        const size_type n = (size_t) (tmp % RADIX).to_integer();
         s.push_back(num2char(n));
 
         tmp /= RADIX;
@@ -895,13 +811,13 @@ std::wstring BigInteger::to_wstring(size_type radix) const
     BigInteger tmp(*this);
     const bool positive = tmp.is_positive();
     if (!positive)
-        BigInteger::negate(tmp, &tmp);
+        tmp = -tmp;
 
     std::wstring s;
     const BigInteger RADIX(radix);
     do
     {
-        const size_type n = (size_t) (tmp % RADIX).llong_value();
+        const size_type n = (size_t) (tmp % RADIX).to_integer();
         s.push_back(num2wchar(n));
 
         tmp /= RADIX;
@@ -998,7 +914,7 @@ BigInteger BigInteger::value_of(const std::string& s, size_type radix)
         index = skip_blank(s, index + 1);
     }
     if (!positive)
-        BigInteger::negate(ret, &ret);
+        ret = -ret;
     return ret;
 }
 
@@ -1026,8 +942,72 @@ BigInteger BigInteger::value_of(const std::wstring& s, size_type radix)
         index = skip_blank(s, index + 1);
     }
     if (!positive)
-        BigInteger::negate(ret, &ret);
+        ret = -ret;
     return ret;
+}
+
+bool operator==(BigInteger::native_int_type a, const BigInteger& b)
+{
+    return b == a;
+}
+
+bool operator!=(BigInteger::native_int_type a, const BigInteger& b)
+{
+    return b != a;
+}
+
+bool operator<(BigInteger::native_int_type a, const BigInteger& b)
+{
+    return b > a;
+}
+
+bool operator>(BigInteger::native_int_type a, const BigInteger& b)
+{
+    return b < a;
+}
+
+bool operator<=(BigInteger::native_int_type a, const BigInteger& b)
+{
+    return b >= a;
+}
+
+bool operator>=(BigInteger::native_int_type a, const BigInteger& b)
+{
+    return b <= a;
+}
+
+BigInteger operator+(BigInteger::native_int_type a, const BigInteger& b)
+{
+    return b + a;
+}
+
+BigInteger operator-(BigInteger::native_int_type a, const BigInteger& b)
+{
+    typedef BigInteger::word_type word_type;
+
+    BigInteger ret;
+    const size_t max_len = (std::max)(sizeof(a) / sizeof(word_type), b._significant_len);
+    ret.ensure_cap(max_len + 1);
+    signed_sub((word_type*)&a, sizeof(a) / sizeof(word_type),
+               b._data, b._significant_len, ret._data, max_len + 1);
+    ret._significant_len = max_len + 1;
+    ret.minimize_significant_len();
+    return ret;
+}
+
+BigInteger operator*(BigInteger::native_int_type a, const BigInteger& b)
+{
+    return b * a;
+}
+
+BigInteger operator/(BigInteger::native_int_type a, const BigInteger& b)
+{
+    return BigInteger(a) / b;
+}
+
+BigInteger operator%(BigInteger::native_int_type a, const BigInteger& b)
+{
+    return BigInteger(a) % b;
 }
 
 }

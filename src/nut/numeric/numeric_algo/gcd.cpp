@@ -3,8 +3,6 @@
 
 #include "gcd.h"
 
-// 优化程度，>= 0
-#define OPTIMIZE_LEVEL 1000
 
 namespace nut
 {
@@ -16,7 +14,7 @@ NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b)
 {
     /// 下面几个算法，随着规模增大，优化后的优势越明显。
     /// 规模较小时优化的算法反而不如没优化的算法有效率。
-#if (OPTIMIZE_LEVEL == 0)
+#if 0 // unoptimized
     /**
      * 欧几里德(EUCLID)算法，求最大公约数
      *
@@ -26,7 +24,7 @@ NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b)
     if (b.is_zero())
         return a;
     return gcd(b, a % b);
-#elif (OPTIMIZE_LEVEL == 1)
+#elif 0 // unoptimized
     /**
      * 利用二进制特性的gcd算法
      *
@@ -45,7 +43,7 @@ NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b)
         return gcd(b, (a - b) >> 1);
     else
         return gcd(a, (b - a) >> 1);
-#elif (OPTIMIZE_LEVEL == 2)
+#elif 0 // unoptimized
     /**
      * 进一步优化上一个实现
      */
@@ -80,7 +78,7 @@ NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b)
     }
     aa <<= left_shift;
     return aa;
-#elif (OPTIMIZE_LEVEL == 3)
+#elif 0 // unoptimized
     /**
      * 进一步优化上一个实现
      */
@@ -191,7 +189,7 @@ NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b)
  */
 NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, BigInteger *x, BigInteger *y)
 {
-#if (OPTIMIZE_LEVEL == 0)
+#if 0 // unoptimized
     /**
      * 欧几里得(EUCLID)算法的推广形式
      * d = gcd(a, b) = ax + by
@@ -217,7 +215,7 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
     if (nullptr != x)
         *x = std::move(xx);
     return;
-#elif (OPTIMIZE_LEVEL == 1)
+#elif 0 // unoptimized
     /**
      * 推广的 Euclidean 算法
      *
@@ -339,7 +337,7 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
         }
         return;
     }
-#elif (OPTIMIZE_LEVEL == 2)
+#elif 0 // unoptimized
     /**
      * 上一个算法的进一步优化
      */

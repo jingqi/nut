@@ -4,6 +4,7 @@
 
 #include "../word_array_integer.h"
 
+
 namespace nut
 {
 

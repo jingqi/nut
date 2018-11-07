@@ -9,13 +9,15 @@
 #include <algorithm> // for std::min() and so on
 
 #include <nut/platform/int_type.h> // for ssize_t in windows VC
+#include <nut/util/string/to_string.h>
 
 namespace nut
 {
 
 /**
- * An ascending set of integers, like
- * [(1,3) (6,6) (8,9)] contains 1 2 3 6 8 9
+ * An ascending set of integers
+ *
+ * eg. {[1,3],6,[8,9]} contains 1 2 3 6 8 9
  */
 template <typename IntType = int>
 class IntegerSet
@@ -156,17 +158,17 @@ private:
     /**
      * 将两个集合 x、y 放到数据轴上，每一个轴坐标的状态
      *
-     *       None  SingleX    SingleY   XAndY
-     *    x        ********            *******
-     *    y                  *****************
-     *  ------------------------------------------> axis
+     *       None  SingleA    SingleB   AAndB
+     *    A        ********            *******
+     *    B                  *****************
+     *  ------------------------------------------> integer axis
      */
     enum class AxisState
     {
         None,        // none
-        SingleX,     // single x
-        SingleY,     // single y
-        XAndY        // x and y
+        SingleA,     // single A
+        SingleB,     // single B
+        AAndB        // A and B
     };
 
 public:
@@ -189,7 +191,7 @@ public:
     {
         if (this == &x)
             return true;
-        if (_ranges.size() != x._ranges.size())
+        else if (_ranges.size() != x._ranges.size())
             return false;
         for (size_t i = 0, sz = _ranges.size(); i < sz; ++i)
         {
@@ -202,6 +204,524 @@ public:
     bool operator!=(const self_type& x) const
     {
         return !(*this == x);
+    }
+
+    bool operator<(const self_type& x) const
+    {
+        if (this == &x)
+            return false;
+        for (size_t i = 0; i < _ranges.size() || i < x._ranges.size(); ++i)
+        {
+            if (i >= _ranges.size())
+                return true;
+            else if (i >= x._ranges.size())
+                return false;
+
+            const Range& rg1 = _ranges.at(i);
+            const Range& rg2 = x._ranges.at(i);
+            if (rg1.first != rg2.first)
+                return rg1.first < rg2.first;
+            else if (rg1.last < rg2.last)
+                return i + 1 >= _ranges.size();
+            else if (rg1.last > rg2.last)
+                return i + 1 < x._ranges.size();
+        }
+        return false;
+    }
+
+    bool operator>(const self_type& x) const
+    {
+        return x < *this;
+    }
+
+    bool operator<=(const self_type& x) const
+    {
+        return !(x < *this);
+    }
+
+    bool operator>=(const self_type& x) const
+    {
+        return !(*this < x);
+    }
+
+    /**
+     * 求并集
+     */
+    self_type operator+(const self_type& x) const
+    {
+        return *this | x;
+    }
+
+    /**
+     * 求补集
+     *
+     * {...} - {...}
+     */
+    self_type operator-(const self_type& x) const
+    {
+        self_type ret;
+        size_t index1 = 0, index2 = 0;
+        AxisState state = AxisState::None;
+        int_type first_of_remainder = 0;
+        while (index1 / 2 < _ranges.size() || index2 / 2 < x._ranges.size())
+        {
+            int_type value1;
+            if (index1 / 2 < _ranges.size())
+            {
+                const Range& rg1 = _ranges.at(index1 / 2);
+                value1 = (0 == (index1 % 2) ? rg1.first : rg1.last);
+            }
+            else
+            {
+                value1 = x._ranges.at(x._ranges.size() - 1).last + 1; // Same effect as max integer
+            }
+
+            int_type value2;
+            if (index2 / 2 < x._ranges.size())
+            {
+                const Range& rg2 = x._ranges.at(index2 / 2);
+                value2 = (0 == (index2 % 2) ? rg2.first : rg2.last);
+            }
+            else
+            {
+                value2 = _ranges.at(_ranges.size() - 1).last + 1; // Same effect as max integer
+            }
+
+            // 对于边界重叠的情况，优先进入状态 AAndB 和 SingleB
+            switch (state)
+            {
+            case AxisState::None:
+                assert(0 == (index1 % 2) && 0 == (index2 % 2));
+                if (value1 < value2)
+                {
+                    state = AxisState::SingleA;
+                    ++index1;
+                    first_of_remainder = value1;
+                }
+                else
+                {
+                    state = AxisState::SingleB;
+                    ++index2;
+                }
+                break;
+
+            case AxisState::SingleA:
+                assert(1 == (index1 % 2) && 0 == (index2 % 2));
+                if (value1 < value2)
+                {
+                    state = AxisState::None;
+                    ++index1;
+                    ret._ranges.push_back(Range(first_of_remainder, value1));
+                }
+                else
+                {
+                    state = AxisState::AAndB;
+                    ++index2;
+                    ret._ranges.push_back(Range(first_of_remainder, value2 - 1));
+                }
+                break;
+
+            case AxisState::SingleB:
+                assert(0 == (index1 % 2) && 1 == (index2 % 2));
+                if (value1 <= value2)
+                {
+                    state = AxisState::AAndB;
+                    ++index1;
+                }
+                else
+                {
+                    state = AxisState::None;
+                    ++index2;
+                }
+                break;
+
+            case AxisState::AAndB:
+                assert(1 == (index1 % 2) && 1 == (index2 % 2));
+                if (value1 <= value2)
+                {
+                    state = AxisState::SingleB;
+                    ++index1;
+                }
+                else
+                {
+                    state = AxisState::SingleA;
+                    ++index2;
+                    first_of_remainder = value2 + 1;
+                }
+                break;
+
+            default:
+                assert(false); // Illegal state
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * 求并集
+     */
+    self_type operator|(const self_type& x) const
+    {
+        // 状态机基本上和求交集方法中一样
+        self_type ret;
+        size_t index1 = 0, index2 = 0;
+        AxisState state = AxisState::None;
+        int_type first_of_merge = 0;
+        while (index1 / 2 < _ranges.size() || index2 / 2 < x._ranges.size())
+        {
+            int_type value1;
+            if (index1 / 2 < _ranges.size())
+            {
+                const Range& rg1 = _ranges.at(index1 / 2);
+                value1 = (0 == (index1 % 2) ? rg1.first : rg1.last);
+            }
+            else
+            {
+                value1 = x._ranges.at(x._ranges.size() - 1).last + 1; // Same effect as max integer
+            }
+
+            int_type value2;
+            if (index2 / 2 < x._ranges.size())
+            {
+                const Range& rg2 = x._ranges.at(index2 / 2);
+                value2 = (0 == (index2 % 2) ? rg2.first : rg2.last);
+            }
+            else
+            {
+                value2 = _ranges.at(_ranges.size() - 1).last + 1; // Same effect as max integer
+            }
+
+            // 对于边界重叠的情况，优先进入状态 AAndB
+            switch (state)
+            {
+            case AxisState::None:
+                assert(0 == (index1 % 2) && 0 == (index2 % 2));
+                if (value1 < value2)
+                {
+                    state = AxisState::SingleA;
+                    ++index1;
+                    first_of_merge = value1;
+                }
+                else
+                {
+                    state = AxisState::SingleB;
+                    ++index2;
+                    first_of_merge = value2;
+                }
+                break;
+
+            case AxisState::SingleA:
+                assert(1 == (index1 % 2) && 0 == (index2 % 2));
+                if (value1 < value2)
+                {
+                    state = AxisState::None;
+                    ++index1;
+                    if (ret._ranges.size() > 0 &&
+                        ret._ranges.at(ret._ranges.size() - 1).last + 1 == first_of_merge)
+                        ret._ranges[ret._ranges.size() - 1].last = value1;
+                    else
+                        ret._ranges.push_back(Range(first_of_merge, value1));
+                }
+                else
+                {
+                    state = AxisState::AAndB;
+                    ++index2;
+                }
+                break;
+
+            case AxisState::SingleB:
+                assert(0 == (index1 % 2) && 1 == (index2 % 2));
+                if (value1 <= value2)
+                {
+                    state = AxisState::AAndB;
+                    ++index1;
+                }
+                else
+                {
+                    state = AxisState::None;
+                    ++index2;
+                    if (ret._ranges.size() > 0 &&
+                        ret._ranges.at(ret._ranges.size() - 1).last + 1 == first_of_merge)
+                        ret._ranges[ret._ranges.size() - 1].last = value2;
+                    else
+                        ret._ranges.push_back(Range(first_of_merge, value2));
+                }
+                break;
+
+            case AxisState::AAndB:
+                assert(1 == (index1 % 2) && 1 == (index2 % 2));
+                if (value1 < value2)
+                {
+                    state = AxisState::SingleB;
+                    ++index1;
+                }
+                else
+                {
+                    state = AxisState::SingleA;
+                    ++index2;
+                }
+                break;
+
+            default:
+                assert(false); // Illegal state
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * 求交集
+     *
+     * 例如：
+     *   容器 [(1,3),(5,10),(13,24)]
+     *   容器 [(2,13),(15,100)]
+     *   交集 [(2,3),(5,10),13,(15,24)]
+     */
+    self_type operator&(const self_type& x) const
+    {
+        self_type ret;
+        size_t index1 = 0, index2 = 0;
+        AxisState state = AxisState::None;
+        int_type first_of_interact = 0;
+        while (index1 / 2 < _ranges.size() && index2 / 2 < x._ranges.size())
+        {
+            const Range& rg1 = _ranges.at(index1 / 2);
+            const int_type value1 = (0 == (index1 % 2) ? rg1.first : rg1.last);
+
+            const Range& rg2 = x._ranges.at(index2 / 2);
+            const int_type value2 = (0 == (index2 % 2) ? rg2.first : rg2.last);
+
+            // 对于边界重叠的情况，优先进入状态 AAndB
+            switch (state)
+            {
+            case AxisState::None:
+                assert(0 == (index1 % 2) && 0 == (index2 % 2));
+                if (value1 < value2)
+                {
+                    state = AxisState::SingleA;
+                    ++index1;
+                }
+                else
+                {
+                    state = AxisState::SingleB;
+                    ++index2;
+                }
+                break;
+
+            case AxisState::SingleA:
+                assert(1 == (index1 % 2) && 0 == (index2 % 2));
+                if (value1 < value2)
+                {
+                    state = AxisState::None;
+                    ++index1;
+                }
+                else
+                {
+                    state = AxisState::AAndB;
+                    ++index2;
+                    first_of_interact = value2;
+                }
+                break;
+
+            case AxisState::SingleB:
+                assert(0 == (index1 % 2) && 1 == (index2 % 2));
+                if (value1 <= value2)
+                {
+                    state = AxisState::AAndB;
+                    ++index1;
+                    first_of_interact = value1;
+                }
+                else
+                {
+                    state = AxisState::None;
+                    ++index2;
+                }
+                break;
+
+            case AxisState::AAndB:
+                assert(1 == (index1 % 2) && 1 == (index2 % 2));
+                if (value1 < value2)
+                {
+                    state = AxisState::SingleB;
+                    ++index1;
+                    ret._ranges.push_back(Range(first_of_interact, value1));
+                }
+                else
+                {
+                    state = AxisState::SingleA;
+                    ++index2;
+                    ret._ranges.push_back(Range(first_of_interact, value2));
+                }
+                break;
+
+            default:
+                assert(false); // Illegal state
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * 求两集合相互补集的并集，eg. A ^ B = (A - B) | (B - A)
+     */
+    self_type operator^(const self_type& x) const
+    {
+        self_type ret;
+        size_t index1 = 0, index2 = 0;
+        AxisState state = AxisState::None;
+        int_type first_of_remainder = 0;
+        while (index1 / 2 < _ranges.size() || index2 / 2 < x._ranges.size())
+        {
+            int_type value1;
+            if (index1 / 2 < _ranges.size())
+            {
+                const Range& rg1 = _ranges.at(index1 / 2);
+                value1 = (0 == (index1 % 2) ? rg1.first : rg1.last);
+            }
+            else
+            {
+                value1 = x._ranges.at(x._ranges.size() - 1).last + 1; // Same effect as max integer
+            }
+
+            int_type value2;
+            if (index2 / 2 < x._ranges.size())
+            {
+                const Range& rg2 = x._ranges.at(index2 / 2);
+                value2 = (0 == (index2 % 2) ? rg2.first : rg2.last);
+            }
+            else
+            {
+                value2 = _ranges.at(_ranges.size() - 1).last + 1; // Same effect as max integer
+            }
+
+            switch (state)
+            {
+            case AxisState::None:
+                assert(0 == (index1 % 2) && 0 == (index2 % 2));
+                if (value1 < value2)
+                {
+                    state = AxisState::SingleA;
+                    ++index1;
+                    first_of_remainder = value1;
+                }
+                else if (value1 > value2)
+                {
+                    state = AxisState::SingleB;
+                    ++index2;
+                    first_of_remainder = value2;
+                }
+                else
+                {
+                    state = AxisState::AAndB;
+                    ++index1;
+                    ++index2;
+                }
+                break;
+
+            case AxisState::SingleA:
+                assert(1 == (index1 % 2) && 0 == (index2 % 2));
+                if (value1 < value2)
+                {
+                    state = AxisState::None;
+                    ++index1;
+                    ret._ranges.push_back(Range(first_of_remainder, value1));
+                }
+                else
+                {
+                    state = AxisState::AAndB;
+                    ++index2;
+                    ret._ranges.push_back(Range(first_of_remainder, value2 - 1));
+                }
+                break;
+
+            case AxisState::SingleB:
+                assert(0 == (index1 % 2) && 1 == (index2 % 2));
+                if (value1 > value2)
+                {
+                    state = AxisState::None;
+                    ++index2;
+                    ret._ranges.push_back(Range(first_of_remainder, value2));
+                }
+                else
+                {
+                    state = AxisState::AAndB;
+                    ++index1;
+                    ret._ranges.push_back(Range(first_of_remainder, value1 - 1));
+                }
+                break;
+
+            case AxisState::AAndB:
+                assert(1 == (index1 % 2) && 1 == (index2 % 2));
+                if (value1 < value2)
+                {
+                    state = AxisState::SingleB;
+                    ++index1;
+                    first_of_remainder = value1 + 1;
+                }
+                else if (value1 > value2)
+                {
+                    state = AxisState::SingleA;
+                    ++index2;
+                    first_of_remainder = value2 + 1;
+                }
+                else
+                {
+                    state = AxisState::None;
+                    ++index1;
+                    ++index2;
+                }
+                break;
+
+            default:
+                assert(false); // Illegal state
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * 求并集
+     */
+    self_type& operator+=(const self_type& x)
+    {
+        *this = *this + x;
+        return *this;
+    }
+    
+    /**
+     * 求补集
+     */
+    self_type& operator-=(const self_type& x)
+    {
+        *this = *this - x;
+        return *this;
+    }
+
+    /**
+     * 求并集
+     */
+    self_type& operator|=(const self_type& x)
+    {
+        *this = *this | x;
+        return *this;
+    }
+    
+    /**
+     * 求交集
+     */
+    self_type& operator&=(const self_type& x)
+    {
+        *this = *this & x;
+        return *this;
+    }
+
+    /**
+     * 求两集合相互补集的并集
+     */
+    self_type& operator^=(const self_type& x)
+    {
+        *this = *this ^ x;
+        return *this;
     }
 
     void add_value(int_type value)
@@ -462,345 +982,54 @@ public:
         return _ranges.at(index);
     }
 
-    self_type intersect_with(const self_type& x) const
+    std::string to_string() const
     {
-        self_type result;
-        intersect(*this, x, &result);
-        return result;
-    }
-
-    self_type merge_with(const self_type& x) const
-    {
-        self_type result;
-        merge(*this, x, &result);
-        return result;
-    }
-
-    self_type remainder_with(const self_type& x) const
-    {
-        self_type result;
-        remainder(*this, x, &result);
-        return result;
-    }
-
-    /**
-     * 两个容器做交集
-     * 例如
-     * 容器 [(1,3),(5,10),(13,24)]
-     * 容器 [(2,13),(15,100)]
-     * 交集 [(2,3),(5,10),13,(15,24)]
-     */
-    static void intersect(const self_type& x, const self_type& y, self_type *result)
-    {
-        assert(nullptr != result && result != &x && result != &y);
-        result->clear();
-
-        size_t index1 = 0, index2 = 0;
-        AxisState state = AxisState::None;
-        int_type first_of_interact = 0;
-        while (index1 / 2 < x._ranges.size() && index2 / 2 < y._ranges.size())
+        std::string s("{");
+        for (size_t i = 0, sz = _ranges.size(); i < sz; ++i)
         {
-            const Range& rg1 = x._ranges.at(index1 / 2);
-            const int_type value1 = (0 == (index1 % 2) ? rg1.first : rg1.last);
-
-            const Range& rg2 = y._ranges.at(index2 / 2);
-            const int_type value2 = (0 == (index2 % 2) ? rg2.first : rg2.last);
-
-            // 对于边界重叠的情况，优先进入状态 XAndY
-            switch (state)
+            const Range& rg = _ranges.at(i);
+            if (rg.first == rg.last)
             {
-            case AxisState::None:
-                assert(0 == (index1 % 2));
-                assert(0 == (index2 % 2));
-                if (value1 < value2)
-                {
-                    state = AxisState::SingleX;
-                    ++index1;
-                }
-                else
-                {
-                    state = AxisState::SingleY;
-                    ++index2;
-                }
-                break;
-
-            case AxisState::SingleX:
-                assert(1 == (index1 % 2));
-                assert(0 == (index2 % 2));
-                if (value1 < value2)
-                {
-                    state = AxisState::None;
-                    ++index1;
-                }
-                else
-                {
-                    state = AxisState::XAndY;
-                    ++index2;
-                    first_of_interact = value2;
-                }
-                break;
-
-            case AxisState::SingleY:
-                assert(0 == (index1 % 2));
-                assert(1 == (index2 % 2));
-                if (value1 <= value2)
-                {
-                    state = AxisState::XAndY;
-                    ++index1;
-                    first_of_interact = value1;
-                }
-                else
-                {
-                    state = AxisState::None;
-                    ++index2;
-                }
-                break;
-
-            case AxisState::XAndY:
-                assert(1 == (index1 % 2));
-                assert(1 == (index2 % 2));
-                if (value1 < value2)
-                {
-                    state = AxisState::SingleY;
-                    ++index1;
-                    result->_ranges.push_back(Range(first_of_interact, value1));
-                }
-                else
-                {
-                    state = AxisState::SingleX;
-                    ++index2;
-                    result->_ranges.push_back(Range(first_of_interact, value2));
-                }
-                break;
-
-            default:
-                assert(false); // Illegal state
+                s += int_to_str(rg.first);
             }
+            else
+            {
+                s.push_back('[');
+                s += int_to_str(rg.first);
+                s.push_back(',');
+                s += int_to_str(rg.last);
+                s.push_back(']');
+            }
+            if (i + 1 < sz)
+                s.push_back(',');
         }
+        s.push_back('}');
+        return s;
     }
 
-    /**
-     * 两个容器做并集
-     */
-    static void merge(const self_type& x, const self_type& y, self_type *result)
+    std::wstring to_wstring() const
     {
-        assert(nullptr != result && result != &x && result != &y);
-        result->clear();
-
-        // 状态机基本上和intersectWith()方法中一样
-        size_t index1 = 0, index2 = 0;
-        AxisState state = AxisState::None;
-        int_type first_of_merge = 0;
-        while (index1 / 2 < x._ranges.size() || index2 / 2 < y._ranges.size())
+        std::wstring s(L"{");
+        for (size_t i = 0, sz = _ranges.size(); i < sz; ++i)
         {
-            int_type value1;
-            if (index1 / 2 < x._ranges.size())
+            const Range& rg = _ranges.at(i);
+            if (rg.first == rg.last)
             {
-                const Range& rg1 = x._ranges.at(index1 / 2);
-                value1 = (0 == (index1 % 2) ? rg1.first : rg1.last);
+                s += int_to_wstr(rg.first);
             }
             else
             {
-                value1 = y._ranges.at(y._ranges.size() - 1).last + 1; // Same effect as max integer
+                s.push_back(L'[');
+                s += int_to_wstr(rg.first);
+                s.push_back(L',');
+                s += int_to_wstr(rg.last);
+                s.push_back(L']');
             }
-
-            int_type value2;
-            if (index2 / 2 < y._ranges.size())
-            {
-                const Range& rg2 = y._ranges.at(index2 / 2);
-                value2 = (0 == (index2 % 2) ? rg2.first : rg2.last);
-            }
-            else
-            {
-                value2 = x._ranges.at(x._ranges.size() - 1).last + 1; // Same effect as max integer
-            }
-
-            // 对于边界重叠的情况，优先进入状态 XAndY
-            switch (state)
-            {
-            case AxisState::None:
-                assert(0 == (index1 % 2));
-                assert(0 == (index2 % 2));
-                if (value1 < value2)
-                {
-                    state = AxisState::SingleX;
-                    ++index1;
-                    first_of_merge = value1;
-                }
-                else
-                {
-                    state = AxisState::SingleY;
-                    ++index2;
-                    first_of_merge = value2;
-                }
-                break;
-
-            case AxisState::SingleX:
-                assert(1 == (index1 % 2));
-                assert(0 == (index2 % 2));
-                if (value1 < value2)
-                {
-                    state = AxisState::None;
-                    ++index1;
-                    if (result->_ranges.size() > 0 && result->_ranges.at(result->_ranges.size() - 1).last + 1 == first_of_merge)
-                        result->_ranges[result->_ranges.size() - 1].last = value1;
-                    else
-                        result->_ranges.push_back(Range(first_of_merge, value1));
-                }
-                else
-                {
-                    state = AxisState::XAndY;
-                    ++index2;
-                }
-                break;
-
-            case AxisState::SingleY:
-                assert(0 == (index1 % 2));
-                assert(1 == (index2 % 2));
-                if (value1 <= value2)
-                {
-                    state = AxisState::XAndY;
-                    ++index1;
-                }
-                else
-                {
-                    state = AxisState::None;
-                    ++index2;
-                    if (result->_ranges.size() > 0 && result->_ranges.at(result->_ranges.size() - 1).last + 1 == first_of_merge)
-                        result->_ranges[result->_ranges.size() - 1].last = value2;
-                    else
-                        result->_ranges.push_back(Range(first_of_merge, value2));
-                }
-                break;
-
-            case AxisState::XAndY:
-                assert(1 == (index1 % 2));
-                assert(1 == (index2 % 2));
-                if (value1 < value2)
-                {
-                    state = AxisState::SingleY;
-                    ++index1;
-                }
-                else
-                {
-                    state = AxisState::SingleX;
-                    ++index2;
-                }
-                break;
-
-            default:
-                assert(false); // Illegal state
-            }
+            if (i + 1 < sz)
+                s.push_back(L',');
         }
-    }
-
-    /**
-     * 两个容器做补集
-     * {x} - {y}
-     */
-    static void remainder(const self_type& x, const self_type& y, self_type *result)
-    {
-        assert(nullptr != result && result != &x && result != &y);
-        result->clear();
-
-        size_t index1 = 0, index2 = 0;
-        AxisState state = AxisState::None;
-        int_type first_of_remainder = 0;
-        while (index1 / 2 < x._ranges.size() || index2 / 2 < y._ranges.size())
-        {
-            int_type value1;
-            if (index1 / 2 < x._ranges.size())
-            {
-                const Range& rg1 = x._ranges.at(index1 / 2);
-                value1 = (0 == (index1 % 2) ? rg1.first : rg1.last);
-            }
-            else
-            {
-                value1 = y._ranges.at(y._ranges.size() - 1).last + 1; // Same effect as max integer
-            }
-
-            int_type value2;
-            if (index2 / 2 < y._ranges.size())
-            {
-                const Range& rg2 = y._ranges.at(index2 / 2);
-                value2 = (0 == (index2 % 2) ? rg2.first : rg2.last);
-            }
-            else
-            {
-                value2 = x._ranges.at(x._ranges.size() - 1).last + 1; // Same effect as max integer
-            }
-
-            // 对于边界重叠的情况，优先进入状态 XAndY 和 SingleY
-            switch (state)
-            {
-            case AxisState::None:
-                assert(0 == (index1 % 2));
-                assert(0 == (index2 % 2));
-                if (value1 < value2)
-                {
-                    state = AxisState::SingleX;
-                    ++index1;
-                    first_of_remainder = value1;
-                }
-                else
-                {
-                    state = AxisState::SingleY;
-                    ++index2;
-                }
-                break;
-
-            case AxisState::SingleX:
-                assert(1 == (index1 % 2));
-                assert(0 == (index2 % 2));
-                if (value1 < value2)
-                {
-                    state = AxisState::None;
-                    ++index1;
-                    result->_ranges.push_back(Range(first_of_remainder, value1));
-                }
-                else
-                {
-                    state = AxisState::XAndY;
-                    ++index2;
-                    result->_ranges.push_back(Range(first_of_remainder, value2 - 1));
-                }
-                break;
-
-            case AxisState::SingleY:
-                assert(0 == (index1 % 2));
-                assert(1 == (index2 % 2));
-                if (value1 <= value2)
-                {
-                    state = AxisState::XAndY;
-                    ++index1;
-                }
-                else
-                {
-                    state = AxisState::None;
-                    ++index2;
-                }
-                break;
-
-            case AxisState::XAndY:
-                assert(1 == (index1 % 2));
-                assert(1 == (index2 % 2));
-                if (value1 <= value2)
-                {
-                    state = AxisState::SingleY;
-                    ++index1;
-                }
-                else
-                {
-                    state = AxisState::SingleX;
-                    ++index2;
-                    first_of_remainder = value2 + 1;
-                }
-                break;
-
-            default:
-                assert(false); // Illegal state
-            }
-        }
+        s.push_back(L'}');
+        return s;
     }
 
 private:
