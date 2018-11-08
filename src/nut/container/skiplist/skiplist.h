@@ -5,6 +5,9 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include "../comparable.h"
+
+
 namespace nut
 {
 
@@ -74,13 +77,14 @@ public:
                     break;
                 }
 
-                if (key < n->get_key())
+                const int rs = compare(key, n->get_key());
+                if (rs < 0)
                 {
                     if (nullptr != pre_lv)
                         pre_lv[lv] = pre;
                     break;
                 }
-                else if (n->get_key() < key)
+                else if (rs > 0)
                 {
                     pre = n;
                 }

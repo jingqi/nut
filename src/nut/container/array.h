@@ -9,6 +9,7 @@
 #include <nut/rc/rc_new.h>
 #include <nut/rc/enrc.h>
 
+
 namespace nut
 {
 
@@ -115,7 +116,7 @@ public:
     {
         if (this == &x)
             return true;
-        if (_size != x._size)
+        else if (_size != x._size)
             return false;
         for (size_type i = 0; i < _size; ++i)
         {
@@ -130,6 +131,26 @@ public:
         return !(*this == x);
     }
 
+    bool operator<(const self_type& x) const
+    {
+        return compare(x) < 0;
+    }
+
+    bool operator>(const self_type& x) const
+    {
+        return x < *this;
+    }
+
+    bool operator<=(const self_type& x) const
+    {
+        return !(x < *this);
+    }
+
+    bool operator>=(const self_type& x) const
+    {
+        return !(*this < x);
+    }
+
     const T& operator[](size_type i) const
     {
         assert(i < _size);
@@ -140,6 +161,21 @@ public:
     {
         assert(i < _size);
         return const_cast<T&>(static_cast<const self_type&>(*this)[i]);
+    }
+
+    int compare(const self_type& x) const
+    {
+        if (this == &x)
+            return 0;
+
+        size_type i = 0;
+        for (; i < _size && i < x._size; ++i)
+        {
+            const int rs = compare(at(i), x.at(i));
+            if (0 != rs)
+                return rs;
+        }
+        return i < _size ? 1 : (i < x._size ? -1 : 0);
     }
 
     const_iterator begin() const
@@ -363,6 +399,26 @@ public:
         return _array->operator!=(*x._array);
     }
 
+    bool operator<(const self_type& x) const
+    {
+        return _array->operator<(*x._array);
+    }
+
+    bool operator>(const self_type& x) const
+    {
+        return _array->operator>(*x._array);
+    }
+
+    bool operator<=(const self_type& x) const
+    {
+        return _array->operator<=(*x._array);
+    }
+
+    bool operator>=(const self_type& x) const
+    {
+        return _array->operator>=(*x._array);
+    }
+
     const T& operator[](size_type i) const
     {
         return _array->operator[](i);
@@ -372,6 +428,11 @@ public:
     {
         copy_on_write();
         return _array->operator[](i);
+    }
+
+    int compare(const self_type& x) const
+    {
+        return _array->compare(*x._array);
     }
 
     const_iterator begin() const

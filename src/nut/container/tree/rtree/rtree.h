@@ -24,26 +24,36 @@ namespace nut
  * 多维空间 rtree
  *
  * 参考资料：
- *      R-Trees - A Dynamic index structure for spatial searching. Antonin Guttman. University of California Berkeley
+ *      R-Trees - A Dynamic index structure for spatial searching. Antonin Guttman.
+ *  University of California Berkeley
  *
- * @param DataT 数据类型; 可以是 int、void*, obj* 等
- * @param NumT 数字类型; 可以是 int、float 等
+ * @param DATA_TYPE 数据类型; 可以是 int、void*, obj* 等
+ * @param NUM_TYPE 数字类型; 可以是 int、float 等
  * @param DIMENSIONS 区域维数; 大于等于2
- * @param RealNumT 实数，避免乘法运算溢出，常用的是float，double等
+ * @param FLOAT_TYPE 实数，避免乘法运算溢出，常用的是float，double等
  * @param MAX_ENTRY_COUNT 节点最大孩子数; 大于等于2
  * @param MIN_ENTRY_COUNT 节点最小孩子数; 小于最大孩子数
  */
-template <typename DataT, typename NumT, size_t DIMENSIONS = 2, typename RealNumT = double,
-          size_t MAX_ENTRY_COUNT = 5, size_t MIN_ENTRY_COUNT = MAX_ENTRY_COUNT / 2>
+template <typename DATA_TYPE, typename NUM_TYPE, size_t DIMENSIONS = 2,
+          typename FLOAT_TYPE = double, size_t MAX_ENTRY_COUNT = 5,
+          size_t MIN_ENTRY_COUNT = MAX_ENTRY_COUNT / 2>
 class RTree
 {
     static_assert(DIMENSIONS >= 2, "rtree 空间维数");
     static_assert(MAX_ENTRY_COUNT >= 2, "rtree 最大子节点数");
-    static_assert(1 <= MIN_ENTRY_COUNT && MIN_ENTRY_COUNT <= (MAX_ENTRY_COUNT + 1) / 2, "rtree 最小子节点数");
+    static_assert(1 <= MIN_ENTRY_COUNT && MIN_ENTRY_COUNT <= (MAX_ENTRY_COUNT + 1) / 2,
+                  "rtree 最小子节点数");
 
 public:
-    typedef MDArea<NumT, DIMENSIONS, RealNumT>  area_type;
-    typedef DataT                               data_type;
+    typedef typename std::enable_if<std::is_integral<NUM_TYPE>::value ||
+                                    std::is_floating_point<NUM_TYPE>::value,
+                                    NUM_TYPE>::type num_type;
+
+    typedef typename std::enable_if<std::is_floating_point<FLOAT_TYPE>::value,
+                                    FLOAT_TYPE>::type float_type;
+
+    typedef MDArea<num_type, DIMENSIONS, float_type> area_type;
+    typedef DATA_TYPE data_type;
 
 private:
     /**
@@ -188,7 +198,8 @@ private:
         data_type data;
     };
 
-    typedef RTree<DataT, NumT, DIMENSIONS, RealNumT, MAX_ENTRY_COUNT, MIN_ENTRY_COUNT> self_type;
+    typedef RTree<data_type, num_type, DIMENSIONS, float_type, MAX_ENTRY_COUNT,
+                  MIN_ENTRY_COUNT> self_type;
 
 public:
     RTree()
@@ -445,7 +456,8 @@ public:
     /**
      * 查找与指定区域相交的数据
      */
-    void search_intersect(const area_type& rect, std::vector<std::pair<area_type,data_type> > *appended)
+    void search_intersect(const area_type& rect,
+                          std::vector<std::pair<area_type,data_type> > *appended)
     {
         assert(nullptr != appended);
 
@@ -481,7 +493,8 @@ public:
     /**
      * 查找包含在指定区域内的数据
      */
-    void search_contains(const area_type& rect, std::vector<std::pair<area_type, data_type> > *appended)
+    void search_contains(const area_type& rect,
+                         std::vector<std::pair<area_type, data_type> > *appended)
     {
         assert(nullptr != appended);
 
@@ -607,12 +620,13 @@ private:
     /**
      * 扩展到包容指定的区域所需要扩展的空间
      */
-    static RealNumT acreage_needed(const area_type& x, const area_type& y)
+    static float_type acreage_needed(const area_type& x, const area_type& y)
     {
-        RealNumT new_acr = 1;
+        float_type new_acr = 1;
         for (size_t i = 0; i < DIMENSIONS; ++i)
         {
-            new_acr *= std::max(x.higher[i], y.higher[i]) - std::min(x.lower[i], y.lower[i]);
+            new_acr *= std::max(x.higher[i], y.higher[i]) -
+                std::min(x.lower[i], y.lower[i]);
         }
         return new_acr - x.acreage();
     }
@@ -652,13 +666,13 @@ private:
             TreeNode *nn = nullptr;
 
             // choose the least enlargement child
-            RealNumT least = 0;
+            float_type least = 0;
             for (size_t i = 0; i < MAX_ENTRY_COUNT; ++i)
             {
                 Node *e = ret->child_at(i);
                 if (nullptr == e)
                     break;
-                RealNumT el = acreage_needed(e->area, rect_to_add);
+                float_type el = acreage_needed(e->area, rect_to_add);
                 if (0 == i || el < least)
                 {
                     nn = dynamic_cast<TreeNode*>(e); // 因为 depth > 1，这里应当是成功的
@@ -732,7 +746,8 @@ private:
 
             Node *e = pick_next(&remained, parent->area, uncle->area);
             assert(nullptr != e);
-            RealNumT el1 = acreage_needed(parent->area, e->area), el2 = acreage_needed(uncle->area, e->area);
+            float_type el1 = acreage_needed(parent->area, e->area),
+                el2 = acreage_needed(uncle->area, e->area);
             if (el1 < el2 || (el1 == el2 && count1 < count2))
             {
                 parent->append_child(e);
@@ -755,7 +770,8 @@ private:
      */
     void liner_pick_seeds(std::list<Node*> *children, Node **pseed1, Node **pseed2)
     {
-        assert(nullptr != children && children->size() >= 2 && nullptr != pseed1 && nullptr != pseed2);
+        assert(nullptr != children && children->size() >= 2 &&
+               nullptr != pseed1 && nullptr != pseed2);
 
         typedef std::list<Node*> list_type;
         typedef typename list_type::iterator iter_type;
@@ -806,15 +822,17 @@ private:
 
         // 对比各个维度的分离度，取分离度最大的维度对应的一组数据
         int greatest_separation_idx = 0;
-        RealNumT greatest_separation = 0;
+        float_type greatest_separation = 0;
         for (size_t i = 0; i < DIMENSIONS; ++i)
         {
-            RealNumT width = (*(highest_high_side[i]))->area.higher[i] - (*(lowest_low_side[i]))->area.lower[i];
+            float_type width = (*(highest_high_side[i]))->area.higher[i] -
+                (*(lowest_low_side[i]))->area.lower[i];
             assert(width > 0);
-            RealNumT separation = (*(highest_low_side[i]))->area.lower[i] - (*(lowest_high_side[i]))->area.higher[i];
+            float_type separation = (*(highest_low_side[i]))->area.lower[i] -
+                (*(lowest_high_side[i]))->area.higher[i];
             if (separation < 0)
                 separation = -separation;
-            RealNumT nomalize = separation / width;
+            float_type nomalize = separation / width;
             if (i == 0 || nomalize > greatest_separation)
             {
                 greatest_separation_idx = (int) i;
@@ -840,11 +858,11 @@ private:
         typedef typename std::list<Node*>::iterator iter_type;
 
         iter_type max_diff_index = remained->begin();
-        RealNumT max_diff = 0;
+        float_type max_diff = 0;
         for (iter_type iter = remained->begin(), end = remained->end();
             iter != end; ++iter)
         {
-            RealNumT diff = acreage_needed(r1, (*iter)->area) - acreage_needed(r2, (*iter)->area);
+            float_type diff = acreage_needed(r1, (*iter)->area) - acreage_needed(r2, (*iter)->area);
             if (diff < 0)
                 diff = -diff;
             if (diff > max_diff)

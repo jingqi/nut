@@ -142,6 +142,8 @@ public:
      */
     static void divide(const BigInteger& a, const BigInteger& b, BigInteger *result, BigInteger *remainder);
 
+    int compare(const BigInteger& x) const;
+
     void set_zero();
 
     bool is_zero() const;

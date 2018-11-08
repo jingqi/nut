@@ -5,6 +5,8 @@
 #include <assert.h>
 
 #include "bstree.h"
+#include "../comparable.h"
+
 
 namespace nut
 {
@@ -29,7 +31,7 @@ public:
         for (NODE *current = root; nullptr != current; )
         {
             parent = current;
-            if (new_node->get_key() < current->get_key())
+            if (compare(new_node->get_key(), current->get_key()) < 0)
             {
                 current = current->get_left_child();
                 insert_to_left = true;

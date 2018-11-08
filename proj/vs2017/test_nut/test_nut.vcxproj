@@ -145,6 +145,7 @@
     <ClCompile Include="..\..\..\src\test_nut\container\test_array.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\container\test_bitstream.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\container\test_bundle.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\container\test_comparable.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\container\test_integer_set.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\container\test_lru_cache.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\container\test_lru_data_cache.cpp" />

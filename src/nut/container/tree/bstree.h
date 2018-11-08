@@ -3,6 +3,8 @@
 #define ___HEADFILE_CFEF4EB8_082C_417F_A58C_9D65C9F3DAD1_
 
 #include "btree.h"
+#include "../comparable.h"
+
 
 namespace nut
 {
@@ -24,9 +26,10 @@ public:
     {
         while (nullptr != sub_root)
         {
-            if (key < sub_root->get_key())
+            const int rs = compare(key, sub_root->get_key());
+            if (rs < 0)
                 sub_root = sub_root->get_left_child();
-            else if (sub_root->get_key() < key)
+            else if (rs > 0)
                 sub_root = sub_root->get_right_child();
             else
                 return sub_root;
@@ -47,7 +50,7 @@ public:
         for (NODE *x = root; nullptr != x; )
         {
             parent = x;
-            if (new_node->get_key() < x->get_key())
+            if (compare(new_node->get_key(), x->get_key()) < 0)
             {
                 x = x->get_left_child();
                 insert_to_left = true;

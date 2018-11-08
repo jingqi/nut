@@ -225,5 +225,8 @@
     <ClCompile Include="..\..\..\src\test_nut\numeric\test_word_array_integer.cpp">
       <Filter>test\numeric</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\test_comparable.cpp">
+      <Filter>test\container</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -5,11 +5,15 @@
 #include <assert.h>
 #include <stddef.h> // for ptrdiff_t
 #include <vector>
+#include <string>
 #include <iterator>
 #include <algorithm> // for std::min() and so on
 
 #include <nut/platform/int_type.h> // for ssize_t in windows VC
 #include <nut/util/string/to_string.h>
+
+#include "comparable.h"
+
 
 namespace nut
 {
@@ -19,14 +23,14 @@ namespace nut
  *
  * eg. {[1,3],6,[8,9]} contains 1 2 3 6 8 9
  */
-template <typename IntType = int>
+template <typename Integral = int>
 class IntegerSet
 {
 private:
-    typedef IntegerSet<IntType> self_type;
+    typedef IntegerSet<Integral> self_type;
 
 public:
-    typedef IntType int_type;
+    typedef typename std::enable_if<std::is_integral<Integral>::value,Integral>::type int_type;
 
     class Range
     {
@@ -208,25 +212,7 @@ public:
 
     bool operator<(const self_type& x) const
     {
-        if (this == &x)
-            return false;
-        for (size_t i = 0; i < _ranges.size() || i < x._ranges.size(); ++i)
-        {
-            if (i >= _ranges.size())
-                return true;
-            else if (i >= x._ranges.size())
-                return false;
-
-            const Range& rg1 = _ranges.at(i);
-            const Range& rg2 = x._ranges.at(i);
-            if (rg1.first != rg2.first)
-                return rg1.first < rg2.first;
-            else if (rg1.last < rg2.last)
-                return i + 1 >= _ranges.size();
-            else if (rg1.last > rg2.last)
-                return i + 1 < x._ranges.size();
-        }
-        return false;
+        return compare(x) < 0;
     }
 
     bool operator>(const self_type& x) const
@@ -722,6 +708,27 @@ public:
     {
         *this = *this ^ x;
         return *this;
+    }
+
+    int compare(const self_type& x) const
+    {
+        if (this == &x)
+            return 0;
+
+        const size_t lsz = _ranges.size(), rsz = x._ranges.size();
+        size_t i = 0;
+        for (; i < lsz && i < rsz; ++i)
+        {
+            const Range& rg1 = _ranges.at(i);
+            const Range& rg2 = x._ranges.at(i);
+            if (rg1.first != rg2.first)
+                return rg1.first < rg2.first ? -1 : 1;
+            else if (rg1.last < rg2.last)
+                return i + 1 >= lsz ? -1 : 1;
+            else if (rg1.last > rg2.last)
+                return i + 1 < rsz ? -1 : 1;
+        }
+        return i < lsz ? 1 : (i < rsz ? -1 : 0);
     }
 
     void add_value(int_type value)

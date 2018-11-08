@@ -6,6 +6,8 @@
 #include <new>
 
 #include "skiplist.h"
+#include "../comparable.h"
+
 
 namespace nut
 {
@@ -79,7 +81,7 @@ private:
         }
 
     private:
-        T _key;
+        const T _key;
         Node **_next = nullptr;
         int _level = SkipList<T,Node,self_type>::INVALID_LEVEL; // 0-based
     };
@@ -232,29 +234,7 @@ public:
 
     bool operator<(const self_type& x) const
     {
-        if (this == &x)
-            return false;
-        else if (0 == _size)
-            return x._size > 0;
-        else if (0 == x._size)
-            return false;
-        assert(nullptr != _head && _level >= 0 && nullptr != x._head && x._level >= 0);
-
-        Node *current1 = _head[0], current2 = x._head[0];
-        while (true)
-        {
-            if (nullptr == current1)
-                return nullptr != current2;
-            else if (nullptr == current2)
-                return false;
-            else if (current1->get_key() < current2->get_key())
-                return true;
-            else if (current2->get_key() < current1->get_key())
-                return false;
-            current1 = current1->get_next(0);
-            current2 = current2->get_next(0);
-        }
-        return false; // dead code
+        return compare(x) < 0;
     }
 
     bool operator>(const self_type& x) const
@@ -270,6 +250,27 @@ public:
     bool operator>=(const self_type& x) const
     {
         return !(*this < x);
+    }
+
+    int compare(const self_type& x) const
+    {
+        if (this == &x)
+            return 0;
+        else if (0 == _size || 0 == x._size)
+            return 0 == _size ? (0 != x._size ? -1 : 0) : 1;
+        assert(nullptr != _head && _level >= 0 && nullptr != x._head && x._level >= 0);
+
+        Node *current1 = _head[0], current2 = x._head[0];
+        while (nullptr != current1 && nullptr != current2)
+        {
+            const int rs = compare(current1->get_key(), current2->get_key());
+            if (0 != rs)
+                return rs;
+
+            current1 = current1->get_next(0);
+            current2 = current2->get_next(0);
+        }
+        return nullptr != current1 ? 1 : (nullptr != current2 ? -1 : 0);
     }
 
     size_t size() const

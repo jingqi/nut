@@ -15,15 +15,22 @@ namespace nut
 /**
  * 多维区域
  *
- * @param NumT 数字类型; 可以是 int、float 等
+ * @param NUM_TYPE 数字类型; 可以是 int、float 等
  * @param DIMENSIONS 维数，大于等于1
- * @param RealNumT 实数，避免乘法运算溢出，常用的是float，double等
+ * @param FLOAT_TYPE 实数，避免乘法运算溢出，常用的是 float，double 等
  */
-template <typename NumT, size_t DIMENSIONS = 2, typename RealNumT = double>
+template <typename NUM_TYPE, size_t DIMENSIONS = 2, typename FLOAT_TYPE = double>
 class MDArea
 {
 private:
-    typedef MDArea<NumT, DIMENSIONS, RealNumT> self_type;
+    typedef typename std::enable_if<std::is_integral<NUM_TYPE>::value ||
+                                    std::is_floating_point<NUM_TYPE>::value,
+                                    NUM_TYPE>::type num_type;
+
+    typedef typename std::enable_if<std::is_floating_point<FLOAT_TYPE>::value,
+                                    FLOAT_TYPE>::type float_type;
+
+    typedef MDArea<num_type, DIMENSIONS, float_type> self_type;
 
 public:
     MDArea()
@@ -90,9 +97,9 @@ public:
     /**
      * 所占的空间
      */
-    RealNumT acreage() const
+    float_type acreage() const
     {
-        RealNumT acr = 1;
+        float_type acr = 1;
         for (size_t i = 0; i < DIMENSIONS; ++i)
             acr *= higher[i] - lower[i];
         return acr;
@@ -126,8 +133,8 @@ public:
     }
 
 public:
-    NumT lower[DIMENSIONS]; // 低边界
-    NumT higher[DIMENSIONS]; // 高边界
+    num_type lower[DIMENSIONS]; // 低边界
+    num_type higher[DIMENSIONS]; // 高边界
 };
 
 }

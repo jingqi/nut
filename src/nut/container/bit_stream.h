@@ -44,6 +44,14 @@ public:
     bool operator==(const BitStream& x) const;
     bool operator!=(const BitStream& x) const;
 
+    /**
+     * 字典序比较，不是二进制数字比较
+     */
+    bool operator<(const BitStream& x) const;
+    bool operator>(const BitStream& x) const;
+    bool operator<=(const BitStream& x) const;
+    bool operator>=(const BitStream& x) const;
+
     BitStream operator+(const BitStream& x) const;
     BitStream& operator+=(const BitStream& x);
 
@@ -60,6 +68,8 @@ public:
      * @return 1 或者 0
      */
     int operator[](size_t i) const;
+
+    int compare(const BitStream& x) const;
 
     size_t size() const;
 

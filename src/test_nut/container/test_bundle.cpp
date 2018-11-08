@@ -1,6 +1,5 @@
 ﻿
 #include <nut/unittest/unittest.h>
-
 #include <nut/container/bundle.h>
 
 using namespace std;

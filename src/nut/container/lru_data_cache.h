@@ -74,7 +74,7 @@ private:
         Node& operator=(const Node&) = delete;
 
     public:
-        K key;
+        const K key;
         void *data = nullptr;
         size_t size = 0;
         Node *prev = nullptr;

@@ -8,6 +8,7 @@
 #include <nut/platform/int_type.h> // for ssize_t in windows VC
 
 #include "bit_stream.h"
+#include "comparable.h"
 
 namespace nut
 {
@@ -167,16 +168,39 @@ bool BitStream::operator==(const BitStream& x) const
         bit_remained_count = _bit_size % (sizeof(word_type) * 8);
     if (0 != ::memcmp(_buf, x._buf, sizeof(word_type) * word_count))
         return false;
-    if (0 != bit_remained_count)
-        if ((_buf[word_count] << (sizeof(word_type) * 8 - bit_remained_count)) !=
-            (x._buf[word_count] << (sizeof(word_type) * 8 - bit_remained_count)))
+    if (bit_remained_count > 0)
+    {
+        const word_type l = _buf[word_count] << (sizeof(word_type) * 8 - bit_remained_count),
+            r = x._buf[word_count] << (sizeof(word_type) * 8 - bit_remained_count);
+        if (l != r)
             return false;
+    }
     return true;
 }
 
 bool BitStream::operator!=(const BitStream& x) const
 {
     return !(*this == x);
+}
+
+bool BitStream::operator<(const BitStream& x) const
+{
+    return compare(x) < 0;
+}
+
+bool BitStream::operator>(const BitStream& x) const
+{
+    return x < *this;
+}
+
+bool BitStream::operator<=(const BitStream& x) const
+{
+    return !(x < *this);
+}
+
+bool BitStream::operator>=(const BitStream& x) const
+{
+    return !(*this < x);
 }
 
 BitStream BitStream::operator+(const BitStream& x) const
@@ -350,6 +374,29 @@ BitStream& BitStream::operator^=(const BitStream& x)
 int BitStream::operator[](size_t i) const
 {
     return bit_at(i);
+}
+
+int BitStream::compare(const BitStream& x) const
+{
+    if (this == &x)
+        return 0;
+
+    const size_t min_bitsz = (std::min)(_bit_size, x._bit_size);
+    const size_t word_count = min_bitsz / (sizeof(word_type) * 8);
+    for (size_t i = 0; i < word_count; ++i)
+    {
+        if (_buf[i] != x._buf[i])
+            return nut::compare(reverse_bits(_buf[i]), reverse_bits(x._buf[i])); // NOTE 比较字典序而不是整数值
+    }
+    const size_t bit_remained_count = min_bitsz % (sizeof(word_type) * 8);
+    if (bit_remained_count > 0)
+    {
+        const word_type l = _buf[word_count] << (sizeof(word_type) * 8 - bit_remained_count),
+            r = x._buf[word_count] << (sizeof(word_type) * 8 - bit_remained_count);
+        if (l != r)
+            return nut::compare(reverse_bits(l), reverse_bits(r));
+    }
+    return _bit_size < x._bit_size ? -1 : (_bit_size > x._bit_size ? 1 : 0);
 }
 
 size_t BitStream::size() const

@@ -32,7 +32,7 @@ private:
         {}
 
     public:
-        K key;
+        const K key;
         V value;
         Node *prev = nullptr;
         Node *next = nullptr;

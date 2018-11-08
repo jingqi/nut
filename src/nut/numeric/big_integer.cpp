@@ -139,13 +139,13 @@ bool BigInteger::operator==(const BigInteger& x) const
 {
     if (this == &x)
         return true;
-    return signed_equals(_data, _significant_len, x._data, x._significant_len);
+    return signed_compare(_data, _significant_len, x._data, x._significant_len) == 0;
 }
 
 bool BigInteger::operator==(native_int_type v) const
 {
-    return signed_equals(_data, _significant_len,
-                         (word_type*)&v, sizeof(v) / sizeof(word_type));
+    return signed_compare(_data, _significant_len, (word_type*)&v,
+                          sizeof(v) / sizeof(word_type)) == 0;
 }
 
 bool BigInteger::operator!=(const BigInteger& x) const
@@ -160,13 +160,13 @@ bool BigInteger::operator!=(native_int_type v) const
 
 bool BigInteger::operator<(const BigInteger& x) const
 {
-    return signed_less_than(_data, _significant_len, x._data, x._significant_len);
+    return signed_compare(_data, _significant_len, x._data, x._significant_len) < 0;
 }
 
 bool BigInteger::operator<(native_int_type v) const
 {
-    return signed_less_than(_data, _significant_len,
-                            (word_type*)&v, sizeof(v) / sizeof(word_type));
+    return signed_compare(_data, _significant_len, (word_type*)&v,
+                          sizeof(v) / sizeof(word_type)) < 0;
 }
 
 bool BigInteger::operator>(const BigInteger& x) const
@@ -176,8 +176,8 @@ bool BigInteger::operator>(const BigInteger& x) const
 
 bool BigInteger::operator>(native_int_type v) const
 {
-    return signed_less_than((word_type*)&v, sizeof(v) / sizeof(word_type),
-                            _data, _significant_len);
+    return signed_compare((word_type*)&v, sizeof(v) / sizeof(word_type),
+                          _data, _significant_len) < 0;
 }
 
 bool BigInteger::operator<=(const BigInteger& x) const
@@ -531,6 +531,11 @@ void BigInteger::divide(const BigInteger& a, const BigInteger& b,
         remainder->_significant_len = b._significant_len;
         remainder->minimize_significant_len();
     }
+}
+
+int BigInteger::compare(const BigInteger& x) const
+{
+    return signed_compare(_data, _significant_len, x._data, x._significant_len);
 }
 
 void BigInteger::set_zero()

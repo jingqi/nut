@@ -131,6 +131,7 @@
     <ClInclude Include="..\..\..\src\nut\container\bytestream\input_stream.h" />
     <ClInclude Include="..\..\..\src\nut\container\bytestream\output_stream.h" />
     <ClInclude Include="..\..\..\src\nut\container\bytestream\random_access_stream.h" />
+    <ClInclude Include="..\..\..\src\nut\container\comparable.h" />
     <ClInclude Include="..\..\..\src\nut\container\integer_set.h" />
     <ClInclude Include="..\..\..\src\nut\container\lru_cache.h" />
     <ClInclude Include="..\..\..\src\nut\container\lru_data_cache.h" />

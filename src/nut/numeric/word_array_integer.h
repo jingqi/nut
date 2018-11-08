@@ -97,58 +97,21 @@ size_t unsigned_significant_size(const T *a, size_t N)
 }
 
 /**
- * (有符号数)是否相等
- */
-template <typename T>
-bool signed_equals(const T *a, size_t M, const T *b, size_t N)
-{
-    assert(nullptr != a && M > 0 && nullptr != b && N > 0);
-
-    const bool positive1 = is_positive(a, M), positive2 = is_positive(b, N);
-    if (positive1 != positive2)
-        return false;
-
-    const T fill = (positive1 ? 0 : ~(T)0);
-    const size_t limit = (std::max)(M, N);
-    for (size_t i = 0; i < limit; ++i)
-    {
-        if ((i < M ? a[i] : fill) != (i < N ? b[i] : fill))
-            return false;
-    }
-    return true;
-}
-
-/**
- * (无符号数)是否相等
- */
-template <typename T>
-bool unsigned_equals(const T *a, size_t M, const T*b, size_t N)
-{
-    assert(nullptr != a && M > 0 && nullptr != b && N > 0);
-
-    const size_t limit = (std::max)(M, N);
-    for (size_t i = 0; i < limit; ++i)
-    {
-        if ((i < M ? a[i] : 0) != (i < N ? b[i] : 0))
-            return false;
-    }
-    return true;
-}
-
-/**
- * (有符号数)小于
+ * (有符号数)比较
  *
- * @return a<M> < b<N>
+ * @return <0 if a<M> < b<N>
+ *         0 if a<M> == b<N>
+ *         >0 if a<M> > b<N>
  */
 template <typename T>
-bool signed_less_than(const T *a, size_t M, const T *b, size_t N)
+int signed_compare(const T *a, size_t M, const T *b, size_t N)
 {
     assert(nullptr != a && M > 0 && nullptr != b && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
     const bool positive1 = is_positive(a, M), positive2 = is_positive(b, N);
     if (positive1 != positive2)
-        return positive2;
+        return positive2 ? -1 : 1;
 
     // 同号比较
     const word_type fill = (positive1 ? 0 : ~(word_type)0);
@@ -157,18 +120,20 @@ bool signed_less_than(const T *a, size_t M, const T *b, size_t N)
         const word_type op1 = (i < (ssize_t) M ? reinterpret_cast<const word_type*>(a)[i] : fill);
         const word_type op2 = (i < (ssize_t) N ? reinterpret_cast<const word_type*>(b)[i] : fill);
         if (op1 != op2)
-            return op1 < op2;
+            return op1 < op2 ? -1 : 1;
     }
-    return false; // 相等
+    return 0; // 相等
 }
 
 /**
- * (无符号数)小于
+ * (无符号数)比较
  *
- * @return a<M> < b<N>
+ * @return <0 if a<M> < b<N>
+ *         0 if a<M> == b<N>
+ *         >0 if a<M> > b<N>
  */
 template <typename T>
-bool unsigned_less_than(const T *a, size_t M, const T *b, size_t N)
+int unsigned_compare(const T *a, size_t M, const T *b, size_t N)
 {
     assert(nullptr != a && M > 0 && nullptr != b && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
@@ -178,9 +143,9 @@ bool unsigned_less_than(const T *a, size_t M, const T *b, size_t N)
         const word_type op1 = (i < (ssize_t) M ? reinterpret_cast<const word_type*>(a)[i] : 0);
         const word_type op2 = (i < (ssize_t) N ? reinterpret_cast<const word_type*>(b)[i] : 0);
         if (op1 != op2)
-            return op1 < op2;
+            return op1 < op2 ? -1 : 1;
     }
-    return false; // 相等
+    return 0; // 相等
 }
 
 /**
