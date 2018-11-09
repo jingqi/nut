@@ -119,10 +119,9 @@ public:
     virtual int release_ref() const override final
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
-        const int ret = --_ref_count; // memory_order release
+        const int ret = --_ref_count;
         if (0 == ret)
         {
-            std::atomic_thread_fence(std::memory_order_acquire); // memory_order acquire
             this->~RCWrapper();
             ::free(const_cast<RCWrapper<T>*>(this));
         }
