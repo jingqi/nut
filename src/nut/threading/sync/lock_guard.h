@@ -6,7 +6,7 @@ namespace nut
 {
 
 template <typename T>
-class Guard
+class LockGuard
 {
 public:
     /**
@@ -17,23 +17,42 @@ public:
      * @param need_unlock
      *      whether need to unlock it
      */
-    explicit Guard(T *lock, bool need_lock = true, bool need_unlock = true)
+    explicit LockGuard(T *lock, bool need_lock = true, bool need_unlock = true)
         : _lock(lock), _need_unlock(need_unlock)
     {
         if (nullptr != _lock && need_lock)
             _lock->lock();
     }
 
-    ~Guard()
+    ~LockGuard()
     {
         if (nullptr != _lock && _need_unlock)
             _lock->unlock();
     }
 
+    void lock()
+    {
+        if (nullptr != _lock)
+            _lock->lock();
+    }
+
+    void unlock()
+    {
+        if (nullptr != _lock)
+            _lock->unlock();
+        _need_unlock = false;
+    }
+
+    void release()
+    {
+        unlock();
+        _lock = nullptr;
+    }
+
 private:
     // Non-copyable
-    Guard(const Guard<T>&) = delete;
-    Guard& operator=(const Guard<T>&) = delete;
+    LockGuard(const LockGuard<T>&) = delete;
+    LockGuard& operator=(const LockGuard<T>&) = delete;
 
 private:
     T *_lock = nullptr;

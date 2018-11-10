@@ -8,7 +8,6 @@
 #endif
 
 #include <nut/unittest/unittest.h>
-
 #include <nut/threading/lockfree/concurrent_stack.h>
 
 using namespace nut;

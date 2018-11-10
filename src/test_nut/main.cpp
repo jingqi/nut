@@ -12,6 +12,7 @@
 #include <nut/unittest/unittest.h>
 #include <nut/unittest/console_test_logger.h>
 #include <nut/util/console_util.h>
+#include <nut/threading/lockfree/hazard_pointer/hp_record.h>
 
 
 using namespace std;
@@ -82,8 +83,8 @@ int main(int argc, char *argv[])
     if (argc <= 1)
     {
         // default action
-        runner.run_group("quiet");
-        // runner.run_fixture("TestTimeWheel");
+        // runner.run_group("quiet");
+        runner.run_fixture("TestConcurrentHashMap");
         // runner.run_case("TestTimeWheel", "test_smoke");
     }
     else
@@ -143,6 +144,8 @@ int main(int argc, char *argv[])
             }
         }
     }
+
+    HPRecord::clear();
 
 #if NUT_PLATFORM_OS_WINDOWS
     if (ConsoleUtil::isatty())

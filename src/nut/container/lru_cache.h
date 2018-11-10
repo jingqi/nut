@@ -6,9 +6,6 @@
 #include <stdlib.h>
 #include <unordered_map>
 
-#include <nut/threading/sync/dummy_lock.h>
-#include <nut/threading/sync/guard.h>
-
 
 namespace nut
 {
