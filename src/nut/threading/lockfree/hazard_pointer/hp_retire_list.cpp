@@ -1,6 +1,7 @@
 ﻿
 #include <assert.h>
 #include <stdlib.h> // for ::free()
+#include <algorithm> // for std::min()
 #include <thread>
 #include <vector>
 
@@ -72,20 +73,20 @@ void HPRetireList::scan_retire_list(HPRetireList *rl)
     }
 
     // do deleting
-    typedef std::list<RetireRecord>::iterator iter_type;
-    std::vector<iter_type> delete_later;
-    for (iter_type iter = rl->_retire_list.begin(), end = rl->_retire_list.end();
-         iter != end; ++iter)
+    for (auto iter = rl->_retire_list.begin(), end = rl->_retire_list.end();
+         iter != end;)
     {
         const RetireRecord& rr = *iter;
         if (rr.version < min_version)
         {
             rr.retire_func(rr.userdata);
-            delete_later.push_back(iter);
+            rl->_retire_list.erase(iter++);
+        }
+        else
+        {
+            ++iter;
         }
     }
-    for (size_t i = 0, sz = delete_later.size(); i < sz; ++i)
-        rl->_retire_list.erase(delete_later.at(i));
 }
 
 }

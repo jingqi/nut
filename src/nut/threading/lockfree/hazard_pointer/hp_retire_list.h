@@ -6,6 +6,8 @@
 #include <list>
 #include <atomic>
 
+#include "../../../nut_config.h"
+
 
 namespace nut
 {
@@ -13,7 +15,7 @@ namespace nut
 /**
  * NOTE Instances of this class should only be THREAD-LOCAL
  */
-class HPRetireList
+class NUT_API HPRetireList
 {
 public:
     typedef void (*retire_func_type)(void*);

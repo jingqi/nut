@@ -702,7 +702,7 @@ BigInteger::size_type BigInteger::bit_count() const
     return 8 * sizeof(word_type) * _significant_len - bc;
 }
 
-int BigInteger::lowest_bit() const
+ssize_t BigInteger::lowest_bit() const
 {
     return nut::lowest_bit1((uint8_t*)_data, sizeof(word_type) * _significant_len);
 }

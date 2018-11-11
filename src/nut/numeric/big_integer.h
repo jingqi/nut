@@ -203,7 +203,7 @@ public:
      */
     size_type bit_count() const;
 
-    int lowest_bit() const;
+    ssize_t lowest_bit() const;
 
     /**
      * 取 [a, b) 范围内的随机数

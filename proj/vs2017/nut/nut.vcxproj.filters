@@ -92,6 +92,9 @@
     <Filter Include="nut\container\rwbuffer">
       <UniqueIdentifier>{5410bf15-474e-4914-9e8e-4fb3c01bdba5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="nut\threading\lockfree\hazard_pointer">
+      <UniqueIdentifier>{5b513018-b75a-49f7-b6d3-2fde35ca65df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\nut\container\tree\rtree\mdarea.h">
@@ -442,6 +445,15 @@
     <ClInclude Include="..\..\..\src\nut\container\comparable.h">
       <Filter>nut\container</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_record.h">
+      <Filter>nut\threading\lockfree\hazard_pointer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_retire_list.h">
+      <Filter>nut\threading\lockfree\hazard_pointer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_hash_map.h">
+      <Filter>nut\threading\lockfree</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">
@@ -659,6 +671,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\numeric\word_array_integer.cpp">
       <Filter>nut\numeric</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_record.cpp">
+      <Filter>nut\threading\lockfree\hazard_pointer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_retire_list.cpp">
+      <Filter>nut\threading\lockfree\hazard_pointer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

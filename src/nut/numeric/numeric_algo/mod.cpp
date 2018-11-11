@@ -157,7 +157,7 @@ struct MontgomeryPreBuildTable
     {
         assert(0 < wnd_sz && wnd_sz < 16);
 
-        size = 1 << (wnd_sz - 1);
+        size = 1LL << (wnd_sz - 1);
         table = (BigInteger**) ::malloc(sizeof(BigInteger*) * size);
         assert(nullptr != table);
         ::memset(table, 0, sizeof(BigInteger*) * size);

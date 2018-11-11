@@ -4,6 +4,8 @@
 
 #include <atomic>
 
+#include "../../../nut_config.h"
+
 
 namespace nut
 {
@@ -26,7 +28,7 @@ namespace nut
  *
  * 由于 A2 和 B2 操作存在因果关系，配合内存栅栏，从而保证正常工作
  */
-class HPRecord
+class NUT_API HPRecord
 {
 public:
     static HPRecord* acquire();
@@ -62,7 +64,7 @@ private:
     friend class HPRetireList;
 };
 
-class HPGuard
+class NUT_API HPGuard
 {
 public:
     /**

@@ -200,8 +200,11 @@
     <ClInclude Include="..\..\..\src\nut\security\encrypt\aes.h" />
     <ClInclude Include="..\..\..\src\nut\security\encrypt\aes_cbc_pkcs5.h" />
     <ClInclude Include="..\..\..\src\nut\security\encrypt\rsa.h" />
+    <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_hash_map.h" />
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_queue.h" />
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_stack.h" />
+    <ClInclude Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_record.h" />
+    <ClInclude Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_retire_list.h" />
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\stamped_ptr.h" />
     <ClInclude Include="..\..\..\src\nut\threading\priority_thread_pool.h" />
     <ClInclude Include="..\..\..\src\nut\threading\sync\dummy_lock.h" />
@@ -285,6 +288,8 @@
     <ClCompile Include="..\..\..\src\nut\security\encrypt\aes.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\encrypt\aes_cbc_pkcs5.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\encrypt\rsa.cpp" />
+    <ClCompile Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_record.cpp" />
+    <ClCompile Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_retire_list.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\priority_thread_pool.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\sync\rwlock.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\sync\sem.cpp" />
