@@ -52,6 +52,7 @@ class TestConcurrentStack : public TestFixture
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> dis(1, 5000);
+        size_t count = 0;
         while (!interrupt.load(std::memory_order_relaxed))
         {
             const int r = dis(gen);
@@ -59,7 +60,9 @@ class TestConcurrentStack : public TestFixture
                 cs->eliminate_push(to_string(r) + "|" + to_string(r + 3));
             else
                 cs->optimistic_push(to_string(r) + "|" + to_string(r + 3));
+            ++count;
         }
+        cout << "producted: " << count << endl;
     }
 
     void consume_thread(ConcurrentStack<string> *cs)
@@ -70,6 +73,7 @@ class TestConcurrentStack : public TestFixture
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> dis(0, 1);
+        size_t success_count = 0, total_count = 0;
         while (!interrupt.load(std::memory_order_relaxed))
         {
             string s;
@@ -92,20 +96,21 @@ class TestConcurrentStack : public TestFixture
                     cout << "error \"" << s << "\"" << endl;
                     continue;
                 }
-                // cout << "good " << s << endl;
+                ++success_count;
             }
+            ++total_count;
         }
+        cout << "consumed: " << success_count << "/" << total_count << endl;
     }
 
     void test_multi_thread()
     {
-        const size_t thread_count = 4;
         ConcurrentStack<string> s;
         vector<thread> threads;
         interrupt.store(false, std::memory_order_relaxed);
-        for (size_t i = 0; i < thread_count; ++i)
+        for (size_t i = 0; i < 2; ++i)
             threads.emplace_back([=,&s] { consume_thread(&s); });
-        for (size_t i = 0; i < thread_count; ++i)
+        for (size_t i = 0; i < 2; ++i)
             threads.emplace_back([=,&s] { product_thread(&s); });
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10 * 1000));

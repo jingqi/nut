@@ -26,6 +26,7 @@ namespace nut
 template <typename T>
 bool is_zero(const T *a, size_t N)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && N > 0);
 
     for (size_t i = 0; i < N; ++i)
@@ -45,6 +46,7 @@ bool is_zero(const T *a, size_t N)
 template <typename T>
 bool is_positive(const T *a, size_t N)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && N > 0);
     return 0 == (a[N - 1] & (((T) 1) << (8 * sizeof(T) - 1)));
 }
@@ -58,6 +60,7 @@ bool is_positive(const T *a, size_t N)
 template <typename T>
 bool is_negative(const T *a, size_t N)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     return !is_positive(a, N);
 }
 
@@ -69,6 +72,7 @@ bool is_negative(const T *a, size_t N)
 template <typename T>
 size_t signed_significant_size(const T *a, size_t N)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && N > 0);
 
     const bool positive = is_positive(a, N);
@@ -88,6 +92,7 @@ size_t signed_significant_size(const T *a, size_t N)
 template <typename T>
 size_t unsigned_significant_size(const T *a, size_t N)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && N > 0);
 
     size_t ret = N;
@@ -106,6 +111,7 @@ size_t unsigned_significant_size(const T *a, size_t N)
 template <typename T>
 int signed_compare(const T *a, size_t M, const T *b, size_t N)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
@@ -135,6 +141,7 @@ int signed_compare(const T *a, size_t M, const T *b, size_t N)
 template <typename T>
 int unsigned_compare(const T *a, size_t M, const T *b, size_t N)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
@@ -155,6 +162,7 @@ int unsigned_compare(const T *a, size_t M, const T *b, size_t N)
 template <typename T>
 void signed_expand(const T *a, size_t M, T *x, size_t N)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
     const int fill = (is_positive(a, M) ? 0 : 0xFF); /// 先把变量算出来，避免操作数被破坏
@@ -171,6 +179,7 @@ void signed_expand(const T *a, size_t M, T *x, size_t N)
 template <typename T>
 void unsigned_expand(const T *a, size_t M, T *x, size_t N)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
     if (x != a)
@@ -182,6 +191,7 @@ void unsigned_expand(const T *a, size_t M, T *x, size_t N)
 template <typename T>
 void _signed_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_count)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
     if (x + word_count == a)
@@ -214,6 +224,7 @@ void _signed_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_c
 template <typename T>
 void signed_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
@@ -251,6 +262,7 @@ void signed_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 template <typename T>
 void _unsigned_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_count)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
     if (x + word_count == a)
@@ -278,6 +290,7 @@ void _unsigned_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word
 template <typename T>
 void unsigned_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
@@ -313,6 +326,7 @@ void unsigned_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 template <typename T>
 void _signed_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t word_count)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
     if (x == a + word_count)
@@ -344,6 +358,7 @@ void _signed_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t word_
 template <typename T>
 void signed_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
@@ -381,6 +396,7 @@ void signed_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 template <typename T>
 void _unsigned_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t word_count)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
     if (x == a + word_count)
@@ -407,6 +423,7 @@ void _unsigned_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t wor
 template <typename T>
 void unsigned_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
@@ -446,6 +463,7 @@ void unsigned_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count
 template <typename T>
 void bit_and(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = nullptr)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && nullptr != b && nullptr != x && N > 0);
 
 #if 0 // unoptimized
@@ -496,6 +514,7 @@ void bit_and(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = null
 template <typename T>
 void bit_or(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = nullptr)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && nullptr != b && nullptr != x && N > 0);
 
 #if 0 // unoptimized
@@ -546,6 +565,7 @@ void bit_or(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = nullp
 template <typename T>
 void bit_xor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = nullptr)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && nullptr != b && nullptr != x && N > 0);
 
 #if 0 // unoptimized
@@ -596,6 +616,7 @@ void bit_xor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = null
 template <typename T>
 void bit_nxor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = nullptr)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && nullptr != b && nullptr != x && N > 0);
 
 #if 0 // unoptimized
@@ -646,6 +667,7 @@ void bit_nxor(const T *a, const T *b, T *x, size_t N, memory_allocator *ma = nul
 template <typename T>
 void bit_not(const T *a, T *x, size_t N)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && nullptr != x && N > 0);
 
     if (x < a)
@@ -751,6 +773,7 @@ template <typename T>
 uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, 
                    memory_allocator *ma = nullptr)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
@@ -791,6 +814,7 @@ template <typename T>
 uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
                      memory_allocator *ma = nullptr)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
@@ -829,6 +853,7 @@ uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
 template <typename T>
 uint8_t increase(T *x, size_t N)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
@@ -855,6 +880,7 @@ template <typename T>
 uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, 
                    memory_allocator *ma = nullptr)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<word_type>::double_unsigned_type dword_type;
@@ -895,6 +921,7 @@ template <typename T>
 uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
                      memory_allocator *ma = nullptr)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<word_type>::double_unsigned_type dword_type;
@@ -933,6 +960,7 @@ uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
 template <typename T>
 uint8_t decrease(T *x, size_t N)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
@@ -958,6 +986,7 @@ uint8_t decrease(T *x, size_t N)
 template <typename T>
 uint8_t signed_negate(const T *a, size_t M, T *x, size_t N, memory_allocator *ma = nullptr)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
@@ -996,6 +1025,7 @@ uint8_t signed_negate(const T *a, size_t M, T *x, size_t N, memory_allocator *ma
 template <typename T>
 uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N, memory_allocator *ma = nullptr)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
@@ -1050,6 +1080,7 @@ uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N, memory_allocator *
 template <typename T>
 void _unsigned_square(const T *a, size_t M, T *x, size_t N, memory_allocator *ma = nullptr)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     assert(is_positive(a, M));
     typedef typename StdInt<T>::unsigned_type word_type;
@@ -1127,6 +1158,7 @@ template <typename T>
 void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
                      memory_allocator *ma = nullptr)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
@@ -1185,6 +1217,7 @@ template <typename T>
 void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
                        memory_allocator *ma = nullptr)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
     typedef typename StdInt<T>::double_unsigned_type dword_type;
@@ -1241,6 +1274,7 @@ template <typename T>
 void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
                    T *y, size_t Q, memory_allocator *ma = nullptr)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0);
     assert((nullptr != x && P > 0) || (nullptr != y && Q > 0));
     assert(nullptr == x || P == 0 || nullptr == y || Q == 0 || y >= x + P || x >= y + Q); // 避免区域交叉覆盖
@@ -1357,6 +1391,7 @@ template <typename T>
 void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
                      T *y, size_t Q, memory_allocator *ma = nullptr)
 {
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0);
     assert((nullptr != x && P > 0) || (nullptr != y && Q > 0));
     assert(nullptr == x || P == 0 || nullptr == y || Q == 0 || y >= x + P || x >= y + Q); // 避免区域交叉覆盖

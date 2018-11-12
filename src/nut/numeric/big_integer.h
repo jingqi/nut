@@ -26,6 +26,8 @@ public:
     typedef long long                               native_int_type;
     typedef StdInt<word_type>::double_unsigned_type dword_type;
 
+    static_assert(std::is_unsigned<word_type>::value, "Unexpected integer type");
+    static_assert(std::is_signed<native_int_type>::value, "Unexpected integer type");
     static_assert(sizeof(native_int_type) % sizeof(word_type) == 0, "Unexpected integer size");
 
     friend bool operator==(native_int_type a, const BigInteger& b);

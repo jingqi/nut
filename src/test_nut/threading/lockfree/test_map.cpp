@@ -75,12 +75,16 @@ class TestConcurrentHashMap : public TestFixture
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> dis(1, 50);
+        size_t success_count = 0, total_count = 0;
         while (!interrupt.load(std::memory_order_relaxed))
         {
             const int r = dis(gen);
             string s = to_string(r);
-            m->insert(r, s);
+            if (m->insert(r, s))
+                ++success_count;
+            ++total_count;
         }
+        cout << "producted: " << success_count << "/" << total_count << endl;
     }
 
     void consume_thread(ConcurrentHashMap<int,string> *m)
@@ -91,35 +95,38 @@ class TestConcurrentHashMap : public TestFixture
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> dis(1, 50);
+        size_t success_count = 0, total_count = 0;
         while (!interrupt.load(std::memory_order_relaxed))
         {
             const int r = dis(gen);
             string s;
-            const bool rs = m->get(r, &s);
+            bool rs = m->get(r, &s);
             if (rs)
             {
-                m->remove(r);
+                if (m->remove(r))
+                    ++success_count;
                 if (::atoi(s.c_str()) != r)
                 {
                     cout << "error " << r << " \"" << s << "\"" << endl;
                     continue;
                 }
             }
+            ++total_count;
         }
+        cout << "consumed: " << success_count << "/" << total_count << endl;
     }
 
     void test_multi_thread()
     {
-        const size_t thread_count = 4;
         ConcurrentHashMap<int,string> m;
         vector<thread> threads;
         interrupt.store(false, std::memory_order_relaxed);
-        for (size_t i = 0; i < thread_count; ++i)
+        for (size_t i = 0; i < 2; ++i)
             threads.emplace_back([=,&m] { consume_thread(&m); });
-        for (size_t i = 0; i < thread_count; ++i)
+        for (size_t i = 0; i < 2; ++i)
             threads.emplace_back([=,&m] { product_thread(&m); });
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(5 * 1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10 * 1000));
         interrupt.store(true, std::memory_order_relaxed);
         cout << "interrupting..." << endl;
         for (size_t i = 0, sz = threads.size(); i < sz; ++i)

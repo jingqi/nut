@@ -22,11 +22,12 @@ class TestConcurrentQueue : public TestFixture
 {
     virtual void register_cases() override
     {
-        NUT_REGISTER_CASE(test_smoking);
+        NUT_REGISTER_CASE(test_trivially_copy_elem);
+        NUT_REGISTER_CASE(test_none_trivially_copy_elem);
         NUT_REGISTER_CASE(test_multi_thread);
     }
 
-    void test_smoking()
+    void test_trivially_copy_elem()
     {
         ConcurrentQueue<int> q;
         q.optimistic_enqueue(1);
@@ -42,6 +43,22 @@ class TestConcurrentQueue : public TestFixture
         NUT_TA(q.is_empty());
     }
 
+    void test_none_trivially_copy_elem()
+    {
+        ConcurrentQueue<string> q;
+        q.optimistic_enqueue("abc");
+        q.eliminate_enqueue("bcdefghi");
+
+        string v;
+        bool rs = q.eliminate_dequeue(&v);
+        NUT_TA(rs && v == "abc");
+
+        rs = q.optimistic_dequeue(&v);
+        NUT_TA(rs && v == "bcdefghi");
+
+        NUT_TA(q.is_empty());
+    }
+
     std::atomic<bool> interrupt = ATOMIC_VAR_INIT(false);
 
     void product_thread(ConcurrentQueue<string> *q)
@@ -52,6 +69,7 @@ class TestConcurrentQueue : public TestFixture
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> dis(1, 5000);
+        size_t count = 0;
         while (!interrupt.load(std::memory_order_relaxed))
         {
             const int r = dis(gen);
@@ -59,7 +77,9 @@ class TestConcurrentQueue : public TestFixture
                 q->eliminate_enqueue(to_string(r) + "|" + to_string(r + 3));
             else
                 q->optimistic_enqueue(to_string(r) + "|" + to_string(r + 3));
+            ++count;
         }
+        cout << "producted: " << count << endl;
     }
 
     void consume_thread(ConcurrentQueue<string> *q)
@@ -70,6 +90,7 @@ class TestConcurrentQueue : public TestFixture
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> dis(0, 1);
+        size_t success_count = 0, total_count = 0;
         while (!interrupt.load(std::memory_order_relaxed))
         {
             string s;
@@ -92,22 +113,24 @@ class TestConcurrentQueue : public TestFixture
                     cout << "error \"" << s << "\"" << endl;
                     continue;
                 }
+                ++success_count;
             }
+            ++total_count;
         }
+        cout << "consumed: " << success_count << "/" << total_count << endl;
     }
 
     void test_multi_thread()
     {
-        const size_t thread_count = 4;
         ConcurrentQueue<string> q;
         vector<thread> threads;
         interrupt.store(false, std::memory_order_relaxed);
-        for (size_t i = 0; i < thread_count; ++i)
+        for (size_t i = 0; i < 2; ++i)
             threads.emplace_back([=,&q] { consume_thread(&q); });
-        for (size_t i = 0; i < thread_count; ++i)
+        for (size_t i = 0; i < 2; ++i)
             threads.emplace_back([=,&q] { product_thread(&q); });
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(5 * 1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10 * 1000));
         interrupt.store(true, std::memory_order_relaxed);
         cout << "interrupting..." << endl;
         for (size_t i = 0, sz = threads.size(); i < sz; ++i)

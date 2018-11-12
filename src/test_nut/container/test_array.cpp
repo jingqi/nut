@@ -1,7 +1,9 @@
 ﻿
-#include <nut/unittest/unittest.h>
+#include <iostream>
 
+#include <nut/unittest/unittest.h>
 #include <nut/container/array.h>
+
 
 using namespace std;
 using namespace nut;
@@ -15,6 +17,7 @@ class TestArray : public TestFixture
         NUT_REGISTER_CASE(test_array_smoking);
         NUT_REGISTER_CASE(test_array_insert_erase);
         NUT_REGISTER_CASE(test_cowarray);
+        NUT_REGISTER_CASE(test_bug1);
     }
 
     void test_array_smoking()
@@ -107,6 +110,27 @@ class TestArray : public TestFixture
         a.push_back(12);
         NUT_TA(static_cast<const COWArray<int>& >(a).data() != static_cast<const COWArray<int>& >(b).data());
         NUT_TA(static_cast<const COWArray<int>& >(b).data() == static_cast<const COWArray<int>& >(c).data());
+    }
+
+    class A
+    {
+        string m;
+    };
+
+    void test_bug1()
+    {
+        /**
+         * NOTE 类似于 std::string 的类型比较坑爹，不能直接转移内存位置，需要使用
+         *      move 构造。因为其中有类似于下面的结构：
+         *          class string { char *str; char builtin_buf[some_length]; }
+         *      当字符串长度较小时，s.str = s.builtin_buf，析构时不会调用 free()。
+         *      但是直接移动内存，导致 s.str != s.builtin_buf，析构时会错误的调用
+         *      free()。
+         *      如果实现有问题，则用 valgrind 会检测出非法内存访问！
+         */
+        Array<string> a(1); // inital capacity 1
+        a.push_back("a");
+        a.push_back("0123456789abcdef0123456789abcdef0123456789abcdef");
     }
 };
 

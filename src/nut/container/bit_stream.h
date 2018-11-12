@@ -20,6 +20,8 @@ class NUT_API BitStream
 private:
     typedef unsigned int word_type;
 
+    static_assert(std::is_unsigned<word_type>::value, "Unexpected integer type");
+
 public:
     BitStream() = default;
 

@@ -67,13 +67,44 @@ private:
     class Node
     {
     public:
-        Node(T&& v)
+        typedef typename std::conditional<
+            std::is_trivially_copyable<T>::value, T, T*>::type data_store_type;
+
+    public:
+        template <typename U>
+        explicit Node(U&& v,
+                      typename std::enable_if<std::is_trivially_copyable<U>::value,int>::type _ = 0)
             : data(std::forward<T>(v))
         {}
 
-        Node(const T& v)
+        template <typename U>
+        explicit Node(const U& v,
+                      typename std::enable_if<std::is_trivially_copyable<U>::value,int>::type _ = 0)
             : data(v)
         {}
+
+        template <typename U>
+        explicit Node(U&& v,
+                      typename std::enable_if<!std::is_trivially_copyable<U>::value,int>::type _ = 0)
+            : data(nullptr)
+        {
+            data = (T*) ::malloc(sizeof(T));
+            new (data) T(std::forward<T>(v));
+        }
+
+        template <typename U>
+        explicit Node(const U& v,
+                      typename std::enable_if<!std::is_trivially_copyable<U>::value,int>::type _ = 0)
+            : data(nullptr)
+        {
+            data = (T*) ::malloc(sizeof(T));
+            new (data) T(v);
+        }
+
+        ~Node()
+        {
+            delete_data<T>();
+        }
 
         /**
          * 构造 dummy 节点，初始化除了 data 以外的其他字段
@@ -108,8 +139,61 @@ private:
             ::free(n);
         }
 
+        template <typename U>
+        static typename std::enable_if<std::is_trivially_copyable<U>::value, void>::type
+        move_data(data_store_type *ds, T *p)
+        {
+            assert(nullptr != ds);
+            if (nullptr != p)
+                *p = *ds;
+        }
+
+        template <typename U>
+        static typename std::enable_if<!std::is_trivially_copyable<U>::value, void>::type
+        move_data(data_store_type *ds, T *p)
+        {
+            assert(nullptr != ds);
+            if (nullptr != p)
+                *p = std::move(**ds);
+        }
+
+        template <typename U>
+        static typename std::enable_if<std::is_trivially_copyable<U>::value, void>::type
+        move_and_destroy_data(data_store_type *ds, T *p)
+        {
+            assert(nullptr != ds);
+            if (nullptr != p)
+                *p = *ds;
+            ds->~T();
+        }
+
+        template <typename U>
+        static typename std::enable_if<!std::is_trivially_copyable<U>::value, void>::type
+        move_and_destroy_data(data_store_type *ds, T *p)
+        {
+            assert(nullptr != ds);
+            if (nullptr != p)
+                *p = std::move(**ds);
+            (*ds)->~T();
+            ::free(*ds);
+        }
+
+    private:
+        template <typename U>
+        typename std::enable_if<std::is_trivially_copyable<U>::value, void>::type
+        delete_data()
+        {}
+
+        template <typename U>
+        typename std::enable_if<!std::is_trivially_copyable<U>::value, void>::type
+        delete_data()
+        {
+            data->~T();
+            ::free(data);
+        }
+
     public:
-        const T data;
+        data_store_type data;
         stamp_type seg = 0; // 用于安全消隐的标记
         std::atomic<StampedPtr<Node>> prev = ATOMIC_VAR_INIT(StampedPtr<Node>());
         std::atomic<StampedPtr<Node>> next = ATOMIC_VAR_INIT(StampedPtr<Node>());
@@ -238,15 +322,13 @@ public:
      */
     bool optimistic_dequeue(T *p)
     {
-        uint8_t tmp_buf[sizeof(T)];
-        T *tmp_obj = (T*) (void*) &(tmp_buf[0]);
+        uint8_t tmp[sizeof(typename Node::data_store_type)];
 
         while (true)
         {
             // 保留旧值
             // NOTE 先取 head, 然后取 tail 和其他，再验证 head 是否改变，以保证
             //      取到的值是一致的
-            HPGuard guard_item; // Hold '_head'
             StampedPtr<Node> old_head = _head.load(std::memory_order_acquire);
             const StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
             const StampedPtr<Node> first_node_next = old_head.ptr->next.load(std::memory_order_relaxed);
@@ -266,7 +348,7 @@ public:
             }
 
             // 基于旧值的操作
-            ::memcpy(tmp_obj, &(first_node_next.ptr->data), sizeof(T));
+            ::memcpy(tmp, &(first_node_next.ptr->data), sizeof(typename Node::data_store_type));
 
             // 尝试CAS操作
             if (_head.compare_exchange_weak(
@@ -276,9 +358,7 @@ public:
                 // NOTE first_node_next.ptr 成为新的 dummy 节点
                 old_head.ptr->retired.store(true, std::memory_order_relaxed);
                 HPRetireList::retire_any(Node::delete_dummy, old_head.ptr);
-                if (nullptr != p)
-                    *p = *tmp_obj;
-                tmp_obj->~T();
+                Node::template move_and_destroy_data<T>((typename Node::data_store_type*) tmp, p);
                 return true;
             }
         }
@@ -379,8 +459,7 @@ private:
     // 尝试出队
     DequeueAttemptResult dequeue_attempt(T *p)
     {
-        uint8_t tmp_buf[sizeof(T)];
-        T *tmp_obj = (T*) (void*) &(tmp_buf[0]);
+        uint8_t tmp[sizeof(typename Node::data_store_type)];
 
         while (true)
         {
@@ -404,7 +483,7 @@ private:
             }
 
             // 基于旧值的操作
-            ::memcpy(tmp_obj, &(first_node_next.ptr->data), sizeof(T));
+            ::memcpy(tmp, &(first_node_next.ptr->data), sizeof(typename Node::data_store_type));
 
             // 尝试CAS操作
             if (_head.compare_exchange_weak(
@@ -414,9 +493,7 @@ private:
                 // NOTE first_node_next.ptr 成为新的 dummy 节点
                 old_head.ptr->retired.store(true, std::memory_order_relaxed);
                 HPRetireList::retire_any(Node::delete_dummy, old_head.ptr);
-                if (nullptr != p)
-                    *p = *tmp_obj;
-                tmp_obj->~T();
+                Node::template move_and_destroy_data<T>((typename Node::data_store_type*) tmp, p);
                 return DequeueAttemptResult::DequeueSuccess;
             }
             return DequeueAttemptResult::ConcurrentFailure;
@@ -472,8 +549,7 @@ private:
                 old_collision, {COLLISION_DONE_PTR, old_collision.stamp},
                 std::memory_order_relaxed, std::memory_order_relaxed))
         {
-            if (nullptr != p)
-                *p = old_collision.ptr->data;
+            Node::template move_data<T>(&(old_collision.ptr->data), p);
             old_collision.ptr->~Node();
             ::free(old_collision.ptr);
             return true;

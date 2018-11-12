@@ -27,19 +27,19 @@ private:
 public:
     explicit Array(size_type init_cap = 16)
     {
-        ensure_cap(init_cap);
+        ensure_cap<T>(init_cap);
     }
 
     Array(size_type sz, const T& fillv)
     {
-        ensure_cap(sz);
+        ensure_cap<T>(sz);
         std::uninitialized_fill(_buf, _buf + sz, fillv);
         _size = sz;
     }
 
     Array(const T *data, size_type sz)
     {
-        ensure_cap(sz);
+        ensure_cap<T>(sz);
         std::uninitialized_copy(data, data + sz, _buf);
         _size = sz;
     }
@@ -49,7 +49,7 @@ public:
     {
         assert(b <= e);
         const size_t sz = e - b;
-        ensure_cap(sz);
+        ensure_cap<T>(sz);
         std::uninitialized_copy(b, e, _buf);
         _size = sz;
     }
@@ -64,7 +64,7 @@ public:
 
     Array(const self_type& x)
     {
-        ensure_cap(x._size);
+        ensure_cap<T>(x._size);
         std::uninitialized_copy(x._buf, x._buf + x._size, _buf);
         _size = x._size;
     }
@@ -105,7 +105,7 @@ public:
 
         clear();
 
-        ensure_cap(x._size);
+        ensure_cap<T>(x._size);
         std::uninitialized_copy(x._buf, x._buf + x._size, _buf);
         _size = x._size;
 
@@ -222,14 +222,14 @@ public:
 
     void push_back(T&& e)
     {
-        ensure_cap(_size + 1);
+        ensure_cap<T>(_size + 1);
         new (_buf + _size) T(std::forward<T>(e));
         ++_size;
     }
 
     void push_back(const T& e)
     {
-        ensure_cap(_size + 1);
+        ensure_cap<T>(_size + 1);
         new (_buf + _size) T(e);
         ++_size;
     }
@@ -244,7 +244,7 @@ public:
     void insert(size_type index, T&& e)
     {
         assert(index <= _size);
-        ensure_cap(_size + 1);
+        ensure_cap<T>(_size + 1);
         if (index < _size)
             ::memmove(_buf + index + 1, _buf + index, sizeof(T) * (_size - index));
         new (_buf + index) T(std::forward<T>(e));
@@ -254,7 +254,7 @@ public:
     void insert(size_type index, const T& e)
     {
         assert(index <= _size);
-        ensure_cap(_size + 1);
+        ensure_cap<T>(_size + 1);
         if (index < _size)
             ::memmove(_buf + index + 1, _buf + index, sizeof(T) * (_size - index));
         new (_buf + index) T(e);
@@ -266,7 +266,7 @@ public:
     {
         assert(index <= _size && b <= e);
         const size_type len = e - b;
-        ensure_cap(_size + len);
+        ensure_cap<T>(_size + len);
         if (index < _size)
             ::memmove(_buf + index + len, _buf + index, sizeof(T) * (_size - index));
         std::uninitialized_copy(b, e, _buf + index);
@@ -300,7 +300,7 @@ public:
 
     void resize(size_type new_size, const T& fill = T())
     {
-        ensure_cap(new_size);
+        ensure_cap<T>(new_size);
         for (size_type i = new_size; i < _size; ++i)
             (_buf + i)->~T();
         if (_size < new_size)
@@ -326,7 +326,9 @@ public:
     }
 
 private:
-    void ensure_cap(size_type new_size)
+    template <typename U>
+    typename std::enable_if<std::is_trivially_copyable<U>::value, void>::type
+    ensure_cap(size_t new_size)
     {
         if (new_size <= _cap)
             return;
@@ -335,8 +337,31 @@ private:
         if (new_cap < new_size)
             new_cap = new_size;
 
-        _buf = (T*) ::realloc(_buf, sizeof(T) * new_cap);
+        _buf = (U*) ::realloc(_buf, sizeof(T) * new_cap);
         assert(nullptr != _buf);
+        _cap = new_cap;
+    }
+
+    template <typename U>
+    typename std::enable_if<!std::is_trivially_copyable<U>::value, void>::type
+    ensure_cap(size_t new_size)
+    {
+        if (new_size <= _cap)
+            return;
+
+        size_type new_cap = _cap * 3 / 2;
+        if (new_cap < new_size)
+            new_cap = new_size;
+
+        U *new_buf = (U*) ::malloc(sizeof(U) * new_cap);
+        assert(nullptr != new_buf);
+        for (size_t i = 0; i < _size; ++i)
+        {
+            new (new_buf + i) U(std::move(_buf[i]));
+            (_buf + i)->~U();
+        }
+        ::free(_buf);
+        _buf = new_buf;
         _cap = new_cap;
     }
 
