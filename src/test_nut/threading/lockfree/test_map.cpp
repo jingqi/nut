@@ -70,7 +70,7 @@ class TestConcurrentHashMap : public TestFixture
     void product_thread(ConcurrentHashMap<int,string> *m)
     {
         assert(nullptr != m);
-        cout << "consume running" << endl;
+        cout << "producter running" << endl;
 
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -86,7 +86,7 @@ class TestConcurrentHashMap : public TestFixture
     void consume_thread(ConcurrentHashMap<int,string> *m)
     {
         assert(nullptr != m);
-        cout << "product running" << endl;
+        cout << "consumer running" << endl;
 
         std::random_device rd;
         std::mt19937 gen(rd());

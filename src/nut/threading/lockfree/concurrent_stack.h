@@ -81,7 +81,7 @@ public:
 
     ~ConcurrentStack()
     {
-        while (pop(nullptr))
+        while (optimistic_pop(nullptr))
         {}
         assert(is_empty());
 
@@ -96,39 +96,35 @@ public:
         return nullptr == _top.load(std::memory_order_relaxed).ptr;
     }
 
-    void push(T&& v)
+    void optimistic_push(T&& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new (&(new_node->data)) T(std::forward<T>(v));
 
         StampedPtr<Node> old_top = _top.load(std::memory_order_relaxed);
-        while (true)
+        do
         {
             new_node->next = old_top.ptr;
-            if (_top.compare_exchange_weak(
+        } while(!_top.compare_exchange_weak(
                     old_top, {new_node, old_top.stamp + 1},
-                    std::memory_order_release, std::memory_order_relaxed))
-                return;
-        }
+                    std::memory_order_release, std::memory_order_relaxed));
     }
 
-    void push(const T& v)
+    void optimistic_push(const T& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new (&(new_node->data)) T(v);
 
         StampedPtr<Node> old_top = _top.load(std::memory_order_relaxed);
-        while (true)
+        do
         {
             new_node->next = old_top.ptr;
-            if (_top.compare_exchange_weak(
-                    old_top, {new_node, old_top.stamp + 1},
-                    std::memory_order_release, std::memory_order_relaxed))
-                return;
-        }
+        } while (!_top.compare_exchange_weak(
+                     old_top, {new_node, old_top.stamp + 1},
+                     std::memory_order_release, std::memory_order_relaxed));
     }
 
-    bool pop(T *p)
+    bool optimistic_pop(T *p)
     {
         StampedPtr<Node> old_top = _top.load(std::memory_order_relaxed);
         while (true)
