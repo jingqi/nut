@@ -4,13 +4,14 @@
 
 #include <assert.h>
 #include <string.h> // for memcpy()
-#include <stdlib.h> // for rand()
 
 #define _ENABLE_ATOMIC_ALIGNMENT_FIX // VS2015 SP2 BUG
 #include <atomic>
 #include <thread>
+#include <random>
 
 #include "stamped_ptr.h"
+#include "../threading.h"
 
 // 消隐数组的指针常量
 #define COLLISION_EMPTY_PTR nullptr
@@ -385,13 +386,13 @@ private:
     bool try_to_eliminate_enqueue(Node *new_node, stamp_type seen_tail)
     {
         new_node->seg = seen_tail;
-        const unsigned int i = ::rand() % COLLISIONS_ARRAY_SIZE;
-        StampedPtr<Node> old_collision_to_add = _collisions[i].load(std::memory_order_relaxed);
+        const unsigned r = rand_pos();
+        StampedPtr<Node> old_collision_to_add = _collisions[r].load(std::memory_order_relaxed);
         if (COLLISION_EMPTY_PTR != old_collision_to_add.ptr)
             return false;
 
         // 添加到碰撞数组
-        if (!_collisions[i].compare_exchange_weak(
+        if (!_collisions[r].compare_exchange_weak(
                 old_collision_to_add, {new_node, old_collision_to_add.stamp + 1},
                 std::memory_order_release, std::memory_order_relaxed))
             return false;
@@ -401,13 +402,13 @@ private:
             std::chrono::milliseconds(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS));
 
         // 检查是否消隐成功
-        StampedPtr<Node> old_collision_to_remove = _collisions[i].load(std::memory_order_relaxed);
+        StampedPtr<Node> old_collision_to_remove = _collisions[r].load(std::memory_order_relaxed);
         if (COLLISION_DONE_PTR == old_collision_to_remove.ptr ||
-            !_collisions[i].compare_exchange_weak(
+            !_collisions[r].compare_exchange_weak(
                 old_collision_to_remove, {COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1},
                 std::memory_order_release, std::memory_order_relaxed))
         {
-            _collisions[i].store({COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1},
+            _collisions[r].store({COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1},
                                  std::memory_order_relaxed);
             return true;
         }
@@ -418,8 +419,8 @@ private:
     bool try_to_eliminate_dequeue(T *p)
     {
         const stamp_type seen_head = _head.load(std::memory_order_relaxed).stamp;
-        const unsigned int i = ::rand() % COLLISIONS_ARRAY_SIZE;
-        StampedPtr<Node> old_collision = _collisions[i].load(std::memory_order_relaxed);
+        const unsigned r = rand_pos();
+        StampedPtr<Node> old_collision = _collisions[r].load(std::memory_order_relaxed);
         if (COLLISION_EMPTY_PTR == old_collision.ptr ||
             COLLISION_DONE_PTR == old_collision.ptr)
             return false;
@@ -427,7 +428,7 @@ private:
         if (old_collision.ptr->seg > seen_head)
             return false;
 
-        if (_collisions[i].compare_exchange_weak(
+        if (_collisions[r].compare_exchange_weak(
                 old_collision, {COLLISION_DONE_PTR, old_collision.stamp},
                 std::memory_order_release, std::memory_order_relaxed))
         {
@@ -438,6 +439,17 @@ private:
             return true;
         }
         return false;
+    }
+
+    /**
+     * Fast, thread safely random integer in [0, COLLISIONS_ARRAY_SIZE - 1]
+     */
+    static unsigned rand_pos()
+    {
+        static NUT_THREAD_LOCAL std::random_device rd;
+        static NUT_THREAD_LOCAL std::mt19937 gen(rd());
+        static NUT_THREAD_LOCAL std::uniform_int_distribution<unsigned> dist(0, COLLISIONS_ARRAY_SIZE - 1);
+        return dist(gen);
     }
 
 private:

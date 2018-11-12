@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <string>
 #include <algorithm> // for std::reverse()
+#include <random>
 
 #include "big_integer.h"
 #include "word_array_integer.h"
@@ -717,17 +718,15 @@ BigInteger BigInteger::rand_between(const BigInteger& a, const BigInteger& b)
     const bool a_is_bigger = (a > b);
     const BigInteger n = (a_is_bigger ? a - b : b - a);
     assert(n.is_positive());
+    
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    std::uniform_int_distribution<word_type> dist(0, ~(word_type)0);
 
     BigInteger ret(0);
     ret.ensure_cap(n._significant_len + 1);
     for (size_type i = 0; i < n._significant_len; ++i)
-    {
-        for (size_type j = 0; j < sizeof(word_type); ++j)
-        {
-            ret._data[i] <<= 8;
-            ret._data[i] += ::rand() & 0xFF;
-        }
-    }
+        ret._data[i] = dist(gen);
     ret._data[n._significant_len] = 0; // 保证是正数
     ret._significant_len = n._significant_len + 1;
 
