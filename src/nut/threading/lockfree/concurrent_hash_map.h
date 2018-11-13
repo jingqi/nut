@@ -89,13 +89,12 @@ private:
             assert(0 == (rh & 0x01));
             const_cast<hash_type&>(reversed_hash) = rh;
 
-            StampedPtr<Entry> init_value(n, 0);
-            new (&next) std::atomic<StampedPtr<Entry>>(init_value);
+            new (&next) AtomicStampedPtr<Entry>(n, 0);
         }
 
         void destruct_dummy()
         {
-            (&next)->~atomic();
+            (&next)->~AtomicStampedPtr();
         }
 
         bool is_dummy() const
@@ -109,10 +108,11 @@ private:
         }
 
     public:
+        alignas(sizeof(AtomicStampedPtr<Entry>)) AtomicStampedPtr<Entry> next;
+
         const K key;
         const V value;
         const hash_type reversed_hash; // bits reversed hash value
-        std::atomic<StampedPtr<Entry>> next = ATOMIC_VAR_INIT(StampedPtr<Entry>(nullptr, 0));
     };
 
 public:
@@ -228,7 +228,7 @@ public:
             new_item->next.store(StampedPtr<Entry>(item.ptr, 0), std::memory_order_relaxed);
             assert(!IS_RETIRED(item.stamp));
             if (prev->next.compare_exchange_weak(
-                    item, {new_item, INCREASE_TAG(item.stamp)},
+                    &item, {new_item, INCREASE_TAG(item.stamp)},
                     std::memory_order_release, std::memory_order_relaxed))
             {
                 const size_t sz = _size.fetch_add(1, std::memory_order_relaxed) + 1;
@@ -289,7 +289,7 @@ public:
             new_item->next.store(StampedPtr<Entry>(item.ptr, 0), std::memory_order_relaxed);
             assert(!IS_RETIRED(item.stamp));
             if (prev->next.compare_exchange_weak(
-                    item, {new_item, INCREASE_TAG(item.stamp)},
+                    &item, {new_item, INCREASE_TAG(item.stamp)},
                     std::memory_order_release, std::memory_order_relaxed))
             {
                 const size_t sz = _size.fetch_add(1, std::memory_order_relaxed) + 1;
@@ -350,7 +350,7 @@ public:
             new_item->next.store(StampedPtr<Entry>(item.ptr, 0), std::memory_order_relaxed);
             assert(!IS_RETIRED(item.stamp));
             if (prev->next.compare_exchange_weak(
-                    item, {new_item, INCREASE_TAG(item.stamp)},
+                    &item, {new_item, INCREASE_TAG(item.stamp)},
                     std::memory_order_release, std::memory_order_relaxed))
             {
                 const size_t sz = _size.fetch_add(1, std::memory_order_relaxed) + 1;
@@ -411,7 +411,7 @@ public:
             new_item->next.store(StampedPtr<Entry>(item.ptr, 0), std::memory_order_relaxed);
             assert(!IS_RETIRED(item.stamp));
             if (prev->next.compare_exchange_weak(
-                    item, {new_item, INCREASE_TAG(item.stamp)},
+                    &item, {new_item, INCREASE_TAG(item.stamp)},
                     std::memory_order_release, std::memory_order_relaxed))
             {
                 const size_t sz = _size.fetch_add(1, std::memory_order_relaxed) + 1;
@@ -646,7 +646,7 @@ private:
             if (IS_RETIRED(inext.stamp))
                 return 0; // 'item' already deleted by some other thread, delete failed
         } while (!item.ptr->next.compare_exchange_weak(
-                     inext, {inext.ptr, MARK_RETIRED(inext.stamp)},
+                     &inext, {inext.ptr, MARK_RETIRED(inext.stamp)},
                      std::memory_order_relaxed, std::memory_order_relaxed));
         assert(!IS_RETIRED(inext.stamp));
 
@@ -658,7 +658,7 @@ private:
         StampedPtr<Entry> old_item = item;
         assert(!IS_RETIRED(old_item.stamp));
         if (prev->next.compare_exchange_weak(
-                old_item, {inext.ptr, INCREASE_TAG(old_item.stamp)},
+                &old_item, {inext.ptr, INCREASE_TAG(old_item.stamp)},
                 std::memory_order_relaxed, std::memory_order_relaxed))
         {
             HPRetireList::retire_object(item.ptr);
@@ -706,7 +706,7 @@ private:
             new_item->next.store(StampedPtr<Entry>(item.ptr, 0), std::memory_order_relaxed);
             assert(!IS_RETIRED(item.stamp));
             while (!prev->next.compare_exchange_weak(
-                       item, {new_item, INCREASE_TAG(item.stamp)},
+                       &item, {new_item, INCREASE_TAG(item.stamp)},
                        std::memory_order_release, std::memory_order_relaxed))
             {
                 if (IS_RETIRED(item.stamp))

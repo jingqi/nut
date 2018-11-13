@@ -118,8 +118,8 @@ private:
             // - 初始有效 stamp 为 1，故 prev.stamp 置 1
             // - next.stamp 需要置 0, 使得 _head.stamp != next.stamp 以表明
             //   next.ptr 尚未指向新增节点
-            new (&prev) std::atomic<StampedPtr<Node>>(StampedPtr<Node>(nullptr, 1));
-            new (&next) std::atomic<StampedPtr<Node>>(StampedPtr<Node>(nullptr, 0));
+            new (&prev) AtomicStampedPtr<Node>(nullptr, 1);
+            new (&next) AtomicStampedPtr<Node>(nullptr, 0);
 
             new (&retired) std::atomic<bool>(false);
         }
@@ -127,8 +127,8 @@ private:
         // 析构 dummy 节点
         void destruct_dummy()
         {
-            (&prev)->~atomic();
-            (&next)->~atomic();
+            (&prev)->~AtomicStampedPtr();
+            (&next)->~AtomicStampedPtr();
             (&retired)->~atomic();
         }
 
@@ -193,10 +193,11 @@ private:
         }
 
     public:
+        alignas(sizeof(AtomicStampedPtr<Node>)) AtomicStampedPtr<Node> prev;
+        alignas(sizeof(AtomicStampedPtr<Node>)) AtomicStampedPtr<Node> next;
+
         data_store_type data;
         stamp_type seg = 0; // 用于安全消隐的标记
-        std::atomic<StampedPtr<Node>> prev = ATOMIC_VAR_INIT(StampedPtr<Node>());
-        std::atomic<StampedPtr<Node>> next = ATOMIC_VAR_INIT(StampedPtr<Node>());
         std::atomic<bool> retired = ATOMIC_VAR_INIT(false);
     };
 
@@ -218,11 +219,10 @@ public:
         _head.store({dummy, 1}, std::memory_order_relaxed);
         _tail.store({dummy, 1}, std::memory_order_relaxed);
 
-        _collisions = (std::atomic<StampedPtr<Node>>*) ::malloc(
-            sizeof(std::atomic<StampedPtr<Node>>) * COLLISIONS_ARRAY_SIZE);
-        StampedPtr<Node> init_value;
+        _collisions = (AtomicStampedPtr<Node>*) ::malloc(
+            sizeof(AtomicStampedPtr<Node>) * COLLISIONS_ARRAY_SIZE);
         for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
-            new (_collisions + i) std::atomic<StampedPtr<Node>>(init_value);
+            new (_collisions + i) AtomicStampedPtr<Node>();
     }
 
     ~ConcurrentQueue()
@@ -238,7 +238,7 @@ public:
         ::free(dummy);
 
         for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
-            (_collisions + i)->~atomic();
+            (_collisions + i)->~AtomicStampedPtr();
         ::free(_collisions);
         _collisions = nullptr;
     }
@@ -268,7 +268,7 @@ public:
 
             // 尝试CAS，失败则自动获取旧值到 old_tail
             if (_tail.compare_exchange_weak(
-                    old_tail, {new_node, old_tail.stamp + 1},
+                    &old_tail, {new_node, old_tail.stamp + 1},
                     std::memory_order_release, std::memory_order_relaxed))
             {
                 HPGuard guard_item; // Hold 'old_tail'
@@ -300,7 +300,7 @@ public:
 
             // 尝试CAS，失败则自动获取旧值到 old_tail
             if (_tail.compare_exchange_weak(
-                    old_tail, {new_node, old_tail.stamp + 1},
+                    &old_tail, {new_node, old_tail.stamp + 1},
                     std::memory_order_release, std::memory_order_relaxed))
             {
                 HPGuard guard_item; // Hold 'old_tail'
@@ -352,7 +352,7 @@ public:
 
             // 尝试CAS操作
             if (_head.compare_exchange_weak(
-                    old_head, {first_node_next.ptr, old_head.stamp + 1},
+                    &old_head, {first_node_next.ptr, old_head.stamp + 1},
                     std::memory_order_relaxed, std::memory_order_relaxed))
             {
                 // NOTE first_node_next.ptr 成为新的 dummy 节点
@@ -440,7 +440,7 @@ private:
                              std::memory_order_relaxed);
 
         if (_tail.compare_exchange_weak(
-                old_tail, {new_node, old_tail.stamp + 1},
+                &old_tail, {new_node, old_tail.stamp + 1},
                 std::memory_order_release, std::memory_order_relaxed))
         {
             HPGuard guard_item; // Hold 'old_tail'
@@ -487,7 +487,7 @@ private:
 
             // 尝试CAS操作
             if (_head.compare_exchange_weak(
-                    old_head, {first_node_next.ptr, old_head.stamp + 1},
+                    &old_head, {first_node_next.ptr, old_head.stamp + 1},
                     std::memory_order_relaxed, std::memory_order_relaxed))
             {
                 // NOTE first_node_next.ptr 成为新的 dummy 节点
@@ -510,7 +510,7 @@ private:
         // 添加到碰撞数组
         new_node->seg = seen_tail;
         if (!_collisions[r].compare_exchange_weak(
-                old_collision_to_add, {new_node, old_collision_to_add.stamp + 1},
+                &old_collision_to_add, {new_node, old_collision_to_add.stamp + 1},
                 std::memory_order_release, std::memory_order_relaxed))
             return false;
 
@@ -522,7 +522,7 @@ private:
         StampedPtr<Node> old_collision_to_remove = _collisions[r].load(std::memory_order_relaxed);
         if (COLLISION_DONE_PTR == old_collision_to_remove.ptr ||
             !_collisions[r].compare_exchange_weak(
-                old_collision_to_remove, {COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1},
+                &old_collision_to_remove, {COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1},
                 std::memory_order_relaxed, std::memory_order_relaxed))
         {
             _collisions[r].store({COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1},
@@ -546,7 +546,7 @@ private:
             return false;
 
         if (_collisions[r].compare_exchange_weak(
-                old_collision, {COLLISION_DONE_PTR, old_collision.stamp},
+                &old_collision, {COLLISION_DONE_PTR, old_collision.stamp},
                 std::memory_order_relaxed, std::memory_order_relaxed))
         {
             Node::template move_data<T>(&(old_collision.ptr->data), p);
@@ -569,11 +569,11 @@ private:
     }
 
 private:
-    std::atomic<StampedPtr<Node>> _head = ATOMIC_VAR_INIT(StampedPtr<Node>());
-    std::atomic<StampedPtr<Node>> _tail = ATOMIC_VAR_INIT(StampedPtr<Node>());
+    alignas(sizeof(AtomicStampedPtr<Node>)) AtomicStampedPtr<Node> _head;
+    alignas(sizeof(AtomicStampedPtr<Node>)) AtomicStampedPtr<Node> _tail;
 
     // 用于消隐的碰撞数组
-    std::atomic<StampedPtr<Node>> *_collisions = nullptr;;
+    AtomicStampedPtr<Node> *_collisions = nullptr;;
 };
 
 }

@@ -72,11 +72,10 @@ private:
 public:
     ConcurrentStack()
     {
-        _collisions = (std::atomic<StampedPtr<Node>>*) ::malloc(
-            sizeof(std::atomic<StampedPtr<Node>>) * COLLISIONS_ARRAY_SIZE);
-        StampedPtr<Node> init_value;
+        _collisions = (AtomicStampedPtr<Node>*) ::malloc(
+            sizeof(AtomicStampedPtr<Node>) * COLLISIONS_ARRAY_SIZE);
         for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
-            new (_collisions + i) std::atomic<StampedPtr<Node>>(init_value);
+            new (_collisions + i) AtomicStampedPtr<Node>();
     }
 
     ~ConcurrentStack()
@@ -86,7 +85,7 @@ public:
         assert(is_empty());
 
         for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
-            (_collisions + i)->~atomic();
+            (_collisions + i)->~AtomicStampedPtr();
         ::free(_collisions);
         _collisions = nullptr;
     }
@@ -106,7 +105,7 @@ public:
         {
             new_node->next = old_top.ptr;
         } while(!_top.compare_exchange_weak(
-                    old_top, {new_node, old_top.stamp + 1},
+                    &old_top, {new_node, old_top.stamp + 1},
                     std::memory_order_release, std::memory_order_relaxed));
     }
 
@@ -120,7 +119,7 @@ public:
         {
             new_node->next = old_top.ptr;
         } while (!_top.compare_exchange_weak(
-                     old_top, {new_node, old_top.stamp + 1},
+                     &old_top, {new_node, old_top.stamp + 1},
                      std::memory_order_release, std::memory_order_relaxed));
     }
 
@@ -133,7 +132,7 @@ public:
                 return false;
 
             if (_top.compare_exchange_weak(
-                    old_top, {old_top.ptr->next, old_top.stamp + 1},
+                    &old_top, {old_top.ptr->next, old_top.stamp + 1},
                     std::memory_order_release, std::memory_order_relaxed))
             {
                 if (nullptr != p)
@@ -194,7 +193,7 @@ private:
         StampedPtr<Node> old_top = _top.load(std::memory_order_relaxed);
         new_node->next = old_top.ptr;
         return _top.compare_exchange_weak(
-            old_top, {new_node, old_top.stamp + 1},
+            &old_top, {new_node, old_top.stamp + 1},
             std::memory_order_release, std::memory_order_relaxed);
     }
 
@@ -206,7 +205,7 @@ private:
             return PopAttemptResult::EmptyStackFailure;
 
         if (_top.compare_exchange_weak(
-                old_top, {old_top.ptr->next, old_top.stamp + 1},
+                &old_top, {old_top.ptr->next, old_top.stamp + 1},
                 std::memory_order_release, std::memory_order_relaxed))
         {
             if (nullptr != p)
@@ -227,7 +226,7 @@ private:
 
         // 添加到碰撞数组
         if (!_collisions[r].compare_exchange_weak(
-                old_collision_to_add, {new_node, old_collision_to_add.stamp + 1},
+                &old_collision_to_add, {new_node, old_collision_to_add.stamp + 1},
                 std::memory_order_release, std::memory_order_relaxed))
             return false;
 
@@ -239,7 +238,7 @@ private:
         StampedPtr<Node> old_collision_to_remove = _collisions[r].load(std::memory_order_relaxed);
         if (COLLISION_DONE_PTR == old_collision_to_remove.ptr ||
             !_collisions[r].compare_exchange_weak(
-                old_collision_to_remove, {COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1},
+                &old_collision_to_remove, {COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1},
                 std::memory_order_release, std::memory_order_relaxed))
         {
             _collisions[r].store({COLLISION_EMPTY_PTR, old_collision_to_add.stamp + 1},
@@ -259,7 +258,7 @@ private:
             return false;
 
         if (_collisions[r].compare_exchange_weak(
-                old_collision, {COLLISION_DONE_PTR, old_collision.stamp},
+                &old_collision, {COLLISION_DONE_PTR, old_collision.stamp},
                 std::memory_order_release, std::memory_order_relaxed))
         {
             if (nullptr != p)
@@ -283,10 +282,10 @@ private:
     }
 
 private:
-    std::atomic<StampedPtr<Node>> _top = ATOMIC_VAR_INIT(StampedPtr<Node>());
+    alignas(sizeof(AtomicStampedPtr<Node>)) AtomicStampedPtr<Node> _top;
 
     // 用于消隐的碰撞数组
-    std::atomic<StampedPtr<Node>> *_collisions = nullptr;
+    AtomicStampedPtr<Node> *_collisions = nullptr;
 };
 
 }

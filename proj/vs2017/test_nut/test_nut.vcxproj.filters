@@ -231,5 +231,8 @@
     <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_map.cpp">
       <Filter>test\threading\lockfree</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_stamped_ptr.cpp">
+      <Filter>test\threading\lockfree</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
