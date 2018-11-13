@@ -51,7 +51,9 @@ void HPRetireList::retire_any(retire_func_type rfunc, void *userdata)
     const size_t version = _global_version.fetch_add(1, std::memory_order_relaxed);
     retires._retire_list.emplace_back(rfunc, userdata, version);
 
-    if (retires._retire_list.size() >= HPRecord::_list_size.load(std::memory_order_relaxed) * 2)
+    const size_t threthrold = (std::max)(
+        (size_t) 8, HPRecord::_list_size.load(std::memory_order_relaxed) * 2);
+    if (retires._retire_list.size() >= threthrold)
         scan_retire_list(&retires);
 }
 

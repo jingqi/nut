@@ -11,11 +11,11 @@
 #include <random>
 
 #include "stamped_ptr.h"
-#include "../threading.h"
 #include "hazard_pointer/hp_record.h"
 #include "hazard_pointer/hp_retire_list.h"
+#include "../threading.h" // for NUT_THREAD_LOCAL
 
-// 消隐数组的指针常量
+// 隐消数组的指针常量
 #define COLLISION_EMPTY_PTR nullptr
 #define COLLISION_DONE_PTR (reinterpret_cast<Node*>(-1))
 
@@ -39,7 +39,7 @@ namespace nut
  *   MS-queue(Michael and Scott)算法
  *   Dominique Fober算法
  *   optimistic算法
- *   消隐(shavit and Touitou)
+ *   隐消(shavit and Touitou)
  *
  * 参考文献：
  *   [1] 钱立兵，陈波等. 多线程并发访问无锁队列的算法研究[J]. 先进技术研究通报，
@@ -51,13 +51,12 @@ template <typename T>
 class ConcurrentQueue
 {
 private:
-    // 这里根据具体情况配置
     enum
     {
-        // 消隐使用的碰撞数组的大小
+        // 隐消使用的碰撞数组的大小
         COLLISIONS_ARRAY_SIZE = 5,
 
-        // 消隐入队时等待碰撞的毫秒数
+        // 隐消入队时等待碰撞的毫秒数
         ELIMINATE_ENQUEUE_DELAY_MICROSECONDS = 10,
     };
 
@@ -197,7 +196,7 @@ private:
         alignas(sizeof(AtomicStampedPtr<Node>)) AtomicStampedPtr<Node> next;
 
         data_store_type data;
-        stamp_type seg = 0; // 用于安全消隐的标记
+        stamp_type seg = 0; // 用于安全隐消的标记
         std::atomic<bool> retired = ATOMIC_VAR_INIT(false);
     };
 
@@ -222,17 +221,22 @@ public:
         _collisions = (AtomicStampedPtr<Node>*) ::malloc(
             sizeof(AtomicStampedPtr<Node>) * COLLISIONS_ARRAY_SIZE);
         for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
-            new (_collisions + i) AtomicStampedPtr<Node>();
+            new (_collisions + i) AtomicStampedPtr<Node>(COLLISION_EMPTY_PTR, 0);
     }
 
     ~ConcurrentQueue()
     {
         // Clear elements
-        while (optimistic_dequeue(nullptr))
-        {}
-        assert(is_empty());
+        Node *const dummy = _head.load(std::memory_order_acquire).ptr;
+        Node *p = dummy->next.load(std::memory_order_relaxed).ptr;
+        while (nullptr != p)
+        {
+            Node *next = p->next.load(std::memory_order_relaxed).ptr;
+            p->~Node();
+            ::free(p);
+            p = next;
+        }
 
-        Node *dummy = _head.load(std::memory_order_relaxed).ptr;
         assert(nullptr != dummy);
         dummy->destruct_dummy();
         ::free(dummy);
@@ -365,7 +369,7 @@ public:
     }
 
     /**
-     * 采用消隐策略的入队
+     * 采用隐消策略的入队
      */
     void eliminate_enqueue(T&& v)
     {
@@ -400,7 +404,7 @@ public:
     }
 
     /**
-     * 采用消隐策略的出队
+     * 采用隐消策略的出队
      */
     bool eliminate_dequeue(T *p)
     {
@@ -518,7 +522,7 @@ private:
         std::this_thread::sleep_for(
             std::chrono::milliseconds(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS));
 
-        // 检查是否消隐成功
+        // 检查是否隐消成功
         StampedPtr<Node> old_collision_to_remove = _collisions[r].load(std::memory_order_relaxed);
         if (COLLISION_DONE_PTR == old_collision_to_remove.ptr ||
             !_collisions[r].compare_exchange_weak(
@@ -572,7 +576,7 @@ private:
     alignas(sizeof(AtomicStampedPtr<Node>)) AtomicStampedPtr<Node> _head;
     alignas(sizeof(AtomicStampedPtr<Node>)) AtomicStampedPtr<Node> _tail;
 
-    // 用于消隐的碰撞数组
+    // 用于隐消的碰撞数组
     AtomicStampedPtr<Node> *_collisions = nullptr;;
 };
 

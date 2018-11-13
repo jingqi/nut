@@ -3,6 +3,8 @@
 #define ___HEADFILE_E7849DBE_E176_427D_A0C1_60B0E4C3A1D0_
 
 #include <assert.h>
+
+#define _ENABLE_ATOMIC_ALIGNMENT_FIX // VS2015 SP2 BUG
 #include <atomic>
 
 #include <nut/numeric/word_array_integer.h>

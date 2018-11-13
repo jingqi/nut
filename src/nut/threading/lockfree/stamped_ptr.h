@@ -4,6 +4,8 @@
 
 #include <string.h> // for memcpy()
 #include <type_traits>
+
+#define _ENABLE_ATOMIC_ALIGNMENT_FIX // VS2015 SP2 BUG
 #include <atomic>
 
 #include <nut/platform/platform.h>

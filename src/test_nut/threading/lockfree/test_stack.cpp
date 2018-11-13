@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <random>
+#include <thread>
 
 #include <nut/platform/platform.h>
 
@@ -11,6 +13,8 @@
 
 #include <nut/unittest/unittest.h>
 #include <nut/threading/lockfree/concurrent_stack.h>
+#include <nut/threading/sync/spinlock.h>
+#include <nut/threading/sync/lock_guard.h>
 #include <nut/util/string/to_string.h>
 #include <nut/util/string/string_utils.h>
 
@@ -29,25 +33,30 @@ class TestConcurrentStack : public TestFixture
     void test_smoking()
     {
         ConcurrentStack<int> s;
-        s.optimistic_push(1);
-        s.eliminate_push(2);
+        s.push(1);
+        s.push(2);
 
         int v = 0;
-        bool rs = s.eliminate_pop(&v);
+        bool rs = s.pop(&v);
         NUT_TA(rs && v == 2);
 
-        rs = s.optimistic_pop(&v);
+        rs = s.pop(&v);
         NUT_TA(rs && v == 1);
 
         NUT_TA(s.is_empty());
     }
 
     std::atomic<bool> interrupt = ATOMIC_VAR_INIT(false);
+    SpinLock msglock;
 
     void product_thread(ConcurrentStack<string> *cs)
     {
         assert(nullptr != cs);
-        cout << "producter running" << endl;
+
+        {
+            LockGuard<SpinLock> g(&msglock);
+            cout << "producter running" << endl;
+        }
 
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -56,43 +65,40 @@ class TestConcurrentStack : public TestFixture
         while (!interrupt.load(std::memory_order_relaxed))
         {
             const int r = dis(gen);
-            if (0 == (r & 1))
-                cs->eliminate_push(to_string(r) + "|" + to_string(r + 3));
-            else
-                cs->optimistic_push(to_string(r) + "|" + to_string(r + 3));
+            cs->push(to_string(r) + "|" + to_string(r + 3));
             ++count;
         }
+
+        LockGuard<SpinLock> g(&msglock);
         cout << "producted: " << count << endl;
     }
 
     void consume_thread(ConcurrentStack<string> *cs)
     {
         assert(nullptr != cs);
-        cout << "consumer running" << endl;
+        {
+            LockGuard<SpinLock> g(&msglock);
+            cout << "consumer running" << endl;
+        }
 
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> dis(0, 1);
         size_t success_count = 0, total_count = 0;
         while (!interrupt.load(std::memory_order_relaxed))
         {
             string s;
-            bool rs = true;
-            if (0 == dis(gen))
-                rs = cs->eliminate_pop(&s);
-            else
-                rs = cs->optimistic_pop(&s);
+            bool rs = cs->pop(&s);
 
             if (rs)
             {
                 vector<string> parts = chr_split(s, '|');
                 if (parts.size() != 2)
                 {
+                    LockGuard<SpinLock> g(&msglock);
                     cout << "error \"" << s << "\"" << endl;
                     continue;
                 }
                 if (::atoi(parts[0].c_str()) + 3 != ::atoi(parts[1].c_str()))
                 {
+                    LockGuard<SpinLock> g(&msglock);
                     cout << "error \"" << s << "\"" << endl;
                     continue;
                 }
@@ -100,6 +106,7 @@ class TestConcurrentStack : public TestFixture
             }
             ++total_count;
         }
+        LockGuard<SpinLock> g(&msglock);
         cout << "consumed: " << success_count << "/" << total_count << endl;
     }
 
@@ -114,8 +121,13 @@ class TestConcurrentStack : public TestFixture
             threads.emplace_back([=,&s] { product_thread(&s); });
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10 * 1000));
+
+        {
+            LockGuard<SpinLock> g(&msglock);
+            cout << "interrupting..." << endl;
+        }
         interrupt.store(true, std::memory_order_relaxed);
-        cout << "interrupting..." << endl;
+
         for (size_t i = 0, sz = threads.size(); i < sz; ++i)
             threads.at(i).join();
     }
