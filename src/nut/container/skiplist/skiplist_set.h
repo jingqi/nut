@@ -118,9 +118,10 @@ public:
         {
             Node *c = (Node*) ::malloc(sizeof(Node));
             new (c) Node(n->get_key());
-            c->set_level(n->get_level());
+            const int level = n->get_level();
+            c->set_level(level);
             algo_type::insert_node(c, *this, pre_lv);
-            for (size_t i = 0; i <= c->get_level(); ++i)
+            for (size_t i = 0; i <= level; ++i)
                 pre_lv[i] = c;
 
             n = n->get_next(0);
@@ -191,9 +192,10 @@ public:
         {
             Node *c = (Node*) ::malloc(sizeof(Node));
             new (c) Node(n->get_key());
-            c->set_level(n->get_level());
+            const int level = n->get_level();
+            c->set_level(level);
             algo_type::insert_node(c, *this, pre_lv);
-            for (size_t i = 0; i <= c->get_level(); ++i)
+            for (size_t i = 0; i <= level; ++i)
                 pre_lv[i] = c;
 
             n = n->get_next(0);

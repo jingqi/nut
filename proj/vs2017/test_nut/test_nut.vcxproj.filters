@@ -150,12 +150,6 @@
     <ClCompile Include="..\..\..\src\test_nut\security\encrypt\test_rsa.cpp">
       <Filter>test\security\encrypt</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_queue.cpp">
-      <Filter>test\threading\lockfree</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_stack.cpp">
-      <Filter>test\threading\lockfree</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\test_nut\threading\test_threadpool.cpp">
       <Filter>test\threading</Filter>
     </ClCompile>
@@ -228,10 +222,16 @@
     <ClCompile Include="..\..\..\src\test_nut\container\test_comparable.cpp">
       <Filter>test\container</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_map.cpp">
+    <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_stamped_ptr.cpp">
       <Filter>test\threading\lockfree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_stamped_ptr.cpp">
+    <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_concurrent_hash_map.cpp">
+      <Filter>test\threading\lockfree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_concurrent_queue.cpp">
+      <Filter>test\threading\lockfree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_concurrent_stack.cpp">
       <Filter>test\threading\lockfree</Filter>
     </ClCompile>
   </ItemGroup>

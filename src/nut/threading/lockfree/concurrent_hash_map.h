@@ -110,7 +110,7 @@ private:
         }
 
     public:
-        alignas(sizeof(AtomicStampedPtr<Entry>)) AtomicStampedPtr<Entry> next;
+        AtomicStampedPtr<Entry> next;
 
         const K key;
         const V value;
@@ -482,6 +482,9 @@ public:
     }
 
 private:
+    ConcurrentHashMap(const ConcurrentHashMap&) = delete;
+    ConcurrentHashMap& operator=(const ConcurrentHashMap&) = delete;
+
     Entry *get_bucket(hash_type h) const
     {
         const size_t bss = _bucket_size_shift.load(std::memory_order_acquire);

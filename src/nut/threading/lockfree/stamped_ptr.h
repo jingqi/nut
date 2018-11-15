@@ -96,12 +96,11 @@ static_assert(sizeof(StampedPtr<void>) == 2 * sizeof(void*), "StampedPtr<> size 
 
 /**
  * NOTE
- * - 为了避免在 Windows 64 MSVC 下 CAS 操作崩溃，使用该结构体时需要声明对齐方式，
- *   例如：
- *     alignas(sizeof(AtomicStampedPtr<Node>)) AtomicStampedPtr<Node> next;
+ * - 为了避免在 Windows 64 MSVC 下 InterlockedCompareExchange128() 操作崩溃，需
+ *   要声明为 16 字节对齐
  */
 template <typename T>
-class AtomicStampedPtr
+class alignas(sizeof(StampedPtr<void>)) AtomicStampedPtr
 {
 public:
     AtomicStampedPtr()
@@ -111,29 +110,28 @@ public:
 #endif
     }
 
+    AtomicStampedPtr(T *p, typename StampedPtr<T>::stamp_type s)
+    {
 #if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_BITS_64 && NUT_PLATFORM_CC_VC
-    AtomicStampedPtr(T *p, typename StampedPtr<T>::stamp_type s)
-    {
+        assert(sizeof(AtomicStampedPtr<T>) == sizeof(StampedPtr<T>));
         ((StampedPtr<T>*) this)->set(p, s);
-    }
 #else
-    AtomicStampedPtr(T *p, typename StampedPtr<T>::stamp_type s)
-    {
         assert(_stamped_ptr.is_lock_free());
         _stamped_ptr.store({p, s}, std::memory_order_relaxed);
-    }
 #endif
+    }
 
     StampedPtr<T> load(std::memory_order order = std::memory_order_seq_cst) const noexcept
     {
 #if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_BITS_64 && NUT_PLATFORM_CC_VC
-        if (order != std::memory_order_relaxed)
-            std::atomic_thread_fence(order);
-
-        // 根据微软的文档，无论 CAS 是否成功，'ret' 都会返回当前值
+        // NOTE 根据微软的文档，无论 CAS 是否成功，'ret' 都会返回原始值
         StampedPtr<T> ret;
         ::InterlockedCompareExchange128(
             const_cast<int64_t volatile*>(&_low_part), 0, 0, (int64_t*) &ret);
+
+        if (order != std::memory_order_relaxed)
+            std::atomic_thread_fence(order); // Usually 'acquire'
+
         return ret;
 #else
         return _stamped_ptr.load(order);
@@ -144,15 +142,15 @@ public:
                std::memory_order order = std::memory_order_seq_cst) noexcept
     {
 #if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_BITS_64 && NUT_PLATFORM_CC_VC
+        if (order != std::memory_order_relaxed)
+            std::atomic_thread_fence(order); // Usually 'release'
+
         int64_t expected[2];
         ::memcpy(expected, (void*) &_low_part, sizeof(StampedPtr<T>));
         const int64_t *raw_desired = (const int64_t*) &desired;
         while (1 != ::InterlockedCompareExchange128(
                    &_low_part, raw_desired[1], raw_desired[0], expected))
         {}
-
-        if (order != std::memory_order_relaxed)
-            std::atomic_thread_fence(order);
 #else
         _stamped_ptr.store(desired, order);
 #endif
@@ -162,14 +160,15 @@ public:
                            std::memory_order order = std::memory_order_seq_cst) noexcept
     {
 #if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_BITS_64 && NUT_PLATFORM_CC_VC
-        StampedPtr<T> ret(_stamped_ptr);
+        if (order != std::memory_order_relaxed)
+            std::atomic_thread_fence(order); // Usually 'release'
+
+        StampedPtr<T> ret;
+        ::memcpy(&ret, (void*) &_low_part, sizeof(StampedPtr<T>));
         const int64_t *raw_desired = (const int64_t*) &desired;
         while (1 != ::InterlockedCompareExchange128(
             &_low_part, raw_desired[1], raw_desired[0], (int64_t*) &ret))
         {}
-
-        if (order != std::memory_order_relaxed)
-            std::atomic_thread_fence(order);
 
         return ret;
 #else
@@ -204,23 +203,25 @@ public:
     {
         assert(nullptr != expected);
 #if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_BITS_64 && NUT_PLATFORM_CC_VC
+        // NOTE 无法提前预知是否 success, 这里只能无论是否 success 都设置内存栅栏
+        if (success != std::memory_order_relaxed)
+            std::atomic_thread_fence(success); // Usually 'release'
+
         int64_t dup_expected[2];
         ::memcpy(dup_expected, expected, sizeof(StampedPtr<T>));
         const int64_t *raw_desired = (const int64_t*) &desired;
         if (1 != ::InterlockedCompareExchange128(
             &_low_part, raw_desired[1], raw_desired[0], dup_expected))
         {
-            // failed
+            // failed, return the current value
             ::memcpy(expected, dup_expected, sizeof(StampedPtr<T>));
 
             if (failure != std::memory_order_relaxed)
-                std::atomic_thread_fence(failure);
+                std::atomic_thread_fence(failure); // Usually 'acquire'
             return false;
         }
 
         // success, keep 'expected' unchanged
-        if (success != std::memory_order_relaxed)
-            std::atomic_thread_fence(success);
         return true;
 #else
         return _stamped_ptr.compare_exchange_strong(*expected, desired, success, failure);
@@ -240,7 +241,7 @@ public:
 
 private:
 #if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_BITS_64 && NUT_PLATFORM_CC_VC
-    int64_t volatile _low_part = 0; // NOTE low part first
+    int64_t volatile _low_part = 0; // NOTE Low-part comes first, followed by high-part
     int64_t volatile _high_part = 0;
 #else
     std::atomic<StampedPtr<T>> _stamped_ptr = ATOMIC_VAR_INIT(StampedPtr<T>());

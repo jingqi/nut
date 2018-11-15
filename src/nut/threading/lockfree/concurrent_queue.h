@@ -192,8 +192,8 @@ private:
         }
 
     public:
-        alignas(sizeof(AtomicStampedPtr<Node>)) AtomicStampedPtr<Node> prev;
-        alignas(sizeof(AtomicStampedPtr<Node>)) AtomicStampedPtr<Node> next;
+        AtomicStampedPtr<Node> prev;
+        AtomicStampedPtr<Node> next;
 
         data_store_type data;
         stamp_type seg = 0; // 用于安全隐消的标记
@@ -573,8 +573,8 @@ private:
     }
 
 private:
-    alignas(sizeof(AtomicStampedPtr<Node>)) AtomicStampedPtr<Node> _head;
-    alignas(sizeof(AtomicStampedPtr<Node>)) AtomicStampedPtr<Node> _tail;
+    AtomicStampedPtr<Node> _head;
+    AtomicStampedPtr<Node> _tail;
 
     // 用于隐消的碰撞数组
     AtomicStampedPtr<Node> *_collisions = nullptr;;

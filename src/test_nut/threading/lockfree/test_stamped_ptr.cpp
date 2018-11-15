@@ -17,17 +17,22 @@ class TestStampedPtr : public TestFixture
 
     void test_smoking()
     {
-        // alignas(16) int64_t volatile dest[2];
-        // int64_t expect[2];
-        // ::InterlockedCompareExchange128(dest, 0, 0, expect);
+        int a = 12, b = 24;
+        AtomicStampedPtr<int> asp(&a, 1);
+        NUT_TA(asp.load() == StampedPtr<int>(&a, 1));
 
-        // Windows VC 下需要 align 16
-        alignas(16) AtomicStampedPtr<int> asp;
-        // AtomicStampedPtr<int> asp;
-        int i = 12;
-        StampedPtr<int> sp(&i, 13);
-        asp.store(sp);
-        asp.load();
+        asp.store({&b, 2});
+        NUT_TA(asp.load() == StampedPtr<int>(&b, 2));
+
+        NUT_TA(asp.exchange({&a, 3}) == StampedPtr<int>(&b, 2));
+        NUT_TA(asp.load() == StampedPtr<int>(&a, 3));
+
+        StampedPtr<int> expected(&b, 3);
+        NUT_TA(!asp.compare_exchange_weak(&expected, {nullptr, 0}));
+        NUT_TA(asp.load() == StampedPtr<int>(&a, 3));
+        expected.set(&a, 3);
+        NUT_TA(asp.compare_exchange_weak(&expected, {&b, 4}));
+        NUT_TA(asp.load() == StampedPtr<int>(&b, 4));
     }
 };
 

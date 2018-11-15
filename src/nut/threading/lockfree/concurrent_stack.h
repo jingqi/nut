@@ -118,7 +118,7 @@ private:
     ConcurrentStack& operator=(const ConcurrentStack&) = delete;
 
 private:
-    alignas(sizeof(AtomicStampedPtr<Node>)) AtomicStampedPtr<Node> _top;
+    AtomicStampedPtr<Node> _top;
 };
 
 }
