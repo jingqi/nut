@@ -59,6 +59,11 @@ public:
         }
     }
 
+    size_t size() const
+    {
+        return _size.load(std::memory_order_relaxed);
+    }
+
     bool is_empty() const
     {
         return nullptr == _top.load(std::memory_order_relaxed).ptr;
@@ -76,6 +81,7 @@ public:
         } while(!_top.compare_exchange_weak(
                     &old_top, {new_node, old_top.stamp + 1},
                     std::memory_order_release, std::memory_order_relaxed));
+        _size.fetch_add(1, std::memory_order_relaxed);
     }
 
     void push(const T& v)
@@ -90,6 +96,7 @@ public:
         } while (!_top.compare_exchange_weak(
                      &old_top, {new_node, old_top.stamp + 1},
                      std::memory_order_release, std::memory_order_relaxed));
+        _size.fetch_add(1, std::memory_order_relaxed);
     }
 
     bool pop(T *p)
@@ -108,6 +115,7 @@ public:
                     *p = std::move(old_top.ptr->data);
                 (&(old_top.ptr->data))->~T();
                 ::free(old_top.ptr);
+                _size.fetch_sub(1, std::memory_order_relaxed);
                 return true;
             }
         }
@@ -119,6 +127,7 @@ private:
 
 private:
     AtomicStampedPtr<Node> _top;
+    std::atomic<size_t> _size = ATOMIC_VAR_INIT(0);
 };
 
 }

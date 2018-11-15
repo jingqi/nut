@@ -247,13 +247,22 @@ public:
         _collisions = nullptr;
     }
 
+    /**
+     * NOTE 由于有两次取值，并发状态下计算的结果可能偏大
+     */
+    size_t size() const
+    {
+        const stamp_type head_stamp = _head.load(std::memory_order_relaxed).stamp;
+        return _tail.load(std::memory_order_relaxed).stamp - head_stamp;
+    }
+
     bool is_empty() const
     {
         return _head.load(std::memory_order_relaxed) == _tail.load(std::memory_order_relaxed);
     }
 
     /**
-     * Optimistic 算法入队
+     * 乐观算法入队
      */
     void optimistic_enqueue(T&& v)
     {
@@ -275,7 +284,7 @@ public:
                     &old_tail, {new_node, old_tail.stamp + 1},
                     std::memory_order_release, std::memory_order_relaxed))
             {
-                HPGuard guard_item; // Hold 'old_tail'
+                HPGuard guard_item; // Hold 'old_tail' if not deleted
                 if (old_tail.ptr->retired.load(std::memory_order_relaxed))
                     break; // 'old_tail' already deleted by some other thread
 
@@ -307,7 +316,7 @@ public:
                     &old_tail, {new_node, old_tail.stamp + 1},
                     std::memory_order_release, std::memory_order_relaxed))
             {
-                HPGuard guard_item; // Hold 'old_tail'
+                HPGuard guard_item; // Hold 'old_tail' if not deleted
                 if (old_tail.ptr->retired.load(std::memory_order_relaxed))
                     break; // 'old_tail' already deleted by some other thread
 
@@ -322,7 +331,7 @@ public:
     }
 
     /**
-     * Optimistic 算法出队
+     * 乐观算法出队
      */
     bool optimistic_dequeue(T *p)
     {
@@ -447,7 +456,7 @@ private:
                 &old_tail, {new_node, old_tail.stamp + 1},
                 std::memory_order_release, std::memory_order_relaxed))
         {
-            HPGuard guard_item; // Hold 'old_tail'
+            HPGuard guard_item; // Hold 'old_tail' if not deleted
             if (old_tail.ptr->retired.load(std::memory_order_relaxed))
                 return true; // 'old_tail' already deleted by some other thread
 

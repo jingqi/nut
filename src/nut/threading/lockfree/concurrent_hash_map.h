@@ -62,20 +62,8 @@ private:
     class Entry
     {
     public:
-        Entry(K&& k, V&& v, hash_type rh)
-            : key(std::forward<K>(k)), value(std::forward<V>(v)), reversed_hash(rh)
-        {
-            assert(0 != (rh & 0x01));
-        }
-
         Entry(const K& k, V&& v, hash_type rh)
             : key(k), value(std::forward<V>(v)), reversed_hash(rh)
-        {
-            assert(0 != (rh & 0x01));
-        }
-
-        Entry(K&& k, const V& v, hash_type rh)
-            : key(std::forward<K>(k)), value(v), reversed_hash(rh)
         {
             assert(0 != (rh & 0x01));
         }
@@ -185,128 +173,6 @@ public:
     /**
      * @return true if insert success, else old data found
      */
-    bool insert(K&& k, V&& v)
-    {
-        // Locate bucket
-        const hash_type h = (hash_type) _hash(k);
-        Entry *bucket = get_bucket(h);
-        assert(nullptr != bucket);
-
-        const hash_type rh = reverse_bits(h) | 0x01;
-        Entry *new_item = nullptr;
-        while (true)
-        {
-            // Search key
-            Entry *prev = nullptr;
-            StampedPtr<Entry> item;
-            if (search_link(bucket, &k, rh, &prev, &item))
-            {
-                // Delete temperory new item
-                if (nullptr != new_item)
-                {
-                    new_item->~Entry();
-                    ::free(new_item);
-                }
-
-                return false;
-            }
-            assert(nullptr != prev);
-            if (IS_RETIRED(item.stamp))
-                continue; // 'prev' deleted by some other thread, retry
-
-            // New item
-            if (nullptr == new_item)
-            {
-                new_item = (Entry*) ::malloc(sizeof(Entry));
-                new (new_item) Entry(std::forward<K>(k), std::forward<V>(v), rh);
-            }
-
-            // Do insert
-            // NOTE 这里 CAS 失败的可能原因：
-            // - prev 节点被删除，导致 EXTRACT_RETIRED(prev->next.stamp) 标记改
-            //   变
-            // - prev 后面插入了新节点，或者删除了节点(item)，导致 prev->next.ptr
-            //   指针改变或者 EXTRACT_TAG(prev->next.stamp) 标记改变
-            new_item->next.store(StampedPtr<Entry>(item.ptr, 0), std::memory_order_relaxed);
-            assert(!IS_RETIRED(item.stamp));
-            if (prev->next.compare_exchange_weak(
-                    &item, {new_item, INCREASE_TAG(item.stamp)},
-                    std::memory_order_release, std::memory_order_relaxed))
-            {
-                const size_t sz = _size.fetch_add(1, std::memory_order_relaxed) + 1;
-                const size_t bss = _bucket_size_shift.load(std::memory_order_relaxed);
-                if (sz >= (((size_t) 1) << bss) * 0.75)
-                    rehash(bss + 1);
-                return true;
-            }
-        }
-
-        // dead code
-        assert(false);
-        return false;
-    }
-
-    bool insert(K&& k, const V& v)
-    {
-        // Locate bucket
-        const hash_type h = (hash_type) _hash(k);
-        Entry *bucket = get_bucket(h);
-        assert(nullptr != bucket);
-
-        const hash_type rh = reverse_bits(h) | 0x01;
-        Entry *new_item = nullptr;
-        while (true)
-        {
-            // Search key
-            Entry *prev = nullptr;
-            StampedPtr<Entry> item;
-            if (search_link(bucket, &k, rh, &prev, &item))
-            {
-                // Delete temperory new item
-                if (nullptr != new_item)
-                {
-                    new_item->~Entry();
-                    ::free(new_item);
-                }
-
-                return false;
-            }
-            assert(nullptr != prev);
-            if (IS_RETIRED(item.stamp))
-                continue; // 'prev' deleted by some other thread, retry
-
-            // New item
-            if (nullptr == new_item)
-            {
-                new_item = (Entry*) ::malloc(sizeof(Entry));
-                new (new_item) Entry(std::forward<K>(k), v, rh);
-            }
-
-            // Do insert
-            // NOTE 这里 CAS 失败的可能原因：
-            // - prev 节点被删除，导致 EXTRACT_RETIRED(prev->next.stamp) 标记改
-            //   变
-            // - prev 后面插入了新节点，或者删除了节点(item)，导致 prev->next.ptr
-            //   指针改变或者 EXTRACT_TAG(prev->next.stamp) 标记改变
-            new_item->next.store(StampedPtr<Entry>(item.ptr, 0), std::memory_order_relaxed);
-            assert(!IS_RETIRED(item.stamp));
-            if (prev->next.compare_exchange_weak(
-                    &item, {new_item, INCREASE_TAG(item.stamp)},
-                    std::memory_order_release, std::memory_order_relaxed))
-            {
-                const size_t sz = _size.fetch_add(1, std::memory_order_relaxed) + 1;
-                const size_t bss = _bucket_size_shift.load(std::memory_order_relaxed);
-                if (sz >= (((size_t) 1) << bss) * 0.75)
-                    rehash(bss + 1);
-                return true;
-            }
-        }
-
-        // dead code
-        assert(false);
-        return false;
-    }
-
     bool insert(const K& k, V&& v)
     {
         // Locate bucket
@@ -339,6 +205,8 @@ public:
             // New item
             if (nullptr == new_item)
             {
+                // NOTE 'k' 在构建 'new_item' 之后，由于 while 循环还可能会在
+                //      search_link() 调用时使用，故不能用右值引用传入
                 new_item = (Entry*) ::malloc(sizeof(Entry));
                 new (new_item) Entry(k, std::forward<V>(v), rh);
             }
@@ -400,6 +268,8 @@ public:
             // New item
             if (nullptr == new_item)
             {
+                // NOTE 'k' 在构建 'new_item' 之后，由于 while 循环还可能会在
+                //      search_link() 调用时使用，故不能用右值引用传入
                 new_item = (Entry*) ::malloc(sizeof(Entry));
                 new (new_item) Entry(k, v, rh);
             }

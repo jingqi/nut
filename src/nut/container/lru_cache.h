@@ -29,7 +29,7 @@ private:
         {}
 
     public:
-        const K key;
+        K key;
         V value;
         Node *prev = nullptr;
         Node *next = nullptr;
@@ -70,36 +70,47 @@ public:
      */
     bool put(const K& k, V&& v)
     {
-        typename map_type::const_iterator const n = _map.find(k);
-        if (n == _map.end())
+        // Search and update
+        typename map_type::const_iterator const iter = _map.find(k);
+        if (iter != _map.end())
         {
+            Node *const p = iter->second;
+            assert(nullptr != p);
+            p->value = std::forward<V>(v);
+            remove_from_list(p);
+            push_list_head(p);
+            return false;
+        }
+
+        if (_map.size() >= _capacity)
+        {
+            // Reuse last node
+            Node *const p = _list_end;
+            assert(nullptr != p);
+            typename map_type::iterator const rm_iter = _map.find(p->key);
+            assert(rm_iter != _map.end());
+            _map.erase(rm_iter);
+
+            p->key = k;
+            p->value = std::forward<V>(v);
+            _map.insert(std::pair<K,Node*>(k,p));
+            remove_from_list(p);
+            push_list_head(p);
+
+            // Remove older nodes
+            remove_older_nodes();
+        }
+        else
+        {
+            // Add new node
             Node *const p = (Node*) ::malloc(sizeof(Node));
             assert(nullptr != p);
             new (p) Node(k, std::forward<V>(v));
             _map.insert(std::pair<K,Node*>(k,p));
             push_list_head(p);
-
-            while (_map.size() > _capacity)
-            {
-                assert(nullptr != _list_end);
-                typename map_type::iterator const nn = _map.find(_list_end->key);
-                assert(nn != _map.end());
-                Node *const pp = nn->second;
-                assert(nullptr != pp);
-                _map.erase(nn);
-                remove_from_list(pp);
-                pp->~Node();
-                ::free(pp);
-            }
-            return true;
         }
 
-        Node *const p = n->second;
-        assert(nullptr != p);
-        p->value = std::forward<V>(v);
-        remove_from_list(p);
-        push_list_head(p);
-        return false;
+        return true;
     }
 
     /**
@@ -107,36 +118,47 @@ public:
      */
     bool put(const K& k, const V& v)
     {
-        typename map_type::const_iterator const n = _map.find(k);
-        if (n == _map.end())
+        // Search and update
+        typename map_type::const_iterator const iter = _map.find(k);
+        if (iter != _map.end())
         {
+            Node *const p = iter->second;
+            assert(nullptr != p);
+            p->value = v;
+            remove_from_list(p);
+            push_list_head(p);
+            return false;
+        }
+
+        if (_map.size() >= _capacity)
+        {
+            // Reuse last node
+            Node *const p = _list_end;
+            assert(nullptr != p);
+            typename map_type::iterator const rm_iter = _map.find(p->key);
+            assert(rm_iter != _map.end());
+            _map.erase(rm_iter);
+
+            p->key = k;
+            p->value = v;
+            _map.insert(std::pair<K,Node*>(k,p));
+            remove_from_list(p);
+            push_list_head(p);
+
+            // Remove older nodes
+            remove_older_nodes();
+        }
+        else
+        {
+            // Add new node
             Node *const p = (Node*) ::malloc(sizeof(Node));
             assert(nullptr != p);
             new (p) Node(k, v);
             _map.insert(std::pair<K,Node*>(k,p));
             push_list_head(p);
-
-            while (_map.size() > _capacity)
-            {
-                assert(nullptr != _list_end);
-                typename map_type::iterator const nn = _map.find(_list_end->key);
-                assert(nn != _map.end());
-                Node *const pp = nn->second;
-                assert(nullptr != pp);
-                _map.erase(nn);
-                remove_from_list(pp);
-                pp->~Node();
-                ::free(pp);
-            }
-            return true;
         }
 
-        Node *const p = n->second;
-        assert(nullptr != p);
-        p->value = v;
-        remove_from_list(p);
-        push_list_head(p);
-        return false;
+        return true;
     }
 
     /**
@@ -144,13 +166,13 @@ public:
      */
     bool remove(const K& k)
     {
-        typename map_type::iterator const n = _map.find(k);
-        if (n == _map.end())
+        typename map_type::iterator const iter = _map.find(k);
+        if (iter == _map.end())
             return false;
 
-        Node *const p = n->second;
+        Node *const p = iter->second;
         assert(nullptr != p);
-        _map.erase(n);
+        _map.erase(iter);
         remove_from_list(p);
         p->~Node();
         ::free(p);
@@ -165,8 +187,8 @@ public:
     bool get(const K& k, V *v)
     {
         assert(nullptr != v);
-        typename map_type::const_iterator const n = _map.find(k);
-        if (n == _map.end())
+        typename map_type::const_iterator const iter = _map.find(k);
+        if (iter == _map.end())
         {
 #ifndef NDEBUG
             ++_miss_count;
@@ -174,7 +196,7 @@ public:
             return false;
         }
 
-        Node *const p = n->second;
+        Node *const p = iter->second;
         assert(nullptr != p);
         *v = p->value;
         remove_from_list(p);
@@ -235,6 +257,21 @@ private:
         else
             _list_end = p;
         _list_head = p;
+    }
+
+    void remove_older_nodes()
+    {
+        while (_map.size() > _capacity)
+        {
+            Node *const p = _list_end;
+            assert(nullptr != p);
+            typename map_type::iterator const iter = _map.find(p->key);
+            assert(iter != _map.end());
+            _map.erase(iter);
+            remove_from_list(p);
+            p->~Node();
+            ::free(p);
+        }
     }
 
 private:

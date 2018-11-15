@@ -130,6 +130,8 @@ class TestConcurrentStack : public TestFixture
 
         for (size_t i = 0, sz = threads.size(); i < sz; ++i)
             threads.at(i).join();
+
+        cout << "remained size " << s.size();
     }
 };
 
