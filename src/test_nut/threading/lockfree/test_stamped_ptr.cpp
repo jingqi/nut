@@ -30,7 +30,7 @@ class TestStampedPtr : public TestFixture
         StampedPtr<int> expected(&b, 3);
         NUT_TA(!asp.compare_exchange_weak(&expected, {nullptr, 0}));
         NUT_TA(asp.load() == StampedPtr<int>(&a, 3));
-        expected.set(&a, 3);
+        NUT_TA(expected == StampedPtr<int>(&a, 3));
         NUT_TA(asp.compare_exchange_weak(&expected, {&b, 4}));
         NUT_TA(asp.load() == StampedPtr<int>(&b, 4));
     }
