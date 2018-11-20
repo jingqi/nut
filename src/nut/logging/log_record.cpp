@@ -9,10 +9,10 @@
 namespace nut
 {
 
-LogRecord::LogRecord(LogLevel level, const char *tag, const char *file_path, int line,
-    const char *func, char *message)
+LogRecord::LogRecord(LogLevel level, const char *tag, const char *file_path,
+                     int line, const char *func, char *message)
     : _level(level), _tag(tag), _file_path(file_path), _line(line),
-    _func(func), _message(message)
+      _func(func), _message(message)
 {
     assert(nullptr != file_path && line >= 0 && nullptr != message);
     _time.set_to_now();

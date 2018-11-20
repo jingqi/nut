@@ -34,8 +34,9 @@ class TestConcurrentHashMap : public TestFixture
         NUT_TA(m.get(1, &v));
         NUT_TA(v == 2);
 
-        NUT_TA(m.remove(1));
-        NUT_TA(m.size() == 1);
+        v = 0;
+        NUT_TA(m.remove(1, &v));
+        NUT_TA(m.size() == 1 && v == 2);
         m.clear();
         NUT_TA(m.size() == 0);
     }
@@ -60,8 +61,9 @@ class TestConcurrentHashMap : public TestFixture
                 bool rs = m.get(r - range, &v);
                 if (rs)
                 {
-                    NUT_TA(m.remove(r - range));
                     NUT_TA(v == r - range + 1);
+                    v = 0;
+                    NUT_TA(m.remove(r - range, &v));
                 }
             }
         }

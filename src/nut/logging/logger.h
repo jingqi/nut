@@ -23,17 +23,12 @@ class NUT_API Logger
     NUT_DEBUGGING_DESTROY_CHECKER
 
 public:
-    Logger() = default;
-    ~Logger();
-
     static Logger* get_instance();
 
     LogFilter& get_filter();
 
     void add_handler(LogHandler *handler);
-
     void remove_handler(LogHandler *handler);
-
     void clear_handlers();
 
     void log(LogLevel level, const char *tag, const char *file, int line,
@@ -45,6 +40,9 @@ public:
     void load_xml_config(const std::string& config);
 
 private:
+    Logger() = default;
+    ~Logger();
+
     // Non-copyable
     Logger(const Logger&) = delete;
     Logger& operator=(const Logger&) = delete;

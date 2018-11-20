@@ -38,11 +38,11 @@ private:
 private:
     DateTime _time;
     LogLevel _level = LogLevel::Debug;
-    const char *_tag = nullptr;            // Can be nullptr, which indicated a root tag
+    const char *_tag = nullptr; // Can be null, which indicated a root tag
     const char *_file_path = nullptr;
     int _line = -1;
-    const char *_func = nullptr;           // Can be nullptr, when the source location is out of any function
-    char *_message = nullptr;
+    const char *_func = nullptr; // Can be null, when the source location is out of any function
+    char *_message = nullptr; // Need to be freed
 };
 
 }

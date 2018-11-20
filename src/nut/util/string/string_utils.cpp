@@ -229,7 +229,7 @@ NUT_API std::string format(const char *fmt, ...)
     assert(nullptr != fmt);
 
     std::string ret;
-    size_t size = ::strlen(fmt) * 2 + 16;
+    size_t size = ::strlen(fmt) * 3 / 2 + 8;
     ret.resize(size);
 
     va_list ap;
@@ -260,7 +260,7 @@ NUT_API std::wstring format(const wchar_t *fmt, ...)
     assert(nullptr != fmt);
 
     std::wstring ret;
-    size_t size = ::wcslen(fmt) * 2 + 16;
+    size_t size = ::wcslen(fmt) * 3 / 2 + 8;
     ret.resize(size);
 
     va_list ap;
@@ -566,6 +566,7 @@ NUT_API std::wstring ascii_to_wstr(const char *str)
     result.resize(n);
     const size_t rs = ::mbstowcs((wchar_t*) result.data(), str, n); // 未包含 '\0'
     assert(rs != (size_t) -1); // success
+    UNUSED(rs);
     assert(result.length() == n);
     return result;
 #endif
@@ -612,6 +613,7 @@ NUT_API std::string wstr_to_ascii(const wchar_t *wstr)
     result.resize(n);
     const size_t rs = ::wcstombs((char*) result.data(), wstr, n);
     assert(rs != (size_t) -1); // success
+    UNUSED(rs);
     assert(result.length() == n);
     return result;
 #endif

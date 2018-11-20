@@ -218,10 +218,9 @@ public:
         _head.store({dummy, 1}, std::memory_order_relaxed);
         _tail.store({dummy, 1}, std::memory_order_relaxed);
 
-        _collisions = (AtomicStampedPtr<Node>*) ::malloc(
-            sizeof(AtomicStampedPtr<Node>) * COLLISIONS_ARRAY_SIZE);
+        StampedPtr<Node> init_value(COLLISION_EMPTY_PTR, 0);
         for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
-            new (_collisions + i) AtomicStampedPtr<Node>(COLLISION_EMPTY_PTR, 0);
+            _collisions[i].store(init_value, std::memory_order_relaxed);
     }
 
     ~ConcurrentQueue()
@@ -240,11 +239,6 @@ public:
         assert(nullptr != dummy);
         dummy->destruct_dummy();
         ::free(dummy);
-
-        for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
-            (_collisions + i)->~AtomicStampedPtr();
-        ::free(_collisions);
-        _collisions = nullptr;
     }
 
     /**
@@ -586,7 +580,7 @@ private:
     AtomicStampedPtr<Node> _tail;
 
     // 用于隐消的碰撞数组
-    AtomicStampedPtr<Node> *_collisions = nullptr;;
+    AtomicStampedPtr<Node> _collisions[COLLISIONS_ARRAY_SIZE];
 };
 
 }

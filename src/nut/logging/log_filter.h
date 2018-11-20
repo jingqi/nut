@@ -15,13 +15,14 @@ namespace nut
 class NUT_API LogFilter
 {
 private:
-    typedef unsigned hashcode_type;
+    typedef size_t hashcode_type;
+    class Node;
 
     // 字典树节点
-    class NUT_API Node
+    class Node
     {
     public:
-        explicit Node(Node *p);
+        explicit Node(hashcode_type h, Node *p);
         ~Node();
 
         void swap(Node *x);
@@ -30,14 +31,14 @@ private:
          * @return >=0, 找到的位置
          *         <0, 插入位置
          */
-        int search(hashcode_type hash) const;
+        int search(hashcode_type h) const;
 
         void ensure_cap(int new_size);
 
         /**
          * @param pos 必须小于 0
          */
-        void insert(int pos, hashcode_type hash);
+        void insert(int pos, hashcode_type h);
 
         void remove(Node *child);
 
@@ -50,9 +51,9 @@ private:
 
     public:
         loglevel_mask_type forbid_mask = 0;
+        const hashcode_type hash;
 
         Node *parent = nullptr;
-        hashcode_type *children_hash = nullptr; // 升序排列
         Node **children = nullptr;
         int children_size = 0, children_cap = 0;
     };
@@ -92,8 +93,10 @@ private:
 
     /**
      * 哈稀字符串，直到遇到结尾或者 '.' 字符
+     *
+     * @parama char_accum 用于累加参与 hash 的字符数
      */
-    static hashcode_type hash_to_dot(const char *s, int *char_accum);
+    static hashcode_type hash_to_dot(const char *s, int *char_accum = nullptr);
 
 private:
     Node _root;

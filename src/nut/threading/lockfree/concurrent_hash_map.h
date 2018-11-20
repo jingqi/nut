@@ -302,7 +302,7 @@ public:
     /**
      * @return true if data removed, else nothing happened
      */
-    bool remove(const K& k)
+    bool remove(const K& k, V *v = nullptr)
     {
         // Locate bucket
         const hash_type h = (hash_type) _hash(k);
@@ -322,7 +322,7 @@ public:
                 continue; // 'prev' deleted by some other thread, retry
 
             // Remove item
-            const int rs = remove_item(prev, item);
+            const int rs = remove_item(prev, item, v);
             if (rs >= 0) // 1 success, 0 failed, -1 retry
                 return rs > 0;
         }
@@ -504,7 +504,7 @@ private:
      *         0, failed
      *         -1, retry
      */
-    int remove_item(Entry *prev, const StampedPtr<Entry>& item)
+    int remove_item(Entry *prev, const StampedPtr<Entry>& item, V *pvalue = nullptr)
     {
         if (IS_RETIRED(item.stamp))
             return -1; // 'prev' is deleted by some other thread, please retry
@@ -536,6 +536,8 @@ private:
                 &old_item, {inext.ptr, INCREASE_TAG(old_item.stamp)},
                 std::memory_order_relaxed, std::memory_order_relaxed))
         {
+            if (nullptr != pvalue)
+                *pvalue = std::move(item.ptr->value);
             HPRetireList::retire_object(item.ptr);
             _size.fetch_sub(1, std::memory_order_relaxed);
             return 1;
@@ -631,6 +633,7 @@ private:
             // Insert into link
             const bool rs = insert_dummy_entry(bucket, dummies + i);
             assert(rs);
+            UNUSED(rs);
         }
         _bucket_size_shift.fetch_add(1, std::memory_order_release);
     }

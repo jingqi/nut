@@ -9,8 +9,8 @@
 namespace nut
 {
 
-LogFilter::Node::Node(Node *p)
-    : parent(p)
+LogFilter::Node::Node(hashcode_type h, Node *p)
+    : hash(h), parent(p)
 {}
 
 LogFilter::Node::~Node()
@@ -28,9 +28,9 @@ void LogFilter::Node::swap(Node *x)
     forbid_mask = x->forbid_mask;
     x->forbid_mask = mask;
 
-    hashcode_type *const hash = children_hash;
-    children_hash = x->children_hash;
-    x->children_hash = hash;
+    const hashcode_type h = hash;
+    const_cast<hashcode_type&>(hash) = x->hash;
+    const_cast<hashcode_type&>(x->hash) = h;
 
     Node **const chdr = children;
     children = x->children;
@@ -50,16 +50,16 @@ void LogFilter::Node::swap(Node *x)
         x->children[i]->parent = x;
 }
 
-int LogFilter::Node::search(hashcode_type hash) const
+int LogFilter::Node::search(hashcode_type h) const
 {
     // binary search
     int left = -1, right = children_size;
     while (left + 1 < right)
     {
         const int mid = (left + right) / 2;
-        if (hash == children_hash[mid])
+        if (h == children[mid]->hash)
             return mid;
-        else if (hash < children_hash[mid])
+        else if (h < children[mid]->hash)
             right = mid;
         else
             left = mid;
@@ -69,19 +69,18 @@ int LogFilter::Node::search(hashcode_type hash) const
 
 void LogFilter::Node::ensure_cap(int new_size)
 {
-    if (new_size < children_cap)
+    if (new_size <= children_cap)
         return;
 
     int new_cap = children_cap * 3 / 2;
     if (new_cap < new_size)
         new_cap = new_size;
 
-    children_hash = (hashcode_type*) ::realloc(children_hash, sizeof(hashcode_type) * new_cap);
     children = (Node**) ::realloc(children, sizeof(Node*) * new_cap);
     children_cap = new_cap;
 }
 
-void LogFilter::Node::insert(int pos, hashcode_type hash)
+void LogFilter::Node::insert(int pos, hashcode_type h)
 {
     assert(pos < 0);
     pos = -pos - 1;
@@ -89,13 +88,11 @@ void LogFilter::Node::insert(int pos, hashcode_type hash)
     if (pos < children_size)
     {
         const int count = children_size - pos;
-        ::memmove(children_hash + pos + 1, children_hash + pos, sizeof(hashcode_type) * count);
         ::memmove(children + pos + 1, children + pos, sizeof(Node*) * count);
     }
-    children_hash[pos] = hash;
     Node *child = (Node*) ::malloc(sizeof(Node));
     assert(nullptr != child);
-    new (child) Node(this);
+    new (child) Node(h, this);
     children[pos] = child;
     ++children_size;
 }
@@ -109,10 +106,11 @@ void LogFilter::Node::remove(Node *child)
     assert(pos < children_size);
 
     children[pos]->~Node();
+    ::free(children[pos]);
+
     if (pos < children_size - 1)
     {
         const int count = children_size - pos - 1;
-        ::memmove(children_hash + pos, children_hash + pos + 1, sizeof(hashcode_type) * count);
         ::memmove(children + pos, children + pos + 1, sizeof(Node*) * count);
     }
     --children_size;
@@ -120,28 +118,24 @@ void LogFilter::Node::remove(Node *child)
 
 void LogFilter::Node::clear()
 {
+    forbid_mask = 0;
+
     for (int i = 0; i < children_size; ++i)
     {
         assert(nullptr != children && nullptr != children[i]);
         children[i]->~Node();
+        ::free(children[i]);
     }
 
-    if (nullptr != children_hash)
-    {
-        ::free(children_hash);
-        assert(nullptr != children);
+    if (nullptr != children)
         ::free(children);
-    }
-
-    forbid_mask = 0;
-    children_hash = nullptr;
     children = nullptr;
     children_size = 0;
     children_cap = 0;
 }
 
 LogFilter::LogFilter()
-    : _root(nullptr)
+    : _root(hash_to_dot(nullptr), nullptr)
 {}
 
 void LogFilter::swap(LogFilter *x)
@@ -155,18 +149,17 @@ void LogFilter::swap(LogFilter *x)
 
 LogFilter::hashcode_type LogFilter::hash_to_dot(const char *s, int *char_accum)
 {
-    assert(nullptr != s && nullptr != char_accum);
-
     // SDBRHash 算法
     hashcode_type hash = 17;
     int i = 0;
-    while (0 != s[i] && '.' != s[i])
+    while (nullptr != s && 0 != s[i] && '.' != s[i])
     {
         // hash = 65599 * hash + (*s++);
         hash = s[i] + (hash << 6) + (hash << 16) - hash;
         ++i;
     }
-    *char_accum += i;
+    if (nullptr != char_accum)
+        *char_accum += i;
     return hash;
 }
 

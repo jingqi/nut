@@ -17,7 +17,7 @@ ConsoleLogHandler::ConsoleLogHandler(bool abbr_mode)
 void ConsoleLogHandler::handle_log(const LogRecord& rec)
 {
     if (_abbr_mode)
-        std::cout << "[" << rec.get_time().get_clock_str() << "] ";
+        std::cout << "[" << rec.get_time().format_time("%H:%M:%S.%3f") << "] ";
     else
         std::cout << "[" << rec.get_time().to_string() << "] ";
 

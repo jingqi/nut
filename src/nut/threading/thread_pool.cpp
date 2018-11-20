@@ -62,9 +62,8 @@ bool ThreadPool::add_task(task_type&& task)
     _wake_condition.notify_one();
 
     // 启动新线程
-    if (!_interrupted &&
-        (0 == _max_thread_number || _alive_number < _max_thread_number) &&
-        0 == _idle_number)
+    if (!_interrupted && 0 == _idle_number &&
+        (0 == _max_thread_number || _alive_number < _max_thread_number))
     {
         if (_threads.size() > _alive_number * 2 + 10)
             clean_dead_threads();
@@ -90,9 +89,8 @@ bool ThreadPool::add_task(const task_type& task)
     _wake_condition.notify_one();
 
     // 启动新线程
-    if (!_interrupted &&
-        (0 == _max_thread_number || _alive_number < _max_thread_number) &&
-        0 == _idle_number)
+    if (!_interrupted && 0 == _idle_number &&
+        (0 == _max_thread_number || _alive_number < _max_thread_number))
     {
         if (_threads.size() > _alive_number * 2 + 10)
             clean_dead_threads();
@@ -137,9 +135,8 @@ void ThreadPool::thread_process()
             std::unique_lock<std::mutex> unique_guard(_lock);
 
             // Wait for conditions
-            while (!_interrupted &&
-                   (0 == _max_thread_number || _alive_number <= _max_thread_number) &&
-                   _task_queue.empty())
+            while (!_interrupted && _task_queue.empty() &&
+                   (0 == _max_thread_number || _alive_number <= _max_thread_number))
             {
                 if (_alive_number == ++_idle_number)
                     _all_idle_condition.notify_all();
@@ -189,15 +186,14 @@ void ThreadPool::thread_finalize()
 
 void ThreadPool::clean_dead_threads()
 {
-    std::vector<thread_iter_type> delete_later;
     for (thread_iter_type iter = _threads.begin(),
-             end =_threads.end(); iter != end; ++iter)
+             end =_threads.end(); iter != end;)
     {
-        if (!iter->joinable())
-            delete_later.push_back(iter);
+        if (iter->joinable())
+            ++iter;
+        else
+            _threads.erase(iter++);
     }
-    for (size_t i = 0, sz = delete_later.size(); i < sz; ++i)
-        _threads.erase(delete_later[i]);
 }
 
 }

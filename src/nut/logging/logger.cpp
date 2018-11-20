@@ -93,23 +93,21 @@ void Logger::log(LogLevel level, const char *tag, const char *file, int line,
     if (_filter.is_forbidden(tag, level))
         return;
 
-    size_t size = 32;
+    size_t size = ::strlen(format) * 3 / 2 + 8;
     char *buf = (char*) ::malloc(size);
-    assert(nullptr != buf);
     va_list ap;
     while (nullptr != buf)
     {
         va_start(ap, format);
         int n = ::vsnprintf(buf, size, format, ap);
         va_end(ap);
-        if (n > -1 && n < (int) size)
+        if (0 <= n && n < (int) size)
             break;
 
-        if (n > -1)
-            size = n + 1; /* glibc 2.1 */
-        else
+        if (n < 0)
             size *= 2; /* glibc 2.0 */
-
+        else
+            size = n + 1; /* glibc 2.1 */
         buf = (char*) ::realloc(buf, size);
     }
     if (nullptr == buf)
@@ -128,6 +126,8 @@ void Logger::log(LogLevel level, const char *tag, const char *file, int line,
 
 void Logger::load_xml_config(const std::string& config)
 {
+    NUT_DEBUGGING_ASSERT_ALIVE;
+
     class TagHandler : public XmlElementHandler
     {
     public:

@@ -141,7 +141,8 @@ public:
         if (_ptr == p)
             return;
 
-        // 先添加引用，以免先减少引用的话引发连锁反应
+        // NOTE 先添加引用，以免减少 '_ptr' 的引用引发连锁反应，导致 'p' 指向的
+        //      对象被意外回收
         if (p != nullptr)
             p->add_ref();
         if (_ptr != nullptr)

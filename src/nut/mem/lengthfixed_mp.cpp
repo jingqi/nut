@@ -106,10 +106,10 @@ void* lengthfixed_mtmp::alloc(size_t sz)
 {
     assert(_granularity == (std::max)(sz, sizeof(void*)));
 
-    void *old_head = _head.load(std::memory_order_relaxed);
+    void *old_head = _head.load(std::memory_order_acquire);
     while (nullptr != old_head && !_head.compare_exchange_weak(
                old_head, *reinterpret_cast<void**>(old_head),
-               std::memory_order_release, std::memory_order_relaxed))
+               std::memory_order_relaxed, std::memory_order_acquire))
     {}
 
     if (nullptr == old_head)
