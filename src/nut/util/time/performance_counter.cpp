@@ -52,6 +52,8 @@ void PerformanceCounter::set_to_now()
 
 #if NUT_PLATFORM_OS_WINDOWS
     ::QueryPerformanceCounter(&_counter);
+#elif NUT_PLATFORM_OS_LINUX
+    ::clock_gettime(CLOCK_MONOTONIC_RAW, &_tv);
 #else
     ::clock_gettime(CLOCK_MONOTONIC, &_tv);
 #endif

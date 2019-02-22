@@ -24,7 +24,7 @@ class TestLogging : public TestFixture
     {
         Logger *l = Logger::get_instance();
         l->clear_handlers();
-        l->get_filter().clear_forbids();
+        l->get_filter().reset();
 
         l->add_handler(rc_new<StreamLogHandler>(std::cout));
 
@@ -45,7 +45,7 @@ class TestLogging : public TestFixture
     {
         Logger *l = Logger::get_instance();
         l->clear_handlers();
-        l->get_filter().clear_forbids();
+        l->get_filter().reset();
 
         l->add_handler(rc_new<ConsoleLogHandler>());
 
@@ -66,23 +66,22 @@ class TestLogging : public TestFixture
     {
         Logger *l = Logger::get_instance();
         l->clear_handlers();
-        l->get_filter().clear_forbids();
+        l->get_filter().reset();
 
         l->add_handler(rc_new<StreamLogHandler>(std::cout));
 
-        l->get_filter().forbid(nullptr, static_cast<loglevel_mask_type>(LogLevel::Info));
-        l->get_filter().forbid("a.b", static_cast<loglevel_mask_type>(LogLevel::Error) |
-                               static_cast<loglevel_mask_type>(LogLevel::Fatal));
-        l->get_filter().unforbid("a.b", static_cast<loglevel_mask_type>(LogLevel::Error));
+        l->get_filter().forbid(nullptr, LL_INFO);
+        l->get_filter().forbid("a.b", LL_ERROR | LL_FATAL);
+        l->get_filter().allow("a.b", LL_ERROR);
 
-        l->get_filter().forbid("a.b.c.m", static_cast<loglevel_mask_type>(LogLevel::Fatal));
-        l->get_filter().unforbid("a.b.c.m", static_cast<loglevel_mask_type>(LogLevel::AllLevels));
+        l->get_filter().forbid("a.b.c.m", LL_FATAL);
+        l->get_filter().allow("a.b.c.m", LL_ALL_LEVELS);
 
         NUT_LOG_D("a", "debug should show");
         NUT_LOG_I("a.b", "info should NOT show----------");
         NUT_LOG_W("a.c", "warn should show");
         NUT_LOG_E("a.b", "error should show");
-        NUT_LOG_F("a.b.c.m", "fatal should NOT show---------");
+        NUT_LOG_F("a.b.c.m", "fatal should show");
     }
 
     void test_xml_config()
@@ -90,17 +89,17 @@ class TestLogging : public TestFixture
         const char *config =
                 "<Logger>"
                     "<Filter>"
-                        "<Tag forbids=\"info\" />"
-                        "<Tag name=\"a.b\" forbids=\"fatal\" />"
+                        "<Tag forbid=\"info\" />"
+                        "<Tag name=\"a.b\" forbid=\"fatal\" />"
                     "</Filter>"
-                    "<Handler type=\"stdout\" flushs=\"debug,info,warn,error,fatal\" >"
+                    "<Handler type=\"stdout\" flush=\"debug,info,warn,error,fatal\" >"
                         "<Filter>"
-                            "<Tag forbids=\"error\" />"
+                            "<Tag forbid=\"error\" />"
                         "</Filter>"
                     "</Handler>"
-                    "<Handler type=\"stderr\" flushs=\"debug,info,warn,error,fatal\" >"
+                    "<Handler type=\"stderr\" flush=\"debug,info,warn,error,fatal\" >"
                         "<Filter>"
-                            "<Tag name=\"a\" forbids=\"debug,info,warn\" />"
+                            "<Tag name=\"a\" forbid=\"debug,info,warn\" />"
                         "</Filter>"
                     "</Handler>"
                 "</Logger>";

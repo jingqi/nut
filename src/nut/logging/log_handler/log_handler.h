@@ -31,7 +31,7 @@ public:
 
 protected:
     // 控制哪些日志触发立即刷新到磁盘
-    loglevel_mask_type _flush_mask = static_cast<loglevel_mask_type>(LogLevel::Fatal);
+    loglevel_mask_type _flush_mask = LL_FATAL;
 
 private:
     // 日志过滤器

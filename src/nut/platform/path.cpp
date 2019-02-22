@@ -6,7 +6,7 @@
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
-#   include<io.h> // for _access()
+#   include <io.h> // for _access()
 #   include <sys/stat.h> // for stat()
 #   include <direct.h> // for getcwd()
 #else
@@ -388,11 +388,11 @@ std::wstring Path::abs_path(const wchar_t *path)
 #if NUT_PLATFORM_OS_WINDOWS
                 // Windows c:\Users\xxx
                 // NOTE getenv() may not safe, replaced by _dupenv_s()
-                char *buf = nullptr;
-                ::_dupenv_s(&buf, nullptr, "USERPROFILE");
+                wchar_t *buf = nullptr;
+                ::_wdupenv_s(&buf, nullptr, L"USERPROFILE");
                 if (nullptr != buf)
                 {
-                    result += ascii_to_wstr(buf);
+                    result += buf;
                     ::free(buf);
                 }
 #else
@@ -438,7 +438,7 @@ std::wstring Path::abs_path(const wchar_t *path)
             {
                 if (result.length() > 0 && !is_path_separator(result.at(result.length() - 1)))
                 {
-                    result.push_back(seperator());
+                    result.push_back(wseperator());
                 }
                 result += part;
             }

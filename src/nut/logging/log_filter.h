@@ -2,8 +2,12 @@
 #ifndef ___HEADFILE_96AEB548_0516_4970_A913_AF51AAC6E02C_
 #define ___HEADFILE_96AEB548_0516_4970_A913_AF51AAC6E02C_
 
+#include <string>
+
 #include "../nut_config.h"
 #include "log_level.h"
+
+#include <nut/platform/int_type.h>
 
 
 namespace nut
@@ -16,7 +20,6 @@ class NUT_API LogFilter
 {
 private:
     typedef size_t hashcode_type;
-    class Node;
 
     // 字典树节点
     class Node
@@ -31,18 +34,20 @@ private:
          * @return >=0, 找到的位置
          *         <0, 插入位置
          */
-        int search(hashcode_type h) const;
-
-        void ensure_cap(int new_size);
+        ssize_t search_child(hashcode_type h) const;
 
         /**
          * @param pos 必须小于 0
          */
-        void insert(int pos, hashcode_type h);
+        Node* insert_child(ssize_t pos, hashcode_type h);
 
-        void remove(Node *child);
+        void remove_child(Node *child);
 
         void clear();
+
+        void ensure_cap(size_t new_size);
+
+        std::string to_string(const std::string& tag_prefix) const;
 
     private:
         // Non-copyable
@@ -50,12 +55,13 @@ private:
         Node& operator=(const Node&) = delete;
 
     public:
-        loglevel_mask_type forbid_mask = 0;
         const hashcode_type hash;
+        loglevel_mask_type allowed_levels = 0;
+        loglevel_mask_type forbidden_levels = 0;
 
         Node *parent = nullptr;
         Node **children = nullptr;
-        int children_size = 0, children_cap = 0;
+        size_t children_size = 0, children_capacity = 0;
     };
 
 public:
@@ -64,27 +70,30 @@ public:
     void swap(LogFilter *x);
 
     /**
-     * 禁用指定 tag
+     * 允许指定 tag
      *
-     * @param mask 禁用的 LogLevel 掩码
+     * @param levels 禁用的 LogLevel 掩码
      */
-    void forbid(const char *tag, loglevel_mask_type mask =
-                static_cast<loglevel_mask_type>(LogLevel::AllLevels));
+    void allow(const char *tag, loglevel_mask_type levels = LL_ALL_LEVELS);
 
     /**
-     * 解禁指定 tag
+     * 禁止指定 tag
      *
-     * @param mask 禁用的 LogLevel 掩码
+     * @param levels 禁用的 LogLevel 掩码
      */
-    void unforbid(const char *tag, loglevel_mask_type mask =
-                  static_cast<loglevel_mask_type>(LogLevel::AllLevels));
-
-    void clear_forbids();
+    void forbid(const char *tag, loglevel_mask_type levels = LL_ALL_LEVELS);
 
     /**
-     * 查询是否被禁用掉
+     * 重置
      */
-    bool is_forbidden(const char *tag, LogLevel level) const;
+    void reset();
+
+    /**
+     * 查询是否允许
+     */
+    bool is_allowed(const char *tag, enum LogLevel level) const;
+
+    std::string to_string() const;
 
 private:
     // Non-copyable
@@ -96,7 +105,22 @@ private:
      *
      * @parama char_accum 用于累加参与 hash 的字符数
      */
-    static hashcode_type hash_to_dot(const char *s, int *char_accum = nullptr);
+    static hashcode_type hash_to_dot(const char *s, size_t *char_accum = nullptr);
+
+    /**
+     * 找到或者创建节点
+     */
+    Node* find_or_create_node(const char *tag);
+
+    /**
+     * 找到节点或者节点的祖先
+     */
+    const Node* find_ancestor(const char *tag) const;
+
+    /**
+     * 删除空叶子节点
+     */
+    void remove_empty_leaves_upway(Node *leaf);
 
 private:
     Node _root;

@@ -8,6 +8,7 @@
 
 #include "circle_file_by_size_log_handler.h"
 
+
 // 数字序列长度
 #define SEQ_NUM_LENGTH 5
 // 数字序列周期
@@ -38,7 +39,12 @@ void CircleFileBySizeLogHandler::reopen(const char *file)
     _ofs.clear();
     _ofs.open(file, std::ios::app);
 
-    const char *first_msg = "\n\n\n\n\n\n------------- ---------------- ---------------\n";
+    if (_file_size > 0)
+    {
+        _ofs << "\n\n\n\n\n\n";
+        _file_size += 6;
+    }
+    const char *first_msg = "------------- ---------------- ---------------\n";
     _ofs << first_msg;
     _file_size += ::strlen(first_msg);
 }
@@ -140,7 +146,7 @@ void CircleFileBySizeLogHandler::handle_log(const LogRecord& rec)
     _file_size += msg.length() + 1;
 
     // Flush to disk if needed
-    if (0 != (_flush_mask & static_cast<loglevel_mask_type>(rec.get_level())))
+    if (0 != (_flush_mask & rec.get_level()))
         _ofs.flush();
 
     // Change to new log file if needed

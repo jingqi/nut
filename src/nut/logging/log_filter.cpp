@@ -4,7 +4,10 @@
 #include <string.h>
 #include <new>
 
+#include <nut/util/string/to_string.h>
+
 #include "log_filter.h"
+
 
 namespace nut
 {
@@ -24,9 +27,13 @@ void LogFilter::Node::swap(Node *x)
     if (this == x)
         return;
 
-    const loglevel_mask_type mask = forbid_mask;
-    forbid_mask = x->forbid_mask;
-    x->forbid_mask = mask;
+    loglevel_mask_type levels = allowed_levels;
+    allowed_levels = x->allowed_levels;
+    x->allowed_levels = levels;
+
+    levels = forbidden_levels;
+    forbidden_levels = x->forbidden_levels;
+    x->forbidden_levels = levels;
 
     const hashcode_type h = hash;
     const_cast<hashcode_type&>(hash) = x->hash;
@@ -36,27 +43,27 @@ void LogFilter::Node::swap(Node *x)
     children = x->children;
     x->children = chdr;
 
-    int v = children_size;
+    size_t v = children_size;
     children_size = x->children_size;
     x->children_size = v;
 
-    v = children_cap;
-    children_cap = x->children_cap;
-    x->children_cap = v;
+    v = children_capacity;
+    children_capacity = x->children_capacity;
+    x->children_capacity = v;
 
-    for (int i = 0; i < children_size; ++i)
+    for (size_t i = 0; i < children_size; ++i)
         children[i]->parent = this;
-    for (int i = 0; i < x->children_size; ++i)
+    for (size_t i = 0; i < x->children_size; ++i)
         x->children[i]->parent = x;
 }
 
-int LogFilter::Node::search(hashcode_type h) const
+ssize_t LogFilter::Node::search_child(hashcode_type h) const
 {
     // binary search
-    int left = -1, right = children_size;
+    ssize_t left = -1, right = children_size;
     while (left + 1 < right)
     {
-        const int mid = (left + right) / 2;
+        const ssize_t mid = (left + right) / 2;
         if (h == children[mid]->hash)
             return mid;
         else if (h < children[mid]->hash)
@@ -67,27 +74,14 @@ int LogFilter::Node::search(hashcode_type h) const
     return -right - 1;
 }
 
-void LogFilter::Node::ensure_cap(int new_size)
-{
-    if (new_size <= children_cap)
-        return;
-
-    int new_cap = children_cap * 3 / 2;
-    if (new_cap < new_size)
-        new_cap = new_size;
-
-    children = (Node**) ::realloc(children, sizeof(Node*) * new_cap);
-    children_cap = new_cap;
-}
-
-void LogFilter::Node::insert(int pos, hashcode_type h)
+LogFilter::Node* LogFilter::Node::insert_child(ssize_t pos, hashcode_type h)
 {
     assert(pos < 0);
     pos = -pos - 1;
     ensure_cap(children_size + 1);
-    if (pos < children_size)
+    if (((size_t) pos) < children_size)
     {
-        const int count = children_size - pos;
+        const size_t count = children_size - pos;
         ::memmove(children + pos + 1, children + pos, sizeof(Node*) * count);
     }
     Node *child = (Node*) ::malloc(sizeof(Node));
@@ -95,12 +89,13 @@ void LogFilter::Node::insert(int pos, hashcode_type h)
     new (child) Node(h, this);
     children[pos] = child;
     ++children_size;
+    return children[pos];
 }
 
-void LogFilter::Node::remove(Node *child)
+void LogFilter::Node::remove_child(Node *child)
 {
     assert(nullptr != child);
-    int pos = 0;
+    size_t pos = 0;
     while (pos < children_size && child != children[pos])
         ++pos;
     assert(pos < children_size);
@@ -110,7 +105,7 @@ void LogFilter::Node::remove(Node *child)
 
     if (pos < children_size - 1)
     {
-        const int count = children_size - pos - 1;
+        const size_t count = children_size - pos - 1;
         ::memmove(children + pos, children + pos + 1, sizeof(Node*) * count);
     }
     --children_size;
@@ -118,9 +113,10 @@ void LogFilter::Node::remove(Node *child)
 
 void LogFilter::Node::clear()
 {
-    forbid_mask = 0;
+    allowed_levels = 0;
+    forbidden_levels = 0;
 
-    for (int i = 0; i < children_size; ++i)
+    for (size_t i = 0; i < children_size; ++i)
     {
         assert(nullptr != children && nullptr != children[i]);
         children[i]->~Node();
@@ -131,7 +127,88 @@ void LogFilter::Node::clear()
         ::free(children);
     children = nullptr;
     children_size = 0;
-    children_cap = 0;
+    children_capacity = 0;
+}
+
+void LogFilter::Node::ensure_cap(size_t new_size)
+{
+    if (new_size <= children_capacity)
+        return;
+
+    size_t new_cap = children_capacity * 3 / 2;
+    if (new_cap < new_size)
+        new_cap = new_size;
+
+    children = (Node**) ::realloc(children, sizeof(Node*) * new_cap);
+    children_capacity = new_cap;
+}
+
+static std::string levels_to_string(loglevel_mask_type levels)
+{
+    std::string ret;
+    if (0 != (levels & LL_DEBUG))
+        ret.push_back(log_level_to_char(LL_DEBUG));
+    if (0 != (levels & LL_INFO))
+        ret.push_back(log_level_to_char(LL_INFO));
+    if (0 != (levels & LL_WARN))
+        ret.push_back(log_level_to_char(LL_WARN));
+    if (0 != (levels & LL_ERROR))
+        ret.push_back(log_level_to_char(LL_ERROR));
+    if (0 != (levels & LL_FATAL))
+        ret.push_back(log_level_to_char(LL_FATAL));
+    return ret;
+}
+
+std::string LogFilter::Node::to_string(const std::string& tag_prefix) const
+{
+    std::string tag;
+    if (nullptr == parent)
+        tag = "*";
+    else if (tag_prefix.empty())
+        tag = ullong_to_str(hash);
+    else
+        tag = tag_prefix + "." + ullong_to_str(hash);
+
+    std::string ret;
+    if (nullptr != parent && 0 != allowed_levels)
+    {
+        ret += "+ ";
+        ret += tag;
+        ret.push_back(' ');
+        ret += levels_to_string(allowed_levels);
+    }
+
+    if (0 != forbidden_levels)
+    {
+        if (!ret.empty())
+            ret.push_back('\n');
+
+        ret += "- ";
+        ret += tag;
+        ret.push_back(' ');
+        ret += levels_to_string(forbidden_levels);
+    }
+
+    if (0 == allowed_levels && 0 == forbidden_levels &&
+        nullptr != parent && 0 == children_size)
+    {
+        // useless node, should be deleted
+        ret += "? ";
+        ret += tag;
+    }
+
+    std::string children_tag_prefix;
+    if (nullptr != parent)
+        children_tag_prefix = tag;
+    for (size_t i = 0; i < children_size; ++i)
+    {
+        std::string s = children[i]->to_string(children_tag_prefix);
+        if (!ret.empty())
+            ret.push_back('\n');
+        ret += s;
+    }
+
+    return ret;
 }
 
 LogFilter::LogFilter()
@@ -147,11 +224,11 @@ void LogFilter::swap(LogFilter *x)
     _root.swap(&x->_root);
 }
 
-LogFilter::hashcode_type LogFilter::hash_to_dot(const char *s, int *char_accum)
+LogFilter::hashcode_type LogFilter::hash_to_dot(const char *s, size_t *char_accum)
 {
     // SDBRHash 算法
     hashcode_type hash = 17;
-    int i = 0;
+    size_t i = 0;
     while (nullptr != s && 0 != s[i] && '.' != s[i])
     {
         // hash = 65599 * hash + (*s++);
@@ -163,118 +240,29 @@ LogFilter::hashcode_type LogFilter::hash_to_dot(const char *s, int *char_accum)
     return hash;
 }
 
-void LogFilter::forbid(const char *tag, loglevel_mask_type mask)
+void LogFilter::remove_empty_leaves_upway(Node *leaf)
 {
-    // dummy operation
-    if (0 == mask)
-        return;
+    assert(nullptr != leaf);
 
-    // root rule
-    if (nullptr == tag || 0 == tag[0])
-    {
-        _root.forbid_mask |= mask;
-        return;
-    }
-
-    // find the node
-    Node *current = &_root;
-    int i = 0;
-    do
-    {
-        // hash 一段标志符
-        const hashcode_type hash = hash_to_dot(tag + i, &i);
-
-        // 找到对应的节点
-        assert(nullptr != current);
-        const int pos = current->search(hash);
-        if (pos < 0)
-        {
-            current->insert(pos, hash);
-            current = current->children[-pos - 1];
-        }
-        else
-        {
-            current = current->children[pos];
-        }
-
-        if (0 != tag[i])
-        {
-            assert('.' == tag[i]);
-            ++i;
-        }
-    } while (0 != tag[i]);
-
-    // apply the rule
-    assert(nullptr != current);
-    current->forbid_mask |= mask;
-}
-
-void LogFilter::unforbid(const char *tag, loglevel_mask_type mask)
-{
-    // dummy operation
-    if (0 == mask)
-        return;
-
-    // root rule
-    if (nullptr == tag || 0 == tag[0])
-    {
-        _root.forbid_mask &= ~mask;
-        return;
-    }
-
-    // find the node
-    Node *current = &_root;
-    int i = 0;
-    do
-    {
-        // hash 一段标志符
-        const hashcode_type hash = hash_to_dot(tag + i, &i);
-
-        // 找到对应的节点
-        assert(nullptr != current);
-        const int pos = current->search(hash);
-        if (pos < 0)
-            return;
-        else
-            current = current->children[pos];
-
-        if (0 != tag[i])
-        {
-            assert('.' == tag[i]);
-            ++i;
-        }
-    } while (0 != tag[i]);
-
-    // apply the rule
-    assert(nullptr != current);
-    current->forbid_mask &= ~mask;
-
-    // remove empty nodes
-    while (0 == current->forbid_mask && 0 == current->children_size &&
-           nullptr != current->parent)
+    Node *current = leaf;
+    while (0 == current->allowed_levels && 0 == current->forbidden_levels &&
+        0 == current->children_size && nullptr != current->parent)
     {
         Node *parent = current->parent;
-        parent->remove(current);
+        parent->remove_child(current);
         current = parent;
     }
 }
 
-void LogFilter::clear_forbids()
+LogFilter::Node* LogFilter::find_or_create_node(const char *tag)
 {
-    _root.clear();
-}
-
-bool LogFilter::is_forbidden(const char *tag, LogLevel level) const
-{
-    // root rule
-    if (0 != (_root.forbid_mask & static_cast<loglevel_mask_type>(level)))
-        return true;
+    // root
     if (nullptr == tag || 0 == tag[0])
-        return false;
+        return &_root;
 
-    // find the node
-    const Node *current = &_root;
-    int i = 0;
+    // find or craete the node
+    Node *current = &_root;
+    size_t i = 0;
     do
     {
         // hash 一段标志符
@@ -282,16 +270,11 @@ bool LogFilter::is_forbidden(const char *tag, LogLevel level) const
 
         // 找到对应的节点
         assert(nullptr != current);
-        const int pos = current->search(hash);
+        const ssize_t pos = current->search_child(hash);
         if (pos < 0)
-            return false;
+            current = current->insert_child(pos, hash);
         else
             current = current->children[pos];
-
-        // apply rule
-        assert(nullptr != current);
-        if (0 != (current->forbid_mask & static_cast<loglevel_mask_type>(level)))
-            return true;
 
         if (0 != tag[i])
         {
@@ -299,8 +282,93 @@ bool LogFilter::is_forbidden(const char *tag, LogLevel level) const
             ++i;
         }
     } while (0 != tag[i]);
+    return current;
+}
 
-    return false;
+const LogFilter::Node* LogFilter::find_ancestor(const char *tag) const
+{
+    // root
+    if (nullptr == tag || 0 == tag[0])
+        return &_root;
+
+    // find
+    const Node *current = &_root;
+    size_t i = 0;
+    do
+    {
+        // hash 一段标志符
+        const hashcode_type hash = hash_to_dot(tag + i, &i);
+
+        // 找到对应的节点
+        assert(nullptr != current);
+        const ssize_t pos = current->search_child(hash);
+        if (pos < 0)
+            return current;
+        current = current->children[pos];
+
+        if (0 != tag[i])
+        {
+            assert('.' == tag[i]);
+            ++i;
+        }
+    } while (0 != tag[i]);
+    return current;
+}
+
+void LogFilter::allow(const char *tag, loglevel_mask_type levels)
+{
+    // dummy operation
+    if (0 == levels)
+        return;
+
+    // apply the rule
+    Node *n = find_or_create_node(tag);
+    assert(nullptr != n);
+    n->allowed_levels |= levels;
+    n->forbidden_levels &= ~levels;
+
+    // remove empty leaves
+    remove_empty_leaves_upway(n);
+}
+
+void LogFilter::forbid(const char *tag, loglevel_mask_type levels)
+{
+    // dummy operation
+    if (0 == levels)
+        return;
+
+    // apply the rule
+    Node *n = find_or_create_node(tag);
+    assert(nullptr != n);
+    n->allowed_levels &= ~levels;
+    n->forbidden_levels |= levels;
+
+    // remove empty leaves
+    remove_empty_leaves_upway(n);
+}
+
+void LogFilter::reset()
+{
+    _root.clear();
+}
+
+bool LogFilter::is_allowed(const char *tag, enum LogLevel level) const
+{
+    const Node *n = find_ancestor(tag);
+    while (nullptr != n)
+    {
+        if (0 != (n->allowed_levels & level))
+            return true;
+        else if (0 != (n->forbidden_levels & level))
+            return false;
+        n = n->parent;
+    }
+    return true;
+}
+
+std::string LogFilter::to_string() const
+{
+    return _root.to_string("");
 }
 
 }

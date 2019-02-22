@@ -11,24 +11,24 @@ namespace nut
 /**
  * Log 等级
  */
-enum class LogLevel : uint8_t
+enum LogLevel
 {
-    Debug = 0x01,
-    Info = 0x02,
-    Warn = 0x04,
-    Error = 0x08,
-    Fatal = 0x10,
+    LL_DEBUG = 0x01,
+    LL_INFO = 0x02,
+    LL_WARN = 0x04,
+    LL_ERROR = 0x08,
+    LL_FATAL = 0x10,
 
     // 全部 LogLevel 掩码
-    AllLevels = 0x1F
+    LL_ALL_LEVELS = 0x1F
 };
 
 // LogLevel 掩码类型
-typedef std::underlying_type<LogLevel>::type loglevel_mask_type;
+typedef uint8_t loglevel_mask_type;
 
-const char* log_level_to_str(LogLevel level);
-char log_level_to_char(LogLevel level);
-LogLevel str_to_log_level(const char *str);
+const char* log_level_to_str(enum LogLevel level);
+char log_level_to_char(enum LogLevel level);
+enum LogLevel str_to_log_level(const char *str);
 
 }
 

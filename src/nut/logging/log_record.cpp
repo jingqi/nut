@@ -9,13 +9,11 @@
 namespace nut
 {
 
-LogRecord::LogRecord(LogLevel level, const char *tag, const char *file_path,
-                     int line, const char *func, char *message)
-    : _level(level), _tag(tag), _file_path(file_path), _line(line),
-      _func(func), _message(message)
+LogRecord::LogRecord(enum LogLevel level, const char *tag, const char *file_path,
+                     int line, const char *func)
+    : _level(level), _tag(tag), _file_path(file_path), _line(line), _func(func)
 {
-    assert(nullptr != file_path && line >= 0 && nullptr != message);
-    _time.set_to_now();
+    assert(nullptr != file_path && line >= 0);
 }
 
 LogRecord::~LogRecord()
@@ -25,12 +23,19 @@ LogRecord::~LogRecord()
     _message = nullptr;
 }
 
+void LogRecord::delay_init(char *message)
+{
+    assert(nullptr != message);
+    _message = message;
+    _time.set_to_now();
+}
+
 const DateTime& LogRecord::get_time() const
 {
     return _time;
 }
 
-LogLevel LogRecord::get_level() const
+enum LogLevel LogRecord::get_level() const
 {
     return _level;
 }

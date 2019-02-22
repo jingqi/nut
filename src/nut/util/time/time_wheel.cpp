@@ -21,9 +21,15 @@
 #   define CLOCK_TO_MS(c) ((c).QuadPart * 1000 / _clock_freq.QuadPart)
 #   define CLOCK_DIFF_TO_MS(a,b) (((a).QuadPart - (b).QuadPart) * 1000 / _clock_freq.QuadPart)
 #else
-#   define GET_CLOCK(name) \
-        struct timespec name; \
-        ::clock_gettime(CLOCK_MONOTONIC_RAW, &name)
+#   if NUT_PLATFORM_OS_LINUX
+#       define GET_CLOCK(name) \
+            struct timespec name; \
+            ::clock_gettime(CLOCK_MONOTONIC_RAW, &name)
+#   else
+#       define GET_CLOCK(name) \
+            struct timespec name; \
+            ::clock_gettime(CLOCK_MONOTONIC, &name)
+#   endif
 
 #   define CLOCK_IS_ZERO(c) (0 == (c).tv_sec && 0 == (c).tv_nsec)
 #   define CLOCK_TO_MS(c) ((c).tv_sec * 1000 + (c).tv_nsec / 1000000)

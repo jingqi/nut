@@ -8,24 +8,24 @@
 namespace nut
 {
 
-const char* log_level_to_str(LogLevel level)
+const char* log_level_to_str(enum LogLevel level)
 {
     // 为了对齐，保持返回字符串长度一致
     switch (level)
     {
-    case LogLevel::Debug:
+    case LL_DEBUG:
         return "DEBUG";
 
-    case LogLevel::Info:
+    case LL_INFO:
         return "INFO ";
 
-    case LogLevel::Warn:
+    case LL_WARN:
         return "WARN ";
 
-    case LogLevel::Error:
+    case LL_ERROR:
         return "ERROR";
 
-    case LogLevel::Fatal:
+    case LL_FATAL:
         return "FATAL";
 
     default:
@@ -33,24 +33,24 @@ const char* log_level_to_str(LogLevel level)
     }
 }
 
-char log_level_to_char(LogLevel level)
+char log_level_to_char(enum LogLevel level)
 {
     // 为了对齐，保持返回字符串长度一致
     switch (level)
     {
-    case LogLevel::Debug:
+    case LL_DEBUG:
         return 'D';
 
-    case LogLevel::Info:
+    case LL_INFO:
         return 'I';
 
-    case LogLevel::Warn:
+    case LL_WARN:
         return 'W';
 
-    case LogLevel::Error:
+    case LL_ERROR:
         return 'E';
 
-    case LogLevel::Fatal:
+    case LL_FATAL:
         return 'F';
 
     default:
@@ -58,20 +58,20 @@ char log_level_to_char(LogLevel level)
     }
 }
 
-LogLevel str_to_log_level(const char *str)
+enum LogLevel str_to_log_level(const char *str)
 {
     if (nullptr == str || 0 == strincmp(str, "DEBUG", 5))
-        return LogLevel::Debug;
+        return LL_DEBUG;
     else if (0 == strincmp(str, "INFO", 4))
-        return LogLevel::Info;
+        return LL_INFO;
     else if (0 == strincmp(str, "WARN", 4))
-        return LogLevel::Warn;
+        return LL_WARN;
     else if (0 == strincmp(str, "ERROR", 5))
-        return LogLevel::Error;
+        return LL_ERROR;
     else if (0 == strincmp(str, "FATAL", 5))
-        return LogLevel::Fatal;
+        return LL_FATAL;
 
-    return LogLevel::Debug;
+    return LL_DEBUG;
 }
 
 }

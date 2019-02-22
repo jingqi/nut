@@ -168,13 +168,13 @@ public:
     time_t to_integer() const;
     double to_double() const;
 
-    // for example : "2007-3-12"
+    /* for example : "2007-3-12" */
     std::string get_date_str() const;
 
-    // for example : "12:34:45.572936192"
+    /* for example : "12:34:45.572936192" */
     std::string get_clock_str() const;
 
-    // for example : "2007-3-4 8:33:57.762917263"
+    /* for example : "2007-3-4 8:33:57.762917263" */
     std::string get_datetime_str() const;
 
     std::string to_string() const;

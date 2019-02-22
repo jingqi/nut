@@ -81,7 +81,7 @@ void Logger::clear_handlers()
     _handlers.clear();
 }
 
-void Logger::log(LogLevel level, const char *tag, const char *file, int line,
+void Logger::log(enum LogLevel level, const char *tag, const char *file, int line,
                  const char *func, const char *format, ...) const
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
@@ -90,36 +90,45 @@ void Logger::log(LogLevel level, const char *tag, const char *file, int line,
     if (_handlers.empty())
         return;
 
-    if (_filter.is_forbidden(tag, level))
+    if (!_filter.is_allowed(tag, level))
         return;
 
-    size_t size = ::strlen(format) * 3 / 2 + 8;
-    char *buf = (char*) ::malloc(size);
-    va_list ap;
-    while (nullptr != buf)
-    {
-        va_start(ap, format);
-        int n = ::vsnprintf(buf, size, format, ap);
-        va_end(ap);
-        if (0 <= n && n < (int) size)
-            break;
-
-        if (n < 0)
-            size *= 2; /* glibc 2.0 */
-        else
-            size = n + 1; /* glibc 2.1 */
-        buf = (char*) ::realloc(buf, size);
-    }
-    if (nullptr == buf)
-        return;
-
-    LogRecord record(level, tag, file, line, func, buf); // 'buf' will be freed by LogRecord
+    LogRecord record(level, tag, file, line, func);
     for (size_t i = 0, sz = _handlers.size(); i < sz; ++i)
     {
         LogHandler *handler = _handlers.at(i);
         assert(nullptr != handler);
-        if (handler->get_filter().is_forbidden(tag, level))
+        if (!handler->get_filter().is_allowed(tag, level))
             continue;
+
+        // delay init log record
+        if (nullptr == record.get_message())
+        {
+            // format log message
+            size_t size = ::strlen(format) * 3 / 2 + 8;
+            char *buf = (char*) ::malloc(size);
+            va_list ap;
+            while (nullptr != buf)
+            {
+                va_start(ap, format);
+                int n = ::vsnprintf(buf, size, format, ap);
+                va_end(ap);
+                if (0 <= n && n < (int) size)
+                    break;
+
+                if (n < 0)
+                    size *= 2; /* glibc 2.0 */
+                else
+                    size = n + 1; /* glibc 2.1 */
+                buf = (char*) ::realloc(buf, size);
+            }
+            if (nullptr == buf)
+                return; // some error happend
+
+            // delay init log record
+            record.delay_init(buf); // NOTE 'buf' will be freed by LogRecord
+        }
+
         handler->handle_log(record);
     }
 }
@@ -139,6 +148,9 @@ void Logger::load_xml_config(const std::string& config)
         {
             assert(nullptr != filter);
             _filter = filter;
+            _tag_name.clear();
+            _allowed_levels = 0;
+            _forbidden_levels = 0;
         }
 
         virtual void handle_attribute(const std::string& name, const std::string& value) override
@@ -147,25 +159,39 @@ void Logger::load_xml_config(const std::string& config)
             {
                 _tag_name = value;
             }
-            else if (name == "forbids")
+            else if (name == "allow")
             {
-                std::vector<std::string> forbids = chr_split(value.c_str(), ',', true);
+                std::vector<std::string> allow = chr_split(value.c_str(), ',', true);
 
-                _forbid_mask = 0;
-                for (size_t i = 0, sz = forbids.size(); i < sz; ++i)
-                    _forbid_mask |= static_cast<loglevel_mask_type>(str_to_log_level(forbids.at(i).c_str()));
+                _allowed_levels = 0;
+                for (size_t i = 0, sz = allow.size(); i < sz; ++i)
+                    _allowed_levels |= str_to_log_level(allow.at(i).c_str());
+                _forbidden_levels &= ~_allowed_levels;
+            }
+            else if (name == "forbid")
+            {
+                std::vector<std::string> forbid = chr_split(value.c_str(), ',', true);
+
+                _forbidden_levels = 0;
+                for (size_t i = 0, sz = forbid.size(); i < sz; ++i)
+                    _forbidden_levels |= str_to_log_level(forbid.at(i).c_str());
+                _allowed_levels &= ~_forbidden_levels;
             }
         }
 
         virtual void handle_finish() override
         {
-            _filter->forbid(_tag_name.c_str(), _forbid_mask);
+            if (0 != _allowed_levels)
+                _filter->allow(_tag_name.c_str(), _allowed_levels);
+            if (0 != _forbidden_levels)
+                _filter->forbid(_tag_name.c_str(), _forbidden_levels);
         }
 
     private:
         LogFilter *_filter = nullptr;
         std::string _tag_name;
-        loglevel_mask_type _forbid_mask = 0;
+        loglevel_mask_type _forbidden_levels = 0;
+        loglevel_mask_type _allowed_levels = 0;
     } tag_xml_handler;
 
     class FilterHandler : public XmlElementHandler
@@ -208,6 +234,20 @@ void Logger::load_xml_config(const std::string& config)
             assert(nullptr != filter_xml_handler);
         }
 
+        void reset()
+        {
+            _type.clear();
+            _path.clear();
+            _file_prefix.clear();
+            _append = false;
+            _close_syslog_on_exit = false;
+            _cross_file = false;
+            _circle = 10;
+            _max_file_size = 1 * 1024 * 1024;
+            _flush_mask = LL_FATAL;
+            _filter.reset();
+        }
+
         virtual XmlElementHandler* handle_child(const std::string& name) override
         {
             if (name == "Filter")
@@ -224,13 +264,13 @@ void Logger::load_xml_config(const std::string& config)
             {
                 _type = value;
             }
-            else if (name == "flushs")
+            else if (name == "flush")
             {
-                std::vector<std::string> flushs = chr_split(value.c_str(), ',', true);
+                std::vector<std::string> flush = chr_split(value.c_str(), ',', true);
 
                 _flush_mask = 0;
-                for (size_t i = 0, sz = flushs.size(); i < sz; ++i)
-                    _flush_mask |= static_cast<loglevel_mask_type>(str_to_log_level(flushs.at(i).c_str()));
+                for (size_t i = 0, sz = flush.size(); i < sz; ++i)
+                    _flush_mask |= str_to_log_level(flush.at(i).c_str());
             }
             else if (name == "path")
             {
@@ -336,7 +376,7 @@ void Logger::load_xml_config(const std::string& config)
         bool _cross_file = true;
         size_t _circle = 10;
         long _max_file_size = 1 * 1024 * 1024;
-        loglevel_mask_type _flush_mask = static_cast<loglevel_mask_type>(LogLevel::Fatal);
+        loglevel_mask_type _flush_mask = LL_FATAL;
         LogFilter _filter;
     } handler_xml_handler(&filter_xml_handler);
 
@@ -359,6 +399,7 @@ void Logger::load_xml_config(const std::string& config)
             }
             else if (name == "Handler")
             {
+                _handler_xml_handler->reset();
                 return _handler_xml_handler;
             }
             return nullptr;
@@ -389,7 +430,7 @@ void Logger::load_xml_config(const std::string& config)
         LoggerHandler *_logger_xml_handler = nullptr;
     } root_handler(&logger_xml_handler);
 
-    _filter.clear_forbids();
+    _filter.reset();
     clear_handlers();
 
     XmlParser parser(&root_handler);

@@ -30,23 +30,23 @@ void SyslogLogHandler::handle_log(const LogRecord& rec)
     int level = 0;
     switch (rec.get_level())
     {
-    case LogLevel::Debug:
+    case LL_DEBUG:
         level = LOG_DEBUG;
         break;
 
-    case LogLevel::Info:
+    case LL_INFO:
         level = LOG_INFO;
         break;
 
-    case LogLevel::Warn:
+    case LL_WARN:
         level = LOG_WARNING;
         break;
 
-    case LogLevel::Error:
+    case LL_ERROR:
         level = LOG_ERR;
         break;
 
-    case LogLevel::Fatal:
+    case LL_FATAL:
         level = LOG_CRIT;
         break;
 

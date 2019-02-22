@@ -83,9 +83,9 @@ int main(int argc, char *argv[])
     if (argc <= 1)
     {
         // default action
-        // runner.run_group("quiet");
+        runner.run_group("quiet");
         // runner.run_fixture("TestConcurrentHashMap");
-        runner.run_case("TestConcurrentHashMap", "test_multi_thread");
+        // runner.run_case("TestConcurrentHashMap", "test_multi_thread");
     }
     else
     {

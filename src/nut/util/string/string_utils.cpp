@@ -178,7 +178,7 @@ NUT_API std::vector<std::wstring> chr_split(
     return chr_split(str.c_str(), c, ignore_empty);
 }
 
-NUT_API int safe_snprintf(char *buf, int buf_size, const char *fmt, ...)
+NUT_API ssize_t safe_snprintf(char *buf, size_t buf_size, const char *fmt, ...)
 {
     assert(nullptr != fmt);
     if (nullptr == buf || buf_size <= 0)
@@ -186,19 +186,19 @@ NUT_API int safe_snprintf(char *buf, int buf_size, const char *fmt, ...)
 
     va_list ap;
     va_start(ap, fmt);
-    int n = ::vsnprintf(buf, buf_size, fmt, ap);
+    ssize_t n = ::vsnprintf(buf, buf_size, fmt, ap);
     va_end(ap);
 
     if (n < 0)
         n = 0; /* glibc 2.0 */
-    else if (n >= buf_size)
+    else if (n >= (ssize_t) buf_size)
         n = buf_size - 1; /* glibc 2.1 */
 
     buf[n] = 0; /* linux版的vsnprintf能保证'\0'结尾，windows版的vsnprintf不能保证'\0'结尾 */
     return n;
 }
 
-NUT_API int safe_snprintf(wchar_t *buf, int buf_size, const wchar_t *fmt, ...)
+NUT_API ssize_t safe_snprintf(wchar_t *buf, size_t buf_size, const wchar_t *fmt, ...)
 {
     assert(nullptr != fmt);
     if (nullptr == buf || buf_size <= 0)
@@ -207,17 +207,17 @@ NUT_API int safe_snprintf(wchar_t *buf, int buf_size, const wchar_t *fmt, ...)
     va_list ap;
     va_start(ap, fmt);
 #if NUT_PLATFORM_CC_VC
-    int n = ::_vsnwprintf(buf, buf_size, fmt, ap);
+    ssize_t n = ::_vsnwprintf(buf, buf_size, fmt, ap);
 #elif NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
-    int n = ::vswprintf(buf, buf_size, fmt, ap);
+    ssize_t n = ::vswprintf(buf, buf_size, fmt, ap);
 #else
-    int n = ::vsnwprintf(buf, buf_size, fmt, ap);
+    ssize_t n = ::vsnwprintf(buf, buf_size, fmt, ap);
 #endif
     va_end(ap);
 
     if (n < 0)
         n = 0; /* glibc 2.0 */
-    else if (n >= buf_size)
+    else if (n >= (ssize_t) buf_size)
         n = buf_size - 1; /* glibc 2.1 */
 
     buf[n] = 0; /* linux版的vsnprintf能保证'\0'结尾，windows版的vsnprintf不能保证'\0'结尾 */
@@ -546,7 +546,7 @@ NUT_API std::wstring ascii_to_wstr(const char *str)
                                         str,
                                         -1,      // 字符串以'\0'结束
                                         nullptr,
-                                        0);      // 返回值包含了 '\0'
+                                        0);      // 返回值 n 包含了 '\0'
     if (n <= 0)
         return result; // failed
     result.resize(n - 1);
@@ -560,11 +560,11 @@ NUT_API std::wstring ascii_to_wstr(const char *str)
     assert(((int) result.length()) == n - 1);
     return result;
 #else
-    const size_t n = ::mbstowcs(nullptr, str, 0); // 返回值未包含 '\0'
+    const size_t n = ::mbstowcs(nullptr, str, 0); // 返回值 n 未包含 '\0'
     if (n == (size_t) -1)
         return result; // failed
     result.resize(n);
-    const size_t rs = ::mbstowcs((wchar_t*) result.data(), str, n); // 未包含 '\0'
+    const size_t rs = ::mbstowcs((wchar_t*) result.data(), str, n); // n 未包含 '\0'
     assert(rs != (size_t) -1); // success
     UNUSED(rs);
     assert(result.length() == n);
@@ -584,25 +584,12 @@ NUT_API std::string wstr_to_ascii(const wchar_t *wstr)
     std::string result;
 
 #if NUT_PLATFORM_OS_WINDOWS
-    const int n = ::WideCharToMultiByte(CP_ACP,
-                                        0,
-                                        wstr,
-                                        -1,
-                                        nullptr,
-                                        0,
-                                        nullptr,
-                                        nullptr);
+    const int n = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, nullptr, 0, nullptr, nullptr);
     if (n <= 0)
         return result; // failed
     result.resize(n - 1);
-    const int rs = ::WideCharToMultiByte(CP_ACP,
-                                         0,
-                                         wstr,
-                                         -1,
-                                         (char*) result.data(),
-                                         n,
-                                         nullptr,
-                                         nullptr);
+    const int rs = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, (char*) result.data(),
+                                         n, nullptr, nullptr);
     assert(rs > 0); // success
     assert(((int) result.length()) == n - 1);
     return result;
@@ -640,12 +627,8 @@ NUT_API std::wstring utf8_to_wstr(const char *str)
     if (n <= 0)
         return result; // failed
     result.resize(n - 1);
-    const int rs = ::MultiByteToWideChar(CP_UTF8,
-                                         0,
-                                         str,
-                                         -1,
-                                         (wchar_t*) result.data(),
-                                         n);
+    const int rs = ::MultiByteToWideChar(CP_UTF8, 0, str, -1,
+                                         (wchar_t*) result.data(), n);
     assert(rs > 0); // success
     assert(((int) result.length()) == n - 1);
     return result;
@@ -666,25 +649,13 @@ NUT_API std::string wstr_to_utf8(const wchar_t *wstr)
     std::string result;
 
 #if NUT_PLATFORM_OS_WINDOWS
-    const int n = ::WideCharToMultiByte(CP_UTF8,
-                                        0,
-                                        wstr,
-                                        -1,
-                                        nullptr,
-                                        0,
-                                        nullptr,
-                                        nullptr);
+    const int n = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, nullptr, 0,
+                                        nullptr, nullptr);
     if (n <= 0)
         return result; // failed
     result.resize(n - 1);
-    const int rs = ::WideCharToMultiByte(CP_UTF8,
-                                         0,
-                                         wstr,
-                                         -1,
-                                         (char*) result.data(),
-                                         n,
-                                         nullptr,
-                                         nullptr);
+    const int rs = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, (char*) result.data(),
+                                         n, nullptr, nullptr);
     assert(rs > 0); // success
     assert(((int) result.length()) == n - 1);
     return result;
@@ -749,7 +720,7 @@ NUT_API int hex_char_to_int(char c)
     return -1;
 }
 
-NUT_API std::string xml_encode(const char *s, int len)
+NUT_API std::string xml_encode(const char *s, ssize_t len)
 {
     assert(nullptr != s);
 
@@ -782,7 +753,7 @@ NUT_API std::string xml_encode(const char *s, int len)
     return result;
 }
 
-NUT_API std::string xml_decode(const char *s, int len)
+NUT_API std::string xml_decode(const char *s, ssize_t len)
 {
     assert(nullptr != s);
 
@@ -822,7 +793,7 @@ NUT_API std::string xml_decode(const char *s, int len)
     return result;
 }
 
-NUT_API std::string url_encode(const char *s, int len)
+NUT_API std::string url_encode(const char *s, ssize_t len)
 {
     assert(nullptr != s);
 
@@ -844,7 +815,7 @@ NUT_API std::string url_encode(const char *s, int len)
     return result;
 }
 
-NUT_API std::string url_decode(const char *s, int len)
+NUT_API std::string url_decode(const char *s, ssize_t len)
 {
     assert(nullptr != s);
 
@@ -881,7 +852,7 @@ NUT_API std::string hex_encode(const void *data, size_t cb)
     return result;
 }
 
-NUT_API Array<uint8_t> hex_decode(const char *s, int len)
+NUT_API Array<uint8_t> hex_decode(const char *s, ssize_t len)
 {
     assert(nullptr != s);
 
@@ -905,7 +876,7 @@ NUT_API Array<uint8_t> hex_decode(const char *s, int len)
     return result;
 }
 
-NUT_API std::string cstyle_encode(const char *s, int len)
+NUT_API std::string cstyle_encode(const char *s, ssize_t len)
 {
     assert(nullptr != s);
 
@@ -972,7 +943,7 @@ NUT_API std::string cstyle_encode(const char *s, int len)
     return result;
 }
 
-NUT_API std::string cstyle_decode(const char *s, int len)
+NUT_API std::string cstyle_decode(const char *s, ssize_t len)
 {
     assert(nullptr != s);
 
@@ -1159,7 +1130,7 @@ NUT_API std::string base64_encode(const void *data, size_t cb)
     return result;
 }
 
-NUT_API Array<uint8_t> base64_decode(const char *s, int len)
+NUT_API Array<uint8_t> base64_decode(const char *s, ssize_t len)
 {
     assert(nullptr != s);
 

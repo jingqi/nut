@@ -73,8 +73,8 @@ NUT_API std::vector<std::wstring> chr_split(
  *
  * @return >=0, 格式化后的字符串长度(可能被截断格式化)
  */
-NUT_API int safe_snprintf(char *buf, int buf_size, const char *fmt, ...);
-NUT_API int safe_snprintf(wchar_t *buf, int buf_size, const wchar_t *fmt, ...);
+NUT_API ssize_t safe_snprintf(char *buf, size_t buf_size, const char *fmt, ...);
+NUT_API ssize_t safe_snprintf(wchar_t *buf, size_t buf_size, const wchar_t *fmt, ...);
 
 /** 格式化 */
 NUT_API std::string format(const char *fmt, ...);
@@ -157,32 +157,32 @@ NUT_API int hex_char_to_int(char c);
 /**
  * 将 & " < > 转换为 &amp; &quot; &lt; &gt;
  */
-NUT_API std::string xml_encode(const char *s, int len);
-NUT_API std::string xml_decode(const char *s, int len);
+NUT_API std::string xml_encode(const char *s, ssize_t len);
+NUT_API std::string xml_decode(const char *s, ssize_t len);
 
 /**
  * url 转义，例如 "http://search?ab%20c%20"
  */
-NUT_API std::string url_encode(const char *s, int len);
-NUT_API std::string url_decode(const char *s, int len);
+NUT_API std::string url_encode(const char *s, ssize_t len);
+NUT_API std::string url_decode(const char *s, ssize_t len);
 
 /**
  * 16进制编码转换，例如 "4FC012B" 等
  */
 NUT_API std::string hex_encode(const void *data, size_t cb);
-NUT_API Array<uint8_t> hex_decode(const char *s, int len);
+NUT_API Array<uint8_t> hex_decode(const char *s, ssize_t len);
 
 /**
  * C 常量风格编码转换
  */
-NUT_API std::string cstyle_encode(const char *s, int len);
-NUT_API std::string cstyle_decode(const char *s, int len);
+NUT_API std::string cstyle_encode(const char *s, ssize_t len);
+NUT_API std::string cstyle_decode(const char *s, ssize_t len);
 
 /**
  * base64 编码
  */
 NUT_API std::string base64_encode(const void *data, size_t cb);
-NUT_API Array<uint8_t> base64_decode(const char *s, int len);
+NUT_API Array<uint8_t> base64_decode(const char *s, ssize_t len);
 
 }
 

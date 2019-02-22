@@ -31,7 +31,7 @@ public:
     void remove_handler(LogHandler *handler);
     void clear_handlers();
 
-    void log(LogLevel level, const char *tag, const char *file, int line,
+    void log(enum LogLevel level, const char *tag, const char *file, int line,
              const char *func, const char *fmt, ...) const;
 
     /**
@@ -58,7 +58,7 @@ private:
     do                                                                  \
     {                                                                   \
         ::nut::Logger::get_instance()->log(                             \
-            nut::LogLevel::Debug, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), \
+            ::nut::LL_DEBUG, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),    \
             ##__VA_ARGS__);                                             \
     } while (false)
 
@@ -66,7 +66,7 @@ private:
     do                                                                  \
     {                                                                   \
         ::nut::Logger::get_instance()->log(                             \
-            nut::LogLevel::Info, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), \
+            ::nut::LL_INFO, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),     \
             ##__VA_ARGS__);                                             \
     } while (false)
 
@@ -74,7 +74,7 @@ private:
     do                                                                  \
     {                                                                   \
         ::nut::Logger::get_instance()->log(                             \
-            nut::LogLevel::Warn, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), \
+            ::nut::LL_WARN, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),     \
             ##__VA_ARGS__);                                             \
     } while (false)
 
@@ -82,7 +82,7 @@ private:
     do                                                                  \
     {                                                                   \
         ::nut::Logger::get_instance()->log(                             \
-            nut::LogLevel::Error, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), \
+            ::nut::LL_ERROR, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),    \
             ##__VA_ARGS__);                                             \
     } while (false)
 
@@ -90,7 +90,7 @@ private:
     do                                                                  \
     {                                                                   \
         ::nut::Logger::get_instance()->log(                             \
-            nut::LogLevel::Fatal, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt), \
+            ::nut::LL_FATAL, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),    \
             ##__VA_ARGS__);                                             \
     } while (false)
 
