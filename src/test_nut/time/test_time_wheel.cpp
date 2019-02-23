@@ -13,7 +13,8 @@
 #include <thread>
 
 #include <nut/unittest/unittest.h>
-#include <nut/util/time/time_wheel.h>
+#include <nut/time/time_wheel.h>
+
 
 using namespace std;
 using namespace nut;

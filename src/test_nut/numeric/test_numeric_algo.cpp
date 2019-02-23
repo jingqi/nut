@@ -1,15 +1,15 @@
 ﻿
+#include <time.h>
+#include <stdio.h>
 #include <iostream>
+
 #include <nut/unittest/unittest.h>
 #include <nut/numeric/numeric_algo/gcd.h>
 #include <nut/numeric/numeric_algo/mod.h>
 #include <nut/numeric/numeric_algo/prime.h>
 #include <nut/numeric/numeric_algo/karatsuba.h>
-#include <nut/util/time/performance_counter.h>
+#include <nut/time/performance_counter.h>
 #include <nut/rc/rc_new.h>
-
-#include <time.h>
-#include <stdio.h>
 
 using namespace nut;
 

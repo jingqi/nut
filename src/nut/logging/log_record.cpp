@@ -6,6 +6,7 @@
 
 #include "log_record.h"
 
+
 namespace nut
 {
 

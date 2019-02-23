@@ -11,8 +11,9 @@
 #   pragma warning(disable: 4996)
 #endif
 
+#include <nut/util/string/string_utils.h>
+
 #include "date_time.h"
-#include "../string/string_utils.h"
 
 
 #define NSECS_PER_SEC  1000000000L

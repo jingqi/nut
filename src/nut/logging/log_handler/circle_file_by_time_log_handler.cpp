@@ -9,7 +9,7 @@
 
 #include <nut/platform/os.h>
 #include <nut/platform/path.h>
-#include <nut/util/time/date_time.h>
+#include <nut/time/date_time.h>
 #include <nut/util/string/to_string.h>
 #include <nut/util/string/string_utils.h>
 

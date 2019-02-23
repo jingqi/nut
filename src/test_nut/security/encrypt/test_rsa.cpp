@@ -3,7 +3,7 @@
 
 
 #include <nut/unittest/unittest.h>
-#include <nut/util/time/performance_counter.h>
+#include <nut/time/performance_counter.h>
 #include <nut/security/encrypt/rsa.h>
 
 #include <time.h>

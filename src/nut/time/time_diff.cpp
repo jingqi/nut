@@ -1,8 +1,9 @@
 ﻿
 #include <assert.h>
 
+#include <nut/util/string/string_utils.h>
+
 #include "time_diff.h"
-#include "../string/string_utils.h"
 
 
 #define NSECS_PER_SEC  1000000000L

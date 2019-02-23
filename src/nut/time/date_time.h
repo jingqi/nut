@@ -12,7 +12,7 @@
 #   include <windows.h>
 #endif
 
-#include "../../nut_config.h"
+#include "../nut_config.h"
 #include "time_diff.h"
 
 

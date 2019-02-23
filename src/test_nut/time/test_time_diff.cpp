@@ -3,7 +3,8 @@
 #include <iostream>
 
 #include <nut/unittest/unittest.h>
-#include <nut/util/time/time_diff.h>
+#include <nut/time/time_diff.h>
+
 
 using namespace std;
 using namespace nut;

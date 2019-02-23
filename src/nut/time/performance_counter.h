@@ -10,7 +10,7 @@
 #   include <windows.h>
 #endif
 
-#include "../../nut_config.h"
+#include "../nut_config.h"
 
 
 namespace nut

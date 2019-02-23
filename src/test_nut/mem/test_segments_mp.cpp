@@ -2,7 +2,7 @@
 #include <time.h>
 
 #include <nut/unittest/unittest.h>
-#include <nut/util/time/performance_counter.h>
+#include <nut/time/performance_counter.h>
 #include <nut/mem/segments_mp.h>
 #include <nut/mem/sys_ma.h>
 #include <nut/rc/rc_new.h>

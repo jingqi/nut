@@ -11,7 +11,7 @@
 
 #include <nut/platform/platform.h>
 
-#include "../../nut_config.h"
+#include "../nut_config.h"
 #include "date_time.h"
 
 
