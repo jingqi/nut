@@ -20,6 +20,8 @@ private:
     typedef SkipListMap<K,V>                 self_type;
     typedef SkipList<K,Node,self_type>       algo_type;
 
+    friend class SkipList<K,Node,self_type>;
+
     class Node
     {
     public:
@@ -114,8 +116,6 @@ private:
         Node **_next = nullptr;
         int _level = algo_type::INVALID_LEVEL; // 0-based
     };
-
-    friend class SkipList<K,Node,self_type>;
 
 public:
     SkipListMap() = default;

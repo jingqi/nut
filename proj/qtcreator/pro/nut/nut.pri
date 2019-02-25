@@ -7,7 +7,7 @@ include(../nut_common.pri)
 
 QT -= core gui
 
-DEFINES += BUILDING_NUT_DLL
+DEFINES += BUILDING_NUT
 
 # INCLUDE 路径
 SRC_ROOT = $$PWD/../../../../src/nut

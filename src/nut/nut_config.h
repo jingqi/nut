@@ -6,7 +6,7 @@
 
 #if defined(USE_STATIC_NUT_LIB)
 #   define NUT_API
-#elif defined(BUILDING_NUT_DLL)
+#elif defined(BUILDING_NUT)
 #   define NUT_API DLL_EXPORT
 #else
 #   define NUT_API DLL_IMPORT

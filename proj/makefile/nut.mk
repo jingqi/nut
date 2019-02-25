@@ -10,7 +10,7 @@ include preface_rules.mk
 CPPFLAGS += -I${SRC_ROOT}/..
 
 # Defines
-CPPFLAGS += -DBUILDING_NUT_DLL
+CPPFLAGS += -DBUILDING_NUT
 
 # C++ standard
 CXXFLAGS += -std=c++11

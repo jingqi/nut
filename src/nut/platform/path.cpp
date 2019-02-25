@@ -283,7 +283,7 @@ std::string Path::abs_path(const char *path)
             }
             else if (part == "~")
             {
-#if NUT_PLATFORM_OS_WINDOWS
+#if NUT_PLATFORM_CC_VC
                 // Windows c:\Users\xxx
                 // NOTE getenv() may not safe, replaced by _dupenv_s()
                 char *buf = nullptr;
@@ -385,7 +385,7 @@ std::wstring Path::abs_path(const wchar_t *path)
             }
             else if (part == L"~")
             {
-#if NUT_PLATFORM_OS_WINDOWS
+#if NUT_PLATFORM_CC_VC
                 // Windows c:\Users\xxx
                 // NOTE getenv() may not safe, replaced by _dupenv_s()
                 wchar_t *buf = nullptr;

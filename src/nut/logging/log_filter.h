@@ -22,7 +22,7 @@ private:
     typedef size_t hashcode_type;
 
     // 字典树节点
-    class Node
+    class NUT_API Node
     {
     public:
         explicit Node(hashcode_type h, Node *p);

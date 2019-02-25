@@ -1,4 +1,5 @@
 ﻿
+#include <math.h>
 #include <iostream>
 
 #include <nut/unittest/unittest.h>
@@ -30,7 +31,7 @@ class TestDateTime : public TestFixture
         NUT_TA(t.get_nanosecond() == 123456789);
 
         NUT_TA(t.to_integer() == 1442805133);
-        NUT_TA(t.to_double() == 1442805133.123456789);
+        NUT_TA(fabs(t.to_double() - 1442805133.123456789) <= 1e-7);
 
         // cout << t.to_string() << endl;
         NUT_TA(t.to_string() == "2015-09-21 11:12:13.123456789");

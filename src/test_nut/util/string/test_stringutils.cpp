@@ -127,12 +127,13 @@ class TestStringUtil : public TestFixture
         NUT_TA(b == L"c5&汉");
 #endif
 
-#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
-        // gcc 或直接取源码的编码并遗留到运行时编码中，目前源码的编码为 utf8
-        b = utf8_to_wstr("c5&汉");
-        a = wstr_to_utf8(b.c_str());
-        NUT_TA(a == "c5&汉");
-#elif NUT_PLATFORM_CC_VC
+        // NOTE Windows 下
+        // - VC 会在 exe 文件中存储的是 ascii(cp936) 字符串
+        // - minGW 默认存储的是 utf8, 除非使用 "-fexec-charset=CP936" 编译参数
+#if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_MINGW
+        NUT_TA(wstr_to_utf8(utf8_to_wstr("c5&汉")) == "c5&汉" || // 如果没有指定 "-fexec-charset=CP936"
+               wstr_to_ascii(ascii_to_wstr("c5&汉")) == "c5&汉"); // 如果指定了 "-fexec-charset=CP936"
+#else
         // vc 会将c字符串转编码为 ascii，所以运行时全部为 ascii
         b = ascii_to_wstr("c5&汉");
         a = wstr_to_ascii(b.c_str());
