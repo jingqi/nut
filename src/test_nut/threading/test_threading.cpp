@@ -1,9 +1,16 @@
 ﻿
+#include <thread>
+
 #include <nut/unittest/unittest.h>
 
 #include <nut/threading/threading.h>
 
 using namespace nut;
+
+
+static NUT_THREAD_LOCAL int test_tl_var = 0;
+static int test_gl_var = 0;
+static bool error = false;
 
 class TestThreading : public TestFixture
 {
@@ -14,9 +21,17 @@ class TestThreading : public TestFixture
 
     void test_smoke()
     {
-        // 如果不支持 thread-local 变量，则编译出错
-        static NUT_THREAD_LOCAL int a;
-        a = 2;
+        test_tl_var = 1234;
+        test_gl_var = 1;
+        error = false;
+        std::thread t([=] {
+                          if (0 != test_tl_var)
+                              error = true;
+                          test_tl_var = 76;
+                          test_gl_var = 89;
+                      });
+        t.join();
+        NUT_TA(!error && 1234 == test_tl_var && 89 == test_gl_var);
     }
 };
 

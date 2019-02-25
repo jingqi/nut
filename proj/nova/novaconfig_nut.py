@@ -3,24 +3,24 @@ import platform
 
 from os.path import realpath, dirname, join, splitext
 
-from nova.app import App
 from nova.util import file_utils
 from nova.builtin import compile_c, file_op
 
 
 CWD = dirname(realpath(__file__))
 
-ns = App.instance().add_namespace('nut')
+ns = globals()['namespace']
+ns.set_name('nut')
 
 ## Vars
 src_root = join(CWD, '../../src/nut')
 out_dir = platform.system().lower() + '-' + ('debug' if ns['DEBUG'] == '1' else 'release')
 out_root = join(CWD, out_dir)
-obj_root = join(out_root, 'obj', 'fig')
-header_root = join(out_root, 'include', 'fig')
+obj_root = join(out_root, 'obj/nut')
+header_root = join(out_root, 'include/nut')
 
 ## Flags
-ns.append_env_flags('CPPFLAGS', '-DBUILDING_NUT', '-I' + realpath(join(src_root, '..')))
+ns.append_env_flags('CPPFLAGS', '-DBUILDING_NUT', '-I' + realpath(join(out_root, 'include')))
 ns.append_env_flags('CFLAGS', '-std=c11')
 ns.append_env_flags('CXXFLAGS', '-std=c++11')
 
@@ -32,6 +32,9 @@ else:
 
 if platform.system() == 'Linux':
     ns.append_env_flags('LDFLAGS', '-lpthread', '-ldl', '-latomic')
+
+if platform.system() != 'Windows':
+    ns.append_env_flags('CXXFLAGS', '-fPIC')
 
 ## Dependencies
 so = join(out_root, 'libnut' + ns['SHARED_LIB_SUFFIX'])
@@ -55,5 +58,5 @@ for src in file_utils.iterfiles(src_root, '.c', '.cpp'):
 
 # clean
 def clean(target):
-    file_utils.remove_many(so, obj_root, header_root)
+    file_utils.remove_any(so, obj_root, header_root)
 ns.set_recipe('@clean', clean)

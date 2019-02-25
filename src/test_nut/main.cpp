@@ -3,16 +3,11 @@
 #include <time.h> // for time()
 #include <iostream>
 
-#include <nut/platform/platform.h>
+#include <nut/nut.h> // check if "nut.h" collect the right header files
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <conio.h>
 #endif
-
-#include <nut/unittest/unittest.h>
-#include <nut/unittest/console_test_logger.h>
-#include <nut/util/console_util.h>
-#include <nut/threading/lockfree/hazard_pointer/hp_record.h>
 
 
 using namespace std;
