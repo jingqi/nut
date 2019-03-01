@@ -13,59 +13,213 @@
 
 
 /**
+ * 字节序交换
+ *    bswap_uint16()
+ *    bswap_int16()
+ *    bswap_uint32()
+ *    bswap_int32()
+ *    bswap_uint64()
+ *    bswap_int64()
+ */
+namespace nut
+{
+
+// swap endian
+inline uint16_t bswap_uint16(uint16_t val)
+{
+#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
+    return __builtin_bswap16(val);
+#elif NUT_PLATFORM_CC_VC
+    static_assert(sizeof(unsigned short) == sizeof(uint16_t), "Unexpected 'unsigned short' size");
+    return _byteswap_ushort(val);
+#else
+    return (val << 8) | (val >> 8);
+#endif
+}
+
+// swap endian
+inline int16_t bswap_int16(int16_t val)
+{
+#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
+    return __builtin_bswap16(val);
+#elif NUT_PLATFORM_CC_VC
+    static_assert(sizeof(unsigned short) == sizeof(int16_t), "Unexpected 'unsigned short' size");
+    return (short) _byteswap_ushort((unsigned short) val);
+#else
+    return (val << 8) | ((val >> 8) & 0xFF);
+#endif
+}
+
+// swap endian
+inline uint32_t bswap_uint32(uint32_t val)
+{
+#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
+    return __builtin_bswap32(val);
+#elif NUT_PLATFORM_CC_VC
+    static_assert(sizeof(unsigned long) == sizeof(uint32_t), "Unexpected 'unsigned long' size");
+    return _byteswap_ulong(val);
+#else
+    val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
+    return (val << 16) | (val >> 16);
+#endif
+}
+
+// swap endian
+inline int32_t bswap_int32(int32_t val)
+{
+#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
+    return __builtin_bswap32(val);
+#elif NUT_PLATFORM_CC_VC
+    static_assert(sizeof(unsigned long) == sizeof(int32_t), "Unexpected 'unsigned long' size");
+    return (long) _byteswap_ulong((unsigned long) val);
+#else
+    val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
+    return (val << 16) | ((val >> 16) & 0xFFFF);
+#endif
+}
+
+// swap endian
+inline uint64_t bswap_uint64(uint64_t val)
+{
+#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
+    return __builtin_bswap64(val);
+#elif NUT_PLATFORM_CC_VC
+    return _byteswap_uint64(val);
+#else
+    val = ((val << 8) & 0xFF00FF00FF00FF00ULL) | ((val >> 8) & 0x00FF00FF00FF00FFULL);
+    val = ((val << 16) & 0xFFFF0000FFFF0000ULL) | ((val >> 16) & 0x0000FFFF0000FFFFULL);
+    return (val << 32) | (val >> 32);
+#endif
+}
+
+// swap endian
+inline int64_t bswap_int64(int64_t val)
+{
+#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
+    return __builtin_bswap64(val);
+#elif NUT_PLATFORM_CC_VC
+    return (int64_t) _byteswap_uint64((uint64_t) val);
+#else
+    val = ((val << 8) & 0xFF00FF00FF00FF00ULL) | ((val >> 8) & 0x00FF00FF00FF00FFULL);
+    val = ((val << 16) & 0xFFFF0000FFFF0000ULL) | ((val >> 16) & 0x0000FFFF0000FFFFULL);
+    return (val << 32) | ((val >> 32) & 0xFFFFFFFFULL);
+#endif
+}
+
+}
+
+
+/**
  * 字节序转换
- *    host <-> little endian
- *    host <-> big endian
+ *
+ * host-endian to little-endian:
+ *    htole16()
+ *    htole32()
+ *    htole64()
+ *
+ * little-endian to host-endian:
+ *    le16toh()
+ *    le32toh()
+ *    le64toh()
+ *
+ * host-endian to big-endian:
+ *    htobe16()
+ *    htobe32()
+ *    htobe64()
+ *
+ * big-endian to host-endian:
+ *    be16toh()
+ *    be32toh()
+ *    be64toh()
  */
 #if NUT_PLATFORM_OS_WINDOWS
 
-    static_assert(sizeof(short) == sizeof(int16_t), "Unexpected 'short' size");
-    static_assert(sizeof(long) == sizeof(int32_t), "Unexpected 'long' size");
-    static_assert(sizeof(long long) == sizeof(int64_t), "Unexpected 'long long' size");
+namespace nut
+{
 
-#   define LITTLE_ENDIAN    0x41424344UL
-#   define BIG_ENDIAN       0x44434241UL
-#   define PDP_ENDIAN       0x42414443UL
-#   define ENDIAN_ORDER     ('ABCD')
+inline bool is_little_endian()
+{
+    const uint16_t word = 0x0001;
+    return 0 != ((const uint8_t*) &word)[0];
+}
 
-#   if ENDIAN_ORDER == LITTLE_ENDIAN
+inline bool is_big_endian()
+{
+    return !is_little_endian();
+}
 
-#       define htole16(x) (x)
-#       define htole32(x) (x)
-#       define htole64(x) (x)
+// htole16() / le16toh()
+inline uint16_t bswap_h_le16(uint16_t x)
+{
+    if (is_little_endian())
+        return x;
+    else
+        return nut::bswap_uint16(x);
+}
 
-#       define le16toh(x) (x)
-#       define le32toh(x) (x)
-#       define le64toh(x) (x)
+// htole32() / le32toh()
+inline uint32_t bswap_h_le32(uint32_t x)
+{
+    if (is_little_endian())
+        return x;
+    else
+        return nut::bswap_uint32(x);
+}
 
-#       define htobe16(x) nut::bswap_uint16((uint16_t) (x))
-#       define htobe32(x) nut::bswap_uint32((uint32_t) (x))
-#       define htobe64(x) nut::bswap_uint64((uint64_t) (x))
+// htole64() / le64toh()
+inline uint64_t bswap_h_le64(uint64_t x)
+{
+    if (is_little_endian())
+        return x;
+    else
+        return nut::bswap_uint64(x);
+}
 
-#       define be16toh(x) nut::bswap_uint16((uint16_t) (x))
-#       define be32toh(x) nut::bswap_uint32((uint32_t) (x))
-#       define be64toh(x) nut::bswap_uint64((uint64_t) (x))
+// htobe16() / be16toh()
+inline uint16_t bswap_h_be16(uint16_t x)
+{
+    if (is_little_endian())
+        return nut::bswap_uint16(x);
+    else
+        return x;
+}
 
-#   elif ENDIAN_ORDER == BIG_ENDIAN
+// htobe32() / be32toh()
+inline uint32_t bswap_h_be32(uint32_t x)
+{
+    if (is_little_endian())
+        return nut::bswap_uint32(x);
+    else
+        return x;
+}
 
-        /* That would be xbox 360 */
-#       define htole16(x) nut::bswap_uint16(x)
-#       define htole32(x) nut::bswap_uint32(x)
-#       define htole64(x) nut::bswap_uint64(x)
+// htobe64() / be64toh()
+inline uint64_t bswap_h_be64(uint64_t x)
+{
+    if (is_little_endian())
+        return nut::bswap_uint64(x);
+    else
+        return x;
+}
 
-#       define le16toh(x) nut::bswap_uint16(x)
-#       define le32toh(x) nut::bswap_uint32(x)
-#       define le64toh(x) nut::bswap_uint64(x)
+}
 
-#       define htobe16(x) (x)
-#       define htobe32(x) (x)
-#       define htobe64(x) (x)
+#   define htole16(x) nut::bswap_h_le16((uint16_t) (x))
+#   define htole32(x) nut::bswap_h_le32((uint32_t) (x))
+#   define htole64(x) nut::bswap_h_le64((uint64_t) (x))
 
-#       define be16toh(x) (x)
-#       define be32toh(x) (x)
-#       define be64toh(x) (x)
+#   define le16toh(x) nut::bswap_h_le16((uint16_t) (x))
+#   define le32toh(x) nut::bswap_h_le32((uint32_t) (x))
+#   define le64toh(x) nut::bswap_h_le64((uint64_t) (x))
 
-#   endif
+#   define htobe16(x) nut::bswap_h_be16((uint16_t) (x))
+#   define htobe32(x) nut::bswap_h_be32((uint32_t) (x))
+#   define htobe64(x) nut::bswap_h_be64((uint64_t) (x))
+
+#   define be16toh(x) nut::bswap_h_be16((uint16_t) (x))
+#   define be32toh(x) nut::bswap_h_be32((uint32_t) (x))
+#   define be64toh(x) nut::bswap_h_be64((uint64_t) (x))
+
 #elif NUT_PLATFORM_OS_MAC
 #   include <libkern/OSByteOrder.h>
 
@@ -111,91 +265,5 @@
 #if defined(letoh64) && !defined(le64toh)
 #   define le64toh(x) letoh64(x)
 #endif
-
-
-/**
- * 字节序转换
- *    little endian <-> big endian
- */
-namespace nut
-{
-
-inline uint16_t bswap_uint16(uint16_t val)
-{
-#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
-    return __builtin_bswap16(val);
-#elif NUT_PLATFORM_CC_VC
-    static_assert(sizeof(unsigned short) == sizeof(uint16_t), "Unexpected 'unsigned short' size");
-    return _byteswap_ushort(val);
-#else
-    return (val << 8) | (val >> 8);
-#endif
-}
-
-inline int16_t bswap_int16(int16_t val)
-{
-#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
-    return __builtin_bswap16(val);
-#elif NUT_PLATFORM_CC_VC
-    static_assert(sizeof(unsigned short) == sizeof(int16_t), "Unexpected 'unsigned short' size");
-    return (short) _byteswap_ushort((unsigned short) val);
-#else
-    return (val << 8) | ((val >> 8) & 0xFF);
-#endif
-}
-
-inline uint32_t bswap_uint32(uint32_t val)
-{
-#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
-    return __builtin_bswap32(val);
-#elif NUT_PLATFORM_CC_VC
-    static_assert(sizeof(unsigned long) == sizeof(uint32_t), "Unexpected 'unsigned long' size");
-    return _byteswap_ulong(val);
-#else
-    val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
-    return (val << 16) | (val >> 16);
-#endif
-}
-
-inline int32_t bswap_int32(int32_t val)
-{
-#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
-    return __builtin_bswap32(val);
-#elif NUT_PLATFORM_CC_VC
-    static_assert(sizeof(unsigned long) == sizeof(int32_t), "Unexpected 'unsigned long' size");
-    return (long) _byteswap_ulong((unsigned long) val);
-#else
-    val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
-    return (val << 16) | ((val >> 16) & 0xFFFF);
-#endif
-}
-
-inline uint64_t bswap_uint64(uint64_t val)
-{
-#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
-    return __builtin_bswap64(val);
-#elif NUT_PLATFORM_CC_VC
-    return _byteswap_uint64(val);
-#else
-    val = ((val << 8) & 0xFF00FF00FF00FF00ULL) | ((val >> 8) & 0x00FF00FF00FF00FFULL);
-    val = ((val << 16) & 0xFFFF0000FFFF0000ULL) | ((val >> 16) & 0x0000FFFF0000FFFFULL);
-    return (val << 32) | (val >> 32);
-#endif
-}
-
-inline int64_t bswap_int64(int64_t val)
-{
-#if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
-    return __builtin_bswap64(val);
-#elif NUT_PLATFORM_CC_VC
-    return (int64_t) _byteswap_uint64((uint64_t) val);
-#else
-    val = ((val << 8) & 0xFF00FF00FF00FF00ULL) | ((val >> 8) & 0x00FF00FF00FF00FFULL);
-    val = ((val << 16) & 0xFFFF0000FFFF0000ULL) | ((val >> 16) & 0x0000FFFF0000FFFFULL);
-    return (val << 32) | ((val >> 32) & 0xFFFFFFFFULL);
-#endif
-}
-
-}
 
 #endif

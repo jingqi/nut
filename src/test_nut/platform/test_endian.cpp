@@ -19,10 +19,14 @@ class TestEndian : public TestFixture
     void test_little_endian()
     {
         uint32_t ui = 0x12345678;
+        if (is_little_endian())
+            NUT_TA(htole32(ui) == ui && le32toh(ui) == ui);
+        else
+            NUT_TA(htole32(ui) == 0x78563412 && le32toh(ui) == 0x78563412);
         NUT_TA(ui == le32toh(htole32(ui)));
 
         int32_t ii = 0xfedcba87;
-        NUT_TA(ii == htole32(le32toh(ii)));
+        NUT_TA(ii == (int32_t) htole32(le32toh(ii)));
     }
 
     void test_big_endian()
@@ -31,7 +35,7 @@ class TestEndian : public TestFixture
         NUT_TA(ui == be32toh(htobe32(ui)));
 
         int32_t ii = 0xfedcba87;
-        NUT_TA(ii == htobe32(be32toh(ii)));
+        NUT_TA(ii == (int32_t) htobe32(be32toh(ii)));
     }
 
     void test_bswap()
