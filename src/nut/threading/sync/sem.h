@@ -31,7 +31,6 @@ public:
     bool timedwait(unsigned s, unsigned ms);
 
 private:
-    // Non-copyable
     Semaphore(const Semaphore&) = delete;
     Semaphore& operator=(const Semaphore&) = delete;
 

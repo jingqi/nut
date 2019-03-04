@@ -6,14 +6,17 @@
 
 #include <stdint.h>
 
-#if NUT_PLATFORM_CC_VC
+
+#if NUT_PLATFORM_OS_LINUX
+#   include <sys/types.h> /* for ssize_t */
+#elif NUT_PLATFORM_CC_VC
 #   include <basetsd.h>
 typedef SSIZE_T ssize_t;
 #endif
 
 #if NUT_PLATFORM_BITS_64
 #   if NUT_PLATFORM_CC_VC
-        // FIXME 目前 vs2015 有 __int128 关键字的语法高亮，但是并不被编译器支持
+        /* FIXME 目前 vs2015 有 __int128 关键字的语法高亮，但是并不被编译器支持 */
 #       define NUT_HAS_INT128 0
 #   else
 #       define NUT_HAS_INT128 1

@@ -85,7 +85,6 @@ public:
     void tick();
 
 private:
-    // Non-copyable
     TimeWheel(const TimeWheel&) = delete;
     TimeWheel& operator=(const TimeWheel&) = delete;
 

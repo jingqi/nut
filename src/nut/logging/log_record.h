@@ -30,7 +30,6 @@ public:
     std::string to_string() const;
 
 private:
-    // Non-copyable
     LogRecord(const LogRecord&) = delete;
     LogRecord& operator=(const LogRecord&) = delete;
 

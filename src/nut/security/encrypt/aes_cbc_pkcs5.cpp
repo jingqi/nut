@@ -18,7 +18,7 @@ static void xor_buf(void *buf1, const void *buf2, size_t len = 16)
 void AES_CBC_PKCS5::start_encrypt(const void* key, int key_bits, const void *iv)
 {
     assert(nullptr != key && nullptr != iv);
-    _state = IN_ENCRYPT;
+    _state = State::IN_ENCRYPT;
     _data_buf_size = 0;
     _result.resize(0);
     bool rs = _aes.set_key(key, key_bits);
@@ -30,7 +30,7 @@ void AES_CBC_PKCS5::start_encrypt(const void* key, int key_bits, const void *iv)
 void AES_CBC_PKCS5::update_encrypt(const void *data, size_t data_len)
 {
     assert(nullptr != data);
-    assert(IN_ENCRYPT == _state && _data_buf_size < 16);
+    assert(State::IN_ENCRYPT == _state && _data_buf_size < 16);
 
     if (_data_buf_size != 0 && _data_buf_size + data_len >= 16)
     {
@@ -61,7 +61,7 @@ void AES_CBC_PKCS5::update_encrypt(const void *data, size_t data_len)
 
 void AES_CBC_PKCS5::finish_encrypt()
 {
-    assert(IN_ENCRYPT == _state && _data_buf_size < 16);
+    assert(State::IN_ENCRYPT == _state && _data_buf_size < 16);
 
     /* PKCS5 填充 */
     ::memset(_data_buf + _data_buf_size, 16 - _data_buf_size, 16 - _data_buf_size);
@@ -69,14 +69,14 @@ void AES_CBC_PKCS5::finish_encrypt()
     _aes.encrypt(_iv, _iv);
 
     _result.append((const uint8_t*) _iv, (const uint8_t*) _iv + 16);
-    _state = READY;
+    _state = State::READY;
     _data_buf_size = 0;
 }
 
 void AES_CBC_PKCS5::start_decrypt(const void *key, int key_bits, const void *iv)
 {
     assert(nullptr != key && nullptr != iv);
-    _state = IN_DECRYPT;
+    _state = State::IN_DECRYPT;
     _data_buf_size = 0;
     _result.resize(0);
     bool rs = _aes.set_key(key, key_bits);
@@ -89,7 +89,7 @@ void AES_CBC_PKCS5::start_decrypt(const void *key, int key_bits, const void *iv)
 void AES_CBC_PKCS5::update_decrypt(const void *data, size_t data_len)
 {
     assert(nullptr != data);
-    assert(IN_DECRYPT == _state && _data_buf_size < 16);
+    assert(State::IN_DECRYPT == _state && _data_buf_size < 16);
 
     uint8_t buf[16];
     if (_data_buf_size != 0 && _data_buf_size + data_len >= 16)
@@ -123,7 +123,7 @@ void AES_CBC_PKCS5::update_decrypt(const void *data, size_t data_len)
 
 bool AES_CBC_PKCS5::finish_decrypt()
 {
-    assert(IN_DECRYPT == _state);
+    assert(State::IN_DECRYPT == _state);
     if (0 != _data_buf_size || _result.size() <= 0)
         return false;
 
@@ -136,7 +136,7 @@ bool AES_CBC_PKCS5::finish_decrypt()
             return false;
     }
     _result.resize(_result.size() - last_byte);
-    _state = READY;
+    _state = State::READY;
     _data_buf_size = 0;
     return true;
 }

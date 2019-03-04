@@ -34,7 +34,6 @@ public:
     virtual void handle_log(const LogRecord& rec) override;
 
 private:
-    // Non-copyable
     CircleFileBySizeLogHandler(const CircleFileBySizeLogHandler&) = delete;
     CircleFileBySizeLogHandler& operator=(const CircleFileBySizeLogHandler&) = delete;
 

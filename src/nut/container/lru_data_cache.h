@@ -70,7 +70,6 @@ private:
         }
 
     private:
-        // Non-copyable
         Node(const Node&) = delete;
         Node& operator=(const Node&) = delete;
 
@@ -244,7 +243,6 @@ public:
     }
 
 private:
-    // Non-copyable
     LRUDataCache(const LRUDataCache<K>&) = delete;
     LRUDataCache<K>& operator=(const LRUDataCache<K>&) = delete;
 

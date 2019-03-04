@@ -24,9 +24,6 @@ namespace nut
 template <typename T>
 class RCWrapper final : public T
 {
-    // 避免多次销毁的检查器
-    NUT_DEBUGGING_DESTROY_CHECKER
-
 public:
 // _MSC_VER == 1700 for Visual Studio 2012
 #if (defined(_MSC_VER) && _MSC_VER > 1700) || (!defined(_MSC_VER) && !defined(_LIBCPP_HAS_NO_VARIADICS))
@@ -137,6 +134,9 @@ public:
 protected:
     // 引用计数器
     mutable RefCounter _ref_count;
+
+    // 避免多次销毁的检查器
+    NUT_DEBUGGING_DESTROY_CHECKER
 };
 
 }

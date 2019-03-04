@@ -31,7 +31,7 @@ void XmlWriter::start_element(const char *name)
             write(">");
         parent_state.has_child = true;
     }
-    _elem_path.push_back(name);
+    _elem_path.emplace_back(name);
 
     write("<");
     write(name);

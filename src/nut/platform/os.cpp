@@ -150,7 +150,7 @@ std::vector<std::wstring> OS::list_dir(const wchar_t *path, bool exclude_file,
         p.c_str(), exclude_file, exclude_dir, exclude_initial_dot);
     for (size_t i = 0, size = dirs.size(); i < size; ++i)
     {
-        result.push_back(ascii_to_wstr(dirs.at(i).c_str()));
+        result.push_back(ascii_to_wstr(dirs.at(i)));
     }
 #endif
 
@@ -347,12 +347,12 @@ bool OS::mkdirs(const char *path)
     // 可能是根目录
     const std::string fullpath = Path::abs_path(path);
     std::string parent, name;
-    Path::split(fullpath.c_str(), &parent, &name);
+    Path::split(fullpath, &parent, &name);
     if (parent.length() == fullpath.length() || name.empty())
         return false; // 根目录是无法创建的
 
     // 递归创建
-    if (!Path::exists(parent.c_str()) && !OS::mkdirs(parent.c_str()))
+    if (!Path::exists(parent) && !OS::mkdirs(parent.c_str()))
         return false;
     return OS::mkdir(path);
 }
@@ -577,7 +577,7 @@ std::wstring OS::read_link(const wchar_t *path)
 #else
     const std::string p = wstr_to_ascii(path);
     const std::string lk = OS::read_link(p.c_str());
-    return ascii_to_wstr(lk.c_str());
+    return ascii_to_wstr(lk);
 #endif
 }
 

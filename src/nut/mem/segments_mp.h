@@ -20,8 +20,6 @@ namespace nut
 template <typename lengthfixed_mp_type>
 class segments_mp : public memory_allocator
 {
-    NUT_DEBUGGING_DESTROY_CHECKER
-
 private:
     enum
     {
@@ -112,13 +110,14 @@ public:
     }
 
 private:
-    // Non-copyable
     segments_mp(const segments_mp&) = delete;
     segments_mp& operator=(const segments_mp&) = delete;
 
 private:
     const rc_ptr<memory_allocator> _alloc;
     rc_ptr<lengthfixed_mp_type> _freelists[FREE_LIST_COUNT];
+
+    NUT_DEBUGGING_DESTROY_CHECKER
 };
 
 typedef segments_mp<lengthfixed_stmp> segments_stmp;

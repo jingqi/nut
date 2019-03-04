@@ -174,7 +174,6 @@ public:
 
 private:
     SkipList() = delete;
-
 };
 
 }

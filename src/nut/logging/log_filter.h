@@ -50,7 +50,6 @@ private:
         std::string to_string(const std::string& tag_prefix) const;
 
     private:
-        // Non-copyable
         Node(const Node&) = delete;
         Node& operator=(const Node&) = delete;
 
@@ -96,7 +95,6 @@ public:
     std::string to_string() const;
 
 private:
-    // Non-copyable
     LogFilter(const LogFilter&) = delete;
     LogFilter& operator=(const LogFilter&) = delete;
 

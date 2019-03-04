@@ -65,10 +65,6 @@ public:
 
     class const_iterator
     {
-        const self_type *_container = nullptr;
-        int_type _value = 0;
-        ssize_t _index = 0;
-
     public:
         typedef std::bidirectional_iterator_tag iterator_category;
         typedef int_type                        value_type;
@@ -156,6 +152,11 @@ public:
         {
             return !(*this == x);
         }
+
+    private:
+        const self_type *_container = nullptr;
+        int_type _value = 0;
+        ssize_t _index = 0;
     };
 
 private:
@@ -297,13 +298,13 @@ public:
                 {
                     state = AxisState::None;
                     ++index1;
-                    ret._ranges.push_back(Range(first_of_remainder, value1));
+                    ret._ranges.emplace_back(first_of_remainder, value1);
                 }
                 else
                 {
                     state = AxisState::AAndB;
                     ++index2;
-                    ret._ranges.push_back(Range(first_of_remainder, value2 - 1));
+                    ret._ranges.emplace_back(first_of_remainder, value2 - 1);
                 }
                 break;
 
@@ -406,7 +407,7 @@ public:
                         ret._ranges.at(ret._ranges.size() - 1).last + 1 == first_of_merge)
                         ret._ranges[ret._ranges.size() - 1].last = value1;
                     else
-                        ret._ranges.push_back(Range(first_of_merge, value1));
+                        ret._ranges.emplace_back(first_of_merge, value1);
                 }
                 else
                 {
@@ -430,7 +431,7 @@ public:
                         ret._ranges.at(ret._ranges.size() - 1).last + 1 == first_of_merge)
                         ret._ranges[ret._ranges.size() - 1].last = value2;
                     else
-                        ret._ranges.push_back(Range(first_of_merge, value2));
+                        ret._ranges.emplace_back(first_of_merge, value2);
                 }
                 break;
 
@@ -530,13 +531,13 @@ public:
                 {
                     state = AxisState::SingleB;
                     ++index1;
-                    ret._ranges.push_back(Range(first_of_interact, value1));
+                    ret._ranges.emplace_back(first_of_interact, value1);
                 }
                 else
                 {
                     state = AxisState::SingleA;
                     ++index2;
-                    ret._ranges.push_back(Range(first_of_interact, value2));
+                    ret._ranges.emplace_back(first_of_interact, value2);
                 }
                 break;
 
@@ -610,13 +611,13 @@ public:
                 {
                     state = AxisState::None;
                     ++index1;
-                    ret._ranges.push_back(Range(first_of_remainder, value1));
+                    ret._ranges.emplace_back(first_of_remainder, value1);
                 }
                 else
                 {
                     state = AxisState::AAndB;
                     ++index2;
-                    ret._ranges.push_back(Range(first_of_remainder, value2 - 1));
+                    ret._ranges.emplace_back(first_of_remainder, value2 - 1);
                 }
                 break;
 
@@ -626,13 +627,13 @@ public:
                 {
                     state = AxisState::None;
                     ++index2;
-                    ret._ranges.push_back(Range(first_of_remainder, value2));
+                    ret._ranges.emplace_back(first_of_remainder, value2);
                 }
                 else
                 {
                     state = AxisState::AAndB;
                     ++index1;
-                    ret._ranges.push_back(Range(first_of_remainder, value1 - 1));
+                    ret._ranges.emplace_back(first_of_remainder, value1 - 1);
                 }
                 break;
 
@@ -743,7 +744,7 @@ public:
         // 对空容器优化
         if (_ranges.empty())
         {
-            _ranges.push_back(Range(first_value, last_value));
+            _ranges.emplace_back(first_value, last_value);
             return;
         }
 
@@ -751,7 +752,7 @@ public:
         Range& head = _ranges[0];
         if (last_value + 1 < head.first)
         {
-            _ranges.insert(_ranges.begin(), Range(first_value, last_value));
+            _ranges.emplace(_ranges.begin(), first_value, last_value);
             return;
         }
         else if (last_value <= head.last)
@@ -766,7 +767,7 @@ public:
         Range& tail = _ranges[_ranges.size() - 1];
         if (first_value > tail.last + 1)
         {
-            _ranges.push_back(Range(first_value, last_value));
+            _ranges.emplace_back(first_value, last_value);
             return;
         }
         else if (first_value >= tail.last)
@@ -789,9 +790,9 @@ public:
             const int_type min_left = std::min(first_value, _ranges.at(i1).first);
             const int_type max_right = std::max(last_value, _ranges.at(i2).last);
             _ranges.erase(_ranges.begin() + i1, _ranges.begin() + i2 + 1);
-            _ranges.insert(_ranges.begin() + i1, Range(min_left, max_right));
+            _ranges.emplace(_ranges.begin() + i1, min_left, max_right);
         } else {
-            _ranges.insert(_ranges.begin() + i1, Range(first_value, last_value));
+            _ranges.emplace(_ranges.begin() + i1, first_value, last_value);
         }
     }
 
@@ -847,7 +848,7 @@ public:
                 const int_type old_last = range.last;
                 range.last = first_value - 1;
                 // NOTE Reference to variable 'range' is invalid after insertion!!
-                _ranges.insert(_ranges.begin() + i1 + 1, Range(last_value + 1, old_last));
+                _ranges.emplace(_ranges.begin() + i1 + 1, last_value + 1, old_last);
                 return;
             }
             else if (first_value <= range.first)

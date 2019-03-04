@@ -7,6 +7,8 @@
 #include "fragment_buffer.h"
 
 
+#define MIN_FRAGMENT_BUFFER_SIZE 64
+
 namespace nut
 {
 
@@ -21,7 +23,7 @@ FragmentBuffer::FragmentBuffer(FragmentBuffer&& x)
     _write_fragment = x._write_fragment;
     _read_index = x._read_index;
     _read_available = x._read_available;
-    
+
     x._read_fragment = nullptr;
     x._write_fragment = nullptr;
     x._read_index = 0;
@@ -60,19 +62,19 @@ FragmentBuffer& FragmentBuffer::operator=(FragmentBuffer&& x)
 {
     if (this == &x)
         return *this;
-    
+
     clear();
-    
+
     _read_fragment = x._read_fragment;
     _write_fragment = x._write_fragment;
     _read_index = x._read_index;
     _read_available = x._read_available;
-    
+
     x._read_fragment = nullptr;
     x._write_fragment = nullptr;
     x._read_index = 0;
     x._read_available = 0;
-    
+
     return *this;
 }
 
@@ -83,16 +85,17 @@ void FragmentBuffer::enqueue(Fragment *frag)
     frag->next = nullptr;
     if (nullptr == _write_fragment)
     {
-        _read_fragment = frag;
         _write_fragment = frag;
+        _read_fragment = frag;
         _read_index = 0;
+        _read_available = frag->size;
     }
     else
     {
         _write_fragment->next = frag;
         _write_fragment = frag;
+        _read_available += frag->size;
     }
-    _read_available += frag->size;
 }
 
 void FragmentBuffer::clear()
@@ -230,18 +233,25 @@ size_t FragmentBuffer::readable_pointers(const void **buf_ptrs, size_t *len_ptrs
 
 void FragmentBuffer::write(const void *buf, size_t len)
 {
-    assert(nullptr != buf);
-
-    if (nullptr != _write_fragment &&
-        _write_fragment->capacity - _write_fragment->size >= len)
-    {
-        ::memcpy(_write_fragment->buffer + _write_fragment->size, buf, len);
-        _write_fragment->size += len;
-        _read_available += len;
+    assert(nullptr != buf || len <= 0);
+    if (len <= 0)
         return;
-    }
 
-    Fragment *frag = new_fragment(len);
+    // 先写入一部分
+    if (nullptr != _write_fragment && _write_fragment->capacity > _write_fragment->size)
+    {
+        const size_t can_write = std::min(_write_fragment->capacity - _write_fragment->size, len);
+        ::memcpy(_write_fragment->buffer + _write_fragment->size, buf, can_write);
+        _write_fragment->size += can_write;
+        _read_available += can_write;
+        buf = ((const uint8_t*) buf) + can_write;
+        len -= can_write;
+    }
+    if (len <= 0)
+        return;
+
+    // 写入剩余部分
+    Fragment *frag = new_fragment(std::max(len, (size_t) MIN_FRAGMENT_BUFFER_SIZE));
     ::memcpy(frag->buffer, buf, len);
     frag->size = len;
     enqueue(frag);
@@ -266,6 +276,7 @@ void FragmentBuffer::delete_fragment(Fragment *frag)
 FragmentBuffer::Fragment* FragmentBuffer::write_fragment(Fragment *frag)
 {
     assert(nullptr != frag && frag->size <= frag->capacity);
+
     if (nullptr != _write_fragment &&
         _write_fragment->capacity - _write_fragment->size >= frag->size)
     {

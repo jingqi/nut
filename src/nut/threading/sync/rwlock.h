@@ -31,7 +31,6 @@ public:
     void unlock_write();
 
 private:
-    // Non-copyable
     RwLock(const RwLock&) = delete;
     RwLock& operator=(const RwLock&) = delete;
 

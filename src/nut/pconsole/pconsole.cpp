@@ -42,7 +42,7 @@ void PConsole::set_prompt_string(const std::string& s)
 
 void PConsole::add_a_command(rc_ptr<ICommand> cmd)
 {
-    _commands.push_back(cmd);
+    _commands.push_back(std::move(cmd));
 }
 
 // 读取并执行一次

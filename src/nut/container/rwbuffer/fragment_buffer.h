@@ -11,6 +11,18 @@
 namespace nut
 {
 
+/**
+ * 多次碎片化的写数据, 再按照 FIFO 的顺序读出
+ *
+ *         dequeue from head
+ *                ↑
+ *                |
+ *          +----------+         +----------+
+ * read <-  | Fragment |    -    | Fragment +    .....  <- write
+ *          +----------+-> next  +----------+->      ↑
+ *                                                   |
+ *                                            enqueue to tail
+ */
 class NUT_API FragmentBuffer
 {
 public:
@@ -22,7 +34,6 @@ public:
         {}
 
     private:
-        // Non-copyable
         Fragment(const Fragment&) = delete;
         Fragment& operator=(const Fragment&) = delete;
 
@@ -46,24 +57,59 @@ public:
 
     void clear();
 
+    /**
+     * 剩余可读的大小
+     */
     size_t readable_size() const;
+
+    /**
+     * 读数据
+     *
+     * @return 读到的字节数
+     */
     size_t read(void *buf, size_t len);
+
+    /**
+     * 读数据，但是不设置读指针
+     *
+     * @return 读到的字节数
+     */
     size_t look_ahead(void *buf, size_t len) const;
+
+    /**
+     * 使读指针跳过一定字节数
+     *
+     * @return 跳过的字节数
+     */
     size_t skip_read(size_t len);
 
     /**
+     * 获取可读 buffer 列表
+     *
      * @return 返回指针个数
      */
     size_t readable_pointers(const void **buf_ptrs, size_t *len_ptrs,
                              size_t ptr_count) const;
 
+    /**
+     * 写入
+     */
     void write(const void *buf, size_t len);
 
+    /**
+     * 创建 fragment
+     */
     static Fragment* new_fragment(size_t capacity);
+
+    /**
+     * 销毁 fragment
+     */
     static void delete_fragment(Fragment *frag);
 
     /**
-     * @return 如果内存片段被征用，则返回 nullptr，否则返回传入的同一指针
+     * 写入 fragment
+     *
+     * @return 如果传入的 fragment 被征用，则返回 nullptr，否则返回传入的同一指针
      */
     Fragment* write_fragment(Fragment *frag);
 

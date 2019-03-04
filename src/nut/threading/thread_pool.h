@@ -67,7 +67,6 @@ public:
     void join();
 
 private:
-    // Non-copyable
     ThreadPool(const ThreadPool& x) = delete;
     ThreadPool& operator=(const ThreadPool& x) = delete;
 

@@ -1,5 +1,5 @@
 ﻿
-#include <nut/platform/portable_endian.h>
+#include <nut/platform/endian.h>
 
 #include "input_stream.h"
 
@@ -115,7 +115,7 @@ uint16_t InputStream::read_uint16()
     assert(sizeof(uint16_t) == rs);
     UNUSED(rs);
 
-    if (is_little_endian())
+    if (this->is_little_endian())
         ret = le16toh(ret);
     else
         ret = be16toh(ret);
@@ -135,7 +135,7 @@ uint32_t InputStream::read_uint32()
     assert(sizeof(uint32_t) == rs);
     UNUSED(rs);
 
-    if (is_little_endian())
+    if (this->is_little_endian())
         ret = le32toh(ret);
     else
         ret = be32toh(ret);
@@ -155,7 +155,7 @@ uint64_t InputStream::read_uint64()
     assert(sizeof(uint64_t) == rs);
     UNUSED(rs);
 
-    if (is_little_endian())
+    if (this->is_little_endian())
         ret = le64toh(ret);
     else
         ret = be64toh(ret);
@@ -176,7 +176,7 @@ float InputStream::read_float()
     assert(sizeof(float) == rs);
     UNUSED(rs);
 
-    if (is_little_endian())
+    if (this->is_little_endian())
         iv = le32toh(iv);
     else
         iv = be32toh(iv);
@@ -192,7 +192,7 @@ double InputStream::read_double()
     assert(sizeof(double) == rs);
     UNUSED(rs);
 
-    if (is_little_endian())
+    if (this->is_little_endian())
         iv = le64toh(iv);
     else
         iv = be64toh(iv);

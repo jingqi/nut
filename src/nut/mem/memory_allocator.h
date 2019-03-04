@@ -41,7 +41,6 @@ public:
     virtual void free(void *p, size_t sz) = 0;
 
 private:
-    // Non-copyable
     memory_allocator(const memory_allocator&) = delete;
     memory_allocator& operator=(const memory_allocator&) = delete;
 };

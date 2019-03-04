@@ -30,6 +30,8 @@ namespace nut
  */
 class NUT_API HPRecord
 {
+    friend class HPRetireList;
+
 public:
     static HPRecord* acquire();
     static void release(HPRecord *rec);
@@ -47,7 +49,7 @@ public:
     static void clear();
 
 private:
-    HPRecord(size_t v);
+    explicit HPRecord(size_t v);
     ~HPRecord() = default;
 
     HPRecord(const HPRecord&) = delete;
@@ -60,8 +62,6 @@ private:
     std::atomic<size_t> _version = ATOMIC_VAR_INIT(0);
     std::atomic<bool> _valid = ATOMIC_VAR_INIT(true);
     HPRecord *_next = nullptr;
-
-    friend class HPRetireList;
 };
 
 class NUT_API HPGuard
@@ -70,7 +70,7 @@ public:
     /**
      * @param rec if nullptr passed, will automatically require one
      */
-    HPGuard(HPRecord *rec = nullptr);
+    explicit HPGuard(HPRecord *rec = nullptr);
     ~HPGuard();
 
     void reacquire();

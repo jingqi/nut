@@ -82,7 +82,6 @@ public:
     }
 
 private:
-    // Non-copyable
     Bundle(const Bundle&) = delete;
     Bundle& operator=(const Bundle&) = delete;
 

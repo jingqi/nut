@@ -50,7 +50,6 @@ public:
     }
 
 private:
-    // Non-copyable
     LockGuard(const LockGuard<T>&) = delete;
     LockGuard& operator=(const LockGuard<T>&) = delete;
 

@@ -95,7 +95,7 @@ rc_ptr<XmlElement> XmlElement::get_child(const std::string& name) const
 void XmlElement::append_child(rc_ptr<XmlElement> child)
 {
     assert(child.is_not_null());
-    _children.push_back(child);
+    _children.push_back(std::move(child));
     _dirty = true;
 }
 

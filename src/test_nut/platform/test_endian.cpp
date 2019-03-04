@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include <nut/unittest/unittest.h>
-#include <nut/platform/portable_endian.h>
+#include <nut/platform/endian.h>
 
 using namespace std;
 using namespace nut;

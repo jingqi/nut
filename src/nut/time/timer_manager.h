@@ -60,7 +60,6 @@ public:
     void run();
 
 private:
-    // Non-copyable
     TimerManager(const TimerManager& x) = delete;
     TimerManager& operator=(const TimerManager& x) = delete;
 

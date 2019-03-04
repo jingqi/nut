@@ -20,7 +20,7 @@ private:
     enum { MAX_FREE_NUM = 50 }; // 最多缓存的空闲块数
 
 public:
-    lengthfixed_stmp(size_t granularity, memory_allocator *ma = nullptr);
+    explicit lengthfixed_stmp(size_t granularity, memory_allocator *ma = nullptr);
     virtual ~lengthfixed_stmp();
 
     bool is_empty() const;
@@ -31,7 +31,6 @@ public:
     virtual void free(void *p, size_t sz) override;
 
 private:
-    // Non-copyable
     lengthfixed_stmp(const lengthfixed_stmp&) = delete;
     lengthfixed_stmp& operator=(const lengthfixed_stmp&) = delete;
 
@@ -51,7 +50,7 @@ private:
     enum { MAX_FREE_NUM = 50 }; // 最多缓存的空闲块数
 
 public:
-    lengthfixed_mtmp(size_t granularity, memory_allocator *ma = nullptr);
+    explicit lengthfixed_mtmp(size_t granularity, memory_allocator *ma = nullptr);
     virtual ~lengthfixed_mtmp();
 
     bool is_empty() const;
@@ -62,7 +61,6 @@ public:
     virtual void free(void *p, size_t sz) override;
 
 private:
-    // Non-copyable
     lengthfixed_mtmp(const lengthfixed_mtmp&) = delete;
     lengthfixed_mtmp& operator=(const lengthfixed_mtmp&) = delete;
 

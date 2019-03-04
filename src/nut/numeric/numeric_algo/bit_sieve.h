@@ -45,7 +45,6 @@ public:
     BigInteger retrieve(const BigInteger& init_value, int certainty);
 
 private:
-    // Non-copyable
     BitSieve(const BitSieve&) = delete;
     BitSieve& operator=(const BitSieve&) = delete;
 

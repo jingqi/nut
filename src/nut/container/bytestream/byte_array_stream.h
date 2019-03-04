@@ -48,7 +48,6 @@ public:
     size_t write(const byte_array_type& ba);
 
 private:
-    // Non-copyable
     ByteArrayStream(const ByteArrayStream&) = delete;
     ByteArrayStream& operator=(const ByteArrayStream&) = delete;
 

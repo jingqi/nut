@@ -22,15 +22,15 @@ private:
     class Case
     {
     public:
-        const char *name = nullptr;
-        case_func_type func;
-
-    public:
         Case(const char *n, case_func_type&& f)
             : name(n), func(f)
         {}
 
         Case(const Case&) = default;
+
+    public:
+        const char *name = nullptr;
+        case_func_type func;
     };
 
 public:

@@ -110,6 +110,26 @@ inline int64_t bswap_int64(int64_t val)
 
 
 /**
+ * 判断主机字节序
+ */
+namespace nut
+{
+
+inline bool is_little_endian()
+{
+    const uint16_t word = 0x0001;
+    return 0 != ((const uint8_t*) &word)[0];
+}
+
+inline bool is_big_endian()
+{
+    return !is_little_endian();
+}
+
+}
+
+
+/**
  * 字节序转换
  *
  * host-endian to little-endian:
@@ -137,19 +157,8 @@ inline int64_t bswap_int64(int64_t val)
 namespace nut
 {
 
-inline bool is_little_endian()
-{
-    const uint16_t word = 0x0001;
-    return 0 != ((const uint8_t*) &word)[0];
-}
-
-inline bool is_big_endian()
-{
-    return !is_little_endian();
-}
-
 // htole16() / le16toh()
-inline uint16_t bswap_h_le16(uint16_t x)
+inline uint16_t _htole16(uint16_t x)
 {
     if (is_little_endian())
         return x;
@@ -158,7 +167,7 @@ inline uint16_t bswap_h_le16(uint16_t x)
 }
 
 // htole32() / le32toh()
-inline uint32_t bswap_h_le32(uint32_t x)
+inline uint32_t _htole32(uint32_t x)
 {
     if (is_little_endian())
         return x;
@@ -167,7 +176,7 @@ inline uint32_t bswap_h_le32(uint32_t x)
 }
 
 // htole64() / le64toh()
-inline uint64_t bswap_h_le64(uint64_t x)
+inline uint64_t _htole64(uint64_t x)
 {
     if (is_little_endian())
         return x;
@@ -176,7 +185,7 @@ inline uint64_t bswap_h_le64(uint64_t x)
 }
 
 // htobe16() / be16toh()
-inline uint16_t bswap_h_be16(uint16_t x)
+inline uint16_t _htobe16(uint16_t x)
 {
     if (is_little_endian())
         return nut::bswap_uint16(x);
@@ -185,7 +194,7 @@ inline uint16_t bswap_h_be16(uint16_t x)
 }
 
 // htobe32() / be32toh()
-inline uint32_t bswap_h_be32(uint32_t x)
+inline uint32_t _htobe32(uint32_t x)
 {
     if (is_little_endian())
         return nut::bswap_uint32(x);
@@ -194,7 +203,7 @@ inline uint32_t bswap_h_be32(uint32_t x)
 }
 
 // htobe64() / be64toh()
-inline uint64_t bswap_h_be64(uint64_t x)
+inline uint64_t _htobe64(uint64_t x)
 {
     if (is_little_endian())
         return nut::bswap_uint64(x);
@@ -204,21 +213,21 @@ inline uint64_t bswap_h_be64(uint64_t x)
 
 }
 
-#   define htole16(x) nut::bswap_h_le16((uint16_t) (x))
-#   define htole32(x) nut::bswap_h_le32((uint32_t) (x))
-#   define htole64(x) nut::bswap_h_le64((uint64_t) (x))
+#   define htole16(x) nut::_htole16((uint16_t) (x))
+#   define htole32(x) nut::_htole32((uint32_t) (x))
+#   define htole64(x) nut::_htole64((uint64_t) (x))
 
-#   define le16toh(x) nut::bswap_h_le16((uint16_t) (x))
-#   define le32toh(x) nut::bswap_h_le32((uint32_t) (x))
-#   define le64toh(x) nut::bswap_h_le64((uint64_t) (x))
+#   define le16toh(x) nut::_htole16((uint16_t) (x))
+#   define le32toh(x) nut::_htole32((uint32_t) (x))
+#   define le64toh(x) nut::_htole64((uint64_t) (x))
 
-#   define htobe16(x) nut::bswap_h_be16((uint16_t) (x))
-#   define htobe32(x) nut::bswap_h_be32((uint32_t) (x))
-#   define htobe64(x) nut::bswap_h_be64((uint64_t) (x))
+#   define htobe16(x) nut::_htobe16((uint16_t) (x))
+#   define htobe32(x) nut::_htobe32((uint32_t) (x))
+#   define htobe64(x) nut::_htobe64((uint64_t) (x))
 
-#   define be16toh(x) nut::bswap_h_be16((uint16_t) (x))
-#   define be32toh(x) nut::bswap_h_be32((uint32_t) (x))
-#   define be64toh(x) nut::bswap_h_be64((uint64_t) (x))
+#   define be16toh(x) nut::_htobe16((uint16_t) (x))
+#   define be32toh(x) nut::_htobe32((uint32_t) (x))
+#   define be64toh(x) nut::_htobe64((uint64_t) (x))
 
 #elif NUT_PLATFORM_OS_MAC
 #   include <libkern/OSByteOrder.h>

@@ -20,7 +20,7 @@ namespace nut
 class NUT_API SaveFile
 {
 public:
-    SaveFile(const std::string& path);
+    explicit SaveFile(const std::string& path);
     ~SaveFile();
 
     bool open();

@@ -35,7 +35,6 @@ public:
 #endif
 
 private:
-    // Non-copyable
     SpinLock(const SpinLock&) = delete;
     SpinLock& operator=(const SpinLock&) = delete;
 

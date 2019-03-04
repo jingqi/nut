@@ -560,15 +560,15 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
         }
         else if (aa > bb)
         {
-            lb1s.push(-1);
-            lb2s.push(-1);
+            lb1s.emplace(-1);
+            lb2s.emplace(-1);
             aa -= bb;
             aa >>= 1;
         }
         else
         {
-            lb1s.push(-2);
-            lb2s.push(-2);
+            lb1s.emplace(-2);
+            lb2s.emplace(-2);
             bb -= aa;
             bb >>= 1;
         }

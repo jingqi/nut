@@ -36,7 +36,7 @@ private:
     class ElemState
     {
     public:
-        ElemState(const char *n)
+        explicit ElemState(const char *n)
             : name(n)
         {}
 

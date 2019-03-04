@@ -25,7 +25,7 @@ private:
     class Sqlite3Freer
     {
     public:
-        Sqlite3Freer(void *p = nullptr)
+        explicit Sqlite3Freer(void *p = nullptr)
             : _ptr(p)
         {}
 
@@ -33,12 +33,17 @@ private:
         {
             if (nullptr != _ptr)
                 ::sqlite3_free(_ptr);
+            _ptr = nullptr;
         }
 
         void attach(void *p)
         {
             _ptr = p;
         }
+
+    private:
+        Sqlite3Freer(const Sqlite3Freer&) = delete;
+        Sqlite3Freer& operator=(const Sqlite3Freer&) = delete;
 
     private:
         void *_ptr = nullptr;

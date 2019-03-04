@@ -97,7 +97,7 @@ public:
 
 private:
     sqlite3_stmt *_stmt = nullptr;
-    std::vector<rc_ptr<enrc<std::string> > > _strings;
+    std::vector<rc_ptr<enrc<std::string>>> _strings;
 };
 
 }

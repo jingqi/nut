@@ -212,7 +212,6 @@ public:
     }
 
 private:
-    // Non-copyable
     scoped_gc(const self_type&) = delete;
     self_type& operator=(const self_type&) = delete;
 
@@ -246,6 +245,7 @@ private:
     Block *_current_block = nullptr;
     uint8_t *_end = nullptr;
     DestructorNode *_destruct_chain = nullptr;
+
     NUT_DEBUGGING_DESTROY_CHECKER
 };
 

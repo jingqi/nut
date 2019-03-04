@@ -17,6 +17,8 @@ namespace nut
  */
 class NUT_API HPRetireList
 {
+    friend class HPRecord;
+
 public:
     typedef void (*retire_func_type)(void*);
 
@@ -76,8 +78,6 @@ private:
     static std::atomic<size_t> _global_version;
 
     std::list<RetireRecord> _retire_list;
-
-    friend class HPRecord;
 };
 
 }

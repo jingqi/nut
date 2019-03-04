@@ -16,7 +16,7 @@ namespace nut
 class NUT_API StreamTestLogger : public ITestLogger
 {
 public:
-    StreamTestLogger(std::ostream *os);
+    explicit StreamTestLogger(std::ostream *os);
 
     virtual void on_start(const char *group_name, const char *fixture_name, const char *case_name) override;
     virtual void on_finish() override;

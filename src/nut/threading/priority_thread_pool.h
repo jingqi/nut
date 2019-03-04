@@ -33,10 +33,6 @@ private:
     class Task
     {
     public:
-        task_type task;
-        priority_type priority; // 数值越大，优先级越高
-
-    public:
         explicit Task(task_type&& t, priority_type p = 0)
             : task(t), priority(p)
         {}
@@ -49,6 +45,10 @@ private:
         {
             return priority < x.priority;
         }
+
+    public:
+        task_type task;
+        priority_type priority; // 数值越大，优先级越高
     };
 
 public:
@@ -90,7 +90,6 @@ public:
     void join();
 
 private:
-    // Non-copyable
     PriorityThreadPool(const PriorityThreadPool& x) = delete;
     PriorityThreadPool& operator=(const PriorityThreadPool& x) = delete;
 

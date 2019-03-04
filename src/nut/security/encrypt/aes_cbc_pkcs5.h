@@ -69,12 +69,12 @@ public:
     COWArray<uint8_t> get_result() const;
 
 private:
-    enum
+    enum class State
     {
         READY,
         IN_ENCRYPT,
         IN_DECRYPT
-    } _state = READY;
+    } _state = State::READY;
     uint8_t _data_buf[16], _iv[16];
     size_t _data_buf_size = 0;
     COWArray<uint8_t> _result;

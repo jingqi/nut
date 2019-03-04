@@ -63,7 +63,7 @@ static void split_groups(const char *groups, std::vector<std::string> *rs)
     }
     s = trim_end(s);
     if (s.length() > 0)
-        rs->push_back(s);
+        rs->push_back(std::move(s));
 }
 
 TestRegister::TestRegister(const char *fixture_name, const char *groups,

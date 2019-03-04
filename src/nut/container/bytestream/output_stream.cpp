@@ -1,5 +1,5 @@
 ﻿
-#include <nut/platform/portable_endian.h>
+#include <nut/platform/endian.h>
 
 #include "output_stream.h"
 
@@ -112,7 +112,7 @@ void OutputStream::write_int8(int8_t v)
 
 void OutputStream::write_uint16(uint16_t v)
 {
-    if (is_little_endian())
+    if (this->is_little_endian())
         v = htole16(v);
     else
         v = htobe16(v);
@@ -129,7 +129,7 @@ void OutputStream::write_int16(int16_t v)
 
 void OutputStream::write_uint32(uint32_t v)
 {
-    if (is_little_endian())
+    if (this->is_little_endian())
         v = htole32(v);
     else
         v = htobe32(v);
@@ -146,7 +146,7 @@ void OutputStream::write_int32(int32_t v)
 
 void OutputStream::write_uint64(uint64_t v)
 {
-    if (is_little_endian())
+    if (this->is_little_endian())
         v = htole64(v);
     else
         v = htobe64(v);
@@ -165,7 +165,7 @@ void OutputStream::write_float(float v)
 {
     static_assert(sizeof(float) == sizeof(uint32_t), "Unexpected 'float' size");
     uint32_t iv = *reinterpret_cast<uint32_t*>(&v);
-    if (is_little_endian())
+    if (this->is_little_endian())
         iv = htole32(iv);
     else
         iv = htobe32(iv);
@@ -179,7 +179,7 @@ void OutputStream::write_double(double v)
 {
     static_assert(sizeof(double) == sizeof(uint64_t), "Unexpected 'double' size");
     uint64_t iv = *reinterpret_cast<uint64_t*>(&v);
-    if (is_little_endian())
+    if (this->is_little_endian())
         iv = htole64(iv);
     else
         iv = htobe64(iv);

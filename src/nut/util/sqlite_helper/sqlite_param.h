@@ -46,7 +46,7 @@ private:
 
 public:
     Type type = Type::None;
-    rc_ptr<enrc<std::string> > string_arg;
+    rc_ptr<enrc<std::string>> string_arg;
     int int_arg = 0;
 };
 

@@ -169,7 +169,7 @@ void PropertyDom::parse(const std::string& s, const char *line_comment_chars, co
 
         rc_ptr<Line> line = rc_new<Line>();
         line->parse(ln, line_comment_chars, space_chars);
-        _lines.push_back(line);
+        _lines.push_back(std::move(line));
     } while (std::string::npos != start);
 }
 
@@ -320,7 +320,7 @@ void PropertyDom::set_string(const char *key, const char *value)
     line->_key = key;
     line->_equal_sign = true;
     line->_value = value;
-    _lines.push_back(line);
+    _lines.push_back(std::move(line));
     _dirty = true;   // tag the need of saving
 }
 

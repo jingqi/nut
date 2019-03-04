@@ -22,14 +22,14 @@ std::vector<rc_ptr<ICommand> > IConsole::match_commands(const std::vector<rc_ptr
         if (nullptr != cmd->get_command_name() && to_match == cmd->get_command_name())
         {
             matched_cmds.clear();
-            matched_cmds.push_back(cmd);
+            matched_cmds.push_back(std::move(cmd));
             return matched_cmds;
         }
 
         // 弱匹配
         if (nullptr != cmd->get_command_name() && starts_with(cmd->get_command_name(), to_match.c_str()))
         {
-            matched_cmds.push_back(cmd);
+            matched_cmds.push_back(std::move(cmd));
         }
         else if (nullptr != cmd->get_command_nick_names())
         {
@@ -38,7 +38,7 @@ std::vector<rc_ptr<ICommand> > IConsole::match_commands(const std::vector<rc_ptr
             {
                 if (to_match == nn[j])
                 {
-                    matched_cmds.push_back(cmd);
+                    matched_cmds.push_back(std::move(cmd));
                     break;
                 }
             }

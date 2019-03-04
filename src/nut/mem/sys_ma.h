@@ -19,8 +19,6 @@ namespace nut
  */
 class NUT_API sys_ma : public memory_allocator
 {
-    NUT_DEBUGGING_DESTROY_CHECKER
-
 public:
     sys_ma();
 
@@ -41,7 +39,6 @@ public:
 #endif
 
 private:
-    // Non-copyable
     sys_ma(const sys_ma&) = delete;
     sys_ma& operator=(const sys_ma&) = delete;
 
@@ -50,6 +47,8 @@ private:
     size_t _alloc_count = 0, _free_count = 0;
     size_t _total_alloc_sz = 0, _total_free_sz = 0;
 #endif
+
+    NUT_DEBUGGING_DESTROY_CHECKER
 };
 
 }

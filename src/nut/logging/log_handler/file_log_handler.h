@@ -14,7 +14,7 @@ namespace nut
 class NUT_API FileLogHandler : public LogHandler
 {
 public:
-    FileLogHandler(const char *file, bool append = false);
+    explicit FileLogHandler(const char *file, bool append = false);
 
     virtual void handle_log(const LogRecord& rec) override;
 

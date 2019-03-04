@@ -31,11 +31,11 @@ private:
     class Node
     {
     public:
-        Node(T&& v)
+        explicit Node(T&& v)
             : data(std::forward<T>(v))
         {}
 
-        Node(const T& v)
+        explicit Node(const T& v)
             : data(v)
         {}
 

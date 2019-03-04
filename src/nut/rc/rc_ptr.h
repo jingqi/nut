@@ -14,6 +14,8 @@ namespace nut
 template <typename T>
 class rc_ptr
 {
+    template <typename U> friend class rc_ptr;
+
 public:
     rc_ptr() = default;
 
@@ -175,7 +177,6 @@ public:
     }
 
 protected:
-    template <typename U> friend class rc_ptr;
     T *_ptr = nullptr;
 };
 

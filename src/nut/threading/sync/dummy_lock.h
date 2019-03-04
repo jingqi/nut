@@ -22,7 +22,6 @@ public:
     {}
 
 private:
-    // Non-copyable
     DummyLock(const DummyLock&) = delete;
     DummyLock& operator=(const DummyLock&) = delete;
 };

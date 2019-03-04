@@ -43,6 +43,8 @@ class AtomicStampedPtr;
 template <typename T>
 class StampedPtr
 {
+    template <typename U> friend class AtomicStampedPtr;
+
 public:
     typedef typename std::conditional<
         sizeof(T*) == sizeof(uint8_t), uint8_t,
@@ -88,8 +90,6 @@ public:
 public:
     T *ptr;           // low part
     stamp_type stamp; // high part
-
-    template <typename U> friend class AtomicStampedPtr;
 };
 
 static_assert(sizeof(StampedPtr<void>) == 2 * sizeof(void*), "StampedPtr<> size error");

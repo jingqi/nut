@@ -484,7 +484,7 @@ public:
                 else
                 {
                     DataNode *dn = dynamic_cast<DataNode*>(c);
-                    appended->push_back(std::pair<area_type,data_type>(dn->area, dn->data));
+                    appended->emplace_back(dn->area, dn->data);
                 }
             }
         }

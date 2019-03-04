@@ -151,13 +151,13 @@ void IniDom::parse(const std::string& s, const char *line_comment_chars, const c
         if (sector.is_not_null())
         {
             current_lines = &(sector->_lines);
-            _sectors.push_back(sector);
+            _sectors.push_back(std::move(sector));
             continue;
         }
 
         rc_ptr<Line> line = rc_new<Line>();
         line->parse(ln, line_comment_chars, space_chars);
-        current_lines->push_back(line);
+        current_lines->push_back(std::move(line));
     }
 }
 
@@ -441,7 +441,7 @@ void IniDom::set_string(const char *sector, const char *key, const char *value)
         rc_ptr<Sector> sec = rc_new<Sector>();
         sec->_name = sector;
         lines = &(sec->_lines);
-        _sectors.push_back(sec);
+        _sectors.push_back(std::move(sec));
     }
 
     for (size_t i = 0, sz = lines->size(); i < sz; ++i)
@@ -457,7 +457,7 @@ void IniDom::set_string(const char *sector, const char *key, const char *value)
     line->_key = key;
     line->_equal_sign = true;
     line->_value = value;
-    lines->push_back(line);
+    lines->push_back(std::move(line));
     _dirty = true;
 }
 

@@ -43,7 +43,6 @@ public:
     }
 
 private:
-    // Non-copyable
     FreeGuard(const FreeGuard&) = delete;
     FreeGuard& operator=(const FreeGuard&) = delete;
 
@@ -87,9 +86,13 @@ public:
     }
 
 private:
+    DeleteGuard(const DeleteGuard<T>&) = delete;
+    DeleteGuard<T>& operator=(const DeleteGuard<T>&) = delete;
+
+private:
     T *_ptr = nullptr;
 };
 
-};
+}
 
 #endif
