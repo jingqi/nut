@@ -69,34 +69,26 @@ public:
         return nullptr == _top.load(std::memory_order_relaxed).ptr;
     }
 
+    template <typename ...Args>
+    void emplace(Args ...args)
+    {
+        Node *new_node = (Node*) ::malloc(sizeof(Node));
+        new (&(new_node->data)) T(std::forward<Args>(args)...);
+        push(new_node);
+    }
+
     void push(T&& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new (&(new_node->data)) T(std::forward<T>(v));
-
-        StampedPtr<Node> old_top = _top.load(std::memory_order_relaxed);
-        do
-        {
-            new_node->next = old_top.ptr;
-        } while(!_top.compare_exchange_weak(
-                    &old_top, {new_node, old_top.stamp + 1},
-                    std::memory_order_release, std::memory_order_relaxed));
-        _size.fetch_add(1, std::memory_order_relaxed);
+        push(new_node);
     }
 
     void push(const T& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new (&(new_node->data)) T(v);
-
-        StampedPtr<Node> old_top = _top.load(std::memory_order_relaxed);
-        do
-        {
-            new_node->next = old_top.ptr;
-        } while (!_top.compare_exchange_weak(
-                     &old_top, {new_node, old_top.stamp + 1},
-                     std::memory_order_release, std::memory_order_relaxed));
-        _size.fetch_add(1, std::memory_order_relaxed);
+        push(new_node);
     }
 
     bool pop(T *p)
@@ -124,6 +116,21 @@ public:
 private:
     ConcurrentStack(const ConcurrentStack&) = delete;
     ConcurrentStack& operator=(const ConcurrentStack&) = delete;
+
+    void push(Node *new_node)
+    {
+        assert(nullptr != new_node);
+
+        StampedPtr<Node> old_top = _top.load(std::memory_order_relaxed);
+        do
+        {
+            new_node->next = old_top.ptr;
+        } while (!_top.compare_exchange_weak(
+                     &old_top, {new_node, old_top.stamp + 1},
+                     std::memory_order_release, std::memory_order_relaxed));
+        _size.fetch_add(1, std::memory_order_relaxed);
+    }
+
 
 private:
     AtomicStampedPtr<Node> _top;

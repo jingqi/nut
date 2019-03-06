@@ -8,6 +8,7 @@
 #include <string>
 #include <iterator>
 #include <algorithm> // for std::min() and so on
+#include <utility> // for std::forward()
 
 #include <nut/platform/int_type.h> // for ssize_t in windows VC
 #include <nut/util/string/to_string.h>

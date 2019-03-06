@@ -48,12 +48,12 @@ public:
 
 public:
     FragmentBuffer() = default;
-    FragmentBuffer(const FragmentBuffer& x);
     FragmentBuffer(FragmentBuffer&& x);
+    FragmentBuffer(const FragmentBuffer& x);
     ~FragmentBuffer();
 
-    FragmentBuffer& operator=(const FragmentBuffer& x);
     FragmentBuffer& operator=(FragmentBuffer&& x);
+    FragmentBuffer& operator=(const FragmentBuffer& x);
 
     void clear();
 

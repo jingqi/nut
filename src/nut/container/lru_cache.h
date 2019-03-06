@@ -20,8 +20,16 @@ private:
     class Node
     {
     public:
+        Node(K&& k, V&& v)
+            : key(std::forward<K>(k)), value(std::forward<V>(v))
+        {}
+
         Node(const K& k, V&& v)
             : key(k), value(std::forward<V>(v))
+        {}
+
+        Node(K&& k, const V& v)
+            : key(std::forward<K>(k)), value(v)
         {}
 
         Node(const K& k, const V& v)
@@ -68,6 +76,54 @@ public:
     /**
      * @return true if new data inserted, else old data replaced
      */
+    bool put(K&& k, V&& v)
+    {
+        // Search and update
+        typename map_type::const_iterator const iter = _map.find(k);
+        if (iter != _map.end())
+        {
+            Node *const p = iter->second;
+            assert(nullptr != p);
+            p->value = std::forward<V>(v);
+            remove_from_list(p);
+            push_list_head(p);
+            return false;
+        }
+
+        if (_map.size() >= _capacity)
+        {
+            // Reuse last node
+            Node *const p = _list_end;
+            assert(nullptr != p);
+            typename map_type::iterator const rm_iter = _map.find(p->key);
+            assert(rm_iter != _map.end());
+            _map.erase(rm_iter);
+
+            p->key = k;
+            p->value = std::forward<V>(v);
+            _map.emplace(std::forward<K>(k), p);
+            remove_from_list(p);
+            push_list_head(p);
+
+            // Remove older nodes
+            remove_older_nodes();
+        }
+        else
+        {
+            // Add new node
+            Node *const p = (Node*) ::malloc(sizeof(Node));
+            assert(nullptr != p);
+            new (p) Node(k, std::forward<V>(v));
+            _map.emplace(std::forward<K>(k), p);
+            push_list_head(p);
+        }
+
+        return true;
+    }
+
+    /**
+     * @return true if new data inserted, else old data replaced
+     */
     bool put(const K& k, V&& v)
     {
         // Search and update
@@ -93,7 +149,7 @@ public:
 
             p->key = k;
             p->value = std::forward<V>(v);
-            _map.insert(std::pair<K,Node*>(k,p));
+            _map.emplace(k, p);
             remove_from_list(p);
             push_list_head(p);
 
@@ -106,7 +162,55 @@ public:
             Node *const p = (Node*) ::malloc(sizeof(Node));
             assert(nullptr != p);
             new (p) Node(k, std::forward<V>(v));
-            _map.insert(std::pair<K,Node*>(k,p));
+            _map.emplace(k, p);
+            push_list_head(p);
+        }
+
+        return true;
+    }
+
+    /**
+     * @return true if new data inserted, else old data replaced
+     */
+    bool put(K&& k, const V& v)
+    {
+        // Search and update
+        typename map_type::const_iterator const iter = _map.find(k);
+        if (iter != _map.end())
+        {
+            Node *const p = iter->second;
+            assert(nullptr != p);
+            p->value = v;
+            remove_from_list(p);
+            push_list_head(p);
+            return false;
+        }
+
+        if (_map.size() >= _capacity)
+        {
+            // Reuse last node
+            Node *const p = _list_end;
+            assert(nullptr != p);
+            typename map_type::iterator const rm_iter = _map.find(p->key);
+            assert(rm_iter != _map.end());
+            _map.erase(rm_iter);
+
+            p->key = k;
+            p->value = v;
+            _map.emplace(std::forward<K>(k), p);
+            remove_from_list(p);
+            push_list_head(p);
+
+            // Remove older nodes
+            remove_older_nodes();
+        }
+        else
+        {
+            // Add new node
+            Node *const p = (Node*) ::malloc(sizeof(Node));
+            assert(nullptr != p);
+            new (p) Node(k, v);
+            _map.emplace(std::forward<K>(k), p);
             push_list_head(p);
         }
 
@@ -141,7 +245,7 @@ public:
 
             p->key = k;
             p->value = v;
-            _map.insert(std::pair<K,Node*>(k,p));
+            _map.emplace(k, p);
             remove_from_list(p);
             push_list_head(p);
 
@@ -154,7 +258,7 @@ public:
             Node *const p = (Node*) ::malloc(sizeof(Node));
             assert(nullptr != p);
             new (p) Node(k, v);
-            _map.insert(std::pair<K,Node*>(k,p));
+            _map.emplace(k, p);
             push_list_head(p);
         }
 
@@ -229,7 +333,6 @@ public:
     }
 
 private:
-    // Non-copyable
     LRUCache(const LRUCache<K,V>&) = delete;
     LRUCache<K,V>& operator=(const LRUCache<K,V>&) = delete;
 

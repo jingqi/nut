@@ -258,70 +258,26 @@ public:
     /**
      * 乐观算法入队
      */
+    template <typename ...Args>
+    void optimistic_emplace(Args&& ...args)
+    {
+        Node *new_node = (Node*) ::malloc(sizeof(Node));
+        new (new_node) Node(std::forward<Args>(args)...);
+        optimistic_enqueue(new_node);
+    }
+
     void optimistic_enqueue(T&& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new (new_node) Node(std::forward<T>(v));
-
-        // 获取旧值
-        StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
-        while (true)
-        {
-            // 基于旧值的操作
-            // NOTE new_node->next.stamp = 0, 以表明 new_node->next.ptr 还是无效
-            //      的(需要指向下个新增节点)
-            new_node->prev.store({old_tail.ptr, old_tail.stamp + 1},
-                                 std::memory_order_relaxed);
-
-            // 尝试CAS，失败则自动获取旧值到 old_tail
-            if (_tail.compare_exchange_weak(
-                    &old_tail, {new_node, old_tail.stamp + 1},
-                    std::memory_order_release, std::memory_order_relaxed))
-            {
-                HPGuard guard_item; // Hold 'old_tail' if not deleted
-                if (old_tail.ptr->retired.load(std::memory_order_relaxed))
-                    break; // 'old_tail' already deleted by some other thread
-
-                // 收尾操作
-                // NOTE 这个操作可能不能即时完成，其他线程如果要删除本节点时，会
-                //      通过 fix_list() 来修复
-                old_tail.ptr->next.store({new_node, old_tail.stamp},
-                                         std::memory_order_relaxed);
-                break;
-            }
-        }
+        optimistic_enqueue(new_node);
     }
 
     void optimistic_enqueue(const T& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new (new_node) Node(v);
-
-        // 获取旧值
-        StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
-        while (true)
-        {
-            // 基于旧值的操作
-            new_node->prev.store({old_tail.ptr, old_tail.stamp + 1},
-                                 std::memory_order_relaxed);
-
-            // 尝试CAS，失败则自动获取旧值到 old_tail
-            if (_tail.compare_exchange_weak(
-                    &old_tail, {new_node, old_tail.stamp + 1},
-                    std::memory_order_release, std::memory_order_relaxed))
-            {
-                HPGuard guard_item; // Hold 'old_tail' if not deleted
-                if (old_tail.ptr->retired.load(std::memory_order_relaxed))
-                    break; // 'old_tail' already deleted by some other thread
-
-                // 收尾操作
-                // NOTE 这个操作可能不能即时完成，其他线程如果要删除本节点时，会
-                //      通过 fix_list() 来修复
-                old_tail.ptr->next.store({new_node, old_tail.stamp},
-                                         std::memory_order_relaxed);
-                break;
-            }
-        }
+        optimistic_enqueue(new_node);
     }
 
     /**
@@ -374,36 +330,26 @@ public:
     /**
      * 采用隐消策略的入队
      */
+    template <typename ...Args>
+    void eliminate_emplace(Args ...args)
+    {
+        Node *new_node = (Node*) ::malloc(sizeof(Node));
+        new (new_node) Node(std::forward<Args>(args)...);
+        eliminate_enqueue(new_node);
+    }
+
     void eliminate_enqueue(T&& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new (new_node) Node(std::forward<T>(v));
-
-        const stamp_type seen_tail = _tail.load(std::memory_order_relaxed).stamp;
-        while (true)
-        {
-            if (enqueue_attempt(new_node))
-                return;
-            if (seen_tail <= _head.load(std::memory_order_relaxed).stamp &&
-                try_to_eliminate_enqueue(new_node, seen_tail))
-                return;
-        }
+        eliminate_enqueue(new_node);
     }
 
     void eliminate_enqueue(const T& v)
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new (new_node) Node(v);
-
-        const stamp_type seen_tail = _tail.load(std::memory_order_relaxed).stamp;
-        while (true)
-        {
-            if (enqueue_attempt(new_node))
-                return;
-            if (seen_tail <= _head.load(std::memory_order_relaxed).stamp &&
-                try_to_eliminate_enqueue(new_node, seen_tail))
-                return;
-        }
+        eliminate_enqueue(new_node);
     }
 
     /**
@@ -425,6 +371,52 @@ public:
 private:
     ConcurrentQueue(const ConcurrentQueue&) = delete;
     ConcurrentQueue& operator=(const ConcurrentQueue&) = delete;
+    
+    void optimistic_enqueue(Node *new_node)
+    {
+        assert(nullptr != new_node);
+
+        // 获取旧值
+        StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
+        while (true)
+        {
+            // 基于旧值的操作
+            new_node->prev.store({old_tail.ptr, old_tail.stamp + 1},
+                                 std::memory_order_relaxed);
+
+            // 尝试CAS，失败则自动获取旧值到 old_tail
+            if (_tail.compare_exchange_weak(
+                    &old_tail, {new_node, old_tail.stamp + 1},
+                    std::memory_order_release, std::memory_order_relaxed))
+            {
+                HPGuard guard_item; // Hold 'old_tail' if not deleted
+                if (old_tail.ptr->retired.load(std::memory_order_relaxed))
+                    break; // 'old_tail' already deleted by some other thread
+
+                // 收尾操作
+                // NOTE 这个操作可能不能即时完成，其他线程如果要删除本节点时，会
+                //      通过 fix_list() 来修复
+                old_tail.ptr->next.store({new_node, old_tail.stamp},
+                                         std::memory_order_relaxed);
+                break;
+            }
+        }
+    }
+    
+    void eliminate_enqueue(Node *new_node)
+    {
+        assert(nullptr != new_node);
+
+        const stamp_type seen_tail = _tail.load(std::memory_order_relaxed).stamp;
+        while (true)
+        {
+            if (enqueue_attempt(new_node))
+                return;
+            if (seen_tail <= _head.load(std::memory_order_relaxed).stamp &&
+                try_to_eliminate_enqueue(new_node, seen_tail))
+                return;
+        }
+    }
 
     // 修复
     void fix_list(const StampedPtr<Node>& head, const StampedPtr<Node>& tail)

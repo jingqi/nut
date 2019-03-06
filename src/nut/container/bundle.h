@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <string>
 #include <stdint.h>
-#include <utility>
+#include <utility> // for std::forward()
 
 #include <nut/rc/rc_new.h>
 
@@ -22,12 +22,12 @@ template <typename T>
 class _BundleElement : public _BundleElementBase
 {
 public:
-    _BundleElement(const T& v)
-        : value(v)
-    {}
-
     _BundleElement(T&& v)
         : value(std::forward<T>(v))
+    {}
+
+    _BundleElement(const T& v)
+        : value(v)
     {}
 
 public:
@@ -65,15 +65,27 @@ public:
     }
 
     template <typename T>
-    void set_value(const std::string& key, const T& value)
+    void set_value(std::string&& key, T&& value)
     {
-        _values[key] = rc_new<_BundleElement<T> >(value);
+        _values[std::forward<std::string>(key)] = rc_new<_BundleElement<T>>(std::forward<T>(value));
     }
 
     template <typename T>
     void set_value(const std::string& key, T&& value)
     {
-        _values[key] = rc_new<_BundleElement<T> >(std::forward<T>(value));
+        _values[key] = rc_new<_BundleElement<T>>(std::forward<T>(value));
+    }
+
+    template <typename T>
+    void set_value(std::string&& key, const T& value)
+    {
+        _values[std::forward<std::string>(key)] = rc_new<_BundleElement<T>>(value);
+    }
+
+    template <typename T>
+    void set_value(const std::string& key, const T& value)
+    {
+        _values[key] = rc_new<_BundleElement<T>>(value);
     }
 
     void clear()

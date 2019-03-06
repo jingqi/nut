@@ -12,11 +12,6 @@
 namespace nut
 {
 
-FragmentBuffer::FragmentBuffer(const FragmentBuffer& x)
-{
-    *this = x;
-}
-
 FragmentBuffer::FragmentBuffer(FragmentBuffer&& x)
 {
     _read_fragment = x._read_fragment;
@@ -30,9 +25,34 @@ FragmentBuffer::FragmentBuffer(FragmentBuffer&& x)
     x._read_available = 0;
 }
 
+FragmentBuffer::FragmentBuffer(const FragmentBuffer& x)
+{
+    *this = x;
+}
+
 FragmentBuffer::~FragmentBuffer()
 {
     clear();
+}
+
+FragmentBuffer& FragmentBuffer::operator=(FragmentBuffer&& x)
+{
+    if (this == &x)
+        return *this;
+
+    clear();
+
+    _read_fragment = x._read_fragment;
+    _write_fragment = x._write_fragment;
+    _read_index = x._read_index;
+    _read_available = x._read_available;
+
+    x._read_fragment = nullptr;
+    x._write_fragment = nullptr;
+    x._read_index = 0;
+    x._read_available = 0;
+
+    return *this;
 }
 
 FragmentBuffer& FragmentBuffer::operator=(const FragmentBuffer& x)
@@ -54,26 +74,6 @@ FragmentBuffer& FragmentBuffer::operator=(const FragmentBuffer& x)
     }
     _read_index = x._read_index;
     _read_available = x._read_available;
-
-    return *this;
-}
-
-FragmentBuffer& FragmentBuffer::operator=(FragmentBuffer&& x)
-{
-    if (this == &x)
-        return *this;
-
-    clear();
-
-    _read_fragment = x._read_fragment;
-    _write_fragment = x._write_fragment;
-    _read_index = x._read_index;
-    _read_available = x._read_available;
-
-    x._read_fragment = nullptr;
-    x._write_fragment = nullptr;
-    x._read_index = 0;
-    x._read_available = 0;
 
     return *this;
 }

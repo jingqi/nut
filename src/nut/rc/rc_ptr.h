@@ -27,6 +27,13 @@ public:
         assign(p);
     }
 
+    template <typename U>
+    rc_ptr(rc_ptr<U>&& p)
+        : _ptr(p._ptr)
+    {
+        p._ptr = nullptr;
+    }
+
     /**
      * 隐式类型转换
      */
@@ -48,13 +55,6 @@ public:
         assign(p._ptr);
     }
 
-    template <typename U>
-    rc_ptr(rc_ptr<U>&& p)
-        : _ptr(p._ptr)
-    {
-        p._ptr = nullptr;
-    }
-
     ~rc_ptr()
     {
         set_null();
@@ -63,24 +63,6 @@ public:
     rc_ptr<T>& operator=(T *p)
     {
         assign(p);
-        return *this;
-    }
-
-    template <typename U>
-    rc_ptr<T>& operator=(const rc_ptr<U>& p)
-    {
-        assign(p._ptr);
-        return *this;
-    }
-
-    /**
-     * 赋值操作符
-     * NOTE:
-     *      (参看复制构造函数的说明)
-     */
-    rc_ptr<T>& operator=(const rc_ptr<T> &p)
-    {
-        assign(p._ptr);
         return *this;
     }
 
@@ -96,6 +78,24 @@ public:
         if (nullptr != tmp)
             tmp->release_ref();
 
+        return *this;
+    }
+
+    template <typename U>
+    rc_ptr<T>& operator=(const rc_ptr<U>& p)
+    {
+        assign(p._ptr);
+        return *this;
+    }
+
+    /**
+     * 赋值操作符
+     * NOTE:
+     *      (参看复制构造函数的说明)
+     */
+    rc_ptr<T>& operator=(const rc_ptr<T>& p)
+    {
+        assign(p._ptr);
         return *this;
     }
 

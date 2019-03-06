@@ -62,8 +62,20 @@ private:
     class Entry
     {
     public:
+        Entry(K&& k, V&& v, hash_type rh)
+            : key(std::forward<K>(k)), value(std::forward<V>(v)), reversed_hash(rh)
+        {
+            assert(0 != (rh & 0x01));
+        }
+
         Entry(const K& k, V&& v, hash_type rh)
             : key(k), value(std::forward<V>(v)), reversed_hash(rh)
+        {
+            assert(0 != (rh & 0x01));
+        }
+
+        Entry(K& k, const V& v, hash_type rh)
+            : key(std::forward<K>(k)), value(v), reversed_hash(rh)
         {
             assert(0 != (rh & 0x01));
         }

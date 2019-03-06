@@ -20,6 +20,18 @@ private:
     class Node
     {
     public:
+        Node(K&& k, const void *buf, size_t cb)
+            : key(std::forward<K>(k)), size(cb)
+        {
+            assert(nullptr != buf || 0 == cb);
+            if (cb > 0)
+            {
+                data = ::malloc(cb);
+                assert(nullptr != data);
+                ::memcpy(data, buf, cb);
+            }
+        }
+
         Node(const K& k, const void *buf, size_t cb)
             : key(k), size(cb)
         {
@@ -119,6 +131,60 @@ public:
     /**
      * @return true if new data inserted, else old data replaced
      */
+    bool put(K&& k, const void *buf, size_t cb)
+    {
+        assert(nullptr != buf || 0 == cb);
+
+        // Search and update
+        typename map_type::const_iterator const iter = _map.find(k);
+        if (iter != _map.end())
+        {
+            Node *const p = iter->second;
+            assert(nullptr != p && _bytes_size >= p->size);
+            _bytes_size -= p->size;
+            _bytes_size += cb;
+            p->copy_from(buf, cb);
+            remove_from_list(p);
+            push_list_head(p);
+            return false;
+        }
+
+        if (_bytes_size >= _bytes_capacity)
+        {
+            // Reuse last node
+            Node *const p = _list_end;
+            assert(nullptr != p && _bytes_size >= p->size);
+            typename map_type::iterator const rm_iter = _map.find(p->key);
+            assert(rm_iter != _map.end());
+            _map.erase(rm_iter);
+
+            _bytes_size -= p->size;
+            _bytes_size += cb;
+            p->copy_from(buf, cb);
+            _map.emplace(std::forward<K>(k), p);
+            remove_from_list(p);
+            push_list_head(p);
+        }
+        else
+        {
+            // Add new node
+            Node *const p = (Node*) ::malloc(sizeof(Node));
+            assert(nullptr != p);
+            new (p) Node(k, buf, cb);
+            _bytes_size += cb;
+            _map.emplace(std::forward<K>(k), p);
+            push_list_head(p);
+        }
+
+        // Remove older nodes
+        remove_older_nodes();
+
+        return true;
+    }
+
+    /**
+     * @return true if new data inserted, else old data replaced
+     */
     bool put(const K& k, const void *buf, size_t cb)
     {
         assert(nullptr != buf || 0 == cb);
@@ -149,7 +215,7 @@ public:
             _bytes_size -= p->size;
             _bytes_size += cb;
             p->copy_from(buf, cb);
-            _map.insert(std::pair<K,Node*>(k,p));
+            _map.emplace(k, p);
             remove_from_list(p);
             push_list_head(p);
         }
@@ -160,7 +226,7 @@ public:
             assert(nullptr != p);
             new (p) Node(k, buf, cb);
             _bytes_size += cb;
-            _map.insert(std::pair<K,Node*>(k,p));
+            _map.emplace(k, p);
             push_list_head(p);
         }
 

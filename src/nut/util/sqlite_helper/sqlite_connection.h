@@ -59,11 +59,16 @@ public:
     }
 
     /**
-     * @param dbfilepath File path encoded in UTF-8
+     * @param db_file File path encoded in UTF-8
      */
     explicit SqliteConnection(const char *db_file)
     {
         assert(nullptr != db_file);
+        open(db_file);
+    }
+
+    explicit SqliteConnection(const std::string& db_file)
+    {
         open(db_file);
     }
 
@@ -74,6 +79,9 @@ public:
         UNUSED(rs);
     }
 
+    /**
+     * @param db_file File path encoded in UTF-8
+     */
     bool open(const char *db_file)
     {
         assert(nullptr != db_file);
@@ -99,6 +107,11 @@ public:
         }
         assert(is_valid());
         return SQLITE_OK == rs;
+    }
+
+    bool open(const std::string& db_file)
+    {
+        return open(db_file.c_str());
     }
 
     bool close()
@@ -213,7 +226,9 @@ public:
         return SQLITE_OK == rs;
     }
 
-    /** 压缩数据库 */
+    /**
+     * 压缩数据库
+     */
     bool vacuum()
     {
         assert(is_valid());

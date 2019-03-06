@@ -5,6 +5,7 @@
 #include <string.h>
 #include <memory>
 #include <algorithm>
+#include <utility> // for std::forward()
 
 #include <nut/rc/rc_new.h>
 #include <nut/rc/enrc.h>
@@ -220,6 +221,14 @@ public:
         return const_cast<T&>(static_cast<const self_type&>(*this).at(i));
     }
 
+    template <typename ...Args>
+    void emplace_back(Args&& ...args)
+    {
+        ensure_cap<T>(_size + 1);
+        new (_buf + _size) T(std::forward<Args>(args)...);
+        ++_size;
+    }
+
     void push_back(T&& e)
     {
         ensure_cap<T>(_size + 1);
@@ -239,6 +248,17 @@ public:
         assert(_size > 0);
         --_size;
         (_buf + _size)->~T();
+    }
+
+    template <typename ...Args>
+    void emplace(size_type index, Args&& ...args)
+    {
+        assert(index <= _size);
+        ensure_cap<T>(_size + 1);
+        if (index < _size)
+            ::memmove(_buf + index + 1, _buf + index, sizeof(T) * (_size - index));
+        new (_buf + index) T(std::forward<Args>(args)...);
+        ++_size;
     }
 
     void insert(size_type index, T&& e)
@@ -498,6 +518,13 @@ public:
         return _array->at(i);
     }
 
+    template <typename ...Args>
+    void emplace_back(Args&& ...args)
+    {
+        copy_on_write();
+        _array->emplace_back(std::forward<Args>(args)...);
+    }
+
     void push_back(T&& e)
     {
         copy_on_write();
@@ -514,6 +541,13 @@ public:
     {
         copy_on_write();
         _array->pop_back();
+    }
+
+    template <typename ...Args>
+    void emplace(size_type index, Args&& ...args)
+    {
+        copy_on_write();
+        _array->emplace(index, std::forward<Args>(args)...);
     }
 
     void insert(size_type index, T&& e)

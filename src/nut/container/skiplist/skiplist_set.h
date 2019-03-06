@@ -310,6 +310,46 @@ public:
     /**
      * @return true if new data inserted, else nothing happened
      */
+    template <typename ...Args>
+    bool emplace(Args&& ...args)
+    {
+        if (nullptr == _head)
+        {
+            assert(_level < 0 && _size == 0);
+            Node *n = (Node*) ::malloc(sizeof(Node));
+            new (n) Node(std::forward<Args>(args)...);
+            _head = (Node**) ::malloc(sizeof(Node*) * 1);
+            _level = 0;
+            _head[0] = n;
+            n->set_level(0);
+            n->set_next(0, nullptr);
+            _size = 1;
+            return true;
+        }
+        assert(_level >= 0);
+
+        // Search
+        T k(std::forward<Args>(args)...);
+        Node **pre_lv = (Node **) ::malloc(sizeof(Node*) * (_level + 1));
+        Node *n = algo_type::search_node(k, *this, pre_lv);
+        if (nullptr != n)
+        {
+            ::free(pre_lv);
+            return false;
+        }
+
+        // Insert
+        n = (Node*) ::malloc(sizeof(Node));
+        new (n) Node(std::move(k));
+        algo_type::insert_node(n, *this, pre_lv);
+        ::free(pre_lv);
+        ++_size;
+        return true;
+    }
+
+    /**
+     * @return true if new data inserted, else nothing happened
+     */
     bool add(T&& k)
     {
         if (nullptr == _head)

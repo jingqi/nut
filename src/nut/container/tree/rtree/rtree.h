@@ -60,22 +60,23 @@ private:
      * 节点基类
      */
     class TreeNode;
+    
     class Node
     {
     public:
         explicit Node(bool tn)
-            : tree_node(tn)
+            : _tree_node(tn)
         {}
 
         Node(bool tn, const area_type& rt)
-            : area(rt), tree_node(tn) 
+            : area(rt), _tree_node(tn) 
         {}
 
         virtual ~Node() = default;
 
         bool is_tree_node() const
         {
-            return tree_node;
+            return _tree_node;
         }
 
     public:
@@ -83,7 +84,7 @@ private:
         TreeNode *parent = nullptr;
 
     private:
-        bool tree_node = true; // 是树节点还是数据节点
+        bool _tree_node = true; // 是树节点还是数据节点
     };
 
     /**
@@ -186,8 +187,16 @@ private:
     class DataNode : public Node
     {
     public:
+        explicit DataNode(data_type&& v)
+            : Node(false), data(std::forward<data_type>(v))
+        {}
+
         explicit DataNode(const data_type& v)
             : Node(false), data(v)
+        {}
+
+        DataNode(const area_type& rt, data_type&& v)
+            : Node(false, rt), data(std::forward<data_type>(v))
         {}
 
         DataNode(const area_type& rt, const data_type& v)
@@ -210,16 +219,6 @@ public:
         _height = 1;
     }
 
-    RTree(const RTree& x)
-    {
-        _root = (TreeNode*) ::malloc(sizeof(TreeNode));
-        assert(nullptr != _root);
-        new (_root) TreeNode();
-        _height = 1;
-
-        *this = x;
-    }
-
     RTree(RTree&& x)
     {
         _root = x._root;
@@ -231,6 +230,16 @@ public:
         x._size = 0;
     }
 
+    RTree(const RTree& x)
+    {
+        _root = (TreeNode*) ::malloc(sizeof(TreeNode));
+        assert(nullptr != _root);
+        new (_root) TreeNode();
+        _height = 1;
+
+        *this = x;
+    }
+
     ~RTree()
     {
         clear();
@@ -240,6 +249,30 @@ public:
             ::free(_root);
             _root = nullptr;
         }
+    }
+
+    RTree& operator=(RTree&& x)
+    {
+        if (this == &x)
+            return *this;
+
+        clear();
+        if (nullptr != _root)
+        {
+            _root->~TreeNode();
+            ::free(_root);
+            _root = nullptr;
+        }
+
+        _root = x._root;
+        _height = x._height;
+        _size = x._size;
+        
+        x._root = nullptr; // NOTE 该对象已经不能执行任何有效操作，只能等待析构了
+        x._height = 0;
+        x._size = 0;
+
+        return *this;
     }
 
     RTree& operator=(const RTree& x)
@@ -298,28 +331,16 @@ public:
         return *this;
     }
 
-    RTree& operator=(RTree&& x)
+    /**
+     * 插入数据
+     */
+    void insert(const area_type& rect, data_type&& data)
     {
-        if (this == &x)
-            return *this;
-
-        clear();
-        if (nullptr != _root)
-        {
-            _root->~TreeNode();
-            ::free(_root);
-            _root = nullptr;
-        }
-
-        _root = x._root;
-        _height = x._height;
-        _size = x._size;
-        
-        x._root = nullptr; // NOTE 该对象已经不能执行任何有效操作，只能等待析构了
-        x._height = 0;
-        x._size = 0;
-
-        return *this;
+        DataNode *data_node = (DataNode*) ::malloc(sizeof(DataNode));
+        assert(nullptr != data_node);
+        new (data_node) DataNode(rect, std::forward<data_type>(data));
+        insert(data_node, _height);
+        ++_size;
     }
 
     /**
