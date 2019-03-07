@@ -40,21 +40,21 @@ public:
 
     void clear();
 
-    void list_keys(std::vector<std::string> *rs) const;
-    bool has_key(const char *key) const;
-    bool remove_key(const char *key);
+    std::vector<std::string> list_keys() const;
+    bool has_key(const std::string& key) const;
+    bool remove_key(const std::string& key);
 
-    const char* get_string(const char *key, const char *default_value = "") const;
-    bool get_bool(const char *key, bool default_value = false) const;
-    long get_num(const char *key, long default_value = 0) const;
-    double get_decimal(const char *key, double default_value = 0.0) const;
-    void get_list(const char *key, std::vector<std::string> *rs, char split_char = ',') const;
+    const char* get_string(const std::string& key, const char *default_value = "") const;
+    bool get_bool(const std::string& key, bool default_value = false) const;
+    long get_int(const std::string& key, long default_value = 0) const;
+    double get_decimal(const std::string& key, double default_value = 0.0) const;
+    std::vector<std::string> get_list(const std::string& key, char split_char = ',') const;
 
-    void set_string(const char *key, const char *value);
-    void set_bool(const char *key, bool value);
-    void set_num(const char *key, long value);
-    void set_decimal(const char *key, double value);
-    void set_list(const char *key, const std::vector<std::string>& values, char split_char = ',');
+    void set_string(const std::string& key, const std::string& value);
+    void set_bool(const std::string& key, bool value);
+    void set_int(const std::string& key, long value);
+    void set_decimal(const std::string& key, double value);
+    void set_list(const std::string& key, const std::vector<std::string>& values, char split_char = ',');
 
 private:
     /**

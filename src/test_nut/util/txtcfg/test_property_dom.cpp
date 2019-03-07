@@ -2,7 +2,7 @@
 #include <nut/unittest/unittest.h>
 
 #include <nut/util/txtcfg/property_dom.h>
-#include <nut/util/txtcfg/txt_file.h>
+#include <nut/util/txtcfg/text_file.h>
 
 using namespace std;
 using namespace nut;
@@ -12,7 +12,7 @@ class TestPropertyDom : public TestFixture
     virtual void register_cases() override
     {
         NUT_REGISTER_CASE(test_read_string);
-        NUT_REGISTER_CASE(test_read_num);
+        NUT_REGISTER_CASE(test_read_int);
         NUT_REGISTER_CASE(test_read_list);
     }
 
@@ -42,16 +42,15 @@ class TestPropertyDom : public TestFixture
         NUT_TA(pf->get_string("read String3") == string("ab c"));
     }
 
-    void test_read_num()
+    void test_read_int()
     {
-        NUT_TA(pf->get_num("readNum1") == 123);
-        NUT_TA(pf->get_num("readNum2") == 123);
+        NUT_TA(pf->get_int("readNum1") == 123);
+        NUT_TA(pf->get_int("readNum2") == 123);
     }
 
     void test_read_list()
     {
-        vector<string> vec;
-        pf->get_list("readList1", &vec);
+        vector<string> vec = pf->get_list("readList1");
         NUT_TA(vec.size() == 3);
         NUT_TA(vec[0] == "a");
         NUT_TA(vec[1] == "b");

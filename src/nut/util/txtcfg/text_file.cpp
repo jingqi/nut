@@ -4,14 +4,15 @@
 
 #include <nut/platform/path.h>
 
-#include "txt_file.h"
+#include "text_file.h"
+
 
 namespace nut
 {
 
-bool TxtFile::read_file(const char *path, std::string *rs)
+bool TextFile::read_file(const std::string& path, std::string *rs)
 {
-    assert(nullptr != path && nullptr != rs);
+    assert(nullptr != rs);
     if (!Path::exists(path))
         return false;
 
@@ -37,7 +38,7 @@ bool TxtFile::read_file(const char *path, std::string *rs)
     return true;
 }
 
-bool TxtFile::write_file(const char *path, const std::string& content)
+bool TextFile::write_file(const std::string& path, const std::string& content)
 {
     std::ofstream ofs(path);
     ofs << content;

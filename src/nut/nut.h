@@ -116,7 +116,7 @@
 #include "util/string/kmp.h"
 #include "util/string/to_string.h"
 #include "util/string/string_utils.h"
-#include "util/txtcfg/txt_file.h"
+#include "util/txtcfg/text_file.h"
 #include "util/txtcfg/property_dom.h"
 #include "util/txtcfg/ini_dom.h"
 #include "util/txtcfg/xml/element_handler.h"

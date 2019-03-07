@@ -20,9 +20,9 @@ void XmlWriter::set_output_stream(std::ostream *os)
     _os = os;
 }
 
-void XmlWriter::start_element(const char *name)
+void XmlWriter::start_element(const std::string& name)
 {
-    assert(nullptr != name && '\0' != name[0]);
+    assert(!name.empty());
 
     if (!_elem_path.empty())
     {
@@ -50,15 +50,15 @@ void XmlWriter::end_element()
     else
     {
         write("</");
-        write(state.name.c_str(), (int) state.name.length());
+        write(state.name.c_str(), state.name.length());
         write(">");
     }
     _elem_path.pop_back();
 }
 
-void XmlWriter::write_attribute(const char *name, const char *value)
+void XmlWriter::write_attribute(const std::string& name, const std::string& value)
 {
-    assert(nullptr != name && '\0' != name[0] && nullptr != value);
+    assert(!name.empty());
     if (_elem_path.empty())
         return;
     if (_elem_path.at(_elem_path.size() - 1).has_child)
@@ -67,13 +67,12 @@ void XmlWriter::write_attribute(const char *name, const char *value)
     write(" ");
     write(name);
     write("=\"");
-    write_encode(value);
+    write_encode(value.c_str(), value.length());
     write("\"");
 }
 
-void XmlWriter::write_text(const char *text)
+void XmlWriter::write_text(const std::string& text)
 {
-    assert(nullptr != text);
     if (!_elem_path.empty())
     {
         ElemState& parent_state = _elem_path[_elem_path.size() - 1];
@@ -82,12 +81,11 @@ void XmlWriter::write_text(const char *text)
         parent_state.has_child = true;
     }
 
-    write_encode(text);
+    write_encode(text.c_str(), text.length());
 }
 
-void XmlWriter::write_comment(const char *comment)
+void XmlWriter::write_comment(const std::string& comment)
 {
-    assert(nullptr != comment);
     if (!_elem_path.empty())
     {
         ElemState& parent_state = _elem_path[_elem_path.size() - 1];
@@ -101,7 +99,7 @@ void XmlWriter::write_comment(const char *comment)
     write("-->");
 }
 
-void XmlWriter::write(const char *s, int len)
+void XmlWriter::write(const char *s, ssize_t len)
 {
     if (nullptr == _os)
         return;
@@ -109,13 +107,18 @@ void XmlWriter::write(const char *s, int len)
         return;
     if (len < 0)
         *_os << s;
-    for (int i = 0; i < len && '\0' != s[i]; ++i)
+    for (ssize_t i = 0; i < len && '\0' != s[i]; ++i)
         *_os << s[i];
 }
 
-void XmlWriter::write_encode(const char *s, int len)
+void XmlWriter::write(const std::string& s)
 {
-    for (int i = 0; (len < 0 || i < len) && '\0' != s[i]; ++i)
+    *_os << s;
+}
+
+void XmlWriter::write_encode(const char *s, ssize_t len)
+{
+    for (ssize_t i = 0; (len < 0 || i < len) && '\0' != s[i]; ++i)
     {
         switch (s[i])
         {

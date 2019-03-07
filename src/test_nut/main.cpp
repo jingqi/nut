@@ -75,75 +75,81 @@ int main(int argc, char *argv[])
 
     ConsoleTestLogger l;
     TestRunner runner(&l);
-    if (argc <= 1)
+    bool has_run = false, quiet = false;
+    for (int i = 1; i < argc; ++i)
+    {
+        const char *arg = argv[i];
+        if (0 == ::strcmp(arg, "-h"))
+        {
+            print_help();
+        }
+        else if (0 == ::strcmp(arg, "-g"))
+        {
+            if (i + 1 < argc)
+            {
+                runner.run_group(argv[i + 1]);
+                has_run = true;
+            }
+            else
+            {
+                std::cerr << "need group name!" << std::endl;
+                print_help();
+            }
+            i += 1;
+        }
+        else if (0 == ::strcmp(arg, "-f"))
+        {
+            if (i + 1 < argc)
+            {
+                runner.run_fixture(argv[i + 1]);
+                has_run = true;
+            }
+            else
+            {
+                std::cerr << "need fixture name!" << std::endl;
+                print_help();
+            }
+            i += 1;
+        }
+        else if (0 == ::strcmp(arg, "-c"))
+        {
+            if (i + 2 < argc)
+            {
+                runner.run_case(argv[i + 1], argv[i + 2]);
+                has_run = true;
+            }
+            else
+            {
+                std::cerr << "need fixture name of case, and case name!" <<
+                    std::endl;
+                print_help();
+            }
+            i += 2;
+        }
+        else if (0 == ::strcmp(arg, "-q"))
+        {
+            quiet = true;
+        }
+        else
+        {
+            std::cerr << "unknown option: " << arg << std::endl;
+            print_help();
+            return -1;
+        }
+    }
+
+    if (!has_run)
     {
         // default action
         runner.run_group("quiet");
         // runner.run_fixture("TestConcurrentHashMap");
         // runner.run_case("TestConcurrentHashMap", "test_multi_thread");
     }
-    else
-    {
-        for (int i = 1; i < argc; ++i)
-        {
-            const char *arg = argv[i];
-            if (0 == ::strcmp(arg, "-h"))
-            {
-                print_help();
-            }
-            else if (0 == ::strcmp(arg, "-g"))
-            {
-                if (i + 1 < argc)
-                {
-                    runner.run_group(argv[i + 1]);
-                }
-                else
-                {
-                    std::cerr << "need group name!" << std::endl;
-                    print_help();
-                }
-                i += 1;
-            }
-            else if (0 == ::strcmp(arg, "-f"))
-            {
-                if (i + 1 < argc)
-                {
-                    runner.run_fixture(argv[i + 1]);
-                }
-                else
-                {
-                    std::cerr << "need fixture name!" << std::endl;
-                    print_help();
-                }
-                i += 1;
-            }
-            else if (0 == ::strcmp(arg, "-c"))
-            {
-                if (i + 2 < argc)
-                {
-                    runner.run_case(argv[i + 1], argv[i + 2]);
-                }
-                else
-                {
-                    std::cerr << "need fixture name of case, and case name!" <<
-                        std::endl;
-                    print_help();
-                }
-                i += 2;
-            }
-            else
-            {
-                std::cerr << "unknown option: " << arg << std::endl;
-                print_help();
-                return -1;
-            }
-        }
-    }
 
     HPRecord::clear();
 
 #if NUT_PLATFORM_OS_WINDOWS
-    if (ConsoleUtil::isatty())
+    if (!quiet && ConsoleUtil::isatty())
     {
         printf("press any key to continue...");
         getch();

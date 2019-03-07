@@ -293,6 +293,9 @@ std::string Path::abs_path(const char *path)
                     result += buf;
                     ::free(buf);
                 }
+#elif NUT_PLATFORM_OS_WINDOWS
+                // Windows c:\Users\xxx
+                result += ::getenv("USERPROFILE");
 #else
                 // MacOS /Users/xxx
                 // Linux /home/xxx
@@ -395,6 +398,8 @@ std::wstring Path::abs_path(const wchar_t *path)
                     result += buf;
                     ::free(buf);
                 }
+#elif NUT_PLATFORM_OS_WINDOWS
+                result += ascii_to_wstr(::getenv("USERPROFILE"));
 #else
                 // MacOS /Users/xxx
                 // Linux /home/xxx

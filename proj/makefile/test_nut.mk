@@ -3,7 +3,7 @@
 TARGET_NAME = test_nut
 SRC_ROOT = ../../src/${TARGET_NAME}
 
-# preface rules
+# Preface rules
 include preface_rules.mk
 
 # Includes
@@ -12,7 +12,8 @@ CPPFLAGS += -I${SRC_ROOT}/..
 # Defines
 CPPFLAGS +=
 
-# C++ standard
+# C/C++ standard
+CFLAGS += -std=c11
 CXXFLAGS += -std=c++11
 
 # Libraries
@@ -42,6 +43,6 @@ rebuild:
 ${LIB_NUT}: FORCE
 	${MAKE} -f nut.mk
 
-# rules
+# Rules
 include common_rules.mk
 include app_rules.mk

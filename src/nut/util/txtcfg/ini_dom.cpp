@@ -7,6 +7,7 @@
 #include "ini_dom.h"
 #include "../string/string_utils.h"
 
+
 #if NUT_PLATFORM_CC_VC
 #   pragma warning(push)
 #   pragma warning(disable: 4996)
@@ -121,13 +122,13 @@ void IniDom::parse(const std::string& s, const char *line_comment_chars, const c
 {
     assert(nullptr != line_comment_chars && nullptr != space_chars);
 
-    _global_lines.clear();
+    _anonymous_lines.clear();
     _sectors.clear();
     _dirty = true;
     if (s.empty())
         return;
 
-    std::vector<rc_ptr<Line> > *current_lines = &_global_lines;
+    std::vector<rc_ptr<Line> > *current_lines = &_anonymous_lines;
     size_t start = 0;
     while (std::string::npos != start)
     {
@@ -170,17 +171,17 @@ std::string IniDom::serielize(const char *le) const
 
     // 全局数据
     std::string ret;
-    for (size_t i = 0, sz = _global_lines.size(); i < sz; ++i)
+    for (size_t i = 0, sz = _anonymous_lines.size(); i < sz; ++i)
     {
         if (0 != i)
             ret += le;
-        ret += _global_lines.at(i)->serielize();
+        ret += _anonymous_lines.at(i)->serielize();
     }
 
     // 各个块
     for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
     {
-        if (0 != i || !_global_lines.empty())
+        if (0 != i || !_anonymous_lines.empty())
             ret += le;
         ret += _sectors.at(i)->serielize(le);
     }
@@ -199,23 +200,23 @@ void IniDom::set_dirty(bool dirty)
 
 void IniDom::clear()
 {
-    _global_lines.clear();
+    _anonymous_lines.clear();
     _sectors.clear();
     _dirty = true;
 }
 
-void IniDom::list_sectors(std::vector<std::string> *rs) const
+std::vector<std::string> IniDom::list_sectors() const
 {
-    assert(nullptr != rs);
+    std::vector<std::string> ret;
     for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
-        rs->push_back(_sectors.at(i)->_name);
+        ret.push_back(_sectors.at(i)->_name);
+    return ret;
 }
 
-bool IniDom::has_sector(const char *sector) const
+bool IniDom::has_sector(const std::string& sector) const
 {
-    if (nullptr == sector)
-        return true;
-
+    if (sector.empty())
+        return true; // anonymous
     for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
     {
         if (_sectors.at(i)->_name == sector)
@@ -224,10 +225,10 @@ bool IniDom::has_sector(const char *sector) const
     return false;
 }
 
-bool IniDom::remove_sector(const char *sector)
+bool IniDom::remove_sector(const std::string& sector)
 {
-    if (nullptr == sector)
-        return false;
+    if (sector.empty())
+        return false; // anonymous
 
     for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
     {
@@ -241,19 +242,19 @@ bool IniDom::remove_sector(const char *sector)
     return false;
 }
 
-void IniDom::list_keys(const char *sector, std::vector<std::string> *rs) const
+std::vector<std::string> IniDom::list_keys(const std::string& sector) const
 {
-    assert(nullptr != rs);
-    if (nullptr == sector)
+    std::vector<std::string> ret;
+    if (sector.empty()) // anonymous
     {
-        for (size_t i = 0, sz = _global_lines.size(); i < sz; ++i)
+        for (size_t i = 0, sz = _anonymous_lines.size(); i < sz; ++i)
         {
-            const rc_ptr<Line>& line = _global_lines.at(i);
+            const rc_ptr<Line>& line = _anonymous_lines.at(i);
             if (!line->_equal_sign)
                 continue;
-            rs->push_back(line->_key);
+            ret.push_back(line->_key);
         }
-        return;
+        return ret;
     }
 
     for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
@@ -266,20 +267,20 @@ void IniDom::list_keys(const char *sector, std::vector<std::string> *rs) const
                 const rc_ptr<Line>& line = lines.at(j);
                 if (!line->_equal_sign)
                     continue;
-                rs->push_back(line->_key);
+                ret.push_back(line->_key);
             }
-            return;
+            return ret;
         }
     }
+    return ret;
 }
 
-bool IniDom::has_key(const char *sector, const char *key) const
+bool IniDom::has_key(const std::string& sector, const std::string& key) const
 {
-    assert(nullptr != key);
-    const std::vector<rc_ptr<Line> > *lines = nullptr;
-    if (nullptr == sector)
+    const std::vector<rc_ptr<Line>> *lines = nullptr;
+    if (sector.empty())
     {
-        lines = &_global_lines;
+        lines = &_anonymous_lines;
     }
     else
     {
@@ -305,13 +306,12 @@ bool IniDom::has_key(const char *sector, const char *key) const
     return false;
 }
 
-bool IniDom::remove_key(const char *sector, const char *key)
+bool IniDom::remove_key(const std::string& sector, const std::string& key)
 {
-    assert(nullptr != key);
     std::vector<rc_ptr<Line> > *lines = nullptr;
-    if (nullptr == sector)
+    if (sector.empty())
     {
-        lines = &_global_lines;
+        lines = &_anonymous_lines;
     }
     else
     {
@@ -339,13 +339,12 @@ bool IniDom::remove_key(const char *sector, const char *key)
     return false;
 }
 
-const char* IniDom::get_string(const char *sector, const char *key, const char *default_value) const
+const char* IniDom::get_string(const std::string& sector, const std::string& key, const char *default_value) const
 {
-    assert(nullptr != key);
     const std::vector<rc_ptr<Line> > *lines = nullptr;
-    if (nullptr == sector)
+    if (sector.empty())
     {
-        lines = &_global_lines;
+        lines = &_anonymous_lines;
     }
     else
     {
@@ -369,9 +368,8 @@ const char* IniDom::get_string(const char *sector, const char *key, const char *
     return default_value;
 }
 
-bool IniDom::get_bool(const char *sector, const char *key, bool default_value) const
+bool IniDom::get_bool(const std::string& sector, const std::string& key, bool default_value) const
 {
-    assert(nullptr != key);
     const char *s = get_string(sector, key);
     if (0 == ::strcmp(s, "0") || 0 == stricmp(s, "false") || 0 == stricmp(s, "no"))
         return false;
@@ -380,9 +378,8 @@ bool IniDom::get_bool(const char *sector, const char *key, bool default_value) c
     return default_value;
 }
 
-long IniDom::get_num(const char *sector, const char *key, long default_value) const
+long IniDom::get_int(const std::string& sector, const std::string& key, long default_value) const
 {
-    assert(nullptr != key);
     const char *s = get_string(sector, key);
     if (nullptr == s || '\0' == s[0])
         return default_value;
@@ -390,9 +387,8 @@ long IniDom::get_num(const char *sector, const char *key, long default_value) co
     return atol(s);
 }
 
-double IniDom::get_decimal(const char *sector, const char *key, double default_value) const
+double IniDom::get_decimal(const std::string& sector, const std::string& key, double default_value) const
 {
-    assert(nullptr != key);
     const char *s = get_string(sector, key);
     if (nullptr == s || '\0' == s[0])
         return default_value;
@@ -400,30 +396,30 @@ double IniDom::get_decimal(const char *sector, const char *key, double default_v
     return atof(s);
 }
 
-void IniDom::get_list(const char *sector, const char *key, std::vector<std::string> *rs, char split_char) const
+std::vector<std::string> IniDom::get_list(const std::string& sector, const std::string& key, char split_char) const
 {
-    assert(nullptr != key && nullptr != rs);
+    std::vector<std::string> ret;
     std::string s = get_string(sector, key);
     if (s.length() == 0)
-        return;
+        return ret;
 
     std::string::size_type begin = 0, end = s.find_first_of(split_char);
     while (end != std::string::npos)
     {
-        rs->push_back(s.substr(begin, end - begin));
+        ret.push_back(s.substr(begin, end - begin));
         begin = end + 1;
         end = s.find_first_of(split_char, begin);
     }
-    rs->push_back(s.substr(begin));
+    ret.push_back(s.substr(begin));
+    return ret;
 }
 
-void IniDom::set_string(const char *sector, const char *key, const char *value)
+void IniDom::set_string(const std::string& sector, const std::string& key, const std::string& value)
 {
-    assert(nullptr != key && nullptr != value);
-    std::vector<rc_ptr<Line> > *lines = nullptr;
-    if (nullptr == sector)
+    std::vector<rc_ptr<Line>> *lines = nullptr;
+    if (sector.empty())
     {
-        lines = &_global_lines;
+        lines = &_anonymous_lines;
     }
     else
     {
@@ -461,15 +457,13 @@ void IniDom::set_string(const char *sector, const char *key, const char *value)
     _dirty = true;
 }
 
-void IniDom::set_bool(const char *sector, const char *key, bool value)
+void IniDom::set_bool(const std::string& sector, const std::string& key, bool value)
 {
-    assert(nullptr != key);
     set_string(sector, key, (value ? "true" : "false"));
 }
 
-void IniDom::set_num(const char *sector, const char *key, long value)
+void IniDom::set_int(const std::string& sector, const std::string& key, long value)
 {
-    assert(nullptr != key);
     const int BUF_LEN = 30;
     char buf[BUF_LEN];
 #if NUT_PLATFORM_OS_WINDOWS
@@ -480,18 +474,17 @@ void IniDom::set_num(const char *sector, const char *key, long value)
     set_string(sector, key, buf);
 }
 
-void IniDom::set_decimal(const char *sector, const char *key, double value)
+void IniDom::set_decimal(const std::string& sector, const std::string& key, double value)
 {
-    assert(nullptr != key);
     const int BUF_LEN = 30;
     char buf[BUF_LEN];
     safe_snprintf(buf, BUF_LEN, "%lf", value);
     set_string(sector, key, buf);
 }
 
-void IniDom::set_list(const char *sector, const char *key, const std::vector<std::string>& values, char split_char)
+void IniDom::set_list(const std::string& sector, const std::string& key,
+                      const std::vector<std::string>& values, char split_char)
 {
-    assert(nullptr != key);
     std::string s;
     if (values.size() > 0)
         s = values.at(0);

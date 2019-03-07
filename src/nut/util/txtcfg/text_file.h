@@ -10,14 +10,14 @@
 namespace nut
 {
 
-class NUT_API TxtFile
+class NUT_API TextFile
 {
 public:
-    static bool read_file(const char *path, std::string *rs);
-    static bool write_file(const char *path, const std::string& content);
+    static bool read_file(const std::string& path, std::string *rs);
+    static bool write_file(const std::string& path, const std::string& content);
 
 private:
-    TxtFile() = delete;
+    TextFile() = delete;
 };
 
 }

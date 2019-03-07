@@ -74,7 +74,7 @@ if platform.system() == 'Windows':
     ns.set_recipe(libstdcpp_path, file_op.copyfile)
 
 def run(target):
-    p = Popen([program], cwd=dirname(program))
+    p = Popen([program, '-q'], cwd=dirname(program))
     p.wait()
 ns.set_recipe('@run', run)
 ns.add_dep('@run', program)

@@ -21,22 +21,27 @@ public:
     std::ostream* get_output_stream() const;
     void set_output_stream(std::ostream *os);
 
-    void start_element(const char *name);
+    void start_element(const std::string& name);
     void end_element();
 
-    void write_attribute(const char *name, const char *value);
-    void write_text(const char *text);
-    void write_comment(const char *comment);
+    void write_attribute(const std::string& name, const std::string& value);
+    void write_text(const std::string& text);
+    void write_comment(const std::string& comment);
 
 private:
-    void write(const char *s, int len = -1);
-    void write_encode(const char *s, int len = -1);
+    void write(const char *s, ssize_t len = -1);
+    void write(const std::string& s);
+    void write_encode(const char *s, ssize_t len = -1);
 
 private:
     class ElemState
     {
     public:
-        explicit ElemState(const char *n)
+        explicit ElemState(std::string&& n)
+            : name(std::forward<std::string>(n))
+        {}
+
+        explicit ElemState(const std::string& n)
             : name(n)
         {}
 

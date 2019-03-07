@@ -29,7 +29,7 @@ else
 	LDFLAGS += -lstdc++
 endif
 
-# phony target used to mark force executing
+# Phony target used to mark force executing
 .PHONY: FORCE
 
 ## *.c -> *.o
@@ -48,7 +48,7 @@ ${OBJ_ROOT}/%.o: ${SRC_ROOT}/%.c
 ${OBJ_ROOT}/%.o: ${SRC_ROOT}/%.cpp
 	${make-cxx-obj}
 
-## automatically make dependence rules
+## Automatically make dependence rules
 define make-c-dep =
 	@${RM} $@
 	@# 向 *.d.$ 中写入 "xx/xx/*.d xx/xx/*.o:\" 这样一个字符串

@@ -34,6 +34,7 @@ if platform.system() == 'Linux':
     ns.append_env_flags('LDFLAGS', '-lpthread', '-ldl', '-latomic')
 
 if platform.system() != 'Windows':
+    ns.append_env_flags('CFLAGS', '-fPIC')
     ns.append_env_flags('CXXFLAGS', '-fPIC')
 
 ## Dependencies

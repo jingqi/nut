@@ -8,7 +8,7 @@ ifeq (${HOST},Darwin)
 	LDFLAGS += -Wl,-rpath,@executable_path/../Frameworks
 endif
 
-## phony targets
+## Phony targets
 .PHONY: run gdb cgdb nemiver valgrind
 
 run: ${TARGET}

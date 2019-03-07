@@ -1,6 +1,6 @@
 ﻿
 #include <assert.h>
-#include <stdlib.h>     // for atoi() and so on
+#include <stdlib.h>     // for atol() and so on
 #include <stdio.h>      // for sprintf()
 #include <string.h>     // for memset()
 
@@ -205,21 +205,21 @@ void PropertyDom::clear()
     _dirty = true;
 }
 
-void PropertyDom::list_keys(std::vector<std::string> *rs) const
+std::vector<std::string> PropertyDom::list_keys() const
 {
-    assert(nullptr != rs);
+    std::vector<std::string> ret;
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
         const rc_ptr<Line>& line = _lines.at(i);
         if (!line->_equal_sign)
             continue;
-        rs->push_back(line->_key);
+        ret.push_back(line->_key);
     }
+    return ret;
 }
 
-bool PropertyDom::has_key(const char *key) const
+bool PropertyDom::has_key(const std::string& key) const
 {
-    assert(nullptr != key);
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
         if (_lines.at(i)->_key == key)
@@ -228,9 +228,8 @@ bool PropertyDom::has_key(const char *key) const
     return false;
 }
 
-bool PropertyDom::remove_key(const char *key)
+bool PropertyDom::remove_key(const std::string& key)
 {
-    assert(nullptr != key);
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
         if (_lines.at(i)->_key == key)
@@ -243,9 +242,8 @@ bool PropertyDom::remove_key(const char *key)
     return false;
 }
 
-const char* PropertyDom::get_string(const char *key, const char *default_value) const
+const char* PropertyDom::get_string(const std::string& key, const char *default_value) const
 {
-    assert(nullptr != key);
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
         if (_lines.at(i)->_key == key)
@@ -254,9 +252,8 @@ const char* PropertyDom::get_string(const char *key, const char *default_value) 
     return default_value;
 }
 
-bool PropertyDom::get_bool(const char *key, bool default_value) const
+bool PropertyDom::get_bool(const std::string& key, bool default_value) const
 {
-    assert(nullptr != key);
     const char *s = get_string(key);
     if (0 == ::strcmp(s, "0") || 0 == stricmp(s, "false") || 0 == stricmp(s, "no"))
         return false;
@@ -265,19 +262,17 @@ bool PropertyDom::get_bool(const char *key, bool default_value) const
     return default_value;
 }
 
-long PropertyDom::get_num(const char *key, long default_value) const
+long PropertyDom::get_int(const std::string& key, long default_value) const
 {
-    assert(nullptr != key);
     const char *s = get_string(key);
     if (nullptr == s || '\0' == s[0])
         return default_value;
 
-    return atol(s);
+    return ::atol(s);
 }
 
-double PropertyDom::get_decimal(const char *key, double default_value) const
+double PropertyDom::get_decimal(const std::string& key, double default_value) const
 {
-    assert(nullptr != key);
     const char *s = get_string(key);
     if (nullptr == s || '\0' == s[0])
         return default_value;
@@ -285,26 +280,26 @@ double PropertyDom::get_decimal(const char *key, double default_value) const
     return atof(s);
 }
 
-void PropertyDom::get_list(const char *key, std::vector<std::string> *rs, char split_char) const
+std::vector<std::string> PropertyDom::get_list(const std::string& key, char split_char) const
 {
-    assert(nullptr != key && nullptr != rs);
+    std::vector<std::string> ret;
     std::string s = get_string(key);
     if (s.empty())
-        return;
+        return ret;
 
     std::string::size_type begin = 0, end = s.find_first_of(split_char);
     while (std::string::npos != end)
     {
-        rs->push_back(s.substr(begin, end - begin));
+        ret.push_back(s.substr(begin, end - begin));
         begin = end + 1;
         end = s.find_first_of(split_char, begin);
     }
-    rs->push_back(s.substr(begin));
+    ret.push_back(s.substr(begin));
+    return ret;
 }
 
-void PropertyDom::set_string(const char *key, const char *value)
+void PropertyDom::set_string(const std::string& key, const std::string& value)
 {
-    assert(nullptr != key && nullptr != value);
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
         if (_lines.at(i)->_key == key)
@@ -324,15 +319,13 @@ void PropertyDom::set_string(const char *key, const char *value)
     _dirty = true;   // tag the need of saving
 }
 
-void PropertyDom::set_bool(const char *key, bool value)
+void PropertyDom::set_bool(const std::string& key, bool value)
 {
-    assert(nullptr != key);
     set_string(key, (value ? "true" : "false"));
 }
 
-void PropertyDom::set_num(const char *key, long value)
+void PropertyDom::set_int(const std::string& key, long value)
 {
-    assert(nullptr != key);
     const int BUF_LEN = 30;
     char buf[BUF_LEN];
 #if NUT_PLATFORM_OS_WINDOWS
@@ -343,18 +336,16 @@ void PropertyDom::set_num(const char *key, long value)
     set_string(key, buf);
 }
 
-void PropertyDom::set_decimal(const char *key, double value)
+void PropertyDom::set_decimal(const std::string& key, double value)
 {
-    assert(nullptr != key);
     const int BUF_LEN = 30;
     char buf[BUF_LEN];
     safe_snprintf(buf, BUF_LEN, "%lf", value);
     set_string(key, buf);
 }
 
-void PropertyDom::set_list(const char *key, const std::vector<std::string>& values, char split_char)
+void PropertyDom::set_list(const std::string& key, const std::vector<std::string>& values, char split_char)
 {
-    assert(nullptr != key);
     std::string s;
     if (values.size() > 0)
         s = values.at(0);

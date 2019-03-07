@@ -5,7 +5,7 @@
 
 ## 预定义变量和规则
 
-# built-in variables
+# Built-in variables
 DEBUG ?= 0
 
 MAKE ?= make
@@ -22,7 +22,7 @@ RAGEL ?= ragel
 
 RM ?= rm -f
 
-# predefined variables
+# Predefined variables
 HOST := $(shell uname -s)
 
 ifeq (${DEBUG}, 1)
@@ -41,7 +41,7 @@ else
 	endif
 endif
 
-# project things
+# Project things
 OUT_DIR_NAME := $(shell echo ${HOST} | tr '[:upper:]' '[:lower:]')-${DEBUG_MODE}
 OUT_DIR := ${CURDIR}/${OUT_DIR_NAME}
 OBJ_ROOT := ${OUT_DIR}/obj/${TARGET_NAME}
@@ -62,5 +62,5 @@ CXX_OBJS := $(patsubst ${SRC_ROOT}%.cpp,${OBJ_ROOT}%.o,${CXX_SRCS})
 OBJS := ${C_OBJS} ${CXX_OBJS}
 DEPS := ${OBJS:.o=.d}
 
-# mkdirs
+# Make dirs
 $(shell mkdir -p $(patsubst ${SRC_ROOT}%,${OBJ_ROOT}%,${DIRS}))
