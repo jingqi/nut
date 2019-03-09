@@ -14,6 +14,10 @@ namespace nut
 class NUT_API SHA1
 {
 public:
+    // 散列结果为 160 bits (20 bytes)
+    static const unsigned DIGEST_SIZE = 20;
+
+public:
     SHA1();
 
     void reset();
@@ -24,19 +28,27 @@ public:
     void digest();
 
     /**
-     * 返回20字节二进制散列结果
+     * 返回二进制散列结果
      */
-    const uint8_t* get_bytes_result(void *result = nullptr) const;
+    const uint8_t* get_result() const;
 
-    std::string get_string_result() const;
+    std::string get_hex_result() const;
 
 private:
     void transform512bits(const void *block);
 
 private:
+    // Length of bits, max (2**64 - 1) bits
+    uint64_t _bits_len = 0;
+
+    // Block, 512 bits
+    uint8_t _block[64];
+
+    // Digest state, 160 bits
     uint32_t _state[5];
-    uint8_t _buffer[64];
-    uint32_t _bytes_len = 0;
+
+    // Digest result, 160 bits
+    uint8_t _result[DIGEST_SIZE];
 };
 
 }

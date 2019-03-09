@@ -4,7 +4,7 @@ TEMPLATE = app
 
 include(../nut_common.pri)
 
-QT -= core gui
+QT -= qt
 CONFIG += console
 CONFIG -= app_bundle
 

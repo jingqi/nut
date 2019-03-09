@@ -701,11 +701,12 @@ NUT_API std::string utf8_to_ascii(const std::string& str)
     return utf8_to_ascii(str.c_str());
 }
 
-NUT_API char int_to_hex_char(int i)
+NUT_API char int_to_hex_char(int i, bool upper_case)
 {
-    const char *hex_chars = "0123456789ABCDEF";
-    if (0 <= i && i < 16)
-        return hex_chars[i];
+    if (0 <= i && i < 10)
+        return '0' + i;
+    else if (10 <= i && i < 16)
+        return (upper_case ? 'A' : 'a') + (i - 10);
     return '\0';
 }
 
@@ -809,8 +810,8 @@ NUT_API std::string url_encode(const char *s, ssize_t len)
         }
 
         result.push_back('%');
-        result.push_back(int_to_hex_char((c >> 4) & 0x0F));
-        result.push_back(int_to_hex_char(c & 0x0F));
+        result.push_back(int_to_hex_char((c >> 4) & 0x0f));
+        result.push_back(int_to_hex_char(c & 0x0f));
     }
     return result;
 }
@@ -838,7 +839,7 @@ NUT_API std::string url_decode(const char *s, ssize_t len)
     return result;
 }
 
-NUT_API std::string hex_encode(const void *data, size_t cb)
+NUT_API std::string hex_encode(const void *data, size_t cb, bool upper_case)
 {
     assert(nullptr != data);
 
@@ -846,8 +847,8 @@ NUT_API std::string hex_encode(const void *data, size_t cb)
     for (size_t i = 0; i < cb; ++i)
     {
         const uint8_t b = ((const uint8_t*) data)[i];
-        result.push_back(int_to_hex_char((b >> 4) & 0x0F));
-        result.push_back(int_to_hex_char(b & 0x0F));
+        result.push_back(int_to_hex_char((b >> 4) & 0x0f, upper_case));
+        result.push_back(int_to_hex_char(b & 0x0f, upper_case));
     }
     return result;
 }

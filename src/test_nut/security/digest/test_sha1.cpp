@@ -23,24 +23,24 @@ class TestSHA1 : public TestFixture
         digest.update(msg, ::strlen(msg));
         digest.digest();
 
-        if (digest.get_string_result() != rs)
+        if (digest.get_hex_result() != rs)
         {
             cerr << " SHA1: \"" << msg << "\" expect " << rs <<
-                " got " << digest.get_string_result() << endl;
+                " got " << digest.get_hex_result() << endl;
         }
-        NUT_TA(digest.get_string_result() == rs);
+        NUT_TA(digest.get_hex_result() == rs);
     }
 
     void test_smoking()
     {
-        check_sha1("", "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709");
-        check_sha1("a", "86F7E437FAA5A7FCE15D1DDCB9EAEAEA377667B8");
-        check_sha1("abc", "A9993E364706816ABA3E25717850C26C9CD0D89D");
-        check_sha1("abcd", "81FE8BFE87576C3ECB22426F8E57847382917ACF");
-        check_sha1("message digest", "C12252CEDA8BE8994D5FA0290A47231C1D16AAE3");
-        check_sha1("abcdefghijklmnopqrstuvwxyz", "32D10C7B8CF96570CA04CE37F2A19D84240D3A89");
-        check_sha1("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", "761C457BF73B14D27E9E9265C46F4B4DDA11F940");
-        check_sha1("12345678901234567890123456789012345678901234567890123456789012345678901234567890", "50ABF5706A150990A08B2C5EA40FA0E585554732");
+        check_sha1("", "da39a3ee5e6b4b0d3255bfef95601890afd80709");
+        check_sha1("a", "86f7e437faa5a7fce15d1ddcb9eaeaea377667b8");
+        check_sha1("abc", "a9993e364706816aba3e25717850c26c9cd0d89d");
+        check_sha1("abcd", "81fe8bfe87576c3ecb22426f8e57847382917acf");
+        check_sha1("message digest", "c12252ceda8be8994d5fa0290a47231c1d16aae3");
+        check_sha1("abcdefghijklmnopqrstuvwxyz", "32d10c7b8cf96570ca04ce37f2a19d84240d3a89");
+        check_sha1("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", "761c457bf73b14d27e9e9265c46f4b4dda11f940");
+        check_sha1("12345678901234567890123456789012345678901234567890123456789012345678901234567890", "50abf5706a150990a08b2c5ea40fa0e585554732");
     }
 };
 

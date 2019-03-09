@@ -5,7 +5,7 @@ VERSION = 1.1.0
 
 include(../nut_common.pri)
 
-QT -= core gui
+QT -= qt
 
 DEFINES += BUILDING_NUT
 

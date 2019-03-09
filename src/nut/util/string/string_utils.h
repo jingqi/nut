@@ -147,7 +147,7 @@ NUT_API std::string utf8_to_ascii(const std::string& str);
 /**
  * @return '\0' if invalid
  */
-NUT_API char int_to_hex_char(int i);
+NUT_API char int_to_hex_char(int i, bool upper_case = true);
 
 /**
  * @return -1 if invalid
@@ -169,7 +169,7 @@ NUT_API std::string url_decode(const char *s, ssize_t len);
 /**
  * 16进制编码转换，例如 "4FC012B" 等
  */
-NUT_API std::string hex_encode(const void *data, size_t cb);
+NUT_API std::string hex_encode(const void *data, size_t cb, bool upper_case = true);
 NUT_API Array<uint8_t> hex_decode(const char *s, ssize_t len);
 
 /**

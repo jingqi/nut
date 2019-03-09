@@ -16,8 +16,7 @@ public:
     class PublicKey
     {
     public:
-        BigInteger e;
-        BigInteger n;
+        BigInteger e, n;
     };
 
     class PrivateKey

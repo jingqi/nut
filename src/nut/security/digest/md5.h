@@ -14,6 +14,10 @@ namespace nut
 class NUT_API MD5
 {
 public:
+    // 散列结果为 128 bits (16 bytes)
+    static const unsigned DIGEST_SIZE = 16;
+
+public:
     MD5();
 
     void reset();
@@ -24,19 +28,27 @@ public:
     void digest();
 
     /**
-     * 返回16字节二进制散列结果
+     * 返回二进制散列结果
      */
-    const uint8_t* get_bytes_result(void *result = nullptr) const;
+    const uint8_t* get_result() const;
 
-    std::string get_string_result() const;
+    std::string get_hex_result() const;
 
 private:
     void transform512bits(const void *block);
 
 private:
-    uint32_t _state[4]; // State ABCD
-    uint8_t _buffer[64];
-    uint64_t _bytes_len = 0; // Length of bytes
+     // Length of bits
+    uint64_t _bits_len = 0;
+
+    // Block, 512 bits
+    uint8_t _block[64];
+
+    // Digest state ABCD, 128 bits
+    uint32_t _state[4];
+
+    // Digest result, 128 bits
+    uint8_t _result[DIGEST_SIZE];
 };
 
 }

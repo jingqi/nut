@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
     {
         // default action
         runner.run_group("quiet");
-        // runner.run_fixture("TestConcurrentHashMap");
+        // runner.run_fixture("TestSHA2_512");
         // runner.run_case("TestConcurrentHashMap", "test_multi_thread");
     }
 
