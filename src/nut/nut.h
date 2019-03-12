@@ -70,6 +70,8 @@
 #include "security/digest/adler32.h"
 #include "security/digest/md5.h"
 #include "security/digest/sha1.h"
+#include "security/digest/sha2_256.h"
+#include "security/digest/sha2_512.h"
 #include "security/encrypt/rsa.h"
 #include "security/encrypt/aes.h"
 #include "security/encrypt/aes_cbc_pkcs5.h"

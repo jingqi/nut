@@ -18,7 +18,7 @@ public:
 
     void reset();
 
-    void update(const void *buf, size_t len);
+    void update(const void *data, size_t len);
 
     uint32_t digest() const;
 
@@ -37,7 +37,7 @@ public:
 
     void initialize();
 
-    void update(const void *buf, size_t len);
+    void update(const void *data, size_t len);
 
     uint32_t get_result() const;
 

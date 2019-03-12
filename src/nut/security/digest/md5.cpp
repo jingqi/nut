@@ -70,7 +70,7 @@ MD5::MD5()
 
 void MD5::reset()
 {
-    _bits_len = 0;
+    _bit_len = 0;
 
     /* Load magic initialization constants */
     _state[0] = 0x67452301;
@@ -86,16 +86,16 @@ void MD5::update(uint8_t byte)
     update(&byte, 1);
 }
 
-void MD5::update(const void *buf, size_t cb)
+void MD5::update(const void *data, size_t cb)
 {
-    assert(nullptr != buf || 0 == cb);
+    assert(nullptr != data || 0 == cb);
 
     /* Calculate number of bytes mod 64 */
-    unsigned index = (_bits_len >> 3) & 0x3F;
+    unsigned index = (_bit_len >> 3) & 0x3f;
     const unsigned partlen = 64 - index;
 
     /* Update number of bits */
-    _bits_len += cb << 3;
+    _bit_len += cb << 3;
 
     /* Transform as many times as possible */
     size_t i = 0;
@@ -103,43 +103,44 @@ void MD5::update(const void *buf, size_t cb)
     {
         if (0 == index)
         {
-            transform512bits(buf);
+            transform512bits(data);
         }
         else
         {
-            ::memcpy(_block + index, buf, partlen);
-            transform512bits(_block);
+            ::memcpy(_buffer + index, data, partlen);
+            transform512bits(_buffer);
         }
 
         for (i = partlen; i + 64 <= cb; i += 64)
-            transform512bits(((const uint8_t*) buf) + i);
+            transform512bits(((const uint8_t*) data) + i);
 
         index = 0;
     }
 
     /* Buffer remaining input */
-    ::memcpy(_block + index, ((const uint8_t*) buf) + i, cb - i);
+    ::memcpy(_buffer + index, ((const uint8_t*) data) + i, cb - i);
 }
 
 void MD5::digest()
 {
-    /* Save bits length */
-    const uint64_t data_bits_len = htole64(_bits_len);
+    /* Pad out to 56 mod 64 */
+    unsigned index = (_bit_len >> 3) & 0x3f;
+    _buffer[index++] = 0x80;
+    if (index < 56)
+    {
+        ::memset(_buffer + index, 0, 56 - index);
+    }
+    else if (index > 56)
+    {
+        if (index < 64)
+            ::memset(_buffer + index, 0, 64 - index);
+        transform512bits(_buffer);
+        ::memset(_buffer, 0, 56);
+    }
 
-    /* Pad out to 56 mod 64. */
-    const unsigned index = (_bits_len >> 3) & 0x3f;
-    const unsigned pad_len = (index < 56) ? (56 - index) : (120 - index);
-    const uint8_t PADDING[64] = {
-        0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-    };
-    update(PADDING, pad_len);
-
-    /* Append bits length */
-    update(&data_bits_len, 8);
-    assert(0 == ((_bits_len >> 3) & 0x3f));
+    /* Append bit length */
+    *(uint64_t*)(_buffer + 56) = htole64(_bit_len);
+    transform512bits(_buffer);
 
     /* Collect result */
     for (int i = 0; i < 4; ++i)

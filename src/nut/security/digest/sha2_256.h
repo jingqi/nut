@@ -1,6 +1,6 @@
 ﻿
-#ifndef ___HEADFILE_EBEFB8BB_FC0F_4EDB_A849_F0B53C882C75_
-#define ___HEADFILE_EBEFB8BB_FC0F_4EDB_A849_F0B53C882C75_
+#ifndef ___HEADFILE_9F55FE91_EFA6_4098_A549_36E6DACA4126_
+#define ___HEADFILE_9F55FE91_EFA6_4098_A549_36E6DACA4126_
 
 #include <stdint.h>
 #include <string>
@@ -11,14 +11,14 @@
 namespace nut
 {
 
-class NUT_API SHA1
+class NUT_API SHA2_256
 {
 public:
-    // 散列结果为 160 bits (20 bytes)
-    static const unsigned DIGEST_SIZE = 20;
+    // 散列结果为 256 bits (32 bytes)
+    static const unsigned DIGEST_SIZE = 32;
 
 public:
-    SHA1();
+    SHA2_256();
 
     void reset();
 
@@ -44,10 +44,10 @@ private:
     // Block buffer, 512 bits
     uint8_t _buffer[64];
 
-    // Digest state, 160 bits
-    uint32_t _state[5];
+    // Digest state, 256 bits
+    uint32_t _state[8];
 
-    // Digest result, 160 bits
+    // Digest result, 256 bits
     uint8_t _result[DIGEST_SIZE];
 };
 

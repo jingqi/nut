@@ -71,10 +71,10 @@ SHA2_512::SHA2_512()
 void SHA2_512::reset()
 {
 #if NUT_HAS_INT128
-    _bits_len = 0;
+    _bit_len = 0;
 #else
-    _bits_len_low = 0;
-    _bits_len_high = 0;
+    _bit_len_low = 0;
+    _bit_len_high = 0;
 #endif
 
     _state[0] = 0x6a09e667f3bcc908ULL;
@@ -94,27 +94,27 @@ void SHA2_512::update(uint8_t byte)
     update(&byte, 1);
 }
 
-void SHA2_512::update(const void *buf, size_t cb)
+void SHA2_512::update(const void *data, size_t cb)
 {
-    assert(nullptr != buf || 0 == cb);
+    assert(nullptr != data || 0 == cb);
 
     /* Calculate number of bytes mod 128 */
 #if NUT_HAS_INT128
-    unsigned index = (_bits_len >> 3) & 0x7f;
+    unsigned index = (_bit_len >> 3) & 0x7f;
 #else
-    unsigned index = (_bits_len_low >> 3) & 0x7f;
+    unsigned index = (_bit_len_low >> 3) & 0x7f;
 #endif
     const unsigned partlen = 128 - index;  //partlen:同128相差的长度
 
     /* Update number of bits */
 #if NUT_HAS_INT128
-    _bits_len += cb << 3;
+    _bit_len += cb << 3;
 #else
-    _bits_len_low += cb << 3;
-    if (_bits_len_low < (cb << 3))
-        ++_bits_len_high; // NOTE '_bits_len_low' 溢出
+    _bit_len_low += cb << 3;
+    if (_bit_len_low < (cb << 3))
+        ++_bit_len_high; // NOTE '_bit_len_low' 溢出
 #   if SIZE_MAX >= 0x2000000000000000ULL // sizeof(size_t) * 8 > 61
-    _bits_len_high += cb >> 61;
+    _bit_len_high += cb >> 61;
 #   endif
 #endif
 
@@ -124,62 +124,54 @@ void SHA2_512::update(const void *buf, size_t cb)
     {
         if (0 == index)
         {
-            transform1024bits(buf);
+            transform1024bits(data);
         }
         else
         {
-            ::memcpy(_block + index, buf, partlen);
-            transform1024bits(_block);
+            ::memcpy(_buffer + index, data, partlen);
+            transform1024bits(_buffer);
         }
 
         for (i = partlen; i + 128 <= cb; i += 128)
-            transform1024bits(((const uint8_t*) buf) + i);
+            transform1024bits(((const uint8_t*) data) + i);
 
         index = 0;
     }
 
     /* Buffer remaining input */
-    ::memcpy(_block + index, ((const uint8_t*) buf) + i, cb - i);
+    ::memcpy(_buffer + index, ((const uint8_t*) data) + i, cb - i);
 }
 
 void SHA2_512::digest()
 {
-    /* Save bits length */
-    uint8_t data_bits_len[16];
+    /* Pad out to 112 mod 128 */
 #if NUT_HAS_INT128
-    ((uint64_t*) data_bits_len)[0] = htobe64((uint64_t) (_bits_len >> 64));
-    ((uint64_t*) data_bits_len)[1] = htobe64((uint64_t) _bits_len);
+    unsigned index = (_bit_len >> 3) & 0x7f;
 #else
-    ((uint64_t*) data_bits_len)[0] = htobe64(_bits_len_high);
-    ((uint64_t*) data_bits_len)[1] = htobe64(_bits_len_low);
+    unsigned index = (_bit_len_low >> 3) & 0x7f;
 #endif
+    _buffer[index++] = 0x80;
+    if (index < 112)
+    {
+        ::memset(_buffer + index, 0, 112 - index);
+    }
+    else if (index > 112)
+    {
+        if (index < 128)
+            ::memset(_buffer + index, 0, 128 - index);
+        transform1024bits(_buffer);
+        ::memset(_buffer, 0, 112);
+    }
 
-    /* Pad out to 112 mod 128. */
+    /* Append bit length */
 #if NUT_HAS_INT128
-    const unsigned index = (_bits_len >> 3) & 0x7f;
+    *(uint64_t*)(_buffer + 112) = htobe64((uint64_t) (_bit_len >> 64));
+    *(uint64_t*)(_buffer + 120) = htobe64((uint64_t) _bit_len);
 #else
-    const unsigned index = (_bits_len_low >> 3) & 0x7f;
+    *(uint64_t*)(_buffer + 112) = htobe64(_bit_len_high);
+    *(uint64_t*)(_buffer + 120) = htobe64(_bit_len_low);
 #endif
-    const unsigned pad_len = (index < 112) ? (112 - index) : (240 - index);
-    const uint8_t PADDING[128] = {
-        0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-    };
-    update(PADDING, pad_len);
-
-    /* Append bits length */
-    update(data_bits_len, 16);
-#if NUT_HAS_INT128
-    assert(0 == ((_bits_len >> 3) & 0x7f));
-#else
-    assert(0 == ((_bits_len_low >> 3) & 0x7f));
-#endif
+    transform1024bits(_buffer);
 
     /* Collect result */
     for (int i = 0; i < 8; ++i)
@@ -207,11 +199,8 @@ void SHA2_512::transform1024bits(const void *block)
     uint64_t W[80];
     for (int i = 0; i < 16; ++i)
         W[i] = bswap_uint64(((const uint64_t*) block)[i]);
-
     for (int i = 16; i < 80; ++i)
-    {
         W[i] = GAMMA1(W[i - 2]) + W[i - 7] + GAMMA0(W[i - 15]) + W[i - 16];
-    }
 
     uint64_t t0, t1;
     for (int i = 0; i < 80; i += 8)

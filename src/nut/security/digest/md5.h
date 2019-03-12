@@ -23,7 +23,7 @@ public:
     void reset();
 
     void update(uint8_t byte);
-    void update(const void *buf, size_t cb);
+    void update(const void *data, size_t cb);
 
     void digest();
 
@@ -39,10 +39,10 @@ private:
 
 private:
      // Length of bits
-    uint64_t _bits_len = 0;
+    uint64_t _bit_len = 0;
 
-    // Block, 512 bits
-    uint8_t _block[64];
+    // Block buffer, 512 bits
+    uint8_t _buffer[64];
 
     // Digest state ABCD, 128 bits
     uint32_t _state[4];

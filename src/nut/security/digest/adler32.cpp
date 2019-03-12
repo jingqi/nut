@@ -15,14 +15,14 @@ void Adler32::reset()
     _result = 1;
 }
 
-void Adler32::update(const void *buf, size_t len)
+void Adler32::update(const void *data, size_t len)
 {
-    assert(nullptr != buf || len <= 0);
+    assert(nullptr != data || len <= 0);
     uint16_t *a = reinterpret_cast<uint16_t*>(&_result);
     uint16_t *b = reinterpret_cast<uint16_t*>(&_result) + 1;
     for (size_t i = 0; i < len; ++i)
     {
-        const uint8_t d = static_cast<const uint8_t*>(buf)[i];
+        const uint8_t d = static_cast<const uint8_t*>(data)[i];
         *a = (((uint32_t) *a) + d) % MOD_ADLER;
         *b = (((uint32_t) *b) + *a) % MOD_ADLER;
     }
@@ -53,9 +53,9 @@ void RollingAdler32::initialize()
     _count = 0;
 }
 
-void RollingAdler32::update(const void *buf, size_t len)
+void RollingAdler32::update(const void *data, size_t len)
 {
-    assert(nullptr != buf || len <= 0);
+    assert(nullptr != data || len <= 0);
     uint16_t& a = reinterpret_cast<uint16_t*>(&_result)[0];
     uint16_t& b = reinterpret_cast<uint16_t*>(&_result)[1];
     for (size_t i = 0; i < len; ++i)
@@ -67,7 +67,7 @@ void RollingAdler32::update(const void *buf, size_t len)
             b = (b + dd * _window_size - 1) % MOD_ADLER;
         }
 
-        const uint8_t d = static_cast<const uint8_t*>(buf)[i];
+        const uint8_t d = static_cast<const uint8_t*>(data)[i];
         a = (((uint32_t) a) + d) % MOD_ADLER;
         b = (((uint32_t) b) + a) % MOD_ADLER;
 

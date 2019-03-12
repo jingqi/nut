@@ -24,7 +24,7 @@ public:
     void reset();
 
     void update(uint8_t byte);
-    void update(const void *buf, size_t cb);
+    void update(const void *data, size_t cb);
 
     void digest();
 
@@ -41,13 +41,13 @@ private:
 private:
     // Length of bits, max (2**128 - 1) bits
 #if NUT_HAS_INT128
-    uint128_t _bits_len = 0;
+    uint128_t _bit_len = 0;
 #else
-    uint64_t _bits_len_low = 0, _bits_len_high = 0;
+    uint64_t _bit_len_low = 0, _bit_len_high = 0;
 #endif
 
-    // Block, 1024 bits
-    uint8_t _block[128];
+    // Block buffer, 1024 bits
+    uint8_t _buffer[128];
 
     // Digest state, 512 bits
     uint64_t _state[8];
