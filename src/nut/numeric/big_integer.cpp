@@ -718,7 +718,7 @@ BigInteger BigInteger::rand_between(const BigInteger& a, const BigInteger& b)
     const bool a_is_bigger = (a > b);
     const BigInteger n = (a_is_bigger ? a - b : b - a);
     assert(n.is_positive());
-    
+
     std::random_device rd;
     std::mt19937_64 gen(rd());
     std::uniform_int_distribution<word_type> dist(0, ~(word_type)0);

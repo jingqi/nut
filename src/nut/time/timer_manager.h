@@ -70,11 +70,11 @@ private:
     static bool timer_greater_than(const Timer *t1, const Timer *t2);
 
 private:
-    timer_id_type volatile _next_id = 1;  // 用于生成不重复的 timer id
+    timer_id_type _next_id = 1;  // 用于生成不重复的 timer id
     std::vector<Timer*> _timers; // 小头堆
     std::mutex _lock;
     std::condition_variable _cond;
-    bool volatile _stopping = false; // 是否停止所有计时器
+    bool _stopping = false; // 是否停止所有计时器
 };
 
 }

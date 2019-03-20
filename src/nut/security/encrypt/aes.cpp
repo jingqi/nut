@@ -1,4 +1,6 @@
 ﻿
+#include <mutex> // for std::call_once()
+
 #include "aes.h"
 
 /**
@@ -32,79 +34,80 @@ static uint32_t RCON[10];
 #define __XTIME__(x) (((x) << 1) ^ (((x) & 0x80) ? 0x1B : 0x00))
 #define __MUL__(x,y) (((x) && (y)) ? pow[(log[x] + log[y]) % 255] : 0)
 
+static std::once_flag aes_gen_table_flag;
+
 static void aes_gen_tables()
 {
-    static bool volatile initialized = false;
-    if (initialized)
-        return;
-    initialized = true;
+    std::call_once(
+        aes_setup_once_flag
+        [=] {
+            int i;
+            uint8_t x, y;
+            uint8_t pow[256];
+            uint8_t log[256];
 
-    int i;
-    uint8_t x, y;
-    uint8_t pow[256];
-    uint8_t log[256];
+            /* Compute pow and log tables over GF(2^8) */
+            for (i = 0, x = 1; i < 256; ++i, x ^= __XTIME__( x ))
+            {
+                pow[i] = x;
+                log[x] = i;
+            }
 
-    /* Compute pow and log tables over GF(2^8) */
-    for (i = 0, x = 1; i < 256; ++i, x ^= __XTIME__( x ))
-    {
-        pow[i] = x;
-        log[x] = i;
-    }
+            /* Calculate the round constants */
+            for (i = 0, x = 1; i < 10; ++i, x = __XTIME__( x ))
+            {
+                RCON[i] = (uint32_t) x << 24;
+            }
 
-    /* Calculate the round constants */
-    for (i = 0, x = 1; i < 10; ++i, x = __XTIME__( x ))
-    {
-        RCON[i] = (uint32_t) x << 24;
-    }
+            /* Generate the forward and reverse S-boxes */
+            FSb[0x00] = 0x63;
+            RSb[0x63] = 0x00;
 
-    /* Generate the forward and reverse S-boxes */
-    FSb[0x00] = 0x63;
-    RSb[0x63] = 0x00;
+            for (i = 1; i < 256; ++i )
+            {
+                x = pow[255 - log[i]];
 
-    for (i = 1; i < 256; ++i )
-    {
-        x = pow[255 - log[i]];
+                y = x;  y = (y << 1) | (y >> 7);
+                x ^= y; y = (y << 1) | (y >> 7);
+                x ^= y; y = (y << 1) | (y >> 7);
+                x ^= y; y = (y << 1) | (y >> 7);
+                x ^= y ^ 0x63;
 
-        y = x;  y = (y << 1) | (y >> 7);
-        x ^= y; y = (y << 1) | (y >> 7);
-        x ^= y; y = (y << 1) | (y >> 7);
-        x ^= y; y = (y << 1) | (y >> 7);
-        x ^= y ^ 0x63;
+                FSb[i] = x;
+                RSb[x] = i;
+            }
 
-        FSb[i] = x;
-        RSb[x] = i;
-    }
+            /* Generate the forward and reverse tables */
+            for (i = 0; i < 256; ++i)
+            {
+                x = (uint8_t) FSb[i];
+                y = __XTIME__( x );
 
-    /* Generate the forward and reverse tables */
-    for (i = 0; i < 256; ++i)
-    {
-        x = (uint8_t) FSb[i];
-        y = __XTIME__( x );
+                FT0[i] = (uint32_t) (x ^ y) ^
+                    ((uint32_t) x << 8) ^
+                    ((uint32_t) x << 16) ^
+                    ((uint32_t) y << 24);
 
-        FT0[i] = (uint32_t) (x ^ y) ^
-            ((uint32_t) x << 8) ^
-            ((uint32_t) x << 16) ^
-            ((uint32_t) y << 24);
+                FT0[i] &= 0xFFFFFFFF;
 
-        FT0[i] &= 0xFFFFFFFF;
+                FT1[i] = __ROTR8__(FT0[i]);
+                FT2[i] = __ROTR8__(FT1[i]);
+                FT3[i] = __ROTR8__(FT2[i]);
 
-        FT1[i] = __ROTR8__(FT0[i]);
-        FT2[i] = __ROTR8__(FT1[i]);
-        FT3[i] = __ROTR8__(FT2[i]);
+                y = (uint8_t) RSb[i];
 
-        y = (uint8_t) RSb[i];
+                RT0[i] = ((uint32_t) __MUL__(0x0B, y)      ) ^
+                         ((uint32_t) __MUL__(0x0D, y) <<  8) ^
+                         ((uint32_t) __MUL__(0x09, y) << 16) ^
+                         ((uint32_t) __MUL__(0x0E, y) << 24);
 
-        RT0[i] = ((uint32_t) __MUL__(0x0B, y)      ) ^
-                 ((uint32_t) __MUL__(0x0D, y) <<  8) ^
-                 ((uint32_t) __MUL__(0x09, y) << 16) ^
-                 ((uint32_t) __MUL__(0x0E, y) << 24);
+                RT0[i] &= 0xFFFFFFFF;
 
-        RT0[i] &= 0xFFFFFFFF;
-
-        RT1[i] = __ROTR8__(RT0[i]);
-        RT2[i] = __ROTR8__(RT1[i]);
-        RT3[i] = __ROTR8__(RT2[i]);
-    }
+                RT1[i] = __ROTR8__(RT0[i]);
+                RT2[i] = __ROTR8__(RT1[i]);
+                RT3[i] = __ROTR8__(RT2[i]);
+            }
+        });
 }
 
 #undef __ROTR8__
@@ -373,23 +376,24 @@ static uint32_t KT1[256];
 static uint32_t KT2[256];
 static uint32_t KT3[256];
 
+static std::once_flag aes_setup_once_flag;
+
 /**
  * Setup decryption round keys
  */
 static void aes_setup_decryption_round_keys()
 {
-    static bool volatile initialized = false;
-    if (initialized)
-        return;
-    initialized = true;
-
-    for (int i = 0; i < 256; ++i)
-    {
-        KT0[i] = RT0[FSb[i]];
-        KT1[i] = RT1[FSb[i]];
-        KT2[i] = RT2[FSb[i]];
-        KT3[i] = RT3[FSb[i]];
-    }
+    std::call_once(
+        aes_setup_once_flag,
+        [=] {
+            for (int i = 0; i < 256; ++i)
+            {
+                KT0[i] = RT0[FSb[i]];
+                KT1[i] = RT1[FSb[i]];
+                KT2[i] = RT2[FSb[i]];
+                KT3[i] = RT3[FSb[i]];
+            }
+        });
 }
 
 AES::AES()
@@ -397,6 +401,7 @@ AES::AES()
 #if FIXED_TABLES
     aes_gen_tables();
 #endif
+
     aes_setup_decryption_round_keys();
 }
 
