@@ -7,7 +7,7 @@
 using namespace nut;
 using namespace std;
 
-#if NUT_PLATFORM_OS_LINUX
+#if NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
 
 class TestBacktrace : public TestFixture
 {
@@ -18,9 +18,7 @@ class TestBacktrace : public TestFixture
 
     void test_smoking()
     {
-        string s;
-        Backtrace::backtrace(&s);
-        cout << endl << s << endl;
+        Backtrace::print_stack();
     }
 };
 

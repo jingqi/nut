@@ -17,7 +17,7 @@
 #include "debugging/exception.h"
 #include "debugging/destroy_checker.h"
 #include "debugging/source_location.h"
-#include "debugging/addr_map_mgr.h"
+#include "debugging/proc_addr_maps.h"
 #include "debugging/backtrace.h"
 
 // mem

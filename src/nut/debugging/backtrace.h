@@ -4,7 +4,7 @@
 
 #include <nut/platform/platform.h>
 
-#if NUT_PLATFORM_OS_LINUX
+#if NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
 
 #include <string>
 
@@ -24,10 +24,14 @@ class NUT_API Backtrace
 {
 public:
     /**
-     * @return >=0， 调用栈层数
-     *         <0， 出错
+     * 获取调用栈
      */
-    static int backtrace(std::string *appended);
+    static std::string backtrace(unsigned skip_top_frames = 0);
+
+    /**
+     * 快捷打印调用栈
+     */
+    static void print_stack();
 
 private:
     Backtrace() = delete;
