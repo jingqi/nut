@@ -1,30 +1,138 @@
 ﻿
-#include <nut/platform/platform.h>
-
-#if NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
-
 #include <assert.h>
-#include <execinfo.h> // for backtrace() and backtrace_symbols()
-#include <stdlib.h> // for free()
-#include <limits.h> // for PATH_MAX
+#include <stdlib.h> // for malloc(), free()
 #include <iostream>
 
+#include <nut/platform/platform.h>
+
+#if NUT_PLATFORM_OS_WINDOWS
+#   include <windows.h>
+#   include <process.h>
+#   include <dbghelp.h>
+#else
+#   include <execinfo.h> // for backtrace() and backtrace_symbols()
+#   include <limits.h> // for PATH_MAX
+#endif
+
 #include <nut/util/string/string_utils.h>
+#include <nut/util/string/to_string.h>
 
 #include "backtrace.h"
 #include "proc_addr_maps.h"
 
 
-// 是否使用 AddrMapManager 获取更详细的信息
-#define NUT_BACKTRACE_USE_ADDR_MAP (NUT_PLATFORM_OS_LINUX && 1)
+// linux 下是否使用 ProcAddrMaps、addr2line 获取更详细的信息
+#define USE_ADDR2LINE 1
+
+// windows 下使用 dbghelp (需要额外连接 Dbghelp.lib) 解析符号
+#define USE_DBGHELP 1
 
 // 最大回溯栈层数
 #define MAX_BACKTRACE 256
 
+#if USE_DBGHELP && NUT_PLATFORM_CC_VC
+#   pragma comment(lib, "Dbghelp.lib")
+#endif
+
 namespace nut
 {
 
-#if NUT_BACKTRACE_USE_ADDR_MAP
+namespace
+{
+
+unsigned dec_width(int n)
+{
+    int count = 0;
+    while (n > 0)
+    {
+        n /= 10;
+        ++count;
+    }
+    return 0 == count ? 1 : count;
+}
+
+std::string fmt_seq(int v, unsigned width)
+{
+    const std::string num = llong_to_str(v);
+    std::string prepand;
+    while (prepand.length() + num.length() < width)
+        prepand.push_back(' ');
+    return prepand + num + " ";
+}
+
+}
+
+#if NUT_PLATFORM_OS_WINDOWS
+
+std::string Backtrace::backtrace(unsigned skip_top_frames)
+{
+    // Get calling stack
+    void *trace[MAX_BACKTRACE];
+    const USHORT trace_count = ::CaptureStackBackTrace(
+        skip_top_frames, MAX_BACKTRACE, trace, nullptr);
+
+    std::string ret;
+#if USE_DBGHELP
+    // Load symbols
+    const HANDLE process = ::GetCurrentProcess();
+    ::SymInitialize(process, nullptr, TRUE);
+    ::SymSetOptions(SYMOPT_LOAD_LINES);
+
+    const int MAX_FUNC_NAME_LENGTH = 1024;
+    SYMBOL_INFO *symbol = (SYMBOL_INFO*) ::malloc(
+        sizeof(SYMBOL_INFO) + sizeof(TCHAR) * (MAX_FUNC_NAME_LENGTH - 1));
+    symbol->MaxNameLen = MAX_FUNC_NAME_LENGTH;
+    symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+
+    IMAGEHLP_LINE64 line;
+    line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
+
+    const unsigned width = dec_width(trace_count - 1);
+    for (USHORT i = 0; i < trace_count; ++i)
+    {
+        if (!ret.empty())
+            ret.push_back('\n');
+        ret += fmt_seq(i, width);
+
+        const DWORD64 address = (DWORD64) trace[i];
+        if (!::SymFromAddr(process, address, nullptr, symbol))
+        {
+            ret += format("[0x%p]", trace[i]);
+            continue;
+        }
+
+        DWORD displacement = 0;
+        if (!::SymGetLineFromAddr64(process, address, &displacement, &line))
+        {
+            ret += format("[0x%p] %s", trace[i], symbol->Name);
+            continue;
+        }
+
+        ret += " file \"";
+        ret += line.FileName;
+        ret += "\", line ";
+        ret += llong_to_str(line.LineNumber);
+        ret += ", in ";
+        ret += symbol->Name;
+    }
+
+    ::free(symbol);
+    ::SymCleanup(process);
+#else
+    const unsigned width = dec_width(trace_count - 1);
+    for (USHORT i = 0; i < trace_count; ++i)
+    {
+        if (!ret.empty())
+            ret.push_back('\n');
+        ret += fmt_seq(i, width);
+        ret += format("[0x%p]", trace[i]);
+    }
+#endif
+
+    return ret;
+}
+
+#elif NUT_PLATFORM_OS_LINUX && USE_ADDR2LINE
 
 namespace
 {
@@ -34,13 +142,7 @@ namespace
  */
 std::string make_addr2line_cmd(ProcAddrMaps::addr_type addr, const std::string& module_path)
 {
-    char buf[50] = {0};
-    safe_snprintf(buf, 50, "0x%X", addr);
-    std::string cmd = "addr2line ";
-    cmd += buf;
-    cmd += " -C -f -e ";
-    cmd += module_path;
-    return cmd;
+    return format("addr2line 0x%X -C -f -e %s", addr, module_path.c_str());
 }
 
 /*
@@ -50,11 +152,8 @@ std::string call_addr2line(const std::string& cmd)
 {
     std::string ret;
     FILE* fp = ::popen(cmd.c_str(), "r");
-    if (!fp)
-    {
-        ::perror("popen");
+    if (nullptr == fp)
         return ret;
-    }
 
     /*
      * 正常 addr2line 输出格式:
@@ -110,6 +209,10 @@ std::string call_addr2line(const std::string& cmd)
     }
 
     ::pclose(fp);
+
+    if ((func.empty() || func == "??") && (file.empty() || file == "??") &&
+        (line.empty() || line == "0"))
+        return ret;
 
     ret += "file \"";
     ret += file;
@@ -181,13 +284,18 @@ std::string Backtrace::backtrace(unsigned skip_top_frames)
     if (nullptr == trace_strs)
         return ret;
 
-    // 从1开始，不返回本函数的信息
+    const unsigned width = dec_width(trace_count - skip_top_frames - 1);
     for (int i = skip_top_frames; i < trace_count; i++)
     {
-        std::string module_path;
-        ProcAddrMaps::addr_type func_addr;
+        if (!ret.empty())
+            ret.push_back('\n');
+        ret += fmt_seq(i - skip_top_frames, width);
+
         if (nullptr == trace_strs[i])
             continue;
+
+        std::string module_path;
+        ProcAddrMaps::addr_type func_addr;
         parse_backtrace_symbol(trace_strs[i], &module_path, &func_addr);
 
         std::string cmd;
@@ -219,13 +327,11 @@ std::string Backtrace::backtrace(unsigned skip_top_frames)
         }
 
         // 调用 addr2line
-        if (!ret.empty())
-            ret.push_back('\n');
-        const std::string rs = call_addr2line(cmd);
-        if (rs == "file \"??\", line 0, in ??")
+        const std::string line = call_addr2line(cmd);
+        if (line.empty())
             ret += trace_strs[i];
         else
-            ret += call_addr2line(cmd);
+            ret += line;
     }
 
     ::free(trace_strs); // 必须调用
@@ -244,10 +350,27 @@ std::string Backtrace::backtrace(unsigned skip_top_frames)
     char **trace_strs = ::backtrace_symbols(trace, trace_count);
     if (nullptr == trace_strs) // error
         return ret;
+
+    const unsigned width = dec_width(trace_count - skip_top_frames - 1);
     for (int i = skip_top_frames; i < trace_count; ++i)
     {
-        ret += trace_strs[i];
-        ret.push_back('\n');
+        if (!ret.empty())
+            ret.push_back('\n');
+        ret += fmt_seq(i - skip_top_frames, width);
+
+        const char *tr = trace_strs[i];
+        if (nullptr == tr)
+            continue;
+
+#if NUT_PLATFORM_OS_MAC
+        // NOTE MacOS 系统上会自己在前面加上栈层号，需要换成我们自己的
+        size_t pos = 0;
+        while (' ' == tr[pos] || ('0' <= tr[pos] && tr[pos] <= '9'))
+            ++pos;
+        ret += tr + pos;
+#else
+        ret += tr;
+#endif
     }
     ::free(trace_strs);
     return ret;
@@ -261,5 +384,3 @@ void Backtrace::print_stack()
 }
 
 }
-
-#endif

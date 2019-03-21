@@ -37,6 +37,9 @@ if platform.system() != 'Windows':
     ns.append_env_flags('CFLAGS', '-fPIC')
     ns.append_env_flags('CXXFLAGS', '-fPIC')
 
+if platform.system() == 'Windows':
+    ns.append_env_flags('LDFLAGS', '-lDbghelp')
+
 ## Dependencies
 so = join(out_root, 'libnut' + ns['SHARED_LIB_SUFFIX'])
 ns.set_default_target(so)

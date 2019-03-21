@@ -4,10 +4,9 @@
 #include <nut/debugging/backtrace.h>
 #include <iostream>
 
+
 using namespace nut;
 using namespace std;
-
-#if NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
 
 class TestBacktrace : public TestFixture
 {
@@ -23,5 +22,3 @@ class TestBacktrace : public TestFixture
 };
 
 NUT_REGISTER_FIXTURE(TestBacktrace, "debugging")
-
-#endif

@@ -2,10 +2,6 @@
 #ifndef ___HEADFILE_B3E81AC9_35E7_4ADF_A586_39A6E77844E7_
 #define ___HEADFILE_B3E81AC9_35E7_4ADF_A586_39A6E77844E7_
 
-#include <nut/platform/platform.h>
-
-#if NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
-
 #include <string>
 
 #include "../nut_config.h"
@@ -38,7 +34,5 @@ private:
 };
 
 }
-
-#endif
 
 #endif

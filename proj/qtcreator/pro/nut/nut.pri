@@ -18,3 +18,6 @@ HEADERS += $$files($${SRC_ROOT}/*.h*, true)
 
 # 源代码
 SOURCES += $$files($${SRC_ROOT}/*.c*, true)
+
+# 链接库
+win32: LIBS += -lDbghelp
