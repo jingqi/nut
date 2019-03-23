@@ -24,7 +24,9 @@ class TestTimeWheel : public TestFixture
     virtual void register_cases() override
     {
         NUT_REGISTER_CASE(test_smoke);
+        NUT_REGISTER_CASE(test_cross_wheel);
         NUT_REGISTER_CASE(test_time_func);
+        NUT_REGISTER_CASE(test_bug1);
     }
 
     TimeWheel tw;
@@ -32,12 +34,21 @@ class TestTimeWheel : public TestFixture
 
     long count = 0;
 
+    virtual void set_up() final override
+    {
+        id = nullptr;
+        count = 0;
+    }
+
+    virtual void tear_down() final override
+    {
+        tw.clear();
+    }
+
     void show(TimeWheel::timer_id_type id, uint64_t expires)
     {
         cout << "-- " << this->count << " +" << expires << "ms" << endl << flush;
 
-        if (this->count >= 20)
-            this->tw.cancel_timer(id);
         ++this->count;
     }
 
@@ -46,7 +57,39 @@ class TestTimeWheel : public TestFixture
         cout << endl;
 
         count = 0;
-        id = tw.add_timer(2550, 23, [=](TimeWheel::timer_id_type id, uint64_t expires) { show(id, expires); }); // 最小轮周期为 2560ms
+        id = tw.add_timer(
+            2550, 23,  // 最小轮周期为 2560ms
+            [=] (TimeWheel::timer_id_type id, uint64_t expires) {
+                show(id, expires);
+                if (this->count >= 20)
+                    this->tw.cancel_timer(id);
+            });
+
+        while (tw.size() > 0)
+        {
+            tw.tick();
+            // cout << "." << flush;
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(TimeWheel::TICK_GRANULARITY_MS));
+        }
+    }
+
+    void test_cross_wheel()
+    {
+        cout << endl;
+
+#define AT(t)                                                       \
+        tw.add_timer(                                               \
+            t, 0,                                                   \
+            [=] (TimeWheel::timer_id_type id, uint64_t expires) {   \
+                show(id, expires);                                  \
+            });
+
+        uint64_t t = 1;
+        AT(t); t += 2570; // 跨越一个 wheel
+        AT(t); t += 2570;
+        AT(t); t += 2570;
+        AT(t); t += 2570;
 
         while (tw.size() > 0)
         {
@@ -119,6 +162,30 @@ class TestTimeWheel : public TestFixture
             ::gettimeofday(&tv, nullptr);
         END("::gettimeofday()")
 #endif
+    }
+
+    void test_bug1()
+    {
+        // NOTE
+        // 由于 cancel_timer() 定位 timer 的 bug, 会导致 assert() 失败
+        //
+        TimeWheel::timer_id_type id1 = tw.add_timer(
+            2570, 0,
+            [=] (TimeWheel::timer_id_type id, uint64_t expires) {
+                cout << "should not run!!!!!" << endl;
+                NUT_TA(false);
+            });
+        tw.add_timer(
+            2540, 0,
+            [=] (TimeWheel::timer_id_type id, uint64_t expires) {
+                tw.cancel_timer(id1);
+            });
+
+        while (tw.size() > 0)
+        {
+            tw.tick();
+            std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        }
     }
 };
 

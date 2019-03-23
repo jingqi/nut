@@ -39,15 +39,32 @@
 namespace nut
 {
 
+TimeWheel::Timer::Timer(uint64_t when_ms_, uint64_t repeat_ms_, timer_task_type&& task_)
+    : valid_mask(VALID_MASK), when_ms(when_ms_), repeat_ms(repeat_ms_),
+      task(std::forward<timer_task_type>(task_))
+{}
+
+TimeWheel::Timer::Timer(uint64_t when_ms_, uint64_t repeat_ms_, const timer_task_type& task_)
+    : valid_mask(VALID_MASK), when_ms(when_ms_), repeat_ms(repeat_ms_),
+      task(task_)
+{}
+
+TimeWheel::Wheel::Wheel()
+{
+    ::memset(bucket_heads, 0, sizeof(Timer*) * BUCKETS_PER_WHEEL);
+    ::memset(bucket_tails, 0, sizeof(Timer*) * BUCKETS_PER_WHEEL);
+}
+
+TimeWheel::Timer::~Timer()
+{
+    assert(VALID_MASK == valid_mask);
+    valid_mask = 0;
+    prev = nullptr;
+    next = nullptr;
+}
+
 TimeWheel::TimeWheel()
 {
-    for (int i = 0; i < WHEEL_COUNT; ++i)
-    {
-        Wheel& w = _wheels[i];
-        for (int j = 0; j < BUCKETS_PER_WHERE; ++j)
-            w.buckets[j] = nullptr;
-    }
-
 #if NUT_PLATFORM_OS_WINDOWS
     ::QueryPerformanceFrequency(&_clock_freq);
     _first_clock.QuadPart = 0;
@@ -59,6 +76,41 @@ TimeWheel::TimeWheel()
 TimeWheel::~TimeWheel()
 {
     clear();
+
+    for (unsigned i = 0; i < _wheel_count; ++i)
+        (_wheels + i)->~Wheel();
+    _wheel_count = 0;
+}
+
+void TimeWheel::ensure_wheel(uint64_t future_tick)
+{
+    uint64_t tick = _last_tick;
+    unsigned need_wheel_count = 1;
+    while (future_tick > BUCKETS_PER_WHEEL)
+    {
+        future_tick += tick % BUCKETS_PER_WHEEL;
+        future_tick /= BUCKETS_PER_WHEEL;
+        assert(future_tick > 0);
+        tick /= BUCKETS_PER_WHEEL;
+        ++need_wheel_count;
+    }
+    assert(need_wheel_count <= MAX_WHEEL_COUNT);
+
+    if (_wheel_count >= need_wheel_count)
+        return;
+
+    for (unsigned i = _wheel_count; i < need_wheel_count; ++i)
+        new (_wheels + i) Wheel;
+    _wheel_count = need_wheel_count;
+}
+
+TimeWheel::Timer* TimeWheel::new_timer(uint64_t when_ms, uint64_t repeat_ms,
+                                       timer_task_type&& task)
+{
+    Timer *t = (Timer*) ::malloc(sizeof(Timer));
+    assert(nullptr != t);
+    new (t) Timer(when_ms, repeat_ms, std::forward<timer_task_type>(task));
+    return t;
 }
 
 TimeWheel::Timer* TimeWheel::new_timer(uint64_t when_ms, uint64_t repeat_ms,
@@ -66,12 +118,7 @@ TimeWheel::Timer* TimeWheel::new_timer(uint64_t when_ms, uint64_t repeat_ms,
 {
     Timer *t = (Timer*) ::malloc(sizeof(Timer));
     assert(nullptr != t);
-    new (t) Timer;
-    t->valid_mask = VALID_MASK;
-    t->when_ms = when_ms;
-    t->repeat_ms = repeat_ms;
-    t->task = task;
-    t->next = nullptr;
+    new (t) Timer(when_ms, repeat_ms, task);
     return t;
 }
 
@@ -79,63 +126,94 @@ void TimeWheel::delete_timer(Timer *t)
 {
     assert(nullptr != t);
     t->~Timer();
-    t->valid_mask = 0;
     ::free(t);
 }
 
 size_t TimeWheel::size() const
 {
-    assert(!_ticking);
     return _size;
 }
 
 void TimeWheel::clear()
 {
-    assert(!_ticking);
-
-    for (int i = 0; i < WHEEL_COUNT; ++i)
+    for (unsigned i = 0; i <_wheel_count; ++i)
     {
         Wheel& w = _wheels[i];
-        for (int j = 0; j < BUCKETS_PER_WHERE; ++j)
+        for (unsigned j = 0; j < BUCKETS_PER_WHEEL; ++j)
         {
-            Timer *t = w.buckets[j];
+            Timer *t = w.bucket_heads[j];
             while (nullptr != t)
             {
                 Timer *next = t->next;
                 delete_timer(t);
                 t = next;
             }
-            w.buckets[j] = nullptr;
+            w.bucket_heads[j] = nullptr;
+            w.bucket_tails[i] = nullptr;
         }
     }
     _size = 0;
+
+    _cancel_later.clear();
 }
 
-TimeWheel::timer_id_type TimeWheel::add_timer(Timer *t)
+void TimeWheel::add_timer(Timer *t)
 {
     assert(nullptr != t);
 
     const uint64_t when_tick = t->when_ms / TICK_GRANULARITY_MS;
-    uint64_t expires_tick = (when_tick > _last_tick ? when_tick - _last_tick : 1);
-    assert(expires_tick > 0); // Min expires tick is 1
-    for (int i = 0; i < WHEEL_COUNT; ++i)
+    uint64_t future_tick = (when_tick > _last_tick ? when_tick - _last_tick : 1);
+    assert(future_tick > 0); // 最近也需要放到下一个 tick
+    ensure_wheel(future_tick);
+
+    uint64_t tick = _last_tick;
+    for (unsigned i = 0; i < _wheel_count; ++i)
     {
         Wheel& w = _wheels[i];
+        const unsigned cursor = tick % BUCKETS_PER_WHEEL;
 
-        if (expires_tick <= BUCKETS_PER_WHERE)
+        if (future_tick <= BUCKETS_PER_WHEEL)
         {
-            const int bucket_index = (w.cursor + expires_tick) % BUCKETS_PER_WHERE;
-            t->next = w.buckets[bucket_index];
-            w.buckets[bucket_index] = t;
+            // 插入双链表尾部
+            const unsigned bucket_index = (cursor + future_tick) % BUCKETS_PER_WHEEL;
+            t->prev = w.bucket_tails[bucket_index];
+            t->next = nullptr;
+            if (nullptr == t->prev)
+            {
+                assert(nullptr == w.bucket_heads[bucket_index]);
+                w.bucket_heads[bucket_index] = t;
+            }
+            else
+            {
+                t->prev->next = t;
+            }
+            w.bucket_tails[bucket_index] = t;
             ++_size;
-            return t;
+            return;
         }
-        expires_tick += w.cursor;
-        expires_tick /= BUCKETS_PER_WHERE;
+        future_tick += cursor;
+        future_tick /= BUCKETS_PER_WHEEL;
+        assert(future_tick > 0);
+        tick /= BUCKETS_PER_WHEEL;
     }
+    assert(false);
+}
 
-    // Time out of range
-    return nullptr;
+TimeWheel::timer_id_type TimeWheel::add_timer(uint64_t interval, uint64_t repeat,
+                                              timer_task_type&& task)
+{
+    assert(task);
+
+    GET_CLOCK(now_clock);
+
+    if (CLOCK_IS_ZERO(_first_clock))
+        _first_clock = now_clock;
+
+    const uint64_t when_ms = CLOCK_DIFF_TO_MS(now_clock, _first_clock) + interval;
+    Timer *t = new_timer(when_ms, repeat, std::forward<timer_task_type>(task));
+    assert(nullptr != t);
+    add_timer(t);
+    return t;
 }
 
 TimeWheel::timer_id_type TimeWheel::add_timer(uint64_t interval, uint64_t repeat,
@@ -151,49 +229,81 @@ TimeWheel::timer_id_type TimeWheel::add_timer(uint64_t interval, uint64_t repeat
     const uint64_t when_ms = CLOCK_DIFF_TO_MS(now_clock, _first_clock) + interval;
     Timer *t = new_timer(when_ms, repeat, task);
     assert(nullptr != t);
-    timer_id_type rs = add_timer(t);
-    if (nullptr == rs)
-        delete_timer(t);
-    return rs;
+    add_timer(t);
+    return t;
 }
 
 bool TimeWheel::do_cancel_timer(Timer *t)
 {
-    assert(nullptr != t && !_ticking);
+    assert(nullptr != t && !_in_invoking_callback);
     if (VALID_MASK != t->valid_mask)
         return false;
 
+    if (nullptr != t->prev && nullptr != t->next)
+    {
+        // 非链表头部或者尾部，可直接从双链表删除
+        t->prev->next = t->next;
+        t->next->prev = t->prev;
+        delete_timer(t);
+        --_size;
+        return true;
+    }
+
     const uint64_t when_tick = t->when_ms / TICK_GRANULARITY_MS;
-    uint64_t expires_tick = (when_tick > _last_tick ? when_tick - _last_tick : 1);
-    assert(expires_tick > 0); // Min expires tick is 1
-    for (int i = 0; i < WHEEL_COUNT; ++i)
+    uint64_t future_tick = (when_tick > _last_tick ? when_tick - _last_tick : 1);
+    assert(future_tick > 0); // 最近也是下一个 tick
+    uint64_t tick = _last_tick;
+    for (unsigned i = 0; i < _wheel_count; ++i)
     {
         Wheel& w = _wheels[i];
+        const unsigned cursor = tick % BUCKETS_PER_WHEEL;
 
-        if (expires_tick <= BUCKETS_PER_WHERE)
+        if (future_tick <= BUCKETS_PER_WHEEL)
         {
-            const int bucket_index = (w.cursor + expires_tick) % BUCKETS_PER_WHERE;
-            Timer *prev = nullptr, *p = w.buckets[bucket_index];
-            while (nullptr != p)
+            // 在链表头部或者尾部
+            const unsigned bucket_index = (cursor + future_tick) % BUCKETS_PER_WHEEL;
+            if (t == w.bucket_heads[bucket_index])
             {
-                if (t == p)
+                // 从链表头部删除
+                assert(nullptr == t->prev);
+                w.bucket_heads[bucket_index] = t->next;
+                if (nullptr == t->next)
                 {
-                    if (nullptr == prev)
-                        w.buckets[bucket_index] = t->next;
-                    else
-                        prev->next = t->next;
-                    delete_timer(t);
-                    --_size;
-                    return true;
+                    assert(t == w.bucket_tails[bucket_index]);
+                    w.bucket_tails[bucket_index] = nullptr;
                 }
-                prev = p;
-                p = p->next;
+                else
+                {
+                    t->next->prev = nullptr;
+                }
+                delete_timer(t);
+                --_size;
+                return true;
             }
+            else if (t == w.bucket_tails[bucket_index])
+            {
+                // 从链表尾部删除
+                assert(nullptr == t->next);
+                w.bucket_tails[bucket_index] = t->prev;
+                if (nullptr == t->prev)
+                {
+                    assert(t == w.bucket_heads[bucket_index]);
+                    w.bucket_heads[bucket_index] = nullptr;
+                }
+                else
+                {
+                    t->prev->next = nullptr;
+                }
+                delete_timer(t);
+                --_size;
+                return true;
+            }
+            assert(cursor + future_tick >= BUCKETS_PER_WHEEL);
         }
-        expires_tick += w.cursor;
-        expires_tick /= BUCKETS_PER_WHERE;
-        if (0 == expires_tick)
-            break;
+        future_tick += cursor;
+        future_tick /= BUCKETS_PER_WHEEL;
+        assert(future_tick > 0);
+        tick /= BUCKETS_PER_WHEEL;
     }
     return false;
 }
@@ -205,34 +315,14 @@ void TimeWheel::cancel_timer(timer_id_type timer_id)
     Timer *t = (Timer*) timer_id;
     if (VALID_MASK != t->valid_mask)
         return;
-    if (_ticking)
-        _to_be_canceled.push_back(t);
+    if (_in_invoking_callback)
+        _cancel_later.insert(t);
     else
         do_cancel_timer(t);
 }
 
-bool TimeWheel::timer_less(const Timer *t1, const Timer *t2)
-{
-    assert(nullptr != t1 && nullptr != t2);
-    return t1->when_ms < t2->when_ms;
-}
-
-TimeWheel::Timer* TimeWheel::reverse_link(Timer *t)
-{
-    Timer *l = nullptr;
-    while (nullptr != t)
-    {
-        Timer *next = t->next;
-        t->next = l;
-        l = t;
-        t = next;
-    }
-    return l;
-}
-
 void TimeWheel::tick()
 {
-    assert(!_ticking);
     if (CLOCK_IS_ZERO(_first_clock) || 0 == _size)
         return;
 
@@ -244,43 +334,59 @@ void TimeWheel::tick()
     if (0 == elapse_tick)
         return;
 
-    _ticking = true;
+    uint64_t old_tick = _last_tick;
     _last_tick = now_tick;
 
-    // 找到所有需要操作的定时器
-    Timer *timers = nullptr; // 单链表
-    for (unsigned i = 0; i < WHEEL_COUNT; ++i)
+    // 找到所有需要处理的定时器
+    Timer *pickout_timers = nullptr; // 环状双链表
+    for (unsigned i = 0; i < _wheel_count; ++i)
     {
         Wheel& w = _wheels[i];
+        const unsigned old_cursor = old_tick % BUCKETS_PER_WHEEL;
 
-        for (unsigned j = 1; j <= BUCKETS_PER_WHERE && j <= elapse_tick; ++j)
+        for (unsigned j = 1; j <= BUCKETS_PER_WHEEL && j <= elapse_tick; ++j)
         {
-            const unsigned bucket_index = (w.cursor + j) % BUCKETS_PER_WHERE;
-            Timer *t = w.buckets[bucket_index];
-            while (nullptr != t)
+            const unsigned bucket_index = (old_cursor + j) % BUCKETS_PER_WHEEL;
+            if (nullptr == w.bucket_heads[bucket_index])
             {
-                Timer *next = t->next;
-                t->next = timers;
-                timers = t;
-                --_size;
-                t = next;
+                assert(nullptr == w.bucket_tails[bucket_index]);
+                continue;
             }
-            w.buckets[bucket_index] = nullptr;
+            assert(nullptr != w.bucket_tails[bucket_index]);
+
+            if (nullptr == pickout_timers)
+            {
+                pickout_timers = w.bucket_heads[bucket_index];
+                pickout_timers->prev = w.bucket_tails[bucket_index];
+                pickout_timers->prev->next = pickout_timers;
+            }
+            else
+            {
+                w.bucket_heads[bucket_index]->prev = pickout_timers->prev;
+                w.bucket_tails[bucket_index]->next = pickout_timers;
+                pickout_timers->prev->next = w.bucket_heads[bucket_index];
+                pickout_timers->prev = w.bucket_tails[bucket_index];
+            }
+            w.bucket_heads[bucket_index] = nullptr;
+            w.bucket_tails[bucket_index] = nullptr;
         }
 
-        w.cursor += elapse_tick;
-        if (w.cursor < BUCKETS_PER_WHERE)
+        const uint64_t new_cursor = old_cursor + elapse_tick; // NOTE 使用 uint64_t 避免溢出错误
+        if (new_cursor < BUCKETS_PER_WHEEL)
             break;
-        elapse_tick = w.cursor / BUCKETS_PER_WHERE;
-        w.cursor %= BUCKETS_PER_WHERE;
+        elapse_tick = new_cursor / BUCKETS_PER_WHEEL;
+        old_tick /= BUCKETS_PER_WHEEL;
     }
 
-    // NOTE 一次处理多个 tick 的情况下，为了性能考虑，仅保持的大致调用顺序，不做精确排序
-    timers = reverse_link(timers);
-
-    Timer *t = timers;
+    // 处置上面收集的定时器：切换时间轮、调用用户回调函数、重复设置定时器
+    std::vector<Timer*> callback_later;
+    Timer *t = pickout_timers;
+    if (nullptr != t)
+        t->prev->next = nullptr; // 解开环形，以便遍历
     while (nullptr != t)
     {
+        --_size;
+
         Timer *next = t->next;
         if (t->when_ms > now_ms)
         {
@@ -290,7 +396,7 @@ void TimeWheel::tick()
         else
         {
             // 调用定时器回调函数
-            t->task(t, now_ms - t->when_ms);
+            callback_later.push_back(t);
 
             // 对于周期性定时器，重新插入到时间轮中
             if (t->repeat_ms > 0)
@@ -298,20 +404,49 @@ void TimeWheel::tick()
                 t->when_ms += t->repeat_ms;
                 add_timer(t);
             }
-            else
-            {
-                delete_timer(t);
-            }
         }
         t = next;
     }
 
-    _ticking = false;
+    // 调用用户的回调函数
+    _in_invoking_callback = true;
+    for (size_t i = 0, sz = callback_later.size(); i < sz; ++i)
+    {
+        Timer *t = callback_later.at(i);
+        std::set<Timer*>::iterator iter = _cancel_later.find(t);
+        if (iter == _cancel_later.end())
+        {
+            // 定时器回调，用户在回调函数中可能会调用 cancel_timer()，从而导致
+            // '_cancel_later' 发生变化
+            if (t->repeat_ms > 0)
+            {
+                t->task(t, now_ms + t->repeat_ms - t->when_ms);
+            }
+            else
+            {
+                t->task(t, now_ms - t->when_ms);
+                delete_timer(t);
+            }
+        }
+        else
+        {
+            // - 重复定时器：等着 'cancel_later' 生效即可
+            // - 非重复定时器：去除 'cancel_later'，然后 delete 即可
+            if (t->repeat_ms <= 0)
+            {
+                _cancel_later.erase(iter);
+                delete_timer(t);
+            }
+        }
+    }
+    _in_invoking_callback = false;
 
-    // 删掉延迟删除的定时器
-    for (size_t i = 0, size = _to_be_canceled.size(); i < size; ++i)
-        do_cancel_timer(_to_be_canceled.at(i));
-    _to_be_canceled.clear();
+    for (std::set<Timer*>::const_iterator iter = _cancel_later.begin(),
+             end = _cancel_later.end(); iter != end; ++iter)
+    {
+        do_cancel_timer(*iter);
+    }
+    _cancel_later.clear();
 }
 
 }

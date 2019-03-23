@@ -79,6 +79,12 @@ def run(target):
 ns.set_recipe('@run', run)
 ns.add_dep('@run', program)
 
+def valgrind(target):
+    p = Popen(['valgrind', '-v', '--leak-check=full', program], cwd=dirname(program))
+    p.wait()
+ns.set_recipe('@valgrind', valgrind)
+ns.add_dep('@valgrind', program)
+
 # clean
 def clean(target):
     file_utils.remove_any(program, obj_root, header_root)
