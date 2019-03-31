@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <time.h>
 #include <set>
+#include <limits>
 #include <functional>
 
 #include <nut/platform/platform.h>
@@ -31,11 +32,11 @@ public:
     // 定时器 id 类型
     typedef void *timer_id_type;
     // 定时器任务类型
-    typedef std::function<void(timer_id_type,uint64_t)> timer_task_type;
+    typedef std::function<void(timer_id_type,int64_t)> timer_task_type;
 
     enum
     {
-        TICK_GRANULARITY_MS = 10, // 每个 tick 粒度，单位: 毫秒
+        RESOLUTION_MS = 5, // 每个 tick 粒度，单位: 毫秒
     };
 
 private:
@@ -94,6 +95,13 @@ public:
      */
     void cancel_timer(timer_id_type timer_id);
 
+    /**
+     * 获取从现在开始的可空闲时间，单位毫秒
+     *
+     * @return UINT64_MAX 表示无限等待
+     */
+    uint64_t get_idle() const;
+
     void tick();
 
 private:
@@ -110,6 +118,13 @@ private:
 
     void add_timer(Timer *t);
     bool do_cancel_timer(Timer *t);
+
+    /**
+     * 搜索最近的定时器
+     *
+     * @param future_tick 开始搜索的位置
+     */
+    uint64_t search_min_timer_tick(uint64_t future_tick = 0) const;
 
 private:
     // 时间轮
@@ -134,6 +149,9 @@ private:
     bool _in_invoking_callback = false;
     // 延迟取消列表，原因同上
     std::set<Timer*> _cancel_later;
+
+    // 最小 timer 对应的 tick (只会偏小，不会偏大)
+    uint64_t _min_timer_tick = UINT64_MAX;
 };
 
 }

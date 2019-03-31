@@ -13,28 +13,36 @@
 #define VALID_MASK 0x5011de5a
 
 #if NUT_PLATFORM_OS_WINDOWS
-#   define GET_CLOCK(name) \
-        LARGE_INTEGER name; \
+
+#   define GET_CLOCK(name)                          \
+        LARGE_INTEGER name;                         \
         ::QueryPerformanceCounter(&name)
 
 #   define CLOCK_IS_ZERO(c) (0 == (c).QuadPart)
 #   define CLOCK_TO_MS(c) ((c).QuadPart * 1000 / _clock_freq.QuadPart)
 #   define CLOCK_DIFF_TO_MS(a,b) (((a).QuadPart - (b).QuadPart) * 1000 / _clock_freq.QuadPart)
-#else
+
+#else /* NUT_PLATFORM_OS_WINDOWS */
+
 #   if NUT_PLATFORM_OS_LINUX
-#       define GET_CLOCK(name) \
-            struct timespec name; \
+
+#       define GET_CLOCK(name)                          \
+            struct timespec name;                       \
             ::clock_gettime(CLOCK_MONOTONIC_RAW, &name)
+
 #   else
-#       define GET_CLOCK(name) \
-            struct timespec name; \
+
+#       define GET_CLOCK(name)                          \
+            struct timespec name;                       \
             ::clock_gettime(CLOCK_MONOTONIC, &name)
+
 #   endif
 
 #   define CLOCK_IS_ZERO(c) (0 == (c).tv_sec && 0 == (c).tv_nsec)
 #   define CLOCK_TO_MS(c) ((c).tv_sec * 1000 + (c).tv_nsec / 1000000)
 #   define CLOCK_DIFF_TO_MS(a,b) (((a).tv_sec - (b).tv_sec) * 1000 + ((a).tv_nsec - (b).tv_nsec) / 1000000)
-#endif
+
+#endif /* NUT_PLATFORM_OS_WINDOWS */
 
 namespace nut
 {
@@ -84,14 +92,14 @@ TimeWheel::~TimeWheel()
 
 void TimeWheel::ensure_wheel(uint64_t future_tick)
 {
-    uint64_t tick = _last_tick;
+    uint64_t last_tick = _last_tick;
     unsigned need_wheel_count = 1;
     while (future_tick > BUCKETS_PER_WHEEL)
     {
-        future_tick += tick % BUCKETS_PER_WHEEL;
+        future_tick += last_tick % BUCKETS_PER_WHEEL;
         future_tick /= BUCKETS_PER_WHEEL;
         assert(future_tick > 0);
-        tick /= BUCKETS_PER_WHEEL;
+        last_tick /= BUCKETS_PER_WHEEL;
         ++need_wheel_count;
     }
     assert(need_wheel_count <= MAX_WHEEL_COUNT);
@@ -161,16 +169,19 @@ void TimeWheel::add_timer(Timer *t)
 {
     assert(nullptr != t);
 
-    const uint64_t when_tick = t->when_ms / TICK_GRANULARITY_MS;
-    uint64_t future_tick = (when_tick > _last_tick ? when_tick - _last_tick : 1);
-    assert(future_tick > 0); // 最近也需要放到下一个 tick
+    // Ensure capacity
+    const uint64_t when_tick = std::max<uint64_t>(
+        t->when_ms / RESOLUTION_MS, _last_tick + 1); // 最近也需要放到下一个 tick
+    uint64_t future_tick = when_tick - _last_tick;
+    assert(future_tick > 0);
     ensure_wheel(future_tick);
 
-    uint64_t tick = _last_tick;
+    // Insert timer into time-wheel
+    uint64_t last_tick = _last_tick;
     for (unsigned i = 0; i < _wheel_count; ++i)
     {
         Wheel& w = _wheels[i];
-        const unsigned cursor = tick % BUCKETS_PER_WHEEL;
+        const unsigned cursor = last_tick % BUCKETS_PER_WHEEL;
 
         if (future_tick <= BUCKETS_PER_WHEEL)
         {
@@ -189,12 +200,16 @@ void TimeWheel::add_timer(Timer *t)
             }
             w.bucket_tails[bucket_index] = t;
             ++_size;
+
+            // Adjust '_min_timer_tick'
+            if (when_tick < _min_timer_tick)
+                _min_timer_tick = when_tick;
             return;
         }
         future_tick += cursor;
         future_tick /= BUCKETS_PER_WHEEL;
         assert(future_tick > 0);
-        tick /= BUCKETS_PER_WHEEL;
+        last_tick /= BUCKETS_PER_WHEEL;
     }
     assert(false);
 }
@@ -249,14 +264,15 @@ bool TimeWheel::do_cancel_timer(Timer *t)
         return true;
     }
 
-    const uint64_t when_tick = t->when_ms / TICK_GRANULARITY_MS;
-    uint64_t future_tick = (when_tick > _last_tick ? when_tick - _last_tick : 1);
-    assert(future_tick > 0); // 最近也是下一个 tick
-    uint64_t tick = _last_tick;
+    const uint64_t when_tick = std::max<uint64_t>(
+        t->when_ms / RESOLUTION_MS, _last_tick + 1); // 最近也是下一个 tick
+    uint64_t future_tick = when_tick - _last_tick;
+    assert(future_tick > 0);
+    uint64_t last_tick = _last_tick;
     for (unsigned i = 0; i < _wheel_count; ++i)
     {
         Wheel& w = _wheels[i];
-        const unsigned cursor = tick % BUCKETS_PER_WHEEL;
+        const unsigned cursor = last_tick % BUCKETS_PER_WHEEL;
 
         if (future_tick <= BUCKETS_PER_WHEEL)
         {
@@ -303,9 +319,44 @@ bool TimeWheel::do_cancel_timer(Timer *t)
         future_tick += cursor;
         future_tick /= BUCKETS_PER_WHEEL;
         assert(future_tick > 0);
-        tick /= BUCKETS_PER_WHEEL;
+        last_tick /= BUCKETS_PER_WHEEL;
     }
     return false;
+}
+
+uint64_t TimeWheel::search_min_timer_tick(uint64_t future_tick) const
+{
+    uint64_t last_tick = _last_tick;
+    uint64_t radix = 1;
+    for (unsigned i = 0; i < _wheel_count; ++i)
+    {
+        const Wheel& w = _wheels[i];
+        const unsigned cursor = last_tick % BUCKETS_PER_WHEEL;
+
+        if (future_tick <= BUCKETS_PER_WHEEL)
+        {
+            for (unsigned j = std::max<uint64_t>(1, future_tick);
+                 j <= BUCKETS_PER_WHEEL; ++j)
+            {
+                const unsigned bucket_index = (cursor + j) % BUCKETS_PER_WHEEL;
+                if (nullptr == w.bucket_heads[bucket_index])
+                    continue;
+
+                if (cursor + j < BUCKETS_PER_WHEEL)
+                    return (last_tick + j) * radix;
+                else
+                    return (last_tick - cursor + BUCKETS_PER_WHEEL) * radix;
+            }
+        }
+
+        future_tick += cursor;
+        future_tick /= BUCKETS_PER_WHEEL;
+        last_tick /= BUCKETS_PER_WHEEL;
+        radix *= BUCKETS_PER_WHEEL;
+    }
+
+    // No timer found
+    return UINT64_MAX;
 }
 
 void TimeWheel::cancel_timer(timer_id_type timer_id)
@@ -315,10 +366,33 @@ void TimeWheel::cancel_timer(timer_id_type timer_id)
     Timer *t = (Timer*) timer_id;
     if (VALID_MASK != t->valid_mask)
         return;
+
     if (_in_invoking_callback)
+    {
         _cancel_later.insert(t);
+    }
     else
+    {
         do_cancel_timer(t);
+
+        if (_min_timer_tick < _last_tick)
+            _min_timer_tick = search_min_timer_tick();
+        else
+            _min_timer_tick = search_min_timer_tick(_min_timer_tick - _last_tick);
+    }
+}
+
+uint64_t TimeWheel::get_idle() const
+{
+    if (UINT64_MAX == _min_timer_tick)
+        return UINT64_MAX;
+    else if (_min_timer_tick <= _last_tick)
+        return 0;
+
+    GET_CLOCK(now_clock);
+    const uint64_t now_ms = CLOCK_DIFF_TO_MS(now_clock, _first_clock);
+    const uint64_t min_timer_ms = _min_timer_tick * RESOLUTION_MS;
+    return (min_timer_ms > now_ms ? min_timer_ms - now_ms : 0);
 }
 
 void TimeWheel::tick()
@@ -329,7 +403,7 @@ void TimeWheel::tick()
     GET_CLOCK(now_clock);
 
     const uint64_t now_ms = CLOCK_DIFF_TO_MS(now_clock, _first_clock);
-    const uint64_t now_tick = now_ms / TICK_GRANULARITY_MS;
+    const uint64_t now_tick = now_ms / RESOLUTION_MS;
     uint64_t elapse_tick = now_tick - _last_tick;
     if (0 == elapse_tick)
         return;
@@ -378,7 +452,8 @@ void TimeWheel::tick()
         old_tick /= BUCKETS_PER_WHEEL;
     }
 
-    // 处置上面收集的定时器：切换时间轮、调用用户回调函数、重复设置定时器
+    // 处置上面收集的定时器：切换时间轮(cascade)、调用用户回调函数(callback)、
+    // 重复设置定时器(repeat)
     std::vector<Timer*> callback_later;
     Timer *t = pickout_timers;
     if (nullptr != t)
@@ -388,7 +463,7 @@ void TimeWheel::tick()
         --_size;
 
         Timer *next = t->next;
-        if (t->when_ms > now_ms)
+        if (t->when_ms / RESOLUTION_MS > now_tick)
         {
             // 对于需要切换时间轮的定时器，重新插入到时间轮中
             add_timer(t);
@@ -447,6 +522,16 @@ void TimeWheel::tick()
         do_cancel_timer(*iter);
     }
     _cancel_later.clear();
+
+    // Adjust '_min_timer_tick'
+    // NOTE 即使没有取消或者新增定时器 cancel_timer() 或者，但是由于*隠式* cascade 的存在(定时器已经
+    //      提前挂到次级时间轮上而不是等到 tick() 中再切换时间轮)，仍然需要计算
+    //      '_min_timer_tick'，否则 get_idle() 将返回 0 (错误的以为还需要一次
+    //      cascade 操作)
+    if (!callback_later.empty() || _min_timer_tick < _last_tick)
+        _min_timer_tick = search_min_timer_tick();
+    else
+        _min_timer_tick = search_min_timer_tick(_min_timer_tick - _last_tick);
 }
 
 }

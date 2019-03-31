@@ -30,13 +30,11 @@ class TestTimeWheel : public TestFixture
     }
 
     TimeWheel tw;
-    TimeWheel::timer_id_type id;
 
     long count = 0;
 
     virtual void set_up() final override
     {
-        id = nullptr;
         count = 0;
     }
 
@@ -45,9 +43,9 @@ class TestTimeWheel : public TestFixture
         tw.clear();
     }
 
-    void show(TimeWheel::timer_id_type id, uint64_t expires)
+    void show(TimeWheel::timer_id_type id, int64_t expires)
     {
-        cout << "-- " << this->count << " +" << expires << "ms" << endl << flush;
+        cout << "-- " << this->count << (expires < 0 ? " " : " +") << expires << "ms" << endl << flush;
 
         ++this->count;
     }
@@ -57,9 +55,9 @@ class TestTimeWheel : public TestFixture
         cout << endl;
 
         count = 0;
-        id = tw.add_timer(
+        tw.add_timer(
             2550, 23,  // 最小轮周期为 2560ms
-            [=] (TimeWheel::timer_id_type id, uint64_t expires) {
+            [=] (TimeWheel::timer_id_type id, int64_t expires) {
                 show(id, expires);
                 if (this->count >= 20)
                     this->tw.cancel_timer(id);
@@ -67,10 +65,13 @@ class TestTimeWheel : public TestFixture
 
         while (tw.size() > 0)
         {
-            tw.tick();
-            // cout << "." << flush;
+            uint64_t idle_ms = tw.get_idle();
+            // cout << "idle " << idle_ms << "ms" << endl;
+            NUT_TA(idle_ms > 0);
+            idle_ms = std::max<uint64_t>(1, idle_ms);
             std::this_thread::sleep_for(
-                std::chrono::milliseconds(TimeWheel::TICK_GRANULARITY_MS));
+                std::chrono::milliseconds(idle_ms));
+            tw.tick();
         }
     }
 
@@ -81,7 +82,7 @@ class TestTimeWheel : public TestFixture
 #define AT(t)                                                       \
         tw.add_timer(                                               \
             t, 0,                                                   \
-            [=] (TimeWheel::timer_id_type id, uint64_t expires) {   \
+            [=] (TimeWheel::timer_id_type id, int64_t expires) {    \
                 show(id, expires);                                  \
             });
 
@@ -93,10 +94,13 @@ class TestTimeWheel : public TestFixture
 
         while (tw.size() > 0)
         {
-            tw.tick();
-            // cout << "." << flush;
+            uint64_t idle_ms = tw.get_idle();
+            // cout << "idle " << idle_ms << "ms" << endl;
+            NUT_TA(idle_ms > 0);
+            idle_ms = std::max<uint64_t>(1, idle_ms);
             std::this_thread::sleep_for(
-                std::chrono::milliseconds(TimeWheel::TICK_GRANULARITY_MS));
+                std::chrono::milliseconds(idle_ms));
+            tw.tick();
         }
     }
 
@@ -171,13 +175,13 @@ class TestTimeWheel : public TestFixture
         //
         TimeWheel::timer_id_type id1 = tw.add_timer(
             2570, 0,
-            [=] (TimeWheel::timer_id_type id, uint64_t expires) {
+            [=] (TimeWheel::timer_id_type id, int64_t expires) {
                 cout << "should not run!!!!!" << endl;
                 NUT_TA(false);
             });
         tw.add_timer(
             2540, 0,
-            [=] (TimeWheel::timer_id_type id, uint64_t expires) {
+            [=] (TimeWheel::timer_id_type id, int64_t expires) {
                 tw.cancel_timer(id1);
             });
 
