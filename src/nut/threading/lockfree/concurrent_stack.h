@@ -3,8 +3,6 @@
 #define ___HEADFILE_039EC871_866B_4C6A_AF26_747D92A9ADA7_
 
 #include <assert.h>
-
-#define _ENABLE_ATOMIC_ALIGNMENT_FIX // VS2015 SP2 BUG
 #include <atomic>
 
 #include "stamped_ptr.h"

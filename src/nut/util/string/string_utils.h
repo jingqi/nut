@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include <nut/platform/int_type.h> // for ssize_t in Windows VC
 #include <nut/container/array.h>
 
 #include "../../nut_config.h"

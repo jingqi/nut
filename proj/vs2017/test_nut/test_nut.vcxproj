@@ -84,6 +84,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_ENABLE_ATOMIC_ALIGNMENT_FIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -96,6 +97,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_ENABLE_ATOMIC_ALIGNMENT_FIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -109,7 +111,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ENABLE_ATOMIC_ALIGNMENT_FIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -126,7 +128,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ENABLE_ATOMIC_ALIGNMENT_FIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -169,6 +171,8 @@
     <ClCompile Include="..\..\..\src\test_nut\security\digest\test_adler32.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\security\digest\test_md5.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\security\digest\test_sha1.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\security\digest\test_sha2_256.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\security\digest\test_sha2_512.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\security\encrypt\test_aes.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\security\encrypt\test_aes_cbc_pkcs5.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\security\encrypt\test_rsa.cpp" />
@@ -179,13 +183,13 @@
     <ClCompile Include="..\..\..\src\test_nut\threading\test_priority_threadpool.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\threading\test_threading.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\threading\test_threadpool.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\time\test_date_time.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\time\test_performance_counter.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\time\test_time_diff.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\time\test_time_wheel.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\string\test_kmp.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\string\test_stringutils.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\string\test_tostring.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\util\time\test_date_time.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\util\time\test_performance_counter.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\util\time\test_time_diff.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\util\time\test_time_wheel.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\test_ini_dom.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\test_property_dom.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\xml\test_xml_element.cpp" />

@@ -53,14 +53,8 @@
     <Filter Include="nut\util">
       <UniqueIdentifier>{90c04571-26da-4d2c-8aef-1ec7298b652e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="nut\util\sqlite3helper">
-      <UniqueIdentifier>{de09a3cb-a2b8-4546-b251-6f715e4ca5fb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="nut\util\string">
       <UniqueIdentifier>{05d54796-9ea5-4817-8dbe-faf7ad173277}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="nut\util\time">
-      <UniqueIdentifier>{8e339d01-3aa8-4bca-b122-31c807b6e711}</UniqueIdentifier>
     </Filter>
     <Filter Include="nut\util\txtcfg">
       <UniqueIdentifier>{88f77c49-0aa7-4cab-9c0a-39f87a5bebd6}</UniqueIdentifier>
@@ -94,6 +88,12 @@
     </Filter>
     <Filter Include="nut\threading\lockfree\hazard_pointer">
       <UniqueIdentifier>{5b513018-b75a-49f7-b6d3-2fde35ca65df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nut\time">
+      <UniqueIdentifier>{2d958ace-be28-4117-bfc0-6e14a7422614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nut\util\sqlite_helper">
+      <UniqueIdentifier>{de09a3cb-a2b8-4546-b251-6f715e4ca5fb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -135,9 +135,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\lru_data_cache.h">
       <Filter>nut\container</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\debugging\addr_map_mgr.h">
-      <Filter>nut\debugging</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\debugging\backtrace.h">
       <Filter>nut\debugging</Filter>
@@ -190,32 +187,11 @@
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\property_dom.h">
       <Filter>nut\util\txtcfg</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\txtcfg\txt_file.h">
-      <Filter>nut\util\txtcfg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\time\date_time.h">
-      <Filter>nut\util\time</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\time\timer_manager.h">
-      <Filter>nut\util\time</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\string\kmp.h">
       <Filter>nut\util\string</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\string\to_string.h">
       <Filter>nut\util\string</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\connection.h">
-      <Filter>nut\util\sqlite3helper</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\prepared_statement.h">
-      <Filter>nut\util\sqlite3helper</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\result_set.h">
-      <Filter>nut\util\sqlite3helper</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\wrapers.h">
-      <Filter>nut\util\sqlite3helper</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\util\console_util.h">
       <Filter>nut\util</Filter>
@@ -394,9 +370,6 @@
     <ClInclude Include="..\..\..\src\nut\container\rwbuffer\ring_buffer.h">
       <Filter>nut\container\rwbuffer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\time\time_wheel.h">
-      <Filter>nut\util\time</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\security\digest\sha1.h">
       <Filter>nut\security\digest</Filter>
     </ClInclude>
@@ -417,12 +390,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\platform\sys.h">
       <Filter>nut\platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\time\performance_counter.h">
-      <Filter>nut\util\time</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\time\time_diff.h">
-      <Filter>nut\util\time</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\platform\int_type.h">
       <Filter>nut\platform</Filter>
@@ -454,13 +421,49 @@
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_hash_map.h">
       <Filter>nut\threading\lockfree</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\time\date_time.h">
+      <Filter>nut\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\time\performance_counter.h">
+      <Filter>nut\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\time\time_diff.h">
+      <Filter>nut\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\time\time_wheel.h">
+      <Filter>nut\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\time\timer_heap.h">
+      <Filter>nut\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\security\digest\sha2_256.h">
+      <Filter>nut\security\digest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\security\digest\sha2_512.h">
+      <Filter>nut\security\digest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\text_file.h">
+      <Filter>nut\util\txtcfg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_connection.h">
+      <Filter>nut\util\sqlite_helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_param.h">
+      <Filter>nut\util\sqlite_helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_result_set.h">
+      <Filter>nut\util\sqlite_helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_statement.h">
+      <Filter>nut\util\sqlite_helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\debugging\proc_addr_maps.h">
+      <Filter>nut\debugging</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">
       <Filter>nut\container</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\debugging\addr_map_mgr.cpp">
-      <Filter>nut\debugging</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\debugging\backtrace.cpp">
       <Filter>nut\debugging</Filter>
@@ -488,15 +491,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\util\txtcfg\property_dom.cpp">
       <Filter>nut\util\txtcfg</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\util\txtcfg\txt_file.cpp">
-      <Filter>nut\util\txtcfg</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\util\time\date_time.cpp">
-      <Filter>nut\util\time</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\util\time\timer_manager.cpp">
-      <Filter>nut\util\time</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\util\string\kmp.cpp">
       <Filter>nut\util\string</Filter>
@@ -639,9 +633,6 @@
     <ClCompile Include="..\..\..\src\nut\container\rwbuffer\ring_buffer.cpp">
       <Filter>nut\container\rwbuffer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\util\time\time_wheel.cpp">
-      <Filter>nut\util\time</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\nut\security\digest\sha1.cpp">
       <Filter>nut\security\digest</Filter>
     </ClCompile>
@@ -650,12 +641,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\platform\sys.cpp">
       <Filter>nut\platform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\util\time\performance_counter.cpp">
-      <Filter>nut\util\time</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\util\time\time_diff.cpp">
-      <Filter>nut\util\time</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\util\txtcfg\xml\element_handler.cpp">
       <Filter>nut\util\txtcfg\xml</Filter>
@@ -677,6 +662,33 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_retire_list.cpp">
       <Filter>nut\threading\lockfree\hazard_pointer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\time\date_time.cpp">
+      <Filter>nut\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\time\performance_counter.cpp">
+      <Filter>nut\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\time\time_diff.cpp">
+      <Filter>nut\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\time\time_wheel.cpp">
+      <Filter>nut\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\time\timer_heap.cpp">
+      <Filter>nut\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\security\digest\sha2_256.cpp">
+      <Filter>nut\security\digest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\security\digest\sha2_512.cpp">
+      <Filter>nut\security\digest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\util\txtcfg\text_file.cpp">
+      <Filter>nut\util\txtcfg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\debugging\proc_addr_maps.cpp">
+      <Filter>nut\debugging</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

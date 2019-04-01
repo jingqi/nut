@@ -36,7 +36,7 @@ public:
 
     enum
     {
-        RESOLUTION_MS = 5, // 每个 tick 粒度，单位: 毫秒
+        RESOLUTION_MS = 5, // 定时器精度，单位: 毫秒
     };
 
 private:

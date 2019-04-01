@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
+#include <algorithm> // for std::max()
 
 #include "time_wheel.h"
 
@@ -335,7 +336,7 @@ uint64_t TimeWheel::search_min_timer_tick(uint64_t future_tick) const
 
         if (future_tick <= BUCKETS_PER_WHEEL)
         {
-            for (unsigned j = std::max<uint64_t>(1, future_tick);
+            for (unsigned j = std::max<unsigned>(1, future_tick);
                  j <= BUCKETS_PER_WHEEL; ++j)
             {
                 const unsigned bucket_index = (cursor + j) % BUCKETS_PER_WHEEL;

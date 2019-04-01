@@ -209,7 +209,7 @@ void RingBuffer::write(const void *buf, size_t len)
 
 size_t RingBuffer::skip_write(size_t len)
 {
-    const size_t skiped = (std::min)(len, writable_size());
+    const size_t skiped = std::min(len, writable_size());
     _write_index += len;
     if (0 != _capacity)
         _write_index %= _capacity;

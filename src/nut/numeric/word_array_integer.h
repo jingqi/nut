@@ -121,7 +121,7 @@ int signed_compare(const T *a, size_t M, const T *b, size_t N)
 
     // 同号比较
     const word_type fill = (positive1 ? 0 : ~(word_type)0);
-    for (ssize_t i = (std::max)(M, N) - 1; i >= 0; --i)
+    for (ssize_t i = std::max(M, N) - 1; i >= 0; --i)
     {
         const word_type op1 = (i < (ssize_t) M ? reinterpret_cast<const word_type*>(a)[i] : fill);
         const word_type op2 = (i < (ssize_t) N ? reinterpret_cast<const word_type*>(b)[i] : fill);
@@ -145,7 +145,7 @@ int unsigned_compare(const T *a, size_t M, const T *b, size_t N)
     assert(nullptr != a && M > 0 && nullptr != b && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
-    for (ssize_t i = (std::max)(M, N) - 1; i >= 0; --i)
+    for (ssize_t i = std::max(M, N) - 1; i >= 0; --i)
     {
         const word_type op1 = (i < (ssize_t) M ? reinterpret_cast<const word_type*>(a)[i] : 0);
         const word_type op2 = (i < (ssize_t) N ? reinterpret_cast<const word_type*>(b)[i] : 0);
@@ -167,7 +167,7 @@ void signed_expand(const T *a, size_t M, T *x, size_t N)
 
     const int fill = (is_positive(a, M) ? 0 : 0xFF); /// 先把变量算出来，避免操作数被破坏
     if (x != a)
-        ::memmove(x, a, sizeof(T) * (std::min)(M, N));
+        ::memmove(x, a, sizeof(T) * std::min(M, N));
     if (M < N)
         ::memset(x + M, fill, sizeof(T) * (N - M));
 }
@@ -183,7 +183,7 @@ void unsigned_expand(const T *a, size_t M, T *x, size_t N)
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
     if (x != a)
-        ::memmove(x, a, sizeof(T) * (std::min)(M, N));
+        ::memmove(x, a, sizeof(T) * std::min(M, N));
     if (M < N)
         ::memset(x + M, 0, sizeof(T) * (N - M));
 }
@@ -1116,7 +1116,7 @@ void _unsigned_square(const T *a, size_t M, T *x, size_t N, memory_allocator *ma
     }
 
     // 再加上另一半
-    const size_t limit = (std::min)(N, M * 2);
+    const size_t limit = std::min(N, M * 2);
     unsigned_shift_left(retx, limit, retx, limit, 1);
 
     // 加上中间对称线
@@ -1287,7 +1287,7 @@ void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
     const size_t divisor_len = signed_significant_size(b, N);
     const bool dividend_positive = is_positive(a, M); /// 先把变量算出来，避免操作数被破坏
     const bool divisor_positive = is_positive(b, N);
-    const size_t quotient_len = (std::min)(P, dividend_len);
+    const size_t quotient_len = std::min(P, dividend_len);
 
     // 避免数据在计算中途被破坏
     word_type *quotient = reinterpret_cast<word_type*>(x); // 商，可以为 nullptr
@@ -1402,7 +1402,7 @@ void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
     // 常量
     const size_t dividend_len = unsigned_significant_size(a, M);
     const size_t divisor_len = unsigned_significant_size(b, N);
-    const size_t quotient_len = (std::min)(P, dividend_len);
+    const size_t quotient_len = std::min(P, dividend_len);
 
     // 避免数据在计算中途被破坏
     word_type *quotient = reinterpret_cast<word_type*>(x); // 商，可以为 nullptr

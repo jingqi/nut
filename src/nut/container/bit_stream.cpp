@@ -381,7 +381,7 @@ int BitStream::compare(const BitStream& x) const
     if (this == &x)
         return 0;
 
-    const size_t min_bitsz = (std::min)(_bit_size, x._bit_size);
+    const size_t min_bitsz = std::min(_bit_size, x._bit_size);
     const size_t word_count = min_bitsz / (sizeof(word_type) * 8);
     for (size_t i = 0; i < word_count; ++i)
     {

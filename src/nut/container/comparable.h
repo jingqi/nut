@@ -2,6 +2,7 @@
 #ifndef ___HEADFILE_49B551AE_4D34_4B5D_A641_3002BDED3655_
 #define ___HEADFILE_49B551AE_4D34_4B5D_A641_3002BDED3655_
 
+#include <type_traits> // for std::enable_if
 #include <string>
 
 

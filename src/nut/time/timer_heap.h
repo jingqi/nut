@@ -21,26 +21,36 @@ namespace nut
 /**
  * 不太精确的用户级定时器
  */
-class NUT_API TimerManager
+class NUT_API TimerHeap
 {
 public:
     // 定时器 id 类型
     typedef int timer_id_type;
     // 定时器任务类型
-    typedef std::function<void(timer_id_type)> timer_task_type;
+    typedef std::function<void(timer_id_type,const TimeDiff&)> timer_task_type;
+
+    enum
+    {
+        RESOLUTION_MS = 2, // 定时器精度，单位: 毫秒
+    };
 
 private:
     // 定时器
-    struct Timer
+    class Timer
     {
+    public:
+        Timer(timer_id_type id_, const DateTime& when_, timer_task_type&& task_);
+        Timer(timer_id_type id_, const DateTime& when_, const timer_task_type& task_);
+
+    public:
         timer_id_type id = 0;
-        DateTime time;
+        DateTime when;
         timer_task_type task;
     };
 
 public:
-    TimerManager() = default;
-    ~TimerManager();
+    TimerHeap() = default;
+    ~TimerHeap();
 
     /**
      * 添加定时器
@@ -48,6 +58,7 @@ public:
      * @param interval 距离现在时间的间隔
      * @return 定时器 id
      */
+    timer_id_type add_timer(const TimeDiff& interval, timer_task_type&& task);
     timer_id_type add_timer(const TimeDiff& interval, const timer_task_type& task);
 
     bool cancel_timer(timer_id_type id);
@@ -60,11 +71,11 @@ public:
     void run();
 
 private:
-    TimerManager(const TimerManager& x) = delete;
-    TimerManager& operator=(const TimerManager& x) = delete;
+    TimerHeap(const TimerHeap& x) = delete;
+    TimerHeap& operator=(const TimerHeap& x) = delete;
 
-    Timer* new_timer();
-    void delete_timer(Timer *t);
+    // NOTE 应该在 mutex 保护下运行
+    void add_timer(Timer *t);
 
     // Greater-Than 操作符用于维护小头堆算法
     static bool timer_greater_than(const Timer *t1, const Timer *t2);

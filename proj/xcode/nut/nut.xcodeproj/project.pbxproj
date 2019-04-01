@@ -35,11 +35,9 @@
 		2E73C31F2250B6F5008673C6 /* sha2_512.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E73C31B2250B6F5008673C6 /* sha2_512.h */; };
 		2E73C3202250B6F5008673C6 /* sha2_256.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E73C31C2250B6F5008673C6 /* sha2_256.cpp */; };
 		2E73C32B2250B739008673C6 /* performance_counter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E73C3212250B739008673C6 /* performance_counter.h */; };
-		2E73C32C2250B73A008673C6 /* timer_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E73C3222250B739008673C6 /* timer_manager.cpp */; };
 		2E73C32D2250B73A008673C6 /* date_time.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E73C3232250B739008673C6 /* date_time.cpp */; };
 		2E73C32E2250B73A008673C6 /* date_time.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E73C3242250B739008673C6 /* date_time.h */; };
 		2E73C32F2250B73A008673C6 /* time_wheel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E73C3252250B739008673C6 /* time_wheel.cpp */; };
-		2E73C3302250B73A008673C6 /* timer_manager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E73C3262250B739008673C6 /* timer_manager.h */; };
 		2E73C3312250B73A008673C6 /* performance_counter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E73C3272250B739008673C6 /* performance_counter.cpp */; };
 		2E73C3322250B73A008673C6 /* time_diff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E73C3282250B739008673C6 /* time_diff.cpp */; };
 		2E73C3332250B73A008673C6 /* time_diff.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E73C3292250B739008673C6 /* time_diff.h */; };
@@ -52,6 +50,8 @@
 		2E73C3482250B7BD008673C6 /* test_time_wheel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E73C3442250B7BD008673C6 /* test_time_wheel.cpp */; };
 		2E73C34B2250B7D1008673C6 /* test_sha2_512.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E73C3492250B7D1008673C6 /* test_sha2_512.cpp */; };
 		2E73C34C2250B7D1008673C6 /* test_sha2_256.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E73C34A2250B7D1008673C6 /* test_sha2_256.cpp */; };
+		2EA1F06122525602007F402B /* timer_heap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EA1F05F22525601007F402B /* timer_heap.cpp */; };
+		2EA1F06222525602007F402B /* timer_heap.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EA1F06022525602007F402B /* timer_heap.h */; };
 		2EC937FE217A4C38005D5285 /* string_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EC937FC217A4C37005D5285 /* string_utils.cpp */; };
 		2EC937FF217A4C38005D5285 /* string_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EC937FD217A4C37005D5285 /* string_utils.h */; };
 		2EC93801217A4C56005D5285 /* unittest.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EC93800217A4C56005D5285 /* unittest.h */; };
@@ -316,11 +316,9 @@
 		2E73C31B2250B6F5008673C6 /* sha2_512.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha2_512.h; path = ../../../src/nut/security/digest/sha2_512.h; sourceTree = "<group>"; };
 		2E73C31C2250B6F5008673C6 /* sha2_256.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sha2_256.cpp; path = ../../../src/nut/security/digest/sha2_256.cpp; sourceTree = "<group>"; };
 		2E73C3212250B739008673C6 /* performance_counter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = performance_counter.h; path = ../../../src/nut/time/performance_counter.h; sourceTree = "<group>"; };
-		2E73C3222250B739008673C6 /* timer_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = timer_manager.cpp; path = ../../../src/nut/time/timer_manager.cpp; sourceTree = "<group>"; };
 		2E73C3232250B739008673C6 /* date_time.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = date_time.cpp; path = ../../../src/nut/time/date_time.cpp; sourceTree = "<group>"; };
 		2E73C3242250B739008673C6 /* date_time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = date_time.h; path = ../../../src/nut/time/date_time.h; sourceTree = "<group>"; };
 		2E73C3252250B739008673C6 /* time_wheel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = time_wheel.cpp; path = ../../../src/nut/time/time_wheel.cpp; sourceTree = "<group>"; };
-		2E73C3262250B739008673C6 /* timer_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = timer_manager.h; path = ../../../src/nut/time/timer_manager.h; sourceTree = "<group>"; };
 		2E73C3272250B739008673C6 /* performance_counter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = performance_counter.cpp; path = ../../../src/nut/time/performance_counter.cpp; sourceTree = "<group>"; };
 		2E73C3282250B739008673C6 /* time_diff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = time_diff.cpp; path = ../../../src/nut/time/time_diff.cpp; sourceTree = "<group>"; };
 		2E73C3292250B739008673C6 /* time_diff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = time_diff.h; path = ../../../src/nut/time/time_diff.h; sourceTree = "<group>"; };
@@ -333,6 +331,8 @@
 		2E73C3442250B7BD008673C6 /* test_time_wheel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_time_wheel.cpp; path = ../../../src/test_nut/time/test_time_wheel.cpp; sourceTree = "<group>"; };
 		2E73C3492250B7D1008673C6 /* test_sha2_512.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_sha2_512.cpp; path = ../../../src/test_nut/security/digest/test_sha2_512.cpp; sourceTree = "<group>"; };
 		2E73C34A2250B7D1008673C6 /* test_sha2_256.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_sha2_256.cpp; path = ../../../src/test_nut/security/digest/test_sha2_256.cpp; sourceTree = "<group>"; };
+		2EA1F05F22525601007F402B /* timer_heap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = timer_heap.cpp; path = ../../../src/nut/time/timer_heap.cpp; sourceTree = "<group>"; };
+		2EA1F06022525602007F402B /* timer_heap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = timer_heap.h; path = ../../../src/nut/time/timer_heap.h; sourceTree = "<group>"; };
 		2EC937FC217A4C37005D5285 /* string_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = string_utils.cpp; path = ../../../src/nut/util/string/string_utils.cpp; sourceTree = "<group>"; };
 		2EC937FD217A4C37005D5285 /* string_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = string_utils.h; path = ../../../src/nut/util/string/string_utils.h; sourceTree = "<group>"; };
 		2EC93800217A4C56005D5285 /* unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unittest.h; path = ../../../src/nut/unittest/unittest.h; sourceTree = "<group>"; };
@@ -1227,6 +1227,8 @@
 		2E73C3122250B61B008673C6 /* time */ = {
 			isa = PBXGroup;
 			children = (
+				2EA1F05F22525601007F402B /* timer_heap.cpp */,
+				2EA1F06022525602007F402B /* timer_heap.h */,
 				2E73C3232250B739008673C6 /* date_time.cpp */,
 				2E73C3242250B739008673C6 /* date_time.h */,
 				2E73C3272250B739008673C6 /* performance_counter.cpp */,
@@ -1235,8 +1237,6 @@
 				2E73C3292250B739008673C6 /* time_diff.h */,
 				2E73C3252250B739008673C6 /* time_wheel.cpp */,
 				2E73C32A2250B739008673C6 /* time_wheel.h */,
-				2E73C3222250B739008673C6 /* timer_manager.cpp */,
-				2E73C3262250B739008673C6 /* timer_manager.h */,
 			);
 			name = time;
 			sourceTree = "<group>";
@@ -1298,7 +1298,6 @@
 				2EE0837F2146DCC0008E4587 /* pconsole.h in Headers */,
 				2EE083CB2146DD2B008E4587 /* sys_ma.h in Headers */,
 				2EE083072146DBA8008E4587 /* ring_buffer.h in Headers */,
-				2E73C3302250B73A008673C6 /* timer_manager.h in Headers */,
 				2EE083CF2146DD3D008E4587 /* singleton.h in Headers */,
 				2EE0840F2146DDB7008E4587 /* word_array_integer.h in Headers */,
 				2EE0832B2146DC0C008E4587 /* lru_cache.h in Headers */,
@@ -1315,6 +1314,7 @@
 				2EE0838D2146DCD6008E4587 /* destroy_checker.h in Headers */,
 				2E73C31E2250B6F5008673C6 /* sha2_256.h in Headers */,
 				2EE0839D2146DCF0008E4587 /* log_filter.h in Headers */,
+				2EA1F06222525602007F402B /* timer_heap.h in Headers */,
 				2EE083D92146DD58008E4587 /* concurrent_stack.h in Headers */,
 				2EE084752146DE5E008E4587 /* console_util.h in Headers */,
 				2EE0834B2146DC7A008E4587 /* rsa.h in Headers */,
@@ -1597,7 +1597,6 @@
 				2E73C32F2250B73A008673C6 /* time_wheel.cpp in Sources */,
 				2EE083B32146DD0D008E4587 /* circle_file_by_size_log_handler.cpp in Sources */,
 				2EE083412146DC66008E4587 /* sha1.cpp in Sources */,
-				2E73C32C2250B73A008673C6 /* timer_manager.cpp in Sources */,
 				2EE083042146DBA8008E4587 /* ring_buffer.cpp in Sources */,
 				2EE0838E2146DCD6008E4587 /* source_location.cpp in Sources */,
 				2EE0837D2146DCC0008E4587 /* cmd_help.cpp in Sources */,
@@ -1646,6 +1645,7 @@
 				2EE083BB2146DD0D008E4587 /* file_log_handler.cpp in Sources */,
 				2EE083B92146DD0D008E4587 /* console_log_handler.cpp in Sources */,
 				2EE084732146DE5E008E4587 /* console_util.cpp in Sources */,
+				2EA1F06122525602007F402B /* timer_heap.cpp in Sources */,
 				2EE084062146DDA2008E4587 /* mod.cpp in Sources */,
 				2EE084622146DE31008E4587 /* kmp.cpp in Sources */,
 				2E73C31D2250B6F5008673C6 /* sha2_512.cpp in Sources */,

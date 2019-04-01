@@ -73,7 +73,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BUILDING_NUT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BUILDING_NUT;_ENABLE_ATOMIC_ALIGNMENT_FIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -85,7 +85,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BUILDING_NUT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BUILDING_NUT;_ENABLE_ATOMIC_ALIGNMENT_FIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -99,7 +99,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BUILDING_NUT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BUILDING_NUT;_ENABLE_ATOMIC_ALIGNMENT_FIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -115,7 +115,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BUILDING_NUT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BUILDING_NUT;_ENABLE_ATOMIC_ALIGNMENT_FIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -145,10 +145,10 @@
     <ClInclude Include="..\..\..\src\nut\container\tree\rbtree.h" />
     <ClInclude Include="..\..\..\src\nut\container\tree\rtree\mdarea.h" />
     <ClInclude Include="..\..\..\src\nut\container\tree\rtree\rtree.h" />
-    <ClInclude Include="..\..\..\src\nut\debugging\addr_map_mgr.h" />
     <ClInclude Include="..\..\..\src\nut\debugging\backtrace.h" />
     <ClInclude Include="..\..\..\src\nut\debugging\destroy_checker.h" />
     <ClInclude Include="..\..\..\src\nut\debugging\exception.h" />
+    <ClInclude Include="..\..\..\src\nut\debugging\proc_addr_maps.h" />
     <ClInclude Include="..\..\..\src\nut\debugging\source_location.h" />
     <ClInclude Include="..\..\..\src\nut\logging\logger.h" />
     <ClInclude Include="..\..\..\src\nut\logging\log_filter.h" />
@@ -197,6 +197,8 @@
     <ClInclude Include="..\..\..\src\nut\security\digest\adler32.h" />
     <ClInclude Include="..\..\..\src\nut\security\digest\md5.h" />
     <ClInclude Include="..\..\..\src\nut\security\digest\sha1.h" />
+    <ClInclude Include="..\..\..\src\nut\security\digest\sha2_256.h" />
+    <ClInclude Include="..\..\..\src\nut\security\digest\sha2_512.h" />
     <ClInclude Include="..\..\..\src\nut\security\encrypt\aes.h" />
     <ClInclude Include="..\..\..\src\nut\security\encrypt\aes_cbc_pkcs5.h" />
     <ClInclude Include="..\..\..\src\nut\security\encrypt\rsa.h" />
@@ -214,6 +216,11 @@
     <ClInclude Include="..\..\..\src\nut\threading\sync\spinlock.h" />
     <ClInclude Include="..\..\..\src\nut\threading\threading.h" />
     <ClInclude Include="..\..\..\src\nut\threading\thread_pool.h" />
+    <ClInclude Include="..\..\..\src\nut\time\date_time.h" />
+    <ClInclude Include="..\..\..\src\nut\time\performance_counter.h" />
+    <ClInclude Include="..\..\..\src\nut\time\timer_heap.h" />
+    <ClInclude Include="..\..\..\src\nut\time\time_diff.h" />
+    <ClInclude Include="..\..\..\src\nut\time\time_wheel.h" />
     <ClInclude Include="..\..\..\src\nut\unittest\console_test_logger.h" />
     <ClInclude Include="..\..\..\src\nut\unittest\stream_test_logger.h" />
     <ClInclude Include="..\..\..\src\nut\unittest\testcase_failure_exception.h" />
@@ -223,21 +230,16 @@
     <ClInclude Include="..\..\..\src\nut\unittest\test_runner.h" />
     <ClInclude Include="..\..\..\src\nut\unittest\unittest.h" />
     <ClInclude Include="..\..\..\src\nut\util\console_util.h" />
-    <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\connection.h" />
-    <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\prepared_statement.h" />
-    <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\result_set.h" />
-    <ClInclude Include="..\..\..\src\nut\util\sqlite3helper\wrapers.h" />
+    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_connection.h" />
+    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_param.h" />
+    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_result_set.h" />
+    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_statement.h" />
     <ClInclude Include="..\..\..\src\nut\util\string\kmp.h" />
     <ClInclude Include="..\..\..\src\nut\util\string\string_utils.h" />
     <ClInclude Include="..\..\..\src\nut\util\string\to_string.h" />
-    <ClInclude Include="..\..\..\src\nut\util\time\date_time.h" />
-    <ClInclude Include="..\..\..\src\nut\util\time\performance_counter.h" />
-    <ClInclude Include="..\..\..\src\nut\util\time\timer_manager.h" />
-    <ClInclude Include="..\..\..\src\nut\util\time\time_diff.h" />
-    <ClInclude Include="..\..\..\src\nut\util\time\time_wheel.h" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\ini_dom.h" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\property_dom.h" />
-    <ClInclude Include="..\..\..\src\nut\util\txtcfg\txt_file.h" />
+    <ClInclude Include="..\..\..\src\nut\util\txtcfg\text_file.h" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\element_handler.h" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_dom.h" />
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\xml\xml_element.h" />
@@ -251,8 +253,8 @@
     <ClCompile Include="..\..\..\src\nut\container\bytestream\output_stream.cpp" />
     <ClCompile Include="..\..\..\src\nut\container\rwbuffer\fragment_buffer.cpp" />
     <ClCompile Include="..\..\..\src\nut\container\rwbuffer\ring_buffer.cpp" />
-    <ClCompile Include="..\..\..\src\nut\debugging\addr_map_mgr.cpp" />
     <ClCompile Include="..\..\..\src\nut\debugging\backtrace.cpp" />
+    <ClCompile Include="..\..\..\src\nut\debugging\proc_addr_maps.cpp" />
     <ClCompile Include="..\..\..\src\nut\debugging\source_location.cpp" />
     <ClCompile Include="..\..\..\src\nut\logging\logger.cpp" />
     <ClCompile Include="..\..\..\src\nut\logging\log_filter.cpp" />
@@ -285,6 +287,8 @@
     <ClCompile Include="..\..\..\src\nut\security\digest\adler32.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\digest\md5.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\digest\sha1.cpp" />
+    <ClCompile Include="..\..\..\src\nut\security\digest\sha2_256.cpp" />
+    <ClCompile Include="..\..\..\src\nut\security\digest\sha2_512.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\encrypt\aes.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\encrypt\aes_cbc_pkcs5.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\encrypt\rsa.cpp" />
@@ -295,6 +299,11 @@
     <ClCompile Include="..\..\..\src\nut\threading\sync\sem.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\sync\spinlock.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\thread_pool.cpp" />
+    <ClCompile Include="..\..\..\src\nut\time\date_time.cpp" />
+    <ClCompile Include="..\..\..\src\nut\time\performance_counter.cpp" />
+    <ClCompile Include="..\..\..\src\nut\time\timer_heap.cpp" />
+    <ClCompile Include="..\..\..\src\nut\time\time_diff.cpp" />
+    <ClCompile Include="..\..\..\src\nut\time\time_wheel.cpp" />
     <ClCompile Include="..\..\..\src\nut\unittest\console_test_logger.cpp" />
     <ClCompile Include="..\..\..\src\nut\unittest\stream_test_logger.cpp" />
     <ClCompile Include="..\..\..\src\nut\unittest\testcase_failure_exception.cpp" />
@@ -306,14 +315,9 @@
     <ClCompile Include="..\..\..\src\nut\util\string\kmp.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\string\string_utils.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\string\to_string.cpp" />
-    <ClCompile Include="..\..\..\src\nut\util\time\date_time.cpp" />
-    <ClCompile Include="..\..\..\src\nut\util\time\performance_counter.cpp" />
-    <ClCompile Include="..\..\..\src\nut\util\time\timer_manager.cpp" />
-    <ClCompile Include="..\..\..\src\nut\util\time\time_diff.cpp" />
-    <ClCompile Include="..\..\..\src\nut\util\time\time_wheel.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\txtcfg\ini_dom.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\txtcfg\property_dom.cpp" />
-    <ClCompile Include="..\..\..\src\nut\util\txtcfg\txt_file.cpp" />
+    <ClCompile Include="..\..\..\src\nut\util\txtcfg\text_file.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\txtcfg\xml\element_handler.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\txtcfg\xml\xml_dom.cpp" />
     <ClCompile Include="..\..\..\src\nut\util\txtcfg\xml\xml_element.cpp" />

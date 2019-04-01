@@ -204,7 +204,7 @@ bool BigInteger::operator>=(native_int_type v) const
 BigInteger BigInteger::operator+(const BigInteger& x) const
 {
     BigInteger ret;
-    const size_type max_len = (std::max)(_significant_len, x._significant_len);
+    const size_type max_len = std::max(_significant_len, x._significant_len);
     ret.ensure_cap(max_len + 1);
     signed_add(_data, _significant_len, x._data, x._significant_len,
                ret._data, max_len + 1);
@@ -216,7 +216,7 @@ BigInteger BigInteger::operator+(const BigInteger& x) const
 BigInteger BigInteger::operator+(native_int_type v) const
 {
     BigInteger ret;
-    const size_type max_len = (std::max)(_significant_len, sizeof(v) / sizeof(word_type));
+    const size_type max_len = std::max(_significant_len, sizeof(v) / sizeof(word_type));
     ret.ensure_cap(max_len + 1);
     signed_add(_data, _significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type),
                ret._data, max_len + 1);
@@ -228,7 +228,7 @@ BigInteger BigInteger::operator+(native_int_type v) const
 BigInteger BigInteger::operator-(const BigInteger& x) const
 {
     BigInteger ret;
-    const size_type max_len = (std::max)(_significant_len, x._significant_len);
+    const size_type max_len = std::max(_significant_len, x._significant_len);
     ret.ensure_cap(max_len + 1);
     signed_sub(_data, _significant_len, x._data, x._significant_len,
                ret._data, max_len + 1);
@@ -240,7 +240,7 @@ BigInteger BigInteger::operator-(const BigInteger& x) const
 BigInteger BigInteger::operator-(native_int_type v) const
 {
     BigInteger ret;
-    const size_type max_len = (std::max)(_significant_len, sizeof(v) / sizeof(word_type));
+    const size_type max_len = std::max(_significant_len, sizeof(v) / sizeof(word_type));
     ret.ensure_cap(max_len + 1);
     signed_sub(_data, _significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type),
                ret._data, max_len + 1);
@@ -324,7 +324,7 @@ BigInteger BigInteger::operator%(native_int_type v) const
 
 BigInteger& BigInteger::operator+=(const BigInteger& x)
 {
-    const size_type max_len = (std::max)(_significant_len, x._significant_len);
+    const size_type max_len = std::max(_significant_len, x._significant_len);
     ensure_cap(max_len + 1);
     signed_add(_data, _significant_len, x._data, x._significant_len, _data, max_len + 1);
     _significant_len = max_len + 1;
@@ -334,7 +334,7 @@ BigInteger& BigInteger::operator+=(const BigInteger& x)
 
 BigInteger& BigInteger::operator+=(native_int_type v)
 {
-    const size_type max_len = (std::max)(_significant_len, sizeof(v) / sizeof(word_type));
+    const size_type max_len = std::max(_significant_len, sizeof(v) / sizeof(word_type));
     ensure_cap(max_len + 1);
     signed_add(_data, _significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type),
                _data, max_len + 1);
@@ -345,7 +345,7 @@ BigInteger& BigInteger::operator+=(native_int_type v)
 
 BigInteger& BigInteger::operator-=(const BigInteger& x)
 {
-    const size_type max_len = (std::max)(_significant_len, x._significant_len);
+    const size_type max_len = std::max(_significant_len, x._significant_len);
     ensure_cap(max_len + 1);
     signed_sub(_data, _significant_len, x._data, x._significant_len, _data, max_len + 1);
     _significant_len = max_len + 1;
@@ -355,7 +355,7 @@ BigInteger& BigInteger::operator-=(const BigInteger& x)
 
 BigInteger& BigInteger::operator-=(native_int_type v)
 {
-    const size_type max_len = (std::max)(_significant_len, sizeof(v) / sizeof(word_type));
+    const size_type max_len = std::max(_significant_len, sizeof(v) / sizeof(word_type));
     ensure_cap(max_len + 1);
     signed_sub(_data, _significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type),
                _data, max_len + 1);
@@ -990,7 +990,7 @@ BigInteger operator-(BigInteger::native_int_type a, const BigInteger& b)
     typedef BigInteger::word_type word_type;
 
     BigInteger ret;
-    const size_t max_len = (std::max)(sizeof(a) / sizeof(word_type), b._significant_len);
+    const size_t max_len = std::max(sizeof(a) / sizeof(word_type), b._significant_len);
     ret.ensure_cap(max_len + 1);
     signed_sub((word_type*)&a, sizeof(a) / sizeof(word_type),
                b._data, b._significant_len, ret._data, max_len + 1);

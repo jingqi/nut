@@ -2,11 +2,10 @@
 #ifndef ___HEADFILE_F8CA88A7_CD94_4F1D_AA24_A5E53F2E2E96_
 #define ___HEADFILE_F8CA88A7_CD94_4F1D_AA24_A5E53F2E2E96_
 
-#include <nut/platform/platform.h>
+#include <algorithm> // for std::min()
+#include <type_traits> // for std::enable_if
 
-#if NUT_PLATFORM_CC_VC
-#   include <xutility> // for std::min() and so on
-#endif
+#include <nut/platform/platform.h>
 
 
 namespace nut

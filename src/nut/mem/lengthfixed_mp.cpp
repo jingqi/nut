@@ -9,7 +9,7 @@ namespace nut
 {
 
 lengthfixed_stmp::lengthfixed_stmp(size_t granularity, memory_allocator *ma)
-    : _alloc(ma), _granularity((std::max)(granularity, sizeof(void*)))
+    : _alloc(ma), _granularity(std::max(granularity, sizeof(void*)))
 {}
 
 lengthfixed_stmp::~lengthfixed_stmp()
@@ -37,7 +37,7 @@ void lengthfixed_stmp::clear()
 
 void* lengthfixed_stmp::alloc(size_t sz)
 {
-    assert(_granularity == (std::max)(sz, sizeof(void*)));
+    assert(_granularity == std::max(sz, sizeof(void*)));
 
     if (nullptr == _head)
         return ma_alloc(_alloc, _granularity);
@@ -58,7 +58,7 @@ void* lengthfixed_stmp::realloc(void *p, size_t old_sz, size_t new_sz)
 
 void lengthfixed_stmp::free(void *p, size_t sz)
 {
-    assert(nullptr != p && _granularity == (std::max)(sz, sizeof(void*)));
+    assert(nullptr != p && _granularity == std::max(sz, sizeof(void*)));
 
     if (_free_num >= (int) MAX_FREE_NUM)
     {
@@ -77,7 +77,7 @@ namespace nut
 {
 
 lengthfixed_mtmp::lengthfixed_mtmp(size_t granularity, memory_allocator *ma)
-    : _alloc(ma), _granularity((std::max)(granularity, sizeof(void*)))
+    : _alloc(ma), _granularity(std::max(granularity, sizeof(void*)))
 {}
 
 lengthfixed_mtmp::~lengthfixed_mtmp()
@@ -104,7 +104,7 @@ void lengthfixed_mtmp::clear()
 
 void* lengthfixed_mtmp::alloc(size_t sz)
 {
-    assert(_granularity == (std::max)(sz, sizeof(void*)));
+    assert(_granularity == std::max(sz, sizeof(void*)));
 
     void *old_head = _head.load(std::memory_order_acquire);
     while (nullptr != old_head && !_head.compare_exchange_weak(
@@ -129,7 +129,7 @@ void* lengthfixed_mtmp::realloc(void *p, size_t old_sz, size_t new_sz)
 
 void lengthfixed_mtmp::free(void *p, size_t sz)
 {
-    assert(nullptr != p && _granularity == (std::max)(sz, sizeof(void*)));
+    assert(nullptr != p && _granularity == std::max(sz, sizeof(void*)));
 
     if (_free_num.load(std::memory_order_relaxed) >= (int) MAX_FREE_NUM)
     {

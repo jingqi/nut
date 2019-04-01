@@ -64,14 +64,14 @@
     <Filter Include="test\container\bytestream">
       <UniqueIdentifier>{a54a5924-7d7e-499a-b87b-b56f9fdf5292}</UniqueIdentifier>
     </Filter>
-    <Filter Include="test\util\time">
-      <UniqueIdentifier>{621719c1-6775-461a-b0bf-0f44e72180c2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="test\util\string">
       <UniqueIdentifier>{e315eb3c-fb74-4c53-acae-5c9df16c0eb4}</UniqueIdentifier>
     </Filter>
     <Filter Include="test\container\rwbuffer">
       <UniqueIdentifier>{dd0c6153-fbf8-4f93-99cd-93e509e0e8ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\time">
+      <UniqueIdentifier>{6ef1dc66-03cb-4847-944f-a8a5966f06c8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -156,9 +156,6 @@
     <ClCompile Include="..\..\..\src\test_nut\util\string\test_kmp.cpp">
       <Filter>test\util\string</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\test_nut\util\time\test_date_time.cpp">
-      <Filter>test\util\time</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\xml\test_xml_element.cpp">
       <Filter>test\util\txtcfg\xml</Filter>
     </ClCompile>
@@ -189,9 +186,6 @@
     <ClCompile Include="..\..\..\src\test_nut\container\rwbuffer\test_ring_buffer.cpp">
       <Filter>test\container\rwbuffer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\test_nut\util\time\test_time_wheel.cpp">
-      <Filter>test\util\time</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\test_nut\security\digest\test_sha1.cpp">
       <Filter>test\security\digest</Filter>
     </ClCompile>
@@ -206,12 +200,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\test_nut\util\string\test_stringutils.cpp">
       <Filter>test\util\string</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\test_nut\util\time\test_performance_counter.cpp">
-      <Filter>test\util\time</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\test_nut\util\time\test_time_diff.cpp">
-      <Filter>test\util\time</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\test_nut\threading\test_priority_threadpool.cpp">
       <Filter>test\threading</Filter>
@@ -233,6 +221,24 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_concurrent_stack.cpp">
       <Filter>test\threading\lockfree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\time\test_date_time.cpp">
+      <Filter>test\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\time\test_performance_counter.cpp">
+      <Filter>test\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\time\test_time_diff.cpp">
+      <Filter>test\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\time\test_time_wheel.cpp">
+      <Filter>test\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\security\digest\test_sha2_256.cpp">
+      <Filter>test\security\digest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\security\digest\test_sha2_512.cpp">
+      <Filter>test\security\digest</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

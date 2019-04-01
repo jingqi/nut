@@ -142,8 +142,8 @@ int main(int argc, char *argv[])
     {
         // default action
         runner.run_group("quiet");
-        // runner.run_fixture("TestSHA2_512");
-        // runner.run_case("TestConcurrentHashMap", "test_multi_thread");
+        // runner.run_fixture("TestTimeWheel");
+        // runner.run_case("TestTimeWheel", "test_bug1");
     }
 
     HPRecord::clear();
