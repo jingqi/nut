@@ -113,8 +113,8 @@ NUT_API BigInteger next_prime(const BigInteger& n)
 
     const size_t SMALL_PRIME_THRESHOLD = 95;
     const size_t DEFAULT_PRIME_CERTAINTY = 2;
-    const BigInteger SMALL_PRIME_PRODUCT(((uint64_t) 3) * 5 * 7 * 11 * 13 * 17 * 19 *
-            23 * 29 * 31 * 37 * 41);
+    const BigInteger SMALL_PRIME_PRODUCT(
+        ((int64_t) 3) * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29 * 31 * 37 * 41);
 
     BigInteger result(n);
     ++result;

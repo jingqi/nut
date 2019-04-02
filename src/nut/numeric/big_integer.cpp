@@ -11,7 +11,7 @@
 namespace nut
 {
 
-BigInteger::BigInteger(native_int_type v)
+BigInteger::BigInteger(long long v)
 {
     ensure_cap(sizeof(v) / sizeof(word_type));
     ::memcpy(_data, &v, sizeof(v));
@@ -126,7 +126,7 @@ BigInteger& BigInteger::operator=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator=(native_int_type v)
+BigInteger& BigInteger::operator=(long long v)
 {
     ensure_cap(sizeof(v) / sizeof(word_type));
     ::memcpy(_data, &v, sizeof(v));
@@ -143,7 +143,7 @@ bool BigInteger::operator==(const BigInteger& x) const
     return signed_compare(_data, _significant_len, x._data, x._significant_len) == 0;
 }
 
-bool BigInteger::operator==(native_int_type v) const
+bool BigInteger::operator==(long long v) const
 {
     return signed_compare(_data, _significant_len, (word_type*)&v,
                           sizeof(v) / sizeof(word_type)) == 0;
@@ -154,7 +154,7 @@ bool BigInteger::operator!=(const BigInteger& x) const
     return !(*this == x);
 }
 
-bool BigInteger::operator!=(native_int_type v) const
+bool BigInteger::operator!=(long long v) const
 {
     return !(*this == v);
 }
@@ -164,7 +164,7 @@ bool BigInteger::operator<(const BigInteger& x) const
     return signed_compare(_data, _significant_len, x._data, x._significant_len) < 0;
 }
 
-bool BigInteger::operator<(native_int_type v) const
+bool BigInteger::operator<(long long v) const
 {
     return signed_compare(_data, _significant_len, (word_type*)&v,
                           sizeof(v) / sizeof(word_type)) < 0;
@@ -175,7 +175,7 @@ bool BigInteger::operator>(const BigInteger& x) const
     return x < *this;
 }
 
-bool BigInteger::operator>(native_int_type v) const
+bool BigInteger::operator>(long long v) const
 {
     return signed_compare((word_type*)&v, sizeof(v) / sizeof(word_type),
                           _data, _significant_len) < 0;
@@ -186,7 +186,7 @@ bool BigInteger::operator<=(const BigInteger& x) const
     return !(x < *this);
 }
 
-bool BigInteger::operator<=(native_int_type v) const
+bool BigInteger::operator<=(long long v) const
 {
     return !(*this > v);
 }
@@ -196,7 +196,7 @@ bool BigInteger::operator>=(const BigInteger& x) const
     return !(*this < x);
 }
 
-bool BigInteger::operator>=(native_int_type v) const
+bool BigInteger::operator>=(long long v) const
 {
     return !(*this < v);
 }
@@ -213,7 +213,7 @@ BigInteger BigInteger::operator+(const BigInteger& x) const
     return ret;
 }
 
-BigInteger BigInteger::operator+(native_int_type v) const
+BigInteger BigInteger::operator+(long long v) const
 {
     BigInteger ret;
     const size_type max_len = std::max(_significant_len, sizeof(v) / sizeof(word_type));
@@ -237,7 +237,7 @@ BigInteger BigInteger::operator-(const BigInteger& x) const
     return ret;
 }
 
-BigInteger BigInteger::operator-(native_int_type v) const
+BigInteger BigInteger::operator-(long long v) const
 {
     BigInteger ret;
     const size_type max_len = std::max(_significant_len, sizeof(v) / sizeof(word_type));
@@ -270,7 +270,7 @@ BigInteger BigInteger::operator*(const BigInteger& x) const
     return ret;
 }
 
-BigInteger BigInteger::operator*(native_int_type v) const
+BigInteger BigInteger::operator*(long long v) const
 {
     BigInteger ret;
     ret.ensure_cap(_significant_len + sizeof(v) / sizeof(word_type));
@@ -288,7 +288,7 @@ BigInteger BigInteger::operator/(const BigInteger& x) const
     return ret;
 }
 
-BigInteger BigInteger::operator/(native_int_type v) const
+BigInteger BigInteger::operator/(long long v) const
 {
     BigInteger ret;
     BigInteger::divide(*this, BigInteger(v), &ret, nullptr);
@@ -313,7 +313,7 @@ BigInteger BigInteger::operator%(const BigInteger& x) const
     return ret;
 }
 
-BigInteger BigInteger::operator%(native_int_type v) const
+BigInteger BigInteger::operator%(long long v) const
 {
     assert(0 != v);
 
@@ -332,7 +332,7 @@ BigInteger& BigInteger::operator+=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator+=(native_int_type v)
+BigInteger& BigInteger::operator+=(long long v)
 {
     const size_type max_len = std::max(_significant_len, sizeof(v) / sizeof(word_type));
     ensure_cap(max_len + 1);
@@ -353,7 +353,7 @@ BigInteger& BigInteger::operator-=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator-=(native_int_type v)
+BigInteger& BigInteger::operator-=(long long v)
 {
     const size_type max_len = std::max(_significant_len, sizeof(v) / sizeof(word_type));
     ensure_cap(max_len + 1);
@@ -374,7 +374,7 @@ BigInteger& BigInteger::operator*=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator*=(native_int_type v)
+BigInteger& BigInteger::operator*=(long long v)
 {
     ensure_cap(_significant_len + sizeof(v) / sizeof(word_type));
     signed_multiply(_data, _significant_len, (word_type*)&v, sizeof(v) / sizeof(word_type),
@@ -390,7 +390,7 @@ BigInteger& BigInteger::operator/=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator/=(native_int_type v)
+BigInteger& BigInteger::operator/=(long long v)
 {
     BigInteger::divide(*this, BigInteger(v), this, nullptr);
     return *this;
@@ -413,7 +413,7 @@ BigInteger& BigInteger::operator%=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator%=(native_int_type v)
+BigInteger& BigInteger::operator%=(long long v)
 {
     assert(0 != v);
     BigInteger::divide(*this, BigInteger(v), nullptr, this);
@@ -565,7 +565,7 @@ void BigInteger::resize(size_type n)
 /**
  * 使值恒为正数，且比特长度小于 bit_len
  *
- * @return 注意，返回为正数
+ * @note 注意，结果为正数
  */
 void BigInteger::limit_positive_bits_to(size_type bit_len)
 {
@@ -757,9 +757,9 @@ void BigInteger::swap(BigInteger *a, BigInteger *b)
     ::free(tmp);
 }
 
-BigInteger::native_int_type BigInteger::to_integer() const
+long long BigInteger::to_integer() const
 {
-    native_int_type ret = 0;
+    long long ret = 0;
     signed_expand(_data, _significant_len, (word_type*)&ret, sizeof(ret) / sizeof(word_type));
     return ret;
 }
@@ -950,42 +950,42 @@ BigInteger BigInteger::value_of(const std::wstring& s, size_type radix)
     return ret;
 }
 
-bool operator==(BigInteger::native_int_type a, const BigInteger& b)
+bool operator==(long long a, const BigInteger& b)
 {
     return b == a;
 }
 
-bool operator!=(BigInteger::native_int_type a, const BigInteger& b)
+bool operator!=(long long a, const BigInteger& b)
 {
     return b != a;
 }
 
-bool operator<(BigInteger::native_int_type a, const BigInteger& b)
+bool operator<(long long a, const BigInteger& b)
 {
     return b > a;
 }
 
-bool operator>(BigInteger::native_int_type a, const BigInteger& b)
+bool operator>(long long a, const BigInteger& b)
 {
     return b < a;
 }
 
-bool operator<=(BigInteger::native_int_type a, const BigInteger& b)
+bool operator<=(long long a, const BigInteger& b)
 {
     return b >= a;
 }
 
-bool operator>=(BigInteger::native_int_type a, const BigInteger& b)
+bool operator>=(long long a, const BigInteger& b)
 {
     return b <= a;
 }
 
-BigInteger operator+(BigInteger::native_int_type a, const BigInteger& b)
+BigInteger operator+(long long a, const BigInteger& b)
 {
     return b + a;
 }
 
-BigInteger operator-(BigInteger::native_int_type a, const BigInteger& b)
+BigInteger operator-(long long a, const BigInteger& b)
 {
     typedef BigInteger::word_type word_type;
 
@@ -999,17 +999,17 @@ BigInteger operator-(BigInteger::native_int_type a, const BigInteger& b)
     return ret;
 }
 
-BigInteger operator*(BigInteger::native_int_type a, const BigInteger& b)
+BigInteger operator*(long long a, const BigInteger& b)
 {
     return b * a;
 }
 
-BigInteger operator/(BigInteger::native_int_type a, const BigInteger& b)
+BigInteger operator/(long long a, const BigInteger& b)
 {
     return BigInteger(a) / b;
 }
 
-BigInteger operator%(BigInteger::native_int_type a, const BigInteger& b)
+BigInteger operator%(long long a, const BigInteger& b)
 {
     return BigInteger(a) % b;
 }
