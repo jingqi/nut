@@ -3,6 +3,7 @@
 #define ___HEADFILE_770F82A8_D4E3_45A1_A6B9_1790204ACF29_
 
 #include <stdint.h>
+#include <functional>
 
 #include <nut/container/array.h>
 
@@ -23,6 +24,12 @@ namespace nut
 class NUT_API AES_CBC_PKCS5
 {
 public:
+    typedef std::function<void(const void*,size_t)> callback_type;
+
+public:
+    void set_callback(callback_type&& cb);
+    void set_callback(const callback_type& cb);
+
     /**
      * 开始加密
      *
@@ -33,12 +40,14 @@ public:
     void start_encrypt(const void* key, int key_bits, const void *iv);
 
     /**
-     * 更新要加密的数据
+     * 加密
      */
     void update_encrypt(const void *data, size_t data_len);
 
     /**
-     * 结束加密过程
+     * 填充小节，结束一段加密过程
+     *
+     * NOTE 如果要复用 key 和当前 iv, 后面可以接着直接 update_encrypt()
      */
     void finish_encrypt();
 
@@ -52,21 +61,18 @@ public:
     void start_decrypt(const void *key, int key_bits, const void *iv);
 
     /**
-     * 更新要解密的数据
+     * 解密
      */
     void update_decrypt(const void *data, size_t data_len);
 
     /**
-     * 结束解密过程
+     * 结束一段解密过程
+     *
+     * NOTE 如果要复用 key 和当前 iv, 后面可以接着直接 update_decrypt()
      *
      * @return 解密失败则返回 false
      */
     bool finish_decrypt();
-
-    /**
-     * 获取加密或者解密结果
-     */
-    COWArray<uint8_t> get_result() const;
 
 private:
     enum class State
@@ -75,10 +81,19 @@ private:
         IN_ENCRYPT,
         IN_DECRYPT
     } _state = State::READY;
-    uint8_t _data_buf[16], _iv[16];
-    size_t _data_buf_size = 0;
-    COWArray<uint8_t> _result;
+
+    uint8_t _iv[16];
+
+    uint8_t _input_buffer[16];
+    size_t _input_buffer_size = 0;
+
+    /* 仅仅给解密过程使用 */
+    uint8_t _decrypt_buffer[16];
+    bool _decrypt_buffer_has_data = false;
+
     AES _aes;
+
+    callback_type _callback;
 };
 
 }
