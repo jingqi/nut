@@ -20,7 +20,7 @@ static void _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, c
     size_t min_sig = (rlen + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
     if (t.significant_words_length() < min_sig)
         min_sig = t.significant_words_length();
-    BigInteger s(t.data(), min_sig, true);
+    BigInteger s(t.data(), sizeof(word_type) * min_sig, true);
     s.limit_positive_bits_to(rlen);
 
     s.multiply_to_len(nn, rlen); // rs = (rs * nn) % r

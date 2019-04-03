@@ -19,24 +19,10 @@ BigInteger::BigInteger(long long v)
     minimize_significant_len();
 }
 
-BigInteger::BigInteger(const word_type *buf, size_type len, bool with_sign)
+BigInteger::BigInteger(const void *buf, size_type cb, bool with_sign)
 {
-    assert(nullptr != buf && len > 0);
-
-    if (with_sign || nut::is_positive(buf, len))
-    {
-        ensure_cap(len);
-        ::memcpy(_data, buf, sizeof(word_type) * len);
-        _significant_len = len;
-    }
-    else
-    {
-        ensure_cap(len + 1);
-        ::memcpy(_data, buf, sizeof(word_type) * len);
-        _data[len] = 0;
-        _significant_len = len + 1;
-    }
-    minimize_significant_len();
+    assert(nullptr != buf && cb > 0);
+    set(buf, cb, with_sign);
 }
 
 BigInteger::BigInteger(BigInteger&& x)
@@ -553,6 +539,19 @@ bool BigInteger::is_zero() const
 bool BigInteger::is_positive() const
 {
     return nut::is_positive(_data, _significant_len);
+}
+
+void BigInteger::set(const void *buf, size_type cb, bool with_sign)
+{
+    assert(nullptr != buf && cb > 0);
+
+    const uint8_t fill = (with_sign ? (nut::is_positive((const uint8_t*) buf, cb) ? 0 : 0xFF) : 0);
+    const size_type min_sig = cb / sizeof(word_type) + 1; // 保证一个空闲字放符号位
+    ensure_cap(min_sig);
+    ::memcpy(_data, buf, cb);
+    ::memset(((uint8_t*) _data) + cb, fill, min_sig * sizeof(word_type) - cb);
+    _significant_len = min_sig;
+    minimize_significant_len();
 }
 
 void BigInteger::resize(size_type n)

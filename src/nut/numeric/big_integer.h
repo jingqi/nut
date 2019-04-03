@@ -44,23 +44,7 @@ public:
 
 public:
     explicit BigInteger(long long v = 0);
-
-    template <typename U>
-    BigInteger(const U *buf, size_type len, bool with_sign)
-    {
-        assert(nullptr != buf && len > 0);
-
-        const uint8_t fill = (with_sign ? (nut::is_positive(buf, len) ? 0 : 0xFF) : 0);
-        const size_type min_sig = sizeof(U) * len / sizeof(word_type) + 1; // 保证一个空闲字节放符号位
-        ensure_cap(min_sig);
-        ::memcpy(_data, buf, sizeof(U) * len);
-        ::memset(((U*) _data) + len, fill, min_sig * sizeof(word_type) - sizeof(U) * len);
-        _significant_len = min_sig;
-        minimize_significant_len();
-    }
-
-    // 上述模板函数的一个特化
-    BigInteger(const word_type *buf, size_type len, bool with_sign);
+    BigInteger(const void *buf, size_type cb, bool with_sign);
 
     BigInteger(BigInteger&& x);
     BigInteger(const BigInteger& x);
@@ -154,6 +138,13 @@ public:
      */
     bool is_positive() const;
 
+    void set(const void *buf, size_type cb, bool with_sign);
+
+    /**
+     * 截断或者符号扩充至指定字数
+     *
+     * @note 截断时可能导致符号翻转
+     */
     void resize(size_type n);
 
     /**

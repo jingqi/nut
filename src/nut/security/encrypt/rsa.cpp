@@ -9,31 +9,23 @@
 namespace nut
 {
 
-size_t RSA::KeyBase::max_input_bit_size() const
+void RSA::gen_key(size_t max_bit_length, PublicKey *public_key, PrivateKey *private_key)
 {
-    assert(n.is_positive());
-    return n.bit_length() - 1; // 输入必须小于 n
-}
-
-size_t RSA::KeyBase::max_output_bit_size() const
-{
-    assert(n.is_positive());
-    return n.bit_length(); // 输出一定小于 n
-}
-
-void RSA::gen_key(size_t bit_count, PublicKey *public_key, PrivateKey *private_key)
-{
-    assert(bit_count > 10);
+    assert(max_bit_length >= 16);
 
     // 随机选取两个素数
     // NOTE:
     //  为了避免椭圆曲线因子分解算法，p、q应有大致相同的比特长度，且足够大。
     //  同时， p,q 不应太接近, 否则就容易分解, 保持几个比特长度差是可以的
+    const unsigned p_len = (max_bit_length + 1) / 2 - 2,
+        q_len = max_bit_length - p_len; // q_len - p_len = 3 or 4
     BigInteger bound(1);
-    bound <<= (bit_count + 1) / 2 - 2;
+    bound <<= p_len - 1;
     BigInteger p = BigInteger::rand_between(bound, bound << 1);
     p = next_prime(p);
-    bound <<= 4;
+
+    assert(q_len > p_len);
+    bound <<= q_len - p_len;
     BigInteger q = BigInteger::rand_between(bound, bound << 1);
     q = next_prime(q);
 
@@ -64,14 +56,14 @@ void RSA::gen_key(size_t bit_count, PublicKey *public_key, PrivateKey *private_k
     }
 }
 
-BigInteger RSA::encode(const BigInteger& m, const PublicKey& k)
+BigInteger RSA::transfer(const BigInteger& m, const PublicKey& k)
 {
     BigInteger ret;
     mod_pow(m, k.e, k.n, &ret);
     return ret;
 }
 
-BigInteger RSA::decode(const BigInteger& c, const PrivateKey& k)
+BigInteger RSA::transfer(const BigInteger& c, const PrivateKey& k)
 {
     BigInteger ret;
     mod_pow(c, k.d, k.n, &ret);

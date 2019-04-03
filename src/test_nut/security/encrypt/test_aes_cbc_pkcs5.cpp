@@ -5,6 +5,7 @@
 #include <nut/unittest/unittest.h>
 
 #include <nut/security/encrypt/aes_cbc_pkcs5.h>
+#include <nut/container/array.h>
 
 using namespace nut;
 
@@ -33,7 +34,7 @@ class TestAesCbcPkcs5 : public TestFixture
         };
 
         AES_CBC_PKCS5 acp_enc, acp_dec;
-        COWArray<uint8_t> ba1, ba2;
+        Array<uint8_t> ba1, ba2;
         acp_enc.set_callback(
             [&] (const void *data, size_t cb) {
                 ba1.append((const uint8_t*) data, (const uint8_t*) data + cb);
@@ -101,7 +102,7 @@ class TestAesCbcPkcs5 : public TestFixture
         };
 
         AES_CBC_PKCS5 acp_enc, acp_dec;
-        COWArray<uint8_t> ba1, ba2, ba3, ba4;
+        Array<uint8_t> ba1, ba2, ba3, ba4;
 
         // Encrypt package 1
         acp_enc.set_callback(

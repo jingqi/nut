@@ -1,5 +1,6 @@
 ﻿
 #include <stdio.h>
+#include <iostream>
 
 
 #include <nut/unittest/unittest.h>
@@ -8,6 +9,7 @@
 
 #include <time.h>
 
+using namespace std;
 using namespace nut;
 
 class TestRSA : public TestFixture
@@ -26,16 +28,16 @@ class TestRSA : public TestFixture
             RSA::PublicKey pk;
             RSA::PrivateKey vk;
             RSA::gen_key(1024, &pk, &vk);
-            NUT_TA(pk.max_input_bit_size() >= 1024);
-            NUT_TA(vk.max_input_bit_size() >= 1024);
+            // cout << pk.n.bit_length() << endl;
+            NUT_TA(pk.n.bit_length() == 1023 || pk.n.bit_length() == 1024);
 
             BigInteger a, b;
-            a = RSA::encode(BigInteger(1986), pk);
-            b = RSA::decode(a, vk);
+            a = RSA::transfer(BigInteger(1986), pk);
+            b = RSA::transfer(a, vk);
             NUT_TA(b == 1986);
 
-            a = RSA::decode(BigInteger(0x457a), vk);
-            b = RSA::encode(a, pk);
+            a = RSA::transfer(BigInteger(0x457a), vk);
+            b = RSA::transfer(a, pk);
             NUT_TA(b == 0x457a);
 
             const double t = PerformanceCounter::now() - s;
@@ -51,16 +53,16 @@ class TestRSA : public TestFixture
         RSA::gen_key(31, &pk, &vk);
         // printf("public key :\n\te: %d\n\tn: %s\n", pk.e, pk.n.toString().c_str());
         // printf("private key :\n\td: %s\n\tn: %s\n", vk.d.toString().c_str(), vk.n.toString().c_str());
-        NUT_TA(pk.max_input_bit_size() >= 31);
-        NUT_TA(vk.max_input_bit_size() >= 31);
+        // cout << pk.n.bit_length() << endl;
+        NUT_TA(pk.n.bit_length() == 30 || pk.n.bit_length() == 31);
 
         BigInteger a, b;
-        a = RSA::encode(BigInteger(1986), pk);
-        b = RSA::decode(a, vk);
+        a = RSA::transfer(BigInteger(1986), pk);
+        b = RSA::transfer(a, vk);
         NUT_TA(b == 1986);
 
-        a = RSA::decode(BigInteger(0x457a), vk);
-        b = RSA::encode(a, pk);
+        a = RSA::transfer(BigInteger(0x457a), vk);
+        b = RSA::transfer(a, pk);
         NUT_TA(b == 0x457a);
     }
 };

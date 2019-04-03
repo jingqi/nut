@@ -6,6 +6,7 @@
 #ifndef ___HEADFILE_BAE94271_DA1F_4411_AC7D_7734CBCA0672_
 #define ___HEADFILE_BAE94271_DA1F_4411_AC7D_7734CBCA0672_
 
+#include <assert.h>
 #include <stdint.h>
 #include <stdlib.h> // for Windows _byteswap_ushort() and so on
 
@@ -104,6 +105,18 @@ inline int64_t bswap_int64(int64_t val)
     val = ((val << 16) & 0xFFFF0000FFFF0000ULL) | ((val >> 16) & 0x0000FFFF0000FFFFULL);
     return (val << 32) | ((val >> 32) & 0xFFFFFFFFULL);
 #endif
+}
+
+// swap endian
+inline void bswap(void *dst, size_t cb)
+{
+    assert(nullptr != dst || 0 == cb);
+    for (size_t i = 0, round = cb / 2; i < round; ++i)
+    {
+        const uint8_t v = ((const uint8_t*) dst)[i];
+        ((uint8_t*) dst)[i] = ((const uint8_t*) dst)[cb - i - 1];
+        ((uint8_t*) dst)[cb - i - 1] = v;
+    }
 }
 
 }

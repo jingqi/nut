@@ -13,41 +13,30 @@ namespace nut
 class NUT_API RSA
 {
 public:
-    class KeyBase
+    class PublicKey
     {
     public:
-        /**
-         * 单次允许输入的最长比特数
-         */
-        size_t max_input_bit_size() const;
-
-        /**
-         * 单次可能输出的最长比特数
-         */
-        size_t max_output_bit_size() const;
-
-    public:
-        BigInteger n;
+        BigInteger e, n;
     };
 
-    class PublicKey : public KeyBase
+    class PrivateKey
     {
     public:
-        BigInteger e;
-    };
-
-    class PrivateKey : public KeyBase
-    {
-    public:
-        BigInteger d;
+        BigInteger d, n;
     };
 
 public:
-    static void gen_key(size_t bit_count, PublicKey *public_key, PrivateKey *private_key);
+    /**
+     * 生成密钥对
+     *
+     * @param max_bit_length 最大密钥长度，最终生成比特长度为 max_bit_length - 1
+     *                       或者 max_bit_length (因为 M 位正整数乘以 N 位正整数
+     *                       的结果为 M + N -1 位或者 M + N 位)
+     */
+    static void gen_key(size_t max_bit_length, PublicKey *public_key, PrivateKey *private_key);
 
-    static BigInteger encode(const BigInteger& m, const PublicKey& k);
-
-    static BigInteger decode(const BigInteger& c, const PrivateKey& k);
+    static BigInteger transfer(const BigInteger& m, const PublicKey& k);
+    static BigInteger transfer(const BigInteger& c, const PrivateKey& k);
 };
 
 }

@@ -5,8 +5,6 @@
 #include <stdint.h>
 #include <functional>
 
-#include <nut/container/array.h>
-
 #include "../../nut_config.h"
 #include "aes.h"
 
@@ -63,7 +61,7 @@ public:
     /**
      * 解密
      */
-    void update_decrypt(const void *data, size_t data_len);
+    bool update_decrypt(const void *data, size_t data_len);
 
     /**
      * 结束一段解密过程
@@ -77,10 +75,11 @@ public:
 private:
     enum class State
     {
-        READY,
-        IN_ENCRYPT,
-        IN_DECRYPT
-    } _state = State::READY;
+        Ready,
+        InEncrypt,
+        InDecrypt,
+        Error,
+    } _state = State::Ready;
 
     uint8_t _iv[16];
 
