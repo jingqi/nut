@@ -17,6 +17,10 @@ namespace nut
 
 /**
  * 无限大整数
+ *
+ * NOTE
+ * - 字(word_type)之间按照 little-endian 方式存储
+ * - 字(word_type)内部的字节序与机器相关, Intel CPU 下一般认为是 little-endian
  */
 class NUT_API BigInteger
 {
@@ -204,6 +208,13 @@ public:
      * 取 [a, b) 范围内的随机数
      */
     static BigInteger rand_between(const BigInteger& a, const BigInteger& b);
+
+    /**
+     * 随机一个 bit_len 位的正整数
+     *
+     * @param ensure_highest_bit 确保第 bit_len - 1 位一定是 1
+     */
+    static BigInteger rand_positive(size_t bit_len, bool ensure_highest_bit = false);
 
     /**
      * 值交换

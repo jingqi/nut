@@ -45,8 +45,7 @@ class TestNumericAlgo : public TestFixture
             // BUG 预算表优化的 _mod_multiply() 实现有问题
             BigInteger a(1), b = BigInteger::value_of("400000000", 16), n = BigInteger::value_of("c00000000", 16);
             ModMultiplyPreBuildTable<2> table(a, n);
-            BigInteger x1;
-            mod_multiply(b, n, table, &x1);
+            BigInteger x1 = mod_multiply(b, n, table);
             BigInteger x2 = (a * b) % n;
 //            printf("\n%s\n%s\n", x1.toString().c_str(), x2.toString().c_str());
             NUT_TA(x1 == x2);
@@ -103,10 +102,9 @@ class TestNumericAlgo : public TestFixture
             BigInteger a = BigInteger::rand_between(bound, bound << 1);
             BigInteger b = BigInteger::rand_between(bound, bound << 1);
             BigInteger n = BigInteger::rand_between(bound, bound << 1);
-            BigInteger x;
 
             ModMultiplyPreBuildTable<4> table(a % n, n);
-            mod_multiply(b % n, n, table, &x);
+            BigInteger x = mod_multiply(b % n, n, table);
             NUT_TA(x == (a * b) % n);
         }
 
@@ -162,7 +160,7 @@ class TestNumericAlgo : public TestFixture
             const PerformanceCounter s = PerformanceCounter::now();
             for (int i = 0; i < iteration; ++i)
             {
-                mod_pow(a, b, n, &x1);
+                x1 = mod_pow(a, b, n);
             }
             const PerformanceCounter t1 = PerformanceCounter::now();
             for (int i = 0; i < iteration; ++i)

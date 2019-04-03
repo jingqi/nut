@@ -15,8 +15,7 @@ namespace nut
  */
 bool psedoprime(const BigInteger& n)
 {
-    BigInteger mp(0);
-    mod_pow(BigInteger(2), n - 1, n, &mp);
+    const BigInteger mp = mod_pow(BigInteger(2), n - 1, n);
     if (mp != 1)
         return false; // 一定是合数
     return true; // 可能是素数
@@ -89,13 +88,12 @@ bool miller_rabin(const BigInteger& n, unsigned s)
         const BigInteger b = BigInteger::rand_between(ONE, n); // _rand_1_n(n);
 
         int j = 0;
-        BigInteger z(0);
-        mod_pow(b, m, n, &z);
+        BigInteger z = mod_pow(b, m, n);
         while (!((j == 0 && z == ONE) || z == this_minus_one))
         {
             if ((j > 0 && z == ONE) || ++j == a)
                 return false;
-            mod_pow(z, TWO, n, &z);
+            z = mod_pow(z, TWO, n);
         }
     }
     return true;

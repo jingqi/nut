@@ -19,14 +19,9 @@ void RSA::gen_key(size_t max_bit_length, PublicKey *public_key, PrivateKey *priv
     //  同时， p,q 不应太接近, 否则就容易分解, 保持几个比特长度差是可以的
     const unsigned p_len = (max_bit_length + 1) / 2 - 2,
         q_len = max_bit_length - p_len; // q_len - p_len = 3 or 4
-    BigInteger bound(1);
-    bound <<= p_len - 1;
-    BigInteger p = BigInteger::rand_between(bound, bound << 1);
+    BigInteger p = BigInteger::rand_positive(p_len, true);
+    BigInteger q = BigInteger::rand_positive(q_len, true);
     p = next_prime(p);
-
-    assert(q_len > p_len);
-    bound <<= q_len - p_len;
-    BigInteger q = BigInteger::rand_between(bound, bound << 1);
     q = next_prime(q);
 
     // 选取小奇数 e，使得 e 与 gamma_n 互质
@@ -58,16 +53,12 @@ void RSA::gen_key(size_t max_bit_length, PublicKey *public_key, PrivateKey *priv
 
 BigInteger RSA::transfer(const BigInteger& m, const PublicKey& k)
 {
-    BigInteger ret;
-    mod_pow(m, k.e, k.n, &ret);
-    return ret;
+    return mod_pow(m, k.e, k.n);
 }
 
 BigInteger RSA::transfer(const BigInteger& c, const PrivateKey& k)
 {
-    BigInteger ret;
-    mod_pow(c, k.d, k.n, &ret);
-    return ret;
+    return mod_pow(c, k.d, k.n);
 }
 
 }

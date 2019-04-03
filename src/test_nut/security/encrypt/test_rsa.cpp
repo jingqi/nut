@@ -16,29 +16,32 @@ class TestRSA : public TestFixture
 {
     virtual void register_cases() override
     {
-        NUT_REGISTER_CASE(test_smoking);
+        NUT_REGISTER_CASE(test_profile);
         NUT_REGISTER_CASE(test_bugs);
     }
 
-    void test_smoking()
+    void test_profile()
     {
         // 性能测试
         {
             const PerformanceCounter s = PerformanceCounter::now();
             RSA::PublicKey pk;
             RSA::PrivateKey vk;
-            RSA::gen_key(1024, &pk, &vk);
+            RSA::gen_key(2048, &pk, &vk);
             // cout << pk.n.bit_length() << endl;
-            NUT_TA(pk.n.bit_length() == 1023 || pk.n.bit_length() == 1024);
+            NUT_TA(pk.n.bit_length() == 2047 || pk.n.bit_length() == 2048);
 
-            BigInteger a, b;
-            a = RSA::transfer(BigInteger(1986), pk);
-            b = RSA::transfer(a, vk);
-            NUT_TA(b == 1986);
+            for (int i = 0; i < 20; ++i)
+            {
+                BigInteger a, b;
+                a = RSA::transfer(BigInteger(1986), pk);
+                b = RSA::transfer(a, vk);
+                NUT_TA(b == 1986);
 
-            a = RSA::transfer(BigInteger(0x457a), vk);
-            b = RSA::transfer(a, pk);
-            NUT_TA(b == 0x457a);
+                a = RSA::transfer(BigInteger(0x457a), vk);
+                b = RSA::transfer(a, pk);
+                NUT_TA(b == 0x457a);
+            }
 
             const double t = PerformanceCounter::now() - s;
             printf(" %.6fs ", t);

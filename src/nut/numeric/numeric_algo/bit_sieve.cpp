@@ -73,8 +73,8 @@ BitSieve::BitSieve(const BigInteger& base, int search_len)
     _bits = (int64_t*) ::malloc(sizeof(int64_t) * _bits_cap);
     ::memset(_bits, 0, _bits_cap * sizeof(int64_t));
     _length = search_len;
-    int start = 0;
 
+    int start = 0;
     int step = _small_sieve.sieve_search(_small_sieve._length, start);
     int converted_step = (step * 2) + 1;
 
@@ -137,7 +137,7 @@ int BitSieve::sieve_search(int limit, int start)
     {
         if (!get(index))
             return index;
-        index++;
+        ++index;
     } while (index < limit - 1);
     return -1;
 }

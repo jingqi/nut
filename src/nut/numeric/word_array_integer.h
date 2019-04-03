@@ -228,7 +228,8 @@ void signed_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
-    const size_t words_off = bit_count / (8 * sizeof(word_type)), bits_off = bit_count % (8 * sizeof(word_type));
+    const size_t words_off = bit_count / (8 * sizeof(word_type)),
+        bits_off = bit_count % (8 * sizeof(word_type));
     if (0 == bits_off)
     {
         _signed_shift_left_word(a, M, x, N, words_off);
@@ -294,7 +295,8 @@ void unsigned_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
-    const size_t words_off = bit_count / (8 * sizeof(word_type)), bits_off = bit_count % (8 * sizeof(word_type));
+    const size_t words_off = bit_count / (8 * sizeof(word_type)),
+        bits_off = bit_count % (8 * sizeof(word_type));
     if (0 == bits_off)
     {
         _unsigned_shift_left_word(a, M, x, N, words_off);
@@ -362,7 +364,8 @@ void signed_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count)
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
-    const size_t words_off = bit_count / (8 * sizeof(word_type)), bits_off = bit_count % (8 * sizeof(word_type));
+    const size_t words_off = bit_count / (8 * sizeof(word_type)),
+        bits_off = bit_count % (8 * sizeof(word_type));
     if (0 == bits_off)
     {
         _signed_shift_right_word(a, M, x, N, words_off);
@@ -427,7 +430,8 @@ void unsigned_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
     typedef typename StdInt<T>::unsigned_type word_type;
 
-    const size_t words_off = bit_count / (8 * sizeof(word_type)), bits_off = bit_count % (8 * sizeof(word_type));
+    const size_t words_off = bit_count / (8 * sizeof(word_type)),
+        bits_off = bit_count % (8 * sizeof(word_type));
     if (0 == bits_off)
     {
         _unsigned_shift_right_word(a, M, x, N, words_off);
@@ -784,7 +788,8 @@ uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
         retx = (word_type*) ma_alloc(ma, sizeof(word_type) * P);
 
     uint8_t carry = 0;
-    const word_type filla = (is_positive(a, M) ? 0 : ~(word_type)0), fillb = (is_positive(b, N) ? 0 : ~(word_type)0);
+    const word_type filla = (is_positive(a, M) ? 0 : ~(word_type)0),
+        fillb = (is_positive(b, N) ? 0 : ~(word_type)0);
     for (size_t i = 0; i < P; ++i)
     {
         const dword_type pluser1 = (i < M ? reinterpret_cast<const word_type*>(a)[i] : filla);
@@ -890,7 +895,8 @@ uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
     if ((a < x && x < a + M) || (b < x && x < b + N))
         retx = (word_type*) ma_alloc(ma, sizeof(word_type) * P);
 
-    const word_type filla = (is_positive(a, M) ? 0 : ~(word_type)0), fillb = (is_positive(b, N) ? 0 : ~(word_type)0);
+    const word_type filla = (is_positive(a, M) ? 0 : ~(word_type)0),
+        fillb = (is_positive(b, N) ? 0 : ~(word_type)0);
     uint8_t carry = 1;
     for (size_t i = 0; i < P; ++i)
     {
@@ -1175,7 +1181,8 @@ void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
         retx = (word_type*) ma_alloc(ma, sizeof(word_type) * P);
 
     // 乘法
-    const word_type filla = (is_positive(a,M) ? 0 : ~(word_type)0), fillb = (is_positive(b,N) ? 0 : ~(word_type)0); /// 先把变量算出来，避免操作数被破坏
+    const word_type filla = (is_positive(a,M) ? 0 : ~(word_type)0),
+        fillb = (is_positive(b,N) ? 0 : ~(word_type)0); /// 先把变量算出来，避免操作数被破坏
     ::memset(retx, 0, sizeof(word_type) * P);
     for (size_t i = 0; i < P; ++i)
     {

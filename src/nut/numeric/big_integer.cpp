@@ -734,26 +734,59 @@ BigInteger BigInteger::rand_between(const BigInteger& a, const BigInteger& b)
     return ret;
 }
 
+BigInteger BigInteger::rand_positive(size_t bit_len, bool ensure_highest_bit)
+{
+    assert(bit_len > 0);
+
+    const size_t word_count = (bit_len + sizeof(word_type) * 8 - 1) / (sizeof(word_type) * 8);
+    const size_t redundant_bit_count = word_count * sizeof(word_type) * 8 - bit_len;
+    assert(redundant_bit_count < sizeof(word_type) * 8);
+
+    BigInteger ret(0);
+    if (redundant_bit_count > 0)
+    {
+        ret.ensure_cap(word_count);
+        ret._significant_len = word_count;
+    }
+    else
+    {
+        ret.ensure_cap(word_count + 1); // 多加一个 word 标记符号
+        ret._data[word_count] = 0;
+        ret._significant_len = word_count + 1;
+    }
+
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    std::uniform_int_distribution<word_type> dist(0, ~(word_type)0);
+    for (size_t i = 0; i < word_count; ++i)
+        ret._data[i] = dist(gen);
+
+    ret._data[word_count - 1] <<= redundant_bit_count;
+    if (ensure_highest_bit)
+        ret._data[word_count - 1] |= ((word_type) 1) << (sizeof(word_type) * 8 - 1);
+    ret._data[word_count - 1] >>= redundant_bit_count;
+
+    return ret;
+}
+
 /**
  * 值交换
  */
 void BigInteger::swap(BigInteger *a, BigInteger *b)
 {
     assert(nullptr != a && nullptr != b);
-    word_type *tmp = a->_data;
-    const size_type tmp_sig = a->_significant_len;
-    a->_data = nullptr;
-    a->_capacity = 0;
 
-    a->ensure_cap(b->_significant_len);
-    ::memcpy(a->_data, b->_data, sizeof(word_type) * b->_significant_len);
+    word_type *tmp_data = a->_data;
+    const size_type tmp_cap = a->_capacity,
+        tmp_sig = a->_significant_len;
+
+    a->_data = b->_data;
+    a->_capacity = b->_capacity;
     a->_significant_len = b->_significant_len;
 
-    b->ensure_cap(tmp_sig);
-    ::memcpy(b->_data, tmp, sizeof(word_type) * tmp_sig);
+    b->_data = tmp_data;
+    b->_capacity = tmp_cap;
     b->_significant_len = tmp_sig;
-
-    ::free(tmp);
 }
 
 long long BigInteger::to_integer() const
