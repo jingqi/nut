@@ -11,6 +11,16 @@
 		2E047C91217F5D1E00C10E14 /* priority_thread_pool.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E047C8F217F5D1E00C10E14 /* priority_thread_pool.h */; };
 		2E047C93217F5D8B00C10E14 /* test_priority_threadpool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E047C92217F5D8B00C10E14 /* test_priority_threadpool.cpp */; };
 		2E135372215FCB5000270AD5 /* element_handler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E135371215FCB5000270AD5 /* element_handler.cpp */; };
+		2E13800D22567B7500C8ECEB /* rsa_pkcs1.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E13800B22567B7500C8ECEB /* rsa_pkcs1.h */; };
+		2E13800E22567B7500C8ECEB /* rsa_pkcs1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E13800C22567B7500C8ECEB /* rsa_pkcs1.cpp */; };
+		2E13801622567B9900C8ECEB /* der_reader.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E13801022567B9900C8ECEB /* der_reader.h */; };
+		2E13801722567B9900C8ECEB /* pem.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E13801122567B9900C8ECEB /* pem.h */; };
+		2E13801822567B9900C8ECEB /* der_reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E13801222567B9900C8ECEB /* der_reader.cpp */; };
+		2E13801922567B9900C8ECEB /* der_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E13801322567B9900C8ECEB /* der_writer.cpp */; };
+		2E13801A22567B9900C8ECEB /* pem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E13801422567B9900C8ECEB /* pem.cpp */; };
+		2E13801B22567B9900C8ECEB /* der_writer.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E13801522567B9900C8ECEB /* der_writer.h */; };
+		2E13801E22567BD600C8ECEB /* test_rsa_pkcs1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E13801C22567BD500C8ECEB /* test_rsa_pkcs1.cpp */; };
+		2E13801F22567BD600C8ECEB /* test_pem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E13801D22567BD500C8ECEB /* test_pem.cpp */; };
 		2E27ED44216E7BC80072840B /* stamped_ptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E27ED43216E7BC80072840B /* stamped_ptr.h */; };
 		2E37F2812193387300FEADF2 /* word_array_integer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E37F2802193387300FEADF2 /* word_array_integer.cpp */; };
 		2E37F2832193389100FEADF2 /* test_word_array_integer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E37F2822193389100FEADF2 /* test_word_array_integer.cpp */; };
@@ -290,6 +300,16 @@
 		2E047C8F217F5D1E00C10E14 /* priority_thread_pool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = priority_thread_pool.h; path = ../../../src/nut/threading/priority_thread_pool.h; sourceTree = "<group>"; };
 		2E047C92217F5D8B00C10E14 /* test_priority_threadpool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_priority_threadpool.cpp; path = ../../../src/test_nut/threading/test_priority_threadpool.cpp; sourceTree = "<group>"; };
 		2E135371215FCB5000270AD5 /* element_handler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = element_handler.cpp; path = ../../../src/nut/util/txtcfg/xml/element_handler.cpp; sourceTree = "<group>"; };
+		2E13800B22567B7500C8ECEB /* rsa_pkcs1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rsa_pkcs1.h; path = ../../../src/nut/security/encrypt/rsa_pkcs1.h; sourceTree = "<group>"; };
+		2E13800C22567B7500C8ECEB /* rsa_pkcs1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rsa_pkcs1.cpp; path = ../../../src/nut/security/encrypt/rsa_pkcs1.cpp; sourceTree = "<group>"; };
+		2E13801022567B9900C8ECEB /* der_reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = der_reader.h; path = ../../../src/nut/security/encrypt/pem/der_reader.h; sourceTree = "<group>"; };
+		2E13801122567B9900C8ECEB /* pem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pem.h; path = ../../../src/nut/security/encrypt/pem/pem.h; sourceTree = "<group>"; };
+		2E13801222567B9900C8ECEB /* der_reader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = der_reader.cpp; path = ../../../src/nut/security/encrypt/pem/der_reader.cpp; sourceTree = "<group>"; };
+		2E13801322567B9900C8ECEB /* der_writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = der_writer.cpp; path = ../../../src/nut/security/encrypt/pem/der_writer.cpp; sourceTree = "<group>"; };
+		2E13801422567B9900C8ECEB /* pem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pem.cpp; path = ../../../src/nut/security/encrypt/pem/pem.cpp; sourceTree = "<group>"; };
+		2E13801522567B9900C8ECEB /* der_writer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = der_writer.h; path = ../../../src/nut/security/encrypt/pem/der_writer.h; sourceTree = "<group>"; };
+		2E13801C22567BD500C8ECEB /* test_rsa_pkcs1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_rsa_pkcs1.cpp; path = ../../../src/test_nut/security/encrypt/test_rsa_pkcs1.cpp; sourceTree = "<group>"; };
+		2E13801D22567BD500C8ECEB /* test_pem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_pem.cpp; path = ../../../src/test_nut/security/encrypt/test_pem.cpp; sourceTree = "<group>"; };
 		2E27ED43216E7BC80072840B /* stamped_ptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stamped_ptr.h; path = ../../../src/nut/threading/lockfree/stamped_ptr.h; sourceTree = "<group>"; };
 		2E37F2802193387300FEADF2 /* word_array_integer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = word_array_integer.cpp; path = ../../../src/nut/numeric/word_array_integer.cpp; sourceTree = "<group>"; };
 		2E37F2822193389100FEADF2 /* test_word_array_integer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_word_array_integer.cpp; path = ../../../src/test_nut/numeric/test_word_array_integer.cpp; sourceTree = "<group>"; };
@@ -584,6 +604,19 @@
 			name = bytestream;
 			sourceTree = "<group>";
 		};
+		2E13800F22567B8100C8ECEB /* pem */ = {
+			isa = PBXGroup;
+			children = (
+				2E13801222567B9900C8ECEB /* der_reader.cpp */,
+				2E13801022567B9900C8ECEB /* der_reader.h */,
+				2E13801322567B9900C8ECEB /* der_writer.cpp */,
+				2E13801522567B9900C8ECEB /* der_writer.h */,
+				2E13801422567B9900C8ECEB /* pem.cpp */,
+				2E13801122567B9900C8ECEB /* pem.h */,
+			);
+			name = pem;
+			sourceTree = "<group>";
+		};
 		2E1926961AD8FE8400FDFFA6 /* nut */ = {
 			isa = PBXGroup;
 			children = (
@@ -816,6 +849,9 @@
 		2E1927521AD900B000FDFFA6 /* encrypt */ = {
 			isa = PBXGroup;
 			children = (
+				2E13800F22567B8100C8ECEB /* pem */,
+				2E13800C22567B7500C8ECEB /* rsa_pkcs1.cpp */,
+				2E13800B22567B7500C8ECEB /* rsa_pkcs1.h */,
 				2EE083422146DC7A008E4587 /* aes_cbc_pkcs5.cpp */,
 				2EE083442146DC7A008E4587 /* aes_cbc_pkcs5.h */,
 				2EE083472146DC7A008E4587 /* aes.cpp */,
@@ -1029,6 +1065,8 @@
 		2E1928101AD902F400FDFFA6 /* encrypt */ = {
 			isa = PBXGroup;
 			children = (
+				2E13801D22567BD500C8ECEB /* test_pem.cpp */,
+				2E13801C22567BD500C8ECEB /* test_rsa_pkcs1.cpp */,
 				2EE084B32146DFD6008E4587 /* test_aes_cbc_pkcs5.cpp */,
 				2EE084B22146DFD6008E4587 /* test_aes.cpp */,
 				2EE084B42146DFD6008E4587 /* test_rsa.cpp */,
@@ -1324,6 +1362,7 @@
 				2EE0834C2146DC7A008E4587 /* aes.h in Headers */,
 				2EE0830F2146DBC4008E4587 /* output_stream.h in Headers */,
 				2EE0846D2146DE47008E4587 /* sqlite_param.h in Headers */,
+				2E13800D22567B7500C8ECEB /* rsa_pkcs1.h in Headers */,
 				2EE083B52146DD0D008E4587 /* console_log_handler.h in Headers */,
 				2EE084072146DDA2008E4587 /* prime.h in Headers */,
 				2EE083B62146DD0D008E4587 /* log_handler.h in Headers */,
@@ -1338,9 +1377,11 @@
 				2E73C3332250B73A008673C6 /* time_diff.h in Headers */,
 				2EE083B72146DD0D008E4587 /* syslog_log_handler.h in Headers */,
 				2EE083EF2146DD6E008E4587 /* rwlock.h in Headers */,
+				2E13801622567B9900C8ECEB /* der_reader.h in Headers */,
 				2EE084102146DDB7008E4587 /* big_integer.h in Headers */,
 				2EE084212146DDD6008E4587 /* testcase_failure_exception.h in Headers */,
 				2EE083192146DBE1008E4587 /* btree.h in Headers */,
+				2E13801B22567B9900C8ECEB /* der_writer.h in Headers */,
 				2E538EA821975AE10060FED9 /* hp_record.h in Headers */,
 				2EE0831E2146DBF5008E4587 /* mdarea.h in Headers */,
 				2EC93803217A4C73005D5285 /* dummy_lock.h in Headers */,
@@ -1385,6 +1426,7 @@
 				2EE083532146DC92008E4587 /* rc_wrapper.h in Headers */,
 				2EE083062146DBA8008E4587 /* fragment_buffer.h in Headers */,
 				2EE083152146DBC4008E4587 /* byte_array_stream.h in Headers */,
+				2E13801722567B9900C8ECEB /* pem.h in Headers */,
 				2E538E9E21975A220060FED9 /* comparable.h in Headers */,
 				2EE0846C2146DE47008E4587 /* sqlite_connection.h in Headers */,
 				2EE083342146DC3A008E4587 /* skiplist_set.h in Headers */,
@@ -1519,6 +1561,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2EE084D12146E03D008E4587 /* test_xml_writer.cpp in Sources */,
+				2E13801E22567BD600C8ECEB /* test_rsa_pkcs1.cpp in Sources */,
 				2EE084A72146DF9F008E4587 /* test_path.cpp in Sources */,
 				2EE084832146DF19008E4587 /* test_rtree.cpp in Sources */,
 				2EE084D02146E03D008E4587 /* test_xml_element.cpp in Sources */,
@@ -1553,6 +1596,7 @@
 				2E37F2832193389100FEADF2 /* test_word_array_integer.cpp in Sources */,
 				2EE084C02146DFFA008E4587 /* test_threading.cpp in Sources */,
 				2EE0848F2146DF3B008E4587 /* test_integer_set.cpp in Sources */,
+				2E13801F22567BD600C8ECEB /* test_pem.cpp in Sources */,
 				2E3EA4BF219DBCEB00E55D46 /* test_concurrent_hash_map.cpp in Sources */,
 				2EE084AB2146DFB0008E4587 /* test_rc.cpp in Sources */,
 				2EE084812146DF07008E4587 /* test_skiplist.cpp in Sources */,
@@ -1586,6 +1630,7 @@
 				2EE083132146DBC4008E4587 /* byte_array_stream.cpp in Sources */,
 				2E37F2812193387300FEADF2 /* word_array_integer.cpp in Sources */,
 				2EE083142146DBC4008E4587 /* input_stream.cpp in Sources */,
+				2E13800E22567B7500C8ECEB /* rsa_pkcs1.cpp in Sources */,
 				2EE083812146DCC0008E4587 /* iconsole.cpp in Sources */,
 				2E73C3152250B668008673C6 /* proc_addr_maps.cpp in Sources */,
 				2EE083052146DBA8008E4587 /* fragment_buffer.cpp in Sources */,
@@ -1595,6 +1640,7 @@
 				2EE0843C2146DDF2008E4587 /* xml_element.cpp in Sources */,
 				2EE083E52146DD6E008E4587 /* spinlock.cpp in Sources */,
 				2E73C32F2250B73A008673C6 /* time_wheel.cpp in Sources */,
+				2E13801822567B9900C8ECEB /* der_reader.cpp in Sources */,
 				2EE083B32146DD0D008E4587 /* circle_file_by_size_log_handler.cpp in Sources */,
 				2EE083412146DC66008E4587 /* sha1.cpp in Sources */,
 				2EE083042146DBA8008E4587 /* ring_buffer.cpp in Sources */,
@@ -1604,6 +1650,7 @@
 				2EE084232146DDD6008E4587 /* console_test_logger.cpp in Sources */,
 				2EE0838F2146DCD6008E4587 /* backtrace.cpp in Sources */,
 				2EE0833F2146DC66008E4587 /* adler32.cpp in Sources */,
+				2E13801A22567B9900C8ECEB /* pem.cpp in Sources */,
 				2EE0837B2146DCC0008E4587 /* pconsole.cpp in Sources */,
 				2EE083BA2146DD0D008E4587 /* circle_file_by_time_log_handler.cpp in Sources */,
 				2EE0833C2146DC66008E4587 /* md5.cpp in Sources */,
@@ -1646,6 +1693,7 @@
 				2EE083B92146DD0D008E4587 /* console_log_handler.cpp in Sources */,
 				2EE084732146DE5E008E4587 /* console_util.cpp in Sources */,
 				2EA1F06122525602007F402B /* timer_heap.cpp in Sources */,
+				2E13801922567B9900C8ECEB /* der_writer.cpp in Sources */,
 				2EE084062146DDA2008E4587 /* mod.cpp in Sources */,
 				2EE084622146DE31008E4587 /* kmp.cpp in Sources */,
 				2E73C31D2250B6F5008673C6 /* sha2_512.cpp in Sources */,

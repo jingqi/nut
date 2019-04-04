@@ -188,7 +188,7 @@ class TestNumericAlgo : public TestFixture
     void test_karatsuba_multiply()
     {
         typedef unsigned word_type;
-        size_t a_len = 5000, b_len = 5086, x_len = a_len + b_len;
+        size_t a_len = 10000, b_len = 10186, x_len = a_len + b_len;
         word_type *a = (word_type*) ::malloc(sizeof(word_type) * a_len),
                 *b = (word_type*) ::malloc(sizeof(word_type) * b_len),
                 *x = (word_type*) ::malloc(sizeof(word_type) * x_len),
@@ -208,7 +208,7 @@ class TestNumericAlgo : public TestFixture
         printf(" %.6fs(origin %.6fs)", f2 - f1, f1 - s);
         NUT_TA(0 == ::memcmp(x, y, sizeof(word_type) * x_len));
 
-        x_len = 156; // x 变小，应该对此做优化
+        x_len = 256; // x 变小，应该对此做优化
         s = PerformanceCounter::now();
         signed_multiply<word_type>(a, a_len, b, b_len, x, x_len);
         f1 = PerformanceCounter::now();

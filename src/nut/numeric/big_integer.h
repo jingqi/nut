@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include <string>
+#include <vector>
 
 #include <nut/platform/int_type.h>
 
@@ -16,11 +17,14 @@ namespace nut
 {
 
 /**
- * 无限大整数
+ * 带符号无限大整数
  *
  * NOTE
- * - 字(word_type)之间按照 little-endian 方式存储
- * - 字(word_type)内部的字节序与机器相关, Intel CPU 下一般认为是 little-endian
+ * - 由 '字(word)' 的数组来存储.
+ * - word 之间按照 little-endian 顺序存储, 高位 word 在数组末尾; 最高位 word 的
+ *   最高位 bit 表示整个 BitInteger 的符号.
+ * - word 内部的字节序与本地字节序相同; 即在 big-endian 机器下是 big-endian, 在
+ *   little-endian 机器下是 little-endian.
  */
 class NUT_API BigInteger
 {
@@ -48,6 +52,10 @@ public:
 
 public:
     explicit BigInteger(long long v = 0);
+
+    /**
+     * @param buf 字节序应与本地一致
+     */
     BigInteger(const void *buf, size_type cb, bool with_sign);
 
     BigInteger(BigInteger&& x);
@@ -142,6 +150,9 @@ public:
      */
     bool is_positive() const;
 
+    /**
+     * @param buf 字节序应与本地一致
+     */
     void set(const void *buf, size_type cb, bool with_sign);
 
     /**
@@ -225,6 +236,12 @@ public:
      * 如果超出返回值类型范围，返回值会被截断；否则做符号扩展
      */
     long long to_integer() const;
+
+    /**
+     * 转为 little-endian(or big-endian) 字节数组
+     */
+    std::vector<uint8_t> to_le_bytes() const;
+    std::vector<uint8_t> to_be_bytes() const;
 
     std::string to_string(size_type radix = 10) const;
     std::wstring to_wstring(size_type radix = 10) const;

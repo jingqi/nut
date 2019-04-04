@@ -7,6 +7,18 @@
 #include "../word_array_integer.h"
 
 
+/**
+ * 规模较小时 karatsub 退化使用一般算法
+ *
+ * NOTE 这个边界值是一个经验值, 并且与系统性能相关。在 VC 上, 如果设置的过小, 性
+ *      能甚至会急剧下降!
+ */
+#if NUT_PLATFORM_CC_VC
+#   define NUT_KARATSUBA_FALLBACK_THRESHOLD 256
+#else
+#   define NUT_KARATSUBA_FALLBACK_THRESHOLD 128
+#endif
+
 namespace nut
 {
 
@@ -27,15 +39,10 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     M = std::min(unsigned_significant_size(a, M), P);
     N = std::min(unsigned_significant_size(b, N), P);
 
-    // 规模较小时使用一般算法
-    // 这个边界值是一个经验值，并且与平台相关。在 VC 上，如果设置的过小，性能甚至会急剧下降!
-#if NUT_PLATFORM_CC_VC
-    const size_t LIMIT = 256;
-#else
-    const size_t LIMIT = 32;
-#endif
-
-    if (M < LIMIT || N < LIMIT || P < LIMIT)
+    // 退化
+    if (M < NUT_KARATSUBA_FALLBACK_THRESHOLD ||
+        N < NUT_KARATSUBA_FALLBACK_THRESHOLD ||
+        P < NUT_KARATSUBA_FALLBACK_THRESHOLD)
     {
         unsigned_multiply(a, M, b, N, x, P);
         return;
@@ -73,10 +80,11 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
 
     // d_len = min(base_len, N)
     const T *D = b;
-    size_t d_len = std::min(base_len, N);
+    const size_t d_len = std::min(base_len, N);
 
     // 计算中间结果
 
+    // AB = A + B
     // ab_len = min(max(a_len, b_len) + 1, P - base_len)
     //        = min(b_len + 1, P - base_len)
     // since, a_len <= b_len
@@ -84,6 +92,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     T *AB = (T*) ::malloc(sizeof(T) * ab_len);
     unsigned_add(A, a_len, B, b_len, AB, ab_len);
 
+    // CD = C + D
     // cd_len = min(max(c_len, d_len) + 1, P - base_len)
     //        = min(d_len + 1, P - base_len)
     // since, c_len <= d_len
@@ -91,6 +100,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     T *CD = (T*) ::malloc(sizeof(T) * cd_len);
     unsigned_add(C, c_len, D, d_len, CD, cd_len);
 
+    // ABCD = (A + B) * (C + D)
     // abcd_len = min(ab_len + cd_len, P - base_len)
     //          = min(b_len + d_len + 1, P - base_len)
     const size_t abcd_len = std::min(b_len + d_len + 1, P - base_len);
@@ -99,6 +109,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     ::free(AB);
     ::free(CD);
 
+    // AC = A * C
     // ac_len = min(a_len + c_len, max(0, P - base_len))
     //        = min(a_len + c_len, P - base_len)
     // since, P - base_len >= max(M,N) - base_len > 0
@@ -106,11 +117,15 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     T *AC = (T*) ::malloc(sizeof(T) * ac_len);
     unsigned_karatsuba_multiply(A, a_len, C, c_len, AC, ac_len);
 
+    // NOTE 因为 BD 复用了 x 的存储空间, 为了避免传入的参数 a, b 被破坏(a、b、x
+    //      可能有交叉区域), BD 要放在 AB、CD、AC 后面计算
+    // BD = B * D
     // bd_len = min(b_len + d_len, P)
     const size_t bd_len = std::min(b_len + d_len, P);
-    T *BD = x; // 为了避免传入的参数 a, b 被破坏(a、b、x可能有交叉区域)，BD要放在后面算
+    T *BD = x;
     unsigned_karatsuba_multiply(B, b_len, D, d_len, BD, bd_len);
 
+    // ABCD = (A + B) * (C + D) - A * C - B * D
     unsigned_sub(ABCD, abcd_len, AC, ac_len, ABCD, abcd_len);
     unsigned_sub(ABCD, abcd_len, BD, bd_len, ABCD, abcd_len);
 
@@ -137,8 +152,17 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
 {
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
 
+    // 退化
+    if (M < NUT_KARATSUBA_FALLBACK_THRESHOLD ||
+        N < NUT_KARATSUBA_FALLBACK_THRESHOLD ||
+        P < NUT_KARATSUBA_FALLBACK_THRESHOLD)
+    {
+        signed_multiply(a, M, b, N, x, P);
+        return;
+    }
+
     // karatsuba 算法不能处理负数的补数形式
-    T *aa = const_cast<T*>(a), *bb = const_cast<T*>(b);
+    T *aa = nullptr, *bb = nullptr;
     size_t MM = M, NN = N;
     bool neg = false;
     if (!is_positive(a, M))
@@ -157,10 +181,11 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
     }
 
     // 调用 karatsuba 算法
-    unsigned_karatsuba_multiply(aa, MM, bb, NN, x, P);
-    if (aa != a)
+    unsigned_karatsuba_multiply((nullptr != aa ? aa : a), MM,
+                                (nullptr != bb ? bb : b), NN, x, P);
+    if (nullptr != aa)
         ::free(aa);
-    if (bb != b)
+    if (nullptr != bb)
         ::free(bb);
 
     // 还原符号

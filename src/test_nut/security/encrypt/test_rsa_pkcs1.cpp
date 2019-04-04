@@ -26,11 +26,9 @@ class TestRsaPkcs1 : public TestFixture
             3,4,5,6,7,8,9,0,1,2,'b','c','d','e','f','a',
             4,5,6,7,8,9,0,1,2,3,'a','b','c','d','e','f'
         };
-        RSA::PublicKey pubkey;
-        RSA::PrivateKey prikey;
-        RSA::gen_key(122, &pubkey, &prikey);
-        NUT_TA(pubkey.n.bit_length() == 121 || pubkey.n.bit_length() == 122);
-        NUT_TA((pubkey.n.bit_length() + 7) / 8 == 16); // 16 字节 EB, 5 字节有效数据
+        RSA::PrivateKey key = RSA::gen_key(122);
+        NUT_TA(key.n.bit_length() == 121 || key.n.bit_length() == 122);
+        NUT_TA((key.n.bit_length() + 7) / 8 == 16); // 16 字节 EB, 5 字节有效数据
 
         RSA_PKCS1 rp;
         vector<uint8_t> v1, v2;
@@ -38,7 +36,7 @@ class TestRsaPkcs1 : public TestFixture
             [&] (const void *data, size_t cb) {
                 v1.insert(v1.end(), (const uint8_t*) data, (const uint8_t*) data + cb);
             });
-        rp.start_encrypt(pubkey);
+        rp.start_public_encrypt(key);
         rp.update_encrypt(data, 7);
         rp.update_encrypt(data + 7, 3);
         rp.update_encrypt(data + 10, 5);
@@ -51,7 +49,7 @@ class TestRsaPkcs1 : public TestFixture
             [&] (const void *data, size_t cb) {
                 v2.insert(v2.end(), (const uint8_t*) data, (const uint8_t*) data + cb);
             });
-        rp.start_decrypt(prikey);
+        rp.start_private_decrypt(key);
         NUT_TA(rp.update_decrypt(v1.data(), 15));
         NUT_TA(rp.update_decrypt(v1.data() + 15, 17));
         NUT_TA(rp.update_decrypt(v1.data() + 32, 19));
@@ -69,11 +67,9 @@ class TestRsaPkcs1 : public TestFixture
             3,4,5,6,7,8,9,0,1,2,'b','c','d','e','f','a',
             4,5,6,7,8,9,0,1,2,3,'a','b','c','d','e','f'
         };
-        RSA::PublicKey pubkey;
-        RSA::PrivateKey prikey;
-        RSA::gen_key(114, &pubkey, &prikey);
-        NUT_TA(pubkey.n.bit_length() == 113 || pubkey.n.bit_length() == 114);
-        NUT_TA((pubkey.n.bit_length() + 7) / 8 == 15); // 15 字节 EB, 4 字节有效数据
+        RSA::PrivateKey key = RSA::gen_key(114);
+        NUT_TA(key.n.bit_length() == 113 || key.n.bit_length() == 114);
+        NUT_TA((key.n.bit_length() + 7) / 8 == 15); // 15 字节 EB, 4 字节有效数据
 
         RSA_PKCS1 rp;
         vector<uint8_t> v1, v2;
@@ -81,7 +77,7 @@ class TestRsaPkcs1 : public TestFixture
             [&] (const void *data, size_t cb) {
                 v1.insert(v1.end(), (const uint8_t*) data, (const uint8_t*) data + cb);
             });
-        rp.start_encrypt(prikey);
+        rp.start_private_encrypt(key);
         rp.update_encrypt(data, 7);
         rp.update_encrypt(data + 7, 3);
         rp.update_encrypt(data + 10, 5);
@@ -93,7 +89,7 @@ class TestRsaPkcs1 : public TestFixture
             [&] (const void *data, size_t cb) {
                 v2.insert(v2.end(), (const uint8_t*) data, (const uint8_t*) data + cb);
             });
-        rp.start_decrypt(pubkey);
+        rp.start_public_decrypt(key);
         NUT_TA(rp.update_decrypt(v1.data(), 15));
         NUT_TA(rp.update_decrypt(v1.data() + 15, 17));
         NUT_TA(rp.update_decrypt(v1.data() + 32, 19));

@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <atomic>
+#include <algorithm>
 
 #include <nut/numeric/word_array_integer.h>
 #include <nut/container/comparable.h>
@@ -369,8 +370,8 @@ private:
     {
         const size_t bss = _bucket_size_shift.load(std::memory_order_acquire);
         const hash_type mask = ~(~((hash_type) 0) << bss);// Lower bits mask, eg. 0x0f
-        const hash_type bucket_index = h & mask; 
-        const int trunk_index = std::max(0, highest_bit1(bucket_index) - FIRST_TRUNK_SIZE_SHIFT + 1);
+        const hash_type bucket_index = h & mask;
+        const int trunk_index = std::max<int>(0, highest_bit1(bucket_index) - FIRST_TRUNK_SIZE_SHIFT + 1);
         hash_type local_bucket_index = bucket_index;
         if (0 != trunk_index)
             local_bucket_index -= ((hash_type) 1) << (trunk_index + FIRST_TRUNK_SIZE_SHIFT - 1);
@@ -633,8 +634,8 @@ private:
             dummies[i].construct_dummy(rh, nullptr);
 
             // Find old bucket
-            const int trunk_index = std::max(0, highest_bit1((hash_type) i) -
-                                             FIRST_TRUNK_SIZE_SHIFT + 1);
+            const int trunk_index = std::max<int>(0, highest_bit1((hash_type) i) -
+                                                  FIRST_TRUNK_SIZE_SHIFT + 1);
             size_t local_bucket_index = i;
             if (0 != trunk_index)
                 local_bucket_index -= ((size_t) 1) << (trunk_index + FIRST_TRUNK_SIZE_SHIFT - 1);

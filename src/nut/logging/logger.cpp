@@ -10,6 +10,7 @@
 #include <nut/platform/platform.h>
 #include <nut/platform/path.h>
 #include <nut/platform/os.h>
+#include <nut/rc/rc_new.h>
 #include <nut/util/txtcfg/xml/xml_parser.h>
 #include <nut/util/string/string_utils.h>
 #include <nut/util/string/to_string.h>

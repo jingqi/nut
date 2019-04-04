@@ -35,8 +35,8 @@ public:
     /**
      * 开始加密
      */
-    void start_encrypt(const RSA::PublicKey& key);
-    void start_encrypt(const RSA::PrivateKey& key);
+    void start_public_encrypt(const RSA::PublicKey& key);
+    void start_private_encrypt(const RSA::PrivateKey& key);
 
     /**
      * 加密
@@ -51,8 +51,8 @@ public:
     /**
      * 开始解密
      */
-    void start_decrypt(const RSA::PublicKey& key);
-    void start_decrypt(const RSA::PrivateKey& key);
+    void start_public_decrypt(const RSA::PublicKey& key);
+    void start_private_decrypt(const RSA::PrivateKey& key);
 
     /**
      * 解密
@@ -71,8 +71,7 @@ private:
     bool unpack_eb(const BigInteger& output);
 
 private:
-    RSA::PublicKey _public_key;
-    RSA::PrivateKey _private_key;
+    RSA::PrivateKey _key;
     bool _use_public_key = true;
     size_t _encryption_block_size = 0; // EB 大小只跟 key 的长度相关
 

@@ -853,11 +853,11 @@ NUT_API std::string hex_encode(const void *data, size_t cb, bool upper_case)
     return result;
 }
 
-NUT_API Array<uint8_t> hex_decode(const char *s, ssize_t len)
+NUT_API std::vector<uint8_t> hex_decode(const char *s, ssize_t len)
 {
     assert(nullptr != s);
 
-    Array<uint8_t> result;
+    std::vector<uint8_t> result;
     uint8_t v = 0;
     bool one_byte = true;
     for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
@@ -869,9 +869,7 @@ NUT_API Array<uint8_t> hex_decode(const char *s, ssize_t len)
             v |= vv;
             one_byte = !one_byte;
             if (one_byte)
-            {
                 result.push_back(v);
-            }
         }
     }
     return result;
@@ -1131,36 +1129,36 @@ NUT_API std::string base64_encode(const void *data, size_t cb)
     return result;
 }
 
-NUT_API Array<uint8_t> base64_decode(const char *s, ssize_t len)
+NUT_API std::vector<uint8_t> base64_decode(const char *s, ssize_t len)
 {
     assert(nullptr != s);
 
-    Array<uint8_t> result;
+    std::vector<uint8_t> result;
     int buff[4], state = 0;
     for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
     {
         const int v = base64_char_to_int(s[i]);
-        if (0 <= v && v <= 64)
+        if (v < 0 || v > 64)
+            continue;
+
+        buff[state++] = v;
+        if (4 == state)
         {
-            buff[state++] = v;
-            if (4 == state)
-            {
-                // first byte
-                result.push_back((uint8_t) ((buff[0] << 2) ^ ((buff[1] & 0x30) >> 4)));
+            // first byte
+            result.push_back((uint8_t) ((buff[0] << 2) ^ ((buff[1] & 0x30) >> 4)));
 
-                // second byte
-                if (64 == buff[2])
-                    break;
-                result.push_back((uint8_t) ((buff[1] << 4) ^ ((buff[2] & 0x3c) >> 2)));
+            // second byte
+            if (64 == buff[2])
+                break;
+            result.push_back((uint8_t) ((buff[1] << 4) ^ ((buff[2] & 0x3c) >> 2)));
 
-                // third byte
-                if (64 == buff[3])
-                    break;
-                result.push_back((uint8_t) ((buff[2] << 6) ^ buff[3]));
+            // third byte
+            if (64 == buff[3])
+                break;
+            result.push_back((uint8_t) ((buff[2] << 6) ^ buff[3]));
 
-                // reset state
-                state = 0;
-            }
+            // reset state
+            state = 0;
         }
     }
     return result;

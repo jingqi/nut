@@ -40,15 +40,15 @@
  *  NUT_PLATFORM_BITS_32
  *  NUT_PLATFORM_BITS_64
  */
-#if defined(_WIN64) || defined(__amd64__) || defined(__amd64) || \
+#if defined(_WIN64) || defined(__amd64__) || defined(__amd64) ||        \
     defined(__LP64__) || defined(_LP64) || defined(__x86_64__) || defined(__x86_64) || \
-    defined(_M_X64) || defined(_M_AMD64) || defined(__aarch64__) || \
+    defined(_M_X64) || defined(_M_AMD64) || defined(__aarch64__) ||     \
     defined(__ia64__) || defined(_IA64) || defined(__IA64__) || defined(__ia64) || \
     defined(_M_IA64)
 #   define NUT_PLATFORM_BITS_64 1
 #   define NUT_PLATFORM_BITS_32 0
 #   define NUT_PLATFORM_BITS_16 0
-#elif defined(_WIN32) || defined(__32BIT__) || defined(__ILP32__) || \
+#elif defined(_WIN32) || defined(__32BIT__) || defined(__ILP32__) ||    \
     defined(_ILP32) || defined(i386) || defined(__i386__) || defined(__i486__) || \
     defined(__i586__) || defined(__i686__) || defined(__i386) || defined(_M_IX86) || \
     defined(__X86__) || defined(_X86_) || defined(__I86__) || defined(__IA32__)

@@ -19,10 +19,10 @@ public:
         BigInteger e, n;
     };
 
-    class PrivateKey
+    class PrivateKey : public PublicKey
     {
     public:
-        BigInteger d, n;
+        BigInteger d, p, q;
     };
 
 public:
@@ -33,10 +33,10 @@ public:
      *                       或者 max_bit_length (因为 M 位正整数乘以 N 位正整数
      *                       的结果为 M + N -1 位或者 M + N 位)
      */
-    static void gen_key(size_t max_bit_length, PublicKey *public_key, PrivateKey *private_key);
+    static PrivateKey gen_key(size_t max_bit_length);
 
-    static BigInteger transfer(const BigInteger& m, const PublicKey& k);
-    static BigInteger transfer(const BigInteger& c, const PrivateKey& k);
+    static BigInteger public_transfer(const BigInteger& m, const PublicKey& k);
+    static BigInteger private_transfer(const BigInteger& c, const PrivateKey& k);
 };
 
 }

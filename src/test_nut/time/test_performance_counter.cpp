@@ -19,9 +19,7 @@ class TestPerformanceCounter : public TestFixture
     void test_smoking()
     {
         const PerformanceCounter s = PerformanceCounter::now();
-        RSA::PublicKey pubk;
-        RSA::PrivateKey prik;
-        RSA::gen_key(20, &pubk, &prik);
+        RSA::gen_key(20);
         const double elapse = PerformanceCounter::now() - s;
         cout << " " << elapse;
         NUT_TA(elapse > 0);

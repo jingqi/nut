@@ -29,9 +29,9 @@ void RSA_PKCS1::set_callback(const callback_type& cb)
     _callback = cb;
 }
 
-void RSA_PKCS1::start_encrypt(const RSA::PublicKey& key)
+void RSA_PKCS1::start_public_encrypt(const RSA::PublicKey& key)
 {
-    _public_key = key;
+    (RSA::PublicKey&) _key = key;
     _use_public_key = true;
     _encryption_block_size = (key.n.bit_length() + 7) / 8;
     assert(_encryption_block_size > MIN_NON_DATA_SIZE);
@@ -40,9 +40,9 @@ void RSA_PKCS1::start_encrypt(const RSA::PublicKey& key)
     _has_error = false;
 }
 
-void RSA_PKCS1::start_encrypt(const RSA::PrivateKey& key)
+void RSA_PKCS1::start_private_encrypt(const RSA::PrivateKey& key)
 {
-    _private_key = key;
+    _key = key;
     _use_public_key = false;
     _encryption_block_size = (key.n.bit_length() + 7) / 8;
     assert(_encryption_block_size > MIN_NON_DATA_SIZE);
@@ -109,9 +109,9 @@ void RSA_PKCS1::update_encrypt(const void *data_, size_t data_len)
         // Encode
         BigInteger output;
         if (_use_public_key)
-            output = RSA::transfer(_input_integer, _public_key);
+            output = RSA::public_transfer(_input_integer, _key);
         else
-            output = RSA::transfer(_input_integer, _private_key);
+            output = RSA::private_transfer(_input_integer, _key);
 
         // Callback
         output.resize(output_word_size);
@@ -132,9 +132,9 @@ void RSA_PKCS1::update_encrypt(const void *data_, size_t data_len)
         // Encode
         BigInteger output;
         if (_use_public_key)
-            output = RSA::transfer(_input_integer, _public_key);
+            output = RSA::public_transfer(_input_integer, _key);
         else
-            output = RSA::transfer(_input_integer, _private_key);
+            output = RSA::private_transfer(_input_integer, _key);
 
         // Callback
         output.resize(output_word_size);
@@ -162,9 +162,9 @@ void RSA_PKCS1::finish_encrypt()
     // Encode
     BigInteger output;
     if (_use_public_key)
-        output = RSA::transfer(_input_integer, _public_key);
+        output = RSA::public_transfer(_input_integer, _key);
     else
-        output = RSA::transfer(_input_integer, _private_key);
+        output = RSA::private_transfer(_input_integer, _key);
 
     // Callback
     const size_t output_word_size =
@@ -174,9 +174,9 @@ void RSA_PKCS1::finish_encrypt()
     _input_size = 0;
 }
 
-void RSA_PKCS1::start_decrypt(const RSA::PublicKey& key)
+void RSA_PKCS1::start_public_decrypt(const RSA::PublicKey& key)
 {
-    _public_key = key;
+    (RSA::PublicKey&) _key = key;
     _use_public_key = true;
     _encryption_block_size = (key.n.bit_length() + 7) / 8;
     assert(_encryption_block_size > MIN_NON_DATA_SIZE);
@@ -185,9 +185,9 @@ void RSA_PKCS1::start_decrypt(const RSA::PublicKey& key)
     _has_error = false;
 }
 
-void RSA_PKCS1::start_decrypt(const RSA::PrivateKey& key)
+void RSA_PKCS1::start_private_decrypt(const RSA::PrivateKey& key)
 {
-    _private_key = key;
+    _key = key;
     _use_public_key = false;
     _encryption_block_size = (key.n.bit_length() + 7) / 8;
     assert(_encryption_block_size > MIN_NON_DATA_SIZE);
@@ -254,9 +254,9 @@ bool RSA_PKCS1::update_decrypt(const void *data_, size_t data_len)
         _input_integer.set(_encryption_block, _encryption_block_size, false);
         BigInteger output;
         if (_use_public_key)
-            output = RSA::transfer(_input_integer, _public_key);
+            output = RSA::public_transfer(_input_integer, _key);
         else
-            output = RSA::transfer(_input_integer, _private_key);
+            output = RSA::private_transfer(_input_integer, _key);
 
         // Unpack
         if (!unpack_eb(output))
@@ -277,9 +277,9 @@ bool RSA_PKCS1::update_decrypt(const void *data_, size_t data_len)
         _input_integer.set(data, _encryption_block_size, false);
         BigInteger output;
         if (_use_public_key)
-            output = RSA::transfer(_input_integer, _public_key);
+            output = RSA::public_transfer(_input_integer, _key);
         else
-            output = RSA::transfer(_input_integer, _private_key);
+            output = RSA::private_transfer(_input_integer, _key);
 
         // Unpack
         if (!unpack_eb(output))

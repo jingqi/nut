@@ -19,10 +19,11 @@ class TestEndian : public TestFixture
     void test_little_endian()
     {
         uint32_t ui = 0x12345678;
-        if (is_little_endian())
+#if NUT_ENDIAN_LITTLE_BYTE
             NUT_TA(htole32(ui) == ui && le32toh(ui) == ui);
-        else
+#else
             NUT_TA(htole32(ui) == 0x78563412 && le32toh(ui) == 0x78563412);
+#endif
         NUT_TA(ui == le32toh(htole32(ui)));
 
         int32_t ii = 0xfedcba87;

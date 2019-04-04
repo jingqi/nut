@@ -1,5 +1,6 @@
 ﻿
 #include <assert.h>
+#include <string.h> // for ::strlen()
 
 #include "platform.h"
 #include "int_type.h" // for ssize_t
@@ -19,6 +20,7 @@
 #include <nut/util/string/string_utils.h>
 
 #include "path.h"
+
 
 namespace nut
 {

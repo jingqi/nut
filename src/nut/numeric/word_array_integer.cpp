@@ -50,20 +50,13 @@ NUT_API size_t bit1_count(const uint8_t *a, size_t N)
 {
     assert(nullptr != a && N > 0);
 
-#if 0 // unoptimized
+    const size_t word_count = N / sizeof(unsigned);
     size_t ret = 0;
-    for (size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < word_count; ++i)
+        ret += bit1_count(reinterpret_cast<const unsigned*>(a)[i]);
+    for (size_t i = word_count * sizeof(unsigned); i < N; ++i)
         ret += bit1_count(a[i]);
     return ret;
-#else
-    const size_t bits32_count = N / sizeof(uint32_t);
-    size_t ret = 0;
-    for (size_t i = 0; i < bits32_count; ++i)
-        ret += bit1_count(reinterpret_cast<const uint32_t*>(a)[i]);
-    for (size_t i = bits32_count * sizeof(uint32_t); i < N; ++i)
-        ret += bit1_count(a[i]);
-    return ret;
-#endif
 }
 
 /**
@@ -219,72 +212,6 @@ NUT_API int lowest_bit1(uint64_t a)
     return ret;
 }
 
-/**
- * 返回从低位到高位第一个 bit 1 的位置
- *
- * @return -1 if not found
- *      >0 if found
- */
-NUT_API ssize_t lowest_bit1(const uint8_t *a, size_t N)
-{
-    assert(nullptr != a && N > 0);
-
-#if 0 // unoptimized
-    for (size_t i = 0; i < N; ++i)
-    {
-        if (0 != a[i])
-            return i * 8 + lowest_bit1(a[i]);
-    }
-    return -1;
-#else
-    const size_t bits32_count = N / sizeof(uint32_t);
-    for (size_t i = 0; i < bits32_count; ++i)
-    {
-        if (0 != reinterpret_cast<const uint32_t*>(a)[i])
-            return i * 32 + lowest_bit1(reinterpret_cast<const uint32_t*>(a)[i]);
-    }
-    for (size_t i = bits32_count * sizeof(uint32_t); i < N; ++i)
-    {
-        if (0 != a[i])
-            return i * 8 + lowest_bit1(a[i]);
-    }
-    return -1;
-#endif
-}
-
-/**
- * 返回从低位到高位第一个 bit 0 的位置
- *
- * @return -1 if not found
- *      >0 if found
- */
-NUT_API ssize_t lowest_bit0(const uint8_t *a, size_t N)
-{
-    assert(nullptr != a && N > 0);
-
-#if 0 // unoptimized
-    for (size_t i = 0; i < N; ++i)
-    {
-        if (0xff != a[i])
-            return i * 8 + lowest_bit1((uint8_t)~a[i]);
-    }
-    return -1;
-#else
-    const size_t bits32_count = N / sizeof(uint32_t);
-    for (size_t i = 0; i < bits32_count; ++i)
-    {
-        if (0xffffffff != reinterpret_cast<const uint32_t*>(a)[i])
-            return i * 32 + lowest_bit1((uint32_t)~reinterpret_cast<const uint32_t*>(a)[i]);
-    }
-    for (size_t i = bits32_count * sizeof(uint32_t); i < N; ++i)
-    {
-        if (0xff != a[i])
-            return i * 8 + lowest_bit1((uint8_t)~a[i]);
-    }
-    return -1;
-#endif
-}
-
 NUT_API int highest_bit1(uint8_t a)
 {
     if (0 == a)
@@ -393,60 +320,6 @@ NUT_API int highest_bit1(uint64_t a)
     }
     ret += a >> 63;
     return ret;
-}
-
-NUT_API ssize_t highest_bit1(const uint8_t *a,  size_t N)
-{
-    assert(nullptr != a && N > 0);
-
-#if 0 // unoptimized
-    for (ssize_t i = N - 1; i >= 0; --i)
-    {
-        if (0 != a[i])
-            return i * 8 + highest_bit1(a[i]);
-    }
-    return -1;
-#else
-    const size_t bits32_count = N / sizeof(uint32_t);
-    for (ssize_t i = N - 1, limit = bits32_count * sizeof(uint32_t); i >= limit; --i)
-    {
-        if (0 != a[i])
-            return i * 8 + highest_bit1(a[i]);
-    }
-    for (ssize_t i = bits32_count - 1; i >= 0; --i)
-    {
-        if (0 != reinterpret_cast<const uint32_t*>(a)[i])
-            return i * 32 + highest_bit1(reinterpret_cast<const uint32_t*>(a)[i]);
-    }
-    return -1;
-#endif
-}
-
-NUT_API ssize_t highest_bit0(const uint8_t *a, size_t N)
-{
-    assert(nullptr != a && N > 0);
-
-#if 0 // unoptimized
-    for (ssize_t i = N - 1; i >= 0; --i)
-    {
-        if (0xFF != a[i])
-            return i * 8 + highest_bit1((uint8_t)~a[i]);
-    }
-    return -1;
-#else
-    const size_t bits32_count = N / sizeof(uint32_t);
-    for (ssize_t i = N - 1, limit = bits32_count * sizeof(uint32_t); i >= limit; --i)
-    {
-        if (0xFF != a[i])
-            return i * 8 + highest_bit1((uint8_t)~a[i]);
-    }
-    for (ssize_t i = bits32_count - 1; i >= 0; --i)
-    {
-        if (0xFFFFFFFF != reinterpret_cast<const uint32_t*>(a)[i])
-            return i * 32 + highest_bit1((uint32_t)~reinterpret_cast<const uint32_t*>(a)[i]);
-    }
-    return -1;
-#endif
 }
 
 }

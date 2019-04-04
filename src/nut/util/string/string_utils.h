@@ -7,7 +7,6 @@
 #include <vector>
 
 #include <nut/platform/int_type.h> // for ssize_t in Windows VC
-#include <nut/container/array.h>
 
 #include "../../nut_config.h"
 
@@ -171,7 +170,7 @@ NUT_API std::string url_decode(const char *s, ssize_t len);
  * 16进制编码转换，例如 "4FC012B" 等
  */
 NUT_API std::string hex_encode(const void *data, size_t cb, bool upper_case = true);
-NUT_API Array<uint8_t> hex_decode(const char *s, ssize_t len);
+NUT_API std::vector<uint8_t> hex_decode(const char *s, ssize_t len);
 
 /**
  * C 常量风格编码转换
@@ -183,7 +182,7 @@ NUT_API std::string cstyle_decode(const char *s, ssize_t len);
  * base64 编码
  */
 NUT_API std::string base64_encode(const void *data, size_t cb);
-NUT_API Array<uint8_t> base64_decode(const char *s, ssize_t len);
+NUT_API std::vector<uint8_t> base64_decode(const char *s, ssize_t len);
 
 }
 

@@ -172,7 +172,7 @@ class TestStringUtil : public TestFixture
         std::string s = hex_encode("\x03\xfA", 2);
         NUT_TA(s == "03FA");
 
-        Array<uint8_t> v = hex_decode("03 FA\t", -1);
+        std::vector<uint8_t> v = hex_decode("03 FA\t", -1);
         NUT_TA(v.size() == 2);
         NUT_TA(v[0] == 0x03);
         NUT_TA(v[1] == 0xFA);
@@ -201,7 +201,7 @@ class TestStringUtil : public TestFixture
         NUT_TA(s == "YWJjZGVmZ2g=");
 
         // decode
-        Array<uint8_t> v = base64_decode("YW \n Jj \t ZGVm", -1);
+        std::vector<uint8_t> v = base64_decode("YW \n Jj \t ZGVm", -1);
         NUT_TA(v.size() == 6);
         NUT_TA(0 == ::strncmp((const char*)&v[0], "abcdef", 6));
 

@@ -7,6 +7,8 @@
 #   include <unistd.h> // for getpid()
 #endif
 
+#include <algorithm> // for std::sort()
+
 #include <nut/platform/os.h>
 #include <nut/platform/path.h>
 #include <nut/time/date_time.h>
