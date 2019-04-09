@@ -5,9 +5,8 @@
 #include <string.h>
 #include <algorithm>
 
-#include <nut/rc/rc_new.h>
-#include <nut/debugging/destroy_checker.h>
-
+#include "../rc/rc_new.h"
+#include "../debugging/destroy_checker.h"
 #include "lengthfixed_mp.h"
 
 

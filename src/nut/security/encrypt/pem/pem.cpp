@@ -6,8 +6,7 @@
  *   openssl rsa -in rsa_private.pem -pubout -out rsa_public.pem
  */
 
-#include <nut/util/string/string_utils.h>
-
+#include "../../../util/string/string_utils.h"
 #include "pem.h"
 #include "der_reader.h"
 #include "der_writer.h"

@@ -4,9 +4,8 @@
 
 #include <string>
 
-#include <nut/platform/int_type.h>
-
 #include "../../nut_config.h"
+#include "../../platform/int_type.h"
 
 
 namespace nut

@@ -2,9 +2,9 @@
 #include <assert.h>
 #include <sstream>
 
-#include <nut/platform/path.h>
-
+#include "../../../platform/path.h"
 #include "xml_dom.h"
+
 
 namespace nut
 {

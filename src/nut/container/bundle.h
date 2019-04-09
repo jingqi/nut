@@ -8,7 +8,8 @@
 #include <stdint.h>
 #include <utility> // for std::forward()
 
-#include <nut/rc/rc_new.h>
+#include "../rc/rc_new.h"
+
 
 namespace nut
 {

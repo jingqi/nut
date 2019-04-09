@@ -6,14 +6,13 @@
 #include <atomic>
 #include <algorithm>
 
-#include <nut/numeric/word_array_integer.h>
-#include <nut/container/comparable.h>
-
+#include "../../numeric/word_array_integer.h"
+#include "../../container/comparable.h"
+#include "../sync/spinlock.h"
+#include "../sync/lock_guard.h"
 #include "stamped_ptr.h"
 #include "hazard_pointer/hp_record.h"
 #include "hazard_pointer/hp_retire_list.h"
-#include "../sync/spinlock.h"
-#include "../sync/lock_guard.h"
 
 
 // #define EXTRACT_TAG(stamp) ((stamp) >> 1)

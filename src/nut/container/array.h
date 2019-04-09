@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <utility> // for std::forward()
 
-#include <nut/rc/rc_new.h>
-#include <nut/rc/enrc.h>
+#include "../rc/rc_new.h"
+#include "../rc/enrc.h"
 
 
 namespace nut

@@ -7,9 +7,8 @@
 #include <vector>
 #include <iostream>
 
-#include <nut/platform/int_type.h> // for ssize_t in Windows VC
-
 #include "../../../nut_config.h"
+#include "../../../platform/int_type.h" // for ssize_t in Windows VC
 
 
 namespace nut

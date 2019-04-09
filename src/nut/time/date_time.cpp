@@ -4,17 +4,15 @@
 #include <string.h>     /* for strlen() */
 #include <stdlib.h>     /* for malloc() and free() */
 
-#include <nut/platform/platform.h>
+#include "../platform/platform.h"
+#include "../util/string/string_utils.h"
+#include "date_time.h"
+
 
 #if NUT_PLATFORM_CC_VC
 #   pragma warning(push)
 #   pragma warning(disable: 4996)
 #endif
-
-#include <nut/util/string/string_utils.h>
-
-#include "date_time.h"
-
 
 #define NSECS_PER_SEC  1000000000L
 #define NSECS_PER_MSEC 1000000L

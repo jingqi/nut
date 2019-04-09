@@ -6,10 +6,9 @@
 #include <string>
 #include <vector>
 
-#include <nut/rc/rc_new.h>
-#include <nut/util/string/string_utils.h>
-
 #include "../nut_config.h"
+#include "../rc/rc_new.h"
+#include "../util/string/string_utils.h"
 #include "icommand.h"
 #include "iconsole.h"
 

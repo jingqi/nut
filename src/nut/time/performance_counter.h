@@ -4,7 +4,7 @@
 
 #include <time.h>
 
-#include <nut/platform/platform.h>
+#include "../platform/platform.h"
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>

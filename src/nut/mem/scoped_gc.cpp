@@ -2,9 +2,9 @@
 #include <assert.h>
 #include <stdlib.h> // for ::malloc() and so on
 
-#include <nut/debugging/destroy_checker.h>
-
+#include "../debugging/destroy_checker.h"
 #include "scoped_gc.h"
+
 
 namespace nut
 {

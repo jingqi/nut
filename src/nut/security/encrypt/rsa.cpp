@@ -1,10 +1,10 @@
 ﻿
 #include <assert.h>
 
-#include <nut/numeric/numeric_algo/mod.h>
-#include <nut/numeric/numeric_algo/prime.h>
-
+#include "../../numeric/numeric_algo/mod.h"
+#include "../../numeric/numeric_algo/prime.h"
 #include "rsa.h"
+
 
 namespace nut
 {

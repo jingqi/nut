@@ -1,6 +1,5 @@
 ﻿
-#include <nut/platform/endian.h>
-
+#include "../../platform/endian.h"
 #include "output_stream.h"
 
 

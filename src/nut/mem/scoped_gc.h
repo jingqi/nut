@@ -7,10 +7,9 @@
 #include <stddef.h> // for size_t
 #include <utility>
 
-#include <nut/rc/rc_ptr.h>
-#include <nut/debugging/destroy_checker.h>
-
 #include "../nut_config.h"
+#include "../rc/rc_ptr.h"
+#include "../debugging/destroy_checker.h"
 
 
 namespace nut

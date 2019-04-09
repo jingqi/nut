@@ -2,9 +2,8 @@
 #ifndef ___HEADFILE_D9A34E39_AC0F_446F_AEAA_B316EFC64AEA_
 #define ___HEADFILE_D9A34E39_AC0F_446F_AEAA_B316EFC64AEA_
 
-#include <nut/rc/rc_ptr.h>
-
 #include "../../nut_config.h"
+#include "../../rc/rc_ptr.h"
 #include "../log_record.h"
 #include "../log_filter.h"
 

@@ -1,9 +1,9 @@
 ﻿
 #include <string.h>
 
-#include <nut/util/string/string_utils.h>
-
+#include "../util/string/string_utils.h"
 #include "log_level.h"
+
 
 namespace nut
 {

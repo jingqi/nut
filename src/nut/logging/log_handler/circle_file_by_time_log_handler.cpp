@@ -1,5 +1,7 @@
 ﻿
-#include <nut/platform/platform.h>
+#include <algorithm> // for std::sort()
+
+#include "../../platform/platform.h"
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h> // for GetCurrentProcessId()
@@ -7,15 +9,13 @@
 #   include <unistd.h> // for getpid()
 #endif
 
-#include <algorithm> // for std::sort()
-
-#include <nut/platform/os.h>
-#include <nut/platform/path.h>
-#include <nut/time/date_time.h>
-#include <nut/util/string/to_string.h>
-#include <nut/util/string/string_utils.h>
-
+#include "../../platform/os.h"
+#include "../../platform/path.h"
+#include "../../time/date_time.h"
+#include "../../util/string/to_string.h"
+#include "../../util/string/string_utils.h"
 #include "circle_file_by_time_log_handler.h"
+
 
 namespace nut
 {

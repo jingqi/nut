@@ -2,7 +2,7 @@
 #ifndef ___HEADFILE_49083D01_04DA_4385_A1BD_6D1F2902FA7A_
 #define ___HEADFILE_49083D01_04DA_4385_A1BD_6D1F2902FA7A_
 
-#include <nut/platform/platform.h>
+#include "../../platform/platform.h"
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>

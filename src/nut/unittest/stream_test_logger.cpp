@@ -3,6 +3,7 @@
 
 #include "stream_test_logger.h"
 
+
 namespace nut
 {
 

@@ -3,7 +3,6 @@
 #include <string.h> // for ::strlen()
 
 #include "platform.h"
-#include "int_type.h" // for ssize_t
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
@@ -17,8 +16,8 @@
 #   include <limits.h> // for PATH_MAX
 #endif
 
-#include <nut/util/string/string_utils.h>
-
+#include "../util/string/string_utils.h"
+#include "int_type.h" // for ssize_t
 #include "path.h"
 
 

@@ -1,6 +1,7 @@
 ﻿
 #include "testcase_failure_exception.h"
 
+
 namespace nut
 {
 

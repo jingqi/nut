@@ -31,10 +31,10 @@
 #   include <fcntl.h> // for ::open(), ::posix_fadvise(), ::posix_fallocate() and so on
 #endif
 
-#include <nut/util/string/string_utils.h>
-
+#include "../util/string/string_utils.h"
 #include "os.h"
 #include "path.h"
+
 
 namespace nut
 {

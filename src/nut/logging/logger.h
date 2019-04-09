@@ -5,11 +5,10 @@
 #include <string>
 #include <vector>
 
-#include <nut/platform/platform.h>
-#include <nut/debugging/destroy_checker.h>
-#include <nut/debugging/source_location.h>
-
 #include "../nut_config.h"
+#include "../platform/platform.h"
+#include "../debugging/destroy_checker.h"
+#include "../debugging/source_location.h"
 #include "log_level.h"
 #include "log_filter.h"
 #include "log_handler/log_handler.h"

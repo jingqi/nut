@@ -1,9 +1,9 @@
 ﻿
 #include <algorithm>
 
-#include <nut/platform/platform.h>
-
+#include "../platform/platform.h"
 #include "lengthfixed_mp.h"
+
 
 namespace nut
 {

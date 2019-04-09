@@ -16,10 +16,9 @@
 #include <stdlib.h> // for malloc()
 #include <algorithm>
 
-#include <nut/platform/platform.h>
-#include <nut/platform/int_type.h>
-
 #include "../nut_config.h"
+#include "../platform/platform.h"
+#include "../platform/int_type.h"
 
 
 namespace nut

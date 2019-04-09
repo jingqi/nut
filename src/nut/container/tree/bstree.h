@@ -2,8 +2,8 @@
 #ifndef ___HEADFILE_CFEF4EB8_082C_417F_A58C_9D65C9F3DAD1_
 #define ___HEADFILE_CFEF4EB8_082C_417F_A58C_9D65C9F3DAD1_
 
-#include "btree.h"
 #include "../comparable.h"
+#include "btree.h"
 
 
 namespace nut

@@ -6,9 +6,8 @@
 #include <stdlib.h>
 #include <utility>
 
-#include <nut/rc/rc_ptr.h>
-
 #include "../nut_config.h"
+#include "../rc/rc_ptr.h"
 
 
 namespace nut

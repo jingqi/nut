@@ -1,8 +1,4 @@
-﻿
-#ifndef ___HEADFILE___5E5FFC51_E0AE_4F6B_8661_502D66D82839_
-#define ___HEADFILE___5E5FFC51_E0AE_4F6B_8661_502D66D82839_
-
-/*
+﻿/**
 
 使用示例：
 
@@ -42,7 +38,8 @@ int main()
 
 */
 
-/* *************************************************************************/
+#ifndef ___HEADFILE___5E5FFC51_E0AE_4F6B_8661_502D66D82839_
+#define ___HEADFILE___5E5FFC51_E0AE_4F6B_8661_502D66D82839_
 
 #include <assert.h>
 #include <string.h> // for strcmp()
@@ -53,6 +50,7 @@ int main()
 #include "test_fixture.h"
 #include "test_register.h"
 #include "test_runner.h"
+
 
 /** register case */
 #define NUT_REGISTER_CASE(case_func)                                    \
@@ -81,6 +79,5 @@ int main()
             p->~TestFixture();                                  \
             ::free(p);                                          \
         });
-
 
 #endif /* head file guarder */

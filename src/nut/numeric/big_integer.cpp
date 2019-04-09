@@ -4,8 +4,7 @@
 #include <algorithm> // for std::reverse()
 #include <random>
 
-#include <nut/platform/endian.h>
-
+#include "../platform/endian.h"
 #include "big_integer.h"
 #include "word_array_integer.h"
 #include "numeric_algo/karatsuba.h"

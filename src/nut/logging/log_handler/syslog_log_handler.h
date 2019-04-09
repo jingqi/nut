@@ -2,7 +2,7 @@
 #ifndef ___HEADFILE_AF6CB8AD_3974_4914_A35E_B86138464E05_
 #define ___HEADFILE_AF6CB8AD_3974_4914_A35E_B86138464E05_
 
-#include <nut/platform/platform.h>
+#include "../../platform/platform.h"
 
 #if NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
 

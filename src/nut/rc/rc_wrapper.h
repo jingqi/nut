@@ -5,8 +5,7 @@
 #include <stdlib.h>
 #include <utility> // for std::forward()
 
-#include <nut/debugging/destroy_checker.h>
-
+#include "../debugging/destroy_checker.h"
 #include "ref_counter.h"
 
 

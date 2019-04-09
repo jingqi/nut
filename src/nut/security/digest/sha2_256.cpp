@@ -2,9 +2,8 @@
 #include <assert.h>
 #include <memory.h> // for memset()
 
-#include <nut/platform/endian.h>
-#include <nut/util/string/string_utils.h>
-
+#include "../../platform/endian.h"
+#include "../../util/string/string_utils.h"
 #include "sha2_256.h"
 
 

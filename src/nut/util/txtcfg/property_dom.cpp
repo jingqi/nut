@@ -4,10 +4,10 @@
 #include <stdio.h>      // for sprintf()
 #include <string.h>     // for memset()
 
-#include <nut/platform/platform.h>
-
-#include "property_dom.h"
+#include "../../platform/platform.h"
 #include "../string/string_utils.h"
+#include "property_dom.h"
+
 
 #if NUT_PLATFORM_CC_VC
 #   pragma warning(push)

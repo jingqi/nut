@@ -1,7 +1,7 @@
 ﻿
-#include <nut/platform/platform.h>
-
+#include "../platform/platform.h"
 #include "cmd_exit.h"
+
 
 namespace nut
 {

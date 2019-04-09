@@ -7,9 +7,8 @@
 #include <string>
 #include <vector>
 
-#include <nut/platform/int_type.h>
-
 #include "../nut_config.h"
+#include "../platform/int_type.h"
 #include "word_array_integer.h"
 
 

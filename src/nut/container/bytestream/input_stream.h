@@ -7,9 +7,8 @@
 #include <stddef.h> // for size_t and so on
 #include <string>
 
-#include <nut/rc/rc_ptr.h>
-
 #include "../../nut_config.h"
+#include "../../rc/rc_ptr.h"
 
 
 namespace nut

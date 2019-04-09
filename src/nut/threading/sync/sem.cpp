@@ -2,9 +2,9 @@
 #include <assert.h>
 #include <time.h>
 
-#include <nut/platform/platform.h>
-
+#include "../../platform/platform.h"
 #include "sem.h"
+
 
 namespace nut
 {

@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <new>
 
-#include "skiplist.h"
 #include "../comparable.h"
+#include "skiplist.h"
 
 
 namespace nut

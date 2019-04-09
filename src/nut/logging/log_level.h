@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <type_traits> // for std::underlying_type
 
+
 namespace nut
 {
 

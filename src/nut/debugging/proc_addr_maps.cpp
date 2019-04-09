@@ -1,5 +1,5 @@
 ﻿
-#include <nut/platform/platform.h>
+#include "../platform/platform.h"
 
 #if NUT_PLATFORM_OS_LINUX
 
@@ -9,9 +9,8 @@
 #include <sys/types.h> // for pid_t
 #include <fstream>
 
-#include <nut/util/string/string_utils.h>
-#include <nut/platform/os.h>
-
+#include "../util/string/string_utils.h"
+#include "../platform/os.h"
 #include "proc_addr_maps.h"
 
 

@@ -5,9 +5,8 @@
 #include <stdint.h>
 #include <vector>
 
-#include <nut/numeric/big_integer.h>
-
 #include "../../../nut_config.h"
+#include "../../../numeric/big_integer.h"
 #include "../rsa.h"
 
 

@@ -1,9 +1,9 @@
 ﻿
 #include <iostream>
 
-#include <nut/util/console_util.h>
-
+#include "../../util/console_util.h"
 #include "console_log_handler.h"
+
 
 namespace nut
 {

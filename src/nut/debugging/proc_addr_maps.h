@@ -2,7 +2,7 @@
 #ifndef ___HEADFILE_95CF1F75_72F1_454A_AA4C_B0D8DD34F14A_
 #define ___HEADFILE_95CF1F75_72F1_454A_AA4C_B0D8DD34F14A_
 
-#include <nut/platform/platform.h>
+#include "../platform/platform.h"
 
 #if NUT_PLATFORM_OS_LINUX
 

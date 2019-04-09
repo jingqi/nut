@@ -4,8 +4,8 @@
 
 #include <assert.h>
 
-#include "bstree.h"
 #include "../comparable.h"
+#include "bstree.h"
 
 
 namespace nut

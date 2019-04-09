@@ -6,9 +6,8 @@
 #include <string>
 #include <map>
 
-#include <nut/rc/rc_new.h>
-
 #include "../../../nut_config.h"
+#include "../../../rc/rc_new.h"
 #include "xml_element.h"
 
 

@@ -5,9 +5,8 @@
 #include <vector>
 #include <string>
 
-#include <nut/rc/rc_new.h>
-
 #include "../../nut_config.h"
+#include "../../rc/rc_new.h"
 #include "property_dom.h"
 
 

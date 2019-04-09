@@ -2,9 +2,8 @@
 #ifndef ___HEADFILE_12FB3097_3C87_4104_A964_9BF5D45EF28E_
 #define ___HEADFILE_12FB3097_3C87_4104_A964_9BF5D45EF28E_
 
-#include <nut/numeric/big_integer.h>
-
 #include "../../nut_config.h"
+#include "../../numeric/big_integer.h"
 
 
 namespace nut

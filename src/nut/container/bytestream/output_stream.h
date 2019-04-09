@@ -7,10 +7,9 @@
 #include <stddef.h>
 #include <string>
 
-#include <nut/rc/rc_ptr.h>
-#include <nut/platform/int_type.h> // for ssize_t
-
 #include "../../nut_config.h"
+#include "../../rc/rc_ptr.h"
+#include "../../platform/int_type.h" // for ssize_t
 
 
 namespace nut

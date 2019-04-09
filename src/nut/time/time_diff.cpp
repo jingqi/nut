@@ -1,8 +1,7 @@
 ﻿
 #include <assert.h>
 
-#include <nut/util/string/string_utils.h>
-
+#include "../util/string/string_utils.h"
 #include "time_diff.h"
 
 

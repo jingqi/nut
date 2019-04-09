@@ -5,8 +5,7 @@
 #include <stdarg.h> /* for va_start() */
 #include <stdlib.h> /* for malloc() free() ltoa() */
 
-#include <nut/platform/platform.h>
-
+#include "../../platform/platform.h"
 #include "to_string.h"
 #include "string_utils.h"
 

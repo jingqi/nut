@@ -4,8 +4,7 @@
 
 #include <assert.h>
 
-#include <nut/platform/endian.h>
-
+#include "../../../platform/endian.h"
 #include "der_reader.h"
 
 

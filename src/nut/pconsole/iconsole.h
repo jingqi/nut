@@ -5,9 +5,8 @@
 #include <string>
 #include <vector>
 
-#include <nut/rc/rc_ptr.h>
-
 #include "../nut_config.h"
+#include "../rc/rc_ptr.h"
 #include "icommand.h"
 
 

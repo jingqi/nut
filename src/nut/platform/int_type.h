@@ -2,10 +2,9 @@
 #ifndef ___HEADFILE_784AE107_1B8B_4833_ADE0_1C516A19FBE7_
 #define ___HEADFILE_784AE107_1B8B_4833_ADE0_1C516A19FBE7_
 
-#include "platform.h"
-
 #include <stdint.h>
 
+#include "platform.h"
 
 #if NUT_PLATFORM_OS_LINUX
 #   include <sys/types.h> /* for ssize_t */

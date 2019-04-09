@@ -2,9 +2,9 @@
 #include <assert.h>
 #include <memory.h> // for ::memset()
 
-#include <nut/platform/platform.h>
-
+#include "../../platform/platform.h"
 #include "aes_cbc_pkcs5.h"
+
 
 namespace nut
 {

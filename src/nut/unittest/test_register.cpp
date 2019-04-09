@@ -4,6 +4,7 @@
 
 #include "test_register.h"
 
+
 namespace nut
 {
 

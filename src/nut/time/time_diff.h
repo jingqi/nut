@@ -5,7 +5,7 @@
 #include <time.h>
 #include <string>
 
-#include <nut/platform/platform.h>
+#include "../platform/platform.h"
 
 #if !NUT_PLATFORM_CC_VC
 #   include <sys/time.h>

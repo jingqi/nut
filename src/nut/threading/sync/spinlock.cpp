@@ -1,8 +1,9 @@
 ﻿
 #include <assert.h>
-#include <nut/platform/platform.h>
 
+#include "../../platform/platform.h"
 #include "spinlock.h"
+
 
 namespace nut
 {

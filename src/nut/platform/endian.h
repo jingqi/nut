@@ -9,6 +9,10 @@
 #ifndef ___HEADFILE_BAE94271_DA1F_4411_AC7D_7734CBCA0672_
 #define ___HEADFILE_BAE94271_DA1F_4411_AC7D_7734CBCA0672_
 
+#include <assert.h>
+#include <stdint.h>
+#include <stddef.h> // for size_t in Linux
+
 #include "platform.h"
 
 #if NUT_PLATFORM_OS_LINUX
@@ -23,10 +27,6 @@
 #elif defined(__OpenBSD__) || defined(__NetBSD__) || defined(__FreeBSD__) || defined(__DragonFly__)
 #   include <sys/endian.h>
 #endif
-
-#include <assert.h>
-#include <stdint.h>
-#include <stddef.h> // for size_t in Linux
 
 
 /**

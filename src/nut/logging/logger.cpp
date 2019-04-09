@@ -7,13 +7,7 @@
 #include <vector>
 #include <algorithm>
 
-#include <nut/platform/platform.h>
-#include <nut/platform/path.h>
-#include <nut/platform/os.h>
-#include <nut/rc/rc_new.h>
-#include <nut/util/txtcfg/xml/xml_parser.h>
-#include <nut/util/string/string_utils.h>
-#include <nut/util/string/to_string.h>
+#include "../platform/platform.h"
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
@@ -21,6 +15,12 @@
 #   include <unistd.h>
 #endif
 
+#include "../platform/path.h"
+#include "../platform/os.h"
+#include "../rc/rc_new.h"
+#include "../util/txtcfg/xml/xml_parser.h"
+#include "../util/string/string_utils.h"
+#include "../util/string/to_string.h"
 #include "logger.h"
 #include "log_handler/stream_log_handler.h"
 #include "log_handler/console_log_handler.h"
@@ -28,6 +28,7 @@
 #include "log_handler/file_log_handler.h"
 #include "log_handler/circle_file_by_size_log_handler.h"
 #include "log_handler/circle_file_by_time_log_handler.h"
+
 
 namespace nut
 {

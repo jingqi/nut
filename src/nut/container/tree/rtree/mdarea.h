@@ -5,7 +5,7 @@
 #include <algorithm> // for std::min()
 #include <type_traits> // for std::enable_if
 
-#include <nut/platform/platform.h>
+#include "../../../platform/platform.h"
 
 
 namespace nut

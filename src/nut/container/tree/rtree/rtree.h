@@ -8,7 +8,7 @@
 #include <map> // for pair
 #include <assert.h>
 
-#include <nut/platform/platform.h>
+#include "../../../platform/platform.h"
 
 #if NUT_PLATFORM_CC_VC
 #   include <xutility> // for std::min() and so on

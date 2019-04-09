@@ -2,10 +2,9 @@
 #include <assert.h>
 #include <string.h>
 
-#include <nut/platform/platform.h>
-
-#include "ini_dom.h"
+#include "../../platform/platform.h"
 #include "../string/string_utils.h"
+#include "ini_dom.h"
 
 
 #if NUT_PLATFORM_CC_VC

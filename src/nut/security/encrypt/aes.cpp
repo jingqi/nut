@@ -3,12 +3,12 @@
 
 #include "aes.h"
 
+
 /**
  * Set FIXED_TABLES to 0 to use pre-computed tables.
  * Otherwise the tables will be generated at the first run.
  */
 #define FIXED_TABLES 0
-
 
 namespace nut
 {

@@ -3,6 +3,7 @@
 
 #include "kmp.h"
 
+
 namespace nut
 {
 
@@ -41,4 +42,3 @@ NUT_API int kmp_search(const std::wstring& src, size_t start, const std::wstring
 }
 
 }
-

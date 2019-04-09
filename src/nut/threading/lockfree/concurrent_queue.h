@@ -8,10 +8,11 @@
 #include <thread>
 #include <random>
 
+#include "../threading.h" // for NUT_THREAD_LOCAL
 #include "stamped_ptr.h"
 #include "hazard_pointer/hp_record.h"
 #include "hazard_pointer/hp_retire_list.h"
-#include "../threading.h" // for NUT_THREAD_LOCAL
+
 
 // 隐消数组的指针常量
 #define COLLISION_EMPTY_PTR nullptr

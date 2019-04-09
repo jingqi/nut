@@ -6,16 +6,17 @@
 #include <stdlib.h> /* for malloc() free() ltoa() wcstombs() and so on */
 #include <wchar.h>
 
-#include <nut/platform/platform.h>
-#include <nut/platform/int_type.h> // for ssize_t
+#include "../../platform/platform.h"
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #endif
 
+#include "../../platform/int_type.h" // for ssize_t
 #include "kmp.h"
 #include "to_string.h"
 #include "string_utils.h"
+
 
 #if NUT_PLATFORM_CC_VC
 #   pragma warning(push)

@@ -4,11 +4,11 @@
 #include <memory.h>
 #include <string>
 
-#include <nut/numeric/word_array_integer.h>
-#include <nut/platform/int_type.h> // for ssize_t in windows VC
-
+#include "../numeric/word_array_integer.h"
+#include "../platform/int_type.h" // for ssize_t in windows VC
 #include "bit_stream.h"
 #include "comparable.h"
+
 
 namespace nut
 {

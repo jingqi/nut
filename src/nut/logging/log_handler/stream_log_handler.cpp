@@ -1,6 +1,7 @@
 ﻿
 #include "stream_log_handler.h"
 
+
 namespace nut
 {
 

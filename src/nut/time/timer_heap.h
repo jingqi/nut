@@ -9,9 +9,8 @@
 #include <condition_variable>
 #include <functional>
 
-#include <nut/platform/platform.h>
-
 #include "../nut_config.h"
+#include "../platform/platform.h"
 #include "date_time.h"
 
 

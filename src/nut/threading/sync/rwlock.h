@@ -2,7 +2,7 @@
 #ifndef ___HEADFILE_409C4713_58BB_467B_A1CB_A8BC6EDA6CFE_
 #define ___HEADFILE_409C4713_58BB_467B_A1CB_A8BC6EDA6CFE_
 
-#include <nut/platform/platform.h>
+#include "../../platform/platform.h"
 
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
 #   include <windows.h>

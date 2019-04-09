@@ -3,8 +3,7 @@
 #include <time.h>
 #include <algorithm>
 
-#include <nut/platform/platform.h>
-
+#include "../platform/platform.h"
 #include "timer_heap.h"
 
 

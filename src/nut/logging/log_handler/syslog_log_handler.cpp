@@ -1,11 +1,12 @@
 ﻿
-#include <nut/platform/platform.h>
+#include "../../platform/platform.h"
 
 #if NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
 
 #include <syslog.h>
 
 #include "syslog_log_handler.h"
+
 
 namespace nut
 {

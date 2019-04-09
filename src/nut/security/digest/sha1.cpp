@@ -2,9 +2,8 @@
 #include <assert.h>
 #include <string.h> /* for ::memcpy() */
 
-#include <nut/platform/endian.h>
-#include <nut/util/string/string_utils.h>
-
+#include "../../platform/endian.h"
+#include "../../util/string/string_utils.h"
 #include "sha1.h"
 
 

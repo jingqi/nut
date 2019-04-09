@@ -4,6 +4,7 @@
 
 #include "../big_integer.h"
 
+
 namespace nut
 {
 

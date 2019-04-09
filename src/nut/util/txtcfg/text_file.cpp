@@ -2,8 +2,7 @@
 #include <assert.h>
 #include <fstream>
 
-#include <nut/platform/path.h>
-
+#include "../../platform/path.h"
 #include "text_file.h"
 
 

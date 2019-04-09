@@ -5,9 +5,9 @@
 #include <thread>
 #include <vector>
 
+#include "../../threading.h" // for NUT_THREAD_LOCAL
 #include "hp_retire_list.h"
 #include "hp_record.h"
-#include "../../threading.h" // for NUT_THREAD_LOCAL
 
 
 namespace nut

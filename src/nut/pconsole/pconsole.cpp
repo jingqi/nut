@@ -3,11 +3,11 @@
 #include <string>
 #include <vector>
 
-#include <nut/util/string/string_utils.h>
-
+#include "../util/string/string_utils.h"
 #include "pconsole.h"
 #include "cmd_exit.h"
 #include "cmd_help.h"
+
 
 namespace nut
 {

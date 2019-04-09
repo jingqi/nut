@@ -2,9 +2,9 @@
 #include <assert.h>
 #include <iostream>
 
-#include <nut/util/console_util.h>
-
+#include "../util/console_util.h"
 #include "console_test_logger.h"
+
 
 namespace nut
 {

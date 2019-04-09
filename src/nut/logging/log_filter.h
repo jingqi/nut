@@ -5,9 +5,8 @@
 #include <string>
 
 #include "../nut_config.h"
+#include "../platform/int_type.h"
 #include "log_level.h"
-
-#include <nut/platform/int_type.h>
 
 
 namespace nut

@@ -3,7 +3,7 @@
 #include <stdlib.h> // for malloc(), free()
 #include <iostream>
 
-#include <nut/platform/platform.h>
+#include "../platform/platform.h"
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
@@ -14,9 +14,8 @@
 #   include <limits.h> // for PATH_MAX
 #endif
 
-#include <nut/util/string/string_utils.h>
-#include <nut/util/string/to_string.h>
-
+#include "../util/string/string_utils.h"
+#include "../util/string/to_string.h"
 #include "backtrace.h"
 #include "proc_addr_maps.h"
 

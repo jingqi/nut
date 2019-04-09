@@ -6,13 +6,13 @@
 #include <type_traits>
 #include <atomic>
 
-#include <nut/platform/platform.h>
+#include "../../platform/platform.h"
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #endif
 
-#include <nut/platform/int_type.h>
+#include "../../platform/int_type.h"
 
 
 namespace nut

@@ -6,9 +6,8 @@
 #include <vector>
 #include <functional>
 
-#include <nut/platform/platform.h>
-
 #include "../nut_config.h"
+#include "../platform/platform.h"
 
 
 namespace nut

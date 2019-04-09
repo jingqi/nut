@@ -1,9 +1,8 @@
 ﻿
 #include <assert.h>
 
-#include <nut/platform/endian.h>
-#include <nut/numeric/numeric_algo/mod.h>
-
+#include "../../../platform/endian.h"
+#include "../../../numeric/numeric_algo/mod.h"
 #include "der_writer.h"
 
 

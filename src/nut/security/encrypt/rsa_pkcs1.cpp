@@ -1,8 +1,7 @@
 ﻿
 #include <stdlib.h> // for ::malloc() and ::free()
 
-#include <nut/platform/endian.h>
-
+#include "../../platform/endian.h"
 #include "rsa_pkcs1.h"
 
 

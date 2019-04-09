@@ -2,10 +2,9 @@
 #ifndef ___HEADFILE_B8331BB6_1126_4255_A278_E60D5B9FBD49_
 #define ___HEADFILE_B8331BB6_1126_4255_A278_E60D5B9FBD49_
 
-#include <nut/platform/int_type.h>
-#include <nut/numeric/big_integer.h>
-
 #include "../../../nut_config.h"
+#include "../../../platform/int_type.h"
+#include "../../../numeric/big_integer.h"
 #include "../rsa.h"
 
 

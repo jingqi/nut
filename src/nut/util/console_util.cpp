@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include <nut/platform/platform.h>
+#include "../platform/platform.h"
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <conio.h> // for ::getch()
@@ -13,6 +13,7 @@
 #endif
 
 #include "console_util.h"
+
 
 #if NUT_PLATFORM_CC_VC
 #   pragma warning(push)

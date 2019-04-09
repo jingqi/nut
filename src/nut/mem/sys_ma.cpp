@@ -3,9 +3,9 @@
 #include <stdlib.h> // for malloc() and so on
 #include <string.h> // for memset()
 
-#include <nut/debugging/destroy_checker.h>
-
+#include "../debugging/destroy_checker.h"
 #include "sys_ma.h"
+
 
 #define UNINIT_BYTE 0xCC
 #define FREED_BYTE 0xFE

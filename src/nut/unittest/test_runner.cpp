@@ -6,6 +6,7 @@
 #include "test_register.h"
 #include "test_fixture.h"
 
+
 namespace nut
 {
 

@@ -4,9 +4,8 @@
 #include <limits.h> /* for SIZE_MAX */
 #include <algorithm>
 
-#include <nut/platform/endian.h>
-#include <nut/util/string/string_utils.h>
-
+#include "../../platform/endian.h"
+#include "../../util/string/string_utils.h"
 #include "sha2_512.h"
 
 
