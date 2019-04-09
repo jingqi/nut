@@ -124,13 +124,13 @@ class TestPem : public TestFixture
     void test_write_pkcs1_public()
     {
         const char *pem1 =
-            "-----BEGIN RSA PUBLIC KEY-----\n"
-            "MIIBCgKCAQEA61BjmfXGEvWmegnBGSuS+rU9soUg2FnODva32D1AqhwdziwHINFa"
-            "D1MVlcrYG6XRKfkcxnaXGfFDWHLEvNBSEVCgJjtHAGZIm5GL/KA86KDp/CwDFMSw"
-            "luowcXwDwoyinmeOY9eKyh6aY72xJh7noLBBq1N0bWi1e2i+83txOCg4yV2oVXhB"
-            "o8pYEJ8LT3el6Smxol3C1oFMVdwPgc0vTl25XucMcG/ALE/KNY6pqC2AQ6R2ERlV"
-            "gPiUWOPatVkt7+Bs3h5Ramxh7XjBOXeulmCpGSynXNcpZ/06+vofGi/2MlpQZNhH"
-            "Ao8eayMp6FcvNucIpUndo1X8dKMv3Y26ZQIDAQAB\n"
+            "-----BEGIN RSA PUBLIC KEY-----" "\n"
+            "MIIBCgKCAQEA61BjmfXGEvWmegnBGSuS+rU9soUg2FnODva32D1AqhwdziwHINFa" "\n"
+            "D1MVlcrYG6XRKfkcxnaXGfFDWHLEvNBSEVCgJjtHAGZIm5GL/KA86KDp/CwDFMSw" "\n"
+            "luowcXwDwoyinmeOY9eKyh6aY72xJh7noLBBq1N0bWi1e2i+83txOCg4yV2oVXhB" "\n"
+            "o8pYEJ8LT3el6Smxol3C1oFMVdwPgc0vTl25XucMcG/ALE/KNY6pqC2AQ6R2ERlV" "\n"
+            "gPiUWOPatVkt7+Bs3h5Ramxh7XjBOXeulmCpGSynXNcpZ/06+vofGi/2MlpQZNhH" "\n"
+            "Ao8eayMp6FcvNucIpUndo1X8dKMv3Y26ZQIDAQAB" "\n"
             "-----END RSA PUBLIC KEY-----";
         RSA::PublicKey key;
         NUT_TA(pem_read_rsa_public(pem1, &key));
@@ -143,9 +143,9 @@ class TestPem : public TestFixture
     void test_write_pkcs1_private()
     {
         const char *pem1 =
-            "-----BEGIN RSA PRIVATE KEY-----\n"
-            "MD8CAQACCQC8LGbl5kjo7wIDAQABAggEoZ8irJt1iQIFANxhrRMCBQDalhw1AgRk"
-            "5rvNAgUAydplIQIFAMVXS/0=\n"
+            "-----BEGIN RSA PRIVATE KEY-----" "\n"
+            "MD8CAQACCQC8LGbl5kjo7wIDAQABAggEoZ8irJt1iQIFANxhrRMCBQDalhw1AgRk" "\n"
+            "5rvNAgUAydplIQIFAMVXS/0=" "\n"
             "-----END RSA PRIVATE KEY-----";
         RSA::PrivateKey key;
         NUT_TA(pem_read_rsa_private(pem1, &key));
@@ -158,8 +158,8 @@ class TestPem : public TestFixture
     void test_write_pkcs8_public()
     {
         const char *pem1 =
-            "-----BEGIN PUBLIC KEY-----\n"
-            "MCQwDQYJKoZIhvcNAQEBBQADEwAwEAIJALwsZuXmSOjvAgMBAAE=\n"
+            "-----BEGIN PUBLIC KEY-----" "\n"
+            "MCQwDQYJKoZIhvcNAQEBBQADEwAwEAIJALwsZuXmSOjvAgMBAAE=" "\n"
             "-----END PUBLIC KEY-----";
         RSA::PublicKey key;
         NUT_TA(pem_read_rsa_public(pem1, &key));
@@ -172,21 +172,21 @@ class TestPem : public TestFixture
     void test_write_pkcs8_private()
     {
         const char *pem1 =
-            "-----BEGIN PRIVATE KEY-----\n"
-            "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBANESTe7LjH2LhrXo"
-            "5g5gSnkivZ/XqWyZQcHYeMYOXGRTSO71gCnJ5mVRdvX3VmTEna/Hb68qmk3iAosP"
-            "LmvskxOnByHUI29x7JJfoOIziXBMCdQRmIFiA0E2sog0S0mZdZJkFN5Hu/scf8TE"
-            "0/m/KGGTTovWU6iSeFhyr30WNMaHAgMBAAECgYAE609WHQfzNEM5KH+xOubFruGT"
-            "Tzm3SmvXqcY9srzNx3/hz3jygsOfAqmv49/ugwnKxwCDuJbk2jqBFxxagbh8JPmM"
-            "G8nNwyWhmcDfqwTRu3OVOP//vXigFiIRw7hpYLskHIyBVZnZZqSotAaiK/igp3OL"
-            "OBzQuYILdczn4X5GkQJBAPjIdAm4l3r+OBcgTy/zcCJQkOHQ3yc63ZIapbNmlgoz"
-            "U5RAhX6yzdKRHPnJap9QEqDJTw5WRFaPvxG5mLZayKMCQQDXIvCj6muQGbmuBtAg"
-            "ZGcMnkFt//T+n59Il+ba2JDWj3hOO6Emzj16EUu0kqlBP3fGU6cXAjusAlZVR0s9"
-            "SzTNAkAvjqIf+Zl7eX1fbl203ORiquQHRtZhuW8BrvZeBQ5JhOZFQNBEGAogZn0T"
-            "gt1O9w+YjOL/6p3FrlToHoKC2XfhAkEAipTPPkd7Ek//88Ifvz3tw4sNyrXeM0bP"
-            "bAutgbuPUScJ8BspK74ei8soYSE4NfeUSAUK1R9zINJAmp5aMRmI4QJBAL29qAbT"
-            "53Eua+VeDqxgQ3Vz54jwokhqkqDRcHM8Cphx9PZyEXd1Q8DehN+uTnUxsdoaMjVS"
-            "R3vpWnZDzckKVuk=\n"
+            "-----BEGIN PRIVATE KEY-----" "\n"
+            "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBANESTe7LjH2LhrXo" "\n"
+            "5g5gSnkivZ/XqWyZQcHYeMYOXGRTSO71gCnJ5mVRdvX3VmTEna/Hb68qmk3iAosP" "\n"
+            "LmvskxOnByHUI29x7JJfoOIziXBMCdQRmIFiA0E2sog0S0mZdZJkFN5Hu/scf8TE" "\n"
+            "0/m/KGGTTovWU6iSeFhyr30WNMaHAgMBAAECgYAE609WHQfzNEM5KH+xOubFruGT" "\n"
+            "Tzm3SmvXqcY9srzNx3/hz3jygsOfAqmv49/ugwnKxwCDuJbk2jqBFxxagbh8JPmM" "\n"
+            "G8nNwyWhmcDfqwTRu3OVOP//vXigFiIRw7hpYLskHIyBVZnZZqSotAaiK/igp3OL" "\n"
+            "OBzQuYILdczn4X5GkQJBAPjIdAm4l3r+OBcgTy/zcCJQkOHQ3yc63ZIapbNmlgoz" "\n"
+            "U5RAhX6yzdKRHPnJap9QEqDJTw5WRFaPvxG5mLZayKMCQQDXIvCj6muQGbmuBtAg" "\n"
+            "ZGcMnkFt//T+n59Il+ba2JDWj3hOO6Emzj16EUu0kqlBP3fGU6cXAjusAlZVR0s9" "\n"
+            "SzTNAkAvjqIf+Zl7eX1fbl203ORiquQHRtZhuW8BrvZeBQ5JhOZFQNBEGAogZn0T" "\n"
+            "gt1O9w+YjOL/6p3FrlToHoKC2XfhAkEAipTPPkd7Ek//88Ifvz3tw4sNyrXeM0bP" "\n"
+            "bAutgbuPUScJ8BspK74ei8soYSE4NfeUSAUK1R9zINJAmp5aMRmI4QJBAL29qAbT" "\n"
+            "53Eua+VeDqxgQ3Vz54jwokhqkqDRcHM8Cphx9PZyEXd1Q8DehN+uTnUxsdoaMjVS" "\n"
+            "R3vpWnZDzckKVuk=" "\n"
             "-----END PRIVATE KEY-----";
         RSA::PrivateKey key;
         NUT_TA(pem_read_rsa_private(pem1, &key));

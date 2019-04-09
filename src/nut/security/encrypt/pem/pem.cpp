@@ -101,8 +101,12 @@ NUT_API std::string pem_write_rsa_public(const RSA::PublicKey& pubkey, bool pkcs
 
     std::string ret(pkcs8 ? BEGIN_PUBLIC_KEY : BEGIN_RSA_PUBLIC_KEY);
     ret.push_back('\n');
-    ret += base64_encode(der.data(), der.size());
-    ret.push_back('\n');
+    const std::string base64 = base64_encode(der.data(), der.size());
+    for (size_t i = 0, len = base64.length(); i < len; i += 64)
+    {
+        ret.insert(ret.end(), base64.data() + i, base64.data() + std::min(len, i + 64));
+        ret.push_back('\n');
+    }
     ret += (pkcs8 ? END_PUBLIC_KEY : END_RSA_PUBLIC_KEY);
     return ret;
 }
@@ -117,8 +121,12 @@ NUT_API std::string pem_write_rsa_private(const RSA::PrivateKey& prikey, bool pk
 
     std::string ret(pkcs8 ? BEGIN_PRIVATE_KEY : BEGIN_RSA_PRIVATE_KEY);
     ret.push_back('\n');
-    ret += base64_encode(der.data(), der.size());
-    ret.push_back('\n');
+    const std::string base64 = base64_encode(der.data(), der.size());
+    for (size_t i = 0, len = base64.length(); i < len; i += 64)
+    {
+        ret.insert(ret.end(), base64.data() + i, base64.data() + std::min(len, i + 64));
+        ret.push_back('\n');
+    }
     ret += (pkcs8 ? END_PRIVATE_KEY : END_RSA_PRIVATE_KEY);
     return ret;
 }
