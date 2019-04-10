@@ -19,6 +19,7 @@
 #include "../nut_config.h"
 #include "../platform/platform.h"
 #include "../platform/int_type.h"
+#include "../platform/endian.h"
 
 
 namespace nut
@@ -868,7 +869,13 @@ uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
         pluser2 += pluser1 + carry;
 
         retx[i] = static_cast<T>(pluser2);
-        carry = static_cast<uint8_t>(pluser2 >> (8 * sizeof(T)));
+#if NUT_ENDIAN_LITTLE_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser2)[1]);
+#elif NUT_ENDIAN_BIG_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser2)[0]);
+#else
+        carry = static_cast<uint8_t>(pluser2 >> (8 * sizeof(T))); // 稍慢
+#endif
     }
 
     // 回写数据
@@ -906,7 +913,13 @@ uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
         pluser2 += pluser1 + carry;
 
         retx[i] = static_cast<T>(pluser2);
+#if NUT_ENDIAN_LITTLE_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser2)[1]);
+#elif NUT_ENDIAN_BIG_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser2)[0]);
+#else
         carry = static_cast<uint8_t>(pluser2 >> (8 * sizeof(T)));
+#endif
     }
 
     // 回写数据
@@ -938,7 +951,13 @@ uint8_t increase(T *x, size_t N)
         pluser += carry;
 
         x[i] = static_cast<T>(pluser);
+#if NUT_ENDIAN_LITTLE_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser)[1]);
+#elif NUT_ENDIAN_BIG_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser)[0]);
+#else
         carry = static_cast<uint8_t>(pluser >> (8 * sizeof(T)));
+#endif
     }
     return carry;
 }
@@ -971,7 +990,13 @@ uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
         pluser2 += pluser1 + carry;
 
         retx[i] = static_cast<T>(pluser2);
+#if NUT_ENDIAN_LITTLE_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser2)[1]);
+#elif NUT_ENDIAN_BIG_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser2)[0]);
+#else
         carry = static_cast<uint8_t>(pluser2 >> (8 * sizeof(T)));
+#endif
     }
 
     // 回写数据
@@ -1009,7 +1034,13 @@ uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
         pluser2 += pluser1 + carry;
 
         retx[i] = static_cast<T>(pluser2);
+#if NUT_ENDIAN_LITTLE_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser2)[1]);
+#elif NUT_ENDIAN_BIG_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser2)[0]);
+#else
         carry = static_cast<uint8_t>(pluser2 >> (8 * sizeof(T)));
+#endif
     }
 
     // 回写数据
@@ -1041,7 +1072,13 @@ uint8_t decrease(T *x, size_t N)
         pluser += carry + (dword_type)(T) ~(T)0;
 
         x[i] = static_cast<T>(pluser);
+#if NUT_ENDIAN_LITTLE_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser)[1]);
+#elif NUT_ENDIAN_BIG_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser)[0]);
+#else
         carry = static_cast<uint8_t>(pluser >> (8 * sizeof(T)));
+#endif
     }
     return carry;
 }
@@ -1072,7 +1109,13 @@ uint8_t signed_negate(const T *a, size_t M, T *x, size_t N)
         pluser += carry;
 
         retx[i] = static_cast<T>(pluser);
+#if NUT_ENDIAN_LITTLE_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser)[1]);
+#elif NUT_ENDIAN_BIG_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser)[0]);
+#else
         carry = static_cast<uint8_t>(pluser >> (8 * sizeof(T)));
+#endif
     }
 
     // 回写数据
@@ -1109,7 +1152,13 @@ uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N)
         pluser += carry;
 
         retx[i] = static_cast<T>(pluser);
+#if NUT_ENDIAN_LITTLE_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser)[1]);
+#elif NUT_ENDIAN_BIG_BYTE
+        carry = static_cast<uint8_t>(reinterpret_cast<const T*>(&pluser)[0]);
+#else
         carry = static_cast<uint8_t>(pluser >> (8 * sizeof(T)));
+#endif
     }
 
     // 回写数据
@@ -1176,7 +1225,13 @@ void _unsigned_square(const T *a, size_t M, T *x, size_t N)
             op2 = op1 * op2 + retx[i + j] + carry;
 
             retx[i + j] = static_cast<T>(op2);
+#if NUT_ENDIAN_LITTLE_BYTE
+            carry = reinterpret_cast<const T*>(&op2)[1];
+#elif NUT_ENDIAN_BIG_BYTE
+            carry = reinterpret_cast<const T*>(&op2)[0];
+#else
             carry = static_cast<T>(op2 >> (8 * sizeof(T)));
+#endif
         }
         if (i + M < N)
             retx[i + M] = carry;
@@ -1197,7 +1252,13 @@ void _unsigned_square(const T *a, size_t M, T *x, size_t N)
         op = op * op + retx[i * 2] + carry;
 
         retx[i * 2] = static_cast<T>(op);
+#if NUT_ENDIAN_LITTLE_BYTE
+        carry = reinterpret_cast<const T*>(&op)[1];
+#elif NUT_ENDIAN_BIG_BYTE
+        carry = reinterpret_cast<const T*>(&op)[0];
+#else
         carry = static_cast<T>(op >> (8 * sizeof(T)));
+#endif
 
         if (0 != carry && i * 2 + 1 < N)
         {
@@ -1205,7 +1266,13 @@ void _unsigned_square(const T *a, size_t M, T *x, size_t N)
             op += carry;
 
             retx[i * 2 + 1] = static_cast<T>(op);
+#if NUT_ENDIAN_LITTLE_BYTE
+            carry = reinterpret_cast<const T*>(&op)[1];
+#elif NUT_ENDIAN_BIG_BYTE
+            carry = reinterpret_cast<const T*>(&op)[0];
+#else
             carry = static_cast<T>(op >> (8 * sizeof(T)));
+#endif
         }
     }
 
@@ -1241,7 +1308,7 @@ void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 
     // 乘法
     const T filla = (is_positive(a,M) ? 0 : ~(T)0),
-        fillb = (is_positive(b,N) ? 0 : ~(T)0); /// 先把变量算出来，避免操作数被破坏
+        fillb = (is_positive(b,N) ? 0 : ~(T)0); // NOTE 先把变量算出来，避免操作数被破坏
     ::memset(retx, 0, sizeof(T) * P);
     for (size_t i = 0; i < P; ++i)
     {
@@ -1249,7 +1316,7 @@ void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
             break;
 
         const dword_type mult1 = (i < M ? a[i] : filla);
-        if (mult1 == 0)
+        if (0 == mult1)
             continue;
 
         T carry = 0; // 这个进位包括乘法的，故此会大于1
@@ -1262,7 +1329,13 @@ void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
             mult2 = mult1 * mult2 + retx[i + j] + carry;
 
             retx[i + j] = static_cast<T>(mult2);
+#if NUT_ENDIAN_LITTLE_BYTE
+            carry = reinterpret_cast<const T*>(&mult2)[1];
+#elif NUT_ENDIAN_BIG_BYTE
+            carry = reinterpret_cast<const T*>(&mult2)[0];
+#else
             carry = static_cast<T>(mult2 >> (8 * sizeof(T)));
+#endif
         }
     }
 
@@ -1299,7 +1372,7 @@ void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t 
             break;
 
         const dword_type mult1 = a[i];
-        if (mult1 == 0)
+        if (0 == mult1)
             continue;
 
         T carry = 0; // 这个进位包括乘法的，故此会大于1
@@ -1312,7 +1385,13 @@ void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t 
             mult2 = mult1 * mult2 + retx[i + j] + carry;
 
             retx[i + j] = static_cast<T>(mult2);
+#if NUT_ENDIAN_LITTLE_BYTE
+            carry = reinterpret_cast<const T*>(&mult2)[1];
+#elif NUT_ENDIAN_BIG_BYTE
+            carry = reinterpret_cast<const T*>(&mult2)[0];
+#else
             carry = static_cast<T>(mult2 >> (8 * sizeof(T)));
+#endif
         }
     }
 

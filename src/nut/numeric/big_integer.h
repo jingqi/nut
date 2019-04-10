@@ -28,29 +28,31 @@ namespace nut
 class NUT_API BigInteger
 {
 public:
-    typedef size_t                                  size_type;
     typedef unsigned int                            word_type;
     typedef StdInt<word_type>::double_unsigned_type dword_type;
+    typedef long long                               cast_int_type;
+    typedef size_t                                  size_type;
 
     static_assert(std::is_unsigned<word_type>::value, "Unexpected integer type");
-    static_assert(std::is_signed<long long>::value, "Unexpected integer type");
-    static_assert(sizeof(long long) % sizeof(word_type) == 0, "Unexpected integer size");
+    static_assert(std::is_unsigned<dword_type>::value, "Unexpected integer type");
+    static_assert(std::is_signed<cast_int_type>::value, "Unexpected integer type");
+    static_assert(sizeof(cast_int_type) % sizeof(word_type) == 0, "Unexpected integer size");
 
-    friend bool operator==(long long a, const BigInteger& b);
-    friend bool operator!=(long long a, const BigInteger& b);
-    friend bool operator<(long long a, const BigInteger& b);
-    friend bool operator>(long long a, const BigInteger& b);
-    friend bool operator<=(long long a, const BigInteger& b);
-    friend bool operator>=(long long a, const BigInteger& b);
+    friend bool operator==(cast_int_type a, const BigInteger& b);
+    friend bool operator!=(cast_int_type a, const BigInteger& b);
+    friend bool operator<(cast_int_type a, const BigInteger& b);
+    friend bool operator>(cast_int_type a, const BigInteger& b);
+    friend bool operator<=(cast_int_type a, const BigInteger& b);
+    friend bool operator>=(cast_int_type a, const BigInteger& b);
 
-    friend BigInteger operator+(long long a, const BigInteger& b);
-    friend BigInteger operator-(long long a, const BigInteger& b);
-    friend BigInteger operator*(long long a, const BigInteger& b);
-    friend BigInteger operator/(long long a, const BigInteger& b);
-    friend BigInteger operator%(long long a, const BigInteger& b);
+    friend BigInteger operator+(cast_int_type a, const BigInteger& b);
+    friend BigInteger operator-(cast_int_type a, const BigInteger& b);
+    friend BigInteger operator*(cast_int_type a, const BigInteger& b);
+    friend BigInteger operator/(cast_int_type a, const BigInteger& b);
+    friend BigInteger operator%(cast_int_type a, const BigInteger& b);
 
 public:
-    explicit BigInteger(long long v = 0);
+    explicit BigInteger(cast_int_type v = 0);
 
     /**
      * @param buf 字节序应与本地一致
@@ -64,57 +66,57 @@ public:
 
     BigInteger& operator=(BigInteger&& x);
     BigInteger& operator=(const BigInteger& x);
-    BigInteger& operator=(long long v);
+    BigInteger& operator=(cast_int_type v);
 
     bool operator==(const BigInteger& x) const;
-    bool operator==(long long v) const;
+    bool operator==(cast_int_type v) const;
 
     bool operator!=(const BigInteger& x) const;
-    bool operator!=(long long v) const;
+    bool operator!=(cast_int_type v) const;
 
     bool operator<(const BigInteger& x) const;
-    bool operator<(long long v) const;
+    bool operator<(cast_int_type v) const;
 
     bool operator>(const BigInteger& x) const;
-    bool operator>(long long v) const;
+    bool operator>(cast_int_type v) const;
 
     bool operator<=(const BigInteger& x) const;
-    bool operator<=(long long v) const;
+    bool operator<=(cast_int_type v) const;
 
     bool operator>=(const BigInteger& x) const;
-    bool operator>=(long long v) const;
+    bool operator>=(cast_int_type v) const;
 
     BigInteger operator+(const BigInteger& x) const;
-    BigInteger operator+(long long v) const;
+    BigInteger operator+(cast_int_type v) const;
 
     BigInteger operator-(const BigInteger& x) const;
-    BigInteger operator-(long long v) const;
+    BigInteger operator-(cast_int_type v) const;
 
     BigInteger operator-() const;
 
     BigInteger operator*(const BigInteger& x) const;
-    BigInteger operator*(long long v) const;
+    BigInteger operator*(cast_int_type v) const;
 
     BigInteger operator/(const BigInteger& x) const;
-    BigInteger operator/(long long v) const;
+    BigInteger operator/(cast_int_type v) const;
 
     BigInteger operator%(const BigInteger& x) const;
-    BigInteger operator%(long long v) const;
+    BigInteger operator%(cast_int_type v) const;
 
     BigInteger& operator+=(const BigInteger& x);
-    BigInteger& operator+=(long long v);
+    BigInteger& operator+=(cast_int_type v);
 
     BigInteger& operator-=(const BigInteger& x);
-    BigInteger& operator-=(long long v);
+    BigInteger& operator-=(cast_int_type v);
 
     BigInteger& operator*=(const BigInteger& x);
-    BigInteger& operator*=(long long v);
+    BigInteger& operator*=(cast_int_type v);
 
     BigInteger& operator/=(const BigInteger& x);
-    BigInteger& operator/=(long long v);
+    BigInteger& operator/=(cast_int_type v);
 
     BigInteger& operator%=(const BigInteger& x);
-    BigInteger& operator%=(long long v);
+    BigInteger& operator%=(cast_int_type v);
 
     BigInteger& operator++();
     BigInteger operator++(int);
@@ -234,7 +236,7 @@ public:
     /**
      * 如果超出返回值类型范围，返回值会被截断；否则做符号扩展
      */
-    long long to_integer() const;
+    cast_int_type to_integer() const;
 
     /**
      * 转为 little-endian(or big-endian) 字节数组
@@ -249,12 +251,25 @@ public:
     static BigInteger value_of(const std::wstring& s, size_type radix = 10);
 
 private:
+    /**
+     * 当前是使用内部存储空间(小对象优化)还是堆上存储空间
+     */
+    bool is_using_heap() const;
+
+    /**
+     * 设置有效字节长度数值
+     */
+    void set_significant_len(size_type len);
+
+    /**
+     * 确保有足够的存储空间
+     */
     void ensure_cap(size_type new_size);
 
     /**
      * 确保有效字节长度足够长，不够长则进行符号扩展
      */
-    void ensure_significant_len(size_type siglen);
+    void ensure_significant_len(size_type new_siglen);
 
     /**
      * 最小化有效字节长度
@@ -262,23 +277,39 @@ private:
     void minimize_significant_len();
 
 private:
-    word_type *_data = nullptr; // 缓冲区, little-endian, 带符号
-    size_type _capacity = 0;
-    size_type _significant_len = 0; // 有效 word 长度
+    enum
+    {
+        INNER_BYTE_SIZE = sizeof(word_type*) + sizeof(size_type),
+        INNER_CAPACITY = INNER_BYTE_SIZE / sizeof(word_type),
+    };
+
+    size_type _significant_len = 0; // big0: 是否使用 heap; other bits: 有效 word 长度
+    union
+    {
+        struct
+        {
+            word_type *_heap_data; // 堆上缓冲区, little-endian, 带符号
+            size_type _heap_capacity;
+        };
+        word_type _inner_data[INNER_CAPACITY]; // 内部缓冲区, little-endian, 带符号
+    };
 };
 
-bool operator==(long long a, const BigInteger& b);
-bool operator!=(long long a, const BigInteger& b);
-bool operator<(long long a, const BigInteger& b);
-bool operator>(long long a, const BigInteger& b);
-bool operator<=(long long a, const BigInteger& b);
-bool operator>=(long long a, const BigInteger& b);
+static_assert(sizeof(BigInteger) == sizeof(BigInteger::size_type) * 2 + sizeof(BigInteger::word_type*),
+              "Unexpected struct size");
 
-BigInteger operator+(long long a, const BigInteger& b);
-BigInteger operator-(long long a, const BigInteger& b);
-BigInteger operator*(long long a, const BigInteger& b);
-BigInteger operator/(long long a, const BigInteger& b);
-BigInteger operator%(long long a, const BigInteger& b);
+bool operator==(BigInteger::cast_int_type a, const BigInteger& b);
+bool operator!=(BigInteger::cast_int_type a, const BigInteger& b);
+bool operator<(BigInteger::cast_int_type a, const BigInteger& b);
+bool operator>(BigInteger::cast_int_type a, const BigInteger& b);
+bool operator<=(BigInteger::cast_int_type a, const BigInteger& b);
+bool operator>=(BigInteger::cast_int_type a, const BigInteger& b);
+
+BigInteger operator+(BigInteger::cast_int_type a, const BigInteger& b);
+BigInteger operator-(BigInteger::cast_int_type a, const BigInteger& b);
+BigInteger operator*(BigInteger::cast_int_type a, const BigInteger& b);
+BigInteger operator/(BigInteger::cast_int_type a, const BigInteger& b);
+BigInteger operator%(BigInteger::cast_int_type a, const BigInteger& b);
 
 }
 

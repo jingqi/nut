@@ -40,9 +40,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     N = std::min(unsigned_significant_size(b, N), P);
 
     // 退化
-    if (M < NUT_KARATSUBA_FALLBACK_THRESHOLD ||
-        N < NUT_KARATSUBA_FALLBACK_THRESHOLD ||
-        P < NUT_KARATSUBA_FALLBACK_THRESHOLD)
+    if (M < NUT_KARATSUBA_FALLBACK_THRESHOLD || N < NUT_KARATSUBA_FALLBACK_THRESHOLD)
     {
         unsigned_multiply(a, M, b, N, x, P);
         return;

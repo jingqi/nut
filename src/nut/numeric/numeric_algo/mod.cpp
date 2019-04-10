@@ -1,4 +1,5 @@
 ﻿
+#include "../../platform/endian.h"
 #include "mod.h"
 #include "gcd.h"
 
@@ -64,7 +65,13 @@ static BigInteger _montgomery2(const BigInteger& t, const BigInteger& n, BigInte
             op2 += carry;
 
             ret.data()[i + j] = static_cast<word_type>(op2);
+#if NUT_ENDIAN_LITTLE_BYTE
+            carry = reinterpret_cast<const word_type*>(&op2)[1];
+#elif NUT_ENDIAN_BIG_BYTE
+            carry = reinterpret_cast<const word_type*>(&op2)[0];
+#else
             carry = static_cast<word_type>(op2 >> (8 * sizeof(word_type)));
+#endif
         }
 
         for (size_t j = i; j < r_word_count; ++j)
@@ -76,7 +83,13 @@ static BigInteger _montgomery2(const BigInteger& t, const BigInteger& n, BigInte
             op += carry;
 
             ret.data()[j + r_word_count] = static_cast<word_type>(op);
+#if NUT_ENDIAN_LITTLE_BYTE
+            carry = reinterpret_cast<const word_type*>(&op)[1];
+#elif NUT_ENDIAN_BIG_BYTE
+            carry = reinterpret_cast<const word_type*>(&op)[0];
+#else
             carry = static_cast<word_type>(op >> (8 * sizeof(word_type)));
+#endif
         }
     }
 

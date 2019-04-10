@@ -13,14 +13,16 @@
 namespace nut
 {
 
-BigInteger::BigInteger(long long v)
+BigInteger::BigInteger(cast_int_type v)
 {
-    ensure_cap(sizeof(v) / sizeof(word_type));
-    ::memcpy(_data, &v, sizeof(v));
-    _significant_len = sizeof(v) / sizeof(word_type);
+    const size_type v_siglen = sizeof(v) / sizeof(word_type);
+    ensure_cap(v_siglen);
+    word_type *const raw_data = data();
+    ::memcpy(raw_data, &v, sizeof(v));
+    set_significant_len(v_siglen);
 
 #if NUT_ENDIAN_BIG_BYTE
-    wswap<word_type>(_data, _significant_len); // Word order to little-endian
+    wswap<word_type>(raw_data, v_siglen); // Word order to little-endian
 #endif
 
     minimize_significant_len();
@@ -33,60 +35,86 @@ BigInteger::BigInteger(const void *buf, size_type cb, bool with_sign)
 }
 
 BigInteger::BigInteger(BigInteger&& x)
-    : _data(x._data), _capacity(x._capacity), _significant_len(x._significant_len)
+    : _significant_len(x._significant_len)
 {
-    x._data = nullptr;
-    x._capacity = 0;
+    ::memcpy(_inner_data, x._inner_data, INNER_BYTE_SIZE);
+
     x._significant_len = 0;
 }
 
 BigInteger::BigInteger(const BigInteger& x)
 {
-    ensure_cap(x._significant_len);
-    ::memcpy(_data, x._data, sizeof(word_type) * x._significant_len);
-    _significant_len = x._significant_len;
+    const size_type x_siglen = x.significant_words_length();
+    ensure_cap(x_siglen);
+    ::memcpy(data(), x.data(), sizeof(word_type) * x_siglen);
+    set_significant_len(x_siglen);
 }
 
 BigInteger::~BigInteger()
 {
-    if (nullptr != _data)
-        ::free(_data);
-    _data = nullptr;
-    _capacity = 0;
+    if (is_using_heap())
+        ::free(_heap_data);
     _significant_len = 0;
 }
 
 void BigInteger::ensure_cap(size_type new_size)
 {
-    if (new_size <= _capacity)
+    // Small memory
+    if (new_size <= INNER_CAPACITY)
+    {
+        assert(!is_using_heap() || _heap_capacity >= INNER_CAPACITY);
+        return;
+    }
+
+    // Inner memory to heap memory
+    if (!is_using_heap())
+    {
+        size_type new_cap = INNER_CAPACITY * 3 / 2;
+        if (new_cap < new_size)
+            new_cap = new_size;
+
+        word_type *heap_data = (word_type*) ::malloc(sizeof(word_type) * new_cap);
+        assert(nullptr != heap_data);
+        ::memcpy(heap_data, _inner_data, sizeof(word_type) * significant_words_length());
+        _significant_len |= 0x01; // Set using heap flag
+        _heap_data = heap_data;
+        _heap_capacity = new_cap;
+        return;
+    }
+
+    // Heap memory to heap memory
+    if (new_size <= _heap_capacity)
         return;
 
-    size_type new_cap = _capacity * 3 / 2;
+    size_type new_cap = _heap_capacity * 3 / 2;
     if (new_cap < new_size)
         new_cap = new_size;
 
-    _data = (word_type*) ::realloc(_data, sizeof(word_type) * new_cap);
-    assert(nullptr != _data);
-    _capacity = new_cap;
+    _heap_data = (word_type*) ::realloc(_heap_data, sizeof(word_type) * new_cap);
+    assert(nullptr != _heap_data);
+    _heap_capacity = new_cap;
 }
 
 /**
  * 确保有效字节长度足够长，不够长则进行符号扩展
  */
-void BigInteger::ensure_significant_len(size_type siglen)
+void BigInteger::ensure_significant_len(size_type new_siglen)
 {
-    assert(siglen > 0);
-    if (siglen <= _significant_len)
+    assert(new_siglen > 0);
+    const size_type old_siglen = significant_words_length();
+    if (new_siglen <= old_siglen)
         return;
 
-    ensure_cap(siglen);
-    signed_expand(_data, _significant_len, _data, siglen);
-    _significant_len = siglen;
+    ensure_cap(new_siglen);
+    word_type *const raw_data = data();
+    signed_expand(raw_data, old_siglen, raw_data, new_siglen);
+    set_significant_len(new_siglen);
 }
 
 void BigInteger::minimize_significant_len()
 {
-    _significant_len = nut::signed_significant_size(_data, _significant_len);
+    const size_type new_siglen = nut::signed_significant_size(data(), significant_words_length());
+    set_significant_len(new_siglen);
 }
 
 BigInteger& BigInteger::operator=(BigInteger&& x)
@@ -94,15 +122,12 @@ BigInteger& BigInteger::operator=(BigInteger&& x)
     if (this == &x)
         return *this;
 
-    if (nullptr != _data)
-        ::free(_data);
+    if (is_using_heap())
+        ::free(_heap_data);
 
-    _data = x._data;
-    _capacity = x._capacity;
     _significant_len = x._significant_len;
+    ::memcpy(_inner_data, x._inner_data, INNER_BYTE_SIZE);
 
-    x._data = nullptr;
-    x._capacity = 0;
     x._significant_len = 0;
 
     return *this;
@@ -113,22 +138,24 @@ BigInteger& BigInteger::operator=(const BigInteger& x)
     if (this == &x)
         return *this;
 
-    ensure_cap(x._significant_len);
-    ::memcpy(_data, x._data, sizeof(word_type) * x._significant_len);
-    _significant_len = x._significant_len;
+    const size_type x_siglen = x.significant_words_length();
+    ensure_cap(x_siglen);
+    ::memcpy(data(), x.data(), sizeof(word_type) * x_siglen);
+    set_significant_len(x_siglen);
+
     return *this;
 }
 
-BigInteger& BigInteger::operator=(long long v)
+BigInteger& BigInteger::operator=(cast_int_type v)
 {
-    ensure_cap(sizeof(v) / sizeof(word_type));
-    ::memcpy(_data, &v, sizeof(v));
-    _significant_len = sizeof(v) / sizeof(word_type);
-
+    const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
-    wswap<word_type>(_data, _significant_len); // Word order to little-endian
+    wswap<word_type>((word_type*)&v, v_siglen); // Word order to little-endian
 #endif
 
+    ensure_cap(v_siglen);
+    ::memcpy(data(), &v, sizeof(v));
+    set_significant_len(v_siglen);
     minimize_significant_len();
 
     return *this;
@@ -138,17 +165,17 @@ bool BigInteger::operator==(const BigInteger& x) const
 {
     if (this == &x)
         return true;
-    return signed_compare(_data, _significant_len, x._data, x._significant_len) == 0;
+    return signed_compare(data(), significant_words_length(), x.data(), x.significant_words_length()) == 0;
 }
 
-bool BigInteger::operator==(long long v) const
+bool BigInteger::operator==(cast_int_type v) const
 {
+    const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
-    wswap<word_type>((word_type*)&v, sizeof(v) / sizeof(word_type)); // Word order to little-endian
+    wswap<word_type>((word_type*)&v, v_siglen); // Word order to little-endian
 #endif
 
-    return signed_compare(_data, _significant_len, (const word_type*)&v,
-                          sizeof(v) / sizeof(word_type)) == 0;
+    return signed_compare(data(), significant_words_length(), (const word_type*)&v, v_siglen) == 0;
 }
 
 bool BigInteger::operator!=(const BigInteger& x) const
@@ -156,24 +183,24 @@ bool BigInteger::operator!=(const BigInteger& x) const
     return !(*this == x);
 }
 
-bool BigInteger::operator!=(long long v) const
+bool BigInteger::operator!=(cast_int_type v) const
 {
     return !(*this == v);
 }
 
 bool BigInteger::operator<(const BigInteger& x) const
 {
-    return signed_compare(_data, _significant_len, x._data, x._significant_len) < 0;
+    return signed_compare(data(), significant_words_length(), x.data(), x.significant_words_length()) < 0;
 }
 
-bool BigInteger::operator<(long long v) const
+bool BigInteger::operator<(cast_int_type v) const
 {
+    const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
-    wswap<word_type>((word_type*)&v, sizeof(v) / sizeof(word_type)); // Word order to little-endian
+    wswap<word_type>((word_type*)&v, v_siglen); // Word order to little-endian
 #endif
 
-    return signed_compare(_data, _significant_len, (const word_type*)&v,
-                          sizeof(v) / sizeof(word_type)) < 0;
+    return signed_compare(data(), significant_words_length(), (const word_type*)&v, v_siglen) < 0;
 }
 
 bool BigInteger::operator>(const BigInteger& x) const
@@ -181,14 +208,14 @@ bool BigInteger::operator>(const BigInteger& x) const
     return x < *this;
 }
 
-bool BigInteger::operator>(long long v) const
+bool BigInteger::operator>(cast_int_type v) const
 {
+    const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
-    wswap<word_type>((word_type*)&v, sizeof(v) / sizeof(word_type)); // Word order to little-endian
+    wswap<word_type>((word_type*)&v, v_siglen); // Word order to little-endian
 #endif
 
-    return signed_compare((const word_type*)&v, sizeof(v) / sizeof(word_type),
-                          _data, _significant_len) < 0;
+    return signed_compare((const word_type*)&v, v_siglen, data(), significant_words_length()) < 0;
 }
 
 bool BigInteger::operator<=(const BigInteger& x) const
@@ -196,7 +223,7 @@ bool BigInteger::operator<=(const BigInteger& x) const
     return !(x < *this);
 }
 
-bool BigInteger::operator<=(long long v) const
+bool BigInteger::operator<=(cast_int_type v) const
 {
     return !(*this > v);
 }
@@ -206,7 +233,7 @@ bool BigInteger::operator>=(const BigInteger& x) const
     return !(*this < x);
 }
 
-bool BigInteger::operator>=(long long v) const
+bool BigInteger::operator>=(cast_int_type v) const
 {
     return !(*this < v);
 }
@@ -214,27 +241,27 @@ bool BigInteger::operator>=(long long v) const
 BigInteger BigInteger::operator+(const BigInteger& x) const
 {
     BigInteger ret;
-    const size_type max_len = std::max(_significant_len, x._significant_len);
-    ret.ensure_cap(max_len + 1);
-    signed_add(_data, _significant_len, x._data, x._significant_len,
-               ret._data, max_len + 1);
-    ret._significant_len = max_len + 1;
+    const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
+        ret_siglen = std::max(siglen, x_siglen) + 1;
+    ret.ensure_cap(ret_siglen);
+    signed_add(data(), siglen, x.data(), x_siglen, ret.data(), ret_siglen);
+    ret.set_significant_len(ret_siglen);
     ret.minimize_significant_len();
     return ret;
 }
 
-BigInteger BigInteger::operator+(long long v) const
+BigInteger BigInteger::operator+(cast_int_type v) const
 {
+    const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
-    wswap<word_type>((word_type*)&v, sizeof(v) / sizeof(word_type)); // Word order to little-endian
+    wswap<word_type>((word_type*)&v, v_siglen); // Word order to little-endian
 #endif
 
     BigInteger ret;
-    const size_type max_len = std::max(_significant_len, sizeof(v) / sizeof(word_type));
-    ret.ensure_cap(max_len + 1);
-    signed_add(_data, _significant_len, (const word_type*)&v,
-               sizeof(v) / sizeof(word_type), ret._data, max_len + 1);
-    ret._significant_len = max_len + 1;
+    const size_type siglen = significant_words_length(), ret_siglen = std::max(siglen, v_siglen) + 1;
+    ret.ensure_cap(ret_siglen);
+    signed_add(data(), siglen, (const word_type*)&v, v_siglen, ret.data(), ret_siglen);
+    ret.set_significant_len(ret_siglen);
     ret.minimize_significant_len();
     return ret;
 }
@@ -242,27 +269,27 @@ BigInteger BigInteger::operator+(long long v) const
 BigInteger BigInteger::operator-(const BigInteger& x) const
 {
     BigInteger ret;
-    const size_type max_len = std::max(_significant_len, x._significant_len);
-    ret.ensure_cap(max_len + 1);
-    signed_sub(_data, _significant_len, x._data, x._significant_len,
-               ret._data, max_len + 1);
-    ret._significant_len = max_len + 1;
+    const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
+        ret_siglen = std::max(siglen, x_siglen) + 1;
+    ret.ensure_cap(ret_siglen);
+    signed_sub(data(), siglen, x.data(), x_siglen, ret.data(), ret_siglen);
+    ret.set_significant_len(ret_siglen);
     ret.minimize_significant_len();
     return ret;
 }
 
-BigInteger BigInteger::operator-(long long v) const
+BigInteger BigInteger::operator-(cast_int_type v) const
 {
+    const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
-    wswap<word_type>((word_type*)&v, sizeof(v) / sizeof(word_type)); // Word order to little-endian
+    wswap<word_type>((word_type*)&v, v_siglen); // Word order to little-endian
 #endif
 
     BigInteger ret;
-    const size_type max_len = std::max(_significant_len, sizeof(v) / sizeof(word_type));
-    ret.ensure_cap(max_len + 1);
-    signed_sub(_data, _significant_len, (const word_type*)&v,
-               sizeof(v) / sizeof(word_type), ret._data, max_len + 1);
-    ret._significant_len = max_len + 1;
+    const size_type siglen = significant_words_length(), ret_siglen = std::max(siglen, v_siglen) + 1;
+    ret.ensure_cap(ret_siglen);
+    signed_sub(data(), siglen, (const word_type*)&v, v_siglen, ret.data(), ret_siglen);
+    ret.set_significant_len(ret_siglen);
     ret.minimize_significant_len();
     return ret;
 }
@@ -270,9 +297,10 @@ BigInteger BigInteger::operator-(long long v) const
 BigInteger BigInteger::operator-() const
 {
     BigInteger ret;
-    ret.ensure_cap(_significant_len + 1);
-    signed_negate(_data, _significant_len, ret._data, _significant_len + 1);
-    ret._significant_len = _significant_len + 1;
+    const size_type siglen = significant_words_length(), ret_siglen = siglen + 1;
+    ret.ensure_cap(ret_siglen);
+    signed_negate(data(), siglen, ret.data(), ret_siglen);
+    ret.set_significant_len(ret_siglen);
     ret.minimize_significant_len();
     return ret;
 }
@@ -280,26 +308,27 @@ BigInteger BigInteger::operator-() const
 BigInteger BigInteger::operator*(const BigInteger& x) const
 {
     BigInteger ret;
-    ret.ensure_cap(_significant_len + x._significant_len);
-    signed_karatsuba_multiply(_data, _significant_len, x._data, x._significant_len,
-                              ret._data, _significant_len + x._significant_len);
-    ret._significant_len = _significant_len + x._significant_len;
+    const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
+        ret_siglen = siglen + x_siglen;
+    ret.ensure_cap(ret_siglen);
+    signed_karatsuba_multiply(data(), siglen, x.data(), x_siglen, ret.data(), ret_siglen);
+    ret.set_significant_len(ret_siglen);
     ret.minimize_significant_len();
     return ret;
 }
 
-BigInteger BigInteger::operator*(long long v) const
+BigInteger BigInteger::operator*(cast_int_type v) const
 {
+    const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
-    wswap<word_type>((word_type*)&v, sizeof(v) / sizeof(word_type)); // Word order to little-endian
+    wswap<word_type>((word_type*)&v, v_siglen); // Word order to little-endian
 #endif
 
     BigInteger ret;
-    ret.ensure_cap(_significant_len + sizeof(v) / sizeof(word_type));
-    signed_multiply(_data, _significant_len, (const word_type*)&v,
-                    sizeof(v) / sizeof(word_type), ret._data,
-                    _significant_len + sizeof(v) / sizeof(word_type));
-    ret._significant_len = _significant_len + sizeof(v) / sizeof(word_type);
+    const size_type siglen = significant_words_length(), ret_siglen = siglen + v_siglen;
+    ret.ensure_cap(ret_siglen);
+    signed_multiply(data(), siglen, (const word_type*)&v, v_siglen, ret.data(), ret_siglen);
+    ret.set_significant_len(ret_siglen);
     ret.minimize_significant_len();
     return ret;
 }
@@ -311,7 +340,7 @@ BigInteger BigInteger::operator/(const BigInteger& x) const
     return ret;
 }
 
-BigInteger BigInteger::operator/(long long v) const
+BigInteger BigInteger::operator/(cast_int_type v) const
 {
     BigInteger ret;
     BigInteger::divide(*this, BigInteger(v), &ret, nullptr);
@@ -336,7 +365,7 @@ BigInteger BigInteger::operator%(const BigInteger& x) const
     return ret;
 }
 
-BigInteger BigInteger::operator%(long long v) const
+BigInteger BigInteger::operator%(cast_int_type v) const
 {
     assert(0 != v);
 
@@ -347,75 +376,84 @@ BigInteger BigInteger::operator%(long long v) const
 
 BigInteger& BigInteger::operator+=(const BigInteger& x)
 {
-    const size_type max_len = std::max(_significant_len, x._significant_len);
-    ensure_cap(max_len + 1);
-    signed_add(_data, _significant_len, x._data, x._significant_len, _data, max_len + 1);
-    _significant_len = max_len + 1;
+    const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
+        new_siglen = std::max(siglen, x_siglen) + 1;
+    ensure_cap(new_siglen);
+    word_type *const raw_data = data();
+    signed_add(raw_data, siglen, x.data(), x_siglen, raw_data, new_siglen);
+    set_significant_len(new_siglen);
     minimize_significant_len();
     return *this;
 }
 
-BigInteger& BigInteger::operator+=(long long v)
+BigInteger& BigInteger::operator+=(cast_int_type v)
 {
+    const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
-    wswap<word_type>((word_type*)&v, sizeof(v) / sizeof(word_type)); // Word order to little-endian
+    wswap<word_type>((word_type*)&v, v_siglen); // Word order to little-endian
 #endif
 
-    const size_type max_len = std::max(_significant_len, sizeof(v) / sizeof(word_type));
-    ensure_cap(max_len + 1);
-    signed_add(_data, _significant_len, (const word_type*)&v,
-               sizeof(v) / sizeof(word_type), _data, max_len + 1);
-    _significant_len = max_len + 1;
+    const size_type siglen = significant_words_length(), new_siglen = std::max(siglen, v_siglen) + 1;
+    ensure_cap(new_siglen);
+    word_type *const raw_data = data();
+    signed_add(raw_data, siglen, (const word_type*)&v, v_siglen, raw_data, new_siglen);
+    set_significant_len(new_siglen);
     minimize_significant_len();
     return *this;
 }
 
 BigInteger& BigInteger::operator-=(const BigInteger& x)
 {
-    const size_type max_len = std::max(_significant_len, x._significant_len);
-    ensure_cap(max_len + 1);
-    signed_sub(_data, _significant_len, x._data, x._significant_len, _data, max_len + 1);
-    _significant_len = max_len + 1;
+    const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
+        new_siglen = std::max(siglen, x_siglen) + 1;
+    ensure_cap(new_siglen);
+    word_type *const raw_data = data();
+    signed_sub(raw_data, siglen, x.data(), x_siglen, raw_data, new_siglen);
+    set_significant_len(new_siglen);
     minimize_significant_len();
     return *this;
 }
 
-BigInteger& BigInteger::operator-=(long long v)
+BigInteger& BigInteger::operator-=(cast_int_type v)
 {
+    const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
-    wswap<word_type>((word_type*)&v, sizeof(v) / sizeof(word_type)); // Word order to little-endian
+    wswap<word_type>((word_type*)&v, v_siglen); // Word order to little-endian
 #endif
 
-    const size_type max_len = std::max(_significant_len, sizeof(v) / sizeof(word_type));
-    ensure_cap(max_len + 1);
-    signed_sub(_data, _significant_len, (const word_type*)&v,
-               sizeof(v) / sizeof(word_type), _data, max_len + 1);
-    _significant_len = max_len + 1;
+    const size_type siglen = significant_words_length(), new_siglen = std::max(siglen, v_siglen) + 1;
+    ensure_cap(new_siglen);
+    word_type *const raw_data = data();
+    signed_sub(raw_data, siglen, (const word_type*)&v, v_siglen, raw_data, new_siglen);
+    set_significant_len(new_siglen);
     minimize_significant_len();
     return *this;
 }
 
 BigInteger& BigInteger::operator*=(const BigInteger& x)
 {
-    ensure_cap(_significant_len + x._significant_len);
-    signed_karatsuba_multiply(_data, _significant_len, x._data, x._significant_len,
-                              _data, _significant_len + x._significant_len);
-    _significant_len += x._significant_len;
+    const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
+        new_siglen = siglen + x_siglen;
+    ensure_cap(new_siglen);
+    word_type *const raw_data = data();
+    signed_karatsuba_multiply(raw_data, siglen, x.data(), x_siglen, raw_data, new_siglen);
+    set_significant_len(new_siglen);
     minimize_significant_len();
     return *this;
 }
 
-BigInteger& BigInteger::operator*=(long long v)
+BigInteger& BigInteger::operator*=(cast_int_type v)
 {
+    const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
-    wswap<word_type>((word_type*)&v, sizeof(v) / sizeof(word_type)); // Word order to little-endian
+    wswap<word_type>((word_type*)&v, v_siglen); // Word order to little-endian
 #endif
 
-    ensure_cap(_significant_len + sizeof(v) / sizeof(word_type));
-    signed_multiply(_data, _significant_len, (const word_type*)&v,
-                    sizeof(v) / sizeof(word_type), _data,
-                    _significant_len + sizeof(v) / sizeof(word_type));
-    _significant_len += sizeof(v) / sizeof(word_type);
+    const size_type siglen = significant_words_length(), new_siglen = siglen + v_siglen;
+    ensure_cap(new_siglen);
+    word_type *const raw_data = data();
+    signed_multiply(raw_data, siglen, (const word_type*)&v, v_siglen, raw_data, new_siglen);
+    set_significant_len(new_siglen);
     minimize_significant_len();
     return *this;
 }
@@ -426,7 +464,7 @@ BigInteger& BigInteger::operator/=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator/=(long long v)
+BigInteger& BigInteger::operator/=(cast_int_type v)
 {
     BigInteger::divide(*this, BigInteger(v), this, nullptr);
     return *this;
@@ -449,7 +487,7 @@ BigInteger& BigInteger::operator%=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator%=(long long v)
+BigInteger& BigInteger::operator%=(cast_int_type v)
 {
     assert(0 != v);
     BigInteger::divide(*this, BigInteger(v), nullptr, this);
@@ -458,8 +496,9 @@ BigInteger& BigInteger::operator%=(long long v)
 
 BigInteger& BigInteger::operator++()
 {
-    ensure_significant_len(_significant_len + 1); // NOTE '_significant_len' changed
-    nut::increase(_data, _significant_len);
+    const size_type new_siglen = significant_words_length() + 1;
+    ensure_significant_len(new_siglen);
+    nut::increase(data(), new_siglen);
     minimize_significant_len();
     return *this;
 }
@@ -473,8 +512,9 @@ BigInteger BigInteger::operator++(int)
 
 BigInteger& BigInteger::operator--()
 {
-    ensure_significant_len(_significant_len + 1); // NOTE '_significant_len' changed
-    nut::decrease(_data, _significant_len);
+    const size_type new_siglen = significant_words_length() + 1;
+    ensure_significant_len(new_siglen);
+    nut::decrease(data(), new_siglen);
     minimize_significant_len();
     return *this;
 }
@@ -492,10 +532,11 @@ BigInteger BigInteger::operator<<(size_type count) const
         return *this;
 
     BigInteger ret;
-    const size_type min_sig = _significant_len + (count - 1) / (8 * sizeof(word_type)) + 1;
-    ret.ensure_cap(min_sig);
-    signed_shift_left(_data, _significant_len, ret._data, min_sig, count);
-    ret._significant_len = min_sig;
+    const size_type siglen = significant_words_length(),
+        ret_siglen = siglen + (count - 1) / (8 * sizeof(word_type)) + 1; // NOTE 额外的1个 word 防止符号位溢出
+    ret.ensure_cap(ret_siglen);
+    signed_shift_left(data(), siglen, ret.data(), ret_siglen, count);
+    ret.set_significant_len(ret_siglen);
     ret.minimize_significant_len();
     return ret;
 }
@@ -509,9 +550,10 @@ BigInteger BigInteger::operator>>(size_type count) const
         return *this;
 
     BigInteger ret;
-    ret.ensure_cap(_significant_len);
-    signed_shift_right(_data, _significant_len, ret._data, _significant_len, count);
-    ret._significant_len = _significant_len;
+    const size_type siglen = significant_words_length();
+    ret.ensure_cap(siglen);
+    signed_shift_right(data(), siglen, ret.data(), siglen, count);
+    ret.set_significant_len(siglen);
     ret.minimize_significant_len();
     return ret;
 }
@@ -521,10 +563,12 @@ BigInteger& BigInteger::operator<<=(size_type count)
     if (0 == count)
         return *this;
 
-    const size_type min_sig = _significant_len + (count - 1) / (8 * sizeof(word_type)) + 1;
-    ensure_cap(min_sig);
-    signed_shift_left(_data, _significant_len, _data, min_sig, count);
-    _significant_len = min_sig;
+    const size_type siglen = significant_words_length(),
+        new_siglen = siglen + (count - 1) / (8 * sizeof(word_type)) + 1; // NOTE 额外的1个 word 防止符号位溢出
+    ensure_cap(new_siglen);
+    word_type *const raw_data = data();
+    signed_shift_left(raw_data, siglen, raw_data, new_siglen, count);
+    set_significant_len(new_siglen);
     minimize_significant_len();
     return *this;
 }
@@ -534,82 +578,83 @@ BigInteger& BigInteger::operator>>=(size_type count)
     if (0 == count)
         return *this;
 
-    signed_shift_right(_data, _significant_len, _data, _significant_len, count);
+    const size_type siglen = significant_words_length();
+    word_type *const raw_data = data();
+    signed_shift_right(raw_data, siglen, raw_data, siglen, count);
     minimize_significant_len();
     return *this;
 }
 
-/**
- * @param result 商
- * @param remainder 余数
- */
 void BigInteger::divide(const BigInteger& a, const BigInteger& b,
                         BigInteger *result, BigInteger *remainder)
 {
     assert(nullptr != result || nullptr != remainder);
     assert(!b.is_zero());
 
+    const size_type a_siglen = a.significant_words_length(), b_siglen = b.significant_words_length();
     if (nullptr != result)
-        result->ensure_cap(a._significant_len);
+        result->ensure_cap(a_siglen);
     if (nullptr != remainder)
-        remainder->ensure_cap(b._significant_len);
+        remainder->ensure_cap(b_siglen);
 
-    signed_divide(a._data, a._significant_len, b._data, b._significant_len,
-           (nullptr == result ? nullptr : result->_data), a._significant_len,
-           (nullptr == remainder ? nullptr : remainder->_data), b._significant_len);
+    signed_divide(a.data(), a_siglen, b.data(), b_siglen,
+                  (nullptr == result ? nullptr : result->data()), a_siglen,
+                  (nullptr == remainder ? nullptr : remainder->data()), b_siglen);
 
     if (nullptr != result)
     {
-        result->_significant_len = a._significant_len;
+        result->set_significant_len(a_siglen);
         result->minimize_significant_len();
     }
     if (nullptr != remainder)
     {
-        remainder->_significant_len = b._significant_len;
+        remainder->set_significant_len(b_siglen);
         remainder->minimize_significant_len();
     }
 }
 
 int BigInteger::compare(const BigInteger& x) const
 {
-    return signed_compare(_data, _significant_len, x._data, x._significant_len);
+    return signed_compare(data(), significant_words_length(), x.data(), x.significant_words_length());
 }
 
 void BigInteger::set_zero()
 {
-    _data[0] = 0;
-    _significant_len = 1;
+    assert(significant_words_length() > 0);
+    data()[0] = 0;
+    set_significant_len(1);
 }
 
 bool BigInteger::is_zero() const
 {
-    return nut::is_zero(_data, _significant_len);
+    return nut::is_zero(data(), significant_words_length());
 }
 
 bool BigInteger::is_positive() const
 {
-    return nut::is_positive(_data, _significant_len);
+    return nut::is_positive(data(), significant_words_length());
 }
 
 void BigInteger::set(const void *buf, size_type cb, bool with_sign)
 {
     assert(nullptr != buf && cb > 0);
 
-    const size_type min_sig = cb / sizeof(word_type) + 1; // 保证一个空闲字放符号位
-    ensure_cap(min_sig);
-    ::memcpy(_data, buf, cb);
+    const size_type new_siglen = cb / sizeof(word_type) + 1; // NOTE 保证一个空闲字放符号位
+    ensure_cap(new_siglen);
+    word_type *const raw_data = data();
+    ::memcpy(raw_data, buf, cb);
 #if NUT_ENDIAN_BIG_BYTE
-    bswap(_data, cb); // Byte order to little-endian
+    bswap(raw_data, cb); // Byte order to little-endian
 #endif
-    const uint8_t fill = (with_sign ? (nut::is_positive((const uint8_t*) _data, cb) ? 0 : 0xFF) : 0);
-    ::memset(((uint8_t*) _data) + cb, fill, min_sig * sizeof(word_type) - cb);
+    const uint8_t fill = (with_sign ? (nut::is_positive((const uint8_t*) raw_data, cb) ? 0 : 0xFF) : 0);
+    ::memset(((uint8_t*) raw_data) + cb, fill, sizeof(word_type) * new_siglen - cb);
 
 #if NUT_ENDIAN_BIG_BYTE
-    for (size_t i = 0; i < min_sig; ++i)
-        bswap(_data + i, sizeof(word_type)); // Local byte order back to big-endian
+    for (size_type i = 0; i < new_siglen; ++i)
+        bswap(raw_data + i, sizeof(word_type)); // Local byte order back to big-endian
 #endif
 
-    _significant_len = min_sig;
+    set_significant_len(new_siglen);
     minimize_significant_len();
 }
 
@@ -617,30 +662,26 @@ void BigInteger::resize(size_type n)
 {
     assert(n > 0);
     ensure_significant_len(n);
-    _significant_len = n;
+    set_significant_len(n);
 }
 
-/**
- * 使值恒为正数，且比特长度小于 bit_len
- *
- * @note 注意，结果为正数
- */
 void BigInteger::limit_positive_bits_to(size_type bit_len)
 {
     assert(bit_len > 0);
 
 #if 0 // unoptimized
-    const size_type new_sig = bit_len / (8 * sizeof(word_type)) + 1;
-    ensure_significant_len(new_sig);
+    const size_type new_siglen = bit_len / (8 * sizeof(word_type)) + 1;
+    ensure_significant_len(new_siglen);
     const size_type bits_shift = 8 * sizeof(word_type) - bit_len % (8 * sizeof(word_type));
-    _data[new_sig - 1] <<= bits_shift;
-    _data[new_sig - 1] >>= bits_shift;
-    _significant_len = new_sig;
+    word_type *const raw_data = data();
+    raw_data[new_siglen - 1] <<= bits_shift;
+    raw_data[new_siglen - 1] >>= bits_shift;
+    set_significant_len(new_siglen);
     minimize_significant_len();
 #else
     // 正数且有效位数较小，无需做任何事情
-    const size_type min_sig = bit_len / (8 * sizeof(word_type));
-    if (_significant_len <= min_sig && BigInteger::is_positive())
+    const size_type min_siglen = bit_len / (8 * sizeof(word_type));
+    if (significant_words_length() <= min_siglen && BigInteger::is_positive())
         return;
 
     // 需要扩展符号位，或者需要截断
@@ -648,49 +689,60 @@ void BigInteger::limit_positive_bits_to(size_type bit_len)
     if (0 != bits_res || 0 == bit_at(bit_len - 1))
     {
         // 无需附加符号位
-        const size_type new_sig = (bit_len + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
-        ensure_significant_len(new_sig);
+        const size_type new_siglen = (bit_len + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
+        ensure_significant_len(new_siglen);
         if (0 != bits_res)
         {
             const size_type bits_shift = 8 * sizeof(word_type) - bits_res;
-            _data[new_sig - 1] <<= bits_shift;
-            _data[new_sig - 1] >>= bits_shift;
+            word_type *const raw_data = data();
+            raw_data[new_siglen - 1] <<= bits_shift;
+            raw_data[new_siglen - 1] >>= bits_shift;
         }
-        _significant_len = new_sig;
+        set_significant_len(new_siglen);
     }
     else
     {
         // 需要附加符号位，以便保证结果是正数
-        ensure_significant_len(min_sig + 1);
-        _data[min_sig] = 0;
-        _significant_len = min_sig + 1;
+        ensure_significant_len(min_siglen + 1);
+        data()[min_siglen] = 0;
+        set_significant_len(min_siglen + 1);
     }
     minimize_significant_len();
 #endif
 }
 
-/**
- * 乘以a, 然后将比特长限制为小于 bit_len 的正数
- *
- * @return 注意，返回为正数
- */
 void BigInteger::multiply_to_len(const BigInteger& a, size_type bit_len)
 {
-    const size_type words_len = (bit_len + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
-    ensure_cap(words_len);
-    signed_karatsuba_multiply(_data, _significant_len, a._data, a._significant_len, _data, words_len);
-    _significant_len = words_len;
+    const size_type new_siglen = (bit_len + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
+    ensure_cap(new_siglen);
+    word_type *const raw_data = data();
+    signed_karatsuba_multiply(raw_data, significant_words_length(),
+                              a.data(), a.significant_words_length(),
+                              raw_data, new_siglen);
+    set_significant_len(new_siglen);
     limit_positive_bits_to(bit_len);
 }
 
 BigInteger::size_type BigInteger::significant_words_length() const
 {
-    return _significant_len;
+    return _significant_len >> 1;
+}
+
+bool BigInteger::is_using_heap() const
+{
+    return 0 != (_significant_len & 0x01);
+}
+
+void BigInteger::set_significant_len(size_type len)
+{
+    _significant_len = (len << 1) | (_significant_len & 0x01);
 }
 
 const BigInteger::word_type* BigInteger::data() const
 {
-    return _data;
+    if (is_using_heap())
+        return _heap_data;
+    return _inner_data;
 }
 
 BigInteger::word_type* BigInteger::data()
@@ -705,22 +757,18 @@ BigInteger::word_type* BigInteger::data()
  */
 int BigInteger::bit_at(size_type i) const
 {
-    if (i / (8 * sizeof(word_type)) >= _significant_len)
-    {
-#if 0 // unoptimized
-        return BigInteger::is_positive() ? 0 : 1;
-#else
-        return _data[_significant_len - 1] >> (8 * sizeof(word_type) - 1);
-#endif
-    }
-    return (_data[i / (8 * sizeof(word_type))] >> (i % (8 * sizeof(word_type)))) & 0x01;
+    const size_t siglen = significant_words_length();
+    const word_type *const raw_data = data();
+    if (i / (8 * sizeof(word_type)) >= siglen)
+        return is_positive() ? 0 : 1; // 取符号位
+    return (raw_data[i / (8 * sizeof(word_type))] >> (i % (8 * sizeof(word_type)))) & 0x01;
 }
 
 BigInteger::word_type BigInteger::word_at(size_type i) const
 {
-    if (i >= _significant_len)
+    if (i >= significant_words_length())
         return BigInteger::is_positive() ? 0 : ~(word_type)0;
-    return _data[i];
+    return data()[i];
 }
 
 /**
@@ -730,24 +778,25 @@ void BigInteger::set_bit(size_type i, int v)
 {
     assert(v == 0 || v == 1);
     ensure_significant_len((i + 1) / (8 * sizeof(word_type)) + 1); // 避免符号位被覆盖
+    word_type *const raw_data = data();
     if (0 == v)
-        _data[i / (8 * sizeof(word_type))] &= ~(((word_type) 1) << (i % (8 * sizeof(word_type))));
+        raw_data[i / (8 * sizeof(word_type))] &= ~(((word_type) 1) << (i % (8 * sizeof(word_type))));
     else
-        _data[i / (8 * sizeof(word_type))] |= ((word_type)1) << (i % (8 * sizeof(word_type)));
+        raw_data[i / (8 * sizeof(word_type))] |= ((word_type)1) << (i % (8 * sizeof(word_type)));
 }
 
 void BigInteger::set_word(size_type i, word_type v)
 {
     ensure_significant_len(i + 1 + 1); // NOTE 多加一个 1 是为了避免符号位被覆盖
-    _data[i] = v;
+    data()[i] = v;
 }
 
 BigInteger::size_type BigInteger::bit_length() const
 {
     if (BigInteger::is_positive())
-        return nut::bit1_length(_data, _significant_len);
+        return nut::bit1_length(data(), significant_words_length());
     else
-        return nut::bit0_length(_data, _significant_len);
+        return nut::bit0_length(data(), significant_words_length());
 }
 
 /**
@@ -755,15 +804,16 @@ BigInteger::size_type BigInteger::bit_length() const
  */
 BigInteger::size_type BigInteger::bit_count() const
 {
-    const size_type bc = nut::bit1_count((uint8_t*)_data, sizeof(word_type) * _significant_len);
+    const size_type siglen = significant_words_length(),
+        bc = nut::bit1_count((uint8_t*)data(), sizeof(word_type) * siglen);
     if (BigInteger::is_positive())
         return bc;
-    return 8 * sizeof(word_type) * _significant_len - bc;
+    return 8 * sizeof(word_type) * siglen - bc;
 }
 
 ssize_t BigInteger::lowest_bit() const
 {
-    return nut::lowest_bit1(_data, _significant_len);
+    return nut::lowest_bit1(data(), significant_words_length());
 }
 
 /**
@@ -773,8 +823,8 @@ BigInteger BigInteger::rand_between(const BigInteger& a, const BigInteger& b)
 {
     assert(a != b);
 
-    const bool a_is_bigger = (a > b);
-    const BigInteger n = (a_is_bigger ? a - b : b - a);
+    const bool a_is_greater = (a > b);
+    const BigInteger n = (a_is_greater ? a - b : b - a);
     assert(n.is_positive());
 
     std::random_device rd;
@@ -782,14 +832,16 @@ BigInteger BigInteger::rand_between(const BigInteger& a, const BigInteger& b)
     std::uniform_int_distribution<word_type> dist(0, ~(word_type)0);
 
     BigInteger ret(0);
-    ret.ensure_cap(n._significant_len + 1);
-    for (size_type i = 0; i < n._significant_len; ++i)
-        ret._data[i] = dist(gen);
-    ret._data[n._significant_len] = 0; // 保证是正数
-    ret._significant_len = n._significant_len + 1;
+    const size_t n_siglen = n.significant_words_length();
+    ret.ensure_cap(n_siglen + 1);
+    word_type *const ret_data = ret.data();
+    for (size_type i = 0; i < n_siglen; ++i)
+        ret_data[i] = dist(gen);
+    ret_data[n_siglen] = 0; // 保证是正数
+    ret.set_significant_len(n_siglen + 1);
 
     ret %= n;
-    ret += (a_is_bigger ? b : a);
+    ret += (a_is_greater ? b : a);
     return ret;
 }
 
@@ -805,25 +857,26 @@ BigInteger BigInteger::rand_positive(size_t bit_len, bool ensure_highest_bit)
     if (redundant_bit_count > 0)
     {
         ret.ensure_cap(word_count);
-        ret._significant_len = word_count;
+        ret.set_significant_len(word_count);
     }
     else
     {
-        ret.ensure_cap(word_count + 1); // 多加一个 word 标记符号
-        ret._data[word_count] = 0;
-        ret._significant_len = word_count + 1;
+        ret.ensure_cap(word_count + 1); // 多加一个 word 存储符号
+        ret.data()[word_count] = 0;
+        ret.set_significant_len(word_count + 1);
     }
 
     std::random_device rd;
     std::mt19937_64 gen(rd());
     std::uniform_int_distribution<word_type> dist(0, ~(word_type)0);
+    word_type *const ret_data = ret.data();
     for (size_t i = 0; i < word_count; ++i)
-        ret._data[i] = dist(gen);
+        ret_data[i] = dist(gen);
 
-    ret._data[word_count - 1] <<= redundant_bit_count;
+    ret_data[word_count - 1] <<= redundant_bit_count;
     if (ensure_highest_bit)
-        ret._data[word_count - 1] |= ((word_type) 1) << (sizeof(word_type) * 8 - 1);
-    ret._data[word_count - 1] >>= redundant_bit_count;
+        ret_data[word_count - 1] |= ((word_type) 1) << (sizeof(word_type) * 8 - 1);
+    ret_data[word_count - 1] >>= redundant_bit_count;
 
     return ret;
 }
@@ -835,26 +888,25 @@ void BigInteger::swap(BigInteger *a, BigInteger *b)
 {
     assert(nullptr != a && nullptr != b);
 
-    word_type *tmp_data = a->_data;
-    const size_type tmp_cap = a->_capacity,
-        tmp_sig = a->_significant_len;
+    const size_type tmp_siglen = a->_significant_len;
+    uint8_t tmp_data[INNER_BYTE_SIZE];
+    ::memcpy(tmp_data, a->_inner_data, INNER_BYTE_SIZE);
 
-    a->_data = b->_data;
-    a->_capacity = b->_capacity;
     a->_significant_len = b->_significant_len;
+    ::memcpy(a->_inner_data, b->_inner_data, INNER_BYTE_SIZE);
 
-    b->_data = tmp_data;
-    b->_capacity = tmp_cap;
-    b->_significant_len = tmp_sig;
+    b->_significant_len = tmp_siglen;
+    ::memcpy(b->_inner_data, tmp_data, INNER_BYTE_SIZE);
 }
 
-long long BigInteger::to_integer() const
+BigInteger::cast_int_type BigInteger::to_integer() const
 {
-    long long ret = 0;
-    signed_expand(_data, _significant_len, (word_type*)&ret, sizeof(ret) / sizeof(word_type));
+    cast_int_type ret = 0;
+    const size_t ret_siglen = sizeof(ret) / sizeof(word_type);
+    signed_expand(data(), significant_words_length(), (word_type*)&ret, ret_siglen);
 
 #if NUT_ENDIAN_BIG_BYTE
-    wswap<word_type>((word_type*)&ret, sizeof(ret) / sizeof(word_type)); // Word order to big-endian
+    wswap<word_type>((word_type*)&ret, ret_siglen); // Word order to big-endian
 #endif
 
     return ret;
@@ -862,12 +914,13 @@ long long BigInteger::to_integer() const
 
 std::vector<uint8_t> BigInteger::to_le_bytes() const
 {
-    std::vector<uint8_t> ret(
-        (const uint8_t*) _data, (const uint8_t*) (_data + _significant_len));
+    const size_t siglen = significant_words_length();
+    const word_type *const raw_data = data();
+    std::vector<uint8_t> ret((const uint8_t*) raw_data, (const uint8_t*) (raw_data + siglen));
 
 #if NUT_ENDIAN_BIG_BYTE
-    for (size_t i = 0; i < _significant_len; ++i)
-        bswap(ret.data() + i * sizeof(word_type), sizeof(word_type)); // Local byte order to little-endian
+    for (size_type i = 0; i < siglen; ++i)
+        bswap(ret.data() + sizeof(word_type) * i, sizeof(word_type)); // Local byte order to little-endian
 #endif
 
     ret.resize(nut::signed_significant_size<uint8_t>(ret.data(), ret.size()));
@@ -878,7 +931,7 @@ std::vector<uint8_t> BigInteger::to_le_bytes() const
 std::vector<uint8_t> BigInteger::to_be_bytes() const
 {
     std::vector<uint8_t> ret = to_le_bytes();
-    bswap(ret.data(), ret.size()); // Byte order to big-endian
+    std::reverse(ret.begin(), ret.end()); // Byte order to big-endian
     return ret;
 }
 
@@ -1068,70 +1121,72 @@ BigInteger BigInteger::value_of(const std::wstring& s, size_type radix)
     return ret;
 }
 
-bool operator==(long long a, const BigInteger& b)
+bool operator==(BigInteger::cast_int_type a, const BigInteger& b)
 {
     return b == a;
 }
 
-bool operator!=(long long a, const BigInteger& b)
+bool operator!=(BigInteger::cast_int_type a, const BigInteger& b)
 {
     return b != a;
 }
 
-bool operator<(long long a, const BigInteger& b)
+bool operator<(BigInteger::cast_int_type a, const BigInteger& b)
 {
     return b > a;
 }
 
-bool operator>(long long a, const BigInteger& b)
+bool operator>(BigInteger::cast_int_type a, const BigInteger& b)
 {
     return b < a;
 }
 
-bool operator<=(long long a, const BigInteger& b)
+bool operator<=(BigInteger::cast_int_type a, const BigInteger& b)
 {
     return b >= a;
 }
 
-bool operator>=(long long a, const BigInteger& b)
+bool operator>=(BigInteger::cast_int_type a, const BigInteger& b)
 {
     return b <= a;
 }
 
-BigInteger operator+(long long a, const BigInteger& b)
+BigInteger operator+(BigInteger::cast_int_type a, const BigInteger& b)
 {
     return b + a;
 }
 
-BigInteger operator-(long long a, const BigInteger& b)
+BigInteger operator-(BigInteger::cast_int_type a, const BigInteger& b)
 {
+    typedef BigInteger::size_type size_type;
     typedef BigInteger::word_type word_type;
 
+    const size_type a_siglen = sizeof(a) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
-    wswap<word_type>((word_type*)&a, sizeof(a) / sizeof(word_type)); // Word order to little-endian
+    wswap<word_type>((word_type*)&a, a_siglen); // Word order to little-endian
 #endif
 
     BigInteger ret;
-    const size_t max_len = std::max(sizeof(a) / sizeof(word_type), b._significant_len);
-    ret.ensure_cap(max_len + 1);
-    signed_sub((const word_type*)&a, sizeof(a) / sizeof(word_type),
-               b._data, b._significant_len, ret._data, max_len + 1);
-    ret._significant_len = max_len + 1;
+    const size_type b_siglen = b.significant_words_length(),
+        ret_siglen = std::max(a_siglen, b_siglen) + 1;
+    ret.ensure_cap(ret_siglen);
+    signed_sub((const word_type*)&a, a_siglen, b.data(), b_siglen, ret.data(), ret_siglen);
+    ret.set_significant_len(ret_siglen);
     ret.minimize_significant_len();
     return ret;
 }
 
-BigInteger operator*(long long a, const BigInteger& b)
+BigInteger operator*(BigInteger::cast_int_type a, const BigInteger& b)
 {
     return b * a;
 }
 
-BigInteger operator/(long long a, const BigInteger& b)
+BigInteger operator/(BigInteger::cast_int_type a, const BigInteger& b)
 {
     return BigInteger(a) / b;
 }
 
-BigInteger operator%(long long a, const BigInteger& b)
+BigInteger operator%(BigInteger::cast_int_type a, const BigInteger& b)
 {
     return BigInteger(a) % b;
 }
