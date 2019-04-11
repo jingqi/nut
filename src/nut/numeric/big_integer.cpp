@@ -5,6 +5,7 @@
 #include <random>
 
 #include "../platform/endian.h"
+#include "../platform/sys.h"
 #include "big_integer.h"
 #include "word_array_integer.h"
 #include "numeric_algo/karatsuba.h"
@@ -827,16 +828,16 @@ BigInteger BigInteger::rand_between(const BigInteger& a, const BigInteger& b)
     const BigInteger n = (a_is_greater ? a - b : b - a);
     assert(n.is_positive());
 
-    std::random_device rd;
-    std::mt19937_64 gen(rd());
-    std::uniform_int_distribution<word_type> dist(0, ~(word_type)0);
-
     BigInteger ret(0);
     const size_t n_siglen = n.significant_words_length();
     ret.ensure_cap(n_siglen + 1);
+
     word_type *const ret_data = ret.data();
+    std::mt19937_64& gen = Sys::random_engine();
+    std::uniform_int_distribution<word_type> dist(0, ~(word_type)0);
     for (size_type i = 0; i < n_siglen; ++i)
         ret_data[i] = dist(gen);
+
     ret_data[n_siglen] = 0; // 保证是正数
     ret.set_significant_len(n_siglen + 1);
 
@@ -866,10 +867,9 @@ BigInteger BigInteger::rand_positive(size_t bit_len, bool ensure_highest_bit)
         ret.set_significant_len(word_count + 1);
     }
 
-    std::random_device rd;
-    std::mt19937_64 gen(rd());
-    std::uniform_int_distribution<word_type> dist(0, ~(word_type)0);
     word_type *const ret_data = ret.data();
+    std::mt19937_64& gen = Sys::random_engine();
+    std::uniform_int_distribution<word_type> dist(0, ~(word_type)0);
     for (size_t i = 0; i < word_count; ++i)
         ret_data[i] = dist(gen);
 

@@ -8,7 +8,7 @@
 #include <thread>
 #include <random>
 
-#include "../threading.h" // for NUT_THREAD_LOCAL
+#include "../../platform/sys.h"
 #include "stamped_ptr.h"
 #include "hazard_pointer/hp_record.h"
 #include "hazard_pointer/hp_retire_list.h"
@@ -370,7 +370,7 @@ public:
 private:
     ConcurrentQueue(const ConcurrentQueue&) = delete;
     ConcurrentQueue& operator=(const ConcurrentQueue&) = delete;
-    
+
     void optimistic_enqueue(Node *new_node)
     {
         assert(nullptr != new_node);
@@ -401,7 +401,7 @@ private:
             }
         }
     }
-    
+
     void eliminate_enqueue(Node *new_node)
     {
         assert(nullptr != new_node);
@@ -560,10 +560,8 @@ private:
      */
     static unsigned rand_pos()
     {
-        static NUT_THREAD_LOCAL std::random_device rd;
-        static NUT_THREAD_LOCAL std::mt19937 gen(rd());
-        static NUT_THREAD_LOCAL std::uniform_int_distribution<unsigned> dist(0, COLLISIONS_ARRAY_SIZE - 1);
-        return dist(gen);
+        static std::uniform_int_distribution<unsigned> dist(0, COLLISIONS_ARRAY_SIZE - 1);
+        return dist(Sys::random_engine());
     }
 
 private:
