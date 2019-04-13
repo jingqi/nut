@@ -65,6 +65,7 @@
 #include "numeric/numeric_algo/mod.h"
 #include "numeric/numeric_algo/prime.h"
 #include "numeric/numeric_algo/karatsuba.h"
+#include "numeric/numeric_algo/fft.h"
 #include "numeric/numeric_algo/ntt.h"
 
 // security

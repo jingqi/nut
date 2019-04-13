@@ -106,7 +106,7 @@ size_t _split_base_bits(const T *a, size_t M, const T *b, size_t N,
            nullptr != aa && nullptr != bb);
 
     const size_t word_siglen = (sizeof(T) * std::max(M, N) + NUT_NTT_BASE_BYTES - 1) / NUT_NTT_BASE_BYTES;
-    unsigned wc_bits = highest_bit1((uint64_t) word_siglen) + 1; // word_count 必须是 2 的幂次
+    unsigned wc_bits = highest_bit1((uint64_t) word_siglen); // word_count 必须是 2 的幂次
     if ((1ULL << wc_bits) < word_siglen)
         ++wc_bits;
     assert((1ULL << wc_bits) >= word_siglen);
@@ -168,7 +168,7 @@ void unsigned_ntt_multiply(const T *a, size_t M, const T *b, size_t N, T *x, siz
     ntt_convolution(aa, bb, wc_bits + 1, rs); // 2**(k+1) points NTT
     ::free(aa); // 'bb' is in same memory block
 
-    const size_t high = (1 << (wc_bits + 1)) - 1;
+    const size_t high = (1ULL << (wc_bits + 1)) - 1;
     for (size_t i = 0; i < high; ++i)
     {
         rs[i + 1] += rs[i] / NUT_NTT_BASE;
