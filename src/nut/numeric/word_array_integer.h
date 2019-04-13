@@ -26,6 +26,36 @@ namespace nut
 {
 
 /**
+ * 将 word 内部字节序当成是 little-endian 来获取指定位置的字节
+ */
+template <typename T>
+uint8_t get_byte_le(const T *arr, size_t le_byte_index)
+{
+#if NUT_ENDIAN_LITTLE_BYTE
+    return reinterpret_cast<const uint8_t*>(arr)[le_byte_index];
+#else
+    const size_t word_index = le_byte_index / sizeof(T);
+    const size_t inner_index = sizeof(T) - 1 - (le_byte_index % sizeof(T));
+    return reinterpret_cast<const uint8_t*>(word + word_index)[inner_index];
+#endif
+}
+
+/**
+ * 将 word 内部字节序当成是 little-endian 来设置指定位置的字节
+ */
+template <typename T>
+void set_byte_le(T *arr, size_t le_byte_index, uint8_t v)
+{
+#if NUT_ENDIAN_LITTLE_BYTE
+    reinterpret_cast<uint8_t*>(arr)[le_byte_index] = v;
+#else
+    const size_t word_index = le_byte_index / sizeof(T);
+    const size_t inner_index = sizeof(T) - 1 - (le_byte_index % sizeof(T));
+    reinterpret_cast<uint8_t*>(word + word_index)[inner_index] = v;
+#endif
+}
+
+/**
  * 是否为0
  *
  * @return a<N> == 0
@@ -695,6 +725,9 @@ NUT_API unsigned bit1_count(uint8_t a);
 NUT_API unsigned bit1_count(uint16_t a);
 NUT_API unsigned bit1_count(uint32_t a);
 NUT_API unsigned bit1_count(uint64_t a);
+#if NUT_HAS_INT128
+NUT_API unsigned bit1_count(uint128_t a);
+#endif
 
 NUT_API size_t bit1_count(const uint8_t *a, size_t N);
 
@@ -710,17 +743,23 @@ NUT_API uint8_t reverse_bits(uint8_t v);
 NUT_API uint16_t reverse_bits(uint16_t v);
 NUT_API uint32_t reverse_bits(uint32_t v);
 NUT_API uint64_t reverse_bits(uint64_t v);
+#if NUT_HAS_INT128
+NUT_API uint128_t reverse_bits(uint128_t v);
+#endif
 
 /**
  * 返回从低位到高位第一个 bit 1 的位置
  *
  * @return -1 if not found
- *         >0 if found
+ *         >=0 if found
  */
 NUT_API int lowest_bit1(uint8_t a);
 NUT_API int lowest_bit1(uint16_t a);
 NUT_API int lowest_bit1(uint32_t a);
 NUT_API int lowest_bit1(uint64_t a);
+#if NUT_HAS_INT128
+NUT_API int lowest_bit1(uint128_t a);
+#endif
 
 /**
  * 返回从低位到高位第一个 bit 1 的位置
@@ -729,7 +768,7 @@ NUT_API int lowest_bit1(uint64_t a);
  *      lowest_bit1<uint8_t>() != lowest_bit1<uint16_t>() ...
  *
  * @return -1 if not found
- *         >0 if found
+ *         >=0 if found
  */
 template <typename T>
 ssize_t lowest_bit1(const T *a, size_t N)
@@ -751,7 +790,7 @@ ssize_t lowest_bit1(const T *a, size_t N)
  *      lowest_bit0<uint8_t>() != lowest_bit0<uint16_t>() ...
  *
  * @return -1 if not found
- *         >0 if found
+ *         >=0 if found
  */
 template <typename T>
 ssize_t lowest_bit0(const T *a, size_t N)
@@ -771,12 +810,15 @@ ssize_t lowest_bit0(const T *a, size_t N)
  * 返回从高位到低位第一个 bit 1 的位置
  *
  * @return -1 if not found
- *         >0 if found
+ *         >=0 if found
  */
 NUT_API int highest_bit1(uint8_t a);
 NUT_API int highest_bit1(uint16_t a);
 NUT_API int highest_bit1(uint32_t a);
 NUT_API int highest_bit1(uint64_t a);
+#if NUT_HAS_INT128
+NUT_API int highest_bit1(uint128_t a);
+#endif
 
 /**
  * 返回从高位到低位第一个 bit 1 的位置
@@ -785,7 +827,7 @@ NUT_API int highest_bit1(uint64_t a);
  *      highest_bit1<uint8_t>() != highest_bit1<uint16_t>() ...
  *
  * @return -1 if not found
- *         >0 if found
+ *         >=0 if found
  */
 template <typename T>
 ssize_t highest_bit1(const T *a, size_t N)
@@ -807,7 +849,7 @@ ssize_t highest_bit1(const T *a, size_t N)
  *      highest_bit0<uint8_t>() != highest_bit0<uint16_t>() ...
  *
  * @return -1 if not found
- *         >0 if found
+ *         >=0 if found
  */
 template <typename T>
 ssize_t highest_bit0(const T *a, size_t N)

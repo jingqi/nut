@@ -7,9 +7,6 @@
 namespace nut
 {
 
-/**
- * 求最大公约数
- */
 NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b)
 {
     /// 下面几个算法，随着规模增大，优化后的优势越明显。
@@ -184,9 +181,6 @@ NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b)
 #endif
 }
 
-/**
- * 扩展欧几里得算法
- */
 NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, BigInteger *x, BigInteger *y)
 {
 #if 0 // unoptimized

@@ -52,6 +52,8 @@ class TestWordArrayInteger : public TestFixture
     {
         NUT_TA(lowest_bit1((unsigned) 0) == -1);
 
+        NUT_TA(lowest_bit1((uint8_t)1) == 0);
+
         uint8_t a = 0x4B; // 0100 1011
         NUT_TA(lowest_bit1(a) == 0);
 
@@ -68,6 +70,8 @@ class TestWordArrayInteger : public TestFixture
     void test_highest_bit()
     {
         NUT_TA(highest_bit1((unsigned) 0) == -1);
+
+        NUT_TA(highest_bit1((uint8_t)1) == 0);
 
         uint8_t a = 0x4B; // 0100 1011
         NUT_TA(highest_bit1(a) == 6);

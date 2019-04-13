@@ -3,12 +3,38 @@
 #define ___HEADFILE_058D89EB_50A2_4934_AF92_FC4F82613999_
 
 #include "../../nut_config.h"
+#include "../../platform/int_type.h"
 #include "../big_integer.h"
+#include "../word_array_integer.h"
 #include "gcd.h"
 
 
 namespace nut
 {
+
+/**
+ * 计算模乘 a * b % n
+ *
+ * NOTE 注意避免中间过程溢出
+ *
+ * @return a * b % n
+ */
+template <typename T>
+T mult_mod(T a, T b, T n)
+{
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
+    typedef typename StdInt<T>::double_unsigned_type dword_type;
+    return ((dword_type) a) * b % n;
+}
+
+#if NUT_HAS_INT128
+template <>
+NUT_API uint128_t mult_mod(uint128_t a, uint128_t b, uint128_t n);
+#else
+template <>
+NUT_API uint64_t mult_mod(uint64_t a, uint64_t b, uint64_t n);
+#endif
+
 
 /**
  * 模乘之前的预计算表计算
@@ -166,7 +192,7 @@ private:
 *     [1]周玉洁，冯国登. 公开密钥密码算法及其快速实现[M]. 国防工业出版社. 2002. 57
  */
 template <size_t C>
-BigInteger mod_multiply(const BigInteger& b, const BigInteger& n, const ModMultiplyPreBuildTable<C>& table)
+BigInteger mult_mod(const BigInteger& b, const BigInteger& n, const ModMultiplyPreBuildTable<C>& table)
 {
     assert(b.is_positive() && n.is_positive() && b < n); // 一定要保证 b<n ,以便优化模加运算
 
@@ -194,12 +220,77 @@ BigInteger mod_multiply(const BigInteger& b, const BigInteger& n, const ModMulti
 }
 
 /**
- * 求(a**b)%n，即a的b次方(模n)
+ * 计算模幂 (a ** b) % n，即a的b次方(mod n)
+ *
+ * NOTE 注意避免中间过程溢出
  *
  * 参考文献：
  *     [1]潘金贵，顾铁成. 现代计算机常用数据结构和算法[M]. 南京大学出版社. 1994. 576
  */
-NUT_API BigInteger mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n);
+template <typename T>
+T pow_mod(T a, T b, T n)
+{
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
+
+    if (0 == b || 1 == a)
+        return 1 == n ? 0 : 1;
+    else if (0 == a)
+        return 0;
+
+    T ret = 1;
+    for (int i = highest_bit1(b); i >= 0; --i) // 从高位向低有效位取bit
+    {
+        ret = mult_mod(ret, ret, n);
+        if (0 != ((b >> i) & 1))
+            ret = mult_mod(ret, a, n);
+    }
+    return ret;
+}
+
+NUT_API BigInteger pow_mod(const BigInteger& a, const BigInteger& b, const BigInteger& n);
+
+/**
+ * 判定 r 是否是素数 n 的原根
+ *
+ * NOTE 这个操作非常耗时, 只应该在线下使用
+ */
+template <typename T>
+bool is_ordm(T r, T n)
+{
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
+    assert(0 < r && r < n && n >= 2);
+
+    // NOTE 具体算法参考 http://blog.leanote.com/post/rockdu/0330
+    if (1 == r && 2 != n)
+        return false;
+    const T nm1 = n - 1;
+    for (T i = 2; i * i < nm1; ++i)
+    {
+        if (0 != nm1 % i)
+            continue;
+        if (1 == pow_mod(r, i, n) || 1 == pow_mod(r, nm1 / i, n))
+            return false;
+    }
+    return true;
+}
+
+/**
+ * 找原根
+ *
+ * NOTE 这个操作非常耗时, 只应该在线下使用
+ */
+template <typename T>
+T find_ordm(T n)
+{
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
+
+    for (T i = 2; i < n; ++i)
+    {
+        if (is_ordm(i, n))
+            return i;
+    }
+    return 0;
+}
 
 }
 

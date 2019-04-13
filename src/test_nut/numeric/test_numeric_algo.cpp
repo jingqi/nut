@@ -24,8 +24,8 @@ class TestNumericAlgo : public TestFixture
         NUT_REGISTER_CASE(test_bugs);
         NUT_REGISTER_CASE(test_gcd);
         NUT_REGISTER_CASE(test_extend_euclid);
-        NUT_REGISTER_CASE(test_mod_multiply);
-        NUT_REGISTER_CASE(test_mod_pow);
+        NUT_REGISTER_CASE(test_bi_mult_mod);
+        NUT_REGISTER_CASE(test_bi_pow_mod);
         NUT_REGISTER_CASE(test_prime);
         NUT_REGISTER_CASE(test_karatsuba_multiply);
     }
@@ -45,7 +45,7 @@ class TestNumericAlgo : public TestFixture
             // BUG 预算表优化的 _mod_multiply() 实现有问题
             BigInteger a(1), b = BigInteger::value_of("400000000", 16), n = BigInteger::value_of("c00000000", 16);
             ModMultiplyPreBuildTable<2> table(a, n);
-            BigInteger x1 = mod_multiply(b, n, table);
+            BigInteger x1 = mult_mod(b, n, table);
             BigInteger x2 = (a * b) % n;
 //            printf("\n%s\n%s\n", x1.toString().c_str(), x2.toString().c_str());
             NUT_TA(x1 == x2);
@@ -94,7 +94,7 @@ class TestNumericAlgo : public TestFixture
         }
     }
 
-    void test_mod_multiply()
+    void test_bi_mult_mod()
     {
         {
             BigInteger bound(1);
@@ -104,7 +104,7 @@ class TestNumericAlgo : public TestFixture
             BigInteger n = BigInteger::rand_between(bound, bound << 1);
 
             ModMultiplyPreBuildTable<4> table(a % n, n);
-            BigInteger x = mod_multiply(b % n, n, table);
+            BigInteger x = mult_mod(b % n, n, table);
             NUT_TA(x == (a * b) % n);
         }
 
@@ -131,7 +131,7 @@ class TestNumericAlgo : public TestFixture
     }
 
     // 用作对比
-    static BigInteger mod_pow2(const BigInteger& a, const BigInteger& b, const BigInteger& n)
+    static BigInteger pow_mod_v2(const BigInteger& a, const BigInteger& b, const BigInteger& n)
     {
         assert(a.is_positive() && b.is_positive() && n.is_positive());
 
@@ -145,7 +145,7 @@ class TestNumericAlgo : public TestFixture
         return ret;
     }
 
-    void test_mod_pow()
+    void test_bi_pow_mod()
     {
         // 测性能
         {
@@ -160,12 +160,12 @@ class TestNumericAlgo : public TestFixture
             const PerformanceCounter s = PerformanceCounter::now();
             for (int i = 0; i < iteration; ++i)
             {
-                x1 = mod_pow(a, b, n);
+                x1 = pow_mod(a, b, n);
             }
             const PerformanceCounter t1 = PerformanceCounter::now();
             for (int i = 0; i < iteration; ++i)
             {
-                x2 = mod_pow2(a, b, n);
+                x2 = pow_mod_v2(a, b, n);
             }
             const double t2 = PerformanceCounter::now() - t1;
             printf(" %.6fs < %.6fs ", t1 - s, t2);

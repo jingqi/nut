@@ -1,4 +1,6 @@
 ﻿
+#include <math.h>
+
 #include "../../platform/endian.h"
 #include "mod.h"
 #include "gcd.h"
@@ -6,6 +8,48 @@
 
 namespace nut
 {
+
+#if NUT_HAS_INT128
+template <>
+NUT_API uint128_t mult_mod(uint128_t a, uint128_t b, uint128_t n)
+{
+#if NUT_ENDIAN_BIG_BYTE
+    wswap(reinterpret_cast<uint32_t*>(&a), 4);
+    wswap(reinterpret_cast<uint32_t*>(&b), 4);
+#endif
+    uint32_t mult_rs[8];
+    unsigned_multiply<uint32_t>(reinterpret_cast<const uint32_t*>(&a), 4,
+                                reinterpret_cast<const uint32_t*>(&b), 4,
+                                mult_rs, 8);
+    uint128_t mod_rs;
+    unsigned_divide<uint32_t>(mult_rs, 8, reinterpret_cast<const uint32_t*>(&n), 4,
+                              nullptr, 0, reinterpret_cast<uint32_t*>(&mod_rs), 4);
+#if NUT_ENDIAN_BIG_BYTE
+    wswap(reinterpret_cast<uint32_t*>(&mod_rs), 2);
+#endif
+    return mod_rs;
+}
+#else
+template <>
+NUT_API uint64_t mult_mod(uint64_t a, uint64_t b, uint64_t n)
+{
+#if NUT_ENDIAN_BIG_BYTE
+    wswap(reinterpret_cast<uint32_t*>(&a), 2);
+    wswap(reinterpret_cast<uint32_t*>(&b), 2);
+#endif
+    uint32_t mult_rs[4];
+    unsigned_multiply<uint32_t>(reinterpret_cast<const uint32_t*>(&a), 2,
+                                reinterpret_cast<const uint32_t*>(&b), 2,
+                                mult_rs, 4);
+    uint64_t mod_rs;
+    unsigned_divide<uint32_t>(mult_rs, 4, reinterpret_cast<const uint32_t*>(&n), 2,
+                              nullptr, 0, reinterpret_cast<uint32_t*>(&mod_rs), 2);
+#if NUT_ENDIAN_BIG_BYTE
+    wswap(reinterpret_cast<uint32_t*>(&mod_rs), 2);
+#endif
+    return mod_rs;
+}
+#endif
 
 /**
  * 蒙哥马利算法
@@ -428,7 +472,7 @@ static BigInteger _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p)
  * 参考文献：
  *      [1]潘金贵，顾铁成. 现代计算机常用数据结构和算法[M]. 南京大学出版社. 1994. 576
  */
-NUT_API BigInteger mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n)
+NUT_API BigInteger pow_mod(const BigInteger& a, const BigInteger& b, const BigInteger& n)
 {
     assert(a.is_positive() && b.is_positive() && n.is_positive());
 

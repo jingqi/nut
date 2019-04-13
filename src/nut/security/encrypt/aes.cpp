@@ -39,7 +39,7 @@ static std::once_flag aes_gen_table_flag;
 static void aes_gen_tables()
 {
     std::call_once(
-        aes_setup_once_flag
+        aes_setup_once_flag,
         [=] {
             int i;
             uint8_t x, y;

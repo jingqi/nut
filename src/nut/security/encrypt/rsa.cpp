@@ -47,12 +47,12 @@ RSA::PrivateKey RSA::gen_key(size_t max_bit_length)
 
 BigInteger RSA::public_transfer(const BigInteger& m, const PublicKey& k)
 {
-    return mod_pow(m, k.e, k.n);
+    return pow_mod(m, k.e, k.n);
 }
 
 BigInteger RSA::private_transfer(const BigInteger& c, const PrivateKey& k)
 {
-    return mod_pow(c, k.d, k.n);
+    return pow_mod(c, k.d, k.n);
 }
 
 }

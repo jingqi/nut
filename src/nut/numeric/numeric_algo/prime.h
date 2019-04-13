@@ -6,6 +6,7 @@
 #include "../big_integer.h"
 #include "bit_sieve.h"
 #include "mod.h"
+#include "gcd.h"
 
 
 namespace nut
@@ -29,6 +30,35 @@ bool miller_rabin(const BigInteger& n, unsigned s);
  * 参见java语言BigInteger.nextProbablePrime()实现
  */
 NUT_API BigInteger next_prime(const BigInteger& n);
+
+/**
+ * n 是素数，计算 a 的模逆 (mod n)
+ */
+template <typename T>
+T inverse_of_prime_mod(T a, T n)
+{
+    static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
+    typedef typename StdInt<T>::signed_type sword_type;
+
+    /**
+     * NOTE 小整数可以根据扩展欧几里得算法求，超大整数可以通过
+     *      pow_mod(a, n - 2, n) 来求(因为 pow_mod(a, n - 1, n) == 1)
+     */
+    sword_type ret;
+    const T gcd = extended_euclid(a, n, &ret, nullptr);
+    assert(1 == gcd);
+    if (ret < 0)
+    {
+        ret %= (sword_type) n; // NOTE 负数模需要有符号数操作
+        ret += n;
+    }
+    else
+    {
+        ret %= n;
+    }
+    assert(mult_mod(a, (T) ret, n) == 1);
+    return ret;
+}
 
 }
 

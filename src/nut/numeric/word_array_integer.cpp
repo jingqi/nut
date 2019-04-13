@@ -43,6 +43,14 @@ NUT_API unsigned bit1_count(uint64_t a)
     return a & 0x7f;
 }
 
+#if NUT_HAS_INT128
+NUT_API unsigned bit1_count(uint128_t a)
+{
+    return bit1_count(reinterpret_cast<const uint64_t*>(&a)[0]) +
+        bit1_count(reinterpret_cast<const uint64_t*>(&a)[1]);
+}
+#endif
+
 /**
  * 统计 bit 1 数目
  */
@@ -101,6 +109,17 @@ NUT_API uint64_t reverse_bits(uint64_t v)
     v = (((v & 0xffff0000ffff0000LL) >> 16) | ((v & 0x0000ffff0000ffffLL) << 16));
     return (v >> 32) | (v << 32);
 }
+
+#if NUT_HAS_INT128
+NUT_API uint128_t reverse_bits(uint128_t v)
+{
+    const uint64_t v1 = reverse_bits(reinterpret_cast<const uint64_t*>(&v)[0]);
+    const uint64_t v2 = reverse_bits(reinterpret_cast<const uint64_t*>(&v)[1]);
+    reinterpret_cast<uint64_t*>(&v)[0] = v2;
+    reinterpret_cast<uint64_t*>(&v)[1] = v1;
+    return v;
+}
+#endif
 
 NUT_API int lowest_bit1(uint8_t a)
 {
@@ -212,6 +231,25 @@ NUT_API int lowest_bit1(uint64_t a)
     return ret;
 }
 
+#if NUT_HAS_INT128
+NUT_API int lowest_bit1(uint128_t a)
+{
+#if NUT_ENDIAN_LITTLE_BYTE
+    int rs = lowest_bit1(reinterpret_cast<const uint64_t*>(&a)[0]);
+    if (rs >= 0)
+        return rs;
+    rs = lowest_bit1(reinterpret_cast<const uint64_t*>(&a)[1]);
+    return (rs < 0 ? rs : 64 + rs);
+#else
+    int rs = lowest_bit1(reinterpret_cast<const uint64_t*>(&a)[1]);
+    if (rs >= 0)
+        return rs;
+    rs = lowest_bit1(reinterpret_cast<const uint64_t*>(&a)[0]);
+    return (rs < 0 ? rs : 64 + rs);
+#endif
+}
+#endif
+
 NUT_API int highest_bit1(uint8_t a)
 {
     if (0 == a)
@@ -321,5 +359,22 @@ NUT_API int highest_bit1(uint64_t a)
     ret += a >> 63;
     return ret;
 }
+
+#if NUT_HAS_INT128
+NUT_API int highest_bit1(uint128_t a)
+{
+#if NUT_ENDIAN_LITTLE_BYTE
+    const int rs = highest_bit1(reinterpret_cast<const uint64_t*>(&a)[1]);
+    if (rs >= 0)
+        return 64 + rs;
+    return highest_bit1(reinterpret_cast<const uint64_t*>(&a)[0]);
+#else
+    const int rs = highest_bit1(reinterpret_cast<const uint64_t*>(&a)[0]);
+    if (rs >= 0)
+        return 64 + rs;
+    return highest_bit1(reinterpret_cast<const uint64_t*>(&a)[1]);
+#endif
+}
+#endif
 
 }

@@ -5,6 +5,7 @@
 #include <algorithm> // for std::min()
 
 #include "../word_array_integer.h"
+#include "ntt.h"
 
 
 /**
@@ -43,6 +44,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     if (M < NUT_KARATSUBA_FALLBACK_THRESHOLD || N < NUT_KARATSUBA_FALLBACK_THRESHOLD)
     {
         unsigned_multiply(a, M, b, N, x, P);
+        // unsigned_ntt_multiply(a, M, b, N, x, P);
         return;
     }
 
@@ -138,7 +140,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
 }
 
 /**
- * karatsuba 乘法，时间复杂度为 O(n^(log2 3)) = O(n^1.58)
+ * karatsuba 乘法，时间复杂度为 O(n**(log2 3)) = O(n**1.58)
  *
  * a = A * base + B (其中 base = 2 ^ (n/2) )
  * b = C * base + D
@@ -156,6 +158,7 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
         P < NUT_KARATSUBA_FALLBACK_THRESHOLD)
     {
         signed_multiply(a, M, b, N, x, P);
+        // signed_ntt_multiply(a, M, b, N, x, P);
         return;
     }
 
