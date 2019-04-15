@@ -142,12 +142,12 @@ static void NTT_R2N(ntt_word_type* a, unsigned bits)
                 const ntt_word_type u = a[cur],
                     t = mult_mod<ntt_word_type>(w, a[next], NUT_NTT_M);
 
-                // => a[cur] = (u + t) % M_M;
+                // => a[cur] = (u + t) % M;
                 a[cur] = u + t;
                 if (a[cur] >= NUT_NTT_M)
                     a[cur] -= NUT_NTT_M;
 
-                // => a[next] = (u + M_M - t) % M_M;
+                // => a[next] = (u + M - t) % M;
                 if (u >= t)
                     a[next] = u - t;
                 else

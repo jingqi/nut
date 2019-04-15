@@ -20,7 +20,7 @@ namespace nut
  * @return a * b % n
  */
 template <typename T>
-T mult_mod(T a, T b, T n)
+constexpr T mult_mod(T a, T b, T n)
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     typedef typename StdInt<T>::double_unsigned_type dword_type;

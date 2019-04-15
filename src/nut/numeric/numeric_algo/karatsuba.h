@@ -53,8 +53,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     const T ZERO = 0;
 
     // a_len = max(0, min(M - base_len, P - base_len))
-    //       = max(0, M - base_len)
-    // since, M <= P
+    //       = max(0, M - base_len)                    [since, M <= P]
     const T *A = a + base_len;
     size_t a_len = M - base_len;
     if (M <= base_len)
@@ -68,8 +67,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     const size_t b_len = std::min(base_len, M);
 
     // c_len = max(0, min(N - base_len, P - base_len))
-    //       = max(0, N - base_len)
-    // since, N <= P
+    //       = max(0, N - base_len)                    [since, N <= P]
     const T *C = b + base_len;
     size_t c_len = N - base_len;
     if (N <= base_len)
@@ -83,49 +81,58 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     const size_t d_len = std::min(base_len, N);
 
     // 计算中间结果
-
+    //
     // AB = A + B
     // ab_len = min(max(a_len, b_len) + 1, P - base_len)
-    //        = min(b_len + 1, P - base_len)
-    // since, a_len <= b_len
-    const size_t ab_len = std::min(b_len + 1, P - base_len);
-    T *AB = (T*) ::malloc(sizeof(T) * ab_len);
-    unsigned_add(A, a_len, B, b_len, AB, ab_len);
-
+    //        = min(b_len + 1, P - base_len)           [since, a_len <= b_len]
+    //
     // CD = C + D
     // cd_len = min(max(c_len, d_len) + 1, P - base_len)
-    //        = min(d_len + 1, P - base_len)
-    // since, c_len <= d_len
-    const size_t cd_len = std::min(d_len + 1, P - base_len);
-    T *CD = (T*) ::malloc(sizeof(T) * cd_len);
-    unsigned_add(C, c_len, D, d_len, CD, cd_len);
-
+    //        = min(d_len + 1, P - base_len)           [since, c_len <= d_len]
+    //
     // ABCD = (A + B) * (C + D)
     // abcd_len = min(ab_len + cd_len, P - base_len)
     //          = min(b_len + d_len + 1, P - base_len)
-    const size_t abcd_len = std::min(b_len + d_len + 1, P - base_len);
-    T *ABCD = (T*) ::malloc(sizeof(T) * abcd_len);
-    unsigned_karatsuba_multiply(AB, ab_len, CD, cd_len, ABCD, abcd_len);
-    ::free(AB);
-    ::free(CD);
-
+    //
     // AC = A * C
     // ac_len = min(a_len + c_len, max(0, P - base_len))
-    //        = min(a_len + c_len, P - base_len)
-    // since, P - base_len >= max(M,N) - base_len > 0
-    const size_t ac_len = std::min(a_len + c_len, P - base_len);
-    T *AC = (T*) ::malloc(sizeof(T) * ac_len);
-    unsigned_karatsuba_multiply(A, a_len, C, c_len, AC, ac_len);
-
-    // NOTE 因为 BD 复用了 x 的存储空间, 为了避免传入的参数 a, b 被破坏(a、b、x
-    //      可能有交叉区域), BD 要放在 AB、CD、AC 后面计算
+    //        = min(a_len + c_len, P - base_len)       [since, P - base_len >= max(M,N) - base_len > 0]
+    //        < ab_len + cd_len
+    //
     // BD = B * D
     // bd_len = min(b_len + d_len, P)
+    //
+    const size_t ab_len = std::min(b_len + 1, P - base_len);
+    const size_t cd_len = std::min(d_len + 1, P - base_len);
+    const size_t abcd_len = std::min(b_len + d_len + 1, P - base_len);
+    const size_t ac_len = std::min(a_len + c_len, P - base_len);
+    assert(ac_len <= ab_len + cd_len);
     const size_t bd_len = std::min(b_len + d_len, P);
-    T *BD = x;
+    T *const AB = (T*) ::malloc(sizeof(T) * (ab_len + cd_len + abcd_len));
+    T *const CD = AB + ab_len;
+    T *const ABCD = CD + cd_len;
+    T *const AC = AB; // 复用 AB + CD 的存储空间
+    T *const BD = x; // 复用 x 的存储空间
+
+    // AB = A + B
+    unsigned_add(A, a_len, B, b_len, AB, ab_len);
+
+    // CD = C + D
+    unsigned_add(C, c_len, D, d_len, CD, cd_len);
+
+    // ABCD = AB * CD
+    unsigned_karatsuba_multiply(AB, ab_len, CD, cd_len, ABCD, abcd_len);
+
+    // AC = A * C
+    // NOTE 因为 AC 复用了 AB CD 的存储空间, 需要在 ABCD 之后计算
+    unsigned_karatsuba_multiply(A, a_len, C, c_len, AC, ac_len);
+
+    // BD = B * D
+    // NOTE 因为 BD 复用了 x 的存储空间, 为了避免传入的参数 a, b 被破坏(a、b、x
+    //      可能有交叉区域), BD 要放在 AB、CD、AC 后面计算
     unsigned_karatsuba_multiply(B, b_len, D, d_len, BD, bd_len);
 
-    // ABCD = (A + B) * (C + D) - A * C - B * D
+    // ABCD -= AC + BD
     unsigned_sub(ABCD, abcd_len, AC, ac_len, ABCD, abcd_len);
     unsigned_sub(ABCD, abcd_len, BD, bd_len, ABCD, abcd_len);
 
@@ -133,10 +140,9 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     if (bd_len < P)
         ::memset(x + bd_len, 0, sizeof(T) * (P - bd_len));
     unsigned_add(x + base_len, P - base_len, ABCD, abcd_len, x + base_len, P - base_len);
-    ::free(ABCD);
     if (P > base_len * 2)
         unsigned_add(x + base_len * 2, P - base_len * 2, AC, ac_len, x + base_len * 2, P - base_len * 2);
-    ::free(AC);
+    ::free(AB);
 }
 
 /**
@@ -163,22 +169,29 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
     }
 
     // karatsuba 算法不能处理负数的补数形式
+    const bool a_neg = is_negative(a, M), b_neg = is_negative(b, N);
     T *aa = nullptr, *bb = nullptr;
     size_t MM = M, NN = N;
-    bool neg = false;
-    if (!is_positive(a, M))
+    if (a_neg && b_neg)
+    {
+        ++MM;
+        ++NN;
+        aa = (T*) ::malloc(sizeof(T) * (MM + NN));
+        bb = aa + MM;
+        signed_negate(a, M, aa, MM);
+        signed_negate(b, N, bb, NN);
+    }
+    else if (a_neg)
     {
         ++MM;
         aa = (T*) ::malloc(sizeof(T) * MM);
         signed_negate(a, M, aa, MM);
-        neg = !neg;
     }
-    if (!is_positive(b, N))
+    else if (b_neg)
     {
         ++NN;
         bb = (T*) ::malloc(sizeof(T) * NN);
         signed_negate(b, N, bb, NN);
-        neg = !neg;
     }
 
     // 调用 karatsuba 算法
@@ -186,11 +199,11 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
                                 (nullptr != bb ? bb : b), NN, x, P);
     if (nullptr != aa)
         ::free(aa);
-    if (nullptr != bb)
+    else if (nullptr != bb)
         ::free(bb);
 
     // 还原符号
-    if (neg)
+    if (a_neg != b_neg)
         signed_negate(x, P, x, P);
 }
 

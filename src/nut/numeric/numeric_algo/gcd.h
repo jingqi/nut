@@ -14,12 +14,10 @@ namespace nut
  * 求最大公约数
  */
 template <typename T>
-T gcd(T a, T b)
+constexpr T gcd(T a, T b)
 {
     static_assert(std::is_integral<T>::value, "Unexpected integer type");
-    if (0 == b)
-        return a;
-    return gcd(b, a % b);
+    return (0 == b ? a : gcd(b, a % b));
 }
 
 NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b);

@@ -18,12 +18,12 @@ namespace nut
  * 参考文献：
  *     [1]潘金贵，顾铁成. 现代计算机常用数据结构和算法[M]. 南京大学出版社. 1994. 582
  */
-bool psedoprime(const BigInteger& n);
+NUT_API bool psedoprime(const BigInteger& n);
 
 /**
  * 米勒-拉宾(Miller-Rabin)素数测试
  */
-bool miller_rabin(const BigInteger& n, unsigned s);
+NUT_API bool miller_rabin(const BigInteger& n, unsigned s);
 
 /**
  * 取下一个可能的素数

@@ -100,10 +100,10 @@ NUT_API bool can_use_ntt_multiply(size_t bits);
  */
 template <typename T>
 size_t _split_base_bits(const T *a, size_t M, const T *b, size_t N,
-                       ntt_word_type **aa, ntt_word_type **bb)
+                        ntt_word_type **aa, ntt_word_type **bb, ntt_word_type **rs)
 {
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 &&
-           nullptr != aa && nullptr != bb);
+           nullptr != aa && nullptr != bb && nullptr != rs);
 
     const size_t word_siglen = (sizeof(T) * std::max(M, N) + NUT_NTT_BASE_BYTES - 1) / NUT_NTT_BASE_BYTES;
     unsigned wc_bits = highest_bit1((uint64_t) word_siglen); // word_count 必须是 2 的幂次
@@ -112,8 +112,9 @@ size_t _split_base_bits(const T *a, size_t M, const T *b, size_t N,
     assert((1ULL << wc_bits) >= word_siglen);
 
     const size_t word_count = (1ULL << (wc_bits + 2)); // 至少是 4 倍大小多项式
-    *aa = (ntt_word_type*) ::malloc(sizeof(ntt_word_type) * word_count * 2);
+    *aa = (ntt_word_type*) ::malloc(sizeof(ntt_word_type) * word_count * 3);
     *bb = *aa + word_count;
+    *rs = *bb + word_count;
     ::memset(*aa, 0, sizeof(ntt_word_type) * word_count * 2);
 
     for (size_t i = 0; i < sizeof(T) * std::max(M, N); ++i)
@@ -162,20 +163,18 @@ void unsigned_ntt_multiply(const T *a, size_t M, const T *b, size_t N, T *x, siz
 
     assert(can_use_ntt_multiply(8 * sizeof(T) * std::max(M, N)));
 
-    ntt_word_type *aa, *bb;
-    const size_t wc_bits = _split_base_bits(a, M, b, N, &aa, &bb);
-    ntt_word_type *rs = (ntt_word_type*) ::malloc(sizeof(ntt_word_type) * (1ULL << (wc_bits + 2)));
+    ntt_word_type *aa, *bb, *rs;
+    const size_t wc_bits = _split_base_bits(a, M, b, N, &aa, &bb, &rs);
     ntt_convolution(aa, bb, wc_bits + 1, rs); // 2**(k+1) points NTT
-    ::free(aa); // 'bb' is in same memory block
 
     const size_t high = (1ULL << (wc_bits + 1)) - 1;
     for (size_t i = 0; i < high; ++i)
     {
-        rs[i + 1] += rs[i] / NUT_NTT_BASE;
-        rs[i] %= NUT_NTT_BASE;
+        rs[i + 1] += rs[i] >> NUT_NTT_BASE_BITS;
+        rs[i] &= ~(~(ntt_word_type)0 << NUT_NTT_BASE_BITS);
     }
     _merge_base_bits(rs, high + 1, x, P);
-    ::free(rs);
+    ::free(aa); // 'bb'、'rs' is in same memory block
 }
 
 template <typename T>
@@ -184,22 +183,29 @@ void signed_ntt_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
 
     // NTT 算法不能处理负数的补数形式
+    const bool a_neg = is_negative(a, M), b_neg = is_negative(b, N);
     T *aa = nullptr, *bb = nullptr;
     size_t MM = M, NN = N;
-    bool neg = false;
-    if (!is_positive(a, M))
+    if (a_neg && b_neg)
+    {
+        ++MM;
+        ++NN;
+        aa = (T*) ::malloc(sizeof(T) * (MM + NN));
+        bb = aa + MM;
+        signed_negate(a, M, aa, MM);
+        signed_negate(b, N, bb, NN);
+    }
+    else if (a_neg)
     {
         ++MM;
         aa = (T*) ::malloc(sizeof(T) * MM);
         signed_negate(a, M, aa, MM);
-        neg = !neg;
     }
-    if (!is_positive(b, N))
+    else if (b_neg)
     {
         ++NN;
         bb = (T*) ::malloc(sizeof(T) * NN);
         signed_negate(b, N, bb, NN);
-        neg = !neg;
     }
 
     // 调用 NTT 算法
@@ -207,11 +213,11 @@ void signed_ntt_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_
                           (nullptr != bb ? bb : b), NN, x, P);
     if (nullptr != aa)
         ::free(aa);
-    if (nullptr != bb)
+    else if (nullptr != bb)
         ::free(bb);
 
     // 还原符号
-    if (neg)
+    if (a_neg != b_neg)
         signed_negate(x, P, x, P);
 }
 
