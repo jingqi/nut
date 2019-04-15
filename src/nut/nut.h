@@ -58,8 +58,12 @@
 #include "container/tree/rtree/rtree.h"
 
 // numeric
-#include "numeric/word_array_integer.h"
 #include "numeric/big_integer.h"
+#include "numeric/word_array_integer/word_array_integer.h"
+#include "numeric/word_array_integer/mul_op.h"
+#include "numeric/word_array_integer/div_op.h"
+#include "numeric/word_array_integer/shift_op.h"
+#include "numeric/word_array_integer/bit_op.h"
 #include "numeric/numeric_algo/bit_sieve.h"
 #include "numeric/numeric_algo/gcd.h"
 #include "numeric/numeric_algo/mod.h"

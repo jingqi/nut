@@ -62,12 +62,12 @@ static void init_omega()
             // => inv_w[k-1] = w[k-1] ** -1 (mod m)
             inv_omega[NUT_NTT_K - 1] = inverse_of_prime_mod<ntt_word_type>(omega[NUT_NTT_K - 1], NUT_NTT_M);
 
-            assert(mult_mod<ntt_word_type>(omega[NUT_NTT_K - 1], inv_omega[NUT_NTT_K - 1], NUT_NTT_M) == 1);
+            assert(mul_mod<ntt_word_type>(omega[NUT_NTT_K - 1], inv_omega[NUT_NTT_K - 1], NUT_NTT_M) == 1);
 
             for (int i = NUT_NTT_K - 2; i >= 0; --i)
             {
-                omega[i] = mult_mod<ntt_word_type>(omega[i + 1], omega[i + 1], NUT_NTT_M);
-                inv_omega[i] = mult_mod<ntt_word_type>(inv_omega[i + 1], inv_omega[i + 1], NUT_NTT_M);
+                omega[i] = mul_mod<ntt_word_type>(omega[i + 1], omega[i + 1], NUT_NTT_M);
+                inv_omega[i] = mul_mod<ntt_word_type>(inv_omega[i + 1], inv_omega[i + 1], NUT_NTT_M);
             }
             assert(1 == omega[0] && 1 == inv_omega[0]);
         });
@@ -104,15 +104,15 @@ static void NTT_N2R(ntt_word_type *a, unsigned bits)
                 // => a[next] = (u + M - v) * w % M;
                 if (u >= v)
                 {
-                    a[next] = mult_mod<ntt_word_type>(u - v, w, NUT_NTT_M);
+                    a[next] = mul_mod<ntt_word_type>(u - v, w, NUT_NTT_M);
                 }
                 else
                 {
-                    a[next] = mult_mod<ntt_word_type>(NUT_NTT_M - v + u, w, NUT_NTT_M);
+                    a[next] = mul_mod<ntt_word_type>(NUT_NTT_M - v + u, w, NUT_NTT_M);
                 }
 
                 // => w = w * kernel % M;
-                w = mult_mod<ntt_word_type>(w, kernel, NUT_NTT_M);
+                w = mul_mod<ntt_word_type>(w, kernel, NUT_NTT_M);
             }
         }
     }
@@ -140,7 +140,7 @@ static void NTT_R2N(ntt_word_type* a, unsigned bits)
                 // 对每一个元素，找到它的兄弟（和它进行蝴蝶操作的那个元素）
                 size_t cur = k + j, next = cur + brother;
                 const ntt_word_type u = a[cur],
-                    t = mult_mod<ntt_word_type>(w, a[next], NUT_NTT_M);
+                    t = mul_mod<ntt_word_type>(w, a[next], NUT_NTT_M);
 
                 // => a[cur] = (u + t) % M;
                 a[cur] = u + t;
@@ -154,7 +154,7 @@ static void NTT_R2N(ntt_word_type* a, unsigned bits)
                     a[next] = NUT_NTT_M - t + u;
 
                 // => w = w * kernel % M_M;
-                w = mult_mod<ntt_word_type>(w, kernel, NUT_NTT_M);
+                w = mul_mod<ntt_word_type>(w, kernel, NUT_NTT_M);
             }
         }
     }
@@ -162,7 +162,7 @@ static void NTT_R2N(ntt_word_type* a, unsigned bits)
     // 除以 len 操作变成乘以逆元
     const uint64_t inv_len = inverse_of_prime_mod<ntt_word_type>(len, NUT_NTT_M);
     for (size_t i = 0; i < len; ++i)
-        a[i] = mult_mod<ntt_word_type>(a[i], inv_len, NUT_NTT_M);
+        a[i] = mul_mod<ntt_word_type>(a[i], inv_len, NUT_NTT_M);
 }
 
 NUT_API void ntt_convolution(ntt_word_type *a, ntt_word_type *b, unsigned bit_len,
@@ -177,7 +177,7 @@ NUT_API void ntt_convolution(ntt_word_type *a, ntt_word_type *b, unsigned bit_le
 
     const size_t len = 1 << bit_len;
     for (size_t i = 0; i < len; ++i)
-        rs[i] = mult_mod<ntt_word_type>(a[i], b[i], NUT_NTT_M);
+        rs[i] = mul_mod<ntt_word_type>(a[i], b[i], NUT_NTT_M);
 
     NTT_R2N(rs, bit_len);
 }

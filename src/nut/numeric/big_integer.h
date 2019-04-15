@@ -6,10 +6,10 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include <type_traits>
 
 #include "../nut_config.h"
 #include "../platform/int_type.h"
-#include "word_array_integer.h"
 
 
 namespace nut

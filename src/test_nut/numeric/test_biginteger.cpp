@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <nut/unittest/unittest.h>
 #include <nut/numeric/big_integer.h>
+#include <nut/numeric/word_array_integer/mul_op.h>
+
 
 using namespace std;
 using namespace nut;

@@ -3,7 +3,7 @@
 
 #include <nut/unittest/unittest.h>
 #include <nut/numeric/numeric_algo/fft.h>
-#include <nut/numeric/word_array_integer.h>
+#include <nut/numeric/word_array_integer/mul_op.h>
 #include <nut/numeric/big_integer.h>
 #include <nut/time/performance_counter.h>
 

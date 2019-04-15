@@ -2,6 +2,7 @@
 #include <math.h>
 
 #include "../../platform/endian.h"
+#include "../word_array_integer/div_op.h"
 #include "mod.h"
 #include "gcd.h"
 
@@ -11,18 +12,18 @@ namespace nut
 
 #if NUT_HAS_INT128
 template <>
-NUT_API uint128_t mult_mod(uint128_t a, uint128_t b, uint128_t n)
+NUT_API uint128_t mul_mod(uint128_t a, uint128_t b, uint128_t n)
 {
 #if NUT_ENDIAN_BIG_BYTE
     wswap(reinterpret_cast<uint32_t*>(&a), 4);
     wswap(reinterpret_cast<uint32_t*>(&b), 4);
 #endif
-    uint32_t mult_rs[8];
+    uint32_t mul_rs[8];
     unsigned_multiply<uint32_t>(reinterpret_cast<const uint32_t*>(&a), 4,
                                 reinterpret_cast<const uint32_t*>(&b), 4,
-                                mult_rs, 8);
+                                mul_rs, 8);
     uint128_t mod_rs;
-    unsigned_divide<uint32_t>(mult_rs, 8, reinterpret_cast<const uint32_t*>(&n), 4,
+    unsigned_divide<uint32_t>(mul_rs, 8, reinterpret_cast<const uint32_t*>(&n), 4,
                               nullptr, 0, reinterpret_cast<uint32_t*>(&mod_rs), 4);
 #if NUT_ENDIAN_BIG_BYTE
     wswap(reinterpret_cast<uint32_t*>(&mod_rs), 2);
@@ -31,18 +32,18 @@ NUT_API uint128_t mult_mod(uint128_t a, uint128_t b, uint128_t n)
 }
 #else
 template <>
-NUT_API uint64_t mult_mod(uint64_t a, uint64_t b, uint64_t n)
+NUT_API uint64_t mul_mod(uint64_t a, uint64_t b, uint64_t n)
 {
 #if NUT_ENDIAN_BIG_BYTE
     wswap(reinterpret_cast<uint32_t*>(&a), 2);
     wswap(reinterpret_cast<uint32_t*>(&b), 2);
 #endif
-    uint32_t mult_rs[4];
+    uint32_t mul_rs[4];
     unsigned_multiply<uint32_t>(reinterpret_cast<const uint32_t*>(&a), 2,
                                 reinterpret_cast<const uint32_t*>(&b), 2,
-                                mult_rs, 4);
+                                mul_rs, 4);
     uint64_t mod_rs;
-    unsigned_divide<uint32_t>(mult_rs, 4, reinterpret_cast<const uint32_t*>(&n), 2,
+    unsigned_divide<uint32_t>(mul_rs, 4, reinterpret_cast<const uint32_t*>(&n), 2,
                               nullptr, 0, reinterpret_cast<uint32_t*>(&mod_rs), 2);
 #if NUT_ENDIAN_BIG_BYTE
     wswap(reinterpret_cast<uint32_t*>(&mod_rs), 2);
@@ -286,7 +287,7 @@ static size_t _best_wnd(size_t bit_len)
 /**
  * 使用 Montgomery 算法优化
  */
-static BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const BigInteger& n)
+static BigInteger _odd_pow_mod(const BigInteger& a, const BigInteger& b, const BigInteger& n)
 {
     assert(a.is_positive() && b.is_positive() && n.is_positive());
     assert(a < n && n.bit_at(0) == 1);
@@ -450,7 +451,7 @@ static BigInteger _odd_mod_pow(const BigInteger& a, const BigInteger& b, const B
 /**
  * 计算 (a ** b) mod (2 ** p)
  */
-static BigInteger _mod_pow_2(const BigInteger& a, const BigInteger& b, size_t p)
+static BigInteger _pow_mod_2(const BigInteger& a, const BigInteger& b, size_t p)
 {
     assert(a.is_positive() && b.is_positive() && p > 0);
 
@@ -520,7 +521,7 @@ NUT_API BigInteger pow_mod(const BigInteger& a, const BigInteger& b, const BigIn
 #else
     // 模是奇数，应用蒙哥马利算法
     if (n.bit_at(0) == 1)
-        return _odd_mod_pow(a % n, b, n);
+        return _odd_pow_mod(a % n, b, n);
 
     // 模是偶数，应用中国余数定理
     const size_t p = n.lowest_bit();
@@ -530,9 +531,9 @@ NUT_API BigInteger pow_mod(const BigInteger& a, const BigInteger& b, const BigIn
 
     BigInteger a1(0);
     if (n1 != 1)
-        a1 = _odd_mod_pow(a % n1, b, n1);
+        a1 = _odd_pow_mod(a % n1, b, n1);
 
-    const BigInteger a2 = _mod_pow_2(a % n, b, p);
+    const BigInteger a2 = _pow_mod_2(a % n, b, p);
 
     BigInteger y1(0);
     extended_euclid(n2, n1, nullptr, &y1, nullptr);

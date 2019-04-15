@@ -58,7 +58,8 @@
 #include <algorithm> // for std::max()
 
 #include "../../nut_config.h"
-#include "../word_array_integer.h"
+#include "../word_array_integer/word_array_integer.h"
+#include "../word_array_integer/bit_op.h"
 
 
 // 模数 M 的相关信息 m = r * 2 ** k + 1

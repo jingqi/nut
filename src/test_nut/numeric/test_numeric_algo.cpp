@@ -8,6 +8,7 @@
 #include <nut/numeric/numeric_algo/mod.h>
 #include <nut/numeric/numeric_algo/prime.h>
 #include <nut/numeric/numeric_algo/karatsuba.h>
+#include <nut/numeric/word_array_integer/mul_op.h>
 #include <nut/time/performance_counter.h>
 #include <nut/rc/rc_new.h>
 
@@ -24,7 +25,7 @@ class TestNumericAlgo : public TestFixture
         NUT_REGISTER_CASE(test_bugs);
         NUT_REGISTER_CASE(test_gcd);
         NUT_REGISTER_CASE(test_extend_euclid);
-        NUT_REGISTER_CASE(test_bi_mult_mod);
+        NUT_REGISTER_CASE(test_bi_mul_mod);
         NUT_REGISTER_CASE(test_bi_pow_mod);
         NUT_REGISTER_CASE(test_prime);
         NUT_REGISTER_CASE(test_karatsuba_multiply);
@@ -45,7 +46,7 @@ class TestNumericAlgo : public TestFixture
             // BUG 预算表优化的 _mod_multiply() 实现有问题
             BigInteger a(1), b = BigInteger::value_of("400000000", 16), n = BigInteger::value_of("c00000000", 16);
             ModMultiplyPreBuildTable<2> table(a, n);
-            BigInteger x1 = mult_mod(b, n, table);
+            BigInteger x1 = mul_mod(b, n, table);
             BigInteger x2 = (a * b) % n;
 //            printf("\n%s\n%s\n", x1.toString().c_str(), x2.toString().c_str());
             NUT_TA(x1 == x2);
@@ -94,7 +95,7 @@ class TestNumericAlgo : public TestFixture
         }
     }
 
-    void test_bi_mult_mod()
+    void test_bi_mul_mod()
     {
         {
             BigInteger bound(1);
@@ -104,7 +105,7 @@ class TestNumericAlgo : public TestFixture
             BigInteger n = BigInteger::rand_between(bound, bound << 1);
 
             ModMultiplyPreBuildTable<4> table(a % n, n);
-            BigInteger x = mult_mod(b % n, n, table);
+            BigInteger x = mul_mod(b % n, n, table);
             NUT_TA(x == (a * b) % n);
         }
 

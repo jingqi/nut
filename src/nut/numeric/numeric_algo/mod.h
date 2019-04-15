@@ -2,10 +2,13 @@
 #ifndef ___HEADFILE_058D89EB_50A2_4934_AF92_FC4F82613999_
 #define ___HEADFILE_058D89EB_50A2_4934_AF92_FC4F82613999_
 
+#include <type_traits>
+
 #include "../../nut_config.h"
 #include "../../platform/int_type.h"
 #include "../big_integer.h"
-#include "../word_array_integer.h"
+#include "../word_array_integer/mul_op.h"
+#include "../word_array_integer/bit_op.h"
 #include "gcd.h"
 
 
@@ -20,7 +23,7 @@ namespace nut
  * @return a * b % n
  */
 template <typename T>
-constexpr T mult_mod(T a, T b, T n)
+constexpr T mul_mod(T a, T b, T n)
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     typedef typename StdInt<T>::double_unsigned_type dword_type;
@@ -29,10 +32,10 @@ constexpr T mult_mod(T a, T b, T n)
 
 #if NUT_HAS_INT128
 template <>
-NUT_API uint128_t mult_mod(uint128_t a, uint128_t b, uint128_t n);
+NUT_API uint128_t mul_mod(uint128_t a, uint128_t b, uint128_t n);
 #else
 template <>
-NUT_API uint64_t mult_mod(uint64_t a, uint64_t b, uint64_t n);
+NUT_API uint64_t mul_mod(uint64_t a, uint64_t b, uint64_t n);
 #endif
 
 
@@ -192,7 +195,7 @@ private:
 *     [1]周玉洁，冯国登. 公开密钥密码算法及其快速实现[M]. 国防工业出版社. 2002. 57
  */
 template <size_t C>
-BigInteger mult_mod(const BigInteger& b, const BigInteger& n, const ModMultiplyPreBuildTable<C>& table)
+BigInteger mul_mod(const BigInteger& b, const BigInteger& n, const ModMultiplyPreBuildTable<C>& table)
 {
     assert(b.is_positive() && n.is_positive() && b < n); // 一定要保证 b<n ,以便优化模加运算
 
@@ -240,9 +243,9 @@ T pow_mod(T a, T b, T n)
     T ret = 1;
     for (int i = highest_bit1(b); i >= 0; --i) // 从高位向低有效位取bit
     {
-        ret = mult_mod(ret, ret, n);
+        ret = mul_mod(ret, ret, n);
         if (0 != ((b >> i) & 1))
-            ret = mult_mod(ret, a, n);
+            ret = mul_mod(ret, a, n);
     }
     return ret;
 }

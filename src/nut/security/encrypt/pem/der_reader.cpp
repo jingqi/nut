@@ -3,6 +3,7 @@
  */
 
 #include <assert.h>
+#include <string.h> // for ::memcpy()
 
 #include "../../../platform/endian.h"
 #include "der_reader.h"

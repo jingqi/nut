@@ -4,7 +4,7 @@
 
 #include <algorithm> // for std::min()
 
-#include "../word_array_integer.h"
+#include "../word_array_integer/word_array_integer.h"
 #include "ntt.h"
 
 

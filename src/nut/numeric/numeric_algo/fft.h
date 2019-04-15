@@ -6,7 +6,8 @@
 #include <stdlib.h> // for ::malloc()
 #include <complex>
 
-#include "../word_array_integer.h"
+#include "../word_array_integer/word_array_integer.h"
+#include "../word_array_integer/bit_op.h"
 
 
 // - 大整数拆成多项式, = a0 + a1*base + a2*pow(base,2) + a3*pow(base, 3) + ...

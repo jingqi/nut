@@ -2,6 +2,8 @@
 #ifndef ___HEADFILE_526CD359_EF76_437B_ACDD_D24322AB6FDC_
 #define ___HEADFILE_526CD359_EF76_437B_ACDD_D24322AB6FDC_
 
+#include <type_traits>
+
 #include "../../nut_config.h"
 #include "../big_integer.h"
 #include "bit_sieve.h"
@@ -56,7 +58,7 @@ T inverse_of_prime_mod(T a, T n)
     {
         ret %= n;
     }
-    assert(mult_mod(a, (T) ret, n) == 1);
+    assert(mul_mod(a, (T) ret, n) == 1);
     return ret;
 }
 

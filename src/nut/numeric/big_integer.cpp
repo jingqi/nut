@@ -7,7 +7,10 @@
 #include "../platform/endian.h"
 #include "../platform/sys.h"
 #include "big_integer.h"
-#include "word_array_integer.h"
+#include "word_array_integer/word_array_integer.h"
+#include "word_array_integer/mul_op.h"
+#include "word_array_integer/div_op.h"
+#include "word_array_integer/shift_op.h"
 #include "numeric_algo/karatsuba.h"
 
 

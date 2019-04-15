@@ -1,7 +1,8 @@
 ﻿
 #include <iostream>
 #include <nut/unittest/unittest.h>
-#include <nut/numeric/word_array_integer.h>
+#include <nut/numeric/word_array_integer/word_array_integer.h>
+#include <nut/numeric/word_array_integer/bit_op.h>
 
 
 using namespace std;

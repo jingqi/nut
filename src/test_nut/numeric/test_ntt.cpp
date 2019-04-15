@@ -3,7 +3,7 @@
 
 #include <nut/unittest/unittest.h>
 #include <nut/numeric/big_integer.h>
-#include <nut/numeric/word_array_integer.h>
+#include <nut/numeric/word_array_integer/mul_op.h>
 #include <nut/numeric/numeric_algo/mod.h>
 #include <nut/numeric/numeric_algo/ntt.h>
 #include <nut/numeric/numeric_algo/prime.h>

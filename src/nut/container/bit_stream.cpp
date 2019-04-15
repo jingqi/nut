@@ -4,7 +4,7 @@
 #include <memory.h>
 #include <string>
 
-#include "../numeric/word_array_integer.h"
+#include "../numeric/word_array_integer/bit_op.h"
 #include "../platform/int_type.h" // for ssize_t in windows VC
 #include "bit_stream.h"
 #include "comparable.h"

@@ -6,7 +6,7 @@
 #include <atomic>
 #include <algorithm>
 
-#include "../../numeric/word_array_integer.h"
+#include "../../numeric/word_array_integer/bit_op.h"
 #include "../../container/comparable.h"
 #include "../sync/spinlock.h"
 #include "../sync/lock_guard.h"

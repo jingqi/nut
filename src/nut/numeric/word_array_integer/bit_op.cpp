@@ -1,5 +1,7 @@
 ﻿
-#include "word_array_integer.h"
+#include "../../platform/endian.h"
+#include "../../platform/int_type.h"
+#include "bit_op.h"
 
 
 namespace nut
