@@ -60,7 +60,7 @@ static void init_omega()
             omega[NUT_NTT_K - 1] = pow_mod<ntt_word_type>(NUT_NTT_G, 2 * NUT_NTT_R, NUT_NTT_M);
 
             // => inv_w[k-1] = w[k-1] ** -1 (mod m)
-            inv_omega[NUT_NTT_K - 1] = inverse_of_prime_mod<ntt_word_type>(omega[NUT_NTT_K - 1], NUT_NTT_M);
+            inv_omega[NUT_NTT_K - 1] = inverse_of_coprime_mod<ntt_word_type>(omega[NUT_NTT_K - 1], NUT_NTT_M);
 
             assert(mul_mod<ntt_word_type>(omega[NUT_NTT_K - 1], inv_omega[NUT_NTT_K - 1], NUT_NTT_M) == 1);
 
@@ -160,7 +160,7 @@ static void NTT_R2N(ntt_word_type* a, unsigned bits)
     }
 
     // 除以 len 操作变成乘以逆元
-    const uint64_t inv_len = inverse_of_prime_mod<ntt_word_type>(len, NUT_NTT_M);
+    const uint64_t inv_len = inverse_of_coprime_mod<ntt_word_type>(len, NUT_NTT_M);
     for (size_t i = 0; i < len; ++i)
         a[i] = mul_mod<ntt_word_type>(a[i], inv_len, NUT_NTT_M);
 }

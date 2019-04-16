@@ -17,6 +17,12 @@
 namespace nut
 {
 
+BigInteger::BigInteger()
+    : _significant_len(1 << 1)
+{
+    _inner_data[0] = 0;
+}
+
 BigInteger::BigInteger(cast_int_type v)
 {
     const size_type v_siglen = sizeof(v) / sizeof(word_type);
@@ -637,6 +643,11 @@ bool BigInteger::is_zero() const
 bool BigInteger::is_positive() const
 {
     return nut::is_positive(data(), significant_words_length());
+}
+
+bool BigInteger::is_negative() const
+{
+    return nut::is_negative(data(), significant_words_length());
 }
 
 void BigInteger::set(const void *buf, size_type cb, bool with_sign)

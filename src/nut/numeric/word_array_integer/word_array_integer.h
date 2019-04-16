@@ -202,7 +202,7 @@ void signed_expand(const T *a, size_t M, T *x, size_t N)
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
-    const int fill = (is_positive(a, M) ? 0 : 0xff); // NOTE 先把变量算出来，避免操作数被破坏
+    const int fill = (is_positive(a, M) ? 0 : 0xff); // NOTE 需要在 memmove() 之前算出来，避免操作数被破坏
     if (x != a)
         ::memmove(x, a, sizeof(T) * std::min(M, N));
     if (M < N)

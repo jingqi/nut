@@ -163,7 +163,8 @@ void BitSieve::sieve_single(int limit, int start, int step)
 BigInteger BitSieve::retrieve(const BigInteger& init_value, int certainty)
 {
     // Examine the sieve one long at a time to find possible primes
-    BigInteger candidate = init_value + 1;
+    BigInteger candidate = init_value;
+    ++candidate;
     for (int i = 0; i < _bits_cap; ++i)
     {
         uint64_t next_long = ~_bits[i];

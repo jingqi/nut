@@ -24,21 +24,28 @@ void _signed_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_c
         ::memset(x, 0, sizeof(T) * word_count);
         if (x + N > a + M)
         {
-            const int fill = (is_positive(a, M) ? 0 : 0xFF);
+            const int fill = (is_positive(a, M) ? 0 : 0xff);
             ::memset(x + word_count + M, fill, sizeof(T) * (N - M - word_count));
         }
+        return;
     }
-    else if (x + word_count < a)
+
+    const T fill = (is_positive(a, M) ? 0 : ~(T)0);
+    if (x + word_count < a)
     {
-        const T fill = (is_positive(a, M) ? 0 : ~(T)0);
         for (size_t i = 0; i < N; ++i)
-            x[i] = (i < word_count ? 0 : (i - word_count >= M ? fill : a[i - word_count]));
+        {
+            const ssize_t off = (ssize_t) i - (ssize_t) word_count;
+            x[i] = (off < 0 ? 0 : (off >= M ? fill : a[off]));
+        }
     }
     else
     {
-        const T fill = (is_positive(a, M) ? 0 : ~(T)0);
         for (ssize_t i = N - 1; i >= 0; --i)
-            x[i] = (i < (ssize_t) word_count ? 0 : (i - word_count >= M ? fill : a[i - word_count]));
+        {
+            const ssize_t off = i - (ssize_t) word_count;
+            x[i] = (off < 0 ? 0 : (off >= M ? fill : a[off]));
+        }
     }
 }
 
@@ -52,33 +59,39 @@ void signed_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
-    const size_t words_off = bit_count / (8 * sizeof(T)),
-        bits_off = bit_count % (8 * sizeof(T));
+    const size_t words_off = bit_count / (8 * sizeof(T));
+    const unsigned bits_off = bit_count % (8 * sizeof(T));
     if (0 == bits_off)
     {
         _signed_shift_left_word(a, M, x, N, words_off);
+        return;
     }
-    else if (x + words_off < a)
+
+    const unsigned inv_bits_off = 8 * sizeof(T) - bits_off;
+    const T fill = (is_positive(a, M) ? 0 : ~(T)0);
+    if (x + words_off < a)
     {
-        const T fill = (is_positive(a, M) ? 0 : ~(T)0);
         for (size_t i = 0; i < N; ++i)
         {
-            const T high = (i < words_off ? 0 : (i - words_off >= M ? fill :
-                    a[i - words_off])) << bits_off;
-            const T low = (i < words_off + 1 ? 0 : (i - words_off - 1 >= M ? fill :
-                    a[i - words_off - 1])) >> (8 * sizeof(T) - bits_off);
+            const ssize_t high_off = (ssize_t) i - (ssize_t) words_off,
+                low_off = high_off - 1;
+            const T high = (high_off < 0 ? 0 : (high_off >= M ? fill :
+                    a[high_off])) << bits_off;
+            const T low = (low_off < 0 ? 0 : (low_off >= M ? fill :
+                    a[low_off])) >> inv_bits_off;
             x[i] = high | low;
         }
     }
     else
     {
-        const T fill = (is_positive(a, M) ? 0 : ~(T)0);
         for (ssize_t i = N - 1; i >= 0; --i)
         {
-            const T high = (i < (ssize_t) words_off ? 0 : (i - words_off >= M ? fill :
-                    a[i - words_off])) << bits_off;
-            const T low = (i < (ssize_t) words_off + 1 ? 0 : (i - words_off - 1 >= M ? fill :
-                    a[i - words_off - 1])) >> (8 * sizeof(T) - bits_off);
+            const ssize_t high_off = i - (ssize_t) words_off,
+                low_off = high_off - 1;
+            const T high = (high_off < 0 ? 0 : (high_off >= M ? fill :
+                    a[high_off])) << bits_off;
+            const T low = (low_off < 0 ? 0 : (low_off >= M ? fill :
+                    a[low_off])) >> inv_bits_off;
             x[i] = high | low;
         }
     }
@@ -99,12 +112,18 @@ void _unsigned_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word
     else if (x + word_count < a)
     {
         for (size_t i = 0; i < N; ++i)
-            x[i] = (i < word_count ? 0 : (i - word_count >= M ? 0 : a[i - word_count]));
+        {
+            const ssize_t off = (ssize_t) i - (ssize_t) word_count;
+            x[i] = (off < 0 ? 0 : (off >= M ? 0 : a[off]));
+        }
     }
     else
     {
         for (ssize_t i = N - 1; i >= 0; --i)
-            x[i] = (i < (ssize_t) word_count ? 0 : (i - word_count >= M ? 0 : a[i - word_count]));
+        {
+            const ssize_t off = i - (ssize_t) word_count;
+            x[i] = (off < 0 ? 0 : (off >= M ? 0 : a[off]));
+        }
     }
 }
 
@@ -118,20 +137,25 @@ void unsigned_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
-    const size_t words_off = bit_count / (8 * sizeof(T)),
-        bits_off = bit_count % (8 * sizeof(T));
+    const size_t words_off = bit_count / (8 * sizeof(T));
+    const unsigned bits_off = bit_count % (8 * sizeof(T));
     if (0 == bits_off)
     {
         _unsigned_shift_left_word(a, M, x, N, words_off);
+        return;
     }
-    else if (x + words_off < a)
+
+    const unsigned inv_bits_off = 8 * sizeof(T) - bits_off;
+    if (x + words_off < a)
     {
         for (size_t i = 0; i < N; ++i)
         {
-            const T high = (i < words_off ? 0 : (i - words_off >= M ? 0 :
-                    a[i - words_off])) << bits_off;
-            const T low = (i < words_off + 1 ? 0 : (i - words_off - 1 >= M ? 0 :
-                    a[i - words_off - 1])) >> (8 * sizeof(T) - bits_off);
+            const ssize_t high_off = (ssize_t) i - (ssize_t) words_off,
+                low_off = high_off - 1;
+            const T high = (high_off < 0 ? 0 : (high_off >= M ? 0 :
+                    a[high_off]) << bits_off);
+            const T low = (low_off < 0 ? 0 : (low_off >= M ? 0 :
+                    a[low_off]) >> inv_bits_off);
             x[i] = high | low;
         }
     }
@@ -139,10 +163,12 @@ void unsigned_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
     {
         for (ssize_t i = N - 1; i >= 0; --i)
         {
-            const T high = (i < (ssize_t) words_off ? 0 : (i - words_off >= M ? 0 :
-                    a[i - words_off])) << bits_off;
-            const T low = (i < (ssize_t) words_off + 1 ? 0 : (i - words_off - 1 >= M ? 0 :
-                    a[i - words_off - 1])) >> (8 * sizeof(T) - bits_off);
+            const ssize_t high_off = i - (ssize_t) words_off,
+                low_off = high_off - 1;
+            const T high = (high_off < 0 ? 0 : (high_off >= M ? 0 :
+                    a[high_off]) << bits_off);
+            const T low = (low_off < 0 ? 0 : (low_off >= M ? 0 :
+                    a[low_off]) >> inv_bits_off);
             x[i] = high | low;
         }
     }
@@ -158,21 +184,28 @@ void _signed_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t word_
     {
         if (x + N > a + M)
         {
-            const int fill = (is_positive(a, M) ? 0 : 0xFF);
+            const int fill = (is_positive(a, M) ? 0 : 0xff);
             ::memset(x - word_count + M, fill, sizeof(T) * (word_count + N - M));
         }
+        return;
     }
-    else if (x < a + word_count)
+
+    const T fill = (is_positive(a, M) ? 0 : ~(T)0);
+    if (x < a + word_count)
     {
-        const T fill = (is_positive(a, M) ? 0 : ~(T)0);
         for (size_t i = 0; i < N; ++i)
-            x[i] = (i + word_count >= M ? fill : a[i + word_count]);
+        {
+            const size_t off = i + word_count;
+            x[i] = (off >= M ? fill : a[off]);
+        }
     }
     else
     {
-        const T fill = (is_positive(a, M) ? 0 : ~(T)0);
         for (ssize_t i = N - 1; i >= 0; --i)
-            x[i] = (i + word_count >= M ? fill : a[i + word_count]);
+        {
+            const size_t off = i + word_count;
+            x[i] = (off >= M ? fill : a[off]);
+        }
     }
 }
 
@@ -186,33 +219,33 @@ void signed_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count)
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
-    const size_t words_off = bit_count / (8 * sizeof(T)),
-        bits_off = bit_count % (8 * sizeof(T));
+    const size_t words_off = bit_count / (8 * sizeof(T));
+    const unsigned bits_off = bit_count % (8 * sizeof(T));
     if (0 == bits_off)
     {
         _signed_shift_right_word(a, M, x, N, words_off);
+        return;
     }
-    else if (x <= a + words_off)
+
+    const unsigned inv_bits_off = 8 * sizeof(T) - bits_off;
+    const T fill = (is_positive(a, M) ? 0 : ~(T)0);
+    if (x <= a + words_off)
     {
-        const T fill = (is_positive(a, M) ? 0 : ~(T)0);
         for (size_t i = 0; i < N; ++i)
         {
-            const T high = (i + words_off + 1 >= M ? fill :
-                            a[i + words_off + 1]) << (8 * sizeof(T) - bits_off);
-            const T low = (i + words_off >= M ? fill :
-                           a[i + words_off]) >> bits_off;
+            const size_t low_off = i + words_off, high_off = low_off + 1;
+            const T low = (low_off >= M ? fill : a[low_off]) >> bits_off;
+            const T high = (high_off >= M ? fill : a[high_off]) << inv_bits_off;
             x[i] = high | low;
         }
     }
     else
     {
-        const T fill = (is_positive(a, M) ? 0 : ~(T)0);
         for (ssize_t i = N - 1; i >= 0; --i)
         {
-            const T high = (i + words_off + 1 >= M ? fill :
-                            a[i + words_off + 1]) << (8 * sizeof(T) - bits_off);
-            const T low = (i + words_off >= M ? fill :
-                           a[i + words_off]) >> bits_off;
+            const size_t low_off = i + words_off, high_off = low_off + 1;
+            const T low = (low_off >= M ? fill : a[low_off]) >> bits_off;
+            const T high = (high_off >= M ? fill : a[high_off]) << inv_bits_off;
             x[i] = high | low;
         }
     }
@@ -232,12 +265,18 @@ void _unsigned_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t wor
     else if (x < a + word_count)
     {
         for (size_t i = 0; i < N; ++i)
-            x[i] = (i + word_count >= M ? 0 : a[i + word_count]);
+        {
+            const size_t off = i + word_count;
+            x[i] = (off >= M ? 0 : a[off]);
+        }
     }
     else
     {
         for (ssize_t i = N - 1; i >= 0; --i)
-            x[i] = (i + word_count >= M ? 0 : a[i + word_count]);
+        {
+            const size_t off = i + word_count;
+            x[i] = (off >= M ? 0 : a[off]);
+        }
     }
 }
 
@@ -251,20 +290,22 @@ void unsigned_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
-    const size_t words_off = bit_count / (8 * sizeof(T)),
-        bits_off = bit_count % (8 * sizeof(T));
+    const size_t words_off = bit_count / (8 * sizeof(T));
+    const unsigned bits_off = bit_count % (8 * sizeof(T));
     if (0 == bits_off)
     {
         _unsigned_shift_right_word(a, M, x, N, words_off);
+        return;
     }
-    else if (x <= a + words_off)
+
+    const unsigned inv_bits_off = 8 * sizeof(T) - bits_off;
+    if (x <= a + words_off)
     {
         for (size_t i = 0; i < N; ++i)
         {
-            const T high = (i + words_off + 1 >= M ? 0 :
-                    a[i + words_off + 1]) << (8 * sizeof(T) - bits_off);
-            const T low = (i + words_off >= M ? 0 :
-                    a[i + words_off]) >> bits_off;
+            const size_t low_off = i + words_off, high_off = low_off + 1;
+            const T low = (low_off >= M ? 0 : a[low_off] >> bits_off);
+            const T high = (high_off >= M ? 0 : a[high_off] << inv_bits_off);
             x[i] = high | low;
         }
     }
@@ -272,10 +313,9 @@ void unsigned_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count
     {
         for (ssize_t i = N - 1; i >= 0; --i)
         {
-            const T high = (i + words_off + 1 >= M ? 0 :
-                            a[i + words_off + 1]) << (8 * sizeof(T) - bits_off);
-            const T low = (i + words_off >= M ? 0 :
-                           a[i + words_off]) >> bits_off;
+            const size_t low_off = i + words_off, high_off = low_off + 1;
+            const T low = (low_off >= M ? 0 : a[low_off] >> bits_off);
+            const T high = (high_off >= M ? 0 : a[high_off] << inv_bits_off);
             x[i] = high | low;
         }
     }

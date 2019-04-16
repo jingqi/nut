@@ -28,7 +28,7 @@ static bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n)
     --b;
     for (size_t i = b.bit_length(); i > 0; --i)
     {
-        BigInteger x = d;
+        const BigInteger x = d;
         d *= d;
         d %= n;
         if (d == 1 && x != 1 && x != b)
@@ -156,7 +156,7 @@ NUT_API BigInteger next_prime(const BigInteger& n)
         --result;
 
     // Looking for the next large prime
-    size_t search_len = (result.bit_length() / 20) * 64;
+    const size_t search_len = (result.bit_length() / 20) * 64;
 
     while (true)
     {
@@ -166,6 +166,19 @@ NUT_API BigInteger next_prime(const BigInteger& n)
             return candidate;
         result += 2 * search_len;
     }
+}
+
+NUT_API BigInteger inverse_of_coprime_mod(const BigInteger& a, const BigInteger& n)
+{
+    BigInteger ret;
+    extended_euclid(a, n, nullptr, &ret, nullptr);
+    if (ret.is_negative())
+    {
+        ret %= n;
+        ret += n;
+    }
+    assert(ret < n);
+    return ret;
 }
 
 }

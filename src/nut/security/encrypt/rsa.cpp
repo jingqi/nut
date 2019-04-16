@@ -33,12 +33,7 @@ RSA::PrivateKey RSA::gen_key(size_t max_bit_length)
 
     // d 为 e 对模 gamma_n 的乘法逆元
     const BigInteger gamma_n = (key.p - 1) * (key.q - 1);
-    extended_euclid(key.e, gamma_n, nullptr, &key.d, nullptr);
-    if (!key.d.is_positive())
-    {
-        key.d %= gamma_n; // NOTE 模运算符(%)返回符号与被除数符号是一致的
-        key.d += gamma_n;
-    }
+    key.d = inverse_of_coprime_mod(key.e, gamma_n);
 
     key.n = key.p * key.q;
 

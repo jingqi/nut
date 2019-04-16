@@ -207,23 +207,16 @@ class MontgomeryPreBuildTable
 public:
     MontgomeryPreBuildTable(size_t wnd_sz, const BigInteger& m, size_t rlen,
             const BigInteger& n, const BigInteger& nn)
-        : _table(nullptr), _size(0)
     {
         assert(0 < wnd_sz && wnd_sz < 16);
 
         _size = 1LL << (wnd_sz - 1);
-        _table = (BigInteger**) ::malloc(sizeof(BigInteger*) * _size);
-        assert(nullptr != _table);
-        ::memset(_table, 0, sizeof(BigInteger*) * _size);
+        _table = (BigInteger*) ::malloc(sizeof(BigInteger) * _size);
 
-        _table[0] = (BigInteger*) ::malloc(sizeof(BigInteger));
-        new (_table[0]) BigInteger(m);
+        new (_table + 0) BigInteger(m);
         const BigInteger mm = _montgomery(m * m, rlen, n, nn);
         for (size_t i = 1; i < _size; ++i)
-        {
-            _table[i] = (BigInteger*) ::malloc(sizeof(BigInteger));
-            new (_table[i]) BigInteger(_montgomery(*_table[i - 1] * mm, rlen, n, nn));
-        }
+            new (_table + i) BigInteger(_montgomery(_table[i - 1] * mm, rlen, n, nn));
     }
 
     ~MontgomeryPreBuildTable()
@@ -231,14 +224,7 @@ public:
         if (nullptr != _table)
         {
             for (size_t i = 0; i < _size; ++i)
-            {
-                if (nullptr != _table[i])
-                {
-                    _table[i]->~BigInteger();
-                    ::free(_table[i]);
-                    _table[i] = nullptr;
-                }
-            }
+                (_table + i)->~BigInteger();
             ::free(_table);
             _table = nullptr;
             _size = 0;
@@ -248,7 +234,7 @@ public:
     const BigInteger& at(size_t i) const
     {
         assert(i < _size);
-        return *_table[i];
+        return _table[i];
     }
 
 private:
@@ -256,8 +242,8 @@ private:
     MontgomeryPreBuildTable& operator=(const MontgomeryPreBuildTable&) = delete;
 
 private:
-    BigInteger **_table;
-    size_t _size;
+    BigInteger *_table = nullptr;
+    size_t _size = 0;
 };
 
 /**
@@ -381,7 +367,7 @@ static BigInteger _odd_pow_mod(const BigInteger& a, const BigInteger& b, const B
 
     // 准备蒙哥马利相关变量
     const size_t rlen = n.bit_length();
-    BigInteger nn(0);
+    BigInteger nn;
     _mont_extended_euclid(rlen, n, nullptr, &nn);
     nn.limit_positive_bits_to(rlen);
 
@@ -482,7 +468,7 @@ NUT_API BigInteger pow_mod(const BigInteger& a, const BigInteger& b, const BigIn
     else if (a == 1)
         return BigInteger(1 == n ? 0 : 1);
     else if (a.is_zero())
-        return BigInteger(0);
+        return BigInteger(); // return 0
 
 #if 0 // unoptimized
     BigInteger ret(1);
@@ -529,23 +515,23 @@ NUT_API BigInteger pow_mod(const BigInteger& a, const BigInteger& b, const BigIn
     n1 >>= p;
     n2 <<= p;
 
-    BigInteger a1(0);
+    BigInteger a1; // a1 = 0
     if (n1 != 1)
         a1 = _odd_pow_mod(a % n1, b, n1);
 
     const BigInteger a2 = _pow_mod_2(a % n, b, p);
 
-    BigInteger y1(0);
+    BigInteger y1;
     extended_euclid(n2, n1, nullptr, &y1, nullptr);
-    if (!y1.is_positive())
+    if (y1.is_negative())
     {
         // y1 = n1 + (y1 % n1);
         y1 %= n1;
         y1 += n1;
     }
-    BigInteger y2(0);
+    BigInteger y2;
     extended_euclid(n1, n2, nullptr, &y2, nullptr);
-    if (!y2.is_positive())
+    if (y2.is_negative())
     {
         // y2 = n2 + (y2 % n2);
         y2 %= n2;

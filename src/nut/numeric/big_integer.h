@@ -52,7 +52,8 @@ public:
     friend BigInteger operator%(cast_int_type a, const BigInteger& b);
 
 public:
-    explicit BigInteger(cast_int_type v = 0);
+    BigInteger();
+    explicit BigInteger(cast_int_type v);
 
     /**
      * @param buf 字节序应与本地一致
@@ -150,6 +151,11 @@ public:
      * 是否为正数或者0
      */
     bool is_positive() const;
+
+    /**
+     * 是否为负数
+     */
+    bool is_negative() const;
 
     /**
      * @param buf 字节序应与本地一致

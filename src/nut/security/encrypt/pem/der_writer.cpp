@@ -2,7 +2,7 @@
 #include <assert.h>
 
 #include "../../../platform/endian.h"
-#include "../../../numeric/numeric_algo/mod.h"
+#include "../../../numeric/numeric_algo/prime.h"
 #include "der_writer.h"
 
 
@@ -163,13 +163,7 @@ NUT_API void der_write_pkcs1_private(std::vector<uint8_t> *output, const RSA::Pr
     der_write_integer(&sq, prikey.d % (prikey.p - 1));
     der_write_integer(&sq, prikey.d % (prikey.q - 1));
 
-    BigInteger iqmp;
-    extended_euclid(prikey.q, prikey.p, nullptr, &iqmp, nullptr);
-    if (!iqmp.is_positive())
-    {
-        iqmp %= prikey.p;
-        iqmp += prikey.p;
-    }
+    const BigInteger iqmp = inverse_of_coprime_mod(prikey.q, prikey.p);
     der_write_integer(&sq, iqmp);
 
     der_write_sequence(output, sq);
@@ -215,13 +209,7 @@ NUT_API void der_write_pkcs8_private(std::vector<uint8_t> *output, const RSA::Pr
     der_write_integer(&sq3, prikey.d % (prikey.p - 1));
     der_write_integer(&sq3, prikey.d % (prikey.q - 1));
 
-    BigInteger iqmp;
-    extended_euclid(prikey.q, prikey.p, nullptr, &iqmp, nullptr);
-    if (!iqmp.is_positive())
-    {
-        iqmp %= prikey.p;
-        iqmp += prikey.p;
-    }
+    const BigInteger iqmp = inverse_of_coprime_mod(prikey.q, prikey.p);
     der_write_integer(&sq3, iqmp);
 
     std::vector<uint8_t> bs;

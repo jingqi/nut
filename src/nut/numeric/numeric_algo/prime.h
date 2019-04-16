@@ -34,10 +34,10 @@ NUT_API bool miller_rabin(const BigInteger& n, unsigned s);
 NUT_API BigInteger next_prime(const BigInteger& n);
 
 /**
- * n 是素数，计算 a 的模逆 (mod n)
+ * a, n 互质，计算 a 的乘法逆元 (mod n)
  */
 template <typename T>
-T inverse_of_prime_mod(T a, T n)
+T inverse_of_coprime_mod(T a, T n)
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     typedef typename StdInt<T>::signed_type sword_type;
@@ -61,6 +61,8 @@ T inverse_of_prime_mod(T a, T n)
     assert(mul_mod(a, (T) ret, n) == 1);
     return ret;
 }
+
+NUT_API BigInteger inverse_of_coprime_mod(const BigInteger& a, const BigInteger& n);
 
 }
 
