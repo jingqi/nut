@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <iostream>
 
+#include "../platform/platform.h"
 #include "../util/console_util.h"
 #include "console_test_logger.h"
 
@@ -69,7 +70,11 @@ void ConsoleTestLogger::on_finish()
     if (_in_a_tty)
         ConsoleUtil::set_text_color(0 == _count_of_failed_fixtures ?
                                     ConsoleColor::Green : ConsoleColor::Red);
+#if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_GCC
+    std::cout << (0 == _count_of_failed_fixtures ? "OK" : "FAILED");
+#else
     std::cout << (0 == _count_of_failed_fixtures ? (_in_a_tty ? "√" : "OK") : (_in_a_tty ? "×" : "FAILED"));
+#endif
     if (_in_a_tty)
         ConsoleUtil::set_text_color();
     std::cout << std::endl << "> total cases  : ";
@@ -89,7 +94,11 @@ void ConsoleTestLogger::on_finish()
     if (_in_a_tty)
         ConsoleUtil::set_text_color(0 == _count_of_failed_cases ?
                                     ConsoleColor::Green : ConsoleColor::Red);
+#if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_GCC
+    std::cout << (0 == _count_of_failed_cases ? "OK" : "FAILED");
+#else
     std::cout << (0 == _count_of_failed_cases ? (_in_a_tty ? "√" : "OK") : (_in_a_tty ? "×" : "FAILED"));
+#endif
     if (_in_a_tty)
         ConsoleUtil::set_text_color();
     std::cout << std::endl;
@@ -140,7 +149,11 @@ void ConsoleTestLogger::on_leave_case()
         std::cout << "  ";
         if (_in_a_tty)
             ConsoleUtil::set_text_color(ConsoleColor::Red);
+#if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_GCC
+        std::cout << "FAILED";
+#else
         std::cout << (_in_a_tty ? "×" : "FAILED");
+#endif
         if (_in_a_tty)
             ConsoleUtil::set_text_color();
         std::cout << std::endl;
@@ -150,7 +163,11 @@ void ConsoleTestLogger::on_leave_case()
         std::cout << "  ";
         if (_in_a_tty)
             ConsoleUtil::set_text_color(ConsoleColor::Green);
+#if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_GCC
+        std::cout << "OK";
+#else
         std::cout << (_in_a_tty ? "√" : "OK");
+#endif
         if (_in_a_tty)
             ConsoleUtil::set_text_color();
         std::cout << std::endl;

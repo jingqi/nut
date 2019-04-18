@@ -36,7 +36,7 @@ void _signed_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_c
         for (size_t i = 0; i < N; ++i)
         {
             const ssize_t off = (ssize_t) i - (ssize_t) word_count;
-            x[i] = (off < 0 ? 0 : (off >= M ? fill : a[off]));
+            x[i] = (off < 0 ? 0 : (off >= (ssize_t) M ? fill : a[off]));
         }
     }
     else
@@ -44,7 +44,7 @@ void _signed_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_c
         for (ssize_t i = N - 1; i >= 0; --i)
         {
             const ssize_t off = i - (ssize_t) word_count;
-            x[i] = (off < 0 ? 0 : (off >= M ? fill : a[off]));
+            x[i] = (off < 0 ? 0 : (off >= (ssize_t) M ? fill : a[off]));
         }
     }
 }
@@ -75,9 +75,9 @@ void signed_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
         {
             const ssize_t high_off = (ssize_t) i - (ssize_t) words_off,
                 low_off = high_off - 1;
-            const T high = (high_off < 0 ? 0 : (high_off >= M ? fill :
+            const T high = (high_off < 0 ? 0 : (high_off >= (ssize_t) M ? fill :
                     a[high_off])) << bits_off;
-            const T low = (low_off < 0 ? 0 : (low_off >= M ? fill :
+            const T low = (low_off < 0 ? 0 : (low_off >= (ssize_t) M ? fill :
                     a[low_off])) >> inv_bits_off;
             x[i] = high | low;
         }
@@ -88,9 +88,9 @@ void signed_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
         {
             const ssize_t high_off = i - (ssize_t) words_off,
                 low_off = high_off - 1;
-            const T high = (high_off < 0 ? 0 : (high_off >= M ? fill :
+            const T high = (high_off < 0 ? 0 : (high_off >= (ssize_t) M ? fill :
                     a[high_off])) << bits_off;
-            const T low = (low_off < 0 ? 0 : (low_off >= M ? fill :
+            const T low = (low_off < 0 ? 0 : (low_off >= (ssize_t) M ? fill :
                     a[low_off])) >> inv_bits_off;
             x[i] = high | low;
         }
@@ -114,7 +114,7 @@ void _unsigned_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word
         for (size_t i = 0; i < N; ++i)
         {
             const ssize_t off = (ssize_t) i - (ssize_t) word_count;
-            x[i] = (off < 0 ? 0 : (off >= M ? 0 : a[off]));
+            x[i] = (off < 0 ? 0 : (off >= (ssize_t) M ? 0 : a[off]));
         }
     }
     else
@@ -122,7 +122,7 @@ void _unsigned_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word
         for (ssize_t i = N - 1; i >= 0; --i)
         {
             const ssize_t off = i - (ssize_t) word_count;
-            x[i] = (off < 0 ? 0 : (off >= M ? 0 : a[off]));
+            x[i] = (off < 0 ? 0 : (off >= (ssize_t) M ? 0 : a[off]));
         }
     }
 }
@@ -152,9 +152,9 @@ void unsigned_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
         {
             const ssize_t high_off = (ssize_t) i - (ssize_t) words_off,
                 low_off = high_off - 1;
-            const T high = (high_off < 0 ? 0 : (high_off >= M ? 0 :
+            const T high = (high_off < 0 ? 0 : (high_off >= (ssize_t) M ? 0 :
                     a[high_off]) << bits_off);
-            const T low = (low_off < 0 ? 0 : (low_off >= M ? 0 :
+            const T low = (low_off < 0 ? 0 : (low_off >= (ssize_t) M ? 0 :
                     a[low_off]) >> inv_bits_off);
             x[i] = high | low;
         }
@@ -165,9 +165,9 @@ void unsigned_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
         {
             const ssize_t high_off = i - (ssize_t) words_off,
                 low_off = high_off - 1;
-            const T high = (high_off < 0 ? 0 : (high_off >= M ? 0 :
+            const T high = (high_off < 0 ? 0 : (high_off >= (ssize_t) M ? 0 :
                     a[high_off]) << bits_off);
-            const T low = (low_off < 0 ? 0 : (low_off >= M ? 0 :
+            const T low = (low_off < 0 ? 0 : (low_off >= (ssize_t) M ? 0 :
                     a[low_off]) >> inv_bits_off);
             x[i] = high | low;
         }

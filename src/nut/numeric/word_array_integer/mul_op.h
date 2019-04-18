@@ -11,6 +11,7 @@
 #include "../../platform/int_type.h"
 #include "../../platform/endian.h"
 #include "shift_op.h"
+#include "word_array_integer.h"
 
 
 namespace nut

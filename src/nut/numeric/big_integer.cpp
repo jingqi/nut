@@ -982,10 +982,9 @@ std::string BigInteger::to_string(size_type radix) const
     const BigInteger RADIX(radix);
     do
     {
-        const size_type n = (size_t) (tmp % RADIX).to_integer();
-        s.push_back(num2char(n));
-
-        tmp /= RADIX;
+        BigInteger n;
+        BigInteger::divide(tmp, RADIX, &tmp, &n);
+        s.push_back(num2char((size_t) n.to_integer()));
     } while (!tmp.is_zero());
     if (!positive)
         s.push_back('-');
@@ -1006,10 +1005,9 @@ std::wstring BigInteger::to_wstring(size_type radix) const
     const BigInteger RADIX(radix);
     do
     {
-        const size_type n = (size_t) (tmp % RADIX).to_integer();
-        s.push_back(num2wchar(n));
-
-        tmp /= RADIX;
+        BigInteger n;
+        BigInteger::divide(tmp, RADIX, &tmp, &n);
+        s.push_back(num2wchar((size_t) n.to_integer()));
     } while (!tmp.is_zero());
     if (!positive)
         s.push_back(L'-');

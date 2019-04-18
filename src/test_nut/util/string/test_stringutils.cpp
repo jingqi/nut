@@ -56,10 +56,11 @@ class TestStringUtil : public TestFixture
 
         NUT_TA(format(L"%d,%S,%C,%f", 1, L"am", L's', 1.23) == L"1,am,s,1.230000");
 #else
-        // wtmp = format(L"%d,%s,%c,%f", 1, L"am", L's', 1.23);
+        // wtmp = format(L"%d,%ls,%c,%f", 1, L"am", L's', 1.23);
         // NUT_TA(wtmp == L"1,am,s,1.230000");
 
-        NUT_TA(format(L"%d,%s,%c,%f", 1, L"am", L's', 1.23) == L"1,am,s,1.230000");
+        // wchar_t* 格式化要用 %S 或者 %ls
+        NUT_TA(format(L"%d,%S,%c,%f", 1, L"am", L's', 1.23) == L"1,am,s,1.230000");
 #endif
     }
 

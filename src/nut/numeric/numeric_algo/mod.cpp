@@ -249,7 +249,7 @@ private:
 /**
  * 计算滑动窗口算法的最佳窗口大小
  */
-static size_t _best_wnd(size_t bit_len)
+static unsigned _best_wnd(size_t bit_len)
 {
     // 参考 java 的 BigInteger.bnExpModThreshTable
     static const size_t TBL[] = {
@@ -372,9 +372,8 @@ static BigInteger _odd_pow_mod(const BigInteger& a, const BigInteger& b, const B
     nn.limit_positive_bits_to(rlen);
 
     // 准备预运算表
-    int bits_left = (int) b.bit_length() - 1; // 剩余还未处理的比特数
-    assert(bits_left >= 0);
-    const size_t wnd_size = _best_wnd(bits_left); // 滑动窗口大小
+    size_t bits_left = b.bit_length() - 1; // 剩余还未处理的比特数
+    const unsigned wnd_size = _best_wnd(bits_left); // 滑动窗口大小
     const uint32_t WND_MASK = ~(((uint32_t) 1) << wnd_size);
     const BigInteger m = (a << rlen) % n;
     const MontgomeryPreBuildTable tbl(wnd_size, m, rlen, n, nn);
@@ -389,13 +388,11 @@ static BigInteger _odd_pow_mod(const BigInteger& a, const BigInteger& b, const B
         wnd &= WND_MASK;
         if (0 != b.bit_at(--bits_left)) // b 的最后一个比特必定为1，因为 b 为奇数
         {
-            wnd |= (uint32_t) 1;
+            wnd |= 1;
 
             ++squre_count;
             bool term = true;
-            for (size_t i = 1;
-                 squre_count + i <= wnd_size && bits_left >= (int) i;
-                ++i)
+            for (size_t i = 1; squre_count + i <= wnd_size && bits_left >= i; ++i)
             {
                 if (0 != b.bit_at(bits_left - i))
                 {
@@ -468,7 +465,7 @@ NUT_API BigInteger pow_mod(const BigInteger& a, const BigInteger& b, const BigIn
     else if (a == 1)
         return BigInteger(1 == n ? 0 : 1);
     else if (a.is_zero())
-        return BigInteger(); // return 0
+        return BigInteger(0);
 
 #if 0 // unoptimized
     BigInteger ret(1);

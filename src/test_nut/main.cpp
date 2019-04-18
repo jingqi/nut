@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 {
 #if NUT_PLATFORM_OS_LINUX
     // 解决 std::wcout 无法显示中文以及 char/wchar_t 相互转换问题
-    setlocale(LC_ALL, "zh_CN.UTF8");
+    ::setlocale(LC_ALL, "zh_CN.UTF8");
 #endif
 
     ::srand((unsigned) ::time(nullptr));

@@ -35,6 +35,8 @@ else:
 
 if platform.system() == 'Linux':
     ns.append_env_flags('LDFLAGS', '-lpthread', '-latomic')
+elif platform.system() == 'Windows':
+    ns.append_env_flags('LDFLAGS', '-latomic')
 
 ns.append_env_flags('LDFLAGS', '-L' + out_root, '-lnut')
 
@@ -60,18 +62,6 @@ for src in file_utils.iterfiles(src_root, '.c', '.cpp'):
 ns.add_dep(program, join(out_root, 'libnut' + ns['SHARED_LIB_SUFFIX']))
 ns.set_recipe(program, compile_c.link_program)
 ns.set_default_target(program)
-
-# run
-if platform.system() == 'Windows':
-    libgcc = 'libgcc_s_dw2-1.dll'
-    libgcc_path = join(out_root, libgcc)
-    ns.add_chained_deps('@run', libgcc_path, join(dirname(ns['CC']), libgcc))
-    ns.set_recipe(libgcc_path, file_op.copyfile)
-
-    libstdcpp = 'libstdc++-6.dll'
-    libstdcpp_path = join(out_root, libstdcpp)
-    ns.add_chained_deps('@run', libstdcpp_path, join(dirname(ns['CC']), libstdcpp))
-    ns.set_recipe(libstdcpp_path, file_op.copyfile)
 
 def run(target):
     p = Popen([program, '-q'], cwd=dirname(program))
