@@ -169,8 +169,6 @@ class TestBigInteger : public TestFixture
 
     void test_to_string()
     {
-        string s;
-        wstring ws;
         NUT_TA(BigInteger(0).to_string() == "0");
         NUT_TA(BigInteger(0).to_wstring() == L"0");
 
@@ -188,6 +186,14 @@ class TestBigInteger : public TestFixture
 
         NUT_TA(BigInteger(5).to_string(2) == "101");
         NUT_TA(BigInteger(5).to_wstring(2) == L"101");
+
+        // 大整数，2 的幂次进制
+        const char *num = "0123456789ABCDEF";
+        std::string s("-1");
+        for (int i = 0; i < 10000; ++i)
+            s.push_back(num[rand() % 16]);
+        // cout << endl << BigInteger::value_of(s, 16).to_string(16) << endl;
+        NUT_TA(BigInteger::value_of(s, 16).to_string(16) == s);
     }
 
     void test_value_of()

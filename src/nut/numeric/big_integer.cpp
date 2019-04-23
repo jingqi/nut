@@ -11,6 +11,7 @@
 #include "word_array_integer/mul_op.h"
 #include "word_array_integer/div_op.h"
 #include "word_array_integer/shift_op.h"
+#include "word_array_integer/bit_op.h"
 #include "numeric_algo/karatsuba.h"
 
 
@@ -820,7 +821,7 @@ BigInteger::size_type BigInteger::bit_length() const
 BigInteger::size_type BigInteger::bit_count() const
 {
     const size_type siglen = significant_words_length(),
-        bc = nut::bit1_count((uint8_t*)data(), sizeof(word_type) * siglen);
+        bc = nut::bit1_count((uint8_t*) data(), sizeof(word_type) * siglen);
     if (BigInteger::is_positive())
         return bc;
     return 8 * sizeof(word_type) * siglen - bc;
@@ -974,19 +975,36 @@ std::string BigInteger::to_string(size_type radix) const
     assert(is_valid_radix(radix));
 
     BigInteger tmp(*this);
-    const bool positive = tmp.is_positive();
-    if (!positive)
+    const bool negative = tmp.is_negative();
+    if (negative)
         tmp = -tmp;
 
     std::string s;
-    const BigInteger RADIX(radix);
-    do
+    if (1 == nut::bit1_count((uint32_t) radix))
     {
-        BigInteger n;
-        BigInteger::divide(tmp, RADIX, &tmp, &n);
-        s.push_back(num2char((size_t) n.to_integer()));
-    } while (!tmp.is_zero());
-    if (!positive)
+        // 进制是 2 的幂次，可以通过移位优化
+        const unsigned shift_count = nut::lowest_bit1((uint32_t) radix);
+        assert(shift_count <= 8 * sizeof(word_type));
+        const word_type mask = ~((~(word_type)0) << shift_count);
+        do
+        {
+            s.push_back(num2char((size_t) (tmp.data()[0] & mask)));
+            tmp >>= shift_count;
+        } while (!tmp.is_zero());
+    }
+    else
+    {
+        // 朴素算法
+        const BigInteger RADIX(radix);
+        do
+        {
+            BigInteger n;
+            BigInteger::divide(tmp, RADIX, &tmp, &n);
+            s.push_back(num2char((size_t) n.to_integer()));
+        } while (!tmp.is_zero());
+    }
+
+    if (negative)
         s.push_back('-');
     std::reverse(s.begin(), s.end());
     return s;
@@ -997,19 +1015,36 @@ std::wstring BigInteger::to_wstring(size_type radix) const
     assert(is_valid_radix(radix));
 
     BigInteger tmp(*this);
-    const bool positive = tmp.is_positive();
-    if (!positive)
+    const bool negative = tmp.is_negative();
+    if (negative)
         tmp = -tmp;
 
     std::wstring s;
-    const BigInteger RADIX(radix);
-    do
+    if (1 == nut::bit1_count((uint32_t) radix))
     {
-        BigInteger n;
-        BigInteger::divide(tmp, RADIX, &tmp, &n);
-        s.push_back(num2wchar((size_t) n.to_integer()));
-    } while (!tmp.is_zero());
-    if (!positive)
+        // 进制是 2 的幂次，可以通过移位优化
+        const unsigned shift_count = nut::lowest_bit1((uint32_t) radix);
+        assert(shift_count <= 8 * sizeof(word_type));
+        const word_type mask = ~((~(word_type)0) << shift_count);
+        do
+        {
+            s.push_back(num2wchar((size_t) (tmp.data()[0] & mask)));
+            tmp >>= shift_count;
+        } while (!tmp.is_zero());
+    }
+    else
+    {
+        // 朴素算法
+        const BigInteger RADIX(radix);
+        do
+        {
+            BigInteger n;
+            BigInteger::divide(tmp, RADIX, &tmp, &n);
+            s.push_back(num2wchar((size_t) n.to_integer()));
+        } while (!tmp.is_zero());
+    }
+
+    if (negative)
         s.push_back(L'-');
     std::reverse(s.begin(), s.end());
     return s;
@@ -1088,19 +1123,35 @@ BigInteger BigInteger::value_of(const std::string& s, size_type radix)
         return ret;
 
     // 正负号
-    bool positive = ('-' != s[index]);
+    bool negative = ('-' == s[index]);
     if ('+' == s[index] || '-' == s[index])
-        if ((index = skip_blank(s, index + 1)) >= s.length())
+    {
+        index = skip_blank(s, index + 1);
+        if (index >= s.length())
             return ret;
+    }
 
     // 数字值
+    const unsigned radix_bc = nut::bit1_count((uint32_t) radix),
+        shift_count = nut::lowest_bit1((uint32_t) radix);
+    assert(shift_count <= 8 * sizeof(word_type));
     while (index < s.length() && is_valid_char(s[index], radix))
     {
-        ret *= radix;
-        ret += char2num(s[index]);
+        if (1 == radix_bc)
+        {
+            ret <<= shift_count;
+            ret.data()[0] |= char2num(s[index]);
+        }
+        else
+        {
+            ret *= radix;
+            ret += char2num(s[index]);
+        }
+
         index = skip_blank(s, index + 1);
     }
-    if (!positive)
+
+    if (negative)
         ret = -ret;
     return ret;
 }
@@ -1116,19 +1167,34 @@ BigInteger BigInteger::value_of(const std::wstring& s, size_type radix)
         return ret;
 
     // 正负号
-    bool positive = (L'-' != s[index]);
+    bool negative = (L'-' == s[index]);
     if (L'+' == s[index] || L'-' == s[index])
-        if ((index = skip_blank(s, index + 1)) >= s.length())
+    {
+        index = skip_blank(s, index + 1);
+        if (index >= s.length())
             return ret;
+    }
 
     // 数字值
+    const unsigned radix_bc = nut::bit1_count((uint32_t) radix),
+        shift_count = nut::lowest_bit1((uint32_t) radix);
     while (index < s.length() && is_valid_char(s[index], radix))
     {
-        ret *= radix;
-        ret += char2num(s[index]);
+        if (1 == radix_bc)
+        {
+            ret <<= shift_count;
+            ret.data()[0] |= char2num(s[index]);
+        }
+        else
+        {
+            ret *= radix;
+            ret += char2num(s[index]);
+        }
+
         index = skip_blank(s, index + 1);
     }
-    if (!positive)
+
+    if (negative)
         ret = -ret;
     return ret;
 }

@@ -175,7 +175,7 @@ void unsigned_ntt_multiply(const T *a, size_t M, const T *b, size_t N, T *x, siz
         rs[i] &= ~(~(ntt_word_type)0 << NUT_NTT_BASE_BITS);
     }
     _merge_base_bits(rs, high + 1, x, P);
-    ::free(aa); // 'bb'、'rs' is in same memory block
+    ::free(aa); // 'bb'、'rs' are in same memory block
 }
 
 template <typename T>

@@ -96,7 +96,7 @@ void unsigned_fft_multiply(const T *a, size_t M, const T *b, size_t N, T *x, siz
             set_byte_le(x, out_byte_index, get_byte_le(ans + i, j));
         }
     }
-    ::free(aa); // 'bb'、'ans' is in same memory block
+    ::free(aa); // 'bb'、'ans' are in same memory block
     for (size_t i = ans_len * NUT_FFT_BASE_BYTES; i < sizeof(T) * P; ++i)
         set_byte_le(x, i, 0);
 }

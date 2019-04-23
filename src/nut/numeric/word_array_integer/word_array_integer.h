@@ -76,7 +76,7 @@ bool is_zero(const T *a, size_t N)
 }
 
 /**
- * 是否为正数或者0
+ * (有符号数)是否为正数或者0
  *
  * @return true, 参数 >= 0
  *      false, 参数 < 0
@@ -91,7 +91,7 @@ bool is_positive(const T *a, size_t N)
 }
 
 /**
- * 是否为负数
+ * (有符号数)是否为负数
  *
  * @return true, 参数 < 0
  *      false, 参数 >= 0
@@ -118,7 +118,7 @@ size_t signed_significant_size(const T *a, size_t N)
     const T skip_value = (positive ? 0 : ~(T)0);
     size_t ret = N;
     while (ret > 1 && a[ret - 1] == skip_value &&
-            is_positive(a, ret - 1) == positive)
+           is_positive(a, ret - 1) == positive)
         --ret;
     return ret;
 }

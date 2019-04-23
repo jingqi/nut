@@ -51,6 +51,11 @@ T extended_euclid(T a, T b, typename StdInt<T>::signed_type *x, typename StdInt<
 
 NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, BigInteger *x, BigInteger *y);
 
+/**
+ * 求最小公倍数
+ */
+NUT_API BigInteger lcm(const BigInteger& a, const BigInteger& b);
+
 }
 
 #endif

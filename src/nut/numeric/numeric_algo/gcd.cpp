@@ -685,4 +685,9 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
 #endif
 }
 
+NUT_API BigInteger lcm(const BigInteger& a, const BigInteger& b)
+{
+    return a / gcd(a, b) * b;
+}
+
 }
