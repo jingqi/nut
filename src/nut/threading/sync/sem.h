@@ -6,6 +6,9 @@
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
+#elif NUT_PLATFORM_OS_MACOS
+#   include <mutex>
+#   include <condition_variable>
 #else
 #   include <semaphore.h>
 #endif
@@ -19,15 +22,13 @@ namespace nut
 class NUT_API Semaphore
 {
 public:
-    explicit Semaphore(int init_value);
+    explicit Semaphore(unsigned init_value);
     ~Semaphore();
-
-    void wait();
 
     void post();
 
+    void wait();
     bool trywait();
-
     bool timedwait(unsigned s, unsigned ms);
 
 private:
@@ -37,6 +38,11 @@ private:
 private:
 #if NUT_PLATFORM_OS_WINDOWS
     HANDLE _sem = nullptr;
+#elif NUT_PLATFORM_OS_MACOS
+    // XXX macOS 上匿名 posix sem 被废弃了
+    std::mutex _lock;
+    std::condition_variable _cond;
+    unsigned _count;
 #else
     sem_t _sem;
 #endif

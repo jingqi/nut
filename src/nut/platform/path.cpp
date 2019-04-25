@@ -878,7 +878,7 @@ bool Path::lexists(const char *path)
 
 #if NUT_PLATFORM_OS_WINDOWS
     return -1 != ::_access(path, 0);
-#elif NUT_PLATFORM_OS_MAC // mac 下 faccessat() 实现不支持 AT_SYMLINK_NOFOLLOW
+#elif NUT_PLATFORM_OS_MACOS // macOS 下 faccessat() 实现不支持 AT_SYMLINK_NOFOLLOW
     // 对符号链接做特殊处理
     struct stat info;
     if (0 != ::lstat(path, &info))

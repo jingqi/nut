@@ -361,8 +361,8 @@ std::string Backtrace::backtrace(unsigned skip_top_frames)
         if (nullptr == tr)
             continue;
 
-#if NUT_PLATFORM_OS_MAC
-        // NOTE MacOS 系统上会自己在前面加上栈层号，需要换成我们自己的
+#if NUT_PLATFORM_OS_MACOS
+        // NOTE macOS 系统上会自己在前面加上栈层号，需要换成我们自己的
         size_t pos = 0;
         while (' ' == tr[pos] || ('0' <= tr[pos] && tr[pos] <= '9'))
             ++pos;

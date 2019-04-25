@@ -28,7 +28,7 @@ public:
 
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     CRITICAL_SECTION* inner_mutex();
-#elif NUT_PLATFORM_OS_MAC
+#elif NUT_PLATFORM_OS_MACOS
     pthread_mutex_t* inner_mutex();
 #else
     pthread_spinlock_t* inner_mutex();
@@ -41,7 +41,7 @@ private:
 private:
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     CRITICAL_SECTION _critical_section;
-#elif NUT_PLATFORM_OS_MAC
+#elif NUT_PLATFORM_OS_MACOS
     pthread_mutex_t _spinlock; // TODO mac 系统没有spinlock
 #else
     pthread_spinlock_t _spinlock;

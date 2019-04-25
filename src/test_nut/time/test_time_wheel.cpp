@@ -158,7 +158,7 @@ class TestTimeWheel : public TestFixture
             ::clock_gettime(CLOCK_MONOTONIC_RAW, &finish);
         END("::clock_gettime(CLOCK_MONOTONIC_RAW)")
 
-#if NUT_PLATFORM_OS_MAC
+#if NUT_PLATFORM_OS_MACOS
         BEGIN
             ::clock_gettime(CLOCK_MONOTONIC_RAW_APPROX, &finish);
         END("::clock_gettime(CLOCK_MONOTONIC_RAW_APPROX)")

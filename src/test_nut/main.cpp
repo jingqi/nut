@@ -23,7 +23,7 @@ static void print_platform()
         // OS
 #if NUT_PLATFORM_OS_WINDOWS
         "Windows"
-#elif NUT_PLATFORM_OS_MAC
+#elif NUT_PLATFORM_OS_MACOS
         "Mac"
 #elif NUT_PLATFORM_OS_LINUX
         "Linux"

@@ -12,7 +12,7 @@ SpinLock::SpinLock()
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::InitializeCriticalSection(&_critical_section);
-#elif NUT_PLATFORM_OS_MAC
+#elif NUT_PLATFORM_OS_MACOS
     ::pthread_mutexattr_t attr;
     ::pthread_mutexattr_init(&attr);
     ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE); /* make the mutex recursive */
@@ -30,7 +30,7 @@ SpinLock::~SpinLock()
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::DeleteCriticalSection(&_critical_section);
-#elif NUT_PLATFORM_OS_MAC
+#elif NUT_PLATFORM_OS_MACOS
     const int rs = ::pthread_mutex_destroy(&_spinlock);
     assert(0 == rs);
     UNUSED(rs);
@@ -46,7 +46,7 @@ CRITICAL_SECTION* SpinLock::inner_mutex()
 {
     return &_critical_section;
 }
-#elif NUT_PLATFORM_OS_MAC
+#elif NUT_PLATFORM_OS_MACOS
 pthread_mutex_t* SpinLock::inner_mutex()
 {
     return &_spinlock;
@@ -62,7 +62,7 @@ void SpinLock::lock()
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::EnterCriticalSection(&_critical_section);
-#elif NUT_PLATFORM_OS_MAC
+#elif NUT_PLATFORM_OS_MACOS
     const int rs = ::pthread_mutex_lock(&_spinlock);
     assert(0 == rs);
     UNUSED(rs);
@@ -77,7 +77,7 @@ bool SpinLock::trylock()
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     return FALSE != ::TryEnterCriticalSection(&_critical_section);
-#elif NUT_PLATFORM_OS_MAC
+#elif NUT_PLATFORM_OS_MACOS
     return 0 == ::pthread_mutex_trylock(&_spinlock);
 #else
     return 0 == ::pthread_spin_trylock(&_spinlock);
@@ -88,7 +88,7 @@ void SpinLock::unlock()
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::LeaveCriticalSection(&_critical_section);
-#elif NUT_PLATFORM_OS_MAC
+#elif NUT_PLATFORM_OS_MACOS
     const int rs = ::pthread_mutex_unlock(&_spinlock);
     assert(0 == rs);
     UNUSED(rs);

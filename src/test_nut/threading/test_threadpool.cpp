@@ -1,7 +1,7 @@
 ﻿
 #include <nut/platform/platform.h>
 
-#if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
+#if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MACOS
 #   include <unistd.h>
 #endif
 

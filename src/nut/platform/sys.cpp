@@ -4,7 +4,7 @@
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #   include <chrono> // for std::chrono
-#elif NUT_PLATFORM_OS_MAC
+#elif NUT_PLATFORM_OS_MACOS
 #   include <unistd.h> // for ::sysconf()
 #else
 #   include <sys/sysinfo.h> // for ::get_nprocs()
@@ -23,7 +23,7 @@ unsigned Sys::get_processor_num()
     SYSTEM_INFO info;
     ::GetSystemInfo(&info);
     return (unsigned) info.dwNumberOfProcessors;
-#elif NUT_PLATFORM_OS_MAC
+#elif NUT_PLATFORM_OS_MACOS
     return (unsigned) ::sysconf(_SC_NPROCESSORS_ONLN);
 #else
     return (unsigned) ::get_nprocs();

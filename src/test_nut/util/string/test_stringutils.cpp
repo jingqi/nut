@@ -50,7 +50,7 @@ class TestStringUtil : public TestFixture
 
         // std::wstring wtmp;
         // wcout << format(L"%d,%S,%c,%f", 1, L"am", L's', 1.23) << endl;
-#if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MAC
+#if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MACOS
         //wtmp = format(L"%d,%S,%C,%f", 1, L"am", L's', 1.23);
         //NUT_TA(wtmp == L"1,am,s,1.230000");
 
@@ -116,7 +116,7 @@ class TestStringUtil : public TestFixture
         std::string a;
         std::wstring b;
 
-#if !NUT_PLATFORM_OS_MAC // mac 下目前对 wchar_t 常量字符串转换有问题
+#if !NUT_PLATFORM_OS_MACOS // macOS 下目前对 wchar_t 常量字符串转换有问题
         a = wstr_to_ascii(L"c5&汉");
         b = ascii_to_wstr(a.c_str());
         //wcout << endl << b << endl;

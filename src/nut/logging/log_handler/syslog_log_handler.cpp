@@ -1,7 +1,7 @@
 ﻿
 #include "../../platform/platform.h"
 
-#if NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
+#if NUT_PLATFORM_OS_MACOS || NUT_PLATFORM_OS_LINUX
 
 #include <syslog.h>
 

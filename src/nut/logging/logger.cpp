@@ -356,7 +356,7 @@ void Logger::load_xml_config(const std::string& config)
                 handler->get_filter().swap(&_filter);
                 Logger::get_instance()->add_handler(handler);
             }
-#if NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
+#if NUT_PLATFORM_OS_MACOS || NUT_PLATFORM_OS_LINUX
             else if (_type == "syslog")
             {
                 rc_ptr<SyslogLogHandler> handler = rc_new<SyslogLogHandler>(_close_syslog_on_exit);

@@ -209,7 +209,7 @@ NUT_API ssize_t safe_snprintf(wchar_t *buf, size_t buf_size, const wchar_t *fmt,
     va_start(ap, fmt);
 #if NUT_PLATFORM_CC_VC
     ssize_t n = ::_vsnwprintf(buf, buf_size, fmt, ap);
-#elif NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
+#elif NUT_PLATFORM_OS_MACOS || NUT_PLATFORM_OS_LINUX
     ssize_t n = ::vswprintf(buf, buf_size, fmt, ap);
 #else
     ssize_t n = ::vsnwprintf(buf, buf_size, fmt, ap);
@@ -270,7 +270,7 @@ NUT_API std::wstring format(const wchar_t *fmt, ...)
         va_start(ap, fmt);
 #if NUT_PLATFORM_CC_VC
         const int n = ::_vsnwprintf((wchar_t*) ret.data(), size, fmt, ap);
-#elif NUT_PLATFORM_OS_MAC || NUT_PLATFORM_OS_LINUX
+#elif NUT_PLATFORM_OS_MACOS || NUT_PLATFORM_OS_LINUX
         const int n = ::vswprintf((wchar_t*) ret.data(), size, fmt, ap);
 #else
         const int n = ::vsnwprintf((wchar_t*) ret.data(), size, fmt, ap);

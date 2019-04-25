@@ -17,7 +17,7 @@
 
 #if NUT_PLATFORM_OS_LINUX
 #   include <endian.h> // for htole16() and so on
-#elif NUT_PLATFORM_OS_MAC
+#elif NUT_PLATFORM_OS_MACOS
 #	include <libkern/OSByteOrder.h> // for OSSwapHostToLittleInt16() and so on
 #elif NUT_PLATFORM_OS_WINDOWS
 #   if  NUT_PLATFORM_CC_MINGW
@@ -268,7 +268,7 @@ inline void bswap(void *dst, size_t cb)
 
 #   endif
 
-#elif NUT_PLATFORM_OS_MAC
+#elif NUT_PLATFORM_OS_MACOS
 
 #   define htole16(x) OSSwapHostToLittleInt16(x)
 #   define htole32(x) OSSwapHostToLittleInt32(x)

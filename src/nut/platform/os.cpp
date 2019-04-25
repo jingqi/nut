@@ -7,7 +7,7 @@
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #   include <io.h>    // for mkdir()
-#elif NUT_PLATFORM_OS_MAC
+#elif NUT_PLATFORM_OS_MACOS
 #   include <dirent.h>  // for DIR, dirent
 #   include <limits.h>   // for PATH_MAX
 #   include <sys/stat.h> // for ::lstat()
@@ -178,7 +178,7 @@ bool OS::copy_file(const char *src, const char *dst)
 
 #if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::CopyFileA(src, dst, FALSE);
-#elif NUT_PLATFORM_OS_MAC
+#elif NUT_PLATFORM_OS_MACOS
     return 0 == ::copyfile(src, dst, nullptr, COPYFILE_ALL | COPYFILE_NOFOLLOW);
 #elif NUT_PLATFORM_OS_LINUX
     const int in_file = ::open(src, O_RDONLY);

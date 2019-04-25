@@ -11,23 +11,23 @@
  *
  * 支持检测：
  *  NUT_PLATFORM_OS_WINDOWS
- *  NUT_PLATFORM_OS_MAC
+ *  NUT_PLATFORM_OS_MACOS
  *  NUT_PLATFORM_OS_LINUX
  */
 #if defined(_WIN16) || defined(_WIN32) || defined(_WIN64) || \
     defined(__WIN32__) || defined(__TOS_WIN__) || defined(__WINDOWS__)
 #   define NUT_PLATFORM_OS_WINDOWS 1
-#   define NUT_PLATFORM_OS_MAC     0
+#   define NUT_PLATFORM_OS_MACOS   0
 #   define NUT_PLATFORM_OS_LINUX   0
 #elif defined(__APPLE__) || defined(__apple__) || defined(__MACOSX) ||  \
     defined(__MACOS_CLASSIC__) || defined(__MACH__)
 #   define NUT_PLATFORM_OS_WINDOWS 0
-#   define NUT_PLATFORM_OS_MAC     1
+#   define NUT_PLATFORM_OS_MACOS   1
 #   define NUT_PLATFORM_OS_LINUX   0
 #elif defined(__linux__) || defined(linux) || defined(__linux) || defined(__LINUX__) || \
     defined(LINUX) || defined(_LINUX)
 #   define NUT_PLATFORM_OS_WINDOWS 0
-#   define NUT_PLATFORM_OS_MAC     0
+#   define NUT_PLATFORM_OS_MACOS   0
 #   define NUT_PLATFORM_OS_LINUX   1
 #else
 #   error Unknown OS
