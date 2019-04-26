@@ -4,9 +4,17 @@
 
 #include <assert.h>
 #include <string.h> // for ::memset(), ::memcpy(), ::memmove()
-#include <stdlib.h> // for malloc()
 #include <algorithm>
 #include <type_traits>
+
+#include "../../platform/platform.h"
+
+#if NUT_PLATFORM_OS_WINDOWS
+#   include <malloc.h> // for ::alloca()
+#else
+#   include <alloca.h>
+#endif
+
 
 #include "../../platform/int_type.h"
 #include "../../platform/endian.h"
@@ -52,7 +60,7 @@ void _unsigned_square(const T *a, size_t M, T *x, size_t N)
     // 避免区域交叉覆盖
     T *retx = x;
     if (a - N < x && x < a + M)
-        retx = (T*) ::malloc(sizeof(T) * N);
+        retx = (T*) ::alloca(sizeof(T) * N);
 
     // 先计算一半
     ::memset(retx, 0, sizeof(T) * N);
@@ -125,10 +133,7 @@ void _unsigned_square(const T *a, size_t M, T *x, size_t N)
 
     // 回写结果
     if (retx != x)
-    {
         ::memcpy(x, retx, sizeof(T) * N);
-        ::free(retx);
-    }
 }
 
 /**
@@ -151,7 +156,7 @@ void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
     // 避免区域交叉覆盖
     T *retx = x;
     if ((a - P < x && x < a + M) || (b - P < x && x < b + N))
-        retx = (T*) ::malloc(sizeof(T) * P);
+        retx = (T*) ::alloca(sizeof(T) * P);
 
     // 乘法
     const T filla = (is_positive(a,M) ? 0 : ~(T)0),
@@ -188,12 +193,8 @@ void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 
     // 回写数据
     if (retx != x)
-    {
         ::memcpy(x, retx, sizeof(T) * P);
-        ::free(retx);
-    }
 }
-
 
 /**
  * (无符号数)相乘
@@ -209,7 +210,7 @@ void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t 
     // 避免区域交叉覆盖
     T *retx = x;
     if ((a - P < x && x < a + M) || (b - P < x && x < b + N))
-        retx = (T*) ::malloc(sizeof(T) * P);
+        retx = (T*) ::alloca(sizeof(T) * P);
 
     // 乘法
     ::memset(retx, 0, sizeof(T) * P);
@@ -244,10 +245,7 @@ void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t 
 
     // 回写数据
     if (retx != x)
-    {
         ::memcpy(x, retx, sizeof(T) * P);
-        ::free(retx);
-    }
 }
 
 }

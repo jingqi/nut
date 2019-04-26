@@ -1,6 +1,14 @@
 ﻿
 #include <assert.h>
 
+#include "../../platform/platform.h"
+
+#if NUT_PLATFORM_OS_WINDOWS
+#   include <malloc.h> // for ::alloca()
+#else
+#   include <alloca.h>
+#endif
+
 #include "kmp.h"
 
 
@@ -21,23 +29,21 @@ namespace nut
  */
 NUT_API int kmp_search(const std::string& src, size_t start, const std::string& target)
 {
-    int *next = (int*) ::malloc(sizeof(int) * target.length());
+    int *next = (int*) ::alloca(sizeof(int) * target.length());
     assert(nullptr != next);
     kmp_build_next(target.c_str(), next, target.length());
     const int ret = kmp_search(src.c_str(), src.length(), start, target.c_str(),
                                next, target.length());
-    ::free(next);
     return ret;
 }
 
 NUT_API int kmp_search(const std::wstring& src, size_t start, const std::wstring& target)
 {
-    int *next = (int*) ::malloc(sizeof(int) * target.length());
+    int *next = (int*) ::alloca(sizeof(int) * target.length());
     assert(nullptr != next);
     kmp_build_next(target.c_str(), next, target.length());
     const int ret = kmp_search(src.c_str(), src.length(), start, target.c_str(),
                                next, target.length());
-    ::free(next);
     return ret;
 }
 

@@ -4,9 +4,16 @@
 
 #include <assert.h>
 #include <string.h> // for memset(), memcpy(), memmove()
-#include <stdlib.h> // for malloc()
 #include <algorithm>
 #include <type_traits>
+
+#include "../../platform/platform.h"
+
+#if NUT_PLATFORM_OS_WINDOWS
+#   include <malloc.h> // for ::alloca()
+#else
+#   include <alloca.h>
+#endif
 
 #include "shift_op.h"
 #include "word_array_integer.h"
@@ -50,16 +57,16 @@ void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T
     T *remainder = y; // 余数, 不能为 nullptr
     if (alloc_quotient && alloc_remainder)
     {
-        quotient = (T*) ::malloc(sizeof(T) * (quotient_len + divisor_len));
+        quotient = (T*) ::alloca(sizeof(T) * (quotient_len + divisor_len));
         remainder = quotient + quotient_len;
     }
     else if (alloc_quotient)
     {
-        quotient = (T*) ::malloc(sizeof(T) * (quotient_len));
+        quotient = (T*) ::alloca(sizeof(T) * (quotient_len));
     }
     else if (alloc_remainder)
     {
-        remainder = (T*) ::malloc(sizeof(T) * divisor_len);
+        remainder = (T*) ::alloca(sizeof(T) * divisor_len);
     }
 
     // 逐位试商
@@ -134,12 +141,6 @@ void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T
         }
         signed_expand(remainder, divisor_len, y, Q);
     }
-
-    // 释放空间
-    if (quotient != x)
-        ::free(quotient);
-    else if (remainder != y)
-        ::free(remainder);
 }
 
 /**
@@ -175,16 +176,16 @@ void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
     T *remainder = y; // 余数，不能为 nullptr
     if (alloc_quotient && alloc_remainder)
     {
-        quotient = (T*) ::malloc(sizeof(T) * (quotient_len + divisor_len));
+        quotient = (T*) ::alloca(sizeof(T) * (quotient_len + divisor_len));
         remainder = quotient + quotient_len;
     }
     else if (alloc_quotient)
     {
-        quotient = (T*) ::malloc(sizeof(T) * quotient_len);
+        quotient = (T*) ::alloca(sizeof(T) * quotient_len);
     }
     else if (alloc_remainder)
     {
-        remainder = (T*) ::malloc(sizeof(T) * divisor_len);
+        remainder = (T*) ::alloca(sizeof(T) * divisor_len);
     }
 
     // 逐位试商
@@ -230,12 +231,6 @@ void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
             unsigned_add(remainder, divisor_len, b, divisor_len, remainder, divisor_len);
         unsigned_expand(remainder, divisor_len, y, Q);
     }
-
-    // 释放空间
-    if (quotient != x)
-        ::free(quotient);
-    else if (remainder != y)
-        ::free(remainder);
 }
 
 }

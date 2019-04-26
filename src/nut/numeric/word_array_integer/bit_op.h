@@ -4,8 +4,15 @@
 
 #include <assert.h>
 #include <string.h> // for memset(), memcpy(), memmove()
-#include <stdlib.h> // for malloc()
 #include <type_traits>
+
+#include "../../platform/platform.h"
+
+#if NUT_PLATFORM_OS_WINDOWS
+#   include <malloc.h> // for ::alloca()
+#else
+#   include <alloca.h>
+#endif
 
 #include "../../nut_config.h"
 #include "../../platform/int_type.h"
@@ -28,17 +35,14 @@ void bit_and(const T *a, const T *b, T *x, size_t N)
     // 避免区域交叉覆盖
     T *retx = x;
     if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (T*) ::malloc(sizeof(T) * N);
+        retx = (T*) ::alloca(sizeof(T) * N);
 
     for (size_t i = 0; i < N; ++i)
         retx[i] = a[i] & b[i];
 
     // 回写数据
     if (retx != x)
-    {
         ::memcpy(x, retx, sizeof(T) * N);
-        ::free(retx);
-    }
 #else
     if ((x <= a || x >= a + N) && (x <= b || x >= b + N))
     {
@@ -53,14 +57,13 @@ void bit_and(const T *a, const T *b, T *x, size_t N)
     else
     {
         // 避免区域交叉覆盖
-        T *const retx = (T*) ::malloc(sizeof(T) * N);
+        T *const retx = (T*) ::alloca(sizeof(T) * N);
 
         for (size_t i = 0; i < N; ++i)
             retx[i] = a[i] & b[i];
 
         // 回写数据
         ::memcpy(x, retx, sizeof(T) * N);
-        ::free(retx);
     }
 #endif
 }
@@ -79,17 +82,14 @@ void bit_or(const T *a, const T *b, T *x, size_t N)
     // 避免区域交叉覆盖
     T *retx = x;
     if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (T*) ::malloc(sizeof(T) * N);
+        retx = (T*) ::alloca(sizeof(T) * N);
 
     for (size_t i = 0; i < N; ++i)
         retx[i] = a[i] | b[i];
 
     // 回写数据
     if (retx != x)
-    {
         ::memcpy(x, retx, sizeof(T) * N);
-        ::free(retx);
-    }
 #else
     if ((x <= a || x >= a + N) && (x <= b || x >= b + N))
     {
@@ -104,14 +104,13 @@ void bit_or(const T *a, const T *b, T *x, size_t N)
     else
     {
         // 避免区域交叉覆盖
-        T *const retx = (T*) ::malloc(sizeof(T) * N);
+        T *const retx = (T*) ::alloca(sizeof(T) * N);
 
         for (size_t i = 0; i < N; ++i)
             retx[i] = a[i] | b[i];
 
         // 回写数据
         ::memcpy(x, retx, sizeof(T) * N);
-        ::free(retx);
     }
 #endif
 }
@@ -130,17 +129,14 @@ void bit_xor(const T *a, const T *b, T *x, size_t N)
     // 避免区域交叉覆盖
     T *retx = x;
     if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (T*) ::malloc(sizeof(T) * N);
+        retx = (T*) ::alloca(sizeof(T) * N);
 
     for (size_t i = 0; i < N; ++i)
         retx[i] = a[i] ^ b[i];
 
     // 回写数据
     if (retx != x)
-    {
         ::memcpy(x, retx, sizeof(T) * N);
-        ::free(retx);
-    }
 #else
     if ((x <= a || x >= a + N) && (x <= b || x >= b + N))
     {
@@ -155,14 +151,13 @@ void bit_xor(const T *a, const T *b, T *x, size_t N)
     else
     {
         // 避免区域交叉覆盖
-        T *const retx = (T*) ::malloc(sizeof(T) * N);
+        T *const retx = (T*) ::alloca(sizeof(T) * N);
 
         for (size_t i = 0; i < N; ++i)
             retx[i] = a[i] ^ b[i];
 
         // 回写数据
         ::memcpy(x, retx, sizeof(T) * N);
-        ::free(retx);
     }
 #endif
 }
@@ -181,17 +176,14 @@ void bit_nxor(const T *a, const T *b, T *x, size_t N)
     // 避免区域交叉覆盖
     T *retx = x;
     if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (T*) ::malloc(sizeof(T) * N);
+        retx = (T*) ::alloca(sizeof(T) * N);
 
     for (size_t i = 0; i < N; ++i)
         retx[i] = ~(a[i] ^ b[i]);
 
     // 回写数据
     if (retx != x)
-    {
         ::memcpy(x, retx, sizeof(T) * N);
-        ::free(retx);
-    }
 #else
     if ((x <= a || x >= a + N) && (x <= b || x >= b + N))
     {
@@ -206,14 +198,13 @@ void bit_nxor(const T *a, const T *b, T *x, size_t N)
     else
     {
         // 避免区域交叉覆盖
-        T *const retx = (T*) ::malloc(sizeof(T) * N);
+        T *const retx = (T*) ::alloca(sizeof(T) * N);
 
         for (size_t i = 0; i < N; ++i)
             retx[i] = ~(a[i] ^ b[i]);
 
         // 回写数据
         ::memcpy(x, retx, sizeof(T) * N);
-        ::free(retx);
     }
 #endif
 }

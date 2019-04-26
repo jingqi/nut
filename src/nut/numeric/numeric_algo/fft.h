@@ -3,8 +3,15 @@
 #define ___HEADFILE_583C901E_7939_41C8_A24C_AF094D969CD9_
 
 #include <assert.h>
-#include <stdlib.h> // for ::malloc()
 #include <complex>
+
+#include "../../platform/platform.h"
+
+#if NUT_PLATFORM_OS_WINDOWS
+#   include <malloc.h> // for ::alloca()
+#else
+#   include <alloca.h>
+#endif
 
 #include "../word_array_integer/word_array_integer.h"
 #include "../word_array_integer/bit_op.h"
@@ -50,7 +57,7 @@ void unsigned_fft_multiply(const T *a, size_t M, const T *b, size_t N, T *x, siz
 
     // 准备复数向量
     const size_t ans_len = std::min(wc_len, (sizeof(T) * P + NUT_FFT_BASE_BYTES - 1) / NUT_FFT_BASE_BYTES);
-    fft_complex_type *aa = (fft_complex_type*) ::malloc(sizeof(fft_complex_type) * wc_len * 2 +
+    fft_complex_type *aa = (fft_complex_type*) ::alloca(sizeof(fft_complex_type) * wc_len * 2 +
                                                         sizeof(fft_word_type) * ans_len);
     fft_complex_type *bb = aa + wc_len;
     fft_word_type *ans = (fft_word_type *) (bb + wc_len);
@@ -96,7 +103,6 @@ void unsigned_fft_multiply(const T *a, size_t M, const T *b, size_t N, T *x, siz
             set_byte_le(x, out_byte_index, get_byte_le(ans + i, j));
         }
     }
-    ::free(aa); // 'bb'、'ans' are in same memory block
     for (size_t i = ans_len * NUT_FFT_BASE_BYTES; i < sizeof(T) * P; ++i)
         set_byte_le(x, i, 0);
 }
@@ -114,7 +120,7 @@ void signed_fft_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_
     {
         ++MM;
         ++NN;
-        aa = (T*) ::malloc(sizeof(T) * (MM + NN));
+        aa = (T*) ::alloca(sizeof(T) * (MM + NN));
         bb = aa + MM;
         signed_negate(a, M, aa, MM);
         signed_negate(b, N, bb, NN);
@@ -122,23 +128,19 @@ void signed_fft_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_
     else if (a_neg)
     {
         ++MM;
-        aa = (T*) ::malloc(sizeof(T) * MM);
+        aa = (T*) ::alloca(sizeof(T) * MM);
         signed_negate(a, M, aa, MM);
     }
     else if (b_neg)
     {
         ++NN;
-        bb = (T*) ::malloc(sizeof(T) * NN);
+        bb = (T*) ::alloca(sizeof(T) * NN);
         signed_negate(b, N, bb, NN);
     }
 
     // 调用 FFT 算法
     unsigned_fft_multiply((nullptr != aa ? aa : a), MM,
                           (nullptr != bb ? bb : b), NN, x, P);
-    if (nullptr != aa)
-        ::free(aa);
-    else if (nullptr != bb)
-        ::free(bb);
 
     // 还原符号
     if (a_neg != b_neg)

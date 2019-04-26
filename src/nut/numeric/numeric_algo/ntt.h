@@ -57,6 +57,14 @@
 #include <stddef.h> // for size_t
 #include <algorithm> // for std::max()
 
+#include "../../platform/platform.h"
+
+#if NUT_PLATFORM_OS_WINDOWS
+#   include <malloc.h> // for ::alloca()
+#else
+#   include <alloca.h>
+#endif
+
 #include "../../nut_config.h"
 #include "../word_array_integer/word_array_integer.h"
 #include "../word_array_integer/bit_op.h"
@@ -191,7 +199,7 @@ void signed_ntt_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_
     {
         ++MM;
         ++NN;
-        aa = (T*) ::malloc(sizeof(T) * (MM + NN));
+        aa = (T*) ::alloca(sizeof(T) * (MM + NN));
         bb = aa + MM;
         signed_negate(a, M, aa, MM);
         signed_negate(b, N, bb, NN);
@@ -199,23 +207,19 @@ void signed_ntt_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_
     else if (a_neg)
     {
         ++MM;
-        aa = (T*) ::malloc(sizeof(T) * MM);
+        aa = (T*) ::alloca(sizeof(T) * MM);
         signed_negate(a, M, aa, MM);
     }
     else if (b_neg)
     {
         ++NN;
-        bb = (T*) ::malloc(sizeof(T) * NN);
+        bb = (T*) ::alloca(sizeof(T) * NN);
         signed_negate(b, N, bb, NN);
     }
 
     // 调用 NTT 算法
     unsigned_ntt_multiply((nullptr != aa ? aa : a), MM,
                           (nullptr != bb ? bb : b), NN, x, P);
-    if (nullptr != aa)
-        ::free(aa);
-    else if (nullptr != bb)
-        ::free(bb);
 
     // 还原符号
     if (a_neg != b_neg)

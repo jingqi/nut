@@ -3,7 +3,6 @@
 #include <string.h>  /* for memset() */
 #include <stdio.h>  /* for sprintf(), vsnprintf() and so on */
 #include <stdarg.h> /* for va_start() */
-#include <stdlib.h> /* for malloc() free() ltoa() */
 
 #include "../../platform/platform.h"
 #include "to_string.h"

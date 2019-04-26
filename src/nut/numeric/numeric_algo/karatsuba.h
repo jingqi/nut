@@ -4,6 +4,14 @@
 
 #include <algorithm> // for std::min()
 
+#include "../../platform/platform.h"
+
+#if NUT_PLATFORM_OS_WINDOWS
+#   include <malloc.h> // for ::alloca()
+#else
+#   include <alloca.h>
+#endif
+
 #include "../word_array_integer/word_array_integer.h"
 #include "ntt.h"
 
@@ -108,7 +116,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     const size_t ac_len = std::min(a_len + c_len, P - base_len);
     assert(ac_len <= ab_len + cd_len);
     const size_t bd_len = std::min(b_len + d_len, P);
-    T *const AB = (T*) ::malloc(sizeof(T) * (ab_len + cd_len + abcd_len));
+    T *const AB = (T*) ::alloca(sizeof(T) * (ab_len + cd_len + abcd_len));
     T *const CD = AB + ab_len;
     T *const ABCD = CD + cd_len;
     T *const AC = AB; // 复用 AB + CD 的存储空间
@@ -142,7 +150,6 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     unsigned_add(x + base_len, P - base_len, ABCD, abcd_len, x + base_len, P - base_len);
     if (P > base_len * 2)
         unsigned_add(x + base_len * 2, P - base_len * 2, AC, ac_len, x + base_len * 2, P - base_len * 2);
-    ::free(AB);
 }
 
 /**
@@ -176,7 +183,7 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
     {
         ++MM;
         ++NN;
-        aa = (T*) ::malloc(sizeof(T) * (MM + NN));
+        aa = (T*) ::alloca(sizeof(T) * (MM + NN));
         bb = aa + MM;
         signed_negate(a, M, aa, MM);
         signed_negate(b, N, bb, NN);
@@ -184,23 +191,19 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
     else if (a_neg)
     {
         ++MM;
-        aa = (T*) ::malloc(sizeof(T) * MM);
+        aa = (T*) ::alloca(sizeof(T) * MM);
         signed_negate(a, M, aa, MM);
     }
     else if (b_neg)
     {
         ++NN;
-        bb = (T*) ::malloc(sizeof(T) * NN);
+        bb = (T*) ::alloca(sizeof(T) * NN);
         signed_negate(b, N, bb, NN);
     }
 
     // 调用 karatsuba 算法
     unsigned_karatsuba_multiply((nullptr != aa ? aa : a), MM,
                                 (nullptr != bb ? bb : b), NN, x, P);
-    if (nullptr != aa)
-        ::free(aa);
-    else if (nullptr != bb)
-        ::free(bb);
 
     // 还原符号
     if (a_neg != b_neg)

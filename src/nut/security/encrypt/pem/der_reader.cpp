@@ -5,6 +5,14 @@
 #include <assert.h>
 #include <string.h> // for ::memcpy()
 
+#include "../../../platform/platform.h"
+
+#if NUT_PLATFORM_OS_WINDOWS
+#   include <malloc.h> // for ::alloca()
+#else
+#   include <alloca.h>
+#endif
+
 #include "../../../platform/endian.h"
 #include "der_reader.h"
 
@@ -50,11 +58,10 @@ NUT_API ssize_t der_read_integer(const uint8_t *data, size_t available, BigInteg
     if (nullptr != rs)
     {
 #if NUT_ENDIAN_LITTLE_BYTE
-        uint8_t *buf = (uint8_t*) ::malloc(len);
+        uint8_t *buf = (uint8_t*) ::alloca(len);
         ::memcpy(buf, data + 1 + readed, len);
         bswap(buf, len);
         rs->set(buf, len, false);
-        ::free(buf);
 #else
         rs->set(data + 1 + readed, len, false);
 #endif

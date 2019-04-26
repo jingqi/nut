@@ -9,7 +9,10 @@
 #include "../../platform/platform.h"
 
 #if NUT_PLATFORM_OS_WINDOWS
+#   include <malloc.h> // for ::alloca()
 #   include <windows.h>
+#else
+#   include <alloca.h>
 #endif
 
 #include "../../platform/int_type.h" // for ssize_t
@@ -35,7 +38,7 @@ NUT_API std::vector<std::string> str_split(const char *str, const char *sep_str,
     assert(nullptr != str && nullptr != sep_str && 0 != sep_str[0]);
 
     const size_t sep_len = ::strlen(sep_str);
-    int *next = (int*) ::malloc(sizeof(int) * sep_len);
+    int *next = (int*) ::alloca(sizeof(int) * sep_len);
     kmp_build_next(sep_str, next, sep_len);
 
     const size_t str_len = ::strlen(str);
@@ -51,7 +54,6 @@ NUT_API std::vector<std::string> str_split(const char *str, const char *sep_str,
     }
     if (!ignore_empty || begin < str_len)
         result.push_back(str + begin);
-    ::free(next);
     return result;
 }
 
@@ -67,7 +69,7 @@ NUT_API std::vector<std::wstring> str_split(
     assert(nullptr != str && nullptr != sep_str && 0 != sep_str[0]);
 
     const size_t sep_len = ::wcslen(sep_str);
-    int *next = (int*) ::malloc(sizeof(int) * sep_len);
+    int *next = (int*) ::alloca(sizeof(int) * sep_len);
     kmp_build_next(sep_str, next, sep_len);
 
     const size_t str_len = ::wcslen(str);
@@ -83,7 +85,6 @@ NUT_API std::vector<std::wstring> str_split(
     }
     if (!ignore_empty || begin < str_len)
         result.push_back(str + begin);
-    ::free(next);
     return result;
 }
 

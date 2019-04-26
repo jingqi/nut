@@ -2,7 +2,6 @@
 #include <assert.h>
 #include <time.h>
 #include <string.h>     /* for strlen() */
-#include <stdlib.h>     /* for malloc() and free() */
 
 #include "../platform/platform.h"
 #include "../util/string/string_utils.h"

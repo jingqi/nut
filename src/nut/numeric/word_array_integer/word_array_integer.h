@@ -13,9 +13,16 @@
 
 #include <assert.h>
 #include <string.h> // for memset(), memcpy(), memmove()
-#include <stdlib.h> // for malloc()
 #include <algorithm>
 #include <type_traits>
+
+#include "../../platform/platform.h"
+
+#if NUT_PLATFORM_OS_WINDOWS
+#   include <malloc.h> // for ::alloca()
+#else
+#   include <alloca.h>
+#endif
 
 #include "../../nut_config.h"
 #include "../../platform/int_type.h"
@@ -241,7 +248,7 @@ uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
     // 避免区域交叉覆盖
     T *retx = x;
     if ((a < x && x < a + M) || (b < x && x < b + N))
-        retx = (T*) ::malloc(sizeof(T) * P);
+        retx = (T*) ::alloca(sizeof(T) * P);
 
     uint8_t carry = 0;
     const T filla = (is_positive(a, M) ? 0 : ~(T)0),
@@ -264,10 +271,7 @@ uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 
     // 回写数据
     if (retx != x)
-    {
         ::memcpy(x, retx, sizeof(T) * P);
-        ::free(retx);
-    }
     return carry;
 }
 
@@ -287,7 +291,7 @@ uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
     // 避免区域交叉覆盖
     T *retx = x;
     if ((a < x && x < a + M) || (b < x && x < b + N))
-        retx = (T*) ::malloc(sizeof(T) * P);
+        retx = (T*) ::alloca(sizeof(T) * P);
 
     uint8_t carry = 0;
     for (size_t i = 0; i < P; ++i)
@@ -308,10 +312,7 @@ uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 
     // 回写数据
     if (retx != x)
-    {
         ::memcpy(x, retx, sizeof(T) * P);
-        ::free(retx);
-    }
     return carry;
 }
 
@@ -362,7 +363,7 @@ uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
     // 避免区域交叉覆盖
     T *retx = x;
     if ((a < x && x < a + M) || (b < x && x < b + N))
-        retx = (T*) ::malloc(sizeof(T) * P);
+        retx = (T*) ::alloca(sizeof(T) * P);
 
     const T filla = (is_positive(a, M) ? 0 : ~(T)0),
         fillb = (is_positive(b, N) ? 0 : ~(T)0);
@@ -385,10 +386,7 @@ uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 
     // 回写数据
     if (retx != x)
-    {
         ::memcpy(x, retx, sizeof(T) * P);
-        ::free(retx);
-    }
     return carry;
 }
 
@@ -408,7 +406,7 @@ uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
     // 避免区域交叉覆盖
     T *retx = x;
     if ((a < x && x < a + M) || (b < x && x < b + N))
-        retx = (T*) ::malloc(sizeof(T) * P);
+        retx = (T*) ::alloca(sizeof(T) * P);
 
     uint8_t carry = 1;
     for (size_t i = 0; i < P; ++i)
@@ -429,10 +427,7 @@ uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 
     // 回写数据
     if (retx != x)
-    {
         ::memcpy(x, retx, sizeof(T) * P);
-        ::free(retx);
-    }
     return carry;
 }
 
@@ -483,7 +478,7 @@ uint8_t signed_negate(const T *a, size_t M, T *x, size_t N)
     // 避免区域交叉覆盖
     T *retx = x;
     if (a < x && x < a + M)
-        retx = (T*) ::malloc(sizeof(T) * N);
+        retx = (T*) ::alloca(sizeof(T) * N);
 
     uint8_t carry = 1;
     const T fill = (is_positive(a, M) ? 0 : ~(T)0);
@@ -504,10 +499,7 @@ uint8_t signed_negate(const T *a, size_t M, T *x, size_t N)
 
     // 回写数据
     if (retx != x)
-    {
         ::memcpy(x, retx, N);
-        ::free(retx);
-    }
     return carry;
 }
 
@@ -527,7 +519,7 @@ uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N)
     // 避免区域交叉覆盖
     T *retx = x;
     if (a < x && x < a + M)
-        retx = (T*) ::malloc(sizeof(T) * N);
+        retx = (T*) ::alloca(sizeof(T) * N);
 
     uint8_t carry = 1;
     for (size_t i = 0; i < N; ++i)
@@ -547,10 +539,7 @@ uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N)
 
     // 回写数据
     if (retx != x)
-    {
         ::memcpy(x, retx, N);
-        ::free(retx);
-    }
     return carry;
 }
 
