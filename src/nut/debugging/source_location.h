@@ -17,20 +17,32 @@ namespace nut
 class NUT_API SourceLocation
 {
 public:
-    SourceLocation(const char *file, int line, const char *func);
+    constexpr SourceLocation(const char *file, int line, const char *func)
+        : _path(file), _line(line), _func(func)
+    {}
 
     bool operator==(const SourceLocation& x) const;
     bool operator!=(const SourceLocation& x) const;
 
-    const char* get_file_path() const;
+    constexpr const char* get_file_path() const
+    {
+        return _path;
+    }
+
     const char* get_file_name() const;
 
-    int get_line_number() const;
+    constexpr int get_line_number() const
+    {
+        return _line;
+    }
 
     /**
      * @return This method may return nullptr if the location is not in any function
      */
-    const char* get_function_name() const;
+    constexpr const char* get_function_name() const
+    {
+        return _func;
+    }
 
     std::string to_string() const;
 

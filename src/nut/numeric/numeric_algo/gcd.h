@@ -23,6 +23,18 @@ constexpr T gcd(T a, T b)
 NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b);
 
 /**
+ * 求最小公倍数
+ */
+template <typename T>
+constexpr T lcm(T a, T b)
+{
+    static_assert(std::is_integral<T>::value, "Unexpected integer type");
+    return a / gcd(a, b) * b;
+}
+
+NUT_API BigInteger lcm(const BigInteger& a, const BigInteger& b);
+
+/**
  * 扩展欧几里得算法
  * d = gcd(a, b) = ax + by
  */
@@ -50,11 +62,6 @@ T extended_euclid(T a, T b, typename StdInt<T>::signed_type *x, typename StdInt<
 }
 
 NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, BigInteger *x, BigInteger *y);
-
-/**
- * 求最小公倍数
- */
-NUT_API BigInteger lcm(const BigInteger& a, const BigInteger& b);
 
 }
 

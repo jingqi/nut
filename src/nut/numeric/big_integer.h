@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "../nut_config.h"
+#include "../platform/endian.h"
 #include "../platform/int_type.h"
 
 
@@ -52,8 +53,17 @@ public:
     friend BigInteger operator%(cast_int_type a, const BigInteger& b);
 
 public:
-    BigInteger();
+    constexpr BigInteger()
+        : _significant_len(1 << 1), _inner_data{0} // only the first word is valid
+    {}
+
+#if NUT_ENDIAN_LITTLE_BYTE
+    constexpr explicit BigInteger(cast_int_type v)
+        : _significant_len((sizeof(v) / sizeof(word_type)) << 1), _inner_integer(v)
+    {}
+#else
     explicit BigInteger(cast_int_type v);
+#endif
 
     /**
      * @param buf 字节序应与本地一致
@@ -297,10 +307,13 @@ private:
             word_type *_heap_data; // 堆上缓冲区, little-endian, 带符号
             size_type _heap_capacity;
         };
+        cast_int_type _inner_integer;
         word_type _inner_data[INNER_CAPACITY]; // 内部缓冲区, little-endian, 带符号
     };
 };
 
+static_assert(sizeof(BigInteger::cast_int_type) <= sizeof(BigInteger::word_type*) + sizeof(BigInteger::size_type),
+              "size of cast_int_type is too large");
 static_assert(sizeof(BigInteger) == sizeof(BigInteger::size_type) * 2 + sizeof(BigInteger::word_type*),
               "Unexpected struct size");
 

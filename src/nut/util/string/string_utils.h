@@ -144,14 +144,43 @@ NUT_API std::string utf8_to_ascii(const char *str);
 NUT_API std::string utf8_to_ascii(const std::string& str);
 
 /**
- * @return '\0' if invalid
+ * Convert 1 to '1', 15 to 'f' or 'F'
+ *
+ * @return '\0' if invalid, or return [0-9a-zA-Z]
  */
-NUT_API char int_to_hex_char(int i, bool upper_case = true);
+constexpr char int_to_char(int i, bool upper_case = true)
+{
+    return (0 <= i && i < 10) ? ('0' + i) :
+        ((10 <= i && i < 36) ? ((upper_case ? 'A' : 'a') + (i - 10)) :
+         '\0');
+}
+
+constexpr char int_to_wchar(int i, bool upper_case = true)
+{
+    return (0 <= i && i < 10) ? (L'0' + i) :
+        ((10 <= i && i < 36) ? ((upper_case ? L'A' : L'a') + (i - 10)) :
+         L'\0');
+}
 
 /**
+ * Convert '1' to 1, 'f' or 'F' to 15
+ *
+ * @param c should be [0-9a-zA-Z]
  * @return -1 if invalid
  */
-NUT_API int hex_char_to_int(char c);
+constexpr int char_to_int(char c)
+{
+    return ('0' <= c && c <= '9') ? (c - '0') :
+        (('a' <= c && c <= 'z') ? (c - 'a' + 10) :
+         (('A' <= c && c <= 'Z') ? (c - 'A' + 10) : -1));
+}
+
+constexpr int char_to_int(wchar_t c)
+{
+    return (L'0' <= c && c <= L'9') ? (c - L'0') :
+        ((L'a' <= c && c <= L'z') ? (c - L'a' + 10) :
+         ((L'A' <= c && c <= L'Z') ? (c - L'A' + 10) : -1));
+}
 
 /**
  * 将 & " < > 转换为 &amp; &quot; &lt; &gt;

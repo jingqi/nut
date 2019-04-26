@@ -5,6 +5,7 @@
 #include <string>
 
 #include "../nut_config.h"
+#include "platform.h"
 
 
 namespace nut
@@ -16,14 +17,36 @@ public:
     /**
      * 路径分隔符
      */
-    static char seperator();
-    static wchar_t wseperator();
+    constexpr static char seperator()
+    {
+#if NUT_PLATFORM_OS_WINDOWS
+        return '\\';
+#else
+        return '/';
+#endif
+    }
+
+    constexpr static wchar_t wseperator()
+    {
+#if NUT_PLATFORM_OS_WINDOWS
+        return L'\\';
+#else
+        return L'/';
+#endif
+    }
 
     /**
      * 检查字符是否是路径分隔符 '\' '/'
      */
-    static bool is_path_separator(char c);
-    static bool is_path_separator(wchar_t c);
+    constexpr static bool is_path_separator(char c)
+    {
+        return '\\' == c || '/' == c;
+    }
+
+    constexpr static bool is_path_separator(wchar_t c)
+    {
+        return L'\\' == c || L'/' == c;
+    }
 
     /**
      * 获取当前工作目录路径

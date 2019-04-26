@@ -24,40 +24,6 @@
 namespace nut
 {
 
-/**
- * 路径分隔符
- */
-char Path::seperator()
-{
-#if NUT_PLATFORM_OS_WINDOWS
-    return '\\';
-#else
-    return '/';
-#endif
-}
-
-wchar_t Path::wseperator()
-{
-#if NUT_PLATFORM_OS_WINDOWS
-    return L'\\';
-#else
-    return L'/';
-#endif
-}
-
-/**
- * 检查字符是否是路径分隔符 '\' '/'
- */
-bool Path::is_path_separator(char c)
-{
-    return '\\' == c || '/' == c;
-}
-
-bool Path::is_path_separator(wchar_t c)
-{
-    return L'\\' == c || L'/' == c;
-}
-
 std::string Path::get_cwd()
 {
 #if NUT_PLATFORM_OS_WINDOWS

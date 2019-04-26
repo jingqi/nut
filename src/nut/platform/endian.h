@@ -102,7 +102,7 @@ namespace nut
 {
 
 // swap endian
-inline uint16_t bswap_uint16(uint16_t val)
+constexpr uint16_t bswap_uint16(uint16_t val)
 {
 #if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
     return __builtin_bswap16(val);
@@ -115,7 +115,7 @@ inline uint16_t bswap_uint16(uint16_t val)
 }
 
 // swap endian
-inline int16_t bswap_int16(int16_t val)
+constexpr int16_t bswap_int16(int16_t val)
 {
 #if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
     return __builtin_bswap16(val);

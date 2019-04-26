@@ -181,6 +181,11 @@ NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b)
 #endif
 }
 
+NUT_API BigInteger lcm(const BigInteger& a, const BigInteger& b)
+{
+    return a / gcd(a, b) * b;
+}
+
 NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, BigInteger *x, BigInteger *y)
 {
 #if 0 // unoptimized
@@ -683,11 +688,6 @@ NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigIntege
         *y = std::move(yy);
     return;
 #endif
-}
-
-NUT_API BigInteger lcm(const BigInteger& a, const BigInteger& b)
-{
-    return a / gcd(a, b) * b;
 }
 
 }

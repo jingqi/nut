@@ -17,7 +17,7 @@ class rc_ptr
     template <typename U> friend class rc_ptr;
 
 public:
-    rc_ptr() = default;
+    constexpr rc_ptr() = default;
 
     /**
      * 类型转换
@@ -99,42 +99,46 @@ public:
         return *this;
     }
 
-    operator T*() const
+    constexpr operator T*() const
     {
         return _ptr;
     }
 
-    bool operator==(const T *p) const
+    constexpr bool operator==(const T *p) const
     {
         return _ptr == p;
     }
 
     template <typename U>
-    bool operator==(const rc_ptr<U>& p) const
+    constexpr bool operator==(const rc_ptr<U>& p) const
     {
         return _ptr == p._ptr;
     }
 
-    bool operator!=(const T *p) const
+    constexpr bool operator!=(const T *p) const
     {
         return _ptr != p;
     }
 
     template <typename U>
-    bool operator!=(const rc_ptr<U>& p) const
+    constexpr bool operator!=(const rc_ptr<U>& p) const
     {
         return _ptr != p._ptr;
     }
 
-    T* operator->() const
+    constexpr T* operator->() const
     {
+#if __cplusplus >= 201402L // C++14 constexpr function feature
         assert(nullptr != _ptr);
+#endif
         return _ptr;
     }
 
-    T& operator*() const
+    constexpr T& operator*() const
     {
+#if __cplusplus >= 201402L // C++14 constexpr function feature
         assert(nullptr != _ptr);
+#endif
         return *_ptr;
     }
 
@@ -152,17 +156,17 @@ public:
         _ptr = p;
     }
 
-    T* pointer() const
+    constexpr T* pointer() const
     {
         return _ptr;
     }
 
-    bool is_null() const
+    constexpr bool is_null() const
     {
         return nullptr == _ptr;
     }
 
-    bool is_not_null() const
+    constexpr bool is_not_null() const
     {
         return nullptr != _ptr;
     }

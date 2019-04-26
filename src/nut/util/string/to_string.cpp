@@ -18,55 +18,55 @@
 namespace nut
 {
 
-/// char
+// char
 NUT_API std::string char_to_str(char i)
 {
     return llong_to_str((long long) i);
 }
 
-/// unsigned char
+// unsigned char
 NUT_API std::string uchar_to_str(unsigned char i)
 {
     return llong_to_str((long long) i);
 }
 
-/// short
+// short
 NUT_API std::string short_to_str(short i)
 {
     return llong_to_str((long long) i);
 }
 
-/// unsigned short
+// unsigned short
 NUT_API std::string ushort_to_str(unsigned short i)
 {
     return llong_to_str((long long) i);
 }
 
-/// int
+// int
 NUT_API std::string int_to_str(int i)
 {
     return llong_to_str((long long) i);
 }
 
-/// unsigned int
+// unsigned int
 NUT_API std::string uint_to_str(unsigned int i)
 {
     return llong_to_str((long long) i);
 }
 
-/// long
+// long
 NUT_API std::string long_to_str(long i)
 {
     return llong_to_str((long long) i);
 }
 
-/// unsigned long
+// unsigned long
 NUT_API std::string ulong_to_str(unsigned long i)
 {
     return llong_to_str((long long) i);
 }
 
-/// long long
+// long long
 NUT_API std::string llong_to_str(long long i)
 {
     const int BUF_SIZE = 60;
@@ -84,19 +84,19 @@ NUT_API std::string llong_to_str(long long i)
     return buf;
 }
 
-/// unsigned long long
+// unsigned long long
 NUT_API std::string ullong_to_str(unsigned long long i)
 {
     return llong_to_str((long long) i);
 }
 
-/// bool
+// bool
 NUT_API std::string bool_to_str(bool b)
 {
-    return (b ? "true" : "false");
+    return b ? "true" : "false";
 }
 
-/// double
+// double
 NUT_API std::string double_to_str(double d)
 {
     const int BUF_SIZE = 30;
@@ -105,7 +105,7 @@ NUT_API std::string double_to_str(double d)
     return buf;
 }
 
-/// float
+// float
 NUT_API std::string float_to_str(float f)
 {
     const int BUF_SIZE = 30;
@@ -114,7 +114,7 @@ NUT_API std::string float_to_str(float f)
     return buf;
 }
 
-/// pointer
+// pointer
 NUT_API std::string ptr_to_str(const void *p)
 {
     const int BUF_SIZE = 30;
@@ -127,7 +127,7 @@ NUT_API std::string ptr_to_str(const void *p)
     return buf;
 }
 
-/// memory block
+// memory block
 NUT_API std::string mem_to_str(const void *p, size_t align, size_t count)
 {
     assert(nullptr != p && align > 0 && count > 0);
@@ -158,7 +158,7 @@ NUT_API std::string mem_to_str(const void *p, size_t align, size_t count)
     return ret;
 }
 
-/// n-size string
+// n-size string
 NUT_API std::string sub_cstr(const char *str, size_t len, const char *fill_nil)
 {
     assert(nullptr != str && nullptr != fill_nil);
@@ -174,7 +174,7 @@ NUT_API std::string sub_cstr(const char *str, size_t len, const char *fill_nil)
     return ret;
 }
 
-/// string to long
+// string to long
 NUT_API long str_to_long(const std::string& s)
 {
     long ret = 0;
@@ -182,7 +182,7 @@ NUT_API long str_to_long(const std::string& s)
     return ret;
 }
 
-/// string to double
+// string to double
 NUT_API double str_to_double(const std::string& s)
 {
     double ret = 0.0;

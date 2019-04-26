@@ -702,26 +702,6 @@ NUT_API std::string utf8_to_ascii(const std::string& str)
     return utf8_to_ascii(str.c_str());
 }
 
-NUT_API char int_to_hex_char(int i, bool upper_case)
-{
-    if (0 <= i && i < 10)
-        return '0' + i;
-    else if (10 <= i && i < 16)
-        return (upper_case ? 'A' : 'a') + (i - 10);
-    return '\0';
-}
-
-NUT_API int hex_char_to_int(char c)
-{
-    if ('0' <= c && c <= '9')
-        return c - '0';
-    else if ('a' <= c && c <= 'f')
-        return c - 'a' + 10;
-    else if ('A' <= c && c <= 'F')
-        return c - 'A' + 10;
-    return -1;
-}
-
 NUT_API std::string xml_encode(const char *s, ssize_t len)
 {
     assert(nullptr != s);
@@ -811,8 +791,8 @@ NUT_API std::string url_encode(const char *s, ssize_t len)
         }
 
         result.push_back('%');
-        result.push_back(int_to_hex_char((c >> 4) & 0x0f));
-        result.push_back(int_to_hex_char(c & 0x0f));
+        result.push_back(int_to_char((c >> 4) & 0x0f));
+        result.push_back(int_to_char(c & 0x0f));
     }
     return result;
 }
@@ -826,8 +806,8 @@ NUT_API std::string url_decode(const char *s, ssize_t len)
     {
         if ('%' == s[i] && (len < 0 || i + 2 < len))
         {
-            const int high = hex_char_to_int(s[i + 1]), low = hex_char_to_int(s[i + 2]);
-            if (high >= 0 && low >= 0)
+            const int high = char_to_int(s[i + 1]), low = char_to_int(s[i + 2]);
+            if (0 <= high && high < 16 && 0 <= low && low < 16)
             {
                 result.push_back((char) ((high << 4) | low));
                 i += 2;
@@ -848,8 +828,8 @@ NUT_API std::string hex_encode(const void *data, size_t cb, bool upper_case)
     for (size_t i = 0; i < cb; ++i)
     {
         const uint8_t b = ((const uint8_t*) data)[i];
-        result.push_back(int_to_hex_char((b >> 4) & 0x0f, upper_case));
-        result.push_back(int_to_hex_char(b & 0x0f, upper_case));
+        result.push_back(int_to_char((b >> 4) & 0x0f, upper_case));
+        result.push_back(int_to_char(b & 0x0f, upper_case));
     }
     return result;
 }
@@ -863,8 +843,8 @@ NUT_API std::vector<uint8_t> hex_decode(const char *s, ssize_t len)
     bool one_byte = true;
     for (int i = 0; 0 != s[i] && (len < 0 || i < len); ++i)
     {
-        const int vv = hex_char_to_int(s[i]);
-        if (vv >= 0)
+        const int vv = char_to_int(s[i]);
+        if (0 <= vv && vv < 16)
         {
             v <<= 4;
             v |= vv;
@@ -935,8 +915,8 @@ NUT_API std::string cstyle_encode(const char *s, ssize_t len)
             else
             {
                 result += "\\x";
-                result.push_back(int_to_hex_char((c >> 4) & 0x0f));
-                result.push_back(int_to_hex_char(c & 0x0f));
+                result.push_back(int_to_char((c >> 4) & 0x0f));
+                result.push_back(int_to_char(c & 0x0f));
             }
         }
     }

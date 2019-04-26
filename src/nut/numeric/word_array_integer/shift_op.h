@@ -11,7 +11,7 @@ namespace nut
 {
 
 template <typename T>
-bool is_positive(const T *a, size_t N);
+constexpr bool is_positive(const T *a, size_t N);
 
 template <typename T>
 void _signed_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_count)

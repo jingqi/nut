@@ -13,14 +13,6 @@ namespace nut
 
 const TimeDiff TimeDiff::ZERO;
 
-TimeDiff::TimeDiff()
-    : _seconds(0), _nanoseconds(0)
-{}
-
-TimeDiff::TimeDiff(double s)
-    : _seconds(s), _nanoseconds((s - (time_t) s) * NSECS_PER_SEC)
-{}
-
 TimeDiff::TimeDiff(time_t s, long ns)
     : _seconds(s), _nanoseconds(ns)
 {
@@ -52,37 +44,6 @@ void TimeDiff::normalize()
     }
 }
 
-bool TimeDiff::operator==(const TimeDiff& x) const
-{
-    return _seconds == x._seconds && _nanoseconds == x._nanoseconds;
-}
-
-bool TimeDiff::operator!=(const TimeDiff& x) const
-{
-    return !(*this == x);
-}
-
-bool TimeDiff::operator<(const TimeDiff& x) const
-{
-    return ((_seconds < x._seconds) ||
-            (_seconds == x._seconds && _nanoseconds < x._nanoseconds));
-}
-
-bool TimeDiff::operator>(const TimeDiff& x) const
-{
-    return x < *this;
-}
-
-bool TimeDiff::operator<=(const TimeDiff& x) const
-{
-    return !(x < *this);
-}
-
-bool TimeDiff::operator>=(const TimeDiff& x) const
-{
-    return !(*this < x);
-}
-
 TimeDiff TimeDiff::operator+(const TimeDiff& x) const
 {
     return TimeDiff(_seconds + x._seconds, _nanoseconds + x._nanoseconds);
@@ -107,20 +68,6 @@ TimeDiff TimeDiff::operator-(double seconds) const
     const double dec_seconds = seconds - int_seconds;
     return TimeDiff(_seconds - int_seconds,
                     _nanoseconds - dec_seconds * NSECS_PER_SEC);
-}
-
-TimeDiff TimeDiff::operator*(double scale) const
-{
-    double v = to_double();
-    v *= scale;
-    return TimeDiff(v);
-}
-
-TimeDiff TimeDiff::operator/(double scale) const
-{
-    double v = to_double();
-    v /= scale;
-    return TimeDiff(v);
 }
 
 TimeDiff TimeDiff::operator-() const
@@ -198,23 +145,6 @@ void TimeDiff::to_timespec(struct timespec *tv)
     tv->tv_nsec = _nanoseconds;
 }
 #endif
-
-time_t TimeDiff::get_seconds() const
-{
-    return _seconds;
-}
-
-long TimeDiff::get_nanoseconds() const
-{
-    return _nanoseconds;
-}
-
-double TimeDiff::to_double() const
-{
-    double ret = _seconds;
-    ret += _nanoseconds / (double) NSECS_PER_SEC;
-    return ret;
-}
 
 std::string TimeDiff::to_string() const
 {

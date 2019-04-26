@@ -4,8 +4,8 @@
 #include <algorithm> // for std::reverse()
 #include <random>
 
-#include "../platform/endian.h"
 #include "../platform/sys.h"
+#include "../util/string/string_utils.h"
 #include "big_integer.h"
 #include "word_array_integer/word_array_integer.h"
 #include "word_array_integer/mul_op.h"
@@ -18,26 +18,14 @@
 namespace nut
 {
 
-BigInteger::BigInteger()
-    : _significant_len(1 << 1)
-{
-    _inner_data[0] = 0;
-}
-
-BigInteger::BigInteger(cast_int_type v)
-{
-    const size_type v_siglen = sizeof(v) / sizeof(word_type);
-    ensure_cap(v_siglen);
-    word_type *const raw_data = data();
-    ::memcpy(raw_data, &v, sizeof(v));
-    set_significant_len(v_siglen);
-
 #if NUT_ENDIAN_BIG_BYTE
-    wswap<word_type>(raw_data, v_siglen); // Word order to little-endian
-#endif
-
+BigInteger::BigInteger(cast_int_type v)
+    : _significant_len((sizeof(v) / sizeof(word_type)) << 1), _inner_integer(v)
+{
+    wswap<word_type>((const word_type*)&_inner_integer, sizeof(v) / sizeof(word_type)); // Word order to little-endian
     minimize_significant_len();
 }
+#endif
 
 BigInteger::BigInteger(const void *buf, size_type cb, bool with_sign)
 {
@@ -756,9 +744,7 @@ void BigInteger::set_significant_len(size_type len)
 
 const BigInteger::word_type* BigInteger::data() const
 {
-    if (is_using_heap())
-        return _heap_data;
-    return _inner_data;
+    return is_using_heap() ? _heap_data : _inner_data;
 }
 
 BigInteger::word_type* BigInteger::data()
@@ -766,11 +752,6 @@ BigInteger::word_type* BigInteger::data()
     return const_cast<word_type*>(static_cast<const BigInteger&>(*this).data());
 }
 
-/**
- * 返回比特位
- *
- * @return 0 or 1
- */
 int BigInteger::bit_at(size_type i) const
 {
     const size_t siglen = significant_words_length();
@@ -952,23 +933,11 @@ std::vector<uint8_t> BigInteger::to_be_bytes() const
 
 #ifndef NDEBUG
 // currently only used in DEBUG mode
-static bool is_valid_radix(size_t radix)
+static constexpr bool is_valid_radix(size_t radix)
 {
     return 1 < radix && radix <= 36;
 }
 #endif
-
-static char num2char(size_t n)
-{
-    assert(n < 36);
-    return (char) (n < 10 ? '0' + n : 'A' + n - 10);
-}
-
-static wchar_t num2wchar(size_t n)
-{
-    assert(n < 36);
-    return (wchar_t) (n < 10 ? L'0' + n : L'A' + n - 10);
-}
 
 std::string BigInteger::to_string(size_type radix) const
 {
@@ -988,7 +957,7 @@ std::string BigInteger::to_string(size_type radix) const
         const word_type mask = ~((~(word_type)0) << shift_count);
         do
         {
-            s.push_back(num2char((size_t) (tmp.data()[0] & mask)));
+            s.push_back(int_to_char((int) (tmp.data()[0] & mask), true));
             tmp >>= shift_count;
         } while (!tmp.is_zero());
     }
@@ -1000,7 +969,7 @@ std::string BigInteger::to_string(size_type radix) const
         {
             BigInteger n;
             BigInteger::divide(tmp, RADIX, &tmp, &n);
-            s.push_back(num2char((size_t) n.to_integer()));
+            s.push_back(int_to_char((int) n.to_integer(), true));
         } while (!tmp.is_zero());
     }
 
@@ -1028,7 +997,7 @@ std::wstring BigInteger::to_wstring(size_type radix) const
         const word_type mask = ~((~(word_type)0) << shift_count);
         do
         {
-            s.push_back(num2wchar((size_t) (tmp.data()[0] & mask)));
+            s.push_back(int_to_wchar((int) (tmp.data()[0] & mask), true));
             tmp >>= shift_count;
         } while (!tmp.is_zero());
     }
@@ -1040,7 +1009,7 @@ std::wstring BigInteger::to_wstring(size_type radix) const
         {
             BigInteger n;
             BigInteger::divide(tmp, RADIX, &tmp, &n);
-            s.push_back(num2wchar((size_t) n.to_integer()));
+            s.push_back(int_to_wchar((int) n.to_integer(), true));
         } while (!tmp.is_zero());
     }
 
@@ -1050,12 +1019,12 @@ std::wstring BigInteger::to_wstring(size_type radix) const
     return s;
 }
 
-static bool is_blank(char c)
+static constexpr bool is_blank(char c)
 {
     return ' ' == c || '\t' == c;
 }
 
-static bool is_blank(wchar_t c)
+static constexpr bool is_blank(wchar_t c)
 {
     return L' ' == c || L'\t' == c;
 }
@@ -1096,22 +1065,6 @@ static bool is_valid_char(wchar_t c, size_t radix)
     return L'a' <= c && c <= L'a' + (int) radix - 10 - 1;
 }
 
-static size_t char2num(char c)
-{
-    assert(is_valid_char(c, 36));
-    if ('0' <= c && c <= '9')
-        return c - '0';
-    return (c | 0x20) - 'a' + 10;
-}
-
-static size_t char2num(wchar_t c)
-{
-    assert(is_valid_char(c, 36));
-    if (L'0' <= c && c <= L'9')
-        return c - L'0';
-    return (c | 0x20) - L'a' + 10;
-}
-
 BigInteger BigInteger::value_of(const std::string& s, size_type radix)
 {
     assert(radix > 1 && radix <= 36);
@@ -1140,12 +1093,12 @@ BigInteger BigInteger::value_of(const std::string& s, size_type radix)
         if (1 == radix_bc)
         {
             ret <<= shift_count;
-            ret.data()[0] |= char2num(s[index]);
+            ret.data()[0] |= char_to_int(s[index]);
         }
         else
         {
             ret *= radix;
-            ret += char2num(s[index]);
+            ret += char_to_int(s[index]);
         }
 
         index = skip_blank(s, index + 1);
@@ -1183,12 +1136,12 @@ BigInteger BigInteger::value_of(const std::wstring& s, size_type radix)
         if (1 == radix_bc)
         {
             ret <<= shift_count;
-            ret.data()[0] |= char2num(s[index]);
+            ret.data()[0] |= char_to_int(s[index]);
         }
         else
         {
             ret *= radix;
-            ret += char2num(s[index]);
+            ret += char_to_int(s[index]);
         }
 
         index = skip_blank(s, index + 1);

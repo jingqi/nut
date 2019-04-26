@@ -8,12 +8,6 @@
 namespace nut
 {
 
-SourceLocation::SourceLocation(const char *file, int line, const char *func)
-    : _path(file), _line(line), _func(func)
-{
-    assert(nullptr != file && line >= 0);
-}
-
 bool SourceLocation::operator==(const SourceLocation& x) const
 {
     if (_line != x._line)
@@ -42,11 +36,6 @@ bool SourceLocation::operator!=(const SourceLocation& x) const
     return !(*this == x);
 }
 
-const char* SourceLocation::get_file_path() const
-{
-    return _path;
-}
-
 const char* SourceLocation::get_file_name() const
 {
     assert(nullptr != _path);
@@ -58,16 +47,6 @@ const char* SourceLocation::get_file_name() const
             ret = tmp + 1;
     }
     return ret;
-}
-
-int SourceLocation::get_line_number() const
-{
-    return _line;
-}
-
-const char* SourceLocation::get_function_name() const
-{
-    return _func;
 }
 
 std::string SourceLocation::to_string() const

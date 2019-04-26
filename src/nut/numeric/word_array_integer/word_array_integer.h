@@ -30,14 +30,13 @@ namespace nut
  * 将 word 内部字节序当成是 little-endian 来获取指定位置的字节
  */
 template <typename T>
-uint8_t get_byte_le(const T *arr, size_t le_byte_index)
+constexpr uint8_t get_byte_le(const T *arr, size_t le_byte_index)
 {
 #if NUT_ENDIAN_LITTLE_BYTE
     return reinterpret_cast<const uint8_t*>(arr)[le_byte_index];
 #else
-    const size_t word_index = le_byte_index / sizeof(T);
-    const size_t inner_index = sizeof(T) - 1 - (le_byte_index % sizeof(T));
-    return reinterpret_cast<const uint8_t*>(word + word_index)[inner_index];
+    return reinterpret_cast<const uint8_t*>(arr + (le_byte_index / sizeof(T)))
+        [sizeof(T) - 1 - (le_byte_index % sizeof(T))];
 #endif
 }
 
@@ -52,7 +51,7 @@ void set_byte_le(T *arr, size_t le_byte_index, uint8_t v)
 #else
     const size_t word_index = le_byte_index / sizeof(T);
     const size_t inner_index = sizeof(T) - 1 - (le_byte_index % sizeof(T));
-    reinterpret_cast<uint8_t*>(word + word_index)[inner_index] = v;
+    reinterpret_cast<uint8_t*>(arr + word_index)[inner_index] = v;
 #endif
 }
 
@@ -82,12 +81,13 @@ bool is_zero(const T *a, size_t N)
  *      false, 参数 < 0
  */
 template <typename T>
-bool is_positive(const T *a, size_t N)
+constexpr bool is_positive(const T *a, size_t N)
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
+#if __cplusplus >= 201402L // C++14 constexpr function feature
     assert(nullptr != a && N > 0);
-    constexpr T mask = ((T) 1) << (8 * sizeof(T) - 1);
-    return 0 == (a[N - 1] & mask);
+#endif
+    return 0 == (a[N - 1] & (((T) 1) << (8 * sizeof(T) - 1)));
 }
 
 /**
@@ -97,7 +97,7 @@ bool is_positive(const T *a, size_t N)
  *      false, 参数 >= 0
  */
 template <typename T>
-bool is_negative(const T *a, size_t N)
+constexpr bool is_negative(const T *a, size_t N)
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     return !is_positive(a, N);

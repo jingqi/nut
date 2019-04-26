@@ -14,14 +14,21 @@
 #include "../nut_config.h"
 
 
+#define __NSECS_PER_SEC  1000000000L
+
 namespace nut
 {
 
 class NUT_API TimeDiff
 {
 public:
-    TimeDiff();
-    explicit TimeDiff(double s);
+    constexpr TimeDiff()
+        : _seconds(0), _nanoseconds(0)
+    {}
+
+    constexpr explicit TimeDiff(double s)
+        : _seconds(s), _nanoseconds((s - (time_t) s) * __NSECS_PER_SEC)
+    {}
 
     /**
      * @param s 秒
@@ -29,12 +36,36 @@ public:
      */
     explicit TimeDiff(time_t s, long ns);
 
-    bool operator==(const TimeDiff& x) const;
-    bool operator!=(const TimeDiff& x) const;
-    bool operator<(const TimeDiff& x) const;
-    bool operator>(const TimeDiff& x) const;
-    bool operator<=(const TimeDiff& x) const;
-    bool operator>=(const TimeDiff& x) const;
+    constexpr bool operator==(const TimeDiff& x) const
+    {
+        return _seconds == x._seconds && _nanoseconds == x._nanoseconds;
+    }
+
+    constexpr bool operator!=(const TimeDiff& x) const
+    {
+        return !(*this == x);
+    }
+
+    constexpr bool operator<(const TimeDiff& x) const
+    {
+        return ((_seconds < x._seconds) ||
+                (_seconds == x._seconds && _nanoseconds < x._nanoseconds));
+    }
+
+    constexpr bool operator>(const TimeDiff& x) const
+    {
+        return x < *this;
+    }
+
+    constexpr bool operator<=(const TimeDiff& x) const
+    {
+        return !(x < *this);
+    }
+
+    constexpr bool operator>=(const TimeDiff& x) const
+    {
+        return !(*this < x);
+    }
 
     TimeDiff operator+(const TimeDiff& x) const;
     TimeDiff operator+(double seconds) const;
@@ -42,9 +73,15 @@ public:
     TimeDiff operator-(const TimeDiff& x) const;
     TimeDiff operator-(double seconds) const;
 
-    TimeDiff operator*(double scale) const;
+    constexpr TimeDiff operator*(double scale) const
+    {
+        return TimeDiff(to_double() * scale);
+    }
 
-    TimeDiff operator/(double scale) const;
+    constexpr TimeDiff operator/(double scale) const
+    {
+        return TimeDiff(to_double() / scale);
+    }
 
     TimeDiff operator-() const;
 
@@ -63,10 +100,20 @@ public:
     void to_timespec(struct timespec *tv);
 #endif
 
-    time_t get_seconds() const;
-    long get_nanoseconds() const;
+    constexpr time_t get_seconds() const
+    {
+        return _seconds;
+    }
 
-    double to_double() const;
+    constexpr long get_nanoseconds() const
+    {
+        return _nanoseconds;
+    }
+
+    constexpr double to_double() const
+    {
+        return ((double) _seconds) + _nanoseconds / (double) __NSECS_PER_SEC;
+    }
 
     // example: "12.2345"
     std::string to_string() const;
@@ -86,5 +133,7 @@ protected:
 };
 
 }
+
+#undef __NSECS_PER_SEC
 
 #endif
