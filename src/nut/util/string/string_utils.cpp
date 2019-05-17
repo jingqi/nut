@@ -1069,8 +1069,7 @@ static int base64_char_to_int(char c)
 
 NUT_API std::string base64_encode(const void *data, size_t cb)
 {
-    assert(nullptr != data);
-
+    assert(nullptr != data || 0 == cb);
     std::string result;
     const uint8_t *bytes = (const uint8_t*) data;
     for (size_t i = 0; i < cb; i += 3)

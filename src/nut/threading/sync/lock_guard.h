@@ -10,43 +10,44 @@ class LockGuard
 {
 public:
     /**
-     * @param lock
-     *      a pointer to a lock, nullptr will be ignored
-     * @param need_lock
-     *      whether need to lock it
-     * @param need_unlock
-     *      whether need to unlock it
+     * @param lock       A pointer to a lock, nullptr will be ignored
+     * @param defer_lock Don't lock now, and don't unlock on destruction if lock()
+     *                   is never called
      */
-    explicit LockGuard(T *lock, bool need_lock = true, bool need_unlock = true)
-        : _lock(lock), _need_unlock(need_unlock)
+    explicit LockGuard(T *lock, bool defer_lock = false)
+        : _lock(lock), _own_the_lock(!defer_lock)
     {
-        if (nullptr != _lock && need_lock)
+        if (nullptr != _lock && !defer_lock)
             _lock->lock();
     }
 
     ~LockGuard()
     {
-        if (nullptr != _lock && _need_unlock)
-            _lock->unlock();
+        release();
     }
 
     void lock()
     {
+        assert(!_own_the_lock);
         if (nullptr != _lock)
             _lock->lock();
+        _own_the_lock = true;
     }
 
     void unlock()
     {
+        assert(_own_the_lock);
         if (nullptr != _lock)
             _lock->unlock();
-        _need_unlock = false;
+        _own_the_lock = false;
     }
 
     void release()
     {
-        unlock();
+        if (nullptr != _lock && _own_the_lock)
+            _lock->unlock();
         _lock = nullptr;
+        _own_the_lock = false;
     }
 
 private:
@@ -55,7 +56,7 @@ private:
 
 private:
     T *_lock = nullptr;
-    bool _need_unlock = true;
+    bool _own_the_lock = true;
 };
 
 }
