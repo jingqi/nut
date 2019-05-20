@@ -26,15 +26,14 @@ class NUT_API scoped_gc
 private:
     typedef scoped_gc self_type;
 
-    enum
-    {
-        /** 默认内存块大小，可根据需要调整 */
-        DEFAULT_BLOCK_LEN = 2048,
-        /** 内存块头部大小 */
-        BLOCK_HEADER_SIZE = sizeof(void*),
-        /** 内存块数据部分大小 */
-        DEFAULT_BLOCK_BODY_SIZE = DEFAULT_BLOCK_LEN - BLOCK_HEADER_SIZE,
-    };
+    /** 默认内存块大小，可根据需要调整 */
+    static constexpr size_t DEFAULT_BLOCK_LEN = 2048;
+
+    /** 内存块头部大小 */
+    static constexpr size_t BLOCK_HEADER_SIZE = sizeof(void*);
+
+    /** 内存块数据部分大小 */
+    static constexpr size_t DEFAULT_BLOCK_BODY_SIZE = DEFAULT_BLOCK_LEN - BLOCK_HEADER_SIZE;
 
     /** 内存块 */
     struct Block

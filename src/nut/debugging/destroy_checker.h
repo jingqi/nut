@@ -12,11 +12,8 @@ namespace nut
 class DestroyChecker
 {
 private:
-    enum
-    {
-        CONSTRUCTED = 0x12344321,
-        DESTRUCTED = 0xDEADBEEF /* magic dead-beaf */
-    };
+    static constexpr int32_t CONSTRUCTED = 0x12344321;
+    static constexpr int32_t DESTRUCTED = 0xDEADBEEF; /* magic dead-beaf */
 
 public:
     DestroyChecker() = default;

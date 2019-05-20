@@ -41,11 +41,8 @@ template <typename K, typename V, typename HASH = std::hash<K>>
 class ConcurrentHashMap
 {
 private:
-    enum
-    {
-        FIRST_TRUNK_SIZE_SHIFT = 4, // first trunk size (initial bucket size) is 2**4 = 16
-        TRUNK_COUNT = 16, // make max bucket size is 2**(3+16) = 524288
-    };
+    static constexpr size_t FIRST_TRUNK_SIZE_SHIFT = 4; // first trunk size (initial bucket size) is 2**4 = 16
+    static constexpr size_t TRUNK_COUNT = 16; // make max bucket size is 2**(3+16) = 524288
 
     // FIXME 单独 'typedef size_t hash_type' 匹配 reverse_bits(uint64_t) 函数时
     //       会出现歧义，找不到最佳匹配

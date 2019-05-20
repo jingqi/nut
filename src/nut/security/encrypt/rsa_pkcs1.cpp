@@ -1,6 +1,7 @@
 ﻿
 #include <stdlib.h> // for ::malloc() and ::free()
 #include <string.h> // for ::memmove()
+#include <algorithm> // for std::min()
 
 #include "../../platform/endian.h"
 #include "rsa_pkcs1.h"

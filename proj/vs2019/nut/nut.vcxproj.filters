@@ -92,8 +92,11 @@
     <Filter Include="nut\time">
       <UniqueIdentifier>{2d958ace-be28-4117-bfc0-6e14a7422614}</UniqueIdentifier>
     </Filter>
-    <Filter Include="nut\util\sqlite_helper">
-      <UniqueIdentifier>{de09a3cb-a2b8-4546-b251-6f715e4ca5fb}</UniqueIdentifier>
+    <Filter Include="nut\security\encrypt\pem">
+      <UniqueIdentifier>{d28814bf-ac36-4964-ac56-1d4839bd9738}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nut\numeric\word_array_integer">
+      <UniqueIdentifier>{9fd0e0bc-eab9-40a6-8508-a8e22d24d283}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -289,9 +292,6 @@
     <ClInclude Include="..\..\..\src\nut\numeric\big_integer.h">
       <Filter>nut\numeric</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer.h">
-      <Filter>nut\numeric</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\logging\log_filter.h">
       <Filter>nut\logging</Filter>
     </ClInclude>
@@ -445,20 +445,41 @@
     <ClInclude Include="..\..\..\src\nut\util\txtcfg\text_file.h">
       <Filter>nut\util\txtcfg</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_connection.h">
-      <Filter>nut\util\sqlite_helper</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_param.h">
-      <Filter>nut\util\sqlite_helper</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_result_set.h">
-      <Filter>nut\util\sqlite_helper</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_statement.h">
-      <Filter>nut\util\sqlite_helper</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\debugging\proc_addr_maps.h">
       <Filter>nut\debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\security\encrypt\rsa_pkcs1.h">
+      <Filter>nut\security\encrypt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\security\encrypt\pem\der_reader.h">
+      <Filter>nut\security\encrypt\pem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\security\encrypt\pem\der_writer.h">
+      <Filter>nut\security\encrypt\pem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\security\encrypt\pem\pem.h">
+      <Filter>nut\security\encrypt\pem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\fft.h">
+      <Filter>nut\numeric\numeric_algo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\ntt.h">
+      <Filter>nut\numeric\numeric_algo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer\bit_op.h">
+      <Filter>nut\numeric\word_array_integer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer\div_op.h">
+      <Filter>nut\numeric\word_array_integer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer\mul_op.h">
+      <Filter>nut\numeric\word_array_integer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer\shift_op.h">
+      <Filter>nut\numeric\word_array_integer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer\word_array_integer.h">
+      <Filter>nut\numeric\word_array_integer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -654,9 +675,6 @@
     <ClCompile Include="..\..\..\src\nut\threading\priority_thread_pool.cpp">
       <Filter>nut\threading</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\numeric\word_array_integer.cpp">
-      <Filter>nut\numeric</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_record.cpp">
       <Filter>nut\threading\lockfree\hazard_pointer</Filter>
     </ClCompile>
@@ -689,6 +707,27 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\debugging\proc_addr_maps.cpp">
       <Filter>nut\debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\security\encrypt\rsa_pkcs1.cpp">
+      <Filter>nut\security\encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\security\encrypt\pem\der_reader.cpp">
+      <Filter>nut\security\encrypt\pem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\security\encrypt\pem\der_writer.cpp">
+      <Filter>nut\security\encrypt\pem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\security\encrypt\pem\pem.cpp">
+      <Filter>nut\security\encrypt\pem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\fft.cpp">
+      <Filter>nut\numeric\numeric_algo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\ntt.cpp">
+      <Filter>nut\numeric\numeric_algo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\numeric\word_array_integer\bit_op.cpp">
+      <Filter>nut\numeric\word_array_integer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

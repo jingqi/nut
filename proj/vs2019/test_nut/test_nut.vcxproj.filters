@@ -240,5 +240,17 @@
     <ClCompile Include="..\..\..\src\test_nut\security\digest\test_sha2_512.cpp">
       <Filter>test\security\digest</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\security\encrypt\test_pem.cpp">
+      <Filter>test\security\encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\security\encrypt\test_rsa_pkcs1.cpp">
+      <Filter>test\security\encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\numeric\test_fft.cpp">
+      <Filter>test\numeric</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\numeric\test_ntt.cpp">
+      <Filter>test\numeric</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

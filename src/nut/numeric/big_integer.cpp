@@ -20,7 +20,7 @@ namespace nut
 
 #if NUT_ENDIAN_BIG_BYTE
 BigInteger::BigInteger(cast_int_type v)
-    : _significant_len((sizeof(v) / sizeof(word_type)) << 1), _inner_integer(v)
+    : _significant_len((sizeof(cast_int_type) / sizeof(word_type)) << 1), _inner_integer(v)
 {
     wswap<word_type>((const word_type*)&_inner_integer, sizeof(v) / sizeof(word_type)); // Word order to little-endian
     minimize_significant_len();

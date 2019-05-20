@@ -26,7 +26,7 @@ class has_compare_method
     static int test(...);
 
 public:
-    static const bool value = sizeof(test<T>(0)) == sizeof(char);
+    static constexpr bool value = sizeof(test<T>(0)) == sizeof(char);
 };
 
 /**

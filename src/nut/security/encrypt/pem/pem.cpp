@@ -7,6 +7,7 @@
  */
 
 #include <string.h> // for ::strlen()
+#include <algorithm> // for std::min()
 
 #include "../../../util/string/string_utils.h"
 #include "pem.h"

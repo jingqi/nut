@@ -102,26 +102,26 @@ namespace nut
 {
 
 // swap endian
-constexpr uint16_t bswap_uint16(uint16_t val)
+inline uint16_t bswap_uint16(uint16_t val)
 {
 #if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
     return __builtin_bswap16(val);
 #elif NUT_PLATFORM_CC_VC
     static_assert(sizeof(unsigned short) == sizeof(uint16_t), "Unexpected 'unsigned short' size");
-    return _byteswap_ushort(val);
+    return _byteswap_ushort(val); // non-constexpr
 #else
     return (val << 8) | (val >> 8);
 #endif
 }
 
 // swap endian
-constexpr int16_t bswap_int16(int16_t val)
+inline int16_t bswap_int16(int16_t val)
 {
 #if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
     return __builtin_bswap16(val);
 #elif NUT_PLATFORM_CC_VC
     static_assert(sizeof(unsigned short) == sizeof(int16_t), "Unexpected 'unsigned short' size");
-    return (short) _byteswap_ushort((unsigned short) val);
+    return (short) _byteswap_ushort((unsigned short) val); // non-constexpr
 #else
     return (val << 8) | ((val >> 8) & 0xFF);
 #endif
@@ -134,7 +134,7 @@ inline uint32_t bswap_uint32(uint32_t val)
     return __builtin_bswap32(val);
 #elif NUT_PLATFORM_CC_VC
     static_assert(sizeof(unsigned long) == sizeof(uint32_t), "Unexpected 'unsigned long' size");
-    return _byteswap_ulong(val);
+    return _byteswap_ulong(val); // non-constexpr
 #else
     val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
     return (val << 16) | (val >> 16);
@@ -148,7 +148,7 @@ inline int32_t bswap_int32(int32_t val)
     return __builtin_bswap32(val);
 #elif NUT_PLATFORM_CC_VC
     static_assert(sizeof(unsigned long) == sizeof(int32_t), "Unexpected 'unsigned long' size");
-    return (long) _byteswap_ulong((unsigned long) val);
+    return (long) _byteswap_ulong((unsigned long) val); // non-constexpr
 #else
     val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
     return (val << 16) | ((val >> 16) & 0xFFFF);
@@ -161,7 +161,7 @@ inline uint64_t bswap_uint64(uint64_t val)
 #if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
     return __builtin_bswap64(val);
 #elif NUT_PLATFORM_CC_VC
-    return _byteswap_uint64(val);
+    return _byteswap_uint64(val); // non-constexpr
 #else
     val = ((val << 8) & 0xFF00FF00FF00FF00ULL) | ((val >> 8) & 0x00FF00FF00FF00FFULL);
     val = ((val << 16) & 0xFFFF0000FFFF0000ULL) | ((val >> 16) & 0x0000FFFF0000FFFFULL);
@@ -175,7 +175,7 @@ inline int64_t bswap_int64(int64_t val)
 #if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
     return __builtin_bswap64(val);
 #elif NUT_PLATFORM_CC_VC
-    return (int64_t) _byteswap_uint64((uint64_t) val);
+    return (int64_t) _byteswap_uint64((uint64_t) val); // non-constexpr
 #else
     val = ((val << 8) & 0xFF00FF00FF00FF00ULL) | ((val >> 8) & 0x00FF00FF00FF00FFULL);
     val = ((val << 16) & 0xFFFF0000FFFF0000ULL) | ((val >> 16) & 0x0000FFFF0000FFFFULL);

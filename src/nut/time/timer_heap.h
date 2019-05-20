@@ -28,10 +28,8 @@ public:
     // 定时器任务类型
     typedef std::function<void(timer_id_type,const TimeDiff&)> timer_task_type;
 
-    enum
-    {
-        RESOLUTION_MS = 2, // 定时器精度，单位: 毫秒
-    };
+    // 定时器精度，单位: 毫秒
+    static constexpr uint64_t RESOLUTION_MS = 2;
 
 private:
     // 定时器

@@ -15,7 +15,7 @@ class NUT_API SHA2_512
 {
 public:
     // 散列结果为 512 bits (64 bytes)
-    static const unsigned DIGEST_SIZE = 64;
+    static constexpr size_t DIGEST_SIZE = 64;
 
 public:
     SHA2_512();

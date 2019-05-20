@@ -50,14 +50,11 @@ template <typename T>
 class ConcurrentQueue
 {
 private:
-    enum
-    {
-        // 隐消使用的碰撞数组的大小
-        COLLISIONS_ARRAY_SIZE = 5,
+    // 隐消使用的碰撞数组的大小
+    static constexpr unsigned COLLISIONS_ARRAY_SIZE = 5;
 
-        // 隐消入队时等待碰撞的毫秒数
-        ELIMINATE_ENQUEUE_DELAY_MICROSECONDS = 10,
-    };
+    // 隐消入队时等待碰撞的毫秒数
+    static constexpr unsigned ELIMINATE_ENQUEUE_DELAY_MICROSECONDS = 10;
 
     typedef typename StampedPtr<void>::stamp_type stamp_type;
 
@@ -218,7 +215,7 @@ public:
         _tail.store({dummy, 1}, std::memory_order_relaxed);
 
         StampedPtr<Node> init_value(COLLISION_EMPTY_PTR, 0);
-        for (int i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
+        for (unsigned i = 0; i < COLLISIONS_ARRAY_SIZE; ++i)
             _collisions[i].store(init_value, std::memory_order_relaxed);
     }
 
@@ -513,8 +510,9 @@ private:
             return false;
 
         // 等待一段时间
+        // NOTE 创建临时变量以便避免 ODR-use
         std::this_thread::sleep_for(
-            std::chrono::milliseconds(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS));
+            std::chrono::milliseconds(unsigned(ELIMINATE_ENQUEUE_DELAY_MICROSECONDS)));
 
         // 检查是否隐消成功
         StampedPtr<Node> old_collision_to_remove = _collisions[r].load(std::memory_order_relaxed);

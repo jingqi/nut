@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <memory.h>
 #include <string>
+#include <algorithm> // for std::max()
 
 #include "../numeric/word_array_integer/bit_op.h"
 #include "../platform/int_type.h" // for ssize_t in windows VC

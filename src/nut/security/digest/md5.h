@@ -15,7 +15,7 @@ class NUT_API MD5
 {
 public:
     // 散列结果为 128 bits (16 bytes)
-    static const unsigned DIGEST_SIZE = 16;
+    static constexpr size_t DIGEST_SIZE = 16;
 
 public:
     MD5();

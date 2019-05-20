@@ -20,14 +20,12 @@ template <typename lengthfixed_mp_type>
 class segments_mp : public memory_allocator
 {
 private:
-    enum
-    {
-        // 粒度
-        GRANULARITY = 8,
-        // free list 数
-        FREE_LIST_COUNT = 128,
-    };
+    // 粒度
+    static constexpr size_t GRANULARITY = 8;
     static_assert(GRANULARITY >= sizeof(void*), "Granularity should greater then or equal to a pointer");
+
+    // free list 数
+    static constexpr size_t FREE_LIST_COUNT = 128;
 
 public:
     segments_mp(memory_allocator *ma = nullptr)
@@ -48,7 +46,7 @@ public:
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
 
-        for (int i = 0; i < FREE_LIST_COUNT; ++i)
+        for (size_t i = 0; i < FREE_LIST_COUNT; ++i)
             _freelists[i]->clear();
     }
 

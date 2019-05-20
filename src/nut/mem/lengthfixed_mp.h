@@ -17,7 +17,7 @@ namespace nut
 class NUT_API lengthfixed_stmp : public memory_allocator
 {
 private:
-    enum { MAX_FREE_NUM = 50 }; // 最多缓存的空闲块数
+    static constexpr unsigned MAX_FREE_NUM = 50; // 最多缓存的空闲块数
 
 public:
     explicit lengthfixed_stmp(size_t granularity, memory_allocator *ma = nullptr);
@@ -47,7 +47,7 @@ private:
 class NUT_API lengthfixed_mtmp : public memory_allocator
 {
 private:
-    enum { MAX_FREE_NUM = 50 }; // 最多缓存的空闲块数
+    static constexpr unsigned MAX_FREE_NUM = 50; // 最多缓存的空闲块数
 
 public:
     explicit lengthfixed_mtmp(size_t granularity, memory_allocator *ma = nullptr);

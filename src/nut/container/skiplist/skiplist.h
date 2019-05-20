@@ -31,12 +31,14 @@ template <typename K, typename NODE, typename SL>
 class SkipList
 {
 public:
-    enum
-    {
-        LEVEL_FACTOR = 2, /* 底层节点是上层的多少倍(>1) */
-        MAX_LEVEL = 16, /* 最大level数, 0-based */
-        INVALID_LEVEL = -1, /* 无效level */
-    };
+    /* 底层节点是上层的多少倍(>1) */
+    static constexpr int LEVEL_FACTOR = 2;
+
+    /* 最大level数, 0-based */
+    static constexpr int MAX_LEVEL = 16;
+
+    /* 无效level */
+    static constexpr int INVALID_LEVEL = -1;
 
     /**
      * 随机化 level

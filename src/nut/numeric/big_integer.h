@@ -293,11 +293,10 @@ private:
     void minimize_significant_len();
 
 private:
-    enum
-    {
-        INNER_BYTE_SIZE = sizeof(word_type*) + sizeof(size_type),
-        INNER_CAPACITY = INNER_BYTE_SIZE / sizeof(word_type),
-    };
+    static constexpr size_t INNER_BYTE_SIZE = (
+        sizeof(word_type*) + sizeof(size_type) > sizeof(cast_int_type) ?
+        sizeof(word_type*) + sizeof(size_type) : sizeof(cast_int_type));
+    static constexpr size_t INNER_CAPACITY = INNER_BYTE_SIZE / sizeof(word_type);
 
     size_type _significant_len = 0; // big0: 是否使用 heap; other bits: 有效 word 长度
     union
@@ -312,10 +311,6 @@ private:
     };
 };
 
-static_assert(sizeof(BigInteger::cast_int_type) <= sizeof(BigInteger::word_type*) + sizeof(BigInteger::size_type),
-              "size of cast_int_type is too large");
-static_assert(sizeof(BigInteger) == sizeof(BigInteger::size_type) * 2 + sizeof(BigInteger::word_type*),
-              "Unexpected struct size");
 
 bool operator==(BigInteger::cast_int_type a, const BigInteger& b);
 bool operator!=(BigInteger::cast_int_type a, const BigInteger& b);

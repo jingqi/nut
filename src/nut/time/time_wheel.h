@@ -34,17 +34,15 @@ public:
     // 定时器任务类型
     typedef std::function<void(timer_id_type,int64_t)> timer_task_type;
 
-    enum
-    {
-        RESOLUTION_MS = 5, // 定时器精度，单位: 毫秒
-    };
+    // 定时器精度，单位: 毫秒
+    static constexpr uint64_t RESOLUTION_MS = 5;
 
 private:
-    enum
-    {
-        BUCKETS_PER_WHEEL = 256, // 每个 wheel 包含的 bucket 数
-        MAX_WHEEL_COUNT = 8, // 最大 wheel 数，能容纳所有 uint64_t 毫秒定时器 (256**8 = 2**64)
-    };
+    // 每个 wheel 包含的 bucket 数
+    static constexpr unsigned BUCKETS_PER_WHEEL = 256;
+
+    // 最大 wheel 数，能容纳所有 uint64_t 毫秒定时器 (256**8 = 2**64)
+    static constexpr unsigned MAX_WHEEL_COUNT = 8;
 
     class Timer
     {

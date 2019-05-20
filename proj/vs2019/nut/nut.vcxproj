@@ -21,32 +21,32 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{918B37F6-E5AD-4A20-9671-798F5AF50957}</ProjectGuid>
     <RootNamespace>nut</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -170,11 +170,17 @@
     <ClInclude Include="..\..\..\src\nut\mem\sys_ma.h" />
     <ClInclude Include="..\..\..\src\nut\numeric\big_integer.h" />
     <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\bit_sieve.h" />
+    <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\fft.h" />
     <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\gcd.h" />
     <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\karatsuba.h" />
     <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\mod.h" />
+    <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\ntt.h" />
     <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\prime.h" />
-    <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer.h" />
+    <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer\bit_op.h" />
+    <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer\div_op.h" />
+    <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer\mul_op.h" />
+    <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer\shift_op.h" />
+    <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer\word_array_integer.h" />
     <ClInclude Include="..\..\..\src\nut\nut.h" />
     <ClInclude Include="..\..\..\src\nut\nut_config.h" />
     <ClInclude Include="..\..\..\src\nut\pconsole\cmd_exit.h" />
@@ -201,7 +207,11 @@
     <ClInclude Include="..\..\..\src\nut\security\digest\sha2_512.h" />
     <ClInclude Include="..\..\..\src\nut\security\encrypt\aes.h" />
     <ClInclude Include="..\..\..\src\nut\security\encrypt\aes_cbc_pkcs5.h" />
+    <ClInclude Include="..\..\..\src\nut\security\encrypt\pem\der_reader.h" />
+    <ClInclude Include="..\..\..\src\nut\security\encrypt\pem\der_writer.h" />
+    <ClInclude Include="..\..\..\src\nut\security\encrypt\pem\pem.h" />
     <ClInclude Include="..\..\..\src\nut\security\encrypt\rsa.h" />
+    <ClInclude Include="..\..\..\src\nut\security\encrypt\rsa_pkcs1.h" />
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_hash_map.h" />
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_queue.h" />
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_stack.h" />
@@ -230,10 +240,6 @@
     <ClInclude Include="..\..\..\src\nut\unittest\test_runner.h" />
     <ClInclude Include="..\..\..\src\nut\unittest\unittest.h" />
     <ClInclude Include="..\..\..\src\nut\util\console_util.h" />
-    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_connection.h" />
-    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_param.h" />
-    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_result_set.h" />
-    <ClInclude Include="..\..\..\src\nut\util\sqlite_helper\sqlite_statement.h" />
     <ClInclude Include="..\..\..\src\nut\util\string\kmp.h" />
     <ClInclude Include="..\..\..\src\nut\util\string\string_utils.h" />
     <ClInclude Include="..\..\..\src\nut\util\string\to_string.h" />
@@ -271,10 +277,12 @@
     <ClCompile Include="..\..\..\src\nut\mem\sys_ma.cpp" />
     <ClCompile Include="..\..\..\src\nut\numeric\big_integer.cpp" />
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\bit_sieve.cpp" />
+    <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\fft.cpp" />
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\gcd.cpp" />
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\mod.cpp" />
+    <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\ntt.cpp" />
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\prime.cpp" />
-    <ClCompile Include="..\..\..\src\nut\numeric\word_array_integer.cpp" />
+    <ClCompile Include="..\..\..\src\nut\numeric\word_array_integer\bit_op.cpp" />
     <ClCompile Include="..\..\..\src\nut\pconsole\cmd_exit.cpp" />
     <ClCompile Include="..\..\..\src\nut\pconsole\cmd_help.cpp" />
     <ClCompile Include="..\..\..\src\nut\pconsole\icommand.cpp" />
@@ -291,7 +299,11 @@
     <ClCompile Include="..\..\..\src\nut\security\digest\sha2_512.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\encrypt\aes.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\encrypt\aes_cbc_pkcs5.cpp" />
+    <ClCompile Include="..\..\..\src\nut\security\encrypt\pem\der_reader.cpp" />
+    <ClCompile Include="..\..\..\src\nut\security\encrypt\pem\der_writer.cpp" />
+    <ClCompile Include="..\..\..\src\nut\security\encrypt\pem\pem.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\encrypt\rsa.cpp" />
+    <ClCompile Include="..\..\..\src\nut\security\encrypt\rsa_pkcs1.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_record.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_retire_list.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\priority_thread_pool.cpp" />

@@ -15,7 +15,7 @@ class NUT_API SHA1
 {
 public:
     // 散列结果为 160 bits (20 bytes)
-    static const unsigned DIGEST_SIZE = 20;
+    static constexpr size_t DIGEST_SIZE = 20;
 
 public:
     SHA1();
