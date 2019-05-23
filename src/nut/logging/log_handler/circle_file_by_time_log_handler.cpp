@@ -27,7 +27,7 @@ CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(const std::string& dir_pa
 
     // 找到相同目录下所有的日志文件
     const std::string log_suffix(".log");
-    const std::vector<std::string> file_names = OS::list_dir(dir_path, false, true, true);
+    const std::vector<std::string> file_names = OS::listdir(dir_path, false, true, true);
     std::vector<std::string> logfile_names;
     for (size_t i = 0; i < file_names.size(); ++i)
     {
@@ -50,7 +50,7 @@ CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(const std::string& dir_pa
              i < del_count; ++i)
         {
             const std::string full_path = Path::join(dir_path, logfile_names.at(i));
-            OS::remove_file(full_path);
+            OS::removefile(full_path);
         }
     }
 
@@ -66,7 +66,7 @@ CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(const std::string& dir_pa
     file_name += log_suffix;
 
     const std::string full_path = Path::join(dir_path, file_name);
-    _ofs.open(full_path.c_str(), std::ios::trunc);
+    _ofs.open(full_path.c_str(), std::ios::app); // NOTE 'O_APPEND' 模式打开的文件支持并发写
 }
 
 void CircleFileByTimeLogHandler::handle_log(const LogRecord& rec)

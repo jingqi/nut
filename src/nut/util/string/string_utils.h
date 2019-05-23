@@ -186,31 +186,39 @@ constexpr int char_to_int(wchar_t c)
  * 将 & " < > 转换为 &amp; &quot; &lt; &gt;
  */
 NUT_API std::string xml_encode(const char *s, ssize_t len = -1);
+NUT_API std::string xml_encode(const std::string& s);
 NUT_API std::string xml_decode(const char *s, ssize_t len = -1);
+NUT_API std::string xml_decode(const std::string& s);
 
 /**
  * url 转义，例如 "http://search?ab%20c%20"
  */
 NUT_API std::string url_encode(const char *s, ssize_t len = -1);
+NUT_API std::string url_encode(const std::string& s);
 NUT_API std::string url_decode(const char *s, ssize_t len = -1);
+NUT_API std::string url_decode(const std::string& s);
 
 /**
  * 16进制编码转换，例如 "4FC012B" 等
  */
 NUT_API std::string hex_encode(const void *data, size_t cb, bool upper_case = true);
 NUT_API std::vector<uint8_t> hex_decode(const char *s, ssize_t len = -1);
+NUT_API std::vector<uint8_t> hex_decode(const std::string& s);
 
 /**
  * C 常量风格编码转换
  */
 NUT_API std::string cstyle_encode(const char *s, ssize_t len = -1);
+NUT_API std::string cstyle_encode(const std::string& s);
 NUT_API std::string cstyle_decode(const char *s, ssize_t len = -1);
+NUT_API std::string cstyle_decode(const std::string& s);
 
 /**
  * base64 编码
  */
 NUT_API std::string base64_encode(const void *data, size_t cb);
 NUT_API std::vector<uint8_t> base64_decode(const char *s, ssize_t len = -1);
+NUT_API std::vector<uint8_t> base64_decode(const std::string& s);
 
 }
 

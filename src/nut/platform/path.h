@@ -11,13 +11,16 @@
 namespace nut
 {
 
+// TODO static std::string splitunc() {}
+// TODO static bool ismount() {}
+
 class NUT_API Path
 {
 public:
     /**
      * 路径分隔符
      */
-    constexpr static char seperator()
+    constexpr static char sep()
     {
 #if NUT_PLATFORM_OS_WINDOWS
         return '\\';
@@ -26,7 +29,7 @@ public:
 #endif
     }
 
-    constexpr static wchar_t wseperator()
+    constexpr static wchar_t wsep()
     {
 #if NUT_PLATFORM_OS_WINDOWS
         return L'\\';
@@ -38,12 +41,12 @@ public:
     /**
      * 检查字符是否是路径分隔符 '\' '/'
      */
-    constexpr static bool is_path_separator(char c)
+    constexpr static bool is_sep(char c)
     {
         return '\\' == c || '/' == c;
     }
 
-    constexpr static bool is_path_separator(wchar_t c)
+    constexpr static bool is_sep(wchar_t c)
     {
         return L'\\' == c || L'/' == c;
     }
@@ -57,14 +60,15 @@ public:
     /**
      * 设置当前工作路径
      */
-    static void chdir(const char *cwd);
+    // static void chdir(const char *cwd); // Implicit conversion
     static void chdir(const wchar_t *cwd);
     static void chdir(const std::string& cwd);
     static void chdir(const std::wstring& cwd);
 
     /**
      * 是否为根目录
-     * eg,
+     *
+     * 例如:
      *   "c:"      (only for windows)
      *   "c:\"     (only for windows)
      *   "c:/"     (only for windows)
@@ -87,28 +91,35 @@ public:
     /**
      * 将相对路径转换为绝对路径
      */
-    static std::string abs_path(const char *path);
-    static std::wstring abs_path(const wchar_t *path);
-    static std::string abs_path(const std::string& path);
-    static std::wstring abs_path(const std::wstring& path);
+    static std::string abspath(const char *path);
+    static std::wstring abspath(const wchar_t *path);
+    static std::string abspath(const std::string& path);
+    static std::wstring abspath(const std::wstring& path);
+
+    /**
+     * 解析软连接, 并转换为绝对路径
+     */
+    // static std::string realpath(const char *path); // Implicit conversion
+    // static std::wstring realpath(const wchar_t *path); // Implicit conversion
+    static std::string realpath(const std::string& path);
+    static std::wstring realpath(const std::wstring& path);
 
     /**
      * 将路径转换为相对路径
      */
-    static std::string relative_path(const char *input_path, const char *ref_path);
-    static std::wstring relative_path(const wchar_t *input_path, const wchar_t *ref_path);
-    static std::string relative_path(const std::string& input_path, const std::string& ref_path);
-    static std::wstring relative_path(const std::wstring& input_path, const std::wstring& ref_path);
+    static std::string relpath(const char *input_path, const char *ref_path);
+    static std::wstring relpath(const wchar_t *input_path, const wchar_t *ref_path);
+    static std::string relpath(const std::string& input_path, const std::string& ref_path);
+    static std::wstring relpath(const std::wstring& input_path, const std::wstring& ref_path);
 
-    // TODO static std::string real_path() {}
 
     /**
      * 从路径中划分出父路径和 文件/文件夹 名
      *
-     * 例如：
-     * "ab/c/d" -> "ab/c" "d"
-     * "/ab.txt" -> "/" "ab.txt"
-     * "c:\tmp" -> "c:\" "tmp"
+     * 例如:
+     *   "ab/c/d" -> "ab/c" "d"
+     *   "/ab.txt" -> "/" "ab.txt"
+     *   "c:\tmp" -> "c:\" "tmp"
      */
     static void split(const char *path, std::string *parent_result, std::string *child_result);
     static void split(const wchar_t *path, std::wstring *parent_result, std::wstring *child_result);
@@ -118,9 +129,9 @@ public:
     /**
      * 从路径中划分出磁盘号和路径(linux路径的磁盘号假定为"")
      *
-     * 例如：
-     * "c:\mn\p" -> "c:" "\mn\p"
-     * "/mnt/sdcard" -> "" "/mnt/sdcard"
+     * 例如:
+     *   "c:\mn\p" -> "c:" "\mn\p"
+     *   "/mnt/sdcard" -> "" "/mnt/sdcard"
      */
     static void split_drive(const char *path, std::string *drive_result, std::string *rest_result);
     static void split_drive(const wchar_t *path, std::wstring *drive_result, std::wstring *rest_result);
@@ -130,88 +141,85 @@ public:
     /**
      * 从路径或者文件名中分离出后缀名
      *
-     * 例如：
-     * "a.txt" -> "a" ".txt"
+     * 例如:
+     *   "a.txt" -> "a" ".txt"
      */
     static void split_ext(const char *path, std::string *prefix_result, std::string *ext_result);
     static void split_ext(const wchar_t *path, std::wstring *prefix_result, std::wstring *ext_result);
     static void split_ext(const std::string& path, std::string *prefix_result, std::string *ext_result);
     static void split_ext(const std::wstring& path, std::wstring *prefix_result, std::wstring *ext_result);
 
-    // TODO static void splitunc() {}
-
     /**
      * 检查路径存在性(不解析符号链接)
      */
-    static bool lexists(const char *path);
-    static bool lexists(const wchar_t *path);
+    // static bool lexists(const char *path); // Implicit conversion
+    // static bool lexists(const wchar_t *path); // Implicit conversion
     static bool lexists(const std::string& path);
     static bool lexists(const std::wstring& path);
 
     /**
      * 检查路径存在性(解析符号链接)
      */
-    static bool exists(const char *path);
-    static bool exists(const wchar_t *path);
+    // static bool exists(const char *path); // Implicit conversion
+    // static bool exists(const wchar_t *path); // Implicit conversion
     static bool exists(const std::string& path);
     static bool exists(const std::wstring& path);
 
     /**
-     * last access time
+     * 获取最后访问时间
      */
-    static time_t get_atime(const char *path);
-    static time_t get_atime(const wchar_t *path);
+    // static bool get_atime(const char *path); // Implicit conversion
+    // static bool get_atime(const wchar_t *path); // Implicit conversion
     static time_t get_atime(const std::string& path);
     static time_t get_atime(const std::wstring& path);
 
     /**
-     * last modified time
+     * 获取最后修改时间
      */
-    static time_t get_mtime(const char *path);
-    static time_t get_mtime(const wchar_t *path);
+    // static bool get_mtime(const char *path); // Implicit conversion
+    // static bool get_mtime(const wchar_t *path); // Implicit conversion
     static time_t get_mtime(const std::string& path);
     static time_t get_mtime(const std::wstring& path);
 
     /**
-     * created time
+     * 获取创建时间
      */
-    static time_t get_ctime(const char *path);
-    static time_t get_ctime(const wchar_t *path);
+    // static bool get_ctime(const char *path); // Implicit conversion
+    // static bool get_ctime(const wchar_t *path); // Implicit conversion
     static time_t get_ctime(const std::string& path);
     static time_t get_ctime(const std::wstring& path);
 
     /**
      * 获取文件大小
      */
-    static long long get_size(const char *path);
-    static long long get_size(const wchar_t *path);
+    // static bool get_size(const char *path); // Implicit conversion
+    // static bool get_size(const wchar_t *path); // Implicit conversion
     static long long get_size(const std::string& path);
     static long long get_size(const std::wstring& path);
 
-    static bool is_dir(const char *path);
-    static bool is_dir(const wchar_t *path);
+    // static bool is_dir(const char *path); // Implicit conversion
+    // static bool is_dir(const wchar_t *path); // Implicit conversion
     static bool is_dir(const std::string& path);
     static bool is_dir(const std::wstring& path);
 
-    static bool is_file(const char *path);
-    static bool is_file(const wchar_t *path);
+    // static bool is_file(const char *path); // Implicit conversion
+    // static bool is_file(const wchar_t *path); // Implicit conversion
     static bool is_file(const std::string& path);
     static bool is_file(const std::wstring& path);
 
-    static bool is_link(const char *path);
-    static bool is_link(const wchar_t *path);
+    // static bool is_link(const char *path); // Implicit conversion
+    // static bool is_link(const wchar_t *path); // Implicit conversion
     static bool is_link(const std::string& path);
     static bool is_link(const std::wstring& path);
 
-    // TODO static bool ismount() {}
 
     /**
-     * 连接两个子路径
+     * 连接多个子路径
      *
-     * 例如：
-     * "a" "b" -> "a/b"
-     * "/" "sd" -> "/sd"
-     * "c:" "\tmp" -> "c:\tmp"
+     * 例如:
+     *   "a" "b" -> "a/b"
+     *   "/" "sd" -> "/sd"
+     *   "c:" "\tmp" -> "c:\tmp"
      */
     static std::string join(const char *a, const char *b);
     static std::wstring join(const wchar_t *a, const wchar_t *b);

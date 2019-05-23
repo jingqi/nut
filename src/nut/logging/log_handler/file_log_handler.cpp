@@ -15,7 +15,7 @@ FileLogHandler::FileLogHandler(const char *file, bool append)
         {
             const long long file_size = Path::get_size(file);
             if (file_size > 0)
-                _ofs << "\n\n\n\n\n\n";
+                _ofs << "\n\n";
         }
         _ofs << "------------- ---------------- ---------------\n";
     }

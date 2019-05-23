@@ -42,8 +42,8 @@ void CircleFileBySizeLogHandler::reopen(const char *file)
 
     if (_file_size > 0)
     {
-        _ofs << "\n\n\n\n\n\n";
-        _file_size += 6;
+        _ofs << "\n\n";
+        _file_size += 2;
     }
     const char *first_msg = "------------- ---------------- ---------------\n";
     _ofs << first_msg;
@@ -57,7 +57,7 @@ void CircleFileBySizeLogHandler::circle_once()
 
     // 找到相同目录下所有的日志文件
     const std::string log_suffix(".log");
-    const std::vector<std::string> file_names = OS::list_dir(_dir_path, false, true, true);
+    const std::vector<std::string> file_names = OS::listdir(_dir_path, false, true, true);
     std::vector<std::string> logfile_names;
     const size_t prefix_len = _file_prefix.length();
     for (size_t i = 0, sz = file_names.size(); i < sz; ++i)
@@ -119,7 +119,7 @@ void CircleFileBySizeLogHandler::circle_once()
              i < del_count; ++i)
         {
             const std::string full_path = Path::join(_dir_path, logfile_names.at(i));
-            OS::remove_file(full_path);
+            OS::removefile(full_path);
         }
     }
 

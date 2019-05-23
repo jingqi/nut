@@ -97,7 +97,7 @@ NUT_API std::vector<std::wstring> str_split(
 /**
  * @param sep_chars
  *      该字符串中的每一个字符都是分割字符
- */ 
+ */
 NUT_API std::vector<std::string> chr_split(
     const char *str_, const char *sep_chars, bool ignore_empty)
 {
@@ -238,7 +238,7 @@ NUT_API std::string format(const char *fmt, ...)
     while (true)
     {
         va_start(ap, fmt);
-        const int n = ::vsnprintf((char*) ret.data(), size, fmt, ap);
+        const int n = ::vsnprintf(const_cast<char*>(ret.data()), size, fmt, ap);
         va_end(ap);
 
         if (0 <= n && n < (int) size)
@@ -270,11 +270,11 @@ NUT_API std::wstring format(const wchar_t *fmt, ...)
     {
         va_start(ap, fmt);
 #if NUT_PLATFORM_CC_VC
-        const int n = ::_vsnwprintf((wchar_t*) ret.data(), size, fmt, ap);
+        const int n = ::_vsnwprintf(const_cast<wchar_t*>(ret.data()), size, fmt, ap);
 #elif NUT_PLATFORM_OS_MACOS || NUT_PLATFORM_OS_LINUX
-        const int n = ::vswprintf((wchar_t*) ret.data(), size, fmt, ap);
+        const int n = ::vswprintf(const_cast<wchar_t*>(ret.data()), size, fmt, ap);
 #else
-        const int n = ::vsnwprintf((wchar_t*) ret.data(), size, fmt, ap);
+        const int n = ::vsnwprintf(const_cast<wchar_t*>(ret.data()), size, fmt, ap);
 #endif
         va_end(ap);
 
@@ -283,7 +283,7 @@ NUT_API std::wstring format(const wchar_t *fmt, ...)
             ret.resize(n);
             break;
         }
-        
+
         if (n < 0)
             size *= 2; /* glibc 2.0 */
         else
@@ -309,7 +309,11 @@ NUT_API std::string trim(const char *str_, const char *blanks)
 
 NUT_API std::string trim(const std::string& str, const std::string& blanks)
 {
-    return trim(str.c_str(), blanks.c_str());
+    const std::string::size_type begin = str.find_first_not_of(blanks),
+        end = str.find_last_not_of(blanks);
+    if (std::string::npos != begin && std::string::npos != end)
+        return str.substr(begin, end - begin + 1);
+    return std::string();
 }
 
 NUT_API std::wstring trim(const wchar_t *str_, const wchar_t *blanks)
@@ -326,7 +330,11 @@ NUT_API std::wstring trim(const wchar_t *str_, const wchar_t *blanks)
 
 NUT_API std::wstring trim(const std::wstring& str, const std::wstring& blanks)
 {
-    return trim(str.c_str(), blanks.c_str());
+    const std::wstring::size_type begin = str.find_first_not_of(blanks),
+        end = str.find_last_not_of(blanks);
+    if (std::wstring::npos != begin && std::wstring::npos == end)
+        return str.substr(begin, end - begin + 1);
+    return std::wstring();
 }
 
 /** 去除左边空白 */
@@ -334,26 +342,24 @@ NUT_API std::string ltrim(const char *str_, const char *blanks)
 {
     assert(nullptr != str_ && nullptr != blanks);
     const std::string str(str_);
-    const std::string::size_type begin = str.find_first_not_of(blanks);
-    return str.substr(begin);
+    return str.substr(str.find_first_not_of(blanks));
 }
 
 NUT_API std::string ltrim(const std::string& str, const std::string& blanks)
 {
-    return ltrim(str.c_str(), blanks.c_str());
+    return str.substr(str.find_first_not_of(blanks));
 }
 
 NUT_API std::wstring ltrim(const wchar_t *str_, const wchar_t *blanks)
 {
     assert(nullptr != str_ && nullptr != blanks);
     const std::wstring str(str_);
-    const std::wstring::size_type begin = str.find_first_not_of(blanks);
-    return str.substr(begin);
+    return str.substr(str.find_first_not_of(blanks));
 }
 
 NUT_API std::wstring ltrim(const std::wstring str, const std::wstring& blanks)
 {
-    return ltrim(str.c_str(), blanks.c_str());
+    return str.substr(str.find_first_not_of(blanks));
 }
 
 /** 去除右边空白 */
@@ -369,7 +375,10 @@ NUT_API std::string rtrim(const char *str_, const char *blanks)
 
 NUT_API std::string rtrim(const std::string& str, const std::string& blanks)
 {
-    return rtrim(str.c_str(), blanks.c_str());
+    const std::string::size_type end = str.find_last_not_of(blanks);
+    if (std::string::npos != end)
+        return str.substr(0, end + 1);
+    return std::string();
 }
 
 NUT_API std::wstring rtrim(const wchar_t *str_, const wchar_t *blanks)
@@ -384,7 +393,10 @@ NUT_API std::wstring rtrim(const wchar_t *str_, const wchar_t *blanks)
 
 NUT_API std::wstring rtrim(const std::wstring& str, const std::wstring& blanks)
 {
-    return rtrim(str.c_str(), blanks.c_str());
+    const std::wstring::size_type end = str.find_last_not_of(blanks);
+    if (std::wstring::npos != end)
+        return str.substr(0, end + 1);
+    return std::wstring();
 }
 
 NUT_API int chricmp(int c1, int c2)
@@ -556,7 +568,7 @@ NUT_API std::wstring ascii_to_wstr(const char *str)
                                          0,
                                          str,
                                          -1,
-                                         (wchar_t*) result.data(),
+                                         const_cast<wchar_t*>(result.data()),
                                          n);
     assert(rs > 0); // success
     assert(((int) result.length()) == n - 1);
@@ -566,7 +578,7 @@ NUT_API std::wstring ascii_to_wstr(const char *str)
     if (n == (size_t) -1)
         return result; // failed
     result.resize(n);
-    const size_t rs = ::mbstowcs((wchar_t*) result.data(), str, n); // n 未包含 '\0'
+    const size_t rs = ::mbstowcs(const_cast<wchar_t*>(result.data()), str, n); // n 未包含 '\0'
     assert(rs != (size_t) -1); // success
     UNUSED(rs);
     assert(result.length() == n);
@@ -590,8 +602,8 @@ NUT_API std::string wstr_to_ascii(const wchar_t *wstr)
     if (n <= 0)
         return result; // failed
     result.resize(n - 1);
-    const int rs = ::WideCharToMultiByte(CP_ACP, 0, wstr, -1, (char*) result.data(),
-                                         n, nullptr, nullptr);
+    const int rs = ::WideCharToMultiByte(
+        CP_ACP, 0, wstr, -1, const_cast<char*>(result.data()), n, nullptr, nullptr);
     assert(rs > 0); // success
     assert(((int) result.length()) == n - 1);
     return result;
@@ -600,7 +612,7 @@ NUT_API std::string wstr_to_ascii(const wchar_t *wstr)
     if (n == (size_t) -1)
         return result; // failed
     result.resize(n);
-    const size_t rs = ::wcstombs((char*) result.data(), wstr, n);
+    const size_t rs = ::wcstombs(const_cast<char*>(result.data()), wstr, n);
     assert(rs != (size_t) -1); // success
     UNUSED(rs);
     assert(result.length() == n);
@@ -629,8 +641,8 @@ NUT_API std::wstring utf8_to_wstr(const char *str)
     if (n <= 0)
         return result; // failed
     result.resize(n - 1);
-    const int rs = ::MultiByteToWideChar(CP_UTF8, 0, str, -1,
-                                         (wchar_t*) result.data(), n);
+    const int rs = ::MultiByteToWideChar(
+        CP_UTF8, 0, str, -1, const_cast<wchar_t*>(result.data()), n);
     assert(rs > 0); // success
     assert(((int) result.length()) == n - 1);
     return result;
@@ -656,8 +668,8 @@ NUT_API std::string wstr_to_utf8(const wchar_t *wstr)
     if (n <= 0)
         return result; // failed
     result.resize(n - 1);
-    const int rs = ::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, (char*) result.data(),
-                                         n, nullptr, nullptr);
+    const int rs = ::WideCharToMultiByte(
+        CP_UTF8, 0, wstr, -1, const_cast<char*>(result.data()), n, nullptr, nullptr);
     assert(rs > 0); // success
     assert(((int) result.length()) == n - 1);
     return result;
@@ -736,6 +748,11 @@ NUT_API std::string xml_encode(const char *s, ssize_t len)
     return result;
 }
 
+NUT_API std::string xml_encode(const std::string& s)
+{
+    return xml_encode(s.c_str());
+}
+
 NUT_API std::string xml_decode(const char *s, ssize_t len)
 {
     assert(nullptr != s);
@@ -776,6 +793,11 @@ NUT_API std::string xml_decode(const char *s, ssize_t len)
     return result;
 }
 
+NUT_API std::string xml_decode(const std::string& s)
+{
+    return xml_encode(s.c_str());
+}
+
 NUT_API std::string url_encode(const char *s, ssize_t len)
 {
     assert(nullptr != s);
@@ -796,6 +818,11 @@ NUT_API std::string url_encode(const char *s, ssize_t len)
         result.push_back(int_to_char(c & 0x0f));
     }
     return result;
+}
+
+NUT_API std::string url_encode(const std::string& s)
+{
+    return url_encode(s.c_str());
 }
 
 NUT_API std::string url_decode(const char *s, ssize_t len)
@@ -819,6 +846,11 @@ NUT_API std::string url_decode(const char *s, ssize_t len)
         result.push_back(s[i]);
     }
     return result;
+}
+
+NUT_API std::string url_decode(const std::string& s)
+{
+    return url_decode(s.c_str());
 }
 
 NUT_API std::string hex_encode(const void *data, size_t cb, bool upper_case)
@@ -855,6 +887,11 @@ NUT_API std::vector<uint8_t> hex_decode(const char *s, ssize_t len)
         }
     }
     return result;
+}
+
+NUT_API std::vector<uint8_t> hex_decode(const std::string& s)
+{
+    return hex_decode(s.c_str());
 }
 
 NUT_API std::string cstyle_encode(const char *s, ssize_t len)
@@ -922,6 +959,11 @@ NUT_API std::string cstyle_encode(const char *s, ssize_t len)
         }
     }
     return result;
+}
+
+NUT_API std::string cstyle_encode(const std::string& s)
+{
+    return cstyle_encode(s.c_str());
 }
 
 NUT_API std::string cstyle_decode(const char *s, ssize_t len)
@@ -1042,6 +1084,11 @@ NUT_API std::string cstyle_decode(const char *s, ssize_t len)
     return result;
 }
 
+NUT_API std::string cstyle_decode(const std::string& s)
+{
+    return cstyle_decode(s.c_str());
+}
+
 static char int_to_base64_char(int i)
 {
     const char *base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -1143,6 +1190,11 @@ NUT_API std::vector<uint8_t> base64_decode(const char *s, ssize_t len)
         }
     }
     return result;
+}
+
+NUT_API std::vector<uint8_t> base64_decode(const std::string& s)
+{
+    return base64_decode(s.c_str());
 }
 
 }

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <nut/unittest/unittest.h>
 #include <nut/platform/path.h>
+#include <nut/util/string/string_utils.h>
 
 using namespace std;
 using namespace nut;
@@ -19,11 +20,12 @@ class TestPath : public TestFixture
         NUT_REGISTER_CASE(test_split_extw);
         NUT_REGISTER_CASE(test_join);
         NUT_REGISTER_CASE(test_joinw);
-        NUT_REGISTER_CASE(test_abs_path);
-        NUT_REGISTER_CASE(test_abs_pathw);
-        NUT_REGISTER_CASE(test_relative_path);
-        NUT_REGISTER_CASE(test_relative_pathw);
+        NUT_REGISTER_CASE(test_abspath);
+        NUT_REGISTER_CASE(test_abspathw);
+        NUT_REGISTER_CASE(test_relpath);
+        NUT_REGISTER_CASE(test_relpathw);
         NUT_REGISTER_CASE(test_bug1);
+        NUT_REGISTER_CASE(test_bug2);
     }
 
     void test_is_root()
@@ -189,68 +191,68 @@ class TestPath : public TestFixture
 #endif
     }
 
-    void test_abs_path()
+    void test_abspath()
     {
         // cout << Path::abspath("/a//c");
 
-        std::string tmp = Path::abs_path("e:\\");
+        std::string tmp = Path::abspath("e:\\");
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "e:\\");
 #else
         NUT_TA(tmp == Path::get_cwd() + "/e:");
 #endif
 
-        tmp = Path::abs_path("e:");
+        tmp = Path::abspath("e:");
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "e:\\");
 #else
         NUT_TA(tmp == Path::get_cwd() + "/e:");
 #endif
 
-        tmp = Path::abs_path("e:\\..\\..");
+        tmp = Path::abspath("e:\\..\\..");
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "e:\\");
 #else
-        NUT_TA(tmp == Path::abs_path(".."));
+        NUT_TA(tmp == Path::abspath(".."));
 #endif
 
-        tmp = Path::abs_path("e:\\..\\..\\a");
+        tmp = Path::abspath("e:\\..\\..\\a");
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "e:\\a");
 #else
-        NUT_TA(tmp == Path::abs_path("../a"));
+        NUT_TA(tmp == Path::abspath("../a"));
 #endif
 
-        tmp = Path::abs_path("e:\\b\\..\\.\\a");
+        tmp = Path::abspath("e:\\b\\..\\.\\a");
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "e:\\a");
 #else
         NUT_TA(tmp == Path::get_cwd() + "/e:/a");
 #endif
 
-        tmp = Path::abs_path("e:\\b\\\\a");
+        tmp = Path::abspath("e:\\b\\\\a");
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "e:\\b\\a");
 #else
         NUT_TA(tmp == Path::get_cwd() + "/e:/b/a");
 #endif
 
-        tmp = Path::abs_path("/");
+        tmp = Path::abspath("/");
         NUT_TA(tmp == "/");
 
-        tmp = Path::abs_path("/.");
+        tmp = Path::abspath("/.");
         NUT_TA(tmp == "/");
 
-        tmp = Path::abs_path("/../");
+        tmp = Path::abspath("/../");
         NUT_TA(tmp == "/");
 
-        tmp = Path::abs_path("/../../a");
+        tmp = Path::abspath("/../../a");
         NUT_TA(tmp == "/a");
 
-        tmp = Path::abs_path("/a/.././c");
+        tmp = Path::abspath("/a/.././c");
         NUT_TA(tmp == "/c");
 
-        tmp = Path::abs_path("/a//c");
+        tmp = Path::abspath("/a//c");
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == "/a\\c");
 #else
@@ -258,68 +260,68 @@ class TestPath : public TestFixture
 #endif
     }
 
-    void test_abs_pathw()
+    void test_abspathw()
     {
         // cout << Path::abspath("/a//c");
 
-        std::wstring tmp = Path::abs_path(L"e:\\");
+        std::wstring tmp = Path::abspath(L"e:\\");
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"e:\\");
 #else
         NUT_TA(tmp == Path::get_wcwd() + L"/e:");
 #endif
 
-        tmp = Path::abs_path(L"e:");
+        tmp = Path::abspath(L"e:");
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"e:\\");
 #else
         NUT_TA(tmp == Path::get_wcwd() + L"/e:");
 #endif
 
-        tmp = Path::abs_path(L"e:\\..\\..");
+        tmp = Path::abspath(L"e:\\..\\..");
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"e:\\");
 #else
-        NUT_TA(tmp == Path::abs_path(L".."));
+        NUT_TA(tmp == Path::abspath(L".."));
 #endif
 
-        tmp = Path::abs_path(L"e:\\..\\..\\a");
+        tmp = Path::abspath(L"e:\\..\\..\\a");
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"e:\\a");
 #else
-        NUT_TA(tmp == Path::abs_path(L"../a"));
+        NUT_TA(tmp == Path::abspath(L"../a"));
 #endif
 
-        tmp = Path::abs_path(L"e:\\b\\..\\.\\a");
+        tmp = Path::abspath(L"e:\\b\\..\\.\\a");
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"e:\\a");
 #else
         NUT_TA(tmp == Path::get_wcwd() + L"/e:/a");
 #endif
 
-        tmp = Path::abs_path(L"e:\\b\\\\a");
+        tmp = Path::abspath(L"e:\\b\\\\a");
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"e:\\b\\a");
 #else
         NUT_TA(tmp == Path::get_wcwd() + L"/e:/b/a");
 #endif
 
-        tmp = Path::abs_path(L"/");
+        tmp = Path::abspath(L"/");
         NUT_TA(tmp == L"/");
 
-        tmp = Path::abs_path(L"/.");
+        tmp = Path::abspath(L"/.");
         NUT_TA(tmp == L"/");
 
-        tmp = Path::abs_path(L"/../");
+        tmp = Path::abspath(L"/../");
         NUT_TA(tmp == L"/");
 
-        tmp = Path::abs_path(L"/../../a");
+        tmp = Path::abspath(L"/../../a");
         NUT_TA(tmp == L"/a");
 
-        tmp = Path::abs_path(L"/a/.././c");
+        tmp = Path::abspath(L"/a/.././c");
         NUT_TA(tmp == L"/c");
 
-        tmp = Path::abs_path(L"/a//c");
+        tmp = Path::abspath(L"/a//c");
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(tmp == L"/a\\c");
 #else
@@ -327,12 +329,12 @@ class TestPath : public TestFixture
 #endif
     }
 
-    void test_relative_path()
+    void test_relpath()
     {
         std::string tmp;
 
-#define _H(a, b, c)                           \
-        tmp = Path::relative_path((a), (b));  \
+#define _H(a, b, c)                     \
+        tmp = Path::relpath((a), (b));  \
         NUT_TA(tmp == (c));
 
 #if NUT_PLATFORM_OS_WINDOWS
@@ -378,12 +380,12 @@ class TestPath : public TestFixture
 #undef _H
     }
 
-    void test_relative_pathw()
+    void test_relpathw()
     {
         std::wstring tmp;
 
-#define _H(a, b, c)                             \
-        tmp = Path::relative_path((a), (b));    \
+#define _H(a, b, c)                       \
+        tmp = Path::relpath((a), (b));    \
         NUT_TA(tmp == (c));
 
 #if NUT_PLATFORM_OS_WINDOWS
@@ -435,7 +437,7 @@ class TestPath : public TestFixture
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(Path::is_abs("c:/"));
 
-        NUT_TA(Path::abs_path("c:") == "c:\\");
+        NUT_TA(Path::abspath("c:") == "c:\\");
 
         string a, b;
         Path::split("c:/a", &a, &b);
@@ -450,7 +452,7 @@ class TestPath : public TestFixture
 #else
         NUT_TA(!Path::is_abs("c:/"));
 
-        NUT_TA(Path::abs_path("c:") != "c:\\");
+        NUT_TA(Path::abspath("c:") != "c:\\");
 
         string a, b;
         Path::split("c:/a", &a, &b);
@@ -463,6 +465,13 @@ class TestPath : public TestFixture
 
         NUT_TA(Path::join("abc", "c:/") == "abc/c:/");
 #endif
+    }
+
+    void test_bug2()
+    {
+        // bug 描述：
+        //     is_abs(const wchar_t*) 在 windows 下对 find_win_drive() 返回值的处理错误
+        NUT_TA(!Path::is_abs(L"."));
     }
 };
 

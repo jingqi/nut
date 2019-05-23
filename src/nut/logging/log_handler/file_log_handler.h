@@ -14,7 +14,10 @@ namespace nut
 class NUT_API FileLogHandler : public LogHandler
 {
 public:
-    explicit FileLogHandler(const char *file, bool append = false);
+    /**
+     * @param append 是否是追加模式。追加模式日志文件支持并发写
+     */
+    explicit FileLogHandler(const char *file, bool append = true);
 
     virtual void handle_log(const LogRecord& rec) override;
 

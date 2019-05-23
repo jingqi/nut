@@ -481,6 +481,12 @@
     <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer\word_array_integer.h">
       <Filter>nut\numeric\word_array_integer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\security\digest\crc16.h">
+      <Filter>nut\security\digest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\security\digest\crc32.h">
+      <Filter>nut\security\digest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">
@@ -728,6 +734,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\numeric\word_array_integer\bit_op.cpp">
       <Filter>nut\numeric\word_array_integer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\security\digest\crc16.cpp">
+      <Filter>nut\security\digest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\security\digest\crc32.cpp">
+      <Filter>nut\security\digest</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

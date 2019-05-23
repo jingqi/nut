@@ -201,6 +201,8 @@
     <ClInclude Include="..\..\..\src\nut\rc\rc_wrapper.h" />
     <ClInclude Include="..\..\..\src\nut\rc\ref_counter.h" />
     <ClInclude Include="..\..\..\src\nut\security\digest\adler32.h" />
+    <ClInclude Include="..\..\..\src\nut\security\digest\crc16.h" />
+    <ClInclude Include="..\..\..\src\nut\security\digest\crc32.h" />
     <ClInclude Include="..\..\..\src\nut\security\digest\md5.h" />
     <ClInclude Include="..\..\..\src\nut\security\digest\sha1.h" />
     <ClInclude Include="..\..\..\src\nut\security\digest\sha2_256.h" />
@@ -293,6 +295,8 @@
     <ClCompile Include="..\..\..\src\nut\platform\savefile.cpp" />
     <ClCompile Include="..\..\..\src\nut\platform\sys.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\digest\adler32.cpp" />
+    <ClCompile Include="..\..\..\src\nut\security\digest\crc16.cpp" />
+    <ClCompile Include="..\..\..\src\nut\security\digest\crc32.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\digest\md5.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\digest\sha1.cpp" />
     <ClCompile Include="..\..\..\src\nut\security\digest\sha2_256.cpp" />

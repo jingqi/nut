@@ -33,7 +33,7 @@ ProcAddrMaps::ProcAddrMaps()
     : _destruct_tag(CONSTRUCTED_TAG)
 {
     const pid_t pid = ::getpid();
-    _exec_path = OS::read_link(format("/proc/%d/exe", pid));
+    _exec_path = OS::readlink(format("/proc/%d/exe", pid));
     _maps_path = format("/proc/%d/maps", pid);
 
     load();
