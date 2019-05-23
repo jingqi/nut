@@ -215,7 +215,7 @@ bool Path::is_abs(const std::wstring& path)
 std::string Path::abs_path(const char *path)
 {
     assert(nullptr != path);
-    
+
     std::string result;
     if (0 == path[0])
     {
@@ -287,7 +287,7 @@ std::string Path::abs_path(const char *path)
         {
             if (part == "..")
             {
-                int j = (int) result.size() - 1;
+                ssize_t j = (ssize_t) result.size() - 1;
                 if (is_path_separator(result.at(j)))
                     --j;
                 while (j >= 0)
@@ -320,7 +320,7 @@ std::string Path::abs_path(const char *path)
 std::wstring Path::abs_path(const wchar_t *path)
 {
     assert(nullptr != path);
-    
+
     std::wstring result;
     if (0 == path[0])
     {
@@ -391,7 +391,7 @@ std::wstring Path::abs_path(const wchar_t *path)
         {
             if (part == L"..")
             {
-                int j = (int) result.size() - 1;
+                ssize_t j = (ssize_t) result.size() - 1;
                 if (is_path_separator(result.at(j)))
                     --j;
                 while (j >= 0)
@@ -1268,7 +1268,7 @@ std::wstring Path::join(const wchar_t *a, const wchar_t *b)
         return result;
     }
 #endif
-    
+
     // 处理第二个参数是根目录的情况 '/', 'c:\'
     if (0 == a[0] || is_path_separator(b[0])
 #if NUT_PLATFORM_OS_WINDOWS
