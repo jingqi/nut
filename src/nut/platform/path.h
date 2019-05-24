@@ -212,7 +212,6 @@ public:
     static bool is_link(const std::string& path);
     static bool is_link(const std::wstring& path);
 
-
     /**
      * 连接多个子路径
      *

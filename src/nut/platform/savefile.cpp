@@ -13,15 +13,17 @@
 #endif
 
 #include "savefile.h"
+#include "path.h"
+#include "os.h"
 
 
 namespace nut
 {
 
 SaveFile::SaveFile(const std::string& path)
-    : _path(path)
+    : _path(Path::realpath(path))
 {
-    _tmp_path = path + ".tmp";
+    _tmp_path = _path + ".tmp";
 }
 
 SaveFile::~SaveFile()
@@ -38,29 +40,27 @@ SaveFile::~SaveFile()
 bool SaveFile::open()
 {
 #if NUT_PLATFORM_OS_WINDOWS
-    assert(INVALID_HANDLE_VALUE != _handle);
-#else
-    assert(_fd < 0);
-#endif
-
-#if NUT_PLATFORM_OS_WINDOWS
+    assert(INVALID_HANDLE_VALUE == _handle);
     _handle = ::CreateFileA(_tmp_path.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
     return INVALID_HANDLE_VALUE != _handle;
 #else
+    assert(_fd < 0);
+
     // 要覆盖的文件不能是一个目录
     struct stat info;
-    if (0 == ::lstat(_path.c_str(), &info) && S_ISDIR(info.st_mode))
+    if (0 == ::lstat(_path.c_str(), &info) && !S_ISREG(info.st_mode))
         return false;
 
     _fd = ::open(_tmp_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW, 0664);
     return _fd >= 0;
 #endif
-
 }
 
 bool SaveFile::write(const void *buf, size_t len)
 {
-    assert(nullptr != buf);
+    assert(nullptr != buf || 0 == len);
+    if (nullptr == buf || 0 == len)
+        return true;
 
 #if NUT_PLATFORM_OS_WINDOWS
     assert(INVALID_HANDLE_VALUE != _handle);
@@ -75,19 +75,17 @@ bool SaveFile::write(const void *buf, size_t len)
 void SaveFile::cancel()
 {
 #if NUT_PLATFORM_OS_WINDOWS
-    if (INVALID_HANDLE_VALUE != _handle)
-    {
-        ::CloseHandle(_handle);
-        _handle = INVALID_HANDLE_VALUE;
-        ::remove(_tmp_path.c_str());
-    }
+    if (INVALID_HANDLE_VALUE == _handle)
+        return;
+    ::CloseHandle(_handle);
+    _handle = INVALID_HANDLE_VALUE;
+    OS::removefile(_tmp_path);
 #else
-    if (_fd >= 0)
-    {
-        ::close(_fd);
-        _fd = -1;
-        ::remove(_tmp_path.c_str());
-    }
+    if (_fd < 0)
+        return;
+    ::close(_fd);
+    _fd = -1;
+    OS::removefile(_tmp_path);
 #endif
 }
 
@@ -98,7 +96,6 @@ bool SaveFile::commit()
     ::FlushFileBuffers(_handle);
     ::CloseHandle(_handle);
     _handle = INVALID_HANDLE_VALUE;
-    return 0 == ::rename(_tmp_path.c_str(), _path.c_str());
 #else
     assert(_fd >= 0);
     // NOTE 确保在重命名文件之前数据全部写入磁盘
@@ -106,9 +103,23 @@ bool SaveFile::commit()
     ::fsync(_fd);
     ::close(_fd);
     _fd = -1;
-    // NOTE rename() 是一个原子操作，能够保证被移动的数据不会丢失
-    return 0 == ::rename(_tmp_path.c_str(), _path.c_str());
 #endif
+
+    // NOTE rename() 是一个原子操作，能够保证被移动的数据不会丢失
+    if (Path::exists(_path) && !OS::removefile(_path))
+        return false;
+    if (!OS::rename(_tmp_path, _path))
+        return false;
+
+#if !NUT_PLATFORM_OS_WINDOWS
+    std::string parentdir;
+    Path::split(_path, &parentdir, nullptr);
+    const int dirfd = ::open(parentdir.c_str(), O_DIRECTORY | O_RDONLY);
+    ::fsync(dirfd);
+    ::close(dirfd);
+#endif
+
+    return true;
 }
 
 }
