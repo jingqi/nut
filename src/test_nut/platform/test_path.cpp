@@ -26,6 +26,7 @@ class TestPath : public TestFixture
         NUT_REGISTER_CASE(test_relpathw);
         NUT_REGISTER_CASE(test_bug1);
         NUT_REGISTER_CASE(test_bug2);
+        NUT_REGISTER_CASE(test_bug3);
     }
 
     void test_is_root()
@@ -169,6 +170,8 @@ class TestPath : public TestFixture
 #else
         NUT_TA(tmp == "\\tmp");
 #endif
+
+        NUT_TA(Path::join("a", "/b") == "/b");
     }
 
     void test_joinw()
@@ -189,6 +192,8 @@ class TestPath : public TestFixture
 #else
         NUT_TA(tmp == L"\\tmp");
 #endif
+
+        NUT_TA(Path::join(L"a", L"/b") == L"/b");
     }
 
     void test_abspath()
@@ -472,6 +477,17 @@ class TestPath : public TestFixture
         // bug 描述：
         //     is_abs(const wchar_t*) 在 windows 下对 find_win_drive() 返回值的处理错误
         NUT_TA(!Path::is_abs(L"."));
+    }
+
+    void test_bug3()
+    {
+        // bug 描述:
+        //     Windows 下驱动号只应该允许一个 a - z 的字母
+#if NUT_PLATFORM_OS_WINDOWS
+        NUT_TA(!Path::is_root("ab:/"));
+        NUT_TA(Path::join("m", "b:/") == "b:/");
+        NUT_TA(Path::join("m", "ab:/") == "m\\ab:/");
+#endif
     }
 };
 

@@ -269,12 +269,6 @@ bool OS::mkdir(const std::wstring& path)
 #endif
 }
 
-bool OS::mkdirs(const wchar_t *path)
-{
-    assert(nullptr != path);
-    return OS::mkdirs(wstr_to_ascii(path));
-}
-
 bool OS::mkdirs(const std::string& path)
 {
     // 可能目录已经存在

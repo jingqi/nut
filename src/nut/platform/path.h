@@ -11,9 +11,6 @@
 namespace nut
 {
 
-// TODO static std::string splitunc() {}
-// TODO static bool ismount() {}
-
 class NUT_API Path
 {
 public:
@@ -60,8 +57,6 @@ public:
     /**
      * 设置当前工作路径
      */
-    // static void chdir(const char *cwd); // Implicit conversion
-    static void chdir(const wchar_t *cwd);
     static void chdir(const std::string& cwd);
     static void chdir(const std::wstring& cwd);
 
@@ -75,43 +70,32 @@ public:
      *   "/"
      *   "\"
      */
-    static bool is_root(const char *path);
-    static bool is_root(const wchar_t *path);
     static bool is_root(const std::string& path);
     static bool is_root(const std::wstring& path);
 
     /**
      * 查看指定路径是否为绝对路径
      */
-    static bool is_abs(const char *path);
-    static bool is_abs(const wchar_t *path);
     static bool is_abs(const std::string& path);
     static bool is_abs(const std::wstring& path);
 
     /**
      * 将相对路径转换为绝对路径
      */
-    static std::string abspath(const char *path);
-    static std::wstring abspath(const wchar_t *path);
     static std::string abspath(const std::string& path);
     static std::wstring abspath(const std::wstring& path);
 
     /**
      * 解析软连接, 并转换为绝对路径
      */
-    // static std::string realpath(const char *path); // Implicit conversion
-    // static std::wstring realpath(const wchar_t *path); // Implicit conversion
     static std::string realpath(const std::string& path);
     static std::wstring realpath(const std::wstring& path);
 
     /**
      * 将路径转换为相对路径
      */
-    static std::string relpath(const char *input_path, const char *ref_path);
-    static std::wstring relpath(const wchar_t *input_path, const wchar_t *ref_path);
     static std::string relpath(const std::string& input_path, const std::string& ref_path);
     static std::wstring relpath(const std::wstring& input_path, const std::wstring& ref_path);
-
 
     /**
      * 从路径中划分出父路径和 文件/文件夹 名
@@ -121,10 +105,24 @@ public:
      *   "/ab.txt" -> "/" "ab.txt"
      *   "c:\tmp" -> "c:\" "tmp"
      */
-    static void split(const char *path, std::string *parent_result, std::string *child_result);
-    static void split(const wchar_t *path, std::wstring *parent_result, std::wstring *child_result);
     static void split(const std::string& path, std::string *parent_result, std::string *child_result);
     static void split(const std::wstring& path, std::wstring *parent_result, std::wstring *child_result);
+
+    /**
+     * 例如:
+     *   "a/b/c" -> "a/b"
+     *   "a/b/c/" -> "a/b"
+     */
+    static std::string dirname(const std::string& path);
+    static std::wstring dirname(const std::wstring& path);
+
+    /**
+     * 例如:
+     *   "a/b/c" -> "c"
+     *   "a/b/c/" -> "c"
+     */
+    static std::string basename(const std::string& path);
+    static std::wstring basename(const std::wstring& path);
 
     /**
      * 从路径中划分出磁盘号和路径(linux路径的磁盘号假定为"")
@@ -133,8 +131,6 @@ public:
      *   "c:\mn\p" -> "c:" "\mn\p"
      *   "/mnt/sdcard" -> "" "/mnt/sdcard"
      */
-    static void split_drive(const char *path, std::string *drive_result, std::string *rest_result);
-    static void split_drive(const wchar_t *path, std::wstring *drive_result, std::wstring *rest_result);
     static void split_drive(const std::string& path, std::string *drive_result, std::string *rest_result);
     static void split_drive(const std::wstring& path, std::wstring *drive_result, std::wstring *rest_result);
 
@@ -144,73 +140,8 @@ public:
      * 例如:
      *   "a.txt" -> "a" ".txt"
      */
-    static void split_ext(const char *path, std::string *prefix_result, std::string *ext_result);
-    static void split_ext(const wchar_t *path, std::wstring *prefix_result, std::wstring *ext_result);
     static void split_ext(const std::string& path, std::string *prefix_result, std::string *ext_result);
     static void split_ext(const std::wstring& path, std::wstring *prefix_result, std::wstring *ext_result);
-
-    /**
-     * 检查路径存在性(不解析符号链接)
-     */
-    // static bool lexists(const char *path); // Implicit conversion
-    // static bool lexists(const wchar_t *path); // Implicit conversion
-    static bool lexists(const std::string& path);
-    static bool lexists(const std::wstring& path);
-
-    /**
-     * 检查路径存在性(解析符号链接)
-     */
-    // static bool exists(const char *path); // Implicit conversion
-    // static bool exists(const wchar_t *path); // Implicit conversion
-    static bool exists(const std::string& path);
-    static bool exists(const std::wstring& path);
-
-    /**
-     * 获取最后访问时间
-     */
-    // static bool get_atime(const char *path); // Implicit conversion
-    // static bool get_atime(const wchar_t *path); // Implicit conversion
-    static time_t get_atime(const std::string& path);
-    static time_t get_atime(const std::wstring& path);
-
-    /**
-     * 获取最后修改时间
-     */
-    // static bool get_mtime(const char *path); // Implicit conversion
-    // static bool get_mtime(const wchar_t *path); // Implicit conversion
-    static time_t get_mtime(const std::string& path);
-    static time_t get_mtime(const std::wstring& path);
-
-    /**
-     * 获取创建时间
-     */
-    // static bool get_ctime(const char *path); // Implicit conversion
-    // static bool get_ctime(const wchar_t *path); // Implicit conversion
-    static time_t get_ctime(const std::string& path);
-    static time_t get_ctime(const std::wstring& path);
-
-    /**
-     * 获取文件大小
-     */
-    // static bool get_size(const char *path); // Implicit conversion
-    // static bool get_size(const wchar_t *path); // Implicit conversion
-    static long long get_size(const std::string& path);
-    static long long get_size(const std::wstring& path);
-
-    // static bool is_dir(const char *path); // Implicit conversion
-    // static bool is_dir(const wchar_t *path); // Implicit conversion
-    static bool is_dir(const std::string& path);
-    static bool is_dir(const std::wstring& path);
-
-    // static bool is_file(const char *path); // Implicit conversion
-    // static bool is_file(const wchar_t *path); // Implicit conversion
-    static bool is_file(const std::string& path);
-    static bool is_file(const std::wstring& path);
-
-    // static bool is_link(const char *path); // Implicit conversion
-    // static bool is_link(const wchar_t *path); // Implicit conversion
-    static bool is_link(const std::string& path);
-    static bool is_link(const std::wstring& path);
 
     /**
      * 连接多个子路径
@@ -220,20 +151,84 @@ public:
      *   "/" "sd" -> "/sd"
      *   "c:" "\tmp" -> "c:\tmp"
      */
-    static std::string join(const char *a, const char *b);
-    static std::wstring join(const wchar_t *a, const wchar_t *b);
     static std::string join(const std::string& a, const std::string& b);
     static std::wstring join(const std::wstring& a, const std::wstring& b);
 
-    static std::string join(const char *a, const char *b, const char *c);
-    static std::wstring join(const wchar_t *a, const wchar_t *b, const wchar_t *c);
     static std::string join(const std::string& a, const std::string& b, const std::string& c);
     static std::wstring join(const std::wstring& a, const std::wstring& b, const std::wstring& c);
 
-    static std::string join(const char *a, const char *b, const char *c, const char *d);
-    static std::wstring join(const wchar_t *a, const wchar_t *b, const wchar_t *c, const wchar_t *d);
-    static std::string join(const std::string& a, const std::string& b, const std::string& c, const std::string& d);
-    static std::wstring join(const std::wstring& a, const std::wstring& b, const std::wstring& c, const std::wstring& d);
+    static std::string join(const std::string& a, const std::string& b, const std::string& c,
+                            const std::string& d);
+    static std::wstring join(const std::wstring& a, const std::wstring& b, const std::wstring& c,
+                             const std::wstring& d);
+
+    static std::string join(const std::string& a, const std::string& b, const std::string& c,
+                            const std::string& d, const std::string& e);
+    static std::wstring join(const std::wstring& a, const std::wstring& b, const std::wstring& c,
+                             const std::wstring& d, const std::wstring& e);
+
+    /**
+     * 检查路径存在性
+     */
+    static bool exists(const std::string& path);
+    static bool exists(const std::wstring& path);
+
+    /**
+     * 检查路径存在性(不解析符号链接)
+     */
+    static bool lexists(const std::string& path);
+    static bool lexists(const std::wstring& path);
+
+    /**
+     * 获取最后访问时间
+     */
+    static time_t get_atime(const std::string& path);
+    static time_t get_atime(const std::wstring& path);
+
+    /**
+     * 获取最后访问时间(不解析符号链接)
+     */
+    static time_t get_latime(const std::string& path);
+    static time_t get_latime(const std::wstring& path);
+
+    /**
+     * 获取最后修改时间
+     */
+    static time_t get_mtime(const std::string& path);
+    static time_t get_mtime(const std::wstring& path);
+
+    /**
+     * 获取最后修改时间(不解析符号链接)
+     */
+    static time_t get_lmtime(const std::string& path);
+    static time_t get_lmtime(const std::wstring& path);
+
+    /**
+     * 获取创建时间
+     */
+    static time_t get_ctime(const std::string& path);
+    static time_t get_ctime(const std::wstring& path);
+
+    /**
+     * 获取创建时间(不解析符号链接)
+     */
+    static time_t get_lctime(const std::string& path);
+    static time_t get_lctime(const std::wstring& path);
+
+    /**
+     * 获取文件大小
+     */
+    static long long get_size(const std::string& path);
+    static long long get_size(const std::wstring& path);
+
+    static bool is_link(const std::string& path);
+    static bool is_link(const std::wstring& path);
+
+    static bool is_dir(const std::string& path);
+    static bool is_dir(const std::wstring& path);
+
+    static bool is_file(const std::string& path);
+    static bool is_file(const std::wstring& path);
 
 private:
     Path() = delete;
