@@ -25,11 +25,11 @@ private:
     class Node
     {
     public:
-        Node(T&& k)
+        explicit Node(T&& k)
             : _key(std::forward<T>(k))
         {}
 
-        Node(const T& k)
+        explicit Node(const T& k)
             : _key(k)
         {}
 
@@ -81,6 +81,10 @@ private:
             assert(nullptr != _next && 0 <= lv && lv <= _level);
             _next[lv] = n;
         }
+
+    private:
+        Node(const Node&) = delete;
+        Node& operator=(const Node&) = delete;
 
     private:
         const T _key;

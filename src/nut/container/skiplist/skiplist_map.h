@@ -111,6 +111,10 @@ private:
         }
 
     private:
+        Node(const Node&) = delete;
+        Node& operator=(const Node&) = delete;
+
+    private:
         const K _key;
         V _value;
         Node **_next = nullptr;

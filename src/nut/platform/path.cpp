@@ -848,7 +848,7 @@ bool Path::lexists(const std::string& path)
     // 非符号链接
     return 0 == ::access(fullpath.c_str(), F_OK); // F_OK 检查存在性
 #else
-    return 0 == ::faccessat(AT_FDCWD, fullpath.c_str(), F_OK, AT_SYMLINK_NOFOLLOW); // F_OK 检查存在性, AT_SYMLINK_NOFOLLOW 不解析符号链接
+    return 0 == ::faccessat(AT_FDCWD, Path::abspath(path).c_str(), F_OK, AT_SYMLINK_NOFOLLOW); // F_OK 检查存在性, AT_SYMLINK_NOFOLLOW 不解析符号链接
 #endif
 }
 

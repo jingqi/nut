@@ -36,6 +36,10 @@ public:
     void delete_fixture(TestFixture *p);
 
 private:
+    TestRegister(const TestRegister&) = delete;
+    TestRegister& operator=(const TestRegister&) = delete;
+
+private:
     new_fixture_func _new_func = nullptr;
     delete_fixture_func _delete_func = nullptr;
 

@@ -42,7 +42,6 @@ private:
     Logger() = default;
     ~Logger();
 
-    // Non-copyable
     Logger(const Logger&) = delete;
     Logger& operator=(const Logger&) = delete;
 

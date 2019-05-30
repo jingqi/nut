@@ -2,6 +2,7 @@
 #ifndef ___HEADFILE_A6EE8581_AE7D_42C8_A4F8_0F10CE4F4E7E_
 #define ___HEADFILE_A6EE8581_AE7D_42C8_A4F8_0F10CE4F4E7E_
 
+#include <assert.h>
 #include <string.h> // for memcpy()
 #include <type_traits>
 #include <atomic>

@@ -52,7 +52,7 @@ BigInteger::BigInteger(const BigInteger& x)
 BigInteger::~BigInteger()
 {
     if (is_using_heap())
-        ::free(_heap_data);
+        ::free(_heap.data);
     _significant_len = 0;
 }
 
@@ -61,7 +61,7 @@ void BigInteger::ensure_cap(size_type new_size)
     // Small memory
     if (new_size <= INNER_CAPACITY)
     {
-        assert(!is_using_heap() || _heap_capacity >= INNER_CAPACITY);
+        assert(!is_using_heap() || _heap.capacity >= INNER_CAPACITY);
         return;
     }
 
@@ -76,22 +76,22 @@ void BigInteger::ensure_cap(size_type new_size)
         assert(nullptr != heap_data);
         ::memcpy(heap_data, _inner_data, sizeof(word_type) * significant_words_length());
         _significant_len |= 0x01; // Set using heap flag
-        _heap_data = heap_data;
-        _heap_capacity = new_cap;
+        _heap.data = heap_data;
+        _heap.capacity = new_cap;
         return;
     }
 
     // Heap memory to heap memory
-    if (new_size <= _heap_capacity)
+    if (new_size <= _heap.capacity)
         return;
 
-    size_type new_cap = _heap_capacity * 3 / 2;
+    size_type new_cap = _heap.capacity * 3 / 2;
     if (new_cap < new_size)
         new_cap = new_size;
 
-    _heap_data = (word_type*) ::realloc(_heap_data, sizeof(word_type) * new_cap);
-    assert(nullptr != _heap_data);
-    _heap_capacity = new_cap;
+    _heap.data = (word_type*) ::realloc(_heap.data, sizeof(word_type) * new_cap);
+    assert(nullptr != _heap.data);
+    _heap.capacity = new_cap;
 }
 
 /**
@@ -122,7 +122,7 @@ BigInteger& BigInteger::operator=(BigInteger&& x)
         return *this;
 
     if (is_using_heap())
-        ::free(_heap_data);
+        ::free(_heap.data);
 
     _significant_len = x._significant_len;
     ::memcpy(_inner_data, x._inner_data, INNER_BYTE_SIZE);
@@ -744,7 +744,7 @@ void BigInteger::set_significant_len(size_type len)
 
 const BigInteger::word_type* BigInteger::data() const
 {
-    return is_using_heap() ? _heap_data : _inner_data;
+    return is_using_heap() ? _heap.data : _inner_data;
 }
 
 BigInteger::word_type* BigInteger::data()

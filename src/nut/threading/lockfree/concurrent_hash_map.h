@@ -54,44 +54,76 @@ private:
                 sizeof(size_t) == sizeof(uint32_t), uint32_t,
                 uint64_t>::type>::type>::type hash_type;
 
-    class Entry
+    /**
+     * NOTE 这个类不能有任何虚函数
+     */
+    struct Entry
     {
     public:
-        Entry(K&& k, V&& v, hash_type rh)
-            : key(std::forward<K>(k)), value(std::forward<V>(v)), reversed_hash(rh)
+        void construct_plump(K&& k, V&& v, hash_type rh)
         {
-            assert(0 != (rh & 0x01));
+            assert(0 != (rh & 0x01)); // Not dummy
+
+            new (&next) AtomicStampedPtr<Entry>;
+            new (const_cast<K*>(&key)) K(std::forward<K>(k));
+            new (const_cast<V*>(&value)) V(std::forward<V>(v));
+            const_cast<hash_type&>(reversed_hash) = rh;
         }
 
-        Entry(const K& k, V&& v, hash_type rh)
-            : key(k), value(std::forward<V>(v)), reversed_hash(rh)
+        void construct_plump(const K& k, V&& v, hash_type rh)
         {
-            assert(0 != (rh & 0x01));
+            assert(0 != (rh & 0x01)); // Not dummy
+
+            new (&next) AtomicStampedPtr<Entry>;
+            new (const_cast<K*>(&key)) K(k);
+            new (const_cast<V*>(&value)) V(std::forward<V>(v));
+            const_cast<hash_type&>(reversed_hash) = rh;
         }
 
-        Entry(K& k, const V& v, hash_type rh)
-            : key(std::forward<K>(k)), value(v), reversed_hash(rh)
+        void construct_plump(K& k, const V& v, hash_type rh)
         {
-            assert(0 != (rh & 0x01));
+            assert(0 != (rh & 0x01)); // Not dummy
+
+            new (&next) AtomicStampedPtr<Entry>;
+            new (const_cast<K*>(&key)) K(std::forward<K>(k));
+            new (const_cast<V*>(&value)) V(v);
+            const_cast<hash_type&>(reversed_hash) = rh;
         }
 
-        Entry(const K& k, const V& v, hash_type rh)
-            : key(k), value(v), reversed_hash(rh)
+        void construct_plump(const K& k, const V& v, hash_type rh)
         {
-            assert(0 != (rh & 0x01));
+            assert(0 != (rh & 0x01)); // Not dummy
+
+            new (&next) AtomicStampedPtr<Entry>;
+            new (const_cast<K*>(&key)) K(k);
+            new (const_cast<V*>(&value)) V(v);
+            const_cast<hash_type&>(reversed_hash) = rh;
         }
 
         void construct_dummy(hash_type rh, Entry *n)
         {
-            assert(0 == (rh & 0x01));
-            const_cast<hash_type&>(reversed_hash) = rh;
+            assert(0 == (rh & 0x01)); // Dummy
 
             new (&next) AtomicStampedPtr<Entry>(n, 0);
+            const_cast<hash_type&>(reversed_hash) = rh;
         }
 
-        void destruct_dummy()
+        void destruct()
         {
             (&next)->~AtomicStampedPtr();
+            if (!is_dummy())
+            {
+                (&key)->~K();
+                (&value)->~V();
+            }
+        }
+
+        // Only used by 'HPRetireList'
+        static void delete_entry(void *n)
+        {
+            assert(nullptr != n);
+            ((Entry*) n)->destruct();
+            ::free(n);
         }
 
         bool is_dummy() const
@@ -103,6 +135,12 @@ private:
         {
             return IS_RETIRED(next.load(std::memory_order_relaxed).stamp);
         }
+
+    private:
+        Entry() = delete;
+        Entry(const Entry&) = delete;
+        ~Entry() = delete;
+        Entry& operator=(const Entry&) = delete;
 
     public:
         AtomicStampedPtr<Entry> next;
@@ -138,15 +176,12 @@ public:
         while (nullptr != p)
         {
             Entry *next = p->next.load(std::memory_order_acquire).ptr;
-            if (p->is_dummy())
-            {
-                p->destruct_dummy();
-            }
-            else
-            {
-                p->~Entry();
+
+            const bool dummy = p->is_dummy();
+            p->destruct();
+            if (!dummy)
                 ::free(p);
-            }
+
             p = next;
         }
 
@@ -199,7 +234,7 @@ public:
                 // Delete temperory new item
                 if (nullptr != new_item)
                 {
-                    new_item->~Entry();
+                    new_item->destruct();
                     ::free(new_item);
                 }
 
@@ -215,7 +250,7 @@ public:
                 // NOTE 'k' 在构建 'new_item' 之后，由于 while 循环还可能会在
                 //      search_link() 调用时使用，故不能用右值引用传入
                 new_item = (Entry*) ::malloc(sizeof(Entry));
-                new (new_item) Entry(k, std::forward<V>(v), rh);
+                new_item->construct_plump(k, std::forward<V>(v), rh);
             }
 
             // Do insert
@@ -262,7 +297,7 @@ public:
                 // Delete temperory new item
                 if (nullptr != new_item)
                 {
-                    new_item->~Entry();
+                    new_item->destruct();
                     ::free(new_item);
                 }
 
@@ -278,7 +313,7 @@ public:
                 // NOTE 'k' 在构建 'new_item' 之后，由于 while 循环还可能会在
                 //      search_link() 调用时使用，故不能用右值引用传入
                 new_item = (Entry*) ::malloc(sizeof(Entry));
-                new (new_item) Entry(k, v, rh);
+                new_item->construct_plump(k, v, rh);
             }
 
             // Do insert
@@ -545,7 +580,7 @@ private:
         {
             if (nullptr != pvalue)
                 *pvalue = std::move(item.ptr->value);
-            HPRetireList::retire_object(item.ptr);
+            HPRetireList::retire_any(Entry::delete_entry, item.ptr);
             _size.fetch_sub(1, std::memory_order_relaxed);
             return 1;
         }

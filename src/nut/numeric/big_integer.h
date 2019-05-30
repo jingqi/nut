@@ -293,19 +293,21 @@ private:
     void minimize_significant_len();
 
 private:
+    size_type _significant_len = 0; // big0: 是否使用 heap; other bits: 有效 word 长度
+
+    struct HeapInfo
+    {
+        word_type *data = nullptr;
+        size_type capacity = 0;
+    };
+
     static constexpr size_t INNER_BYTE_SIZE = (
-        sizeof(word_type*) + sizeof(size_type) > sizeof(cast_int_type) ?
-        sizeof(word_type*) + sizeof(size_type) : sizeof(cast_int_type));
+        sizeof(HeapInfo) > sizeof(cast_int_type) ? sizeof(HeapInfo) : sizeof(cast_int_type));
     static constexpr size_t INNER_CAPACITY = INNER_BYTE_SIZE / sizeof(word_type);
 
-    size_type _significant_len = 0; // big0: 是否使用 heap; other bits: 有效 word 长度
     union
     {
-        struct
-        {
-            word_type *_heap_data; // 堆上缓冲区, little-endian, 带符号
-            size_type _heap_capacity;
-        };
+        HeapInfo _heap; // 堆上缓冲区, little-endian, 带符号
         cast_int_type _inner_integer;
         word_type _inner_data[INNER_CAPACITY]; // 内部缓冲区, little-endian, 带符号
     };

@@ -258,5 +258,8 @@
     <ClCompile Include="..\..\..\src\test_nut\security\digest\test_crc32.cpp">
       <Filter>test\security\digest</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\platform\test_savefile.cpp">
+      <Filter>test\platform</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
