@@ -7,6 +7,7 @@
 #include <atomic>
 
 #include "../../../nut_config.h"
+#include "../../../debugging/destroy_checker.h"
 
 
 namespace nut
@@ -75,6 +76,8 @@ private:
     static void scan_retire_list(HPRetireList *rl);
 
 private:
+    NUT_DEBUGGING_DESTROY_CHECKER
+
     static std::atomic<size_t> _global_version;
 
     std::list<RetireRecord> _retire_list;

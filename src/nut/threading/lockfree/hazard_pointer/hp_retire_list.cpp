@@ -20,6 +20,8 @@ std::atomic<size_t> HPRetireList::_global_version = ATOMIC_VAR_INIT(0);
  */
 HPRetireList::~HPRetireList()
 {
+    NUT_DEBUGGING_ASSERT_ALIVE;
+
     if (_retire_list.empty())
         return;
 

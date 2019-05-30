@@ -15,11 +15,12 @@ SpinLock::SpinLock()
 #elif NUT_PLATFORM_OS_MACOS
     ::pthread_mutexattr_t attr;
     ::pthread_mutexattr_init(&attr);
-    ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE); /* make the mutex recursive */
+    // ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE); // 重入
     const int rs = ::pthread_mutex_init(&_spinlock, &attr);
     assert(0 == rs);
     UNUSED(rs);
 #else
+    // pthread_spinlock_t 不支持重入
     const int rs = ::pthread_spin_init(&_spinlock, PTHREAD_PROCESS_PRIVATE);
     assert(0 == rs);
     UNUSED(rs);

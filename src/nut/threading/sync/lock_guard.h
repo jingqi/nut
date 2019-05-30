@@ -2,6 +2,9 @@
 #ifndef ___HEADFILE___37C18F74_55B3_430D_B169_1B0AA23A8A08_
 #define ___HEADFILE___37C18F74_55B3_430D_B169_1B0AA23A8A08_
 
+#include <assert.h>
+
+
 namespace nut
 {
 
@@ -9,15 +12,11 @@ template <typename T>
 class LockGuard
 {
 public:
-    /**
-     * @param lock       A pointer to a lock, nullptr will be ignored
-     * @param defer_lock Don't lock now, and don't unlock on destruction if lock()
-     *                   is never called
-     */
-    explicit LockGuard(T *lock, bool defer_lock = false)
-        : _lock(lock), _own_the_lock(!defer_lock)
+    explicit LockGuard(T *lock, bool lock_now = true)
+        : _lock(lock)
     {
-        if (nullptr != _lock && !defer_lock)
+        assert(nullptr != lock);
+        if (lock_now)
             _lock->lock();
     }
 
@@ -26,28 +25,31 @@ public:
         release();
     }
 
+    void set_need_unlock(bool need_unlock)
+    {
+        _need_unlock = need_unlock;
+    }
+
     void lock()
     {
-        assert(!_own_the_lock);
         if (nullptr != _lock)
             _lock->lock();
-        _own_the_lock = true;
+        _need_unlock = true;
     }
 
     void unlock()
     {
-        assert(_own_the_lock);
         if (nullptr != _lock)
             _lock->unlock();
-        _own_the_lock = false;
+        _need_unlock = false;
     }
 
     void release()
     {
-        if (nullptr != _lock && _own_the_lock)
+        if (nullptr != _lock && _need_unlock)
             _lock->unlock();
         _lock = nullptr;
-        _own_the_lock = false;
+        _need_unlock = false;
     }
 
 private:
@@ -56,7 +58,7 @@ private:
 
 private:
     T *_lock = nullptr;
-    bool _own_the_lock = true;
+    bool _need_unlock = true;
 };
 
 }

@@ -3,7 +3,7 @@
 #define ___HEADFILE_A6EE8581_AE7D_42C8_A4F8_0F10CE4F4E7E_
 
 #include <assert.h>
-#include <string.h> // for memcpy()
+#include <string.h> // for ::memcpy()
 #include <type_traits>
 #include <atomic>
 
@@ -40,7 +40,7 @@ class AtomicStampedPtr;
  *    缺点是，操作位数变长，性能有所损失。
  */
 template <typename T>
-class StampedPtr
+class alignas(sizeof(void*) * 2) StampedPtr
 {
     template <typename U> friend class AtomicStampedPtr;
 
@@ -91,25 +91,27 @@ public:
     stamp_type stamp; // high part
 };
 
-static_assert(sizeof(StampedPtr<void>) == 2 * sizeof(void*), "StampedPtr<> size error");
+static_assert(sizeof(StampedPtr<void>) == sizeof(void*) * 2, "StampedPtr<> size error");
 
 
 /**
  * 在 Windows 64 MSVC 和部分 linux 下，std::atomic<StampedPtr<>> 不是 lockfree
  * 的而是用 spinlock 实现的，而某些无锁算法需要访问已经析构甚至 free 的内存中的
  * 指针和标记，需要这块内存是 lockfree 的。
- * 故使用 AtomicStampedPtr<> 替代 std::atomic<StampedPtr<>>，以保证其是 lockfree
- * 的。
- *
- * NOTE 为了避免在 Windows 64 下 InterlockedCompareExchange128() 操作崩溃，需要
- *      声明为 16 字节对齐
+ *     故使用 AtomicStampedPtr<> 替代 std::atomic<StampedPtr<>>，以保证其是
+ * lockfree 的。
  */
 #if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_BITS_64 && NUT_PLATFORM_CC_VC
 
 /**
- * 基于
- *   uint64_t low_part, high_part;
- * 布局的实现
+ * 基于 windows 64 MSVC 的 ::InterlockedCompareExchange128() 实现
+ *
+ * NOTE
+ * - 为了避免在 Windows 64 下 ::InterlockedCompareExchange128() 操作崩溃，需要
+ *   声明为 16 字节对齐
+ * - ::InterlockedCompareExchange128() 自带完全内存栅栏
+ *
+ * SEE https://docs.microsoft.com/en-us/windows/desktop/api/winnt/nf-winnt-interlockedcompareexchange128
  */
 template <typename T>
 class alignas(sizeof(StampedPtr<void>)) AtomicStampedPtr
@@ -121,29 +123,23 @@ public:
     AtomicStampedPtr(T *p, typename StampedPtr<T>::stamp_type s)
     {
         assert(sizeof(AtomicStampedPtr<T>) == sizeof(StampedPtr<T>));
-        ((StampedPtr<T>*) this)->set(p, s);
+        reinterpret_cast<StampedPtr<T>*>(this)->set(p, s);
     }
 
     StampedPtr<T> load(std::memory_order order = std::memory_order_seq_cst) const noexcept
     {
         StampedPtr<T> ret;
-        atomic_cas(const_cast<int64_t volatile*>(&_low_part), (int64_t*) &ret, 0, 0);
-
-        if (order != std::memory_order_relaxed)
-            std::atomic_thread_fence(order); // Usually 'acquire'
-
+        atomic_cas(const_cast<int64_t volatile*>(&_low_part),
+                   reinterpret_cast<int64_t*>(&ret), 0, 0);
         return ret;
     }
 
     void store(const StampedPtr<T>& desired,
                std::memory_order order = std::memory_order_seq_cst) noexcept
     {
-        if (order != std::memory_order_relaxed)
-            std::atomic_thread_fence(order); // Usually 'release'
-
         int64_t expected[2];
-        ::memcpy(expected, (void*) &_low_part, sizeof(StampedPtr<T>));
-        const int64_t *raw_desired = (const int64_t*) &desired;
+        ::memcpy(expected, const_cast<int64_t*>(&_low_part), sizeof(StampedPtr<T>));
+        const int64_t *raw_desired = reinterpret_cast<const int64_t*>(&desired);
         while (!atomic_cas(&_low_part, expected, raw_desired[0], raw_desired[1]))
         {}
     }
@@ -151,13 +147,11 @@ public:
     StampedPtr<T> exchange(const StampedPtr<T>& desired,
                            std::memory_order order = std::memory_order_seq_cst) noexcept
     {
-        if (order != std::memory_order_relaxed)
-            std::atomic_thread_fence(order); // Usually 'release'
-
         StampedPtr<T> ret;
-        ::memcpy(&ret, (void*) &_low_part, sizeof(StampedPtr<T>));
-        const int64_t *raw_desired = (const int64_t*) &desired;
-        while (!atomic_cas(&_low_part, (int64_t*) &ret, raw_desired[0], raw_desired[1]))
+        ::memcpy(&ret, const_cast<int64_t*>(&_low_part), sizeof(StampedPtr<T>));
+        const int64_t *raw_desired = reinterpret_cast<const int64_t*>(&desired);
+        while (!atomic_cas(&_low_part, reinterpret_cast<int64_t*>(&ret),
+                           raw_desired[0], raw_desired[1]))
         {}
 
         return ret;
@@ -181,18 +175,11 @@ public:
                                  std::memory_order success, std::memory_order failure) noexcept
     {
         assert(nullptr != expected);
-        // NOTE 无法提前预知是否 success, 这里只能无论是否 success 都设置内存栅栏
-        if (success != std::memory_order_relaxed)
-            std::atomic_thread_fence(success); // Usually 'release'
 
-        const int64_t *raw_desired = (const int64_t*) &desired;
-        if (!atomic_cas(&_low_part, (int64_t*) expected, raw_desired[0], raw_desired[1]))
-        {
-            // Failed
-            if (failure != std::memory_order_relaxed)
-                std::atomic_thread_fence(failure); // Usually 'acquire'
+        const int64_t *raw_desired = reinterpret_cast<const int64_t*>(&desired);
+        if (!atomic_cas(&_low_part, reinterpret_cast<int64_t*>(expected),
+                        raw_desired[0], raw_desired[1]))
             return false;
-        }
 
         // Success
         return true;
@@ -207,21 +194,19 @@ public:
 
 private:
     static bool atomic_cas(int64_t volatile* dest, int64_t *expected,
-                           int64_t low_desire, int64_t high_desire)
+                           int64_t low_desired, int64_t high_desired)
     {
         assert(nullptr != dest && nullptr != expected);
 
         // NOTE 根据微软的文档，无论 CAS 是否成功，'dup_expected' 都会返回原始值
-        int64_t dup_expected[2];
-        dup_expected[0] = expected[0];
-        dup_expected[1] = expected[1];
+        alignas(16) int64_t dup_expected[2];
+        ::memcpy(dup_expected, expected, sizeof(StampedPtr<T>));
         const int rs = ::InterlockedCompareExchange128(
-            dest, high_desire, low_desire, dup_expected); // 'high_desire' comes first by API spec
+            dest, high_desired, low_desired, dup_expected); // 'high_desired' comes first by API spec
         if (1 == rs)
             return true;
 
-        expected[0] = dup_expected[0];
-        expected[1] = dup_expected[1];
+        ::memcpy(expected, dup_expected, sizeof(StampedPtr<T>));
         return false;
     }
 
@@ -234,9 +219,9 @@ private:
     (NUT_PLATFORM_OS_LINUX && NUT_PLATFORM_BITS_64)
 
 /**
- * 基于
- *   uint128_t cas;
- * 布局的实现
+ * 基于 gcc 内建的 __atomic_xxx() 函数实现
+ *
+ * SEE https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
  */
 template <typename T>
 class alignas(sizeof(StampedPtr<void>)) AtomicStampedPtr
@@ -259,44 +244,32 @@ public:
     AtomicStampedPtr(T *p, typename StampedPtr<T>::stamp_type s)
     {
         assert(sizeof(AtomicStampedPtr<T>) == sizeof(StampedPtr<T>));
-        ((StampedPtr<T>*) this)->set(p, s);
+        reinterpret_cast<StampedPtr<T>*>(this)->set(p, s);
     }
 
     StampedPtr<T> load(std::memory_order order = std::memory_order_seq_cst) const noexcept
     {
         StampedPtr<T> ret;
-        atomic_cas(const_cast<uint128_t volatile*>(&_cas_value), (uint128_t*) &ret, 0);
-
-        if (order != std::memory_order_relaxed)
-            std::atomic_thread_fence(order); // Usually 'acquire'
-
+        *reinterpret_cast<cas_type*>(&ret) = __atomic_load_n(
+            &_cas_value, to_builtin_memorder(order));
         return ret;
     }
 
     void store(const StampedPtr<T>& desired,
                std::memory_order order = std::memory_order_seq_cst) noexcept
     {
-        if (order != std::memory_order_relaxed)
-            std::atomic_thread_fence(order); // Usually 'release'
-
-        uint128_t expected = _cas_value;
-        const uint128_t *raw_desired = (const uint128_t*) &desired;
-        while (!atomic_cas(&_cas_value, &expected, *raw_desired))
-        {}
+        __atomic_store_n(
+            &_cas_value, *reinterpret_cast<const cas_type*>(&desired),
+            to_builtin_memorder(order));
     }
 
     StampedPtr<T> exchange(const StampedPtr<T>& desired,
                            std::memory_order order = std::memory_order_seq_cst) noexcept
     {
-        if (order != std::memory_order_relaxed)
-            std::atomic_thread_fence(order); // Usually 'release'
-
         StampedPtr<T> ret;
-        ::memcpy(&ret, (void*) &_cas_value, sizeof(StampedPtr<T>));
-        const uint128_t *raw_desired = (const uint128_t*) &desired;
-        while (!atomic_cas(&_cas_value, (uint128_t*) &ret, *raw_desired))
-        {}
-
+        *reinterpret_cast<cas_type*>(&ret) = __atomic_exchange_n(
+            &_cas_value, *reinterpret_cast<const cas_type*>(&desired),
+            to_builtin_memorder(order));
         return ret;
     }
 
@@ -304,76 +277,81 @@ public:
                                std::memory_order success, std::memory_order failure) noexcept
     {
         assert(nullptr != expected);
-        return compare_exchange_strong(expected, desired, success, failure);
+        return __atomic_compare_exchange_n(
+            &_cas_value, reinterpret_cast<cas_type*>(expected),
+            *reinterpret_cast<const cas_type*>(&desired), true,
+            to_builtin_memorder(success), to_builtin_memorder(failure));
     }
 
     bool compare_exchange_weak(StampedPtr<T> *expected, const StampedPtr<T>& desired,
                                std::memory_order order = std::memory_order_seq_cst) noexcept
     {
         assert(nullptr != expected);
-        return compare_exchange_weak(expected, desired, order, order);
+        const int builtin_order = to_builtin_memorder(order);
+        return __atomic_compare_exchange_n(
+            &_cas_value, reinterpret_cast<cas_type*>(expected),
+            *reinterpret_cast<const cas_type*>(&desired), true,
+            builtin_order, builtin_order);
     }
 
     bool compare_exchange_strong(StampedPtr<T> *expected, const StampedPtr<T>& desired,
                                  std::memory_order success, std::memory_order failure) noexcept
     {
         assert(nullptr != expected);
-        // NOTE 无法提前预知是否 success, 这里只能无论是否 success 都设置内存栅栏
-        if (success != std::memory_order_relaxed)
-            std::atomic_thread_fence(success); // Usually 'release'
 
-        const uint128_t *raw_desired = (const uint128_t*) &desired;
-        if (!atomic_cas(&_cas_value, (uint128_t*) expected, *raw_desired))
-        {
-            // Failed
-            if (failure != std::memory_order_relaxed)
-                std::atomic_thread_fence(failure); // Usually 'acquire'
-            return false;
-        }
-
-        // Success
-        return true;
+        return __atomic_compare_exchange_n(
+            &_cas_value, reinterpret_cast<cas_type*>(expected),
+            *reinterpret_cast<const cas_type*>(&desired), false,
+            to_builtin_memorder(success), to_builtin_memorder(failure));
     }
 
     bool compare_exchange_strong(StampedPtr<T> *expected, const StampedPtr<T>& desired,
                             std::memory_order order = std::memory_order_seq_cst) noexcept
     {
         assert(nullptr != expected);
-        return compare_exchange_strong(expected, desired, order, order);
+        const int builtin_order = to_builtin_memorder(order);
+        return __atomic_compare_exchange_n(
+            &_cas_value, reinterpret_cast<cas_type*>(expected),
+            *reinterpret_cast<const cas_type*>(&desired), false,
+            builtin_order, builtin_order);
     }
 
 private:
-    static bool atomic_cas(uint128_t volatile *dest, uint128_t *expected, uint128_t desired)
+    static int to_builtin_memorder(std::memory_order order)
     {
-        assert(nullptr != dest && nullptr != expected);
+        switch (order)
+        {
+        case std::memory_order_relaxed:
+            return __ATOMIC_RELAXED;
 
-        // NOTE '__sync_val_compare_and_swap()' doesn't support 128 bits, so we
-        //      get it by ourself
-        uint64_t low_expected = ((uint64_t*) expected)[0],
-            high_expected = ((uint64_t*) expected)[1];
-        const uint64_t low_desired = (uint64_t) desired,
-            high_desired = (uint64_t) (desired >> 64);
-        bool rs = false;
-        __asm__ __volatile__ (
-            "lock cmpxchg16b %1;\n"
-            "sete %0;\n"
-            : "=m"(rs), "+m" (*dest), "+a" (low_expected), "+d" (high_expected)
-            : "b" (low_desired), "c" (high_desired));
-        if (!rs)
-            *expected = (((uint128_t) high_expected) << 64) | low_expected;
-        return rs;
+        case std::memory_order_consume:
+            return __ATOMIC_CONSUME;
+
+        case std::memory_order_acquire:
+            return __ATOMIC_ACQUIRE;
+
+        case std::memory_order_release:
+            return __ATOMIC_RELEASE;
+
+        case std::memory_order_acq_rel:
+            return __ATOMIC_ACQ_REL;
+
+        case std::memory_order_seq_cst:
+            return __ATOMIC_SEQ_CST;
+        }
+
+        assert(false);
+        return __ATOMIC_SEQ_CST;
     }
 
 private:
-    cas_type volatile _cas_value = 0;
+    cas_type _cas_value = 0;
 };
 
 #else
 
 /**
- * 基于
- *   StampedPtr<void> stamped_ptr;
- * 布局的实现
+ * 基于 std::atomic<> 实现
  */
 template <typename T>
 class alignas(sizeof(StampedPtr<void>)) AtomicStampedPtr
@@ -385,9 +363,9 @@ public:
     }
 
     AtomicStampedPtr(T *p, typename StampedPtr<T>::stamp_type s)
+        : _stamped_ptr(StampedPtr<T>(p, s))
     {
         assert(_stamped_ptr.is_lock_free());
-        _stamped_ptr.store({p, s}, std::memory_order_relaxed);
     }
 
     StampedPtr<T> load(std::memory_order order = std::memory_order_seq_cst) const noexcept
@@ -441,7 +419,7 @@ private:
 
 #endif
 
-static_assert(sizeof(AtomicStampedPtr<void>) == 2 * sizeof(void*), "AtomicStampedPtr<> size or align error");
+static_assert(sizeof(AtomicStampedPtr<void>) == sizeof(void*) * 2, "AtomicStampedPtr<> size or align error");
 
 #pragma pack()
 

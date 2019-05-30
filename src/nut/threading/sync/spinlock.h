@@ -16,6 +16,11 @@
 namespace nut
 {
 
+/**
+ * 自旋锁
+ *
+ * NOTE 自旋锁不支持重入
+ */
 class NUT_API SpinLock
 {
 public:
