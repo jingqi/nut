@@ -3,6 +3,7 @@
 #define ___HEADFILE_E6D40B10_E5D6_4092_A38B_4E69E5B8E123_
 
 #include <string>
+#include <vector>
 
 #include "../nut_config.h"
 #include "platform.h"
@@ -98,17 +99,6 @@ public:
     static std::wstring relpath(const std::wstring& input_path, const std::wstring& ref_path);
 
     /**
-     * 从路径中划分出父路径和 文件/文件夹 名
-     *
-     * 例如:
-     *   "ab/c/d" -> "ab/c" "d"
-     *   "/ab.txt" -> "/" "ab.txt"
-     *   "c:\tmp" -> "c:\" "tmp"
-     */
-    static void split(const std::string& path, std::string *parent_result, std::string *child_result);
-    static void split(const std::wstring& path, std::wstring *parent_result, std::wstring *child_result);
-
-    /**
      * 例如:
      *   "a/b/c" -> "a/b"
      *   "a/b/c/" -> "a/b"
@@ -123,6 +113,28 @@ public:
      */
     static std::string basename(const std::string& path);
     static std::wstring basename(const std::wstring& path);
+
+    /**
+     * 从路径中划分出 dirname 和 basename
+     *
+     * 例如:
+     *   "ab/c/d" -> "ab/c" "d"
+     *   "/ab.txt" -> "/" "ab.txt"
+     *   "c:\tmp" -> "c:\" "tmp"
+     */
+    static void split(const std::string& path, std::string *parent_result, std::string *child_result);
+    static void split(const std::wstring& path, std::wstring *parent_result, std::wstring *child_result);
+
+    /**
+     * 拆分出路径上所有 目录/文件 名
+     *
+     * 例如:
+     *   "a/b/c" -> "a" "b" "c"
+     *   "c:/a/../b" -> "c:/" "a" ".." "b"
+     *   "/m/n" -> "/" "m" "n"
+     */
+    static std::vector<std::string> split_entries(const std::string& path);
+    static std::vector<std::wstring> split_entries(const std::wstring& path);
 
     /**
      * 从路径中划分出磁盘号和路径(linux路径的磁盘号假定为"")

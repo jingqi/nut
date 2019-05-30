@@ -81,7 +81,7 @@ static constexpr bool is_letter(C c)
 
 // "c:" or "c:/"
 template <typename STR>
-static bool starts_win_drive(const STR& path)
+static bool starts_with_win_drive(const STR& path)
 {
     const size_t len = path.length();
     return len >= 2 && is_letter(path.at(0)) && int(':') == path.at(1) &&
@@ -98,7 +98,7 @@ bool Path::is_root(const std::string& path)
 
 #if NUT_PLATFORM_OS_WINDOWS
     // "c:" or "c:/"
-    return path.length() <= 3 && starts_win_drive(path);
+    return path.length() <= 3 && starts_with_win_drive(path);
 #else
     return false;
 #endif
@@ -113,7 +113,7 @@ bool Path::is_root(const std::wstring& path)
 
 #if NUT_PLATFORM_OS_WINDOWS
     // "c:" or "c:/"
-    return path.length() <= 3 && starts_win_drive(path);
+    return path.length() <= 3 && starts_with_win_drive(path);
 #else
     return false;
 #endif
@@ -124,13 +124,13 @@ bool Path::is_abs(const std::string& path)
     if (path.empty())
         return false;
 
-    // Linux / Unix root or home
+    // Unix root or home
     if (is_sep(path.at(0)) || '~' == path.at(0))
         return true;
 
 #if NUT_PLATFORM_OS_WINDOWS
-    // Windows partion root
-    return starts_win_drive(path);
+    // Windows partition root
+    return starts_with_win_drive(path);
 #else
     return false;
 #endif
@@ -141,13 +141,13 @@ bool Path::is_abs(const std::wstring& path)
     if (path.empty())
         return false;
 
-    // Linux / Unix root or home
+    // Unix root or home
     if (is_sep(path.at(0)) || L'~' == path.at(0))
         return true;
 
 #if NUT_PLATFORM_OS_WINDOWS
-    // Windows partion root
-    return starts_win_drive(path);
+    // Windows partition root
+    return starts_with_win_drive(path);
 #else
     return false;
 #endif
@@ -180,8 +180,8 @@ std::string Path::abspath(const std::string& path)
         {
             if (part.empty())
             {
-                // Linux root
-                result.push_back('/');
+                // Unix root
+                result.push_back(sep());
                 continue;
             }
             else if (part == "~")
@@ -201,14 +201,15 @@ std::string Path::abspath(const std::string& path)
                 result += ::getenv("USERPROFILE");
 #else
                 // MacOS /Users/xxx
-                // Linux /home/xxx
+                // Unix /home/xxx
                 result += ::getenv("HOME");
 #endif
                 result.push_back(sep());
                 part.clear();
                 continue;
             }
-            else if (part.at(part.length() - 1) == ':')
+#if NUT_PLATFORM_OS_WINDOWS
+            else if (starts_with_win_drive(part))
             {
                 // Windows partition root
                 result += part;
@@ -216,6 +217,7 @@ std::string Path::abspath(const std::string& path)
                 part.clear();
                 continue;
             }
+#endif
         }
 
         // 组装
@@ -232,7 +234,11 @@ std::string Path::abspath(const std::string& path)
                         break;
                     --j;
                 }
-                if (j == 0 || (j > 0 && result.at(j - 1) == ':'))
+#if NUT_PLATFORM_OS_WINDOWS
+                if (0 == j || (2 == j && starts_with_win_drive(result)))
+#else
+                if (0 == j)
+#endif
                     result.resize(j + 1);
                 else if (j > 0)
                     result.resize(j);
@@ -280,8 +286,8 @@ std::wstring Path::abspath(const std::wstring& path)
         {
             if (part.empty())
             {
-                // Linux root
-                result.push_back(L'/');
+                // Unix root
+                result.push_back(wsep());
                 continue;
             }
             else if (part == L"~")
@@ -301,14 +307,15 @@ std::wstring Path::abspath(const std::wstring& path)
                 result += ascii_to_wstr(::getenv("USERPROFILE"));
 #else
                 // MacOS /Users/xxx
-                // Linux /home/xxx
+                // Unix /home/xxx
                 result += ascii_to_wstr(::getenv("HOME"));
 #endif
                 result.push_back(wsep());
                 part.clear();
                 continue;
             }
-            else if (part.at(part.length() - 1) == L':')
+#if NUT_PLATFORM_OS_WINDOWS
+            else if (starts_with_win_drive(part))
             {
                 // Windows partition root
                 result += part;
@@ -316,6 +323,7 @@ std::wstring Path::abspath(const std::wstring& path)
                 part.clear();
                 continue;
             }
+#endif
         }
 
         // 组装
@@ -332,7 +340,11 @@ std::wstring Path::abspath(const std::wstring& path)
                         break;
                     --j;
                 }
-                if (j == 0 || (j > 0 && result.at(j - 1) == L':'))
+#if NUT_PLATFORM_OS_WINDOWS
+                if (0 == j || (2 == j && starts_with_win_drive(result)))
+#else
+                if (0 == j)
+#endif
                     result.resize(j + 1);
                 else if (j > 0)
                     result.resize(j);
@@ -529,6 +541,34 @@ std::wstring Path::relpath(const std::wstring& input_path, const std::wstring& r
     return result;
 }
 
+std::string Path::dirname(const std::string& path)
+{
+    std::string ret;
+    Path::split(path, &ret, nullptr);
+    return ret;
+}
+
+std::wstring Path::dirname(const std::wstring& path)
+{
+    std::wstring ret;
+    Path::split(path, &ret, nullptr);
+    return ret;
+}
+
+std::string Path::basename(const std::string& path)
+{
+    std::string ret;
+    Path::split(path, nullptr, &ret);
+    return ret;
+}
+
+std::wstring Path::basename(const std::wstring& path)
+{
+    std::wstring ret;
+    Path::split(path, nullptr, &ret);
+    return ret;
+}
+
 void Path::split(const std::string& path, std::string *parent_result, std::string *child_result)
 {
     assert(nullptr != parent_result || nullptr != child_result);
@@ -553,11 +593,13 @@ void Path::split(const std::string& path, std::string *parent_result, std::strin
 
     if (nullptr != parent_result)
     {
-        if (0 == pos // Unix 根目录
 #if NUT_PLATFORM_OS_WINDOWS
-            || (2 == pos && is_letter(path.at(0)) && ':' == path.at(1)) // Unix 根目录; 磁盘号 + 根目录
+        // Unix root; Windows 磁盘号 + 根目录
+        if (0 == pos || (2 == pos && starts_with_win_drive(path)))
+#else
+        // Unix root
+        if (0 == pos)
 #endif
-            )
             parent_result->append(path.c_str(), pos + 1);
         else
             parent_result->append(path.c_str(), pos);
@@ -590,11 +632,13 @@ void Path::split(const std::wstring& path, std::wstring *parent_result, std::wst
 
     if (nullptr != parent_result)
     {
-        if (0 == pos // Unix 根目录
 #if NUT_PLATFORM_OS_WINDOWS
-            || (2 == pos && is_letter(path.at(0)) && L':' == path.at(1)) // Unix 根目录; 磁盘号 + 根目录
+        // Unix root; Windows 磁盘号 + 根目录
+        if (0 == pos || (2 == pos && starts_with_win_drive(path)))
+#else
+        // Unix root
+        if (0 == pos)
 #endif
-            )
             parent_result->append(path.c_str(), pos + 1);
         else
             parent_result->append(path.c_str(), pos);
@@ -603,32 +647,94 @@ void Path::split(const std::wstring& path, std::wstring *parent_result, std::wst
         child_result->append(path.c_str() + pos + 1);
 }
 
-std::string Path::dirname(const std::string& path)
+std::vector<std::string> Path::split_entries(const std::string &path)
 {
-    std::string ret;
-    Path::split(path, &ret, nullptr);
-    return ret;
+    std::vector<std::string> result;
+    std::string part;
+    for (size_t i = 0, len = path.length(); i < len; ++i)
+    {
+        const char c = path.at(i);
+        if (!is_sep(c))
+        {
+            part.push_back(c);
+            if (i + 1 < len)
+                continue;
+        }
+
+        // 处理根目录
+        if (result.empty())
+        {
+            if (part.empty())
+            {
+                // Unix root
+                result.push_back("/");
+                continue;
+            }
+#if NUT_PLATFORM_OS_WINDOWS
+            else if (starts_with_win_drive(part))
+            {
+                // Windows partition root
+                part.push_back(sep());
+                result.push_back(part);
+                part.clear();
+                continue;
+            }
+#endif
+        }
+
+        if (!part.empty())
+        {
+            result.push_back(part);
+            part.clear();
+        }
+    }
+
+    return result;
 }
 
-std::wstring Path::dirname(const std::wstring& path)
+std::vector<std::wstring> Path::split_entries(const std::wstring &path)
 {
-    std::wstring ret;
-    Path::split(path, &ret, nullptr);
-    return ret;
-}
+    std::vector<std::wstring> result;
+    std::wstring part;
+    for (size_t i = 0, len = path.length(); i < len; ++i)
+    {
+        const wchar_t c = path.at(i);
+        if (!is_sep(c))
+        {
+            part.push_back(c);
+            if (i + 1 < len)
+                continue;
+        }
 
-std::string Path::basename(const std::string& path)
-{
-    std::string ret;
-    Path::split(path, nullptr, &ret);
-    return ret;
-}
+        // 处理根目录
+        if (result.empty())
+        {
+            if (part.empty())
+            {
+                // Unix root
+                result.push_back(L"/");
+                continue;
+            }
+#if NUT_PLATFORM_OS_WINDOWS
+            else if (starts_with_win_drive(part))
+            {
+                // Windows partition root
+                part.push_back(sep());
+                result.push_back(part);
+                part.clear();
+                continue;
+            }
+#endif
+        }
 
-std::wstring Path::basename(const std::wstring& path)
-{
-    std::wstring ret;
-    Path::split(path, nullptr, &ret);
-    return ret;
+        if (!part.empty())
+        {
+            result.push_back(part);
+            part.clear();
+        }
+    }
+
+    return result;
 }
 
 void Path::split_drive(const std::string& path, std::string *drive_result, std::string *rest_result)
@@ -636,7 +742,7 @@ void Path::split_drive(const std::string& path, std::string *drive_result, std::
     assert(nullptr != drive_result || nullptr != rest_result);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    if (!starts_win_drive(path))
+    if (!starts_with_win_drive(path))
     {
         if (nullptr != rest_result)
             *rest_result += path;
@@ -658,7 +764,7 @@ void Path::split_drive(const std::wstring& path, std::wstring *drive_result, std
     assert(nullptr != drive_result || nullptr != rest_result);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    if (!starts_win_drive(path))
+    if (!starts_with_win_drive(path))
     {
         if (nullptr != rest_result)
             *rest_result += path;
@@ -742,7 +848,7 @@ std::string Path::join(const std::string& a, const std::string& b)
 #if NUT_PLATFORM_OS_WINDOWS
     // 处理 windows 盘符 + 盘根路径
     // "c:/a/b" "/c/d" -> "c:/c/d"
-    if (starts_win_drive(a) && !b.empty() && is_sep(b.at(0)))
+    if (starts_with_win_drive(a) && !b.empty() && is_sep(b.at(0)))
         return a.substr(0, 2) + b;
 #endif
 
@@ -763,7 +869,7 @@ std::wstring Path::join(const std::wstring& a, const std::wstring& b)
 #if NUT_PLATFORM_OS_WINDOWS
     // 处理 windows 盘符 + 盘根路径
     // "c:/a/b" "/c/d" -> "c:/c/d"
-    if (starts_win_drive(a) && !b.empty() && is_sep(b.at(0)))
+    if (starts_with_win_drive(a) && !b.empty() && is_sep(b.at(0)))
         return a.substr(0, 2) + b;
 #endif
 
