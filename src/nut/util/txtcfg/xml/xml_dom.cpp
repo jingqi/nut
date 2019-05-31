@@ -77,11 +77,6 @@ void XmlDom::set_root(rc_ptr<XmlElement> root)
     }
 }
 
-/**
- * 解析文本为 XML DOM
- *
- * @param ignore_text_blank 忽略文本首尾的空白和换行
- */
 void XmlDom::parse(const std::string& s, bool ignore_text_blank)
 {
     _version = "1.0";
@@ -142,11 +137,6 @@ void XmlDom::parse(const std::string& s, bool ignore_text_blank)
         _root.set_null();
 }
 
-/**
- * 将 XML DOM 序列化为文本
- *
- * @param format 格式化输出，以便于阅读
- */
 std::string XmlDom::serielize(bool format) const
 {
     // xml header

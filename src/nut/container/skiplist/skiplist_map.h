@@ -416,41 +416,47 @@ public:
     }
 
     /**
-     * @return true if insert success, else old data found
+     * @return true, 插入成功
+     *         false, 存在重复 key, 插入失败
      */
     bool insert(K&& k, V&& v)
     {
-        return put(std::forward<K>(k), std::forward<V>(v), false);
+        return 0 != put(std::forward<K>(k), std::forward<V>(v), false);
     }
 
     /**
-     * @return true if insert success, else old data found
+     * @return true, 插入成功
+     *         false, 存在重复 key, 插入失败
      */
     bool insert(const K& k, V&& v)
     {
-        return put(k, std::forward<V>(v), false);
+        return 0 != put(k, std::forward<V>(v), false);
     }
 
     /**
-     * @return true if insert success, else old data found
+     * @return true, 插入成功
+     *         false, 存在重复 key, 插入失败
      */
     bool insert(K&& k, const V& v)
     {
-        return put(std::forward<K>(k), v, false);
+        return 0 != put(std::forward<K>(k), v, false);
     }
 
     /**
-     * @return true if insert success, else old data found
+     * @return true, 插入成功
+     *         false, 存在重复 key, 插入失败
      */
     bool insert(const K& k, const V& v)
     {
-        return put(k, v, false);
+        return 0 != put(k, v, false);
     }
 
     /**
-     * @return true if new data inserted, else old data replaced
+     * @return -1, duplicated key, force replaced
+     *         0, duplicated key, canceled
+     *         1, new data inserted
      */
-    bool put(K&& k, V&& v, bool replace = true)
+    int put(K&& k, V&& v, bool force = true)
     {
         if (nullptr == _head)
         {
@@ -463,7 +469,7 @@ public:
             n->set_level(0);
             n->set_next(0, nullptr);
             _size = 1;
-            return true;
+            return 1;
         }
         assert(_level >= 0);
 
@@ -473,9 +479,10 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
-            if (replace)
-                n->set_value(std::forward<V>(v));
-            return false;
+            if (!force)
+                return 0;
+            n->set_value(std::forward<V>(v));
+            return -1;
         }
 
         // Insert
@@ -484,13 +491,15 @@ public:
         algo_type::insert_node(n, *this, pre_lv);
         ::free(pre_lv);
         ++_size;
-        return true;
+        return 1;
     }
 
     /**
-     * @return true if new data inserted, else old data replaced
+     * @return -1, duplicated key, force replaced
+     *         0, duplicated key, canceled
+     *         1, new data inserted
      */
-    bool put(const K& k, V&& v, bool replace = true)
+    int put(const K& k, V&& v, bool force = true)
     {
         if (nullptr == _head)
         {
@@ -503,7 +512,7 @@ public:
             n->set_level(0);
             n->set_next(0, nullptr);
             _size = 1;
-            return true;
+            return 1;
         }
         assert(_level >= 0);
 
@@ -513,9 +522,10 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
-            if (replace)
-                n->set_value(std::forward<V>(v));
-            return false;
+            if (!force)
+                return 0;
+            n->set_value(std::forward<V>(v));
+            return -1;
         }
 
         // Insert
@@ -524,13 +534,15 @@ public:
         algo_type::insert_node(n, *this, pre_lv);
         ::free(pre_lv);
         ++_size;
-        return true;
+        return 1;
     }
 
     /**
-     * @return true if new data inserted, else old data replaced
+     * @return -1, duplicated key, force replaced
+     *         0, duplicated key, canceled
+     *         1, new data inserted
      */
-    bool put(K&& k, const V& v, bool replace = true)
+    int put(K&& k, const V& v, bool force = true)
     {
         if (nullptr == _head)
         {
@@ -543,7 +555,7 @@ public:
             n->set_level(0);
             n->set_next(0, nullptr);
             _size = 1;
-            return true;
+            return 1;
         }
         assert(_level >= 0);
 
@@ -553,9 +565,10 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
-            if (replace)
-                n->set_value(v);
-            return false;
+            if (!force)
+                return 0;
+            n->set_value(v);
+            return -1;
         }
 
         // Insert
@@ -564,13 +577,15 @@ public:
         algo_type::insert_node(n, *this, pre_lv);
         ::free(pre_lv);
         ++_size;
-        return true;
+        return 1;
     }
 
     /**
-     * @return true if new data inserted, else old data replaced
+     * @return -1, duplicated key, force replaced
+     *         0, duplicated key, canceled
+     *         1, new data inserted
      */
-    bool put(const K& k, const V& v, bool replace = true)
+    int put(const K& k, const V& v, bool force = true)
     {
         if (nullptr == _head)
         {
@@ -583,7 +598,7 @@ public:
             n->set_level(0);
             n->set_next(0, nullptr);
             _size = 1;
-            return true;
+            return 1;
         }
         assert(_level >= 0);
 
@@ -593,9 +608,10 @@ public:
         if (nullptr != n)
         {
             ::free(pre_lv);
-            if (replace)
-                n->set_value(v);
-            return false;
+            if (!force)
+                return 0;
+            n->set_value(v);
+            return -1;
         }
 
         // Insert
@@ -604,11 +620,12 @@ public:
         algo_type::insert_node(n, *this, pre_lv);
         ::free(pre_lv);
         ++_size;
-        return true;
+        return 1;
     }
 
     /**
-     * @return true if data removed, else nothing happened
+     * @return true, 删除成功
+     *         false, 未找到键值, 删除失败
      */
     bool remove(const K& k)
     {
@@ -634,18 +651,15 @@ public:
         return true;
     }
 
-    bool get(const K& k, V *v) const
+    const V* get(const K& k) const
     {
-        assert(nullptr != v);
-
         if (0 == _size)
-            return false;
+            return nullptr;
         assert(nullptr != _head && _level >= 0);
         Node *n = algo_type::search_node(k, *this, nullptr);
         if (nullptr == n)
-            return false;
-        *v = n->get_value();
-        return true;
+            return nullptr;
+        return &n->get_value();
     }
 
 private:

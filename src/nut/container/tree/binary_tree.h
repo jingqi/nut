@@ -12,9 +12,14 @@ namespace nut
 
 /**
  * 二叉树
+ *
+ * 类型 NODE 需要满足的模板接口:
+ * - Node* get_parent() const
+ * - Node* get_left_child() const
+ * - Node* get_right_child() const
  */
 template <typename NODE>
-class BTree
+class BinaryTree
 {
 private:
     /**
@@ -535,7 +540,7 @@ public:
     }
 
 private:
-    BTree() = delete;
+    BinaryTree() = delete;
 };
 
 }

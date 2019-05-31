@@ -8,7 +8,7 @@
 using namespace std;
 using namespace nut;
 
-class TestStringUtil : public TestFixture
+class TestStringUtils : public TestFixture
 {
     virtual void register_cases() override
     {
@@ -28,17 +28,11 @@ class TestStringUtil : public TestFixture
 
     void test_split()
     {
-        vector<string> rs = chr_split("a,b,e", ',');
-        NUT_TA(rs.size() == 3 && rs[0] == "a" && rs[1] == "b" && rs[2] == "e");
+        NUT_TA(chr_split("a,b,e", ',') == vector<string>({"a", "b", "e"}));
+        NUT_TA(chr_split("a,b&e", ",&") == vector<string>({"a", "b", "e"}));
 
-        rs = chr_split("a,b&e", ",&");
-        NUT_TA(rs.size() == 3 && rs[0] == "a" && rs[1] == "b" && rs[2] == "e");
-
-        rs = str_split("a,&b,&", ",&");
-        NUT_TA(rs.size() == 3 && rs[0] == "a" && rs[1] == "b" && rs[2] == "");
-
-        rs = str_split("a,&b,&", ",&", true);
-        NUT_TA(rs.size() == 2 && rs[0] == "a" && rs[1] == "b");
+        NUT_TA(str_split("a,&b,&", ",&") == vector<string>({"a", "b", ""}));
+        NUT_TA(str_split("a,&b,&", ",&", true) == vector<string>({"a", "b"}));
     }
 
     void test_format()
@@ -89,14 +83,11 @@ class TestStringUtil : public TestFixture
 
     void test_trim()
     {
-        std::string tmp = trim(" ab\r\t");
-        NUT_TA(tmp == "ab");
+        NUT_TA(trim(" ab\r\t") == "ab");
 
-        tmp = ltrim(" ab\r\t");
-        NUT_TA(tmp == "ab\r\t");
+        NUT_TA(ltrim(" ab\r\t") == "ab\r\t");
 
-        tmp = rtrim(" ab\r\t");
-        NUT_TA(tmp == " ab");
+        NUT_TA(rtrim(" ab\r\t") == " ab");
     }
 
     void test_stricmp()
@@ -118,12 +109,12 @@ class TestStringUtil : public TestFixture
 
 #if !NUT_PLATFORM_OS_MACOS // macOS 下目前对 wchar_t 常量字符串转换有问题
         a = wstr_to_ascii(L"c5&汉");
-        b = ascii_to_wstr(a.c_str());
+        b = ascii_to_wstr(a);
         //wcout << endl << b << endl;
         NUT_TA(b == L"c5&汉");
 
         a = wstr_to_utf8(L"c5&汉");
-        b = utf8_to_wstr(a.c_str());
+        b = utf8_to_wstr(a);
         //wcout << endl << b << endl;
         NUT_TA(b == L"c5&汉");
 #endif
@@ -137,43 +128,38 @@ class TestStringUtil : public TestFixture
 #else
         // vc 会将c字符串转编码为 ascii，所以运行时全部为 ascii
         b = ascii_to_wstr("c5&汉");
-        a = wstr_to_ascii(b.c_str());
+        a = wstr_to_ascii(b);
         NUT_TA(a == "c5&汉");
 #endif
     }
 
     void test_utf8_ascii_convert()
     {
-        std::string a = "abcd中文", b, c;
-        b = nut::ascii_to_utf8(a.c_str());
-        c = nut::utf8_to_ascii(b.c_str());
+        const std::string a = "abcd中文";
+        const std::string b = nut::ascii_to_utf8(a);
+        const std::string c = nut::utf8_to_ascii(b);
         NUT_TA(c == a);
     }
 
     void test_xml_encoding()
     {
-        std::string s = xml_encode("a\"b<c>d&ef", -1);
-        NUT_TA(s == "a&quot;b&lt;c&gt;d&amp;ef");
+        NUT_TA(xml_encode("a\"b<c>d&ef") == "a&quot;b&lt;c&gt;d&amp;ef");
 
-        s = xml_decode("a&quot;b&lt;c&gt;d&amp;ef", -1);
-        NUT_TA(s == "a\"b<c>d&ef");
+        NUT_TA(xml_decode("a&quot;b&lt;c&gt;d&amp;ef") == "a\"b<c>d&ef");
     }
 
     void test_url_encoding()
     {
-        std::string s = url_encode("abc#$^* m123", -1);
-        NUT_TA(s == "abc%23%24%5E%2A%20m123");
+        NUT_TA(url_encode("abc#$^* m123") == "abc%23%24%5E%2A%20m123");
 
-        s = url_decode("abc%23%24%5E%2A%20m123", -1);
-        NUT_TA(s == "abc#$^* m123");
+        NUT_TA(url_decode("abc%23%24%5E%2A%20m123") == "abc#$^* m123");
     }
 
     void test_hex_encoding()
     {
-        std::string s = hex_encode("\x03\xfA", 2);
-        NUT_TA(s == "03FA");
+        NUT_TA(hex_encode("\x03\xfA", 2) == "03FA");
 
-        std::vector<uint8_t> v = hex_decode("03 FA\t", -1);
+        std::vector<uint8_t> v = hex_decode("03 FA\t");
         NUT_TA(v.size() == 2);
         NUT_TA(v[0] == 0x03);
         NUT_TA(v[1] == 0xFA);
@@ -181,39 +167,33 @@ class TestStringUtil : public TestFixture
 
     void test_cstyle_encoding()
     {
-        std::string s = cstyle_encode("abc\adef\b\f\n\r\t\v\\\"\'\xf9", -1);
-        // std::cout << std::endl << s << std::endl;
-        NUT_TA(s == "abc\\adef\\b\\f\\n\\r\\t\\v\\\\\\\"\\\'\\xF9");
+        NUT_TA(cstyle_encode("abc\adef\b\f\n\r\t\v\\\"\'\xf9") ==
+               "abc\\adef\\b\\f\\n\\r\\t\\v\\\\\\\"\\\'\\xF9");
 
-        s = cstyle_decode("abc\\adef\\b\\f\\n\\r\\t\\v\\\\\\\"\\\'\\xF9", -1);
-        NUT_TA(s == "abc\adef\b\f\n\r\t\v\\\"\'\xf9");
+        NUT_TA(cstyle_decode("abc\\adef\\b\\f\\n\\r\\t\\v\\\\\\\"\\\'\\xF9") ==
+               "abc\adef\b\f\n\r\t\v\\\"\'\xf9");
     }
 
     void test_base64_encoding()
     {
         // encode
-        std::string s = base64_encode("abcdef", 6);
-        NUT_TA(s == "YWJjZGVm");
-
-        s = base64_encode("abcdefg", 7);
-        NUT_TA(s == "YWJjZGVmZw==");
-
-        s = base64_encode("abcdefgh", 8);
-        NUT_TA(s == "YWJjZGVmZ2g=");
+        NUT_TA(base64_encode("abcdef", 6) == "YWJjZGVm");
+        NUT_TA(base64_encode("abcdefg", 7) == "YWJjZGVmZw==");
+        NUT_TA(base64_encode("abcdefgh", 8) == "YWJjZGVmZ2g=");
 
         // decode
-        std::vector<uint8_t> v = base64_decode("YW \n Jj \t ZGVm", -1);
+        std::vector<uint8_t> v = base64_decode("YW \n Jj \t ZGVm");
         NUT_TA(v.size() == 6);
         NUT_TA(0 == ::strncmp((const char*)&v[0], "abcdef", 6));
 
-        v = base64_decode("YWJjZGVmZw==", -1);
+        v = base64_decode("YWJjZGVmZw==");
         NUT_TA(v.size() == 7);
         NUT_TA(0 == ::strncmp((const char*)&v[0], "abcdefg", 7));
 
-        v = base64_decode("YWJjZGVmZ2g=", -1);
+        v = base64_decode("YWJjZGVmZ2g=");
         NUT_TA(v.size() == 8);
         NUT_TA(0 == ::strncmp((const char*)&v[0], "abcdefgh", 8));
     }
 };
 
-NUT_REGISTER_FIXTURE(TestStringUtil, "util, string, quiet")
+NUT_REGISTER_FIXTURE(TestStringUtils, "util, string, quiet")

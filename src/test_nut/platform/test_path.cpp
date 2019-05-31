@@ -59,14 +59,10 @@ class TestPath : public TestFixture
         NUT_TA(dir == "ab/c");
         NUT_TA(base == "d");
 
-        dir.clear();
-        base.clear();
         Path::split("/ab.txt", &dir, &base);
         NUT_TA(dir == "/");
         NUT_TA(base == "ab.txt");
 
-        dir.clear();
-        base.clear();
         Path::split("c:\\tmp", &dir, &base);
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(dir == "c:\\");
@@ -84,14 +80,10 @@ class TestPath : public TestFixture
         NUT_TA(dir == L"ab/c");
         NUT_TA(base == L"d");
 
-        dir.clear();
-        base.clear();
         Path::split(L"/ab.txt", &dir, &base);
         NUT_TA(dir == L"/");
         NUT_TA(base == L"ab.txt");
 
-        dir.clear();
-        base.clear();
         Path::split(L"c:\\tmp", &dir, &base);
 #if NUT_PLATFORM_OS_WINDOWS
         NUT_TA(dir == L"c:\\");
@@ -136,8 +128,6 @@ class TestPath : public TestFixture
         NUT_TA(rpath == "c:\\mn\\p"); // 冒号当作是普通文件名中的符号
 #endif
 
-        drive.clear();
-        rpath.clear();
         Path::split_drive("/mnt/sdcard", &drive, &rpath);
         NUT_TA(drive == "");
         NUT_TA(rpath == "/mnt/sdcard");
@@ -155,8 +145,6 @@ class TestPath : public TestFixture
         NUT_TA(rpath == L"c:\\mn\\p");
 #endif
 
-        drive.clear();
-        rpath.clear();
         Path::split_drive(L"/mnt/sdcard", &drive, &rpath);
         NUT_TA(drive == L"");
         NUT_TA(rpath == L"/mnt/sdcard");
@@ -169,14 +157,10 @@ class TestPath : public TestFixture
         NUT_TA(prefix == "a");
         NUT_TA(ext == ".txt");
 
-        prefix.clear();
-        ext.clear();
         Path::split_ext("a/b.txt", &prefix, &ext);
         NUT_TA(prefix == "a/b");
         NUT_TA(ext == ".txt");
 
-        prefix.clear();
-        ext.clear();
         Path::split_ext("a/.bash", &prefix, &ext);
         NUT_TA(prefix == "a/.bash");
         NUT_TA(ext == "");
@@ -189,14 +173,10 @@ class TestPath : public TestFixture
         NUT_TA(prefix == L"a");
         NUT_TA(ext == L".txt");
 
-        prefix.clear();
-        ext.clear();
         Path::split_ext(L"a/b.txt", &prefix, &ext);
         NUT_TA(prefix == L"a/b");
         NUT_TA(ext == L".txt");
 
-        prefix.clear();
-        ext.clear();
         Path::split_ext(L"a/.bash", &prefix, &ext);
         NUT_TA(prefix == L"a/.bash");
         NUT_TA(ext == L"");
@@ -406,8 +386,6 @@ class TestPath : public TestFixture
         Path::split("c:/a", &a, &b);
         NUT_TA(a == "c:/" && b == "a");
 
-        a.clear();
-        b.clear();
         Path::split_drive("c:/a/b", &a, &b);
         NUT_TA(a == "c:" && b == "/a/b");
 
@@ -421,8 +399,6 @@ class TestPath : public TestFixture
         Path::split("c:/a", &a, &b);
         NUT_TA(a == "c:" && b == "a");
 
-        a.clear();
-        b.clear();
         Path::split_drive("c:/a/b", &a, &b);
         NUT_TA(a == "" && b == "c:/a/b");
 

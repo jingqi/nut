@@ -312,7 +312,7 @@ public:
     }
 
     /**
-     * @return true if new data inserted, else nothing happened
+     * @return 插入成功返回 true; 否则表示存在重复数据, 返回 false
      */
     template <typename ...Args>
     bool emplace(Args&& ...args)
@@ -352,7 +352,7 @@ public:
     }
 
     /**
-     * @return true if new data inserted, else nothing happened
+     * @return 插入成功返回 true; 否则表示存在重复数据, 返回 false
      */
     bool add(T&& k)
     {
@@ -390,7 +390,7 @@ public:
     }
 
     /**
-     * @return true if new data inserted, else nothing happened
+     * @return 插入成功返回 true; 否则表示存在重复数据, 返回 false
      */
     bool add(const T& k)
     {
@@ -428,7 +428,7 @@ public:
     }
 
     /**
-     * @return true if data removed, else nothing happened
+     * @return 删除成功返回 true; 否则表示未找到数据, 返回 false
      */
     bool remove(const T& k)
     {

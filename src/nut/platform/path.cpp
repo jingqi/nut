@@ -569,9 +569,9 @@ std::wstring Path::basename(const std::wstring& path)
     return ret;
 }
 
-void Path::split(const std::string& path, std::string *parent_result, std::string *child_result)
+void Path::split(const std::string& path, std::string *dirname, std::string *basename)
 {
-    assert(nullptr != parent_result || nullptr != child_result);
+    assert(nullptr != dirname || nullptr != basename);
 
     // 找到最后一个 '/'
     ssize_t pos = -1;
@@ -586,12 +586,14 @@ void Path::split(const std::string& path, std::string *parent_result, std::strin
 
     if (pos < 0)
     {
-        if (nullptr != child_result)
-            *child_result += path;
+        if (nullptr != dirname)
+            dirname->clear();
+        if (nullptr != basename)
+            *basename = path;
         return;
     }
 
-    if (nullptr != parent_result)
+    if (nullptr != dirname)
     {
 #if NUT_PLATFORM_OS_WINDOWS
         // Unix root; Windows 磁盘号 + 根目录
@@ -600,17 +602,18 @@ void Path::split(const std::string& path, std::string *parent_result, std::strin
         // Unix root
         if (0 == pos)
 #endif
-            parent_result->append(path.c_str(), pos + 1);
+            *dirname = path.substr(0, pos + 1);
         else
-            parent_result->append(path.c_str(), pos);
+            *dirname = path.substr(0, pos);
     }
-    if (nullptr != child_result)
-        child_result->append(path.c_str() + pos + 1);
+
+    if (nullptr != basename)
+        *basename = path.substr(pos + 1);
 }
 
-void Path::split(const std::wstring& path, std::wstring *parent_result, std::wstring *child_result)
+void Path::split(const std::wstring& path, std::wstring *dirname, std::wstring *basename)
 {
-    assert(nullptr != parent_result || nullptr != child_result);
+    assert(nullptr != dirname || nullptr != basename);
 
     // 找到最后一个 '/'
     ssize_t pos = -1;
@@ -625,12 +628,14 @@ void Path::split(const std::wstring& path, std::wstring *parent_result, std::wst
 
     if (pos < 0)
     {
-        if (nullptr != child_result)
-            *child_result += path;
+        if (nullptr != dirname)
+            dirname->clear();
+        if (nullptr != basename)
+            *basename = path;
         return;
     }
 
-    if (nullptr != parent_result)
+    if (nullptr != dirname)
     {
 #if NUT_PLATFORM_OS_WINDOWS
         // Unix root; Windows 磁盘号 + 根目录
@@ -639,12 +644,13 @@ void Path::split(const std::wstring& path, std::wstring *parent_result, std::wst
         // Unix root
         if (0 == pos)
 #endif
-            parent_result->append(path.c_str(), pos + 1);
+            *dirname = path.substr(0, pos + 1);
         else
-            parent_result->append(path.c_str(), pos);
+            *dirname = path.substr(0, pos);
     }
-    if (nullptr != child_result)
-        child_result->append(path.c_str() + pos + 1);
+
+    if (nullptr != basename)
+        *basename = path.substr(pos + 1);
 }
 
 std::vector<std::string> Path::split_entries(const std::string &path)
@@ -737,53 +743,61 @@ std::vector<std::wstring> Path::split_entries(const std::wstring &path)
     return result;
 }
 
-void Path::split_drive(const std::string& path, std::string *drive_result, std::string *rest_result)
+void Path::split_drive(const std::string& path, std::string *drive, std::string *rest)
 {
-    assert(nullptr != drive_result || nullptr != rest_result);
+    assert(nullptr != drive || nullptr != rest);
 
 #if NUT_PLATFORM_OS_WINDOWS
     if (!starts_with_win_drive(path))
     {
-        if (nullptr != rest_result)
-            *rest_result += path;
+        if (nullptr != drive)
+            drive->clear();
+        if (nullptr != rest)
+            *rest = path;
         return;
     }
 
-    if (nullptr != drive_result)
-        drive_result->append(path.c_str(), 2);
-    if (nullptr != rest_result)
-        rest_result->append(path.c_str() + 2);
+    if (nullptr != drive)
+        *drive = path.substr(0, 2);
+    if (nullptr != rest)
+        *rest = path.substr(2);
 #else
-    if (nullptr != rest_result)
-        *rest_result += path;
+    if (nullptr != drive)
+        drive->clear();
+    if (nullptr != rest)
+        *rest = path;
 #endif
 }
 
-void Path::split_drive(const std::wstring& path, std::wstring *drive_result, std::wstring *rest_result)
+void Path::split_drive(const std::wstring& path, std::wstring *drive, std::wstring *rest)
 {
-    assert(nullptr != drive_result || nullptr != rest_result);
+    assert(nullptr != drive || nullptr != rest);
 
 #if NUT_PLATFORM_OS_WINDOWS
     if (!starts_with_win_drive(path))
     {
-        if (nullptr != rest_result)
-            *rest_result += path;
+        if (nullptr != drive)
+            drive->clear();
+        if (nullptr != rest)
+            *rest = path;
         return;
     }
 
-    if (nullptr != drive_result)
-        drive_result->append(path.c_str(), 2);
-    if (nullptr != rest_result)
-        rest_result->append(path.c_str() + 2);
+    if (nullptr != drive)
+        *drive = path.substr(0, 2);
+    if (nullptr != rest)
+        *rest = path.substr(2);
 #else
-    if (nullptr != rest_result)
-        *rest_result += path;
+    if (nullptr != drive)
+        drive->clear();
+    if (nullptr != rest)
+        *rest = path;
 #endif
 }
 
-void Path::split_ext(const std::string& path, std::string *prefix_result, std::string *ext_result)
+void Path::split_ext(const std::string& path, std::string *prefix, std::string *ext)
 {
-    assert(nullptr != prefix_result || nullptr != ext_result);
+    assert(nullptr != prefix || nullptr != ext);
 
     ssize_t pos = -1;
     for (ssize_t i = path.length() - 1; i >= 0; --i)
@@ -801,20 +815,22 @@ void Path::split_ext(const std::string& path, std::string *prefix_result, std::s
 
     if (pos < 0)
     {
-        if (nullptr != prefix_result)
-            *prefix_result += path;
+        if (nullptr != prefix)
+            *prefix = path;
+        if (nullptr != ext)
+            ext->clear();
         return;
     }
 
-    if (nullptr != prefix_result)
-        prefix_result->append(path.c_str(), pos);
-    if (nullptr != ext_result)
-        ext_result->append(path.c_str() + pos);
+    if (nullptr != prefix)
+        *prefix = path.substr(0, pos);
+    if (nullptr != ext)
+        *ext = path.substr(pos);
 }
 
-void Path::split_ext(const std::wstring& path, std::wstring *prefix_result, std::wstring *ext_result)
+void Path::split_ext(const std::wstring& path, std::wstring *prefix, std::wstring *ext)
 {
-    assert(nullptr != prefix_result || nullptr != ext_result);
+    assert(nullptr != prefix || nullptr != ext);
 
     ssize_t pos = -1;
     for (ssize_t i = path.length() - 1; i >= 0; --i)
@@ -832,15 +848,17 @@ void Path::split_ext(const std::wstring& path, std::wstring *prefix_result, std:
 
     if (pos < 0)
     {
-        if (nullptr != prefix_result)
-            *prefix_result += path;
+        if (nullptr != prefix)
+            *prefix = path;
+        if (nullptr != ext)
+            ext->clear();
         return;
     }
 
-    if (nullptr != prefix_result)
-        prefix_result->append(path.c_str(), pos);
-    if (nullptr != ext_result)
-        ext_result->append(path.c_str() + pos);
+    if (nullptr != prefix)
+        *prefix = path.substr(0, pos);
+    if (nullptr != ext)
+        *ext = path.substr(pos);
 }
 
 std::string Path::join(const std::string& a, const std::string& b)

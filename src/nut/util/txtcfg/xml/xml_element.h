@@ -69,10 +69,9 @@ public:
     /**
      * 获取属性
      *
-     * @param attr 用来存储返回的属性值，可以为 nullptr
-     * @return 该属性是否存在
+     * @return 如果属性不存在，会返回 nullptr
      */
-    bool get_attribute(const std::string& name, std::string *attr) const;
+    const std::string* get_attribute(const std::string& name) const;
 
     /**
      * 添加属性
@@ -103,7 +102,7 @@ public:
 
     void parse(const std::string& s, size_t start_index = 0, bool ignore_text_blank = true);
 
-    /*
+    /**
      * @param format 格式化输出，以便于阅读
      */
     std::string serielize(bool format = true) const;

@@ -11,7 +11,7 @@ namespace nut
 {
 
 /**
- * least-recently-used cache
+ * Least-Recently-Used cache
  */
 template <typename K, typename V, typename HASH = std::hash<K>>
 class LRUCache
@@ -74,9 +74,10 @@ public:
     }
 
     /**
-     * @return true if new data inserted, else old data replaced
+     * @return -1, old data replaced
+     *         1, new data inserted
      */
-    bool put(K&& k, V&& v)
+    int put(K&& k, V&& v)
     {
         // Search and update
         typename map_type::const_iterator const iter = _map.find(k);
@@ -87,7 +88,7 @@ public:
             p->value = std::forward<V>(v);
             remove_from_list(p);
             push_list_head(p);
-            return false;
+            return -1;
         }
 
         if (_map.size() >= _capacity)
@@ -118,13 +119,14 @@ public:
             push_list_head(p);
         }
 
-        return true;
+        return 1;
     }
 
     /**
-     * @return true if new data inserted, else old data replaced
+     * @return -1, old data replaced
+     *         1, new data inserted
      */
-    bool put(const K& k, V&& v)
+    int put(const K& k, V&& v)
     {
         // Search and update
         typename map_type::const_iterator const iter = _map.find(k);
@@ -135,7 +137,7 @@ public:
             p->value = std::forward<V>(v);
             remove_from_list(p);
             push_list_head(p);
-            return false;
+            return -1;
         }
 
         if (_map.size() >= _capacity)
@@ -166,13 +168,14 @@ public:
             push_list_head(p);
         }
 
-        return true;
+        return 1;
     }
 
     /**
-     * @return true if new data inserted, else old data replaced
+     * @return -1, old data replaced
+     *         1, new data inserted
      */
-    bool put(K&& k, const V& v)
+    int put(K&& k, const V& v)
     {
         // Search and update
         typename map_type::const_iterator const iter = _map.find(k);
@@ -183,7 +186,7 @@ public:
             p->value = v;
             remove_from_list(p);
             push_list_head(p);
-            return false;
+            return -1;
         }
 
         if (_map.size() >= _capacity)
@@ -214,13 +217,14 @@ public:
             push_list_head(p);
         }
 
-        return true;
+        return 1;
     }
 
     /**
-     * @return true if new data inserted, else old data replaced
+     * @return -1, old data replaced
+     *         1, new data inserted
      */
-    bool put(const K& k, const V& v)
+    int put(const K& k, const V& v)
     {
         // Search and update
         typename map_type::const_iterator const iter = _map.find(k);
@@ -231,7 +235,7 @@ public:
             p->value = v;
             remove_from_list(p);
             push_list_head(p);
-            return false;
+            return -1;
         }
 
         if (_map.size() >= _capacity)
@@ -262,11 +266,12 @@ public:
             push_list_head(p);
         }
 
-        return true;
+        return 1;
     }
 
     /**
-     * @return true if remove succeeded
+     * @return true, remove succeeded
+     *         false, no key found
      */
     bool remove(const K& k)
     {
@@ -288,28 +293,27 @@ public:
         return _map.find(k) != _map.end();
     }
 
-    bool get(const K& k, V *v)
+    const V* get(const K& k)
     {
-        assert(nullptr != v);
         typename map_type::const_iterator const iter = _map.find(k);
         if (iter == _map.end())
         {
 #ifndef NDEBUG
             ++_miss_count;
 #endif
-            return false;
+            return nullptr;
         }
 
         Node *const p = iter->second;
         assert(nullptr != p);
-        *v = p->value;
+        const V* const ret = &p->value;
         remove_from_list(p);
         push_list_head(p);
 
 #ifndef NDEBUG
         ++_hit_count;
 #endif
-        return true;
+        return ret;
     }
 
     void clear()

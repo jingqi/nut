@@ -25,8 +25,7 @@ class TestSaveFile : public TestFixture
         NUT_TA(sf.write("abcdef", 6));
         NUT_TA(sf.commit());
 
-        std::string text;
-        TextFile::read_file(filename, &text);
+        std::string text = TextFile::read_file(filename);
         NUT_TA(text == "abcdef");
         OS::removefile(filename);
     }

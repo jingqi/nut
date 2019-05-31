@@ -51,7 +51,7 @@
 #include "container/skiplist/skiplist.h"
 #include "container/skiplist/skiplist_set.h"
 #include "container/skiplist/skiplist_map.h"
-#include "container/tree/btree.h"
+#include "container/tree/binary_tree.h"
 #include "container/tree/bstree.h"
 #include "container/tree/rbtree.h"
 #include "container/tree/rtree/mdarea.h"

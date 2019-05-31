@@ -30,7 +30,7 @@ private:
 
 public:
     /**
-     * NODE: 根 handler 的删除操作需要外部自己管理
+     * NODE 根 handler 的删除操作需要外部自己管理
      */
     explicit XmlParser(XmlElementHandler *root_handler);
 

@@ -10,22 +10,21 @@
 namespace nut
 {
 
-static void decode_append(const std::string& e, std::string *appended)
+static const char* decode(const std::string& e)
 {
-    assert(nullptr != appended);
     if (e == "&amp;")
-        appended->push_back('&');
+        return "&";
     else if (e == "&quot;")
-        appended->push_back('\"');
+        return "\"";
     else if (e == "&lt;")
-        appended->push_back('<');
+        return "<";
     else if (e == "&gt;")
-        appended->push_back('>');
+        return ">";
     else
-        *appended += e; // decode failed
+        return e.c_str(); // decode failed
 }
 
-static bool is_space(char c)
+static constexpr bool is_space(char c)
 {
     return ' ' == c || '\t' == c || '\r' == c || '\n' == c;
 }
@@ -86,7 +85,7 @@ bool XmlParser::input(char c)
             if (should_handle_text())
             {
                 _tmp_encoded.push_back(';');
-                decode_append(_tmp_encoded, &_tmp_value);
+                _tmp_value += decode(_tmp_encoded);
             }
             _tmp_encoded.clear();
             _state = State::InText;
@@ -328,7 +327,7 @@ bool XmlParser::input(char c)
             if (should_handle_attribute())
             {
                 _tmp_encoded.push_back(';');
-                decode_append(_tmp_encoded, &_tmp_value);
+                _tmp_value += decode(_tmp_encoded);
             }
             _tmp_encoded.clear();
             _state = State::InAttrValue;

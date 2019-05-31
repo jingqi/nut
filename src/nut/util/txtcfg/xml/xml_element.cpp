@@ -119,27 +119,14 @@ void XmlElement::clear_children()
     _dirty = true;
 }
 
-/**
- * 获取属性
- *
- * @param attr 用来存储返回的属性值，可以为 nullptr
- * @param 改属性是否存在
- */
-bool XmlElement::get_attribute(const std::string& name, std::string *attr) const
+const std::string* XmlElement::get_attribute(const std::string& name) const
 {
     const_attr_iter_type iter = _attrs.find(name);
     if (iter == _attrs.end())
-        return false;
-    if (nullptr != attr)
-        *attr = iter->second;
-    return true;
+        return nullptr;
+    return &iter->second;
 }
 
-/**
- * 添加属性
- *
- * @return 是否成功，如果属性已经存在，则添加失败
- */
 bool XmlElement::add_attribute(const std::string& name, const std::string& value)
 {
     if (_attrs.find(name) != _attrs.end())
@@ -149,9 +136,6 @@ bool XmlElement::add_attribute(const std::string& name, const std::string& value
     return true;
 }
 
-/**
- * 存在属性则设置属性值，否则添加新属性
- */
 void XmlElement::set_attribute(const std::string& name, const std::string& value)
 {
     _attrs[name] = value;
@@ -307,9 +291,6 @@ void XmlElement::parse(const std::string& s, size_t start_index, bool ignore_tex
     p.finish();
 }
 
-/*
- * @param format 格式化输出，以便于阅读
- */
 std::string XmlElement::serielize(bool format) const
 {
     std::stringstream ss;

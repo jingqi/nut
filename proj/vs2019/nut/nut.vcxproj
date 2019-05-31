@@ -145,6 +145,7 @@
     <ClInclude Include="..\..\..\src\nut\container\tree\rbtree.h" />
     <ClInclude Include="..\..\..\src\nut\container\tree\rtree\mdarea.h" />
     <ClInclude Include="..\..\..\src\nut\container\tree\rtree\rtree.h" />
+    <ClInclude Include="..\..\..\src\nut\container\tree\trie_tree.h" />
     <ClInclude Include="..\..\..\src\nut\debugging\backtrace.h" />
     <ClInclude Include="..\..\..\src\nut\debugging\destroy_checker.h" />
     <ClInclude Include="..\..\..\src\nut\debugging\exception.h" />

@@ -122,8 +122,8 @@ public:
      *   "/ab.txt" -> "/" "ab.txt"
      *   "c:\tmp" -> "c:\" "tmp"
      */
-    static void split(const std::string& path, std::string *parent_result, std::string *child_result);
-    static void split(const std::wstring& path, std::wstring *parent_result, std::wstring *child_result);
+    static void split(const std::string& path, std::string *dirname, std::string *basename);
+    static void split(const std::wstring& path, std::wstring *dirname, std::wstring *basename);
 
     /**
      * 拆分出路径上所有 目录/文件 名
@@ -143,8 +143,8 @@ public:
      *   "c:\mn\p" -> "c:" "\mn\p"
      *   "/mnt/sdcard" -> "" "/mnt/sdcard"
      */
-    static void split_drive(const std::string& path, std::string *drive_result, std::string *rest_result);
-    static void split_drive(const std::wstring& path, std::wstring *drive_result, std::wstring *rest_result);
+    static void split_drive(const std::string& path, std::string *drive, std::string *rest);
+    static void split_drive(const std::wstring& path, std::wstring *drive, std::wstring *rest);
 
     /**
      * 从路径或者文件名中分离出后缀名
@@ -152,8 +152,8 @@ public:
      * 例如:
      *   "a.txt" -> "a" ".txt"
      */
-    static void split_ext(const std::string& path, std::string *prefix_result, std::string *ext_result);
-    static void split_ext(const std::wstring& path, std::wstring *prefix_result, std::wstring *ext_result);
+    static void split_ext(const std::string& path, std::string *prefix, std::string *ext);
+    static void split_ext(const std::wstring& path, std::wstring *prefix, std::wstring *ext);
 
     /**
      * 连接多个子路径

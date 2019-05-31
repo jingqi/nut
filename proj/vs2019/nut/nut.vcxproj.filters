@@ -487,6 +487,9 @@
     <ClInclude Include="..\..\..\src\nut\security\digest\crc32.h">
       <Filter>nut\security\digest</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\tree\trie_tree.h">
+      <Filter>nut\container\tree</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">

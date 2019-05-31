@@ -2,8 +2,9 @@
 #ifndef ___HEADFILE_CFEF4EB8_082C_417F_A58C_9D65C9F3DAD1_
 #define ___HEADFILE_CFEF4EB8_082C_417F_A58C_9D65C9F3DAD1_
 
+#include <assert.h>
+
 #include "../comparable.h"
-#include "btree.h"
 
 
 namespace nut
@@ -11,6 +12,15 @@ namespace nut
 
 /**
  * 二叉查找树
+ *
+ * 类型 NODE 需要满足的模板接口:
+ * - const K& get_key() const
+ * - NODE* get_parent() const
+ * - NODE* get_left_child() const
+ * - NODE* get_right_child() const
+ * - void set_parent(NODE*)
+ * - void set_left_child(NODE*)
+ * - void set_right_child(NODE*)
  */
 template <typename K, typename NODE>
 class BSTree
@@ -19,8 +29,7 @@ public:
     /**
      * 查找数据所在的节点
      *
-     * @return
-     *      没有找到则返回 nullptr
+     * @return 没有找到则返回 nullptr
      */
     static NODE* search(NODE *sub_root, const K& key)
     {

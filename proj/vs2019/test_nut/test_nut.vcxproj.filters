@@ -261,5 +261,8 @@
     <ClCompile Include="..\..\..\src\test_nut\platform\test_savefile.cpp">
       <Filter>test\platform</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\tree\test_trie_tree.cpp">
+      <Filter>test\container\tree</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

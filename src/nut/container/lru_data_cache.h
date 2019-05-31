@@ -129,9 +129,10 @@ public:
     }
 
     /**
-     * @return true if new data inserted, else old data replaced
+     * @return -1, old data replaced
+     *         1, new data inserted
      */
-    bool put(K&& k, const void *buf, size_t cb)
+    int put(K&& k, const void *buf, size_t cb)
     {
         assert(nullptr != buf || 0 == cb);
 
@@ -146,7 +147,7 @@ public:
             p->copy_from(buf, cb);
             remove_from_list(p);
             push_list_head(p);
-            return false;
+            return -1;
         }
 
         if (_bytes_size >= _bytes_capacity)
@@ -179,13 +180,14 @@ public:
         // Remove older nodes
         remove_older_nodes();
 
-        return true;
+        return 1;
     }
 
     /**
-     * @return true if new data inserted, else old data replaced
+     * @return -1, old data replaced
+     *         1, new data inserted
      */
-    bool put(const K& k, const void *buf, size_t cb)
+    int put(const K& k, const void *buf, size_t cb)
     {
         assert(nullptr != buf || 0 == cb);
 
@@ -200,7 +202,7 @@ public:
             p->copy_from(buf, cb);
             remove_from_list(p);
             push_list_head(p);
-            return false;
+            return -1;
         }
 
         if (_bytes_size >= _bytes_capacity)
@@ -233,11 +235,12 @@ public:
         // Remove older nodes
         remove_older_nodes();
 
-        return true;
+        return 1;
     }
 
     /**
-     * @return true if remove succeeded
+     * @return true, remove succeeded
+     *         false, no key found
      */
     bool remove(const K& k)
     {

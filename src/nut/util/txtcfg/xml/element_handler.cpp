@@ -50,14 +50,12 @@ void XmlElementHandler::handle_comment(const std::string& comment)
     UNUSED(comment);
 }
 
-// 返回新的 handler
 XmlElementHandler* XmlElementHandler::handle_child(const std::string& name)
 {
     UNUSED(name);
     return nullptr;
 }
 
-// 回收旧的 handler
 void XmlElementHandler::handle_child_finish(XmlElementHandler *child)
 {
     UNUSED(child);

@@ -153,6 +153,7 @@
     <ClCompile Include="..\..\..\src\test_nut\container\test_lru_data_cache.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\container\tree\rtree\test_rtree.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\container\tree\test_bst.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\container\tree\test_trie_tree.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\debugging\test_backtrace.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\logging\test_logging.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\main.cpp" />

@@ -9,11 +9,11 @@
 namespace nut
 {
 
-bool TextFile::read_file(const std::string& path, std::string *rs)
+std::string TextFile::read_file(const std::string& path)
 {
-    assert(nullptr != rs);
+    std::string ret;
     if (!Path::exists(path))
-        return false;
+        return ret;
 
     std::ifstream ifs(path);
     std::string line;
@@ -29,12 +29,12 @@ bool TextFile::read_file(const std::string& path, std::string *rs)
         }
 
         if (!first_line)
-            rs->push_back('\n');
-        *rs += line;
+            ret.push_back('\n');
+        ret += line;
         first_line = false;
     }
     ifs.close();
-    return true;
+    return ret;
 }
 
 bool TextFile::write_file(const std::string& path, const std::string& content)

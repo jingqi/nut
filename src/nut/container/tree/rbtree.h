@@ -12,14 +12,25 @@ namespace nut
 {
 
 /**
- * Red-Black-Tree
+ * 红黑树(Red-Black-Tree)
+ *
+ * 类型 NODE 需要满足的模板接口:
+ * - const K& get_key() const
+ * - bool is_red() const
+ * - NODE* get_parent() const
+ * - NODE* get_left_child() const
+ * - NODE* get_right_child() const
+ * - void set_red(bool)
+ * - void set_parent(NODE*)
+ * - void set_left_child(NODE*)
+ * - void set_right_child(NODE*)
  */
 template <typename K, typename NODE>
 class RBTree
 {
 public:
     /**
-     * 插入新节点到二叉查找树
+     * 插入新节点到红黑树
      *
      * @return 新的根
      */
@@ -446,7 +457,8 @@ private:
                 }
             }
         }
-        sublink->set_red(false);
+        if (nullptr != sublink)
+            sublink->set_red(false);
         return root;
     }
 };

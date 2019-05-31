@@ -2,11 +2,11 @@
 #include <iostream>
 #include <nut/unittest/unittest.h>
 
-#include <nut/container/tree/btree.h>
+#include <nut/container/tree/binary_tree.h>
 #include <nut/container/tree/bstree.h>
 
-using namespace nut;
 
+using namespace nut;
 
 class TestBSTree : public TestFixture
 {
@@ -21,12 +21,12 @@ class TestBSTree : public TestFixture
     struct Node
     {
         int key;
-        Node *parent;
-        Node *left;
-        Node *right;
+        Node *parent = nullptr;
+        Node *left = nullptr;
+        Node *right = nullptr;
 
         Node(int k)
-            : key(k), parent(nullptr), left(nullptr), right(nullptr)
+            : key(k)
         {}
 
         int get_key() const { return key; }
@@ -52,13 +52,13 @@ class TestBSTree : public TestFixture
     virtual void set_up() override
     {
         /*
-         构建这样一颗树
-                 4
-               /   \
-              2     6
-             / \   / \
-            1   3 5   7
-        */
+         * 构建这样一颗树
+         *       4
+         *     /   \
+         *    2     6
+         *   / \   / \
+         *  1   3 5   7
+         */
         root = nullptr;
         int nodes[7] = {4, 2, 6, 1, 3, 5, 7 };
         for (int i = 0; i < 7; ++i)
@@ -80,16 +80,18 @@ class TestBSTree : public TestFixture
         // 中序遍历
         int i = 0;
         int inorder[7] = {1, 2, 3, 4, 5, 6, 7 };
-        for (BTree<Node>::inorder_iterator iter = BTree<Node>::inorder_traversal_begin(root), end = BTree<Node>::inorder_traversal_end(root);
-            iter != end; ++iter)
+        for (BinaryTree<Node>::inorder_iterator iter = BinaryTree<Node>::inorder_traversal_begin(root),
+                 end = BinaryTree<Node>::inorder_traversal_end(root);
+             iter != end; ++iter)
         {
             NUT_TA(iter->get_key() == inorder[i]);
             ++i;
         }
         NUT_TA(7 == i);
 
-        for (BTree<Node>::inorder_reverse_iterator iter = BTree<Node>::inorder_traversal_rbegin(root), end = BTree<Node>::inorder_traversal_rend(root);
-            iter != end; ++iter)
+        for (BinaryTree<Node>::inorder_reverse_iterator iter = BinaryTree<Node>::inorder_traversal_rbegin(root),
+                 end = BinaryTree<Node>::inorder_traversal_rend(root);
+             iter != end; ++iter)
         {
             --i;
             NUT_TA(iter->get_key() == inorder[i]);
@@ -102,16 +104,18 @@ class TestBSTree : public TestFixture
         // 前序遍历
         int order[7] = {4, 2, 1, 3, 6, 5, 7 };
         int i = 0;
-        for (BTree<Node>::preorder_iterator iter = BTree<Node>::preorder_traversal_begin(root), end = BTree<Node>::preorder_traversal_end(root);
-            iter != end; ++iter)
+        for (BinaryTree<Node>::preorder_iterator iter = BinaryTree<Node>::preorder_traversal_begin(root),
+                 end = BinaryTree<Node>::preorder_traversal_end(root);
+             iter != end; ++iter)
         {
             NUT_TA(iter->get_key() == order[i]);
             ++i;
         }
         NUT_TA(7 == i);
 
-        for (BTree<Node>::preorder_reverse_iterator iter = BTree<Node>::preorder_traversal_rbegin(root), end = BTree<Node>::preorder_traversal_rend(root);
-            iter != end; ++iter)
+        for (BinaryTree<Node>::preorder_reverse_iterator iter = BinaryTree<Node>::preorder_traversal_rbegin(root),
+                 end = BinaryTree<Node>::preorder_traversal_rend(root);
+             iter != end; ++iter)
         {
             --i;
             NUT_TA(iter->get_key() == order[i]);
@@ -124,16 +128,18 @@ class TestBSTree : public TestFixture
         // 后序遍历
         int order[7] = {1, 3, 2, 5, 7, 6, 4 };
         int i = 0;
-        for (BTree<Node>::postorder_iterator iter = BTree<Node>::postorder_traversal_begin(root), end = BTree<Node>::postorder_traversal_end(root);
-            iter != end; ++iter)
+        for (BinaryTree<Node>::postorder_iterator iter = BinaryTree<Node>::postorder_traversal_begin(root),
+                 end = BinaryTree<Node>::postorder_traversal_end(root);
+             iter != end; ++iter)
         {
             NUT_TA(iter->get_key() == order[i]);
             ++i;
         }
         NUT_TA(7 == i);
 
-        for (BTree<Node>::postorder_reverse_iterator iter = BTree<Node>::postorder_traversal_rbegin(root), end = BTree<Node>::postorder_traversal_rend(root);
-            iter != end; ++iter)
+        for (BinaryTree<Node>::postorder_reverse_iterator iter = BinaryTree<Node>::postorder_traversal_rbegin(root),
+                 end = BinaryTree<Node>::postorder_traversal_rend(root);
+             iter != end; ++iter)
         {
             --i;
             NUT_TA(iter->get_key() == order[i]);
