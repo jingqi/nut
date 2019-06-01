@@ -19,6 +19,20 @@ namespace nut
 
 /**
  * 字典树
+ *
+ * 例如: "a/d"、"b"、"b/e"、"b/f/g"、"c" 这5个路径组成了如下的字典树：
+ *
+ *          -
+ *       /  |  \
+ *      a  [b] [c]
+ *     /   / \
+ *   [d] [e]  f
+ *             \
+ *             [g]
+ *
+ * NOTE 为了平衡插入、查找速度，这里将字典树节点的子节点也组织成一颗红黑树。
+ *      例如, 上面例子中根节点('-'节点)的子节点 a、b、c 组成红黑树, b 节点的子节
+ *      点 e、f 组成另一颗红黑树.... 依此类推
  */
 template <typename ENTRY, typename DATA>
 class TrieTree
@@ -195,34 +209,59 @@ private:
         {
             if (nullptr == _rb_root)
                 return;
-            _rb_root->clear_rb_tree();
+
+            // 遍历红黑树子节点、字典树子节点
+            std::stack<Node*> s;
+            s.push(_rb_root);
+            while (!s.empty())
+            {
+                Node *n = s.top();
+                assert(nullptr != n);
+                s.pop();
+
+                if (nullptr != n->_rb_left)
+                    s.push(n->_rb_left);
+                if (nullptr != n->_rb_right)
+                    s.push(n->_rb_right);
+                if (nullptr != n->_rb_root)
+                    s.push(n->_rb_root);
+
+                // NOTE 避免 destruct() 递归调用 clear_trie_children() 时重复析构
+                n->_rb_left = nullptr;
+                n->_rb_right = nullptr;
+                n->_rb_root = nullptr;
+
+                n->destruct();
+                ::free(n);
+            }
             _rb_root = nullptr;
-        }
-
-        void clear_rb_tree()
-        {
-            if (nullptr != _rb_left)
-                _rb_left->clear_rb_tree();
-            if (nullptr != _rb_right)
-                _rb_right->clear_rb_tree();
-
-            destruct();
-            ::free(this);
         }
 
         size_t count_of_data() const
         {
             size_t ret = 0;
-            for (auto iter = BinaryTree<Node>::inorder_traversal_begin(_rb_root),
-                     end = BinaryTree<Node>::inorder_traversal_end(_rb_root);
-                 iter != end; ++iter)
+
+            std::stack<const Node*> s;
+            s.push(this);
+            while (!s.empty())
             {
-                Node *n = &*iter;
+                const Node *n = s.top();
                 assert(nullptr != n);
-                ret += n->count_of_data();
+                s.pop();
+
+                if (n->_has_data)
+                    ++ret;
+
+                for (auto iter = BinaryTree<Node>::inorder_traversal_begin(n->_rb_root),
+                         end = BinaryTree<Node>::inorder_traversal_end(n->_rb_root);
+                     iter != end; ++iter)
+                {
+                    Node *child = &*iter;
+                    assert(nullptr != child);
+                    s.push(child);
+                }
             }
-            if (_has_data)
-                ++ret;
+
             return ret;
         }
 
@@ -487,7 +526,11 @@ public:
     {
         if (nullptr == _rb_root)
             return;
-        _rb_root->clear_rb_tree();
+
+        BinaryTree<Node>::delete_tree(_rb_root, [] (Node *n) {
+            n->destruct();
+            ::free(n);
+        });
         _rb_root = nullptr;
         _size = 0;
     }

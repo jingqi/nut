@@ -38,15 +38,6 @@ class TestRBTree : public TestFixture
         void set_parent(Node *p) { parent = p; }
         void set_left_child(Node *p) { left = p; }
         void set_right_child(Node *p) { right = p; }
-
-        void destroy()
-        {
-            if (nullptr != left)
-                left->destroy();
-            if (nullptr != right)
-                right->destroy();
-            delete this;
-        }
     };
 
     void test_bug1()

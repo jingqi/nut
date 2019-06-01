@@ -29,6 +29,16 @@ class TestBSTree : public TestFixture
             : key(k)
         {}
 
+        ~Node()
+        {
+            // XXX 由于使用了 BinaryTree::delete_tree()，其实不用递归调用子节点
+            // 的删除，这里只是用来测试一下是否会重复删除
+            if (nullptr != left)
+                delete left;
+            if (nullptr != right)
+                delete right;
+        }
+
         int get_key() const { return key; }
         Node* get_parent() const { return parent; }
         Node* get_left_child() const { return left; }
@@ -36,15 +46,6 @@ class TestBSTree : public TestFixture
         void set_parent(Node *p) { parent = p; }
         void set_left_child(Node *p) { left = p; }
         void set_right_child(Node *p) { right = p; }
-
-        void destroy()
-        {
-            if (nullptr != left)
-                left->destroy();
-            if (nullptr != right)
-                right->destroy();
-            delete this;
-        }
     };
 
     Node *root;
@@ -67,7 +68,7 @@ class TestBSTree : public TestFixture
 
     virtual void tear_down() override
     {
-        root->destroy();
+        BinaryTree<Node>::delete_tree(root, [] (Node *n) { delete n; });
         root = nullptr;
     }
 

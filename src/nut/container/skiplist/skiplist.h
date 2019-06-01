@@ -16,16 +16,16 @@ namespace nut
  *
  * @param K 键值类型，要求能用 "<" 操作符比较大小
  * @param NODE 节点类型，要求实现以下方法
- *      const K& get_key()       获取键值
- *      int get_level()          获取 0-based 层数
- *      void set_level(int)      设置层数，并自动分配 level+1 长度的 next 数组
- *      NODE* get_next(int)      获取指定层数的指针
- *      void set_next(int,NODE*) 设置指定层数的指针
+ *      const K& get_key() const   获取键值
+ *      int get_level() const      获取 0-based 层数
+ *      NODE* get_next(int) const  获取指定层数的指针
+ *      void set_level(int)        设置层数，并自动分配 level+1 长度的 next 数组
+ *      void set_next(int,NODE*)   设置指定层数的指针
  * @param SL 跳表数据结构本身，要求实现以下方法
- *      int get_level()          获取跳表 0-based 层数
- *      void set_level(int)      设置层数，并自动分配 level+1 长度的 head 数组
- *      NODE get_head(int)       获取跳表头
- *      void set_head(int,NODE*) 设置跳表头
+ *      int get_level() const      获取跳表 0-based 层数
+ *      NODE* get_head(int) const  获取跳表头
+ *      void set_level(int)        设置层数，并自动分配 level+1 长度的 head 数组
+ *      void set_head(int,NODE*)   设置跳表头
  */
 template <typename K, typename NODE, typename SL>
 class SkipList

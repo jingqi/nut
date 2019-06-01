@@ -13,14 +13,14 @@ namespace nut
 /**
  * 二叉查找树
  *
- * 类型 NODE 需要满足的模板接口:
- * - const K& get_key() const
- * - NODE* get_parent() const
- * - NODE* get_left_child() const
- * - NODE* get_right_child() const
- * - void set_parent(NODE*)
- * - void set_left_child(NODE*)
- * - void set_right_child(NODE*)
+ * @param NODE 树节点类型, 要求实现以下方法
+ *      const K& get_key() const
+ *      NODE* get_parent() const
+ *      NODE* get_left_child() const
+ *      NODE* get_right_child() const
+ *      void set_parent(NODE*)
+ *      void set_left_child(NODE*)
+ *      void set_right_child(NODE*)
  */
 template <typename K, typename NODE>
 class BSTree

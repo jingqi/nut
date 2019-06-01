@@ -14,16 +14,16 @@ namespace nut
 /**
  * 红黑树(Red-Black-Tree)
  *
- * 类型 NODE 需要满足的模板接口:
- * - const K& get_key() const
- * - bool is_red() const
- * - NODE* get_parent() const
- * - NODE* get_left_child() const
- * - NODE* get_right_child() const
- * - void set_red(bool)
- * - void set_parent(NODE*)
- * - void set_left_child(NODE*)
- * - void set_right_child(NODE*)
+ * @param NODE 树节点类型, 要求实现以下方法
+ *      bool is_red() const            获取节点的颜色, true 为红色, false 为黑色
+ *      const K& get_key() const
+ *      NODE* get_parent() const
+ *      NODE* get_left_child() const
+ *      NODE* get_right_child() const
+ *      void set_red(bool)             设置节点的颜色
+ *      void set_parent(NODE*)
+ *      void set_left_child(NODE*)
+ *      void set_right_child(NODE*)
  */
 template <typename K, typename NODE>
 class RBTree
@@ -330,12 +330,12 @@ private:
                 {
                     /* case 2:
                      *
-                     *    |                      |
-                     *    ?                     [?]
-                     *   / \         color      / \
-                     * [B]  B         ->       B   R
-                     *     / \                    / \
-                     *    B   B                  B   B
+                     *     |                      |
+                     *     ?                     [?]
+                     *    / \         color      / \
+                     *  [B]  B         ->       B   R
+                     *      / \                    / \
+                     *     B   B                  B   B
                      */
                     brother->set_red(true);
                     sublink = sublink_parent;
@@ -389,12 +389,12 @@ private:
                 {
                     /* case 1:
                      *
-                     *     |                                 |
-                     *     B                                 B
-                     *    / \        color & rotate         / \
-                     *   R  [B]            ->              B   R
-                     *  / \                                   / \
-                     * B   B                                 B  [B]
+                     *       |                                 |
+                     *       B                                 B
+                     *      / \        color & rotate         / \
+                     *     R  [B]            ->              B   R
+                     *    / \                                   / \
+                     *   B   B                                 B  [B]
                      */
                     brother->set_red(false);
                     sublink_parent->set_red(true);
@@ -407,12 +407,12 @@ private:
                 {
                     /* case 2:
                      *
-                     *     |                      |
-                     *     ?                     [?]
-                     *    / \         color      / \
-                     *   B  [B]        ->       R   B
-                     *  / \                    / \
-                     * B   B                  B   B
+                     *        |                      |
+                     *        ?                     [?]
+                     *       / \         color      / \
+                     *      B  [B]        ->       R   B
+                     *     / \                    / \
+                     *    B   B                  B   B
                      */
                     brother->set_red(true);
                     sublink = sublink_parent;
@@ -441,12 +441,12 @@ private:
 
                     /* case 4:
                      *
-                     *     |                                     |
-                     *     ?                                     ?
-                     *    / \            color & rotate         / \
-                     *   B  [B]               ->               B   B
-                     *  / \                                       / \
-                     * R   ?                                     ?   B
+                     *       |                                     |
+                     *       ?                                     ?
+                     *      / \            color & rotate         / \
+                     *     B  [B]               ->               B   B
+                     *    / \                                       / \
+                     *   R   ?                                     ?   B
                      */
                     brother->set_red(sublink_parent->is_red());
                     sublink_parent->set_red(false);

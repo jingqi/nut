@@ -5,6 +5,8 @@
 #include <assert.h>
 #include <stddef.h> // for ptrdiff_t
 #include <iterator>
+#include <stack>
+#include <functional>
 
 
 namespace nut
@@ -13,10 +15,12 @@ namespace nut
 /**
  * 二叉树
  *
- * 类型 NODE 需要满足的模板接口:
- * - Node* get_parent() const
- * - Node* get_left_child() const
- * - Node* get_right_child() const
+ * @param NODE 树节点类型, 要求实现以下方法
+ *      NODE* get_parent() const
+ *      NODE* get_left_child() const
+ *      NODE* get_right_child() const
+ *      void set_left_child(NODE*)     仅在 delete_tree() 中使用
+ *      void set_right_child(NODE*)    仅在 delete_tree() 中使用
  */
 template <typename NODE>
 class BinaryTree
@@ -25,9 +29,9 @@ private:
     /**
      * 中序遍历迭代器
      *
-     *        B
-     *       / \
-     *      A   C
+     *        B                               B
+     *       / \       reverse_iterator:     / \
+     *      A   C                           C   A
      */
     class InorderTraversalIterator
     {
@@ -149,6 +153,10 @@ public:
 
     /**
      * 中序遍历的起始迭代器
+     *
+     *       B
+     *      / \
+     *     A   C
      */
     static inorder_iterator inorder_traversal_begin(NODE *sub_root)
     {
@@ -176,7 +184,11 @@ public:
     }
 
     /**
-     * 逆中序遍历的终止迭代器
+     * 逆中序遍历的起始迭代器
+     *
+     *       B
+     *      / \
+     *     C   A
      */
     static inorder_reverse_iterator inorder_traversal_rbegin(NODE *sub_root)
     {
@@ -193,11 +205,11 @@ public:
 
 private:
     /**
-     * 前序遍历迭代器
+     * 前序遍历迭代器 (reverse 后是*异*后序遍历器)
      *
-     *        A
-     *       / \
-     *      B   C
+     *        A                             C
+     *       / \      reverse_iterator:    / \
+     *      B   C                         B   A
      */
     class PreorderTraversalIterator
     {
@@ -328,6 +340,10 @@ public:
 
     /**
      * 前序遍历的起始迭代器
+     *
+     *        A
+     *       / \
+     *      B   C
      */
     static preorder_iterator preorder_traversal_begin(NODE *sub_root)
     {
@@ -351,7 +367,11 @@ public:
     }
 
     /**
-     * 逆前序遍历的终止迭代器
+     * 逆前序遍历(*异*后序遍历)的起始迭代器
+     *
+     *       C
+     *      / \
+     *     B   A
      */
     static preorder_reverse_iterator preorder_traversal_rbegin(NODE *sub_root)
     {
@@ -359,7 +379,7 @@ public:
     }
 
     /**
-     * 逆前序遍历的终止迭代器
+     * 逆前序遍历(*异*后序遍历)的终止迭代器
      */
     static preorder_reverse_iterator preorder_traversal_rend(NODE *sub_root)
     {
@@ -368,11 +388,11 @@ public:
 
 private:
     /**
-     * 后序遍历迭代器
+     * 后序遍历迭代器 (reverse 后是*异*前序遍历器)
      *
-     *        C
-     *       / \
-     *      A   B
+     *        C                             A
+     *       / \      reverse_iterator:    / \
+     *      A   B                         C   B
      */
     class PostorderTraversalIterator
     {
@@ -501,6 +521,10 @@ public:
 
     /**
      * 后序遍历的起始迭代器
+     *
+     *       C
+     *      / \
+     *     A   B
      */
     static postorder_iterator postorder_traversal_begin(NODE *sub_root)
     {
@@ -524,7 +548,11 @@ public:
     }
 
     /**
-     * 逆后序遍历的起始迭代器
+     * 逆后序遍历(*异*前序遍历)的起始迭代器
+     *
+     *       A
+     *      / \
+     *     C   B
      */
     static postorder_reverse_iterator postorder_traversal_rbegin(NODE *sub_root)
     {
@@ -532,11 +560,57 @@ public:
     }
 
     /**
-     * 逆后序遍历的终止迭代器
+     * 逆后序遍历(*异*前序遍历)的终止迭代器
      */
     static postorder_reverse_iterator postorder_traversal_rend(NODE *sub_root)
     {
         return postorder_reverse_iterator(postorder_traversal_begin(sub_root));
+    }
+
+public:
+    typedef std::function<void(NODE*)> del_func_type;
+
+    /**
+     * 销毁二叉树(析构、释放内存)
+     *
+     * NOTE
+     * - 因后序遍历器不能用于销毁树的操作(后序遍历依赖于取当前节点的 parent, 而
+     *   当前节点可能已经销毁), 故单独提供方法来销毁树
+     * - sub_root 如果有 parent, 则 parent 中指向 sub_root 的指针需要调用者自己
+     *   置空, e.g. sub_root->parent->left_child = nullptr;
+     *
+     * @param delfunc 删除节点的函数(析构、释放内存)
+     */
+    static void delete_tree(NODE *sub_root, del_func_type del_func)
+    {
+        assert(del_func);
+        if (nullptr == sub_root)
+            return;
+
+        std::stack<NODE*> s;
+        s.push(sub_root);
+        while (!s.empty())
+        {
+            // Pop node
+            NODE *n = s.top();
+            assert(nullptr != n);
+            s.pop();
+
+            // Push children
+            if (nullptr != n->get_left_child())
+                s.push(n->get_left_child());
+            if (nullptr != n->get_right_child())
+                s.push(n->get_right_child());
+
+            // Clear children
+            // NOTE Just for safe, if the node also try to delete it's children
+            //      in it's destructor
+            n->set_left_child(nullptr);
+            n->set_right_child(nullptr);
+
+            // Delete, this should destruct the node and free it's memory
+            del_func(n);
+        }
     }
 
 private:
