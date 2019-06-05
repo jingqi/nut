@@ -54,6 +54,7 @@
 #include "container/tree/binary_tree.h"
 #include "container/tree/bstree.h"
 #include "container/tree/rbtree.h"
+#include "container/tree/trie_tree.h"
 #include "container/tree/rtree/mdarea.h"
 #include "container/tree/rtree/rtree.h"
 
@@ -74,6 +75,8 @@
 
 // security
 #include "security/digest/adler32.h"
+#include "security/digest/crc16.h"
+#include "security/digest/crc32.h"
 #include "security/digest/md5.h"
 #include "security/digest/sha1.h"
 #include "security/digest/sha2_256.h"
@@ -92,6 +95,8 @@
 #include "threading/priority_thread_pool.h"
 #include "threading/lockfree/concurrent_stack.h"
 #include "threading/lockfree/concurrent_queue.h"
+#include "threading/lockfree/hazard_pointer/hp_record.h"
+#include "threading/lockfree/hazard_pointer/hp_retire_list.h"
 #include "threading/sync/dummy_lock.h"
 #include "threading/sync/spinlock.h"
 #include "threading/sync/rwlock.h"
@@ -136,12 +141,5 @@
 #include "util/txtcfg/xml/xml_dom.h"
 #include "util/txtcfg/xml/xml_parser.h"
 #include "util/txtcfg/xml/xml_writer.h"
-
-#if defined(NUT_ENABLE_SQLITE3)
-#   include "util/sqlite_helper/sqlite_param.h"
-#   include "util/sqlite_helper/sqlite_result_set.h"
-#   include "util/sqlite_helper/sqlite_statement.h"
-#   include "util/sqlite_helper/sqlite_connection.h"
-#endif
 
 #endif

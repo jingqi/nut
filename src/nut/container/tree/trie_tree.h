@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <stdlib.h> // for ::malloc(), ::free()
+#include <stdint.h>
 #include <algorithm> // for std::reverse()
 #include <stack>
 #include <vector>
@@ -43,75 +44,73 @@ private:
      */
     class Node
     {
+    private:
+        static constexpr uint8_t RB_RED = 0x01;
+        static constexpr uint8_t HAS_DATA = 0x02;
+
     public:
         void construct_plump(ENTRY&& entry, DATA&& data)
         {
-            construct_transit(std::forward<ENTRY>(entry));
+            construct_dummy(std::forward<ENTRY>(entry));
 
-            _has_data = true;
+            _flags |= HAS_DATA;
             new (&_data) DATA(std::forward<DATA>(data));
         }
 
         void construct_plump(const ENTRY& entry, DATA&& data)
         {
-            construct_transit(entry);
+            construct_dummy(entry);
 
-            _has_data = true;
+            _flags |= HAS_DATA;
             new (&_data) DATA(std::forward<DATA>(data));
         }
 
         void construct_plump(ENTRY&& entry, const DATA& data)
         {
-            construct_transit(std::forward<ENTRY>(entry));
+            construct_dummy(std::forward<ENTRY>(entry));
 
-            _has_data = true;
+            _flags |= HAS_DATA;
             new (&_data) DATA(data);
         }
 
         void construct_plump(const ENTRY& entry, const DATA& data)
         {
-            construct_transit(entry);
+            construct_dummy(entry);
 
-            _has_data = true;
+            _flags |= HAS_DATA;
             new (&_data) DATA(data);
         }
 
-        void construct_transit(ENTRY&& entry)
+        void construct_dummy(ENTRY&& entry)
         {
-            construct_dummy();
-
-            _has_entry = true;
-            new (const_cast<ENTRY*>(&_entry)) ENTRY(std::forward<ENTRY>(entry));
-        }
-
-        void construct_transit(const ENTRY& entry)
-        {
-            construct_dummy();
-
-            _has_entry = true;
-            new (const_cast<ENTRY*>(&_entry)) ENTRY(entry);
-        }
-
-        void construct_dummy()
-        {
-            _has_entry = false;
-            _has_data = false;
-
             _trie_parent = nullptr;
-            _rb_root = nullptr;
-
-            _rb_red = false;
+            _child_tree = nullptr;
             _rb_parent = nullptr;
             _rb_left = nullptr;
             _rb_right = nullptr;
+            _flags = 0;
+
+            new (const_cast<ENTRY*>(&_entry)) ENTRY(std::forward<ENTRY>(entry));
+        }
+
+        void construct_dummy(const ENTRY& entry)
+        {
+            _trie_parent = nullptr;
+            _child_tree = nullptr;
+            _rb_parent = nullptr;
+            _rb_left = nullptr;
+            _rb_right = nullptr;
+            _flags = 0;
+
+            new (const_cast<ENTRY*>(&_entry)) ENTRY(entry);
         }
 
         void destruct()
         {
-            if (_has_entry)
-                (&_entry)->~ENTRY();
-            if (_has_data)
+            if (has_data())
                 (&_data)->~DATA();
+
+            (&_entry)->~ENTRY();
 
             clear_trie_children();
         }
@@ -123,52 +122,63 @@ private:
 
         bool has_data() const
         {
-            return _has_data;
+            return 0 != (_flags & HAS_DATA);
         }
 
         const DATA& get_data() const
         {
-            assert(_has_data);
+            assert(has_data());
             return _data;
         }
 
         void set_data(DATA&& data)
         {
-            if (_has_data)
+            if (has_data())
                 _data = std::forward<DATA>(data);
             else
                 new (&_data) DATA(std::forward<DATA>(data));
-            _has_data = true;
+            _flags |= HAS_DATA;
         }
 
         void set_data(const DATA& data)
         {
-            if (_has_data)
+            if (has_data())
                 _data = data;
             else
                 new (&_data) DATA(data);
-            _has_data = true;
+            _flags |= HAS_DATA;
         }
 
         void clear_data()
         {
-            if (!_has_data)
+            if (!has_data())
                 return;
             (&_data)->~DATA();
-            _has_data = false;
+            _flags &= ~HAS_DATA;
         }
 
         std::vector<ENTRY> get_path() const
         {
             std::vector<ENTRY> path;
             Node *n = this;
-            while (nullptr != n && n->_has_entry)
+            while (nullptr != n)
             {
                 path.push_back(n->_entry);
-                n = n->_trie_parent;
+                n = n->get_trie_parent();
             }
             std::reverse(path.begin(), path.end());
             return path;
+        }
+
+        void set_trie_parent(Node *parent)
+        {
+            _trie_parent = parent;
+        }
+
+        // Set rbtree parent
+        void set_parent(Node* n)
+        {
+            _rb_parent = n;
         }
 
         Node* get_trie_parent() const
@@ -178,41 +188,43 @@ private:
 
         Node* get_trie_child(const ENTRY& entry) const
         {
-            return BSTree<ENTRY,Node>::search(_rb_root, entry);
+            return BSTree<ENTRY,Node>::search(_child_tree, entry);
         }
 
         Node* get_trie_child_tree() const
         {
-            return _rb_root;
+            return _child_tree;
         }
 
         void add_trie_child(Node *n)
         {
-            assert(n->_has_entry);
-            _rb_root = RBTree<ENTRY,Node>::insert(_rb_root, n);
+            _child_tree = RBTree<ENTRY,Node>::insert(_child_tree, n);
+            _child_tree->_rb_parent = nullptr;
             n->_trie_parent = this;
         }
 
         void remove_trie_child(Node *n)
         {
-            assert(n->_has_entry);
-            _rb_root = RBTree<ENTRY,Node>::remove(_rb_root, n);
+            _child_tree = RBTree<ENTRY,Node>::remove(_child_tree, n);
+            if (nullptr != _child_tree)
+                _child_tree->_rb_parent = nullptr;
+            n->_rb_parent = nullptr;
             n->_trie_parent = nullptr;
         }
 
         bool is_trie_leaf() const
         {
-            return nullptr == _rb_root;
+            return nullptr == _child_tree;
         }
 
         void clear_trie_children()
         {
-            if (nullptr == _rb_root)
+            if (nullptr == _child_tree)
                 return;
 
             // 遍历红黑树子节点、字典树子节点
             std::stack<Node*> s;
-            s.push(_rb_root);
+            s.push(_child_tree);
             while (!s.empty())
             {
                 Node *n = s.top();
@@ -223,18 +235,18 @@ private:
                     s.push(n->_rb_left);
                 if (nullptr != n->_rb_right)
                     s.push(n->_rb_right);
-                if (nullptr != n->_rb_root)
-                    s.push(n->_rb_root);
+                if (nullptr != n->_child_tree)
+                    s.push(n->_child_tree);
 
                 // NOTE 避免 destruct() 递归调用 clear_trie_children() 时重复析构
                 n->_rb_left = nullptr;
                 n->_rb_right = nullptr;
-                n->_rb_root = nullptr;
+                n->_child_tree = nullptr;
 
                 n->destruct();
                 ::free(n);
             }
-            _rb_root = nullptr;
+            _child_tree = nullptr;
         }
 
         size_t count_of_data() const
@@ -249,11 +261,11 @@ private:
                 assert(nullptr != n);
                 s.pop();
 
-                if (n->_has_data)
+                if (n->has_data())
                     ++ret;
 
-                for (auto iter = BinaryTree<Node>::inorder_traversal_begin(n->_rb_root),
-                         end = BinaryTree<Node>::inorder_traversal_end(n->_rb_root);
+                for (auto iter = BinaryTree<Node>::inorder_traversal_begin(n->_child_tree),
+                         end = BinaryTree<Node>::inorder_traversal_end(n->_child_tree);
                      iter != end; ++iter)
                 {
                     Node *child = &*iter;
@@ -273,13 +285,12 @@ private:
 
         const ENTRY& get_key() const
         {
-            assert(_has_entry);
             return _entry;
         }
 
         bool is_red() const
         {
-            return _rb_red;
+            return 0 != (_flags & RB_RED);
         }
 
         Node* get_parent() const
@@ -299,12 +310,10 @@ private:
 
         void set_red(bool red)
         {
-            _rb_red = red;
-        }
-
-        void set_parent(Node* n)
-        {
-            _rb_parent = n;
+            if (red)
+                _flags |= RB_RED;
+            else
+                _flags &= ~RB_RED;
         }
 
         void set_left_child(Node *n)
@@ -324,18 +333,17 @@ private:
         Node& operator=(const Node&) = delete;
 
     public:
-        bool _has_entry = true;
-        const ENTRY _entry;
-
-        bool _has_data = true;
-        DATA _data;
-
         // 字典树属性
-        Node *_trie_parent = nullptr, *_rb_root = nullptr; // 子节点构成一颗红黑树
+        Node *_trie_parent = nullptr;
+        Node *_child_tree = nullptr; // 子节点构成另一颗红黑树
 
         // 红黑树属性
-        bool _rb_red = false;
         Node *_rb_parent = nullptr, *_rb_left = nullptr, *_rb_right = nullptr;
+
+        const ENTRY _entry;
+        DATA _data;
+
+        uint8_t _flags = 0;
     };
 
 public:
@@ -488,7 +496,7 @@ public:
             if (nullptr != n && n->has_data())
                 ret.push_back(n->get_data());
 
-            Node *const root = (nullptr == n ? _rb_root : n->get_trie_child_tree());
+            Node *const root = (nullptr == n ? _child_tree : n->get_trie_child_tree());
             for (auto iter = BinaryTree<Node>::inorder_traversal_rbegin(root),
                      end = BinaryTree<Node>::inorder_traversal_rend(root);
                  iter != end; ++iter)
@@ -524,14 +532,14 @@ public:
      */
     void clear()
     {
-        if (nullptr == _rb_root)
+        if (nullptr == _child_tree)
             return;
 
-        BinaryTree<Node>::delete_tree(_rb_root, [] (Node *n) {
+        BinaryTree<Node>::delete_tree(_child_tree, [] (Node *n) {
             n->destruct();
             ::free(n);
         });
-        _rb_root = nullptr;
+        _child_tree = nullptr;
         _size = 0;
     }
 
@@ -553,7 +561,7 @@ private:
             assert(0 == i || nullptr != n);
             Node *child;
             if (0 == i)
-                child = BSTree<ENTRY,Node>::search(_rb_root, path[i]);
+                child = BSTree<ENTRY,Node>::search(_child_tree, path[i]);
             else
                 child = n->get_trie_child(path[i]);
 
@@ -564,11 +572,17 @@ private:
             }
 
             Node *new_node = (Node*) ::malloc(sizeof(Node));
-            new_node->construct_transit(path[i]);
+            new_node->construct_dummy(path[i]);
             if (0 == i)
-                _rb_root = RBTree<ENTRY,Node>::insert(_rb_root, new_node);
+            {
+                _child_tree = RBTree<ENTRY,Node>::insert(_child_tree, new_node);
+                _child_tree->set_parent(nullptr);
+                new_node->set_trie_parent(nullptr);
+            }
             else
+            {
                 n->add_trie_child(new_node);
+            }
             n = new_node;
         }
         return n;
@@ -577,17 +591,17 @@ private:
     /**
      * @param accestor 如果路径不存在, 返回缺失节点的父节点而不是 nullptr
      */
-    const Node* find_path(const ENTRY *path, size_t path_len, bool ancestor = false) const
+    Node* find_path(const ENTRY *path, size_t path_len, bool ancestor = false) const
     {
         assert(nullptr != path || 0 == path_len);
 
-        const Node *n = nullptr;
+        Node *n = nullptr;
         for (size_t i = 0; i < path_len; ++i)
         {
             assert(0 == i || nullptr != n);
-            const Node *child;
+            Node *child;
             if (0 == i)
-                child = BSTree<ENTRY,Node>::search(_rb_root, path[i]);
+                child = BSTree<ENTRY,Node>::search(_child_tree, path[i]);
             else
                 child = n->get_trie_child(path[i]);
 
@@ -602,14 +616,6 @@ private:
         return n;
     }
 
-    Node* find_path(const ENTRY *path, size_t path_len, bool ancestor = false)
-    {
-        assert(nullptr != path || 0 == path_len);
-        return const_cast<Node*>(
-            static_cast<const TrieTree<ENTRY,DATA>*>(this)->find_path(
-                path, path_len, ancestor));
-    }
-
     /**
      * 从指定节点到其先祖，剪除无用节点(自身没有数据, 子孙节点也没有数据的节点)
      */
@@ -619,9 +625,17 @@ private:
         {
             Node *const parent = n->get_trie_parent();
             if (nullptr == parent)
-                _rb_root = RBTree<ENTRY,Node>::remove(_rb_root, n);
+            {
+                _child_tree = RBTree<ENTRY,Node>::remove(_child_tree, n);
+                if (nullptr != _child_tree)
+                    _child_tree->set_parent(nullptr);
+                n->set_parent(nullptr);
+                n->set_trie_parent(nullptr);
+            }
             else
+            {
                 parent->remove_trie_child(n);
+            }
             n->destruct();
             ::free(n);
             n = parent;
@@ -629,7 +643,7 @@ private:
     }
 
 public:
-    Node *_rb_root = nullptr;
+    Node *_child_tree = nullptr;
     size_t _size = 0;
 };
 
