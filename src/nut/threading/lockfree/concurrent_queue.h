@@ -253,6 +253,33 @@ public:
     }
 
     /**
+     * 入队
+     */
+    template <typename ...Args>
+    void emplace(Args&& ...args)
+    {
+        optimistic_emplace(std::forward<Args>(args)...);
+    }
+
+    void enqueue(T&& v)
+    {
+        optimistic_enqueue(std::forward<T>(v));
+    }
+
+    void enqueue(const T& v)
+    {
+        optimistic_enqueue(v);
+    }
+
+    /**
+     * 出队
+     */
+    bool dequeue(T *p = nullptr)
+    {
+        return optimistic_dequeue(p);
+    }
+
+    /**
      * 乐观算法入队
      */
     template <typename ...Args>
@@ -280,7 +307,7 @@ public:
     /**
      * 乐观算法出队
      */
-    bool optimistic_dequeue(T *p)
+    bool optimistic_dequeue(T *p = nullptr)
     {
         uint8_t tmp[sizeof(typename Node::data_store_type)];
 
@@ -352,7 +379,7 @@ public:
     /**
      * 采用隐消策略的出队
      */
-    bool eliminate_dequeue(T *p)
+    bool eliminate_dequeue(T *p = nullptr)
     {
         while (true)
         {
@@ -363,6 +390,12 @@ public:
                      try_to_eliminate_dequeue(p))
                 return true;
         }
+    }
+
+    void clear()
+    {
+        while (optimistic_dequeue(nullptr))
+        {}
     }
 
 private:

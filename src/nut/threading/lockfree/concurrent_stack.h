@@ -89,7 +89,7 @@ public:
         push(new_node);
     }
 
-    bool pop(T *p)
+    bool pop(T *p = nullptr)
     {
         StampedPtr<Node> old_top = _top.load(std::memory_order_acquire);
         while (true)
@@ -109,6 +109,12 @@ public:
                 return true;
             }
         }
+    }
+
+    void clear()
+    {
+        while (pop(nullptr))
+        {}
     }
 
 private:
