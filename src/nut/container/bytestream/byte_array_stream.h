@@ -23,7 +23,7 @@ class NUT_API ByteArrayStream : public InputStream, public OutputStream, public 
     NUT_REF_COUNTABLE_OVERRIDE
 
 public:
-    ByteArrayStream() noexcept = default;
+    ByteArrayStream() = default;
     explicit ByteArrayStream(std::vector<uint8_t>&& arr) noexcept;
     explicit ByteArrayStream(const std::vector<uint8_t>& arr) noexcept;
     ByteArrayStream(const void *data, size_t cb) noexcept;

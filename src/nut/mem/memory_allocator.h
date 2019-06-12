@@ -18,8 +18,8 @@ class NUT_API memory_allocator
     NUT_REF_COUNTABLE
 
 public:
-    memory_allocator() noexcept = default;
-    virtual ~memory_allocator() noexcept = default;
+    memory_allocator() = default;
+    virtual ~memory_allocator() = default;
 
     /**
      * @param sz Should greater than 0

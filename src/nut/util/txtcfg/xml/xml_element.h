@@ -30,7 +30,7 @@ private:
     class Comment
     {
     public:
-        Comment() noexcept = default;
+        Comment() = default;
 
         Comment(size_t _pos, const std::string& _text) noexcept
             : pos(_pos), text(_text)

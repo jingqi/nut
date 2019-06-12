@@ -21,7 +21,7 @@ private:
     static_assert(std::is_unsigned<word_type>::value, "Unexpected integer type");
 
 public:
-    BitStream() noexcept = default;
+    BitStream() = default;
 
     /**
      * @param fill_bit 填充比特值，只能为 1 或者 0

@@ -72,7 +72,7 @@ private:
             : area(rt), _tree_node(tn) 
         {}
 
-        virtual ~Node() noexcept = default;
+        virtual ~Node() = default;
 
         bool is_tree_node() const noexcept
         {

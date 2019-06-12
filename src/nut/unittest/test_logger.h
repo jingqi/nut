@@ -15,7 +15,7 @@ namespace nut
 class NUT_API ITestLogger
 {
 public:
-    virtual ~ITestLogger() noexcept = default;
+    virtual ~ITestLogger() = default;
 
     size_t get_count_of_fixtures() const noexcept;
     size_t get_count_of_failed_fixtures() const noexcept;

@@ -54,7 +54,7 @@ private:
     };
 
 public:
-    scoped_gc() noexcept {}
+    scoped_gc() = default;
     ~scoped_gc() noexcept;
 
     void clear() noexcept;

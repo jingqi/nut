@@ -16,7 +16,7 @@ private:
     static constexpr int32_t DESTRUCTED = 0xDEADBEEF; /* magic dead-beaf */
 
 public:
-    DestroyChecker() noexcept = default;
+    DestroyChecker() = default;
 
     ~DestroyChecker() noexcept
     {

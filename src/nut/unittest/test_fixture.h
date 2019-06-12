@@ -38,7 +38,7 @@ private:
     };
 
 public:
-    virtual ~TestFixture() noexcept = default;
+    virtual ~TestFixture() = default;
 
     virtual void register_cases() noexcept = 0;
 

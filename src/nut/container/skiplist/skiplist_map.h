@@ -122,7 +122,7 @@ private:
     };
 
 public:
-    SkipListMap() noexcept = default;
+    SkipListMap() = default;
 
     SkipListMap(self_type&& x) noexcept
         : _level(x._level), _head(x._head), _size(x._size)

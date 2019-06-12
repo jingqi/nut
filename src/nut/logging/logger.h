@@ -39,7 +39,7 @@ public:
     void load_xml_config(const std::string& config) noexcept;
 
 private:
-    Logger() noexcept = default;
+    Logger() = default;
     ~Logger() noexcept;
 
     Logger(const Logger&) = delete;

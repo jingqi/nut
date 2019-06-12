@@ -347,7 +347,7 @@ private:
     };
 
 public:
-    TrieTree() noexcept = default;
+    TrieTree() = default;
 
     ~TrieTree() noexcept
     {

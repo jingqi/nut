@@ -1,7 +1,7 @@
 
 TARGET = nut
 TEMPLATE = lib
-VERSION = 1.2.0
+VERSION = 1.3.0
 
 include(../nut_common.pri)
 

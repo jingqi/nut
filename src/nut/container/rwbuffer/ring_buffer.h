@@ -30,7 +30,7 @@ namespace nut
 class NUT_API RingBuffer
 {
 public:
-    RingBuffer() noexcept = default;
+    RingBuffer() = default;
     RingBuffer(RingBuffer&& x) noexcept;
     RingBuffer(const RingBuffer& x) noexcept;
     ~RingBuffer() noexcept;

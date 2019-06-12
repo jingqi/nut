@@ -48,7 +48,7 @@ public:
     };
 
 public:
-    FragmentBuffer() noexcept {}
+    FragmentBuffer() = default;
     FragmentBuffer(FragmentBuffer&& x) noexcept;
     FragmentBuffer(const FragmentBuffer& x) noexcept;
     ~FragmentBuffer() noexcept;

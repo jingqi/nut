@@ -28,7 +28,7 @@ public:
 
 public:
     explicit XmlElementHandler(uint8_t mask = 0xff) noexcept;
-    virtual ~XmlElementHandler() noexcept = default;
+    virtual ~XmlElementHandler() = default;
 
     void set_name(const std::string& name) noexcept;
     const std::string& get_name() const noexcept;

@@ -35,7 +35,7 @@ public:
     class Range
     {
     public:
-        Range() noexcept = default;
+        Range() = default;
 
         Range(int_type f, int_type l) noexcept
             : first(f), last(l)
@@ -177,7 +177,7 @@ private:
     };
 
 public:
-    IntegerSet() noexcept = default;
+    IntegerSet() = default;
 
     IntegerSet(IntegerSet&& x) noexcept
         : _ranges(std::forward<std::vector<Range>>(x._ranges))
