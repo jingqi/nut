@@ -20,14 +20,14 @@ public:
     /**
      * 查询命令名
      */
-    virtual const char* get_command_name() const = 0;
+    virtual const char* get_command_name() const noexcept = 0;
 
     /**
      * 命令名缩写
      *
      * @return 最后一项必须是 nullptr
      */
-    virtual const char** get_command_nick_names() const;
+    virtual const char** get_command_nick_names() const noexcept;
 
     /**
      * 查询命令的简要描述
@@ -35,7 +35,7 @@ public:
      * @return 简要描述，例如
      *     "这是一个测试命令"
      */
-    virtual const char* get_general_info() const = 0;
+    virtual const char* get_general_info() const noexcept = 0;
 
     /**
      * 查询命令的详细描述
@@ -47,24 +47,25 @@ public:
      *     eg.:\n
      *     \ttestCommand 这是第一个消息"
      */
-    virtual const char* get_detail_info() const = 0;
+    virtual const char* get_detail_info() const noexcept = 0;
 
     /**
      * 执行命令
      *
      * @param command_line 命令行，包括起始部分的命令名
      */
-    virtual void execute(const char* command_line) = 0;
+    virtual void execute(const char* command_line) noexcept = 0;
 
     /**
      * 分析命令行
      */
-    static std::vector<std::string> parse_comand_line(const char *cmd_line);
+    static std::vector<std::string> parse_comand_line(const char *cmd_line) noexcept;
 
     /**
      * 分析命令行
      */
-    static void parse_comand_line(const wchar_t *cmd_line, std::vector<std::wstring> *appended);
+    static void parse_comand_line(const wchar_t *cmd_line,
+                                  std::vector<std::wstring> *appended) noexcept;
 };
 
 }

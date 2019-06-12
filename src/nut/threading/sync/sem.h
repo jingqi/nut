@@ -22,14 +22,14 @@ namespace nut
 class NUT_API Semaphore
 {
 public:
-    explicit Semaphore(unsigned init_value);
-    ~Semaphore();
+    explicit Semaphore(unsigned init_value) noexcept;
+    ~Semaphore() noexcept;
 
-    void post();
+    void post() noexcept;
 
-    void wait();
-    bool trywait();
-    bool timedwait(unsigned s, unsigned ms);
+    void wait() noexcept;
+    bool trywait() noexcept;
+    bool timedwait(unsigned s, unsigned ms) noexcept;
 
 private:
     Semaphore(const Semaphore&) = delete;

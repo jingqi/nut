@@ -25,7 +25,7 @@ namespace nut
 
 using color_rep_type = std::underlying_type<ConsoleColor>::type;
 
-bool ConsoleUtil::isatty()
+bool ConsoleUtil::isatty() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return 0 != ::_isatty(::_fileno(stdout));
@@ -34,7 +34,7 @@ bool ConsoleUtil::isatty()
 #endif
 }
 
-void ConsoleUtil::set_text_color(ConsoleColor forecolor, ConsoleColor backcolor)
+void ConsoleUtil::set_text_color(ConsoleColor forecolor, ConsoleColor backcolor) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     const unsigned fgtable[9] =
@@ -94,7 +94,7 @@ void ConsoleUtil::set_text_color(ConsoleColor forecolor, ConsoleColor backcolor)
 #endif
 }
 
-void ConsoleUtil::set_back_ground_color(ConsoleColor forecolor, ConsoleColor backcolor)
+void ConsoleUtil::set_back_ground_color(ConsoleColor forecolor, ConsoleColor backcolor) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     const char fgtable[9] =
@@ -116,7 +116,7 @@ void ConsoleUtil::set_back_ground_color(ConsoleColor forecolor, ConsoleColor bac
 #endif
 }
 
-void ConsoleUtil::pause()
+void ConsoleUtil::pause() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     ::getch();
@@ -127,7 +127,7 @@ void ConsoleUtil::pause()
 #endif
 }
 
-std::string ConsoleUtil::get_password()
+std::string ConsoleUtil::get_password() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     std::string ret;

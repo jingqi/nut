@@ -8,7 +8,7 @@
 namespace nut
 {
 
-bool SourceLocation::operator==(const SourceLocation& x) const
+bool SourceLocation::operator==(const SourceLocation& x) const noexcept
 {
     if (_line != x._line)
         return false;
@@ -31,12 +31,12 @@ bool SourceLocation::operator==(const SourceLocation& x) const
     return true;
 }
 
-bool SourceLocation::operator!=(const SourceLocation& x) const
+bool SourceLocation::operator!=(const SourceLocation& x) const noexcept
 {
     return !(*this == x);
 }
 
-const char* SourceLocation::get_file_name() const
+const char* SourceLocation::get_file_name() const noexcept
 {
     assert(nullptr != _path);
 
@@ -49,7 +49,7 @@ const char* SourceLocation::get_file_name() const
     return ret;
 }
 
-std::string SourceLocation::to_string() const
+std::string SourceLocation::to_string() const noexcept
 {
     std::string s = get_file_name();
     s.push_back(':');

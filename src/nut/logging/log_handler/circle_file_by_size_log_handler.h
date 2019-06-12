@@ -29,19 +29,19 @@ public:
      */
     CircleFileBySizeLogHandler(const std::string& dir_path, const std::string& prefix,
                                size_t circle_size, size_t max_file_size,
-                               bool cross_file = true);
+                               bool cross_file = true) noexcept;
 
-    virtual void handle_log(const LogRecord& rec) override;
+    virtual void handle_log(const LogRecord& rec) noexcept override;
 
 private:
     CircleFileBySizeLogHandler(const CircleFileBySizeLogHandler&) = delete;
     CircleFileBySizeLogHandler& operator=(const CircleFileBySizeLogHandler&) = delete;
 
     // 重新打开输出流
-    void reopen(const char *file);
+    void reopen(const char *file) noexcept;
 
     // 新一轮循环
-    void circle_once();
+    void circle_once() noexcept;
 
 private:
     // 输出流

@@ -9,7 +9,7 @@ using namespace nut;
 
 class TestLRUDataCache : public TestFixture
 {
-    virtual void register_cases() override
+    virtual void register_cases() noexcept override
     {
         NUT_REGISTER_CASE(test_smoking);
     }

@@ -39,7 +39,7 @@ namespace nut
 namespace
 {
 
-unsigned dec_width(int n)
+unsigned dec_width(int n) noexcept
 {
     int count = 0;
     while (n > 0)
@@ -50,7 +50,7 @@ unsigned dec_width(int n)
     return 0 == count ? 1 : count;
 }
 
-std::string fmt_seq(int v, unsigned width)
+std::string fmt_seq(int v, unsigned width) noexcept
 {
     const std::string num = llong_to_str(v);
     std::string prepand;
@@ -63,7 +63,7 @@ std::string fmt_seq(int v, unsigned width)
 
 #if NUT_PLATFORM_OS_WINDOWS
 
-std::string Backtrace::backtrace(unsigned skip_top_frames)
+std::string Backtrace::backtrace(unsigned skip_top_frames) noexcept
 {
     // Get calling stack
     void *trace[MAX_BACKTRACE];
@@ -139,7 +139,7 @@ namespace
 /*
  * 构造用于调用addr2line的命令。
  */
-std::string make_addr2line_cmd(ProcAddrMaps::addr_type addr, const std::string& module_path)
+std::string make_addr2line_cmd(ProcAddrMaps::addr_type addr, const std::string& module_path) noexcept
 {
     return format("addr2line 0x%X -C -f -e %s", addr, module_path.c_str());
 }
@@ -147,7 +147,7 @@ std::string make_addr2line_cmd(ProcAddrMaps::addr_type addr, const std::string& 
 /*
  * 调用 addr2line，查询地址，获得源文件、行号和函数名
  */
-std::string call_addr2line(const std::string& cmd)
+std::string call_addr2line(const std::string& cmd) noexcept
 {
     std::string ret;
     FILE* fp = ::popen(cmd.c_str(), "r");
@@ -225,7 +225,7 @@ std::string call_addr2line(const std::string& cmd)
 /*
  * 将路径 str_path 转化成绝对路径，这会处理软链接和相对路径
  */
-std::string get_real_path(const std::string& path)
+std::string get_real_path(const std::string& path) noexcept
 {
     char resolved_path[PATH_MAX + 1] = {0};
     if (::realpath(path.c_str(), resolved_path))
@@ -242,7 +242,7 @@ std::string get_real_path(const std::string& path)
  * @param addr [out] e.g. 0x5fa269
  */
 void parse_backtrace_symbol(const std::string& backtrace_symbol,
-                            std::string *module_path, ProcAddrMaps::addr_type *addr)
+                            std::string *module_path, ProcAddrMaps::addr_type *addr) noexcept
 {
     assert(nullptr != module_path && nullptr != addr);
     *addr = 0;
@@ -268,7 +268,7 @@ void parse_backtrace_symbol(const std::string& backtrace_symbol,
 
 }
 
-std::string Backtrace::backtrace(unsigned skip_top_frames)
+std::string Backtrace::backtrace(unsigned skip_top_frames) noexcept
 {
     std::string ret;
 
@@ -340,7 +340,7 @@ std::string Backtrace::backtrace(unsigned skip_top_frames)
 
 #else
 
-std::string Backtrace::backtrace(unsigned skip_top_frames)
+std::string Backtrace::backtrace(unsigned skip_top_frames) noexcept
 {
     std::string ret;
 
@@ -377,7 +377,7 @@ std::string Backtrace::backtrace(unsigned skip_top_frames)
 
 #endif
 
-void Backtrace::print_stack()
+void Backtrace::print_stack() noexcept
 {
     std::cerr << std::endl << backtrace(1) << std::endl;
 }

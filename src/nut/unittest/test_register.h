@@ -23,17 +23,17 @@ private:
 
 public:
     TestRegister(const char *fixture_name, const char *groups,
-                 new_fixture_func&& n, delete_fixture_func&& d);
+                 new_fixture_func&& n, delete_fixture_func&& d) noexcept;
 
-    static TestRegister** get_link_header();
-    TestRegister* get_next_register() const;
+    static TestRegister** get_link_header() noexcept;
+    TestRegister* get_next_register() const noexcept;
 
-    bool match_group(const char *group_name) const;
+    bool match_group(const char *group_name) const noexcept;
 
-    const char* get_fixture_name() const;
+    const char* get_fixture_name() const noexcept;
 
-    TestFixture* new_fixture() const;
-    void delete_fixture(TestFixture *p);
+    TestFixture* new_fixture() const noexcept;
+    void delete_fixture(TestFixture *p) noexcept;
 
 private:
     TestRegister(const TestRegister&) = delete;

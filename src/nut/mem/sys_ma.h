@@ -19,22 +19,22 @@ namespace nut
 class NUT_API sys_ma : public memory_allocator
 {
 public:
-    sys_ma();
+    sys_ma() noexcept;
 
 #ifndef NDEBUG
-    ~sys_ma();
+    virtual ~sys_ma() noexcept override;
 #endif
 
-    virtual void* alloc(size_t sz) override;
-    virtual void* realloc(void *p, size_t old_sz, size_t new_sz) override;
-    virtual void free(void *p, size_t sz) override;
+    virtual void* alloc(size_t sz) noexcept override;
+    virtual void* realloc(void *p, size_t old_sz, size_t new_sz) noexcept override;
+    virtual void free(void *p, size_t sz) noexcept override;
 
 #ifndef NDEBUG
-    size_t get_alloc_count() const;
-    size_t get_free_count() const;
+    size_t get_alloc_count() const noexcept;
+    size_t get_free_count() const noexcept;
 
-    size_t get_total_alloc_size() const;
-    size_t get_total_free_size() const;
+    size_t get_total_alloc_size() const noexcept;
+    size_t get_total_free_size() const noexcept;
 #endif
 
 private:

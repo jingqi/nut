@@ -23,7 +23,7 @@ public: // NOTE 暴露给外部，使其能手动操作引用计数，比如 Cop
     NUT_REF_COUNTABLE
 
     template <typename ...Args>
-    enrc(Args&& ...args)
+    enrc(Args&& ...args) noexcept
         : T(std::forward<Args>(args)...)
     {}
 };

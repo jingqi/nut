@@ -47,9 +47,9 @@ private:
     class Timer
     {
     public:
-        Timer(uint64_t when_ms_, uint64_t repeat_ms_, timer_task_type&& task_);
-        Timer(uint64_t when_ms_, uint64_t repeat_ms_, const timer_task_type& task_);
-        ~Timer();
+        Timer(uint64_t when_ms_, uint64_t repeat_ms_, timer_task_type&& task_) noexcept;
+        Timer(uint64_t when_ms_, uint64_t repeat_ms_, const timer_task_type& task_) noexcept;
+        ~Timer() noexcept;
 
     public:
         uint32_t valid_mask = 0; // 是否有效，避免内存被释放后依然被错误使用
@@ -65,7 +65,7 @@ private:
     class Wheel
     {
     public:
-        Wheel();
+        Wheel() noexcept;
 
     public:
         Timer *bucket_heads[BUCKETS_PER_WHEEL];
@@ -73,56 +73,56 @@ private:
     };
 
 public:
-    TimeWheel();
-    ~TimeWheel();
+    TimeWheel() noexcept;
+    ~TimeWheel() noexcept;
 
-    size_t size() const;
-    void clear();
+    size_t size() const noexcept;
+    void clear() noexcept;
 
     /**
      * @param interval 延时间隔，单位毫秒
      * @param repeat 重复间隔，单位毫秒, 0 表示不延时
      */
     timer_id_type add_timer(uint64_t interval, uint64_t repeat,
-                            timer_task_type&& task);
+                            timer_task_type&& task) noexcept;
     timer_id_type add_timer(uint64_t interval, uint64_t repeat,
-                            const timer_task_type& task);
+                            const timer_task_type& task) noexcept;
 
     /**
      * 取消定时器
      */
-    void cancel_timer(timer_id_type timer_id);
+    void cancel_timer(timer_id_type timer_id) noexcept;
 
     /**
      * 获取从现在开始的可空闲时间，单位毫秒
      *
      * @return UINT64_MAX 表示无限等待
      */
-    uint64_t get_idle() const;
+    uint64_t get_idle() const noexcept;
 
-    void tick();
+    void tick() noexcept;
 
 private:
     TimeWheel(const TimeWheel&) = delete;
     TimeWheel& operator=(const TimeWheel&) = delete;
 
-    void ensure_wheel(uint64_t future_tick);
+    void ensure_wheel(uint64_t future_tick) noexcept;
 
     static Timer* new_timer(uint64_t when_ms, uint64_t repeat_ms,
-                            timer_task_type&& task);
+                            timer_task_type&& task) noexcept;
     static Timer* new_timer(uint64_t when_ms, uint64_t repeat_ms,
-                            const timer_task_type& task);
-    static void delete_timer(Timer *t);
+                            const timer_task_type& task) noexcept;
+    static void delete_timer(Timer *t) noexcept;
 
-    void add_timer(Timer *t);
-    bool do_cancel_timer(Timer *t);
+    void add_timer(Timer *t) noexcept;
+    bool do_cancel_timer(Timer *t) noexcept;
 
     /**
      * 搜索最近的定时器
      *
      * @param future_tick 开始搜索的位置
      */
-    uint64_t search_min_timer_tick(uint64_t future_tick = 0) const;
+    uint64_t search_min_timer_tick(uint64_t future_tick = 0) const noexcept;
 
 private:
     // 时间轮

@@ -9,7 +9,7 @@
 namespace nut
 {
 
-std::string TextFile::read_file(const std::string& path)
+std::string TextFile::read_file(const std::string& path) noexcept
 {
     std::string ret;
     if (!Path::exists(path))
@@ -37,7 +37,7 @@ std::string TextFile::read_file(const std::string& path)
     return ret;
 }
 
-bool TextFile::write_file(const std::string& path, const std::string& content)
+bool TextFile::write_file(const std::string& path, const std::string& content) noexcept
 {
     std::ofstream ofs(path);
     ofs << content;

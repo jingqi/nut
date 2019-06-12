@@ -10,15 +10,15 @@ class DummyLock
 public:
     DummyLock() = default;
 
-    void lock()
+    void lock() noexcept
     {}
 
-    bool trylock()
+    bool trylock() noexcept
     {
         return true;
     }
 
-    void unlock()
+    void unlock() noexcept
     {}
 
 private:

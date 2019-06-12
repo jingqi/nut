@@ -27,7 +27,7 @@ private:
     class RetireRecord
     {
     public:
-        RetireRecord(retire_func_type rfunc, void *ud, size_t v)
+        RetireRecord(retire_func_type rfunc, void *ud, size_t v) noexcept
             : retire_func(rfunc), userdata(ud), version(v)
         {}
 
@@ -44,7 +44,7 @@ public:
      * object will be destructed and memory be freed
      */
     template <typename T>
-    static void retire_object(T *obj)
+    static void retire_object(T *obj) noexcept
     {
         retire_any(delete_object<T>, obj);
     }
@@ -52,28 +52,28 @@ public:
     /**
      * memory will be freed
      */
-    static void retire_memory(void *ptr);
+    static void retire_memory(void *ptr) noexcept;
 
     /**
      * any resource will be retired (freed or released)
      */
-    static void retire_any(retire_func_type rfunc, void *userdata = nullptr);
+    static void retire_any(retire_func_type rfunc, void *userdata = nullptr) noexcept;
 
 private:
     HPRetireList() = default;
-    ~HPRetireList();
+    ~HPRetireList() noexcept;
 
     HPRetireList(const HPRetireList&) = delete;
     HPRetireList& operator=(const HPRetireList&) = delete;
 
     template <typename T>
-    static void delete_object(void *p)
+    static void delete_object(void *p) noexcept
     {
         ((T*) p)->~T();
         ::free(p);
     }
 
-    static void scan_retire_list(HPRetireList *rl);
+    static void scan_retire_list(HPRetireList *rl) noexcept;
 
 private:
     NUT_DEBUGGING_DESTROY_CHECKER

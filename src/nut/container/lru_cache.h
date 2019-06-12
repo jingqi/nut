@@ -20,19 +20,19 @@ private:
     class Node
     {
     public:
-        Node(K&& k, V&& v)
+        Node(K&& k, V&& v) noexcept
             : key(std::forward<K>(k)), value(std::forward<V>(v))
         {}
 
-        Node(const K& k, V&& v)
+        Node(const K& k, V&& v) noexcept
             : key(k), value(std::forward<V>(v))
         {}
 
-        Node(K&& k, const V& v)
+        Node(K&& k, const V& v) noexcept
             : key(std::forward<K>(k)), value(v)
         {}
 
-        Node(const K& k, const V& v)
+        Node(const K& k, const V& v) noexcept
             : key(k), value(v)
         {}
 
@@ -46,28 +46,28 @@ private:
     typedef std::unordered_map<K,Node*,HASH> map_type;
 
 public:
-    explicit LRUCache(size_t capacity = 50)
+    explicit LRUCache(size_t capacity = 50) noexcept
         : _capacity(capacity)
     {
         assert(capacity > 0);
     }
 
-    ~LRUCache()
+    ~LRUCache() noexcept
     {
         clear();
     }
 
-    size_t size() const
+    size_t size() const noexcept
     {
         return _map.size();
     }
 
-    size_t capacity() const
+    size_t capacity() const noexcept
     {
         return _capacity;
     }
 
-    void set_capacity(size_t capacity)
+    void set_capacity(size_t capacity) noexcept
     {
         assert(capacity > 0);
         _capacity = capacity;
@@ -77,7 +77,7 @@ public:
      * @return -1, old data replaced
      *         1, new data inserted
      */
-    int put(K&& k, V&& v)
+    int put(K&& k, V&& v) noexcept
     {
         // Search and update
         typename map_type::const_iterator const iter = _map.find(k);
@@ -126,7 +126,7 @@ public:
      * @return -1, old data replaced
      *         1, new data inserted
      */
-    int put(const K& k, V&& v)
+    int put(const K& k, V&& v) noexcept
     {
         // Search and update
         typename map_type::const_iterator const iter = _map.find(k);
@@ -175,7 +175,7 @@ public:
      * @return -1, old data replaced
      *         1, new data inserted
      */
-    int put(K&& k, const V& v)
+    int put(K&& k, const V& v) noexcept
     {
         // Search and update
         typename map_type::const_iterator const iter = _map.find(k);
@@ -224,7 +224,7 @@ public:
      * @return -1, old data replaced
      *         1, new data inserted
      */
-    int put(const K& k, const V& v)
+    int put(const K& k, const V& v) noexcept
     {
         // Search and update
         typename map_type::const_iterator const iter = _map.find(k);
@@ -273,7 +273,7 @@ public:
      * @return true, remove succeeded
      *         false, no key found
      */
-    bool remove(const K& k)
+    bool remove(const K& k) noexcept
     {
         typename map_type::iterator const iter = _map.find(k);
         if (iter == _map.end())
@@ -288,12 +288,12 @@ public:
         return true;
     }
 
-    bool has_key(const K& k)
+    bool has_key(const K& k) noexcept
     {
         return _map.find(k) != _map.end();
     }
 
-    const V* get(const K& k)
+    const V* get(const K& k) noexcept
     {
         typename map_type::const_iterator const iter = _map.find(k);
         if (iter == _map.end())
@@ -316,7 +316,7 @@ public:
         return ret;
     }
 
-    void clear()
+    void clear() noexcept
     {
         Node *p = _list_head;
         while (nullptr != p)
@@ -340,7 +340,7 @@ private:
     LRUCache(const LRUCache<K,V>&) = delete;
     LRUCache<K,V>& operator=(const LRUCache<K,V>&) = delete;
 
-    void remove_from_list(Node *p)
+    void remove_from_list(Node *p) noexcept
     {
         assert(nullptr != p);
         if (nullptr != p->prev)
@@ -354,7 +354,7 @@ private:
             _list_end = p->prev;
     }
 
-    void push_list_head(Node *p)
+    void push_list_head(Node *p) noexcept
     {
         assert(nullptr != p);
         p->next = _list_head;
@@ -366,7 +366,7 @@ private:
         _list_head = p;
     }
 
-    void remove_older_nodes()
+    void remove_older_nodes() noexcept
     {
         while (_map.size() > _capacity)
         {

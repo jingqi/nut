@@ -15,17 +15,18 @@ namespace nut
 class NUT_API ConsoleTestLogger : public ITestLogger
 {
 public:
-    ConsoleTestLogger();
+    ConsoleTestLogger() noexcept;
 
-    virtual void on_start(const char *group_name, const char *fixture_name, const char *case_name) override;
-    virtual void on_finish() override;
+    virtual void on_start(const char *group_name, const char *fixture_name,
+                          const char *case_name) noexcept override;
+    virtual void on_finish() noexcept override;
 
-    virtual void on_enter_fixture(const char *fixture_name) override;
-    virtual void on_leave_fixture() override;
+    virtual void on_enter_fixture(const char *fixture_name) noexcept override;
+    virtual void on_leave_fixture() noexcept override;
 
-    virtual void on_enter_case(const char *case_name) override;
-    virtual void on_leave_case() override;
-    virtual void on_failed_case(const TestCaseFailureException& e) override;
+    virtual void on_enter_case(const char *case_name) noexcept override;
+    virtual void on_leave_case() noexcept override;
+    virtual void on_failed_case(const TestCaseFailureException& e) noexcept override;
 
 private:
     bool _in_a_tty = false;

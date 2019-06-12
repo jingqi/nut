@@ -68,7 +68,7 @@ private:
     public:
         template <typename TT=T>
         typename std::enable_if<std::is_trivially_copyable<TT>::value, void>::type
-        construct_plump(const T& v)
+        construct_plump(const T& v) noexcept
         {
             construct_dummy();
 
@@ -77,7 +77,7 @@ private:
 
         template <typename TT=T>
         typename std::enable_if<!std::is_trivially_copyable<TT>::value, void>::type
-        construct_plump(T&& v)
+        construct_plump(T&& v) noexcept
         {
             construct_dummy();
 
@@ -87,7 +87,7 @@ private:
 
         template <typename TT=T>
         typename std::enable_if<!std::is_trivially_copyable<TT>::value, void>::type
-        construct_plump(const T& v)
+        construct_plump(const T& v) noexcept
         {
             construct_dummy();
 
@@ -99,7 +99,7 @@ private:
          * 构造 dummy 节点，初始化除了 data 以外的其他字段
          *
          */
-        void construct_dummy()
+        void construct_dummy() noexcept
         {
             // NOTE
             // - 初始有效 stamp 为 1，故 prev.stamp 置 1
@@ -113,14 +113,14 @@ private:
 
         template <typename TT=T>
         typename std::enable_if<std::is_trivially_copyable<TT>::value, void>::type
-        destruct_plump()
+        destruct_plump() noexcept
         {
             destruct_dummy();
         }
 
         template <typename TT=T>
         typename std::enable_if<!std::is_trivially_copyable<TT>::value, void>::type
-        destruct_plump()
+        destruct_plump() noexcept
         {
             destruct_dummy();
 
@@ -130,7 +130,7 @@ private:
         }
 
         // 析构 dummy 节点
-        void destruct_dummy()
+        void destruct_dummy() noexcept
         {
             (&prev)->~AtomicStampedPtr();
             (&next)->~AtomicStampedPtr();
@@ -138,7 +138,7 @@ private:
         }
 
         // Only used by 'HPRetireList'
-        static void delete_dummy(void *n)
+        static void delete_dummy(void *n) noexcept
         {
             assert(nullptr != n);
             ((Node*) n)->destruct_dummy();
@@ -147,7 +147,7 @@ private:
 
         template <typename TT=T>
         static typename std::enable_if<std::is_trivially_copyable<TT>::value, void>::type
-        move_data(data_store_type *src, T *dst)
+        move_data(data_store_type *src, T *dst) noexcept
         {
             assert(nullptr != src);
             if (nullptr != dst)
@@ -156,7 +156,7 @@ private:
 
         template <typename TT=T>
         static typename std::enable_if<!std::is_trivially_copyable<TT>::value, void>::type
-        move_data(data_store_type *src, T *dst)
+        move_data(data_store_type *src, T *dst) noexcept
         {
             assert(nullptr != src && nullptr != *src);
             if (nullptr != dst)
@@ -165,7 +165,7 @@ private:
 
         template <typename TT=T>
         static typename std::enable_if<std::is_trivially_copyable<TT>::value, void>::type
-        move_and_destroy_data(data_store_type *src, T *dst)
+        move_and_destroy_data(data_store_type *src, T *dst) noexcept
         {
             assert(nullptr != src);
             if (nullptr != dst)
@@ -175,7 +175,7 @@ private:
 
         template <typename TT=T>
         static typename std::enable_if<!std::is_trivially_copyable<TT>::value, void>::type
-        move_and_destroy_data(data_store_type *src, T *dst)
+        move_and_destroy_data(data_store_type *src, T *dst) noexcept
         {
             assert(nullptr != src && nullptr != *src);
             if (nullptr != dst)
@@ -206,7 +206,7 @@ private:
     };
 
 public:
-    ConcurrentQueue()
+    ConcurrentQueue() noexcept
     {
         Node *dummy = (Node*) ::malloc(sizeof(Node));
         dummy->construct_dummy();
@@ -220,7 +220,7 @@ public:
             _collisions[i].store(init_value, std::memory_order_relaxed);
     }
 
-    ~ConcurrentQueue()
+    ~ConcurrentQueue() noexcept
     {
         // Clear elements
         Node *const dummy = _head.load(std::memory_order_acquire).ptr;
@@ -241,13 +241,13 @@ public:
     /**
      * NOTE 由于有两次取值，并发状态下计算的结果可能偏大
      */
-    size_t size() const
+    size_t size() const noexcept
     {
         const stamp_type head_stamp = _head.load(std::memory_order_relaxed).stamp;
         return _tail.load(std::memory_order_relaxed).stamp - head_stamp;
     }
 
-    bool is_empty() const
+    bool is_empty() const noexcept
     {
         return _head.load(std::memory_order_relaxed) == _tail.load(std::memory_order_relaxed);
     }
@@ -256,17 +256,17 @@ public:
      * 入队
      */
     template <typename ...Args>
-    void emplace(Args&& ...args)
+    void emplace(Args&& ...args) noexcept
     {
         optimistic_emplace(std::forward<Args>(args)...);
     }
 
-    void enqueue(T&& v)
+    void enqueue(T&& v) noexcept
     {
         optimistic_enqueue(std::forward<T>(v));
     }
 
-    void enqueue(const T& v)
+    void enqueue(const T& v) noexcept
     {
         optimistic_enqueue(v);
     }
@@ -274,7 +274,7 @@ public:
     /**
      * 出队
      */
-    bool dequeue(T *p = nullptr)
+    bool dequeue(T *p = nullptr) noexcept
     {
         return optimistic_dequeue(p);
     }
@@ -283,21 +283,21 @@ public:
      * 乐观算法入队
      */
     template <typename ...Args>
-    void optimistic_emplace(Args&& ...args)
+    void optimistic_emplace(Args&& ...args) noexcept
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new_node->construct_plump(T(std::forward<Args>(args)...));
         optimistic_enqueue(new_node);
     }
 
-    void optimistic_enqueue(T&& v)
+    void optimistic_enqueue(T&& v) noexcept
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new_node->construct_plump(std::forward<T>(v));
         optimistic_enqueue(new_node);
     }
 
-    void optimistic_enqueue(const T& v)
+    void optimistic_enqueue(const T& v) noexcept
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new_node->construct_plump(v);
@@ -307,7 +307,7 @@ public:
     /**
      * 乐观算法出队
      */
-    bool optimistic_dequeue(T *p = nullptr)
+    bool optimistic_dequeue(T *p = nullptr) noexcept
     {
         uint8_t tmp[sizeof(typename Node::data_store_type)];
 
@@ -355,21 +355,21 @@ public:
      * 采用隐消策略的入队
      */
     template <typename ...Args>
-    void eliminate_emplace(Args ...args)
+    void eliminate_emplace(Args ...args) noexcept
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new_node->construct_plump(T(std::forward<Args>(args)...));
         eliminate_enqueue(new_node);
     }
 
-    void eliminate_enqueue(T&& v)
+    void eliminate_enqueue(T&& v) noexcept
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new_node->construct_plump(std::forward<T>(v));
         eliminate_enqueue(new_node);
     }
 
-    void eliminate_enqueue(const T& v)
+    void eliminate_enqueue(const T& v) noexcept
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new_node->construct_plump(v);
@@ -379,7 +379,7 @@ public:
     /**
      * 采用隐消策略的出队
      */
-    bool eliminate_dequeue(T *p = nullptr)
+    bool eliminate_dequeue(T *p = nullptr) noexcept
     {
         while (true)
         {
@@ -392,7 +392,7 @@ public:
         }
     }
 
-    void clear()
+    void clear() noexcept
     {
         while (optimistic_dequeue(nullptr))
         {}
@@ -402,7 +402,7 @@ private:
     ConcurrentQueue(const ConcurrentQueue&) = delete;
     ConcurrentQueue& operator=(const ConcurrentQueue&) = delete;
 
-    void optimistic_enqueue(Node *new_node)
+    void optimistic_enqueue(Node *new_node) noexcept
     {
         assert(nullptr != new_node);
 
@@ -433,7 +433,7 @@ private:
         }
     }
 
-    void eliminate_enqueue(Node *new_node)
+    void eliminate_enqueue(Node *new_node) noexcept
     {
         assert(nullptr != new_node);
 
@@ -449,7 +449,7 @@ private:
     }
 
     // 修复
-    void fix_list(const StampedPtr<Node>& head, const StampedPtr<Node>& tail)
+    void fix_list(const StampedPtr<Node>& head, const StampedPtr<Node>& tail) noexcept
     {
         StampedPtr<Node> cur_node = tail;
         while ((head == _head.load(std::memory_order_relaxed)) && (cur_node != head))
@@ -462,7 +462,7 @@ private:
     }
 
     // 尝试入队
-    bool enqueue_attempt(Node *new_node)
+    bool enqueue_attempt(Node *new_node) noexcept
     {
         StampedPtr<Node> old_tail = _tail.load(std::memory_order_relaxed);
         new_node->prev.store({old_tail.ptr, old_tail.stamp + 1},
@@ -486,7 +486,7 @@ private:
     }
 
     // 尝试出队
-    DequeueAttemptResult dequeue_attempt(T *p)
+    DequeueAttemptResult dequeue_attempt(T *p) noexcept
     {
         uint8_t tmp[sizeof(typename Node::data_store_type)];
 
@@ -529,7 +529,7 @@ private:
         }
     }
 
-    bool try_to_eliminate_enqueue(Node *new_node, stamp_type seen_tail)
+    bool try_to_eliminate_enqueue(Node *new_node, stamp_type seen_tail) noexcept
     {
         const unsigned r = rand_pos();
         StampedPtr<Node> old_collision_to_add = _collisions[r].load(std::memory_order_relaxed);
@@ -563,7 +563,7 @@ private:
         return false;
     }
 
-    bool try_to_eliminate_dequeue(T *p)
+    bool try_to_eliminate_dequeue(T *p) noexcept
     {
         const unsigned r = rand_pos();
         StampedPtr<Node> old_collision = _collisions[r].load(std::memory_order_acquire);
@@ -590,7 +590,7 @@ private:
     /**
      * Fast, thread safely random integer in [0, COLLISIONS_ARRAY_SIZE - 1]
      */
-    static unsigned rand_pos()
+    static unsigned rand_pos() noexcept
     {
         static std::uniform_int_distribution<unsigned> dist(0, COLLISIONS_ARRAY_SIZE - 1);
         return dist(Sys::random_engine());

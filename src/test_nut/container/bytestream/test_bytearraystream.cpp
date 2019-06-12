@@ -8,7 +8,7 @@ using namespace nut;
 
 class TestByteArrayStream : public TestFixture
 {
-    virtual void register_cases() override
+    virtual void register_cases() noexcept override
     {
         NUT_REGISTER_CASE(test_little_endian);
         NUT_REGISTER_CASE(test_big_endian);

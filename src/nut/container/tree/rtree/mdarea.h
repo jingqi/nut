@@ -32,7 +32,7 @@ private:
     typedef MDArea<num_type, DIMENSIONS, float_type> self_type;
 
 public:
-    MDArea()
+    MDArea() noexcept
     {
         for (size_t i = 0; i < DIMENSIONS; ++i)
         {
@@ -41,7 +41,7 @@ public:
         }
     }
 
-    bool operator==(const self_type& x) const
+    bool operator==(const self_type& x) const noexcept
     {
         for (size_t i = 0; i < DIMENSIONS; ++i)
         {
@@ -51,7 +51,7 @@ public:
         return true;
     }
 
-    bool operator!=(const self_type& x) const
+    bool operator!=(const self_type& x) const noexcept
     {
         return !(*this == x);
     }
@@ -59,7 +59,7 @@ public:
     /**
      * 清除数据，回到初始状态
      */
-    void clear()
+    void clear() noexcept
     {
         for (size_t i = 0; i < DIMENSIONS; ++i)
         {
@@ -71,7 +71,7 @@ public:
     /**
      * 扩展区域，以便包含目标区域
      */
-    void expand_to_contain(const self_type& x)
+    void expand_to_contain(const self_type& x) noexcept
     {
         for (size_t i = 0; i < DIMENSIONS; ++i)
         {
@@ -83,7 +83,7 @@ public:
     /**
      * 检查区域有效性
      */
-    bool is_valid() const
+    bool is_valid() const noexcept
     {
         for (int i = 0; i < DIMENSIONS; ++i)
         {
@@ -96,7 +96,7 @@ public:
     /**
      * 所占的空间
      */
-    float_type acreage() const
+    float_type acreage() const noexcept
     {
         float_type acr = 1;
         for (size_t i = 0; i < DIMENSIONS; ++i)
@@ -107,7 +107,7 @@ public:
     /**
      * 查看是否完全包含另一个区域
      */
-    bool contains(const self_type& x) const
+    bool contains(const self_type& x) const noexcept
     {
         for (size_t i = 0; i < DIMENSIONS; ++i)
         {
@@ -120,7 +120,7 @@ public:
     /**
      * 查看是否与另一个区域有交集
      */
-    bool intersects(const self_type& x) const
+    bool intersects(const self_type& x) const noexcept
     {
         // 任意一个维度不想交，则区域不想交
         for (size_t i = 0; i < DIMENSIONS; ++i)

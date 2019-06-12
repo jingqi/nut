@@ -13,7 +13,7 @@
 namespace nut
 {
 
-sys_ma::sys_ma()
+sys_ma::sys_ma() noexcept
 {
 #ifndef NDEBUG
     for (size_t i = 0; i < sizeof(_left_tag); ++i)
@@ -24,7 +24,7 @@ sys_ma::sys_ma()
 }
 
 #ifndef NDEBUG
-sys_ma::~sys_ma()
+sys_ma::~sys_ma() noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
 
@@ -33,7 +33,7 @@ sys_ma::~sys_ma()
 }
 #endif
 
-void* sys_ma::alloc(size_t sz)
+void* sys_ma::alloc(size_t sz) noexcept
 {
     assert(sz > 0);
     NUT_DEBUGGING_ASSERT_ALIVE;
@@ -54,7 +54,7 @@ void* sys_ma::alloc(size_t sz)
 #endif
 }
 
-void* sys_ma::realloc(void *p, size_t old_sz, size_t new_sz)
+void* sys_ma::realloc(void *p, size_t old_sz, size_t new_sz) noexcept
 {
     assert(nullptr != p && old_sz > 0 && new_sz > 0);
     NUT_DEBUGGING_ASSERT_ALIVE;
@@ -85,7 +85,7 @@ void* sys_ma::realloc(void *p, size_t old_sz, size_t new_sz)
 #endif
 }
 
-void sys_ma::free(void *p, size_t sz)
+void sys_ma::free(void *p, size_t sz) noexcept
 {
     assert(nullptr != p && sz > 0);
     NUT_DEBUGGING_ASSERT_ALIVE;
@@ -107,25 +107,25 @@ void sys_ma::free(void *p, size_t sz)
 }
 
 #ifndef NDEBUG
-size_t sys_ma::get_alloc_count() const
+size_t sys_ma::get_alloc_count() const noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     return _alloc_count;
 }
 
-size_t sys_ma::get_free_count() const
+size_t sys_ma::get_free_count() const noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     return _free_count;
 }
 
-size_t sys_ma::get_total_alloc_size() const
+size_t sys_ma::get_total_alloc_size() const noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     return _total_alloc_sz;
 }
 
-size_t sys_ma::get_total_free_size() const
+size_t sys_ma::get_total_free_size() const noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     return _total_free_sz;

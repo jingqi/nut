@@ -40,7 +40,7 @@ namespace nut
 {
 
 std::vector<std::string> OS::listdir(const std::string& path, bool exclude_file,
-    bool exclude_dir, bool exclude_initial_dot)
+    bool exclude_dir, bool exclude_initial_dot) noexcept
 {
     const std::string abspath = Path::abspath(path);
     std::vector<std::string> result;
@@ -102,7 +102,7 @@ std::vector<std::string> OS::listdir(const std::string& path, bool exclude_file,
 }
 
 std::vector<std::wstring> OS::listdir(const std::wstring& path, bool exclude_file,
-    bool exclude_dir, bool exclude_initial_dot)
+    bool exclude_dir, bool exclude_initial_dot) noexcept
 {
     std::vector<std::wstring> result;
 
@@ -137,7 +137,7 @@ std::vector<std::wstring> OS::listdir(const std::wstring& path, bool exclude_fil
     return result;
 }
 
-bool OS::copyfile(const std::string& src, const std::string& dst)
+bool OS::copyfile(const std::string& src, const std::string& dst) noexcept
 {
     const std::string abssrc = Path::abspath(src), absdst = Path::abspath(dst);
 
@@ -219,7 +219,7 @@ bool OS::copyfile(const std::string& src, const std::string& dst)
 #endif
 }
 
-bool OS::copyfile(const std::wstring& src, const std::wstring& dst)
+bool OS::copyfile(const std::wstring& src, const std::wstring& dst) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     const std::wstring abssrc = Path::abspath(src), absdst = Path::abspath(dst);
@@ -229,7 +229,7 @@ bool OS::copyfile(const std::wstring& src, const std::wstring& dst)
 #endif
 }
 
-bool OS::removefile(const std::string& path)
+bool OS::removefile(const std::string& path) noexcept
 {
     const std::string abspath = Path::abspath(path);
 
@@ -240,7 +240,7 @@ bool OS::removefile(const std::string& path)
 #endif
 }
 
-bool OS::removefile(const std::wstring& path)
+bool OS::removefile(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::DeleteFileW(Path::abspath(path).c_str());
@@ -249,7 +249,7 @@ bool OS::removefile(const std::wstring& path)
 #endif
 }
 
-bool OS::mkdir(const std::string& path)
+bool OS::mkdir(const std::string& path) noexcept
 {
     const std::string abspath = Path::abspath(path);
 
@@ -260,7 +260,7 @@ bool OS::mkdir(const std::string& path)
 #endif
 }
 
-bool OS::mkdir(const std::wstring& path)
+bool OS::mkdir(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::CreateDirectoryW(Path::abspath(path).c_str(), nullptr);
@@ -269,7 +269,7 @@ bool OS::mkdir(const std::wstring& path)
 #endif
 }
 
-bool OS::mkdirs(const std::string& path)
+bool OS::mkdirs(const std::string& path) noexcept
 {
     // 可能目录已经存在
     const std::string abspath = Path::abspath(path);
@@ -288,12 +288,12 @@ bool OS::mkdirs(const std::string& path)
     return OS::mkdir(abspath);
 }
 
-bool OS::mkdirs(const std::wstring& path)
+bool OS::mkdirs(const std::wstring& path) noexcept
 {
     return OS::mkdirs(wstr_to_ascii(path));
 }
 
-bool OS::rmdir(const std::string& path)
+bool OS::rmdir(const std::string& path) noexcept
 {
     const std::string abspath = Path::abspath(path);
 
@@ -304,7 +304,7 @@ bool OS::rmdir(const std::string& path)
 #endif
 }
 
-bool OS::rmdir(const std::wstring& path)
+bool OS::rmdir(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return FALSE != ::RemoveDirectoryW(Path::abspath(path).c_str());
@@ -313,7 +313,7 @@ bool OS::rmdir(const std::wstring& path)
 #endif
 }
 
-bool OS::rmtree(const std::string& path)
+bool OS::rmtree(const std::string& path) noexcept
 {
     const std::string abspath = Path::abspath(path);
 
@@ -386,7 +386,7 @@ bool OS::rmtree(const std::string& path)
 #endif
 }
 
-bool OS::rmtree(const std::wstring& path)
+bool OS::rmtree(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     // 删除文件
@@ -424,7 +424,7 @@ bool OS::rmtree(const std::wstring& path)
 #endif
 }
 
-std::string OS::readlink(const std::string& path)
+std::string OS::readlink(const std::string& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
@@ -438,7 +438,7 @@ std::string OS::readlink(const std::string& path)
 #endif
 }
 
-std::wstring OS::readlink(const std::wstring& path)
+std::wstring OS::readlink(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
@@ -448,7 +448,7 @@ std::wstring OS::readlink(const std::wstring& path)
 #endif
 }
 
-bool OS::symlink(const std::string& link, const std::string& path)
+bool OS::symlink(const std::string& link, const std::string& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(link);
@@ -459,7 +459,7 @@ bool OS::symlink(const std::string& link, const std::string& path)
 #endif
 }
 
-bool OS::symlink(const std::wstring& link, const std::wstring& path)
+bool OS::symlink(const std::wstring& link, const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(link);
@@ -470,12 +470,12 @@ bool OS::symlink(const std::wstring& link, const std::wstring& path)
 #endif
 }
 
-bool OS::rename(const std::string& from, const std::string& to)
+bool OS::rename(const std::string& from, const std::string& to) noexcept
 {
     return 0 == ::rename(Path::abspath(from).c_str(), Path::abspath(to).c_str());
 }
 
-bool OS::rename(const std::wstring& from, const std::wstring& to)
+bool OS::rename(const std::wstring& from, const std::wstring& to) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return 0 == ::_wrename(Path::abspath(from).c_str(), Path::abspath(to).c_str());

@@ -16,7 +16,7 @@ namespace nut
 {
 
 template <typename T, typename ...Args>
-rc_ptr<T> rc_new(Args&& ...args)
+rc_ptr<T> rc_new(Args&& ...args) noexcept
 {
     RCWrapper<T> *p = (RCWrapper<T>*) ::malloc(sizeof(RCWrapper<T>));
     assert(nullptr != p);

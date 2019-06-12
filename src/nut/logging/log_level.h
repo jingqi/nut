@@ -27,9 +27,9 @@ enum LogLevel
 // LogLevel 掩码类型
 typedef uint8_t loglevel_mask_type;
 
-const char* log_level_to_str(enum LogLevel level);
-char log_level_to_char(enum LogLevel level);
-enum LogLevel str_to_log_level(const char *str);
+const char* log_level_to_str(enum LogLevel level) noexcept;
+char log_level_to_char(enum LogLevel level) noexcept;
+enum LogLevel str_to_log_level(const char *str) noexcept;
 
 }
 

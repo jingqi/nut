@@ -62,12 +62,12 @@ static const uint64_t SHA512_K[80] = {
     0x4cc5d4becb3e42b6ULL, 0x597f299cfc657e2aULL, 0x5fcb6fab3ad6faecULL, 0x6c44198c4a475817ULL
 };
 
-SHA2_512::SHA2_512()
+SHA2_512::SHA2_512() noexcept
 {
     reset();
 }
 
-void SHA2_512::reset()
+void SHA2_512::reset() noexcept
 {
 #if NUT_HAS_INT128
     _bit_len = 0;
@@ -88,12 +88,12 @@ void SHA2_512::reset()
     ::memset(_result, 0, DIGEST_SIZE);
 }
 
-void SHA2_512::update(uint8_t byte)
+void SHA2_512::update(uint8_t byte) noexcept
 {
     update(&byte, 1);
 }
 
-void SHA2_512::update(const void *data, size_t cb)
+void SHA2_512::update(const void *data, size_t cb) noexcept
 {
     assert(nullptr != data || 0 == cb);
 
@@ -141,7 +141,7 @@ void SHA2_512::update(const void *data, size_t cb)
     ::memcpy(_buffer + index, ((const uint8_t*) data) + i, cb - i);
 }
 
-void SHA2_512::digest()
+void SHA2_512::digest() noexcept
 {
     /* Pad out to 112 mod 128 */
 #if NUT_HAS_INT128
@@ -177,17 +177,17 @@ void SHA2_512::digest()
         ((uint64_t*) _result)[i] = htobe64(_state[i]);
 }
 
-const uint8_t* SHA2_512::get_result() const
+const uint8_t* SHA2_512::get_result() const noexcept
 {
     return _result;
 }
 
-std::string SHA2_512::get_hex_result() const
+std::string SHA2_512::get_hex_result() const noexcept
 {
     return hex_encode(_result, DIGEST_SIZE, false);
 }
 
-void SHA2_512::transform1024bits(const void *block)
+void SHA2_512::transform1024bits(const void *block) noexcept
 {
     // 把 state 的值复制给 S
     uint64_t S[8];

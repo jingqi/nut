@@ -14,7 +14,7 @@ static bool error = false;
 
 class TestThreading : public TestFixture
 {
-    virtual void register_cases() override
+    virtual void register_cases() noexcept override
     {
         NUT_REGISTER_CASE(test_smoke);
     }

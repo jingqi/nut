@@ -29,11 +29,11 @@ private:
     class Node
     {
     public:
-        explicit Node(T&& v)
+        explicit Node(T&& v) noexcept
             : data(std::forward<T>(v))
         {}
 
-        explicit Node(const T& v)
+        explicit Node(const T& v) noexcept
             : data(v)
         {}
 
@@ -45,7 +45,7 @@ private:
 public:
     ConcurrentStack() = default;
 
-    ~ConcurrentStack()
+    ~ConcurrentStack() noexcept
     {
         Node *p = _top.load(std::memory_order_acquire).ptr;
         while (nullptr != p)
@@ -57,39 +57,39 @@ public:
         }
     }
 
-    size_t size() const
+    size_t size() const noexcept
     {
         return _size.load(std::memory_order_relaxed);
     }
 
-    bool is_empty() const
+    bool is_empty() const noexcept
     {
         return nullptr == _top.load(std::memory_order_relaxed).ptr;
     }
 
     template <typename ...Args>
-    void emplace(Args ...args)
+    void emplace(Args ...args) noexcept
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new (&(new_node->data)) T(std::forward<Args>(args)...);
         push(new_node);
     }
 
-    void push(T&& v)
+    void push(T&& v) noexcept
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new (&(new_node->data)) T(std::forward<T>(v));
         push(new_node);
     }
 
-    void push(const T& v)
+    void push(const T& v) noexcept
     {
         Node *new_node = (Node*) ::malloc(sizeof(Node));
         new (&(new_node->data)) T(v);
         push(new_node);
     }
 
-    bool pop(T *p = nullptr)
+    bool pop(T *p = nullptr) noexcept
     {
         StampedPtr<Node> old_top = _top.load(std::memory_order_acquire);
         while (true)
@@ -111,7 +111,7 @@ public:
         }
     }
 
-    void clear()
+    void clear() noexcept
     {
         while (pop(nullptr))
         {}
@@ -121,7 +121,7 @@ private:
     ConcurrentStack(const ConcurrentStack&) = delete;
     ConcurrentStack& operator=(const ConcurrentStack&) = delete;
 
-    void push(Node *new_node)
+    void push(Node *new_node) noexcept
     {
         assert(nullptr != new_node);
 
@@ -134,7 +134,6 @@ private:
                      std::memory_order_release, std::memory_order_relaxed));
         _size.fetch_add(1, std::memory_order_relaxed);
     }
-
 
 private:
     AtomicStampedPtr<Node> _top;

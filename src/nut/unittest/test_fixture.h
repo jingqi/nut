@@ -22,7 +22,11 @@ private:
     class Case
     {
     public:
-        Case(const char *n, case_func_type&& f)
+        Case(const char *n, case_func_type&& f) noexcept
+            : name(n), func(std::forward<case_func_type>(f))
+        {}
+
+        Case(const char *n, const case_func_type& f) noexcept
             : name(n), func(f)
         {}
 
@@ -34,17 +38,18 @@ private:
     };
 
 public:
-    virtual ~TestFixture() = default;
+    virtual ~TestFixture() noexcept = default;
 
-    virtual void register_cases() = 0;
+    virtual void register_cases() noexcept = 0;
 
-    void run_case(ITestLogger *logger, const char *case_name);
+    void run_case(ITestLogger *logger, const char *case_name) noexcept;
 
 protected:
     virtual void set_up() {}
     virtual void tear_down() {}
 
-    void register_case(const char *name, case_func_type&& func);
+    void register_case(const char *name, case_func_type&& func) noexcept;
+    void register_case(const char *name, const case_func_type& func) noexcept;
 
 private:
     std::vector<Case> _cases;

@@ -19,16 +19,16 @@ namespace nut
 class NUT_API RwLock
 {
 public:
-    RwLock();
-    ~RwLock();
+    RwLock() noexcept;
+    ~RwLock() noexcept;
 
-    void lock_read();
-    bool try_lock_read();
-    void unlock_read();
+    void lock_read() noexcept;
+    bool try_lock_read() noexcept;
+    void unlock_read() noexcept;
 
-    void lock_write();
-    bool try_lock_write();
-    void unlock_write();
+    void lock_write() noexcept;
+    bool try_lock_write() noexcept;
+    void unlock_write() noexcept;
 
 private:
     RwLock(const RwLock&) = delete;

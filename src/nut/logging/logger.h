@@ -22,25 +22,25 @@ class NUT_API Logger
     NUT_DEBUGGING_DESTROY_CHECKER
 
 public:
-    static Logger* get_instance();
+    static Logger* get_instance() noexcept;
 
-    LogFilter& get_filter();
+    LogFilter& get_filter() noexcept;
 
-    void add_handler(LogHandler *handler);
-    void remove_handler(LogHandler *handler);
-    void clear_handlers();
+    void add_handler(LogHandler *handler) noexcept;
+    void remove_handler(LogHandler *handler) noexcept;
+    void clear_handlers() noexcept;
 
     void log(enum LogLevel level, const char *tag, const char *file, int line,
-             const char *func, const char *fmt, ...) const;
+             const char *func, const char *fmt, ...) const noexcept;
 
     /**
      * 加载配置文件
      */
-    void load_xml_config(const std::string& config);
+    void load_xml_config(const std::string& config) noexcept;
 
 private:
-    Logger() = default;
-    ~Logger();
+    Logger() noexcept = default;
+    ~Logger() noexcept;
 
     Logger(const Logger&) = delete;
     Logger& operator=(const Logger&) = delete;

@@ -48,23 +48,23 @@
 namespace nut
 {
 
-TimeWheel::Timer::Timer(uint64_t when_ms_, uint64_t repeat_ms_, timer_task_type&& task_)
+TimeWheel::Timer::Timer(uint64_t when_ms_, uint64_t repeat_ms_, timer_task_type&& task_) noexcept
     : valid_mask(VALID_MASK), when_ms(when_ms_), repeat_ms(repeat_ms_),
       task(std::forward<timer_task_type>(task_))
 {}
 
-TimeWheel::Timer::Timer(uint64_t when_ms_, uint64_t repeat_ms_, const timer_task_type& task_)
+TimeWheel::Timer::Timer(uint64_t when_ms_, uint64_t repeat_ms_, const timer_task_type& task_) noexcept
     : valid_mask(VALID_MASK), when_ms(when_ms_), repeat_ms(repeat_ms_),
       task(task_)
 {}
 
-TimeWheel::Wheel::Wheel()
+TimeWheel::Wheel::Wheel() noexcept
 {
     ::memset(bucket_heads, 0, sizeof(Timer*) * BUCKETS_PER_WHEEL);
     ::memset(bucket_tails, 0, sizeof(Timer*) * BUCKETS_PER_WHEEL);
 }
 
-TimeWheel::Timer::~Timer()
+TimeWheel::Timer::~Timer() noexcept
 {
     assert(VALID_MASK == valid_mask);
     valid_mask = 0;
@@ -72,7 +72,7 @@ TimeWheel::Timer::~Timer()
     next = nullptr;
 }
 
-TimeWheel::TimeWheel()
+TimeWheel::TimeWheel() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     ::QueryPerformanceFrequency(&_clock_freq);
@@ -82,7 +82,7 @@ TimeWheel::TimeWheel()
 #endif
 }
 
-TimeWheel::~TimeWheel()
+TimeWheel::~TimeWheel() noexcept
 {
     clear();
 
@@ -91,7 +91,7 @@ TimeWheel::~TimeWheel()
     _wheel_count = 0;
 }
 
-void TimeWheel::ensure_wheel(uint64_t future_tick)
+void TimeWheel::ensure_wheel(uint64_t future_tick) noexcept
 {
     uint64_t last_tick = _last_tick;
     unsigned need_wheel_count = 1;
@@ -114,7 +114,7 @@ void TimeWheel::ensure_wheel(uint64_t future_tick)
 }
 
 TimeWheel::Timer* TimeWheel::new_timer(uint64_t when_ms, uint64_t repeat_ms,
-                                       timer_task_type&& task)
+                                       timer_task_type&& task) noexcept
 {
     Timer *t = (Timer*) ::malloc(sizeof(Timer));
     assert(nullptr != t);
@@ -123,7 +123,7 @@ TimeWheel::Timer* TimeWheel::new_timer(uint64_t when_ms, uint64_t repeat_ms,
 }
 
 TimeWheel::Timer* TimeWheel::new_timer(uint64_t when_ms, uint64_t repeat_ms,
-                                       const timer_task_type& task)
+                                       const timer_task_type& task) noexcept
 {
     Timer *t = (Timer*) ::malloc(sizeof(Timer));
     assert(nullptr != t);
@@ -131,19 +131,19 @@ TimeWheel::Timer* TimeWheel::new_timer(uint64_t when_ms, uint64_t repeat_ms,
     return t;
 }
 
-void TimeWheel::delete_timer(Timer *t)
+void TimeWheel::delete_timer(Timer *t) noexcept
 {
     assert(nullptr != t);
     t->~Timer();
     ::free(t);
 }
 
-size_t TimeWheel::size() const
+size_t TimeWheel::size() const noexcept
 {
     return _size;
 }
 
-void TimeWheel::clear()
+void TimeWheel::clear() noexcept
 {
     for (unsigned i = 0; i <_wheel_count; ++i)
     {
@@ -166,7 +166,7 @@ void TimeWheel::clear()
     _cancel_later.clear();
 }
 
-void TimeWheel::add_timer(Timer *t)
+void TimeWheel::add_timer(Timer *t) noexcept
 {
     assert(nullptr != t);
 
@@ -216,7 +216,7 @@ void TimeWheel::add_timer(Timer *t)
 }
 
 TimeWheel::timer_id_type TimeWheel::add_timer(uint64_t interval, uint64_t repeat,
-                                              timer_task_type&& task)
+                                              timer_task_type&& task) noexcept
 {
     assert(task);
 
@@ -233,7 +233,7 @@ TimeWheel::timer_id_type TimeWheel::add_timer(uint64_t interval, uint64_t repeat
 }
 
 TimeWheel::timer_id_type TimeWheel::add_timer(uint64_t interval, uint64_t repeat,
-                                              const timer_task_type& task)
+                                              const timer_task_type& task) noexcept
 {
     assert(task);
 
@@ -249,7 +249,7 @@ TimeWheel::timer_id_type TimeWheel::add_timer(uint64_t interval, uint64_t repeat
     return t;
 }
 
-bool TimeWheel::do_cancel_timer(Timer *t)
+bool TimeWheel::do_cancel_timer(Timer *t) noexcept
 {
     assert(nullptr != t && !_in_invoking_callback);
     if (VALID_MASK != t->valid_mask)
@@ -325,7 +325,7 @@ bool TimeWheel::do_cancel_timer(Timer *t)
     return false;
 }
 
-uint64_t TimeWheel::search_min_timer_tick(uint64_t future_tick) const
+uint64_t TimeWheel::search_min_timer_tick(uint64_t future_tick) const noexcept
 {
     uint64_t last_tick = _last_tick;
     uint64_t radix = 1;
@@ -360,7 +360,7 @@ uint64_t TimeWheel::search_min_timer_tick(uint64_t future_tick) const
     return UINT64_MAX;
 }
 
-void TimeWheel::cancel_timer(timer_id_type timer_id)
+void TimeWheel::cancel_timer(timer_id_type timer_id) noexcept
 {
     if (nullptr == timer_id)
         return;
@@ -383,7 +383,7 @@ void TimeWheel::cancel_timer(timer_id_type timer_id)
     }
 }
 
-uint64_t TimeWheel::get_idle() const
+uint64_t TimeWheel::get_idle() const noexcept
 {
     if (UINT64_MAX == _min_timer_tick)
         return UINT64_MAX;
@@ -396,7 +396,7 @@ uint64_t TimeWheel::get_idle() const
     return (min_timer_ms > now_ms ? min_timer_ms - now_ms : 0);
 }
 
-void TimeWheel::tick()
+void TimeWheel::tick() noexcept
 {
     if (CLOCK_IS_ZERO(_first_clock) || 0 == _size)
         return;

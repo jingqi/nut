@@ -37,7 +37,7 @@ namespace nut
  * 将 word 内部字节序当成是 little-endian 来获取指定位置的字节
  */
 template <typename T>
-constexpr uint8_t get_byte_le(const T *arr, size_t le_byte_index)
+constexpr uint8_t get_byte_le(const T *arr, size_t le_byte_index) noexcept
 {
 #if NUT_ENDIAN_LITTLE_BYTE
     return reinterpret_cast<const uint8_t*>(arr)[le_byte_index];
@@ -51,7 +51,7 @@ constexpr uint8_t get_byte_le(const T *arr, size_t le_byte_index)
  * 将 word 内部字节序当成是 little-endian 来设置指定位置的字节
  */
 template <typename T>
-void set_byte_le(T *arr, size_t le_byte_index, uint8_t v)
+void set_byte_le(T *arr, size_t le_byte_index, uint8_t v) noexcept
 {
 #if NUT_ENDIAN_LITTLE_BYTE
     reinterpret_cast<uint8_t*>(arr)[le_byte_index] = v;
@@ -68,7 +68,7 @@ void set_byte_le(T *arr, size_t le_byte_index, uint8_t v)
  * @return a<N> == 0
  */
 template <typename T>
-bool is_zero(const T *a, size_t N)
+bool is_zero(const T *a, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && N > 0);
@@ -88,7 +88,7 @@ bool is_zero(const T *a, size_t N)
  *      false, 参数 < 0
  */
 template <typename T>
-constexpr bool is_positive(const T *a, size_t N)
+constexpr bool is_positive(const T *a, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
 #if __cplusplus >= 201402L // C++14 constexpr function feature
@@ -104,7 +104,7 @@ constexpr bool is_positive(const T *a, size_t N)
  *      false, 参数 >= 0
  */
 template <typename T>
-constexpr bool is_negative(const T *a, size_t N)
+constexpr bool is_negative(const T *a, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     return !is_positive(a, N);
@@ -116,7 +116,7 @@ constexpr bool is_negative(const T *a, size_t N)
  * @return 返回值>=1
  */
 template <typename T>
-size_t signed_significant_size(const T *a, size_t N)
+size_t signed_significant_size(const T *a, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && N > 0);
@@ -136,7 +136,7 @@ size_t signed_significant_size(const T *a, size_t N)
  * @return 返回值>=1
  */
 template <typename T>
-size_t unsigned_significant_size(const T *a, size_t N)
+size_t unsigned_significant_size(const T *a, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && N > 0);
@@ -155,7 +155,7 @@ size_t unsigned_significant_size(const T *a, size_t N)
  *         >0 if a<M> > b<N>
  */
 template <typename T>
-int signed_compare(const T *a, size_t M, const T *b, size_t N)
+int signed_compare(const T *a, size_t M, const T *b, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0);
@@ -184,7 +184,7 @@ int signed_compare(const T *a, size_t M, const T *b, size_t N)
  *         >0 if a<M> > b<N>
  */
 template <typename T>
-int unsigned_compare(const T *a, size_t M, const T *b, size_t N)
+int unsigned_compare(const T *a, size_t M, const T *b, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0);
@@ -204,7 +204,7 @@ int unsigned_compare(const T *a, size_t M, const T *b, size_t N)
  * a<M> -> x<N>
  */
 template <typename T>
-void signed_expand(const T *a, size_t M, T *x, size_t N)
+void signed_expand(const T *a, size_t M, T *x, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
@@ -221,7 +221,7 @@ void signed_expand(const T *a, size_t M, T *x, size_t N)
  * a<M> -> x<N>
  */
 template <typename T>
-void unsigned_expand(const T *a, size_t M, T *x, size_t N)
+void unsigned_expand(const T *a, size_t M, T *x, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
@@ -239,7 +239,7 @@ void unsigned_expand(const T *a, size_t M, T *x, size_t N)
  * @return 进位
  */
 template <typename T>
-uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
+uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
@@ -282,7 +282,7 @@ uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
  * @return 进位
  */
 template <typename T>
-uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
+uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
@@ -323,7 +323,7 @@ uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
  * @return 进位
  */
 template <typename T>
-uint8_t increase(T *x, size_t N)
+uint8_t increase(T *x, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != x && N > 0);
@@ -354,7 +354,7 @@ uint8_t increase(T *x, size_t N)
  * @return 进位
  */
 template <typename T>
-uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
+uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
@@ -397,7 +397,7 @@ uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
  * @return 进位
  */
 template <typename T>
-uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
+uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
@@ -438,7 +438,7 @@ uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
  * @return 进位
  */
 template <typename T>
-uint8_t decrease(T *x, size_t N)
+uint8_t decrease(T *x, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != x && N > 0);
@@ -469,7 +469,7 @@ uint8_t decrease(T *x, size_t N)
  * @return 进位
  */
 template <typename T>
-uint8_t signed_negate(const T *a, size_t M, T *x, size_t N)
+uint8_t signed_negate(const T *a, size_t M, T *x, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
@@ -510,7 +510,7 @@ uint8_t signed_negate(const T *a, size_t M, T *x, size_t N)
  * @return 进位
  */
 template <typename T>
-uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N)
+uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);

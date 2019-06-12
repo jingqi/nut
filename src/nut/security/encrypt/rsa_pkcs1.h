@@ -27,48 +27,48 @@ public:
     typedef std::function<void(const void*,size_t)> callback_type;
 
 public:
-    ~RSA_PKCS1();
+    ~RSA_PKCS1() noexcept;
 
-    void set_callback(callback_type&& cb);
-    void set_callback(const callback_type& cb);
+    void set_callback(callback_type&& cb) noexcept;
+    void set_callback(const callback_type& cb) noexcept;
 
     /**
      * 开始加密
      */
-    void start_public_encrypt(const RSA::PublicKey& key);
-    void start_private_encrypt(const RSA::PrivateKey& key);
+    void start_public_encrypt(const RSA::PublicKey& key) noexcept;
+    void start_private_encrypt(const RSA::PrivateKey& key) noexcept;
 
     /**
      * 加密
      */
-    void update_encrypt(const void *data, size_t data_len);
+    void update_encrypt(const void *data, size_t data_len) noexcept;
 
     /**
      * 填充小节，结束一段加密过程
      */
-    void finish_encrypt();
+    void finish_encrypt() noexcept;
 
     /**
      * 开始解密
      */
-    void start_public_decrypt(const RSA::PublicKey& key);
-    void start_private_decrypt(const RSA::PrivateKey& key);
+    void start_public_decrypt(const RSA::PublicKey& key) noexcept;
+    void start_private_decrypt(const RSA::PrivateKey& key) noexcept;
 
     /**
      * 解密
      */
-    bool update_decrypt(const void *data, size_t data_len);
+    bool update_decrypt(const void *data, size_t data_len) noexcept;
 
     /**
      * 结束一段解密过程
      *
      * @return 解密失败则返回 false
      */
-    bool finish_decrypt();
+    bool finish_decrypt() noexcept;
 
 private:
-    void pack_eb(size_t data_len);
-    bool unpack_eb(const BigInteger& output);
+    void pack_eb(size_t data_len) noexcept;
+    bool unpack_eb(const BigInteger& output) noexcept;
 
 private:
     RSA::PrivateKey _key;

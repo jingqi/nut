@@ -28,21 +28,21 @@ private:
     static constexpr size_t FREE_LIST_COUNT = 128;
 
 public:
-    segments_mp(memory_allocator *ma = nullptr)
+    segments_mp(memory_allocator *ma = nullptr) noexcept
         : _alloc(ma)
     {
         for (size_t i = 0; i < FREE_LIST_COUNT; ++i)
             _freelists[i] = rc_new<lengthfixed_mp_type>(GRANULARITY * (i + 1), ma);
     }
 
-    ~segments_mp()
+    ~segments_mp() noexcept
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
 
         clear();
     }
 
-    void clear()
+    void clear() noexcept
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
 
@@ -50,7 +50,7 @@ public:
             _freelists[i]->clear();
     }
 
-    virtual void* alloc(size_t sz) override
+    virtual void* alloc(size_t sz) noexcept override
     {
         assert(sz > 0);
         NUT_DEBUGGING_ASSERT_ALIVE;
@@ -62,7 +62,7 @@ public:
         return _freelists[idx]->alloc(GRANULARITY * (idx + 1));
     }
 
-    virtual void* realloc(void *p, size_t old_sz, size_t new_sz) override
+    virtual void* realloc(void *p, size_t old_sz, size_t new_sz) noexcept override
     {
         assert(nullptr != p && old_sz > 0 && new_sz > 0);
         NUT_DEBUGGING_ASSERT_ALIVE;
@@ -91,7 +91,7 @@ public:
         return ret;
     }
 
-    virtual void free(void *p, size_t sz) override
+    virtual void free(void *p, size_t sz) noexcept override
     {
         assert(nullptr != p);
         NUT_DEBUGGING_ASSERT_ALIVE;

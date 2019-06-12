@@ -22,36 +22,36 @@ namespace nut
 class NUT_API PConsole : public IConsole
 {
 public:
-    explicit PConsole(const std::string& name = "PConsole");
+    explicit PConsole(const std::string& name = "PConsole") noexcept;
 
-    char get_prompt_char() const;
+    char get_prompt_char() const noexcept;
 
-    void set_prompt_char(char c);
+    void set_prompt_char(char c) noexcept;
 
-    const std::string& get_prompt_string() const;
+    const std::string& get_prompt_string() const noexcept;
 
-    void set_prompt_string(const std::string& s);
+    void set_prompt_string(const std::string& s) noexcept;
 
     // 添加一个命令
-    void add_a_command(rc_ptr<ICommand> cmd);
+    void add_a_command(rc_ptr<ICommand> cmd) noexcept;
 
     // 读取并执行一次
-    void read_and_execute();
+    void read_and_execute() noexcept;
 
     // 执行直到用户输入exit命令
-    int execute();
+    int execute() noexcept;
 
     // 打印一般信息
-    virtual void print_general_info() const override;
+    virtual void print_general_info() const noexcept override;
 
     // 获取命令列表
-    virtual const std::vector<rc_ptr<ICommand> >& get_commands() const override;
+    virtual const std::vector<rc_ptr<ICommand> >& get_commands() const noexcept override;
 
     // 设置退出标记
-    virtual void exit(int e) override;
+    virtual void exit(int e) noexcept override;
 
 private:
-    void execute_line(const char* l);
+    void execute_line(const char* l) noexcept;
 
 private:
     char _prompt_char = '>';

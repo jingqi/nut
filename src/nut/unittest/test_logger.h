@@ -15,32 +15,33 @@ namespace nut
 class NUT_API ITestLogger
 {
 public:
-    virtual ~ITestLogger() = default;
+    virtual ~ITestLogger() noexcept = default;
 
-    size_t get_count_of_fixtures() const;
-    size_t get_count_of_failed_fixtures() const;
-    size_t get_count_of_cases() const;
-    size_t get_count_of_failed_cases() const;
+    size_t get_count_of_fixtures() const noexcept;
+    size_t get_count_of_failed_fixtures() const noexcept;
+    size_t get_count_of_cases() const noexcept;
+    size_t get_count_of_failed_cases() const noexcept;
 
-    void start(const char *group_name, const char *fixture_name, const char *case_name);
-    void finish();
+    void start(const char *group_name, const char *fixture_name, const char *case_name) noexcept;
+    void finish() noexcept;
 
-    void enter_fixture(const char *fixture_name);
-    void leave_fixture();
+    void enter_fixture(const char *fixture_name) noexcept;
+    void leave_fixture() noexcept;
 
-    void enter_case(const char *case_name);
-    void failed_case(const TestCaseFailureException& e);
-    void leave_case();
+    void enter_case(const char *case_name) noexcept;
+    void failed_case(const TestCaseFailureException& e) noexcept;
+    void leave_case() noexcept;
 
-    virtual void on_start(const char *group_name, const char *fixture_name, const char *case_name) = 0;
-    virtual void on_finish() = 0;
+    virtual void on_start(const char *group_name, const char *fixture_name,
+                          const char *case_name) noexcept = 0;
+    virtual void on_finish() noexcept = 0;
 
-    virtual void on_enter_fixture(const char *fixture_name) = 0;
-    virtual void on_leave_fixture() = 0;
+    virtual void on_enter_fixture(const char *fixture_name) noexcept = 0;
+    virtual void on_leave_fixture() noexcept = 0;
 
-    virtual void on_enter_case(const char *case_name) = 0;
-    virtual void on_failed_case(const TestCaseFailureException& e) = 0;
-    virtual void on_leave_case() = 0;
+    virtual void on_enter_case(const char *case_name) noexcept = 0;
+    virtual void on_failed_case(const TestCaseFailureException& e) noexcept = 0;
+    virtual void on_leave_case() noexcept = 0;
 
 protected:
     size_t _count_of_fixtures = 0;

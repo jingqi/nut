@@ -54,15 +54,15 @@ private:
     };
 
 public:
-    scoped_gc() = default;
-    ~scoped_gc();
+    scoped_gc() noexcept {}
+    ~scoped_gc() noexcept;
 
-    void clear();
+    void clear() noexcept;
 
-    void* gc_alloc(size_t sz);
+    void* gc_alloc(size_t sz) noexcept;
 
     template <typename T, typename ...Args>
-    T* gc_new(Args&& ...args)
+    T* gc_new(Args&& ...args) noexcept
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *p = (T*) alloc(sizeof(T), destruct_single<T>);
@@ -72,7 +72,7 @@ public:
     }
 
     template <typename T>
-    T* gc_new_array(size_t count)
+    T* gc_new_array(size_t count) noexcept
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         T *ret = (T*) alloc(sizeof(T), count, destruct_array<T>);
@@ -87,14 +87,14 @@ private:
     self_type& operator=(const self_type&) = delete;
 
     template <typename T>
-    static void destruct_single(void *p)
+    static void destruct_single(void *p) noexcept
     {
         assert(nullptr != p);
         ((T*) p)->~T();
     }
 
     template <typename T>
-    static void destruct_array(void *p)
+    static void destruct_array(void *p) noexcept
     {
         assert(nullptr != p);
         size_t count = *(size_t*)p;
@@ -106,11 +106,11 @@ private:
         }
     }
 
-    void* raw_alloc(size_t sz);
+    void* raw_alloc(size_t sz) noexcept;
 
-    void* alloc(size_t sz, destruct_func_type func);
+    void* alloc(size_t sz, destruct_func_type func) noexcept;
 
-    void* alloc(size_t sz, size_t count, destruct_func_type func);
+    void* alloc(size_t sz, size_t count, destruct_func_type func) noexcept;
 
 private:
     Block *_current_block = nullptr;

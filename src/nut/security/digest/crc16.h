@@ -17,12 +17,12 @@ namespace nut
 class NUT_API CRC16
 {
 public:
-    void reset();
+    void reset() noexcept;
 
-    void update(uint8_t byte);
-    void update(const void *data, size_t cb);
+    void update(uint8_t byte) noexcept;
+    void update(const void *data, size_t cb) noexcept;
 
-    uint16_t get_result() const;
+    uint16_t get_result() const noexcept;
 
 private:
     uint16_t _crc16 = 0;

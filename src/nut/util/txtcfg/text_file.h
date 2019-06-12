@@ -13,8 +13,8 @@ namespace nut
 class NUT_API TextFile
 {
 public:
-    static std::string read_file(const std::string& path);
-    static bool write_file(const std::string& path, const std::string& content);
+    static std::string read_file(const std::string& path) noexcept;
+    static bool write_file(const std::string& path, const std::string& content) noexcept;
 
 private:
     TextFile() = delete;

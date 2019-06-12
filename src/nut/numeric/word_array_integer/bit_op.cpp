@@ -7,7 +7,7 @@
 namespace nut
 {
 
-NUT_API unsigned bit1_count(uint8_t a)
+NUT_API unsigned bit1_count(uint8_t a) noexcept
 {
     a -= (a >> 1) & 0x55;
     a = (a & 0x33) + ((a >> 2) & 0x33);
@@ -15,7 +15,7 @@ NUT_API unsigned bit1_count(uint8_t a)
     return a & 0x0f;
 }
 
-NUT_API unsigned bit1_count(uint16_t a)
+NUT_API unsigned bit1_count(uint16_t a) noexcept
 {
     a -= (a >> 1) & 0x5555;
     a = (a & 0x3333) + ((a >> 2) & 0x3333);
@@ -24,7 +24,7 @@ NUT_API unsigned bit1_count(uint16_t a)
     return a & 0x1f;
 }
 
-NUT_API unsigned bit1_count(uint32_t a)
+NUT_API unsigned bit1_count(uint32_t a) noexcept
 {
     a -= (a >> 1) & 0x55555555;
     a = (a & 0x33333333) + ((a >> 2) & 0x33333333);
@@ -34,7 +34,7 @@ NUT_API unsigned bit1_count(uint32_t a)
     return a & 0x3f;
 }
 
-NUT_API unsigned bit1_count(uint64_t a)
+NUT_API unsigned bit1_count(uint64_t a) noexcept
 {
     a -= (a >> 1) & 0x5555555555555555LL;
     a = (a & 0x3333333333333333LL) + ((a >> 2) & 0x3333333333333333LL);
@@ -46,7 +46,7 @@ NUT_API unsigned bit1_count(uint64_t a)
 }
 
 #if NUT_HAS_INT128
-NUT_API unsigned bit1_count(uint128_t a)
+NUT_API unsigned bit1_count(uint128_t a) noexcept
 {
     return bit1_count(reinterpret_cast<const uint64_t*>(&a)[0]) +
         bit1_count(reinterpret_cast<const uint64_t*>(&a)[1]);
@@ -56,7 +56,7 @@ NUT_API unsigned bit1_count(uint128_t a)
 /**
  * 统计 bit 1 数目
  */
-NUT_API size_t bit1_count(const uint8_t *a, size_t N)
+NUT_API size_t bit1_count(const uint8_t *a, size_t N) noexcept
 {
     assert(nullptr != a && N > 0);
 
@@ -72,20 +72,20 @@ NUT_API size_t bit1_count(const uint8_t *a, size_t N)
 /**
  * 统计 bit 0 数目
  */
-NUT_API size_t bit0_count(const uint8_t *a, size_t N)
+NUT_API size_t bit0_count(const uint8_t *a, size_t N) noexcept
 {
     assert(nullptr != a && N > 0);
     return N * 8 - bit1_count(a, N);
 }
 
-NUT_API uint8_t reverse_bits(uint8_t v)
+NUT_API uint8_t reverse_bits(uint8_t v) noexcept
 {
     v = (((v & 0xaa) >> 1) | ((v & 0x55) << 1));
     v = (((v & 0xcc) >> 2) | ((v & 0x33) << 2));
     return (v >> 4) | (v << 4);
 }
 
-NUT_API uint16_t reverse_bits(uint16_t v)
+NUT_API uint16_t reverse_bits(uint16_t v) noexcept
 {
     v = (((v & 0xaaaa) >> 1) | ((v & 0x5555) << 1));
     v = (((v & 0xcccc) >> 2) | ((v & 0x3333) << 2));
@@ -93,7 +93,7 @@ NUT_API uint16_t reverse_bits(uint16_t v)
     return (v >> 8) | (v << 8);
 }
 
-NUT_API uint32_t reverse_bits(uint32_t v)
+NUT_API uint32_t reverse_bits(uint32_t v) noexcept
 {
     v = (((v & 0xaaaaaaaa) >> 1) | ((v & 0x55555555) << 1));
     v = (((v & 0xcccccccc) >> 2) | ((v & 0x33333333) << 2));
@@ -102,7 +102,7 @@ NUT_API uint32_t reverse_bits(uint32_t v)
     return (v >> 16) | (v << 16);
 }
 
-NUT_API uint64_t reverse_bits(uint64_t v)
+NUT_API uint64_t reverse_bits(uint64_t v) noexcept
 {
     v = (((v & 0xaaaaaaaaaaaaaaaaLL) >> 1) | ((v & 0x5555555555555555LL) << 1));
     v = (((v & 0xccccccccccccccccLL) >> 2) | ((v & 0x3333333333333333LL) << 2));
@@ -113,7 +113,7 @@ NUT_API uint64_t reverse_bits(uint64_t v)
 }
 
 #if NUT_HAS_INT128
-NUT_API uint128_t reverse_bits(uint128_t v)
+NUT_API uint128_t reverse_bits(uint128_t v) noexcept
 {
     const uint64_t v1 = reverse_bits(reinterpret_cast<const uint64_t*>(&v)[0]);
     const uint64_t v2 = reverse_bits(reinterpret_cast<const uint64_t*>(&v)[1]);
@@ -123,7 +123,7 @@ NUT_API uint128_t reverse_bits(uint128_t v)
 }
 #endif
 
-NUT_API int lowest_bit1(uint8_t a)
+NUT_API int lowest_bit1(uint8_t a) noexcept
 {
     if (0 == a)
         return -1;
@@ -143,7 +143,7 @@ NUT_API int lowest_bit1(uint8_t a)
     return ret;
 }
 
-NUT_API int lowest_bit1(uint16_t a)
+NUT_API int lowest_bit1(uint16_t a) noexcept
 {
     if (0 == a)
         return -1;
@@ -168,7 +168,7 @@ NUT_API int lowest_bit1(uint16_t a)
     return ret;
 }
 
-NUT_API int lowest_bit1(uint32_t a)
+NUT_API int lowest_bit1(uint32_t a) noexcept
 {
     if (0 == a)
         return -1;
@@ -198,7 +198,7 @@ NUT_API int lowest_bit1(uint32_t a)
     return ret;
 }
 
-NUT_API int lowest_bit1(uint64_t a)
+NUT_API int lowest_bit1(uint64_t a) noexcept
 {
     if (0 == a)
         return -1;
@@ -234,7 +234,7 @@ NUT_API int lowest_bit1(uint64_t a)
 }
 
 #if NUT_HAS_INT128
-NUT_API int lowest_bit1(uint128_t a)
+NUT_API int lowest_bit1(uint128_t a) noexcept
 {
 #if NUT_ENDIAN_LITTLE_BYTE
     int rs = lowest_bit1(reinterpret_cast<const uint64_t*>(&a)[0]);
@@ -252,7 +252,7 @@ NUT_API int lowest_bit1(uint128_t a)
 }
 #endif
 
-NUT_API int highest_bit1(uint8_t a)
+NUT_API int highest_bit1(uint8_t a) noexcept
 {
     if (0 == a)
         return -1;
@@ -272,7 +272,7 @@ NUT_API int highest_bit1(uint8_t a)
     return ret;
 }
 
-NUT_API int highest_bit1(uint16_t a)
+NUT_API int highest_bit1(uint16_t a) noexcept
 {
     if (0 == a)
         return -1;
@@ -297,7 +297,7 @@ NUT_API int highest_bit1(uint16_t a)
     return ret;
 }
 
-NUT_API int highest_bit1(uint32_t a)
+NUT_API int highest_bit1(uint32_t a) noexcept
 {
     if (0 == a)
         return -1;
@@ -327,7 +327,7 @@ NUT_API int highest_bit1(uint32_t a)
     return ret;
 }
 
-NUT_API int highest_bit1(uint64_t a)
+NUT_API int highest_bit1(uint64_t a) noexcept
 {
     if (0 == a)
         return -1;
@@ -363,7 +363,7 @@ NUT_API int highest_bit1(uint64_t a)
 }
 
 #if NUT_HAS_INT128
-NUT_API int highest_bit1(uint128_t a)
+NUT_API int highest_bit1(uint128_t a) noexcept
 {
 #if NUT_ENDIAN_LITTLE_BYTE
     const int rs = highest_bit1(reinterpret_cast<const uint64_t*>(&a)[1]);

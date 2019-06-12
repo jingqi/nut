@@ -263,6 +263,7 @@
     <ClCompile Include="..\..\..\src\nut\container\rwbuffer\fragment_buffer.cpp" />
     <ClCompile Include="..\..\..\src\nut\container\rwbuffer\ring_buffer.cpp" />
     <ClCompile Include="..\..\..\src\nut\debugging\backtrace.cpp" />
+    <ClCompile Include="..\..\..\src\nut\debugging\exception.cpp" />
     <ClCompile Include="..\..\..\src\nut\debugging\proc_addr_maps.cpp" />
     <ClCompile Include="..\..\..\src\nut\debugging\source_location.cpp" />
     <ClCompile Include="..\..\..\src\nut\logging\logger.cpp" />

@@ -10,15 +10,15 @@
 namespace nut
 {
 
-TimerHeap::Timer::Timer(timer_id_type id_, const DateTime& when_, timer_task_type&& task_)
+TimerHeap::Timer::Timer(timer_id_type id_, const DateTime& when_, timer_task_type&& task_) noexcept
     : id(id_), when(when_), task(std::forward<timer_task_type>(task_))
 {}
 
-TimerHeap::Timer::Timer(timer_id_type id_, const DateTime& when_, const timer_task_type& task_)
+TimerHeap::Timer::Timer(timer_id_type id_, const DateTime& when_, const timer_task_type& task_) noexcept
     : id(id_), when(when_), task(task_)
 {}
 
-TimerHeap::~TimerHeap()
+TimerHeap::~TimerHeap() noexcept
 {
     for (size_t i = 0, sz = _timers.size(); i < sz; ++i)
     {
@@ -30,13 +30,13 @@ TimerHeap::~TimerHeap()
     _timers.clear();
 }
 
-bool TimerHeap::timer_greater_than(const Timer *t1, const Timer *t2)
+bool TimerHeap::timer_greater_than(const Timer *t1, const Timer *t2) noexcept
 {
     assert(nullptr != t1 && nullptr != t2);
     return t1->when > t2->when;
 }
 
-void TimerHeap::add_timer(Timer *t)
+void TimerHeap::add_timer(Timer *t) noexcept
 {
     assert(nullptr != t);
 
@@ -49,7 +49,7 @@ void TimerHeap::add_timer(Timer *t)
     std::push_heap(_timers.begin(), _timers.end(), &timer_greater_than);
 }
 
-TimerHeap::timer_id_type TimerHeap::add_timer(const TimeDiff& interval, timer_task_type&& task)
+TimerHeap::timer_id_type TimerHeap::add_timer(const TimeDiff& interval, timer_task_type&& task) noexcept
 {
     assert(task);
 
@@ -64,7 +64,7 @@ TimerHeap::timer_id_type TimerHeap::add_timer(const TimeDiff& interval, timer_ta
     return t->id;
 }
 
-TimerHeap::timer_id_type TimerHeap::add_timer(const TimeDiff& interval, const timer_task_type& task)
+TimerHeap::timer_id_type TimerHeap::add_timer(const TimeDiff& interval, const timer_task_type& task) noexcept
 {
     assert(task);
 
@@ -79,7 +79,7 @@ TimerHeap::timer_id_type TimerHeap::add_timer(const TimeDiff& interval, const ti
     return t->id;
 }
 
-bool TimerHeap::cancel_timer(timer_id_type id)
+bool TimerHeap::cancel_timer(timer_id_type id) noexcept
 {
     std::lock_guard<std::mutex> g(_lock);
     size_t i = 0;
@@ -105,7 +105,7 @@ bool TimerHeap::cancel_timer(timer_id_type id)
     return true;
 }
 
-void TimerHeap::interupt()
+void TimerHeap::interupt() noexcept
 {
     std::lock_guard<std::mutex> g(_lock);
     _stopping = true;
@@ -115,7 +115,7 @@ void TimerHeap::interupt()
 /**
  * 主定时器线程，将阻塞线程，直到 interupt() 被调用
  */
-void TimerHeap::run()
+void TimerHeap::run() noexcept
 {
     // 允许的定时误差，防止定时线程抖动厉害
     const TimeDiff min_interval(0, RESOLUTION_MS * 1000000);

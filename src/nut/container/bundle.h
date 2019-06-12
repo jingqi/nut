@@ -23,11 +23,11 @@ template <typename T>
 class _BundleElement : public _BundleElementBase
 {
 public:
-    _BundleElement(T&& v)
+    _BundleElement(T&& v) noexcept
         : value(std::forward<T>(v))
     {}
 
-    _BundleElement(const T& v)
+    _BundleElement(const T& v) noexcept
         : value(v)
     {}
 
@@ -45,7 +45,7 @@ private:
 public:
     Bundle() = default;
 
-    bool has_key(const std::string& key) const
+    bool has_key(const std::string& key) const noexcept
     {
         map_type::const_iterator iter = _values.find(key);
         if (iter == _values.end() || iter->second.is_null())
@@ -54,7 +54,7 @@ public:
     }
 
     template <typename T>
-    const T& get_value(const std::string& key) const
+    const T& get_value(const std::string& key) const noexcept
     {
         map_type::const_iterator iter = _values.find(key);
         assert(iter != _values.end());
@@ -66,30 +66,30 @@ public:
     }
 
     template <typename T>
-    void set_value(std::string&& key, T&& value)
+    void set_value(std::string&& key, T&& value) noexcept
     {
         _values[std::forward<std::string>(key)] = rc_new<_BundleElement<T>>(std::forward<T>(value));
     }
 
     template <typename T>
-    void set_value(const std::string& key, T&& value)
+    void set_value(const std::string& key, T&& value) noexcept
     {
         _values[key] = rc_new<_BundleElement<T>>(std::forward<T>(value));
     }
 
     template <typename T>
-    void set_value(std::string&& key, const T& value)
+    void set_value(std::string&& key, const T& value) noexcept
     {
         _values[std::forward<std::string>(key)] = rc_new<_BundleElement<T>>(value);
     }
 
     template <typename T>
-    void set_value(const std::string& key, const T& value)
+    void set_value(const std::string& key, const T& value) noexcept
     {
         _values[key] = rc_new<_BundleElement<T>>(value);
     }
 
-    void clear()
+    void clear() noexcept
     {
         _values.clear();
     }

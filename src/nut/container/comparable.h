@@ -20,10 +20,10 @@ class has_compare_method
     {};
 
     template<typename U>
-    static char test(SFINAE<U, &U::compare>*);
+    static char test(SFINAE<U, &U::compare>*) noexcept;
 
     template<typename U>
-    static int test(...);
+    static int test(...) noexcept;
 
 public:
     static constexpr bool value = sizeof(test<T>(0)) == sizeof(char);
@@ -40,14 +40,14 @@ public:
  */
 template <typename T>
 typename std::enable_if<!has_compare_method<T>::value,int>::type
-compare(const T& lhs, const T& rhs)
+compare(const T& lhs, const T& rhs) noexcept
 {
     return lhs < rhs ? -1 : (rhs < lhs ? 1 : 0);
 }
 
 template <typename T>
 typename std::enable_if<has_compare_method<T>::value,int>::type
-compare(const T& lhs, const T&rhs)
+compare(const T& lhs, const T&rhs) noexcept
 {
     return lhs.compare(rhs);
 }

@@ -36,8 +36,8 @@ private:
     class Timer
     {
     public:
-        Timer(timer_id_type id_, const DateTime& when_, timer_task_type&& task_);
-        Timer(timer_id_type id_, const DateTime& when_, const timer_task_type& task_);
+        Timer(timer_id_type id_, const DateTime& when_, timer_task_type&& task_) noexcept;
+        Timer(timer_id_type id_, const DateTime& when_, const timer_task_type& task_) noexcept;
 
     public:
         timer_id_type id = 0;
@@ -47,7 +47,7 @@ private:
 
 public:
     TimerHeap() = default;
-    ~TimerHeap();
+    ~TimerHeap() noexcept;
 
     /**
      * 添加定时器
@@ -55,27 +55,27 @@ public:
      * @param interval 距离现在时间的间隔
      * @return 定时器 id
      */
-    timer_id_type add_timer(const TimeDiff& interval, timer_task_type&& task);
-    timer_id_type add_timer(const TimeDiff& interval, const timer_task_type& task);
+    timer_id_type add_timer(const TimeDiff& interval, timer_task_type&& task) noexcept;
+    timer_id_type add_timer(const TimeDiff& interval, const timer_task_type& task) noexcept;
 
-    bool cancel_timer(timer_id_type id);
+    bool cancel_timer(timer_id_type id) noexcept;
 
-    void interupt();
+    void interupt() noexcept;
 
     /**
      * 主定时器线程，将阻塞线程，直到 interupt() 被调用
      */
-    void run();
+    void run() noexcept;
 
 private:
     TimerHeap(const TimerHeap& x) = delete;
     TimerHeap& operator=(const TimerHeap& x) = delete;
 
     // NOTE 应该在 mutex 保护下运行
-    void add_timer(Timer *t);
+    void add_timer(Timer *t) noexcept;
 
     // Greater-Than 操作符用于维护小头堆算法
-    static bool timer_greater_than(const Timer *t1, const Timer *t2);
+    static bool timer_greater_than(const Timer *t1, const Timer *t2) noexcept;
 
 private:
     timer_id_type _next_id = 1;  // 用于生成不重复的 timer id

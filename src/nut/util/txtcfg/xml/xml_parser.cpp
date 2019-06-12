@@ -10,7 +10,7 @@
 namespace nut
 {
 
-static const char* decode(const std::string& e)
+static const char* decode(const std::string& e) noexcept
 {
     if (e == "&amp;")
         return "&";
@@ -24,12 +24,12 @@ static const char* decode(const std::string& e)
         return e.c_str(); // decode failed
 }
 
-static constexpr bool is_space(char c)
+static constexpr bool is_space(char c) noexcept
 {
     return ' ' == c || '\t' == c || '\r' == c || '\n' == c;
 }
 
-static bool is_name_char(char c)
+static bool is_name_char(char c) noexcept
 {
     if ('a' <= c && c <= 'z')
         return true;
@@ -42,7 +42,33 @@ static bool is_name_char(char c)
     return false;
 }
 
-bool XmlParser::input(char c)
+enum class XmlParser::State : uint8_t
+{
+        InText, // 在 text 中
+        InTextEncode, // 在 text 的转义符中
+        JustAfterLessSign, // 紧接着 '<'
+        ExpectElemNameFirstChar, // 预期 element 名称的第一个字符
+        InElemName, // 在 element 名称中
+        ExpectSpaceBeforeAttrNameFirstChar, // 在 attribute 名字的第一个字符前，至少匹配一个空格
+        ExpectAttrNameFirstChar, // 预期 attribute 名称的第一个字符
+        InAttrName, // 在 attribute 名称中
+        ExpectEqual, // 预期 '＝' 字符
+        ExpectFirstQuot, // 预期第一个双引号
+        InAttrValue, // 在 attribute 的值中
+        InAttrValueEncode, // 在 attribute 的值中的转义符中
+        ExpectImmediatGreaterSignAndFinishElem, // 预期立即的 '>' 字符，然后结束 element
+        ExpectFirstBar, // 预期注释中的第一个 '-' 符号
+        ExpectSecondBar, // 预期注释中的第二个 '-' 符号
+        InComment, // 在注释中
+        ExpectLastBar, // 预期注释中的最后一个 '-'
+        ExpectGreaterSignAndFinishComment, // 预期 '>' 字符，然后结束注释
+        ExpectElemNameFirstCharAndFinishElem, // 预期第一个字符，然后结束 element
+        InElemNameAndFinishElem, // 在 element 名称中，然后结束 element
+        ExpectGreaterSignAndFinishElem, // 预期 '>' 然后 element 结束
+        InError // 出错
+};
+
+bool XmlParser::input(char c) noexcept
 {
     switch (_state)
     {
@@ -522,7 +548,7 @@ bool XmlParser::input(char c)
     return true;
 }
 
-bool XmlParser::should_handle_child() const
+bool XmlParser::should_handle_child() const noexcept
 {
     if (_elem_path.empty())
         return false;
@@ -532,7 +558,7 @@ bool XmlParser::should_handle_child() const
     return 0 != (current_elem.handler->get_handle_mask() & XmlElementHandler::HANDLE_CHILD);
 }
 
-bool XmlParser::should_handle_attribute() const
+bool XmlParser::should_handle_attribute() const noexcept
 {
     if (_elem_path.empty())
         return false;
@@ -542,7 +568,7 @@ bool XmlParser::should_handle_attribute() const
     return 0 != (current_elem.handler->get_handle_mask() & XmlElementHandler::HANDLE_ATTRIBUTE);
 }
 
-bool XmlParser::should_handle_text() const
+bool XmlParser::should_handle_text() const noexcept
 {
     if (_elem_path.empty())
         return false;
@@ -552,7 +578,7 @@ bool XmlParser::should_handle_text() const
     return 0 != (current_elem.handler->get_handle_mask() & XmlElementHandler::HANDLE_TEXT);
 }
 
-bool XmlParser::should_handle_comment() const
+bool XmlParser::should_handle_comment() const noexcept
 {
     if (_elem_path.empty())
         return false;
@@ -562,7 +588,7 @@ bool XmlParser::should_handle_comment() const
     return 0 != (current_elem.handler->get_handle_mask() & XmlElementHandler::HANDLE_COMMENT);
 }
 
-void XmlParser::handle_child()
+void XmlParser::handle_child() noexcept
 {
     // Create child handler
     XmlElementHandler *child = nullptr;
@@ -582,7 +608,7 @@ void XmlParser::handle_child()
     _tmp_name.clear();
 }
 
-void XmlParser::handle_attribute()
+void XmlParser::handle_attribute() noexcept
 {
     if (should_handle_attribute())
     {
@@ -595,7 +621,7 @@ void XmlParser::handle_attribute()
     _tmp_encoded.clear();
 }
 
-void XmlParser::handle_text()
+void XmlParser::handle_text() noexcept
 {
     if (should_handle_text())
     {
@@ -608,14 +634,14 @@ void XmlParser::handle_text()
     _tmp_encoded.clear();
 }
 
-void XmlParser::handle_comment()
+void XmlParser::handle_comment() noexcept
 {
     if (should_handle_comment())
         _elem_path.at(_elem_path.size() - 1).handler->handle_comment(_tmp_value);
     _tmp_value.clear();
 }
 
-void XmlParser::handle_finish()
+void XmlParser::handle_finish() noexcept
 {
     if (_elem_path.empty())
         return;
@@ -641,7 +667,7 @@ void XmlParser::handle_finish()
         parent->handle_child_finish(handler);
 }
 
-bool XmlParser::check_finish()
+bool XmlParser::check_finish() noexcept
 {
     if (_elem_path.empty())
         return false;
@@ -651,7 +677,7 @@ bool XmlParser::check_finish()
     return true;
 }
 
-void XmlParser::force_finish()
+void XmlParser::force_finish() noexcept
 {
     // 强制回收资源
     while (_elem_path.size() > 1)
@@ -661,13 +687,13 @@ void XmlParser::force_finish()
 /**
  * NODE: 根 handler 的删除操作需要外部自己管理
  */
-XmlParser::XmlParser(XmlElementHandler *root_handler)
+XmlParser::XmlParser(XmlElementHandler *root_handler) noexcept
     : _state(State::InText)
 {
     _elem_path.emplace_back("", root_handler);
 }
 
-void XmlParser::reset(XmlElementHandler *root_handler)
+void XmlParser::reset(XmlElementHandler *root_handler) noexcept
 {
     force_finish();
     _elem_path.clear();
@@ -680,7 +706,7 @@ void XmlParser::reset(XmlElementHandler *root_handler)
     _tmp_encoded.clear();
 }
 
-bool XmlParser::input(const char *s, int len)
+bool XmlParser::input(const char *s, int len) noexcept
 {
     assert(nullptr != s);
     for (int i = 0; (len < 0 || i < len) && '\0' != s[i]; ++i)
@@ -695,7 +721,7 @@ bool XmlParser::input(const char *s, int len)
     return true;
 }
 
-bool XmlParser::finish()
+bool XmlParser::finish() noexcept
 {
     if (State::InError == _state)
     {
@@ -721,22 +747,22 @@ bool XmlParser::finish()
     return true;
 }
 
-size_t XmlParser::line() const
+size_t XmlParser::line() const noexcept
 {
     return _line;
 }
 
-size_t XmlParser::column() const
+size_t XmlParser::column() const noexcept
 {
     return _column;
 }
 
-bool XmlParser::has_error() const
+bool XmlParser::has_error() const noexcept
 {
     return State::InError == _state;
 }
 
-std::string XmlParser::error_message() const
+std::string XmlParser::error_message() const noexcept
 {
     if (!has_error())
         return "";

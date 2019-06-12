@@ -9,7 +9,8 @@ namespace nut
 {
 
 /** 从指定的命令集中挑选出匹配名称的子集 */
-std::vector<rc_ptr<ICommand> > IConsole::match_commands(const std::vector<rc_ptr<ICommand> >& commands, const std::string& to_match)
+std::vector<rc_ptr<ICommand> > IConsole::match_commands(
+    const std::vector<rc_ptr<ICommand> >& commands, const std::string& to_match) noexcept
 {
     // 匹配命令
     std::vector<rc_ptr<ICommand> > matched_cmds;

@@ -11,12 +11,12 @@
 namespace nut
 {
 
-void Adler32::reset()
+void Adler32::reset() noexcept
 {
     _result = 1;
 }
 
-void Adler32::update(const void *data, size_t len)
+void Adler32::update(const void *data, size_t len) noexcept
 {
     assert(nullptr != data || len <= 0);
     uint16_t *a = reinterpret_cast<uint16_t*>(&_result);
@@ -29,32 +29,32 @@ void Adler32::update(const void *data, size_t len)
     }
 }
 
-uint32_t Adler32::digest() const
+uint32_t Adler32::digest() const noexcept
 {
     return _result;
 }
 
 // -----------------------------------------------------------------------------
 
-RollingAdler32::RollingAdler32(size_t window)
+RollingAdler32::RollingAdler32(size_t window) noexcept
     : _window_size(window)
 {
     assert(window > 0);
     _buf = (uint8_t*) ::malloc(_window_size);
 }
 
-RollingAdler32::~RollingAdler32()
+RollingAdler32::~RollingAdler32() noexcept
 {
     ::free(_buf);
 }
 
-void RollingAdler32::initialize()
+void RollingAdler32::initialize() noexcept
 {
     _result = 1;
     _count = 0;
 }
 
-void RollingAdler32::update(const void *data, size_t len)
+void RollingAdler32::update(const void *data, size_t len) noexcept
 {
     assert(nullptr != data || len <= 0);
     uint16_t& a = reinterpret_cast<uint16_t*>(&_result)[0];
@@ -77,7 +77,7 @@ void RollingAdler32::update(const void *data, size_t len)
     }
 }
 
-uint32_t RollingAdler32::get_result() const
+uint32_t RollingAdler32::get_result() const noexcept
 {
     return _result;
 }

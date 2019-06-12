@@ -10,7 +10,7 @@ namespace nut
  *
  * @return 最后一项必须是 nullptr
  */
-const char** ICommand::get_command_nick_names() const
+const char** ICommand::get_command_nick_names() const noexcept
 {
     static const char* ret[] = {
         nullptr
@@ -19,7 +19,7 @@ const char** ICommand::get_command_nick_names() const
 }
 
 /** 分析命令行 */
-std::vector<std::string> ICommand::parse_comand_line(const char *cmd_line)
+std::vector<std::string> ICommand::parse_comand_line(const char *cmd_line) noexcept
 {
     std::vector<std::string> ret;
     if (nullptr == cmd_line)
@@ -60,7 +60,7 @@ std::vector<std::string> ICommand::parse_comand_line(const char *cmd_line)
 }
 
 /** 分析命令行 */
-void ICommand::parse_comand_line(const wchar_t *cmd_line, std::vector<std::wstring> *appended)
+void ICommand::parse_comand_line(const wchar_t *cmd_line, std::vector<std::wstring> *appended) noexcept
 {
     assert(nullptr != appended);
     if (nullptr == cmd_line)

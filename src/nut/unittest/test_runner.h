@@ -12,11 +12,11 @@ namespace nut
 class NUT_API TestRunner
 {
 public:
-    explicit TestRunner(ITestLogger *logger);
+    explicit TestRunner(ITestLogger *logger) noexcept;
 
-    void run_group(const char *group_name);
-    void run_fixture(const char *fixture_name);
-    void run_case(const char *fixture_name, const char *case_name);
+    void run_group(const char *group_name) noexcept;
+    void run_fixture(const char *fixture_name) noexcept;
+    void run_case(const char *fixture_name, const char *case_name) noexcept;
 
 private:
     ITestLogger *_logger = nullptr;

@@ -8,7 +8,7 @@ using namespace nut;
 
 class TestAdler32 : public TestFixture
 {
-    virtual void register_cases() override
+    virtual void register_cases() noexcept override
     {
         NUT_REGISTER_CASE(test_adler32);
         NUT_REGISTER_CASE(test_rolling_adler32);

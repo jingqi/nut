@@ -7,7 +7,7 @@
 namespace nut
 {
 
-NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b)
+NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b) noexcept
 {
     /// 下面几个算法，随着规模增大，优化后的优势越明显。
     /// 规模较小时优化的算法反而不如没优化的算法有效率。
@@ -181,12 +181,13 @@ NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b)
 #endif
 }
 
-NUT_API BigInteger lcm(const BigInteger& a, const BigInteger& b)
+NUT_API BigInteger lcm(const BigInteger& a, const BigInteger& b) noexcept
 {
     return a / gcd(a, b) * b;
 }
 
-NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, BigInteger *x, BigInteger *y)
+NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b,
+                             BigInteger *d, BigInteger *x, BigInteger *y) noexcept
 {
 #if 0 // unoptimized
     /**

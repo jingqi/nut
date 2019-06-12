@@ -8,18 +8,18 @@
 namespace nut
 {
 
-CmdHelp::CmdHelp(IConsole *c)
+CmdHelp::CmdHelp(IConsole *c) noexcept
     : _console(c)
 {
     assert(nullptr != c);
 }
 
-const char* CmdHelp::get_command_name() const
+const char* CmdHelp::get_command_name() const noexcept
 {
     return "help";
 }
 
-const char** CmdHelp::get_command_nick_names() const
+const char** CmdHelp::get_command_nick_names() const noexcept
 {
     static const char* ret[] = {
         "hlp",
@@ -28,17 +28,17 @@ const char** CmdHelp::get_command_nick_names() const
     return ret;
 }
 
-const char* CmdHelp::get_general_info() const
+const char* CmdHelp::get_general_info() const noexcept
 {
     return "print some helpfull information";
 }
 
-const char* CmdHelp::get_detail_info() const
+const char* CmdHelp::get_detail_info() const noexcept
 {
     return "help [command_name]\neg.:\n\thelp\n\thelp exit";
 }
 
-void CmdHelp::execute(const char* command_line)
+void CmdHelp::execute(const char* command_line) noexcept
 {
     assert(nullptr != command_line);
     const std::vector<std::string> params = parse_comand_line(command_line);

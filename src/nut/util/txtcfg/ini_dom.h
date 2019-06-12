@@ -21,50 +21,52 @@ class NUT_API IniDom
     NUT_REF_COUNTABLE
 
 public:
-    IniDom() = default;
+    IniDom() noexcept = default;
 
     /**
-     * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
+     * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';'
+     *              行注释和 '#' 行注释
      * @param space_chars 空白字符，其中出现的字符将被视为空白
      */
-    void parse(const std::string& s, const char *line_comment_chars = ";#", const char *space_chars = " \t");
+    void parse(const std::string& s, const char *line_comment_chars = ";#",
+               const char *space_chars = " \t") noexcept;
 
     /**
      * @param le 换行符
      */
-    std::string serielize(const char *le = "\n") const;
+    std::string serielize(const char *le = "\n") const noexcept;
 
-    bool is_dirty() const;
+    bool is_dirty() const noexcept;
 
-    void set_dirty(bool dirty = true);
+    void set_dirty(bool dirty = true) noexcept;
 
-    void clear();
+    void clear() noexcept;
 
-    std::vector<std::string> list_sectors() const;
-    bool has_sector(const std::string& sector) const;
-    bool remove_sector(const std::string& sector);
+    std::vector<std::string> list_sectors() const noexcept;
+    bool has_sector(const std::string& sector) const noexcept;
+    bool remove_sector(const std::string& sector) noexcept;
 
-    std::vector<std::string> list_keys(const std::string& sector) const;
-    bool has_key(const std::string& sector, const std::string& key) const;
-    bool remove_key(const std::string& sector, const std::string& key);
+    std::vector<std::string> list_keys(const std::string& sector) const noexcept;
+    bool has_key(const std::string& sector, const std::string& key) const noexcept;
+    bool remove_key(const std::string& sector, const std::string& key) noexcept;
 
     const char* get_string(const std::string& sector, const std::string& key,
-                           const char *default_value = "") const;
+                           const char *default_value = "") const noexcept;
     bool get_bool(const std::string& sector, const std::string& key,
-                  bool default_value = false) const;
+                  bool default_value = false) const noexcept;
     long get_int(const std::string& sector, const std::string& key,
-                 long default_value = 0) const;
+                 long default_value = 0) const noexcept;
     double get_decimal(const std::string& sector, const std::string& key,
-                       double default_value = 0.0) const;
+                       double default_value = 0.0) const noexcept;
     std::vector<std::string> get_list(const std::string& sector, const std::string& key,
-                                      char split_char = ',') const;
+                                      char split_char = ',') const noexcept;
 
-    void set_string(const std::string& sector, const std::string& key, const std::string& value);
-    void set_bool(const std::string& sector, const std::string& key, bool value);
-    void set_int(const std::string& sector, const std::string& key, long value);
-    void set_decimal(const std::string& sector, const std::string& key, double value);
+    void set_string(const std::string& sector, const std::string& key, const std::string& value) noexcept;
+    void set_bool(const std::string& sector, const std::string& key, bool value) noexcept;
+    void set_int(const std::string& sector, const std::string& key, long value) noexcept;
+    void set_decimal(const std::string& sector, const std::string& key, double value) noexcept;
     void set_list(const std::string& sector, const std::string& key,
-                  const std::vector<std::string>& values, char split_char = ',');
+                  const std::vector<std::string>& values, char split_char = ',') noexcept;
 
 private:
     typedef PropertyDom::Line Line;
@@ -80,17 +82,17 @@ private:
     public:
         /**
          * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如
-         *        ';' 行注释和 '#' 行注释
+         *              ';' 行注释和 '#' 行注释
          * @param space_chars 空白字符，其中出现的字符将被视为空白
          */
-        static rc_ptr<Sector> parse_sector_name(const std::string& line,
-                                                const char *line_comment_chars = ";#",
-                                                const char *space_chars = " \t");
+        static rc_ptr<Sector> parse_sector_name(
+            const std::string& line, const char *line_comment_chars = ";#",
+            const char *space_chars = " \t") noexcept;
 
         /**
          * @param le 换行符
          */
-        std::string serielize(const char *le = "\n");
+        std::string serielize(const char *le = "\n") noexcept;
 
     public:
         std::string _space0;

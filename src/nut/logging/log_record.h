@@ -16,23 +16,23 @@ class NUT_API LogRecord
 {
 public:
     LogRecord(enum LogLevel level, const char *tag, const char *file_path,
-              int line, const char *func);
-    ~LogRecord();
+              int line, const char *func) noexcept;
+    ~LogRecord() noexcept;
 
-    const DateTime& get_time() const;
-    enum LogLevel get_level() const;
-    const char* get_tag() const;
-    const char* get_file_path() const;
-    const char* get_file_name() const;
-    int get_line() const;
-    const char* get_message() const;
-    std::string to_string() const;
+    const DateTime& get_time() const noexcept;
+    enum LogLevel get_level() const noexcept;
+    const char* get_tag() const noexcept;
+    const char* get_file_path() const noexcept;
+    const char* get_file_name() const noexcept;
+    int get_line() const noexcept;
+    const char* get_message() const noexcept;
+    std::string to_string() const noexcept;
 
 private:
     LogRecord(const LogRecord&) = delete;
     LogRecord& operator=(const LogRecord&) = delete;
 
-    void delay_init(char *message);
+    void delay_init(char *message) noexcept;
 
 private:
     DateTime _time;

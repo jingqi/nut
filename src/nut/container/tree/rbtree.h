@@ -34,7 +34,7 @@ public:
      *
      * @return 新的根
      */
-    static NODE* insert(NODE *root, NODE *new_node)
+    static NODE* insert(NODE *root, NODE *new_node) noexcept
     {
         assert(nullptr != new_node);
         NODE *parent = nullptr;
@@ -73,7 +73,7 @@ public:
      *
      * @return 新的根
      */
-    static NODE* remove(NODE *root, NODE *to_be_del)
+    static NODE* remove(NODE *root, NODE *to_be_del) noexcept
     {
         assert(nullptr != to_be_del);
         NODE *escaper = nullptr;
@@ -127,7 +127,7 @@ private:
     /**
      * 左旋转
      */
-    static NODE* _left_rotate(NODE *root, NODE *x)
+    static NODE* _left_rotate(NODE *root, NODE *x) noexcept
     {
         /*
          *
@@ -158,7 +158,7 @@ private:
     /**
      * 右旋转
      */
-    static NODE* _right_rotate(NODE *root, NODE *x)
+    static NODE* _right_rotate(NODE *root, NODE *x) noexcept
     {
         /*
          *        |                           |
@@ -185,7 +185,7 @@ private:
         return root;
     }
 
-    static NODE* _insert_fixup(NODE *root, NODE *x)
+    static NODE* _insert_fixup(NODE *root, NODE *x) noexcept
     {
         assert(nullptr != x && x->is_red());
         while (nullptr != x->get_parent() && x->get_parent()->is_red())
@@ -297,7 +297,7 @@ private:
         return root;
     }
 
-    static NODE* _remove_fixup(NODE *root, NODE *sublink, NODE *sublink_parent)
+    static NODE* _remove_fixup(NODE *root, NODE *sublink, NODE *sublink_parent) noexcept
     {
         while (sublink != root && (nullptr == sublink || !sublink->is_red()))
         {

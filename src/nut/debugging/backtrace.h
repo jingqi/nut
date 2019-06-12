@@ -22,12 +22,12 @@ public:
     /**
      * 获取调用栈
      */
-    static std::string backtrace(unsigned skip_top_frames = 0);
+    static std::string backtrace(unsigned skip_top_frames = 0) noexcept;
 
     /**
      * 快捷打印调用栈
      */
-    static void print_stack();
+    static void print_stack() noexcept;
 
 private:
     Backtrace() = delete;

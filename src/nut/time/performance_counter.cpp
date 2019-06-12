@@ -12,7 +12,7 @@ LARGE_INTEGER PerformanceCounter::_frequency;
 bool PerformanceCounter::_frequency_initialized = false;
 #endif
 
-PerformanceCounter::PerformanceCounter()
+PerformanceCounter::PerformanceCounter() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     if (!_frequency_initialized)
@@ -27,7 +27,7 @@ PerformanceCounter::PerformanceCounter()
 #endif
 }
 
-double PerformanceCounter::operator-(const PerformanceCounter& x) const
+double PerformanceCounter::operator-(const PerformanceCounter& x) const noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return (_counter.QuadPart - x._counter.QuadPart) / (double) _frequency.QuadPart;
@@ -37,7 +37,7 @@ double PerformanceCounter::operator-(const PerformanceCounter& x) const
 #endif
 }
 
-void PerformanceCounter::set_to_now()
+void PerformanceCounter::set_to_now() noexcept
 {
     // NOTE 各个可计时函数信息:
     // - time(), POSIX, 实际精度 1s
@@ -59,14 +59,14 @@ void PerformanceCounter::set_to_now()
 #endif
 }
 
-PerformanceCounter PerformanceCounter::now()
+PerformanceCounter PerformanceCounter::now() noexcept
 {
     PerformanceCounter ret;
     ret.set_to_now();
     return ret;
 }
 
-bool PerformanceCounter::is_valid() const
+bool PerformanceCounter::is_valid() const noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return 0 != _counter.QuadPart;

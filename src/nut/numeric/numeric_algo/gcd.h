@@ -14,32 +14,33 @@ namespace nut
  * 求最大公约数
  */
 template <typename T>
-constexpr T gcd(T a, T b)
+constexpr T gcd(T a, T b) noexcept
 {
     static_assert(std::is_integral<T>::value, "Unexpected integer type");
     return (0 == b ? a : gcd(b, a % b));
 }
 
-NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b);
+NUT_API BigInteger gcd(const BigInteger& a, const BigInteger& b) noexcept;
 
 /**
  * 求最小公倍数
  */
 template <typename T>
-constexpr T lcm(T a, T b)
+constexpr T lcm(T a, T b) noexcept
 {
     static_assert(std::is_integral<T>::value, "Unexpected integer type");
     return a / gcd(a, b) * b;
 }
 
-NUT_API BigInteger lcm(const BigInteger& a, const BigInteger& b);
+NUT_API BigInteger lcm(const BigInteger& a, const BigInteger& b) noexcept;
 
 /**
  * 扩展欧几里得算法
  * d = gcd(a, b) = ax + by
  */
 template <typename T>
-T extended_euclid(T a, T b, typename StdInt<T>::signed_type *x, typename StdInt<T>::signed_type *y)
+T extended_euclid(T a, T b, typename StdInt<T>::signed_type *x,
+                  typename StdInt<T>::signed_type *y) noexcept
 {
     static_assert(std::is_integral<T>::value, "Unexpected integer type");
 
@@ -61,7 +62,8 @@ T extended_euclid(T a, T b, typename StdInt<T>::signed_type *x, typename StdInt<
     return gcd;
 }
 
-NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b, BigInteger *d, BigInteger *x, BigInteger *y);
+NUT_API void extended_euclid(const BigInteger& a, const BigInteger& b,
+                             BigInteger *d, BigInteger *x, BigInteger *y) noexcept;
 
 }
 

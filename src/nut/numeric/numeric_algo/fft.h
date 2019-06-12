@@ -36,13 +36,13 @@ static_assert(sizeof(fft_word_type) > 2 * NUT_FFT_BASE_BYTES,
  *
  * @param dft DFT / IDFT
  */
-NUT_API void FFT(fft_complex_type *a, unsigned loglen, size_t len, bool dft = true);
+NUT_API void FFT(fft_complex_type *a, unsigned loglen, size_t len, bool dft = true) noexcept;
 
 /**
  * 利用快速傅立叶变换求大数的成绩，时间复杂度为 O(nlogn)
  */
 template <typename T>
-void unsigned_fft_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
+void unsigned_fft_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
@@ -108,7 +108,7 @@ void unsigned_fft_multiply(const T *a, size_t M, const T *b, size_t N, T *x, siz
 }
 
 template <typename T>
-void signed_fft_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
+void signed_fft_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P) noexcept
 {
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
 

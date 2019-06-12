@@ -24,29 +24,29 @@ private:
     class NUT_API Node
     {
     public:
-        explicit Node(hashcode_type h, Node *p);
-        ~Node();
+        explicit Node(hashcode_type h, Node *p) noexcept;
+        ~Node() noexcept;
 
-        void swap(Node *x);
+        void swap(Node *x) noexcept;
 
         /**
          * @return >=0, 找到的位置
          *         <0, 插入位置
          */
-        ssize_t search_child(hashcode_type h) const;
+        ssize_t search_child(hashcode_type h) const noexcept;
 
         /**
          * @param pos 必须小于 0
          */
-        Node* insert_child(ssize_t pos, hashcode_type h);
+        Node* insert_child(ssize_t pos, hashcode_type h) noexcept;
 
-        void remove_child(Node *child);
+        void remove_child(Node *child) noexcept;
 
-        void clear();
+        void clear() noexcept;
 
-        void ensure_cap(size_t new_size);
+        void ensure_cap(size_t new_size) noexcept;
 
-        std::string to_string(const std::string& tag_prefix) const;
+        std::string to_string(const std::string& tag_prefix) const noexcept;
 
     private:
         Node(const Node&) = delete;
@@ -63,35 +63,35 @@ private:
     };
 
 public:
-    LogFilter();
+    LogFilter() noexcept;
 
-    void swap(LogFilter *x);
+    void swap(LogFilter *x) noexcept;
 
     /**
      * 允许指定 tag
      *
      * @param levels 禁用的 LogLevel 掩码
      */
-    void allow(const char *tag, loglevel_mask_type levels = LL_ALL_LEVELS);
+    void allow(const char *tag, loglevel_mask_type levels = LL_ALL_LEVELS) noexcept;
 
     /**
      * 禁止指定 tag
      *
      * @param levels 禁用的 LogLevel 掩码
      */
-    void forbid(const char *tag, loglevel_mask_type levels = LL_ALL_LEVELS);
+    void forbid(const char *tag, loglevel_mask_type levels = LL_ALL_LEVELS) noexcept;
 
     /**
      * 重置
      */
-    void reset();
+    void reset() noexcept;
 
     /**
      * 查询是否允许
      */
-    bool is_allowed(const char *tag, enum LogLevel level) const;
+    bool is_allowed(const char *tag, enum LogLevel level) const noexcept;
 
-    std::string to_string() const;
+    std::string to_string() const noexcept;
 
 private:
     LogFilter(const LogFilter&) = delete;
@@ -102,22 +102,22 @@ private:
      *
      * @parama char_accum 用于累加参与 hash 的字符数
      */
-    static hashcode_type hash_to_dot(const char *s, size_t *char_accum = nullptr);
+    static hashcode_type hash_to_dot(const char *s, size_t *char_accum = nullptr) noexcept;
 
     /**
      * 找到或者创建节点
      */
-    Node* find_or_create_node(const char *tag);
+    Node* find_or_create_node(const char *tag) noexcept;
 
     /**
      * 找到节点或者节点的祖先
      */
-    const Node* find_ancestor(const char *tag) const;
+    const Node* find_ancestor(const char *tag) const noexcept;
 
     /**
      * 删除空叶子节点
      */
-    void remove_empty_leaves_upway(Node *leaf);
+    void remove_empty_leaves_upway(Node *leaf) noexcept;
 
 private:
     Node _root;

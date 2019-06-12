@@ -9,13 +9,13 @@
 namespace nut
 {
 
-scoped_gc::~scoped_gc()
+scoped_gc::~scoped_gc() noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     clear();
 }
 
-void* scoped_gc::raw_alloc(size_t sz)
+void* scoped_gc::raw_alloc(size_t sz) noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     if (_current_block->body + sz > _end)
@@ -52,7 +52,7 @@ void* scoped_gc::raw_alloc(size_t sz)
     return _end;
 }
 
-void* scoped_gc::alloc(size_t sz, destruct_func_type func)
+void* scoped_gc::alloc(size_t sz, destruct_func_type func) noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     DestructorNode *dn = (DestructorNode*) raw_alloc(sizeof(DestructorNode) + sz);
@@ -63,7 +63,7 @@ void* scoped_gc::alloc(size_t sz, destruct_func_type func)
     return dn + 1;
 }
 
-void* scoped_gc::alloc(size_t sz, size_t count, destruct_func_type func)
+void* scoped_gc::alloc(size_t sz, size_t count, destruct_func_type func) noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     DestructorNode *dn = (DestructorNode*) raw_alloc(sizeof(DestructorNode) + sizeof(size_t) + sz * count);
@@ -75,7 +75,7 @@ void* scoped_gc::alloc(size_t sz, size_t count, destruct_func_type func)
     return ((size_t*)(dn + 1)) + 1;
 }
 
-void scoped_gc::clear()
+void scoped_gc::clear() noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     while (nullptr != _destruct_chain)
@@ -94,7 +94,7 @@ void scoped_gc::clear()
     _end = nullptr;
 }
 
-void* scoped_gc::gc_alloc(size_t sz)
+void* scoped_gc::gc_alloc(size_t sz) noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     void* ret = raw_alloc(sz);

@@ -12,7 +12,7 @@ template <typename T>
 class LockGuard
 {
 public:
-    explicit LockGuard(T *lock, bool lock_now = true)
+    explicit LockGuard(T *lock, bool lock_now = true) noexcept
         : _lock(lock)
     {
         assert(nullptr != lock);
@@ -20,31 +20,31 @@ public:
             _lock->lock();
     }
 
-    ~LockGuard()
+    ~LockGuard() noexcept
     {
         release();
     }
 
-    void set_need_unlock(bool need_unlock)
+    void set_need_unlock(bool need_unlock) noexcept
     {
         _need_unlock = need_unlock;
     }
 
-    void lock()
+    void lock() noexcept
     {
         if (nullptr != _lock)
             _lock->lock();
         _need_unlock = true;
     }
 
-    void unlock()
+    void unlock() noexcept
     {
         if (nullptr != _lock)
             _lock->unlock();
         _need_unlock = false;
     }
 
-    void release()
+    void release() noexcept
     {
         if (nullptr != _lock && _need_unlock)
             _lock->unlock();

@@ -31,7 +31,7 @@ namespace nut
  * @param y 余数
  */
 template <typename T>
-void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, size_t Q)
+void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, size_t Q) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0);
@@ -152,7 +152,7 @@ void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T
  * @param y 余数
  */
 template <typename T>
-void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, size_t Q)
+void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T *y, size_t Q) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0);

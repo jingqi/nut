@@ -33,23 +33,23 @@ class NUT_API HPRecord
     friend class HPRetireList;
 
 public:
-    static HPRecord* acquire();
-    static void release(HPRecord *rec);
+    static HPRecord* acquire() noexcept;
+    static void release(HPRecord *rec) noexcept;
 
     /**
      * release then acquire again
      */
-    void reacquire();
+    void reacquire() noexcept;
 
     /**
      * 清理资源
      *
      * NOTE 应该放到进程的最后来清理
      */
-    static void clear();
+    static void clear() noexcept;
 
 private:
-    explicit HPRecord(size_t v);
+    explicit HPRecord(size_t v) noexcept;
     ~HPRecord() = default;
 
     HPRecord(const HPRecord&) = delete;
@@ -70,10 +70,10 @@ public:
     /**
      * @param rec if nullptr passed, will automatically require one
      */
-    explicit HPGuard(HPRecord *rec = nullptr);
-    ~HPGuard();
+    explicit HPGuard(HPRecord *rec = nullptr) noexcept;
+    ~HPGuard() noexcept;
 
-    void reacquire();
+    void reacquire() noexcept;
 
 private:
     HPGuard(const HPGuard&) = delete;

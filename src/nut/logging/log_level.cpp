@@ -8,7 +8,7 @@
 namespace nut
 {
 
-const char* log_level_to_str(enum LogLevel level)
+const char* log_level_to_str(enum LogLevel level) noexcept
 {
     // 为了对齐，保持返回字符串长度一致
     switch (level)
@@ -33,7 +33,7 @@ const char* log_level_to_str(enum LogLevel level)
     }
 }
 
-char log_level_to_char(enum LogLevel level)
+char log_level_to_char(enum LogLevel level) noexcept
 {
     // 为了对齐，保持返回字符串长度一致
     switch (level)
@@ -58,7 +58,7 @@ char log_level_to_char(enum LogLevel level)
     }
 }
 
-enum LogLevel str_to_log_level(const char *str)
+enum LogLevel str_to_log_level(const char *str) noexcept
 {
     if (nullptr == str || 0 == strincmp(str, "DEBUG", 5))
         return LL_DEBUG;

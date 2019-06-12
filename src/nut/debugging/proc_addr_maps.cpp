@@ -23,13 +23,13 @@
 namespace nut
 {
 
-ProcAddrMaps& ProcAddrMaps::instance()
+ProcAddrMaps& ProcAddrMaps::instance() noexcept
 {
     static ProcAddrMaps ins;
     return ins;
 }
 
-ProcAddrMaps::ProcAddrMaps()
+ProcAddrMaps::ProcAddrMaps() noexcept
     : _destruct_tag(CONSTRUCTED_TAG)
 {
     const pid_t pid = ::getpid();
@@ -42,22 +42,22 @@ ProcAddrMaps::ProcAddrMaps()
     _addr_map.emplace(_exec_path, 0);
 }
 
-ProcAddrMaps::~ProcAddrMaps()
+ProcAddrMaps::~ProcAddrMaps() noexcept
 {
     _destruct_tag = DESTRUCTED_TAG;
 }
 
-bool ProcAddrMaps::is_valid() const
+bool ProcAddrMaps::is_valid() const noexcept
 {
     return nullptr != this && _destruct_tag == CONSTRUCTED_TAG;
 }
 
-const std::string& ProcAddrMaps::get_exec_path() const
+const std::string& ProcAddrMaps::get_exec_path() const noexcept
 {
     return _exec_path;
 }
 
-void ProcAddrMaps::load(const std::string& module_path)
+void ProcAddrMaps::load(const std::string& module_path) noexcept
 {
     std::ifstream input(_maps_path.c_str());
     if (!input)
@@ -83,7 +83,7 @@ void ProcAddrMaps::load(const std::string& module_path)
     input.close();
 }
 
-bool ProcAddrMaps::parse_line(const std::string& line, const std::string& module_path)
+bool ProcAddrMaps::parse_line(const std::string& line, const std::string& module_path) noexcept
 {
     // Parse module file path
     std::string::size_type pos = line.find('/');
@@ -114,7 +114,7 @@ bool ProcAddrMaps::parse_line(const std::string& line, const std::string& module
     return true;
 }
 
-bool ProcAddrMaps::find(const std::string& module_path, addr_type *out_addr) const
+bool ProcAddrMaps::find(const std::string& module_path, addr_type *out_addr) const noexcept
 {
     assert(nullptr != out_addr);
     *out_addr = 0;

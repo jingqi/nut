@@ -12,7 +12,7 @@ using namespace std;
 
 class TestRBTree : public TestFixture
 {
-    virtual void register_cases() override
+    virtual void register_cases() noexcept override
     {
         NUT_REGISTER_CASE(test_bug1);
     }

@@ -13,13 +13,13 @@ namespace nut
 
 const TimeDiff TimeDiff::ZERO;
 
-TimeDiff::TimeDiff(time_t s, long ns)
+TimeDiff::TimeDiff(time_t s, long ns) noexcept
     : _seconds(s), _nanoseconds(ns)
 {
     normalize();
 }
 
-void TimeDiff::normalize()
+void TimeDiff::normalize() noexcept
 {
     if (_nanoseconds >= NSECS_PER_SEC)
     {
@@ -44,12 +44,12 @@ void TimeDiff::normalize()
     }
 }
 
-TimeDiff TimeDiff::operator+(const TimeDiff& x) const
+TimeDiff TimeDiff::operator+(const TimeDiff& x) const noexcept
 {
     return TimeDiff(_seconds + x._seconds, _nanoseconds + x._nanoseconds);
 }
 
-TimeDiff TimeDiff::operator+(double seconds) const
+TimeDiff TimeDiff::operator+(double seconds) const noexcept
 {
     const time_t int_seconds = (time_t) seconds;
     const double dec_seconds = seconds - int_seconds;
@@ -57,12 +57,12 @@ TimeDiff TimeDiff::operator+(double seconds) const
                     _nanoseconds + dec_seconds * NSECS_PER_SEC);
 }
 
-TimeDiff TimeDiff::operator-(const TimeDiff& x) const
+TimeDiff TimeDiff::operator-(const TimeDiff& x) const noexcept
 {
     return TimeDiff(_seconds - x._seconds, _nanoseconds - x._nanoseconds);
 }
 
-TimeDiff TimeDiff::operator-(double seconds) const
+TimeDiff TimeDiff::operator-(double seconds) const noexcept
 {
     const time_t int_seconds = (time_t) seconds;
     const double dec_seconds = seconds - int_seconds;
@@ -70,12 +70,12 @@ TimeDiff TimeDiff::operator-(double seconds) const
                     _nanoseconds - dec_seconds * NSECS_PER_SEC);
 }
 
-TimeDiff TimeDiff::operator-() const
+TimeDiff TimeDiff::operator-() const noexcept
 {
     return TimeDiff(-_seconds, -_nanoseconds);
 }
 
-TimeDiff& TimeDiff::operator+=(const TimeDiff& x)
+TimeDiff& TimeDiff::operator+=(const TimeDiff& x) noexcept
 {
     _seconds += x._seconds;
     _nanoseconds += x._nanoseconds;
@@ -83,7 +83,7 @@ TimeDiff& TimeDiff::operator+=(const TimeDiff& x)
     return *this;
 }
 
-TimeDiff& TimeDiff::operator-=(const TimeDiff& x)
+TimeDiff& TimeDiff::operator-=(const TimeDiff& x) noexcept
 {
     _seconds -= x._seconds;
     _nanoseconds -= x._nanoseconds;
@@ -91,7 +91,7 @@ TimeDiff& TimeDiff::operator-=(const TimeDiff& x)
     return *this;
 }
 
-TimeDiff& TimeDiff::operator*=(double scale)
+TimeDiff& TimeDiff::operator*=(double scale) noexcept
 {
     double v = to_double();
     v *= scale;
@@ -99,7 +99,7 @@ TimeDiff& TimeDiff::operator*=(double scale)
     return *this;
 }
 
-TimeDiff& TimeDiff::operator/=(double scale)
+TimeDiff& TimeDiff::operator/=(double scale) noexcept
 {
     double v = to_double();
     v /= scale;
@@ -107,13 +107,13 @@ TimeDiff& TimeDiff::operator/=(double scale)
     return *this;
 }
 
-void TimeDiff::set(double s)
+void TimeDiff::set(double s) noexcept
 {
     _seconds = (time_t) s;
     _nanoseconds = (long) ((s - _seconds) * NSECS_PER_SEC);
 }
 
-void TimeDiff::set(time_t s, long ns)
+void TimeDiff::set(time_t s, long ns) noexcept
 {
     _seconds = s;
     _nanoseconds = ns;
@@ -121,24 +121,24 @@ void TimeDiff::set(time_t s, long ns)
 }
 
 #if !NUT_PLATFORM_CC_VC
-void TimeDiff::set(const struct timeval& tv)
+void TimeDiff::set(const struct timeval& tv) noexcept
 {
     set(tv.tv_sec, tv.tv_usec * NSECS_PER_USEC);
 }
 
-void TimeDiff::set(const struct timespec& tv)
+void TimeDiff::set(const struct timespec& tv) noexcept
 {
     set(tv.tv_sec, tv.tv_nsec);
 }
 
-void TimeDiff::to_timeval(struct timeval *tv)
+void TimeDiff::to_timeval(struct timeval *tv) noexcept
 {
     assert(nullptr != tv);
     tv->tv_sec = _seconds;
     tv->tv_usec = _nanoseconds / NSECS_PER_USEC;
 }
 
-void TimeDiff::to_timespec(struct timespec *tv)
+void TimeDiff::to_timespec(struct timespec *tv) noexcept
 {
     assert(nullptr != tv);
     tv->tv_sec = _seconds;
@@ -146,7 +146,7 @@ void TimeDiff::to_timespec(struct timespec *tv)
 }
 #endif
 
-std::string TimeDiff::to_string() const
+std::string TimeDiff::to_string() const noexcept
 {
     const double f = to_double();
     char buf[128];

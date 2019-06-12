@@ -36,7 +36,7 @@ static uint32_t RCON[10];
 
 static std::once_flag aes_gen_table_flag;
 
-static void aes_gen_tables()
+static void aes_gen_tables() noexcept
 {
     std::call_once(
         aes_setup_once_flag,
@@ -381,7 +381,7 @@ static std::once_flag aes_setup_once_flag;
 /**
  * Setup decryption round keys
  */
-static void aes_setup_decryption_round_keys()
+static void aes_setup_decryption_round_keys() noexcept
 {
     std::call_once(
         aes_setup_once_flag,
@@ -396,7 +396,7 @@ static void aes_setup_decryption_round_keys()
         });
 }
 
-AES::AES()
+AES::AES() noexcept
 {
 #if FIXED_TABLES
     aes_gen_tables();
@@ -427,7 +427,7 @@ AES::AES()
  *
  * @return True if success
  */
-bool AES::set_key(const void *key, int nbits)
+bool AES::set_key(const void *key, int nbits) noexcept
 {
     switch (nbits)
     {
@@ -563,7 +563,7 @@ bool AES::set_key(const void *key, int nbits)
 }
 
 /* AES 128-bit block encryption routine */
-void AES::encrypt(const void *input, void *output) const
+void AES::encrypt(const void *input, void *output) const noexcept
 {
     uint32_t X0, X1, X2, X3, Y0, Y1, Y2, Y3;
 
@@ -656,7 +656,7 @@ void AES::encrypt(const void *input, void *output) const
 }
 
 /* AES 128-bit block decryption routine */
-void AES::decrypt(const void *input, void *output) const
+void AES::decrypt(const void *input, void *output) const noexcept
 {
     uint32_t X0, X1, X2, X3, Y0, Y1, Y2, Y3;
 

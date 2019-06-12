@@ -10,13 +10,13 @@
 namespace nut
 {
 
-TestRunner::TestRunner(ITestLogger *logger)
+TestRunner::TestRunner(ITestLogger *logger) noexcept
     : _logger(logger)
 {
     assert(nullptr != logger);
 }
 
-void TestRunner::run_group(const char *group_name)
+void TestRunner::run_group(const char *group_name) noexcept
 {
     assert(nullptr != group_name);
 
@@ -44,7 +44,7 @@ void TestRunner::run_group(const char *group_name)
     _logger->finish();
 }
 
-void TestRunner::run_fixture(const char *fixture_name)
+void TestRunner::run_fixture(const char *fixture_name) noexcept
 {
     assert(nullptr != fixture_name);
 
@@ -72,7 +72,7 @@ void TestRunner::run_fixture(const char *fixture_name)
     _logger->finish();
 }
 
-void TestRunner::run_case(const char *fixture_name, const char *case_name)
+void TestRunner::run_case(const char *fixture_name, const char *case_name) noexcept
 {
     assert(nullptr != fixture_name && nullptr != case_name);
 

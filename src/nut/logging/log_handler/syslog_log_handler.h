@@ -16,13 +16,13 @@ namespace nut
 class NUT_API SyslogLogHandler : public LogHandler
 {
 public:
-    explicit SyslogLogHandler(bool close_syslog_on_exit = false);
+    explicit SyslogLogHandler(bool close_syslog_on_exit = false) noexcept;
 
-    ~SyslogLogHandler();
+    ~SyslogLogHandler() noexcept;
 
-    void set_close_syslog_on_exit(bool close_on_exit);
+    void set_close_syslog_on_exit(bool close_on_exit) noexcept;
 
-    virtual void handle_log(const LogRecord& rec) override;
+    virtual void handle_log(const LogRecord& rec) noexcept override;
 
 private:
     SyslogLogHandler(const SyslogLogHandler&) = delete;

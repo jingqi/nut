@@ -29,11 +29,12 @@ public:
     class Fragment
     {
     public:
-        explicit Fragment(size_t cap)
+        explicit Fragment(size_t cap) noexcept
             : capacity(cap)
         {}
 
     private:
+        Fragment() = delete;
         Fragment(const Fragment&) = delete;
         Fragment& operator=(const Fragment&) = delete;
 
@@ -47,41 +48,41 @@ public:
     };
 
 public:
-    FragmentBuffer() = default;
-    FragmentBuffer(FragmentBuffer&& x);
-    FragmentBuffer(const FragmentBuffer& x);
-    ~FragmentBuffer();
+    FragmentBuffer() noexcept {}
+    FragmentBuffer(FragmentBuffer&& x) noexcept;
+    FragmentBuffer(const FragmentBuffer& x) noexcept;
+    ~FragmentBuffer() noexcept;
 
-    FragmentBuffer& operator=(FragmentBuffer&& x);
-    FragmentBuffer& operator=(const FragmentBuffer& x);
+    FragmentBuffer& operator=(FragmentBuffer&& x) noexcept;
+    FragmentBuffer& operator=(const FragmentBuffer& x) noexcept;
 
-    void clear();
+    void clear() noexcept;
 
     /**
      * 剩余可读的大小
      */
-    size_t readable_size() const;
+    size_t readable_size() const noexcept;
 
     /**
      * 读数据
      *
      * @return 读到的字节数
      */
-    size_t read(void *buf, size_t len);
+    size_t read(void *buf, size_t len) noexcept;
 
     /**
      * 读数据，但是不设置读指针
      *
      * @return 读到的字节数
      */
-    size_t look_ahead(void *buf, size_t len) const;
+    size_t look_ahead(void *buf, size_t len) const noexcept;
 
     /**
      * 使读指针跳过一定字节数
      *
      * @return 跳过的字节数
      */
-    size_t skip_read(size_t len);
+    size_t skip_read(size_t len) noexcept;
 
     /**
      * 获取可读 buffer 列表
@@ -89,32 +90,32 @@ public:
      * @return 返回指针个数
      */
     size_t readable_pointers(const void **buf_ptrs, size_t *len_ptrs,
-                             size_t ptr_count) const;
+                             size_t ptr_count) const noexcept;
 
     /**
      * 写入
      */
-    void write(const void *buf, size_t len);
+    void write(const void *buf, size_t len) noexcept;
 
     /**
      * 创建 fragment
      */
-    static Fragment* new_fragment(size_t capacity);
+    static Fragment* new_fragment(size_t capacity) noexcept;
 
     /**
      * 销毁 fragment
      */
-    static void delete_fragment(Fragment *frag);
+    static void delete_fragment(Fragment *frag) noexcept;
 
     /**
      * 写入 fragment
      *
      * @return 如果传入的 fragment 被征用，则返回 nullptr，否则返回传入的同一指针
      */
-    Fragment* write_fragment(Fragment *frag);
+    Fragment* write_fragment(Fragment *frag) noexcept;
 
 private:
-    void enqueue(Fragment *frag);
+    void enqueue(Fragment *frag) noexcept;
 
 private:
     Fragment *_read_fragment = nullptr;

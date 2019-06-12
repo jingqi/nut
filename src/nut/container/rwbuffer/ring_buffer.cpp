@@ -14,7 +14,7 @@
 namespace nut
 {
 
-RingBuffer::RingBuffer(RingBuffer&& x)
+RingBuffer::RingBuffer(RingBuffer&& x) noexcept
 {
     _buffer = x._buffer;
     _capacity = x._capacity;
@@ -27,12 +27,12 @@ RingBuffer::RingBuffer(RingBuffer&& x)
     x._write_index = 0;
 }
 
-RingBuffer::RingBuffer(const RingBuffer& x)
+RingBuffer::RingBuffer(const RingBuffer& x) noexcept
 {
     *this = x;
 }
 
-RingBuffer::~RingBuffer()
+RingBuffer::~RingBuffer() noexcept
 {
     if (nullptr != _buffer)
         ::free(_buffer);
@@ -42,7 +42,7 @@ RingBuffer::~RingBuffer()
     _write_index = 0;
 }
 
-RingBuffer& RingBuffer::operator=(RingBuffer&& x)
+RingBuffer& RingBuffer::operator=(RingBuffer&& x) noexcept
 {
     if (this == &x)
         return *this;
@@ -63,7 +63,7 @@ RingBuffer& RingBuffer::operator=(RingBuffer&& x)
     return *this;
 }
 
-RingBuffer& RingBuffer::operator=(const RingBuffer& x)
+RingBuffer& RingBuffer::operator=(const RingBuffer& x) noexcept
 {
     if (this == &x)
         return *this;
@@ -80,13 +80,13 @@ RingBuffer& RingBuffer::operator=(const RingBuffer& x)
     return *this;
 }
 
-void RingBuffer::clear()
+void RingBuffer::clear() noexcept
 {
     _read_index = 0;
     _write_index = 0;
 }
 
-size_t RingBuffer::readable_size() const
+size_t RingBuffer::readable_size() const noexcept
 {
     VALIDATE_MEMBERS();
 
@@ -95,7 +95,7 @@ size_t RingBuffer::readable_size() const
     return _capacity - _read_index + _write_index;
 }
 
-size_t RingBuffer::read(void *buf, size_t len)
+size_t RingBuffer::read(void *buf, size_t len) noexcept
 {
     assert(nullptr != buf);
     const size_t readed = look_ahead(buf, len);
@@ -112,7 +112,7 @@ size_t RingBuffer::read(void *buf, size_t len)
     return readed;
 }
 
-size_t RingBuffer::look_ahead(void *buf, size_t len) const
+size_t RingBuffer::look_ahead(void *buf, size_t len) const noexcept
 {
     assert(nullptr != buf);
     const size_t readed = std::min(len, readable_size()),
@@ -130,7 +130,7 @@ size_t RingBuffer::look_ahead(void *buf, size_t len) const
     return readed;
 }
 
-size_t RingBuffer::skip_read(size_t len)
+size_t RingBuffer::skip_read(size_t len) noexcept
 {
     const size_t skiped = std::min(len, readable_size());
     _read_index += skiped;
@@ -147,7 +147,7 @@ size_t RingBuffer::skip_read(size_t len)
 }
 
 size_t RingBuffer::readable_pointers(const void **buf_ptr1, size_t *len_ptr1,
-                                     const void **buf_ptr2, size_t *len_ptr2) const
+                                     const void **buf_ptr2, size_t *len_ptr2) const noexcept
 {
     VALIDATE_MEMBERS();
 
@@ -177,7 +177,7 @@ size_t RingBuffer::readable_pointers(const void **buf_ptr1, size_t *len_ptr1,
     return 2;
 }
 
-size_t RingBuffer::writable_size() const
+size_t RingBuffer::writable_size() const noexcept
 {
     VALIDATE_MEMBERS();
 
@@ -188,7 +188,7 @@ size_t RingBuffer::writable_size() const
     return _read_index - 1 - _write_index;
 }
 
-void RingBuffer::write(const void *buf, size_t len)
+void RingBuffer::write(const void *buf, size_t len) noexcept
 {
     assert(nullptr != buf);
     ensure_writable_size(len);
@@ -207,7 +207,7 @@ void RingBuffer::write(const void *buf, size_t len)
         _write_index %= _capacity;
 }
 
-size_t RingBuffer::skip_write(size_t len)
+size_t RingBuffer::skip_write(size_t len) noexcept
 {
     const size_t skiped = std::min(len, writable_size());
     _write_index += len;
@@ -217,7 +217,7 @@ size_t RingBuffer::skip_write(size_t len)
 }
 
 size_t RingBuffer::writable_pointers(void **buf_ptr1, size_t *len_ptr1,
-                                  void **buf_ptr2, size_t *len_ptr2)
+                                  void **buf_ptr2, size_t *len_ptr2) noexcept
 {
     VALIDATE_MEMBERS();
 
@@ -252,7 +252,7 @@ size_t RingBuffer::writable_pointers(void **buf_ptr1, size_t *len_ptr1,
     return 2;
 }
 
-void RingBuffer::ensure_writable_size(size_t write_size)
+void RingBuffer::ensure_writable_size(size_t write_size) noexcept
 {
     VALIDATE_MEMBERS();
     if (writable_size() >= write_size)

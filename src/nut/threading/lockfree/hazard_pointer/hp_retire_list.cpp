@@ -18,7 +18,7 @@ std::atomic<size_t> HPRetireList::_global_version = ATOMIC_VAR_INIT(0);
 /**
  * HPRetireList 是 thread-local 的，线程结束时会析构，此时需要清理本线程资源
  */
-HPRetireList::~HPRetireList()
+HPRetireList::~HPRetireList() noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
 
@@ -37,12 +37,12 @@ HPRetireList::~HPRetireList()
     }
 }
 
-void HPRetireList::retire_memory(void *ptr)
+void HPRetireList::retire_memory(void *ptr) noexcept
 {
     retire_any(::free, ptr);
 }
 
-void HPRetireList::retire_any(retire_func_type rfunc, void *userdata)
+void HPRetireList::retire_any(retire_func_type rfunc, void *userdata) noexcept
 {
     assert(nullptr != rfunc);
 
@@ -59,7 +59,7 @@ void HPRetireList::retire_any(retire_func_type rfunc, void *userdata)
         scan_retire_list(&retires);
 }
 
-void HPRetireList::scan_retire_list(HPRetireList *rl)
+void HPRetireList::scan_retire_list(HPRetireList *rl) noexcept
 {
     assert(nullptr != rl);
 

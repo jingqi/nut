@@ -11,7 +11,7 @@ namespace nut
 /**
  * 判断字符是否是空白
  */
-static bool is_blank(char c)
+static bool is_blank(char c) noexcept
 {
     return c == ' ' || c == '\r' || c == '\n' || c == '\t';
 }
@@ -19,7 +19,7 @@ static bool is_blank(char c)
 /**
  * 去除字符串末尾的空白
  */
-static std::string trim_end(const std::string& s)
+static std::string trim_end(const std::string& s) noexcept
 {
     std::string ret = s;
     while (ret.length() > 0)
@@ -35,7 +35,7 @@ static std::string trim_end(const std::string& s)
 /**
  * 拆分如 "test, quiet" 的字符串为 ["test", "quiet"]
  */
-static void split_groups(const char *groups, std::vector<std::string> *rs)
+static void split_groups(const char *groups, std::vector<std::string> *rs) noexcept
 {
     assert(nullptr != groups && nullptr != rs);
 
@@ -68,7 +68,7 @@ static void split_groups(const char *groups, std::vector<std::string> *rs)
 }
 
 TestRegister::TestRegister(const char *fixture_name, const char *groups,
-                           new_fixture_func&& n, delete_fixture_func&& d)
+                           new_fixture_func&& n, delete_fixture_func&& d) noexcept
     : _new_func(n), _delete_func(d), _fixture_name(fixture_name)
 {
     assert(nullptr != fixture_name && nullptr != groups && n && d);
@@ -81,13 +81,13 @@ TestRegister::TestRegister(const char *fixture_name, const char *groups,
     *get_link_header() = this;
 }
 
-TestRegister** TestRegister::get_link_header()
+TestRegister** TestRegister::get_link_header() noexcept
 {
     static TestRegister *header = nullptr;
     return &header;
 }
 
-bool TestRegister::match_group(const char *group_name) const
+bool TestRegister::match_group(const char *group_name) const noexcept
 {
     assert(nullptr != group_name);
     for (std::vector<std::string>::const_iterator iter = _groups.begin();
@@ -99,23 +99,23 @@ bool TestRegister::match_group(const char *group_name) const
     return false;
 }
 
-const char* TestRegister::get_fixture_name() const
+const char* TestRegister::get_fixture_name() const noexcept
 {
     return _fixture_name;
 }
 
-TestRegister* TestRegister::get_next_register() const
+TestRegister* TestRegister::get_next_register() const noexcept
 {
     return _pnext;
 }
 
-TestFixture* TestRegister::new_fixture() const
+TestFixture* TestRegister::new_fixture() const noexcept
 {
     assert(nullptr != _new_func);
     return _new_func();
 }
 
-void TestRegister::delete_fixture(TestFixture *p)
+void TestRegister::delete_fixture(TestFixture *p) noexcept
 {
     assert(nullptr != p);
     _delete_func(p);

@@ -9,7 +9,7 @@
 namespace nut
 {
 
-RSA::PrivateKey RSA::gen_key(size_t max_bit_length)
+RSA::PrivateKey RSA::gen_key(size_t max_bit_length) noexcept
 {
     assert(max_bit_length >= 16);
 
@@ -40,12 +40,12 @@ RSA::PrivateKey RSA::gen_key(size_t max_bit_length)
     return key;
 }
 
-BigInteger RSA::public_transfer(const BigInteger& m, const PublicKey& k)
+BigInteger RSA::public_transfer(const BigInteger& m, const PublicKey& k) noexcept
 {
     return pow_mod(m, k.e, k.n);
 }
 
-BigInteger RSA::private_transfer(const BigInteger& c, const PrivateKey& k)
+BigInteger RSA::private_transfer(const BigInteger& c, const PrivateKey& k) noexcept
 {
     return pow_mod(c, k.d, k.n);
 }

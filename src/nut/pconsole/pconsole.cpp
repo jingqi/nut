@@ -12,7 +12,7 @@
 namespace nut
 {
 
-PConsole::PConsole(const std::string& name)
+PConsole::PConsole(const std::string& name) noexcept
     : _prompt_string("PConsole"), _console_name(name)
 {
     // 内建命令
@@ -20,33 +20,33 @@ PConsole::PConsole(const std::string& name)
     add_a_command(rc_new<CmdHelp>(this));
 }
 
-char PConsole::get_prompt_char() const
+char PConsole::get_prompt_char() const noexcept
 {
     return _prompt_char;
 }
 
-void PConsole::set_prompt_char(char c)
+void PConsole::set_prompt_char(char c) noexcept
 {
     _prompt_char = c;
 }
 
-const std::string& PConsole::get_prompt_string() const
+const std::string& PConsole::get_prompt_string() const noexcept
 {
     return _prompt_string;
 }
 
-void PConsole::set_prompt_string(const std::string& s)
+void PConsole::set_prompt_string(const std::string& s) noexcept
 {
     _prompt_string = s;
 }
 
-void PConsole::add_a_command(rc_ptr<ICommand> cmd)
+void PConsole::add_a_command(rc_ptr<ICommand> cmd) noexcept
 {
     _commands.push_back(std::move(cmd));
 }
 
 // 读取并执行一次
-void PConsole::read_and_execute()
+void PConsole::read_and_execute() noexcept
 {
     // 打印命令提示符
     printf("%s%c ", _prompt_string.c_str(), _prompt_char);
@@ -65,7 +65,7 @@ void PConsole::read_and_execute()
 }
 
 // 执行直到用户输入exit命令
-int PConsole::execute()
+int PConsole::execute() noexcept
 {
     _exit = false;
     _exit_value = 0;
@@ -75,7 +75,7 @@ int PConsole::execute()
 }
 
 // 打印一般信息
-void PConsole::print_general_info() const
+void PConsole::print_general_info() const noexcept
 {
     printf("%s\n", _console_name.c_str());
     for (size_t i = 0, size = _commands.size(); i < size; ++i)
@@ -90,19 +90,19 @@ void PConsole::print_general_info() const
 }
 
 // 获取命令列表
-const std::vector<rc_ptr<ICommand> >& PConsole::get_commands() const
+const std::vector<rc_ptr<ICommand> >& PConsole::get_commands() const noexcept
 {
     return _commands;
 }
 
 // 设置退出标记
-void PConsole::exit(int e)
+void PConsole::exit(int e) noexcept
 {
     _exit_value = e;
     _exit = true;
 }
 
-void PConsole::execute_line(const char* l)
+void PConsole::execute_line(const char* l) noexcept
 {
     assert(nullptr != l);
     // 首先取出命令名

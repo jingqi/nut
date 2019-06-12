@@ -14,9 +14,9 @@ namespace nut
 class NUT_API StreamLogHandler : public LogHandler
 {
 public:
-    explicit StreamLogHandler(std::ostream& os);
+    explicit StreamLogHandler(std::ostream& os) noexcept;
 
-    virtual void handle_log(const LogRecord& rec) override;
+    virtual void handle_log(const LogRecord& rec) noexcept override;
 
 private:
     StreamLogHandler(const StreamLogHandler&) = delete;

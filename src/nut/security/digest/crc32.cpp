@@ -52,17 +52,17 @@ static const uint32_t crc_table[256] = {
    0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
 
-void CRC32::reset()
+void CRC32::reset() noexcept
 {
     _crc32 = 0xffffffff;
 }
 
-void CRC32::update(uint8_t byte)
+void CRC32::update(uint8_t byte) noexcept
 {
     update(&byte, 1);
 }
 
-void CRC32::update(const void *data, size_t cb)
+void CRC32::update(const void *data, size_t cb) noexcept
 {
     assert(nullptr != data);
 
@@ -74,7 +74,7 @@ void CRC32::update(const void *data, size_t cb)
     }
 }
 
-uint32_t CRC32::get_result() const
+uint32_t CRC32::get_result() const noexcept
 {
     return ~_crc32;
 }

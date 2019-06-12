@@ -31,7 +31,7 @@ public:
      *
      * @return 没有找到则返回 nullptr
      */
-    static NODE* search(NODE *sub_root, const K& key)
+    static NODE* search(NODE *sub_root, const K& key) noexcept
     {
         while (nullptr != sub_root)
         {
@@ -51,7 +51,7 @@ public:
      *
      * @return 新的根
      */
-    static NODE* insert(NODE *root, NODE *new_node)
+    static NODE* insert(NODE *root, NODE *new_node) noexcept
     {
         assert(nullptr != new_node);
         NODE *parent = nullptr;
@@ -86,7 +86,7 @@ public:
      *
      * @return 新的根
      */
-    static NODE* remove(NODE *root, NODE *to_be_del)
+    static NODE* remove(NODE *root, NODE *to_be_del) noexcept
     {
         assert(nullptr != to_be_del);
         NODE *escaper = nullptr;
@@ -130,7 +130,7 @@ public:
     /**
      * 找到最小数据所在的节点
      */
-    static NODE* minimum(NODE *sub_root)
+    static NODE* minimum(NODE *sub_root) noexcept
     {
         assert(nullptr != sub_root);
         while (nullptr != sub_root->get_left_child())
@@ -141,7 +141,7 @@ public:
     /**
      * 找到最大数据所在的节点
      */
-    static NODE* maximum(NODE *sub_root)
+    static NODE* maximum(NODE *sub_root) noexcept
     {
         assert(nullptr != sub_root);
         while (nullptr != sub_root->get_right_child())
@@ -152,7 +152,7 @@ public:
     /**
      * 按照数据大小顺序找到下一个结点
      */
-    static NODE* successor(NODE *x)
+    static NODE* successor(NODE *x) noexcept
     {
         assert(nullptr != x);
         if (nullptr != x->get_right_child())
@@ -169,7 +169,7 @@ public:
     /**
      * 按照数据大小顺序找到上一个结点
      */
-    static NODE* predecessor(NODE *x)
+    static NODE* predecessor(NODE *x) noexcept
     {
         assert(nullptr != x);
         if (nullptr != x->get_left_child())

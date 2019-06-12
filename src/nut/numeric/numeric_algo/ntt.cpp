@@ -21,7 +21,7 @@
 namespace nut
 {
 
-NUT_API bool can_use_ntt_multiply(size_t bits)
+NUT_API bool can_use_ntt_multiply(size_t bits) noexcept
 {
     const size_t word_siglen = (bits + NUT_NTT_BASE_BITS - 1) / NUT_NTT_BASE_BITS;
     unsigned word_count_bits = highest_bit1((uint64_t) word_siglen) + 1; // word_count 必须是 2 的幂次
@@ -51,7 +51,7 @@ static ntt_word_type omega[NUT_NTT_K] = {0};
 static ntt_word_type inv_omega[NUT_NTT_K] = {0};
 static std::once_flag amega_init_flag;
 
-static void init_omega()
+static void init_omega() noexcept
 {
     std::call_once(
         amega_init_flag,
@@ -74,7 +74,7 @@ static void init_omega()
 }
 
 // DIF-FFT: 输入为自然顺序，输出为二进制倒序
-static void NTT_N2R(ntt_word_type *a, unsigned bits)
+static void NTT_N2R(ntt_word_type *a, unsigned bits) noexcept
 {
     const size_t len = 1ULL << bits;
 
@@ -119,7 +119,7 @@ static void NTT_N2R(ntt_word_type *a, unsigned bits)
 }
 
 // DIT-FFT: 输入为二进制倒序，输出为自然顺序的FFT
-static void NTT_R2N(ntt_word_type* a, unsigned bits)
+static void NTT_R2N(ntt_word_type* a, unsigned bits) noexcept
 {
     const size_t len = 1 << bits;
 
@@ -166,7 +166,7 @@ static void NTT_R2N(ntt_word_type* a, unsigned bits)
 }
 
 NUT_API void ntt_convolution(ntt_word_type *a, ntt_word_type *b, unsigned bit_len,
-                             ntt_word_type *rs)
+                             ntt_word_type *rs) noexcept
 {
     assert(nullptr != a && nullptr != b && bit_len > 0 && nullptr != rs);
 

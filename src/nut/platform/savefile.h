@@ -21,13 +21,13 @@ namespace nut
 class NUT_API SaveFile
 {
 public:
-    explicit SaveFile(const std::string& path);
-    ~SaveFile();
+    explicit SaveFile(const std::string& path) noexcept;
+    ~SaveFile() noexcept;
 
-    bool open();
-    bool write(const void *buf, size_t len);
-    void cancel();
-    bool commit();
+    bool open() noexcept;
+    bool write(const void *buf, size_t len) noexcept;
+    void cancel() noexcept;
+    bool commit() noexcept;
 
 private:
     std::string _path, _tmp_path;

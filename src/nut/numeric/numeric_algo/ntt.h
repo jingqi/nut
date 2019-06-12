@@ -101,7 +101,7 @@ static_assert(NUT_NTT_M <= ((~(ntt_word_type)0) >> 1), // 避免加减法操作�
  *
  * @param bits 乘数最大 bit 数
  */
-NUT_API bool can_use_ntt_multiply(size_t bits);
+NUT_API bool can_use_ntt_multiply(size_t bits) noexcept;
 
 /**
  * 将 2**(8*sizeof(T)) 进制输入, 划分成 NUT_NTT_BASE 进制输入, 且多项式长度为 2
@@ -109,7 +109,7 @@ NUT_API bool can_use_ntt_multiply(size_t bits);
  */
 template <typename T>
 size_t _split_base_bits(const T *a, size_t M, const T *b, size_t N,
-                        ntt_word_type **aa, ntt_word_type **bb, ntt_word_type **rs)
+                        ntt_word_type **aa, ntt_word_type **bb, ntt_word_type **rs) noexcept
 {
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 &&
            nullptr != aa && nullptr != bb && nullptr != rs);
@@ -140,7 +140,7 @@ size_t _split_base_bits(const T *a, size_t M, const T *b, size_t N,
 }
 
 template <typename T>
-void _merge_base_bits(const ntt_word_type *src, size_t M, T *dst, size_t P)
+void _merge_base_bits(const ntt_word_type *src, size_t M, T *dst, size_t P) noexcept
 {
     assert(nullptr != src && M > 0 && nullptr != dst && P > 0);
     for (size_t i = 0; i < sizeof(T) * P; ++i)
@@ -159,13 +159,13 @@ void _merge_base_bits(const ntt_word_type *src, size_t M, T *dst, size_t P)
  * @param rs 长度为 2**(bit_len+1)
  */
 NUT_API void ntt_convolution(ntt_word_type *a, ntt_word_type *b, unsigned bit_len,
-                             ntt_word_type *rs);
+                             ntt_word_type *rs) noexcept;
 
 /**
  * 快速数论变换(NTT) 乘法, 时间复杂度为 O(n(log2 n))
  */
 template <typename T>
-void unsigned_ntt_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
+void unsigned_ntt_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
@@ -187,7 +187,7 @@ void unsigned_ntt_multiply(const T *a, size_t M, const T *b, size_t N, T *x, siz
 }
 
 template <typename T>
-void signed_ntt_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
+void signed_ntt_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P) noexcept
 {
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
 

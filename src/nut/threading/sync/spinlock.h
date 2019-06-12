@@ -24,19 +24,19 @@ namespace nut
 class NUT_API SpinLock
 {
 public:
-    SpinLock();
-    ~SpinLock();
+    SpinLock() noexcept;
+    ~SpinLock() noexcept;
 
-    void lock();
-    bool trylock();
-    void unlock();
+    void lock() noexcept;
+    bool trylock() noexcept;
+    void unlock() noexcept;
 
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
-    CRITICAL_SECTION* inner_mutex();
+    CRITICAL_SECTION* inner_mutex() noexcept;
 #elif NUT_PLATFORM_OS_MACOS
-    pthread_mutex_t* inner_mutex();
+    pthread_mutex_t* inner_mutex() noexcept;
 #else
-    pthread_spinlock_t* inner_mutex();
+    pthread_spinlock_t* inner_mutex() noexcept;
 #endif
 
 private:

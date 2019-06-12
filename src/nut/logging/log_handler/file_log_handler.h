@@ -17,9 +17,9 @@ public:
     /**
      * @param append 是否是追加模式。追加模式日志文件支持并发写
      */
-    explicit FileLogHandler(const char *file, bool append = true);
+    explicit FileLogHandler(const char *file, bool append = true) noexcept;
 
-    virtual void handle_log(const LogRecord& rec) override;
+    virtual void handle_log(const LogRecord& rec) noexcept override;
 
 private:
     FileLogHandler(const FileLogHandler&) = delete;

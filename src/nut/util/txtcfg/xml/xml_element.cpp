@@ -10,11 +10,11 @@
 namespace nut
 {
 
-XmlElement::XmlElement(const std::string& name)
+XmlElement::XmlElement(const std::string& name) noexcept
     : _name(name)
 {}
 
-bool XmlElement::is_dirty() const
+bool XmlElement::is_dirty() const noexcept
 {
     if (_dirty)
         return true;
@@ -26,7 +26,7 @@ bool XmlElement::is_dirty() const
     return false;
 }
 
-void XmlElement::set_dirty(bool dirty)
+void XmlElement::set_dirty(bool dirty) noexcept
 {
     if (dirty)
     {
@@ -39,12 +39,12 @@ void XmlElement::set_dirty(bool dirty)
         _children.at(i)->set_dirty(false);
 }
 
-const std::string& XmlElement::get_name() const
+const std::string& XmlElement::get_name() const noexcept
 {
     return _name;
 }
 
-void XmlElement::set_name(const std::string& name)
+void XmlElement::set_name(const std::string& name) noexcept
 {
     if (name != _name)
     {
@@ -53,12 +53,12 @@ void XmlElement::set_name(const std::string& name)
     }
 }
 
-const std::string& XmlElement::get_text() const
+const std::string& XmlElement::get_text() const noexcept
 {
     return _text;
 }
 
-void XmlElement::set_text(const std::string& text)
+void XmlElement::set_text(const std::string& text) noexcept
 {
     if (text != _text)
     {
@@ -67,19 +67,19 @@ void XmlElement::set_text(const std::string& text)
     }
 }
 
-size_t XmlElement::get_children_count() const
+size_t XmlElement::get_children_count() const noexcept
 {
     return _children.size();
 }
 
-rc_ptr<XmlElement> XmlElement::get_child(size_t i) const
+rc_ptr<XmlElement> XmlElement::get_child(size_t i) const noexcept
 {
     if (i >= _children.size())
         return rc_ptr<XmlElement>();
     return _children.at(i);
 }
 
-rc_ptr<XmlElement> XmlElement::get_child(const std::string& name) const
+rc_ptr<XmlElement> XmlElement::get_child(const std::string& name) const noexcept
 {
     for (size_t i = 0, s = _children.size(); i < s; ++i)
     {
@@ -92,34 +92,34 @@ rc_ptr<XmlElement> XmlElement::get_child(const std::string& name) const
     return rc_ptr<XmlElement>();
 }
 
-void XmlElement::append_child(rc_ptr<XmlElement> child)
+void XmlElement::append_child(rc_ptr<XmlElement> child) noexcept
 {
     assert(child.is_not_null());
     _children.push_back(std::move(child));
     _dirty = true;
 }
 
-void XmlElement::insert_child(size_t pos, rc_ptr<XmlElement> child)
+void XmlElement::insert_child(size_t pos, rc_ptr<XmlElement> child) noexcept
 {
     assert(pos <= _children.size() && child.is_not_null());
     _children.insert(_children.begin() + pos, child);
     _dirty = true;
 }
 
-void XmlElement::remove_child(size_t pos)
+void XmlElement::remove_child(size_t pos) noexcept
 {
     assert(pos < _children.size());
     _children.erase(_children.begin() + pos);
     _dirty = true;
 }
 
-void XmlElement::clear_children()
+void XmlElement::clear_children() noexcept
 {
     _children.clear();
     _dirty = true;
 }
 
-const std::string* XmlElement::get_attribute(const std::string& name) const
+const std::string* XmlElement::get_attribute(const std::string& name) const noexcept
 {
     const_attr_iter_type iter = _attrs.find(name);
     if (iter == _attrs.end())
@@ -127,7 +127,7 @@ const std::string* XmlElement::get_attribute(const std::string& name) const
     return &iter->second;
 }
 
-bool XmlElement::add_attribute(const std::string& name, const std::string& value)
+bool XmlElement::add_attribute(const std::string& name, const std::string& value) noexcept
 {
     if (_attrs.find(name) != _attrs.end())
         return false;
@@ -136,13 +136,13 @@ bool XmlElement::add_attribute(const std::string& name, const std::string& value
     return true;
 }
 
-void XmlElement::set_attribute(const std::string& name, const std::string& value)
+void XmlElement::set_attribute(const std::string& name, const std::string& value) noexcept
 {
     _attrs[name] = value;
     _dirty = true;
 }
 
-bool XmlElement::remove_attribute(const std::string& name)
+bool XmlElement::remove_attribute(const std::string& name) noexcept
 {
     attr_iter_type iter = _attrs.find(name);
     if (iter == _attrs.end())
@@ -152,13 +152,13 @@ bool XmlElement::remove_attribute(const std::string& name)
     return true;
 }
 
-void XmlElement::clear_attributes()
+void XmlElement::clear_attributes() noexcept
 {
     _attrs.clear();
     _dirty = true;
 }
 
-void XmlElement::add_comment(size_t pos, const std::string& text)
+void XmlElement::add_comment(size_t pos, const std::string& text) noexcept
 {
     // binary search
     int left = -1, right = (int) _comments.size();
@@ -173,7 +173,7 @@ void XmlElement::add_comment(size_t pos, const std::string& text)
     _comments.insert(_comments.begin() + right, Comment(pos, text));
 }
 
-void XmlElement::remove_comment(size_t pos)
+void XmlElement::remove_comment(size_t pos) noexcept
 {
     // binary search
     const int size = (int) _comments.size();
@@ -204,7 +204,7 @@ void XmlElement::remove_comment(size_t pos)
     }
 }
 
-void XmlElement::clear()
+void XmlElement::clear() noexcept
 {
     _name.clear();
     _text.clear();
@@ -214,29 +214,29 @@ void XmlElement::clear()
     _dirty = true;
 }
 
-XmlElement::const_attr_iter_type XmlElement::attr_const_begin() const
+XmlElement::const_attr_iter_type XmlElement::attr_const_begin() const noexcept
 {
     return _attrs.begin();
 }
 
-XmlElement::const_attr_iter_type XmlElement::attr_const_end() const
+XmlElement::const_attr_iter_type XmlElement::attr_const_end() const noexcept
 {
     return _attrs.end();
 }
 
-XmlElement::attr_iter_type XmlElement::attr_begin()
+XmlElement::attr_iter_type XmlElement::attr_begin() noexcept
 {
     _dirty = true; // in case of modification
     return _attrs.begin();
 }
 
-XmlElement::attr_iter_type XmlElement::attr_end()
+XmlElement::attr_iter_type XmlElement::attr_end() noexcept
 {
     _dirty = true; // in case of modification
     return _attrs.end();
 }
 
-void XmlElement::parse(const std::string& s, size_t start_index, bool ignore_text_blank)
+void XmlElement::parse(const std::string& s, size_t start_index, bool ignore_text_blank) noexcept
 {
     assert(start_index <= s.length());
 
@@ -250,34 +250,34 @@ void XmlElement::parse(const std::string& s, size_t start_index, bool ignore_tex
             : _elem(e), _ignore_text_blank(ignore_text_blank)
         {}
 
-        virtual void handle_attribute(const std::string &name, const std::string &value)
+        virtual void handle_attribute(const std::string &name, const std::string &value) noexcept override
         {
             _elem->add_attribute(name, value);
         }
 
-        virtual void handle_text(const std::string& text)
+        virtual void handle_text(const std::string& text) noexcept override
         {
             _elem->_text += text;
         }
 
-        virtual void handle_comment(const std::string& comment)
+        virtual void handle_comment(const std::string& comment) noexcept override
         {
             _elem->add_comment(_elem->_children.size(), comment);
         }
 
-        virtual XmlElementHandler* handle_child(const std::string &name)
+        virtual XmlElementHandler* handle_child(const std::string &name) noexcept override
         {
             rc_ptr<XmlElement> c = rc_new<XmlElement>(name);
             _elem->append_child(c);
             return new Handler(c, _ignore_text_blank);
         }
 
-        virtual void handle_child_finish(XmlElementHandler *child)
+        virtual void handle_child_finish(XmlElementHandler *child) noexcept override
         {
             delete child;
         }
 
-        virtual void handle_finish()
+        virtual void handle_finish() noexcept override
         {
             if (_ignore_text_blank)
                 _elem->_text = trim(_elem->_text);
@@ -291,7 +291,7 @@ void XmlElement::parse(const std::string& s, size_t start_index, bool ignore_tex
     p.finish();
 }
 
-std::string XmlElement::serielize(bool format) const
+std::string XmlElement::serielize(bool format) const noexcept
 {
     std::stringstream ss;
     XmlWriter w(&ss);
@@ -299,7 +299,7 @@ std::string XmlElement::serielize(bool format) const
     return ss.str();
 }
 
-void XmlElement::serielize(XmlWriter &writer, int tab) const
+void XmlElement::serielize(XmlWriter &writer, int tab) const noexcept
 {
     // name
     for (int i = 0; i < tab; ++i)

@@ -13,19 +13,19 @@
 namespace nut
 {
 
-NUT_API void der_write_len(std::vector<uint8_t> *output, size_t len);
-NUT_API void der_write_integer(std::vector<uint8_t> *output, const BigInteger& v);
-NUT_API void der_write_bit_string(std::vector<uint8_t> *output, const std::vector<uint8_t>& bs);
-NUT_API void der_write_octet_string(std::vector<uint8_t> *output, const std::vector<uint8_t>& os);
-NUT_API void der_write_sequence(std::vector<uint8_t> *output, const std::vector<uint8_t>& sq);
-NUT_API void der_write_obj_ident(std::vector<uint8_t> *output, const uint8_t *id_begin, size_t id_size);
-NUT_API void der_write_null(std::vector<uint8_t> *output);
+NUT_API void der_write_len(std::vector<uint8_t> *output, size_t len) noexcept;
+NUT_API void der_write_integer(std::vector<uint8_t> *output, const BigInteger& v) noexcept;
+NUT_API void der_write_bit_string(std::vector<uint8_t> *output, const std::vector<uint8_t>& bs) noexcept;
+NUT_API void der_write_octet_string(std::vector<uint8_t> *output, const std::vector<uint8_t>& os) noexcept;
+NUT_API void der_write_sequence(std::vector<uint8_t> *output, const std::vector<uint8_t>& sq) noexcept;
+NUT_API void der_write_obj_ident(std::vector<uint8_t> *output, const uint8_t *id_begin, size_t id_size) noexcept;
+NUT_API void der_write_null(std::vector<uint8_t> *output) noexcept;
 
-NUT_API void der_write_pkcs1_public(std::vector<uint8_t> *output, const RSA::PublicKey& pubkey);
-NUT_API void der_write_pkcs8_public(std::vector<uint8_t> *output, const RSA::PublicKey& pubkey);
+NUT_API void der_write_pkcs1_public(std::vector<uint8_t> *output, const RSA::PublicKey& pubkey) noexcept;
+NUT_API void der_write_pkcs8_public(std::vector<uint8_t> *output, const RSA::PublicKey& pubkey) noexcept;
 
-NUT_API void der_write_pkcs1_private(std::vector<uint8_t> *output, const RSA::PrivateKey& prikey);
-NUT_API void der_write_pkcs8_private(std::vector<uint8_t> *output, const RSA::PrivateKey& prikey);
+NUT_API void der_write_pkcs1_private(std::vector<uint8_t> *output, const RSA::PrivateKey& prikey) noexcept;
+NUT_API void der_write_pkcs8_private(std::vector<uint8_t> *output, const RSA::PrivateKey& prikey) noexcept;
 
 }
 

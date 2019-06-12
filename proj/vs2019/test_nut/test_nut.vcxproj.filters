@@ -102,9 +102,6 @@
     <ClCompile Include="..\..\..\src\test_nut\container\tree\rtree\test_rtree.cpp">
       <Filter>test\container\tree\rtree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\test_nut\container\tree\test_bst.cpp">
-      <Filter>test\container\tree</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\test_nut\debugging\test_backtrace.cpp">
       <Filter>test\debugging</Filter>
     </ClCompile>
@@ -262,6 +259,12 @@
       <Filter>test\platform</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\test_nut\container\tree\test_trie_tree.cpp">
+      <Filter>test\container\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\tree\test_bstree.cpp">
+      <Filter>test\container\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\container\tree\test_rbtree.cpp">
       <Filter>test\container\tree</Filter>
     </ClCompile>
   </ItemGroup>

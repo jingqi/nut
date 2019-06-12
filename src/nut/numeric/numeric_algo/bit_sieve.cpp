@@ -11,7 +11,7 @@ BitSieve BitSieve::_small_sieve;
 /**
  * Given a bit index return unit index containing it.
  */
-static int unit_index(int bit_index)
+static int unit_index(int bit_index) noexcept
 {
     return (int) (((unsigned) bit_index) >> 6);
 }
@@ -19,7 +19,7 @@ static int unit_index(int bit_index)
 /**
  * Return a unit that masks the specified bit in its unit.
  */
-static int64_t bit(int bit_index)
+static int64_t bit(int bit_index) noexcept
 {
     return ((int64_t) 1) << (bit_index & ((1 << 6) - 1));
 }
@@ -35,7 +35,7 @@ static int64_t bit(int bit_index)
  * for primality.  The length was chosen experimentally to yield good
  * performance.
  */
-BitSieve::BitSieve()
+BitSieve::BitSieve() noexcept
 {
     _length = 150 * 64;
     _bits_cap = unit_index(_length - 1) + 1;
@@ -61,7 +61,7 @@ BitSieve::BitSieve()
  * candidates. The new sieve begins at the specified base, which must
  * be even.
  */
-BitSieve::BitSieve(const BigInteger& base, int search_len)
+BitSieve::BitSieve(const BigInteger& base, int search_len) noexcept
 {
     /*
      * Candidates are indicated by clear bits in the sieve. As a candidates
@@ -97,7 +97,7 @@ BitSieve::BitSieve(const BigInteger& base, int search_len)
     } while (step > 0);
 }
 
-BitSieve::~BitSieve()
+BitSieve::~BitSieve() noexcept
 {
     if (nullptr != _bits)
         ::free(_bits);
@@ -108,7 +108,7 @@ BitSieve::~BitSieve()
 /**
  * Get the value of the bit at the specified index.
  */
-bool BitSieve::get(int bit_index)
+bool BitSieve::get(int bit_index) noexcept
 {
     int ui = unit_index(bit_index);
     return ((_bits[ui] & bit(bit_index)) != 0);
@@ -117,7 +117,7 @@ bool BitSieve::get(int bit_index)
 /**
  * Set the bit at the specified index.
  */
-void BitSieve::set(int bit_index)
+void BitSieve::set(int bit_index) noexcept
 {
     int ui = unit_index(bit_index);
     _bits[ui] |= bit(bit_index);
@@ -128,7 +128,7 @@ void BitSieve::set(int bit_index)
  * array that occurs at or after start. It will not search past the
  * specified limit. It returns -1 if there is no such clear bit.
  */
-int BitSieve::sieve_search(int limit, int start)
+int BitSieve::sieve_search(int limit, int start) noexcept
 {
     if (start >= limit)
         return -1;
@@ -148,7 +148,7 @@ int BitSieve::sieve_search(int limit, int start)
  * multiples of the specified step starting at the specified start index,
  * up to the specified limit.
  */
-void BitSieve::sieve_single(int limit, int start, int step)
+void BitSieve::sieve_single(int limit, int start, int step) noexcept
 {
     while (start < limit)
     {
@@ -160,7 +160,7 @@ void BitSieve::sieve_single(int limit, int start, int step)
 /**
  * Test probable primes in the sieve and return successful candidates.
  */
-BigInteger BitSieve::retrieve(const BigInteger& init_value, int certainty)
+BigInteger BitSieve::retrieve(const BigInteger& init_value, int certainty) noexcept
 {
     // Examine the sieve one long at a time to find possible primes
     BigInteger candidate = init_value;

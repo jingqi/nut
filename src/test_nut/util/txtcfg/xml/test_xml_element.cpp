@@ -10,7 +10,7 @@ using namespace nut;
 
 class TestXmlElement : public TestFixture
 {
-    virtual void register_cases() override
+    virtual void register_cases() noexcept override
     {
         NUT_REGISTER_CASE(test_write);
         NUT_REGISTER_CASE(test_write_single);

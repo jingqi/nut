@@ -26,26 +26,26 @@ private:
     typedef enrc<byte_array_type> byte_rcarray_type;
 
 public:
-    ByteArrayStream();
-    explicit ByteArrayStream(byte_rcarray_type *arr);
+    ByteArrayStream() noexcept;
+    explicit ByteArrayStream(byte_rcarray_type *arr) noexcept;
 
-    virtual bool is_little_endian() const override;
-    virtual void set_little_endian(bool le) override;
+    virtual bool is_little_endian() const noexcept override;
+    virtual void set_little_endian(bool le) noexcept override;
 
-    byte_rcarray_type* byte_array() const;
+    byte_rcarray_type* byte_array() const noexcept;
 
-    virtual size_t size() const override;
-    void resize(size_t new_size);
-    virtual size_t tell() const override;
-    virtual void seek(size_t index) override;
+    virtual size_t size() const noexcept override;
+    void resize(size_t new_size) noexcept;
+    virtual size_t tell() const noexcept override;
+    virtual void seek(size_t index) noexcept override;
 
-    virtual size_t readable_size() const override;
-    virtual void skip_read(size_t cb) override;
-    virtual size_t read(void *buf, size_t cb) override;
+    virtual size_t readable_size() const noexcept override;
+    virtual void skip_read(size_t cb) noexcept override;
+    virtual size_t read(void *buf, size_t cb) noexcept override;
 
-    virtual size_t write(const void *buf, size_t cb) override;
+    virtual size_t write(const void *buf, size_t cb) noexcept override;
 
-    size_t write(const byte_array_type& ba);
+    size_t write(const byte_array_type& ba) noexcept;
 
 private:
     ByteArrayStream(const ByteArrayStream&) = delete;

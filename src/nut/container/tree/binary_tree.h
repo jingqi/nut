@@ -43,7 +43,7 @@ private:
         typedef NODE*                           pointer;
 
     public:
-        InorderTraversalIterator(const NODE *parent_of_sub_root, NODE *current, bool eof = false)
+        InorderTraversalIterator(const NODE *parent_of_sub_root, NODE *current, bool eof = false) noexcept
             : _parent_of_sub_root(parent_of_sub_root), _current(current), _eof(eof)
         {
             assert( (_eof && nullptr == _current) ||
@@ -51,19 +51,19 @@ private:
                 (!_eof && nullptr != _current));
         }
 
-        NODE& operator*() const
+        NODE& operator*() const noexcept
         {
             assert(!_eof && nullptr != _current);
             return *_current;
         }
 
-        NODE* operator->() const
+        NODE* operator->() const noexcept
         {
             assert(!_eof && nullptr != _current);
             return _current;
         }
 
-        InorderTraversalIterator& operator++()
+        InorderTraversalIterator& operator++() noexcept
         {
             assert(nullptr != _current);
             assert(!_eof); // no next
@@ -89,7 +89,7 @@ private:
             return *this;
         }
 
-        InorderTraversalIterator& operator--()
+        InorderTraversalIterator& operator--() noexcept
         {
             assert(nullptr != _current);
             if (_eof)
@@ -116,27 +116,27 @@ private:
             return *this;
         }
 
-        InorderTraversalIterator operator++(int)
+        InorderTraversalIterator operator++(int) noexcept
         {
             InorderTraversalIterator ret = *this;
             ++*this;
             return ret;
         }
 
-        InorderTraversalIterator operator--(int)
+        InorderTraversalIterator operator--(int) noexcept
         {
             InorderTraversalIterator ret = *this;
             --*this;
             return ret;
         }
 
-        bool operator==(const InorderTraversalIterator& i) const
+        bool operator==(const InorderTraversalIterator& i) const noexcept
         {
             return _parent_of_sub_root == i._parent_of_sub_root &&
                 _current == i._current && _eof == i._eof;
         }
 
-        bool operator!=(const InorderTraversalIterator& i) const
+        bool operator!=(const InorderTraversalIterator& i) const noexcept
         {
             return !(*this == i);
         }
@@ -158,7 +158,7 @@ public:
      *      / \
      *     A   C
      */
-    static inorder_iterator inorder_traversal_begin(NODE *sub_root)
+    static inorder_iterator inorder_traversal_begin(NODE *sub_root) noexcept
     {
         if (nullptr == sub_root)
             return inorder_iterator(nullptr, nullptr, true);
@@ -172,7 +172,7 @@ public:
     /**
      * 中序遍历的终止迭代器
      */
-    static inorder_iterator inorder_traversal_end(NODE *sub_root)
+    static inorder_iterator inorder_traversal_end(NODE *sub_root) noexcept
     {
         if (nullptr == sub_root)
             return inorder_iterator(nullptr, nullptr, true);
@@ -190,7 +190,7 @@ public:
      *      / \
      *     C   A
      */
-    static inorder_reverse_iterator inorder_traversal_rbegin(NODE *sub_root)
+    static inorder_reverse_iterator inorder_traversal_rbegin(NODE *sub_root) noexcept
     {
         return inorder_reverse_iterator(inorder_traversal_end(sub_root));
     }
@@ -198,7 +198,7 @@ public:
     /**
      * 逆中序遍历的终止迭代器
      */
-    static inorder_reverse_iterator inorder_traversal_rend(NODE *sub_root)
+    static inorder_reverse_iterator inorder_traversal_rend(NODE *sub_root) noexcept
     {
         return inorder_reverse_iterator(inorder_traversal_begin(sub_root));
     }
@@ -221,7 +221,7 @@ private:
         typedef NODE*                           pointer;
 
     public:
-        PreorderTraversalIterator(const NODE *parent_of_sub_root, NODE *current, bool eof = false)
+        PreorderTraversalIterator(const NODE *parent_of_sub_root, NODE *current, bool eof = false) noexcept
             : _parent_of_sub_root(parent_of_sub_root), _current(current), _eof(eof)
         {
             assert( (_eof && nullptr == _current) ||
@@ -230,19 +230,19 @@ private:
                 (!_eof && nullptr != _current) );
         }
 
-        NODE& operator*() const
+        NODE& operator*() const noexcept
         {
             assert(!_eof && nullptr != _current);
             return *_current;
         }
 
-        NODE* operator->() const
+        NODE* operator->() const noexcept
         {
             assert(!_eof && nullptr != _current);
             return _current;
         }
 
-        PreorderTraversalIterator& operator++()
+        PreorderTraversalIterator& operator++() noexcept
         {
             assert(nullptr != _current);
             assert(!_eof); // no next
@@ -271,7 +271,7 @@ private:
             return *this;
         }
 
-        PreorderTraversalIterator& operator--()
+        PreorderTraversalIterator& operator--() noexcept
         {
             assert(nullptr != _current);
             if (_eof)
@@ -303,27 +303,27 @@ private:
             return *this;
         }
 
-        PreorderTraversalIterator operator++(int)
+        PreorderTraversalIterator operator++(int) noexcept
         {
             PreorderTraversalIterator ret = *this;
             ++*this;
             return ret;
         }
 
-        PreorderTraversalIterator operator--(int)
+        PreorderTraversalIterator operator--(int) noexcept
         {
             PreorderTraversalIterator ret = *this;
             --*this;
             return ret;
         }
 
-        bool operator==(const PreorderTraversalIterator& i) const
+        bool operator==(const PreorderTraversalIterator& i) const noexcept
         {
             return _parent_of_sub_root == i._parent_of_sub_root &&
                 _current == i._current && _eof == i._eof;
         }
 
-        bool operator!=(const PreorderTraversalIterator& i) const
+        bool operator!=(const PreorderTraversalIterator& i) const noexcept
         {
             return !(*this == i);
         }
@@ -345,7 +345,7 @@ public:
      *       / \
      *      B   C
      */
-    static preorder_iterator preorder_traversal_begin(NODE *sub_root)
+    static preorder_iterator preorder_traversal_begin(NODE *sub_root) noexcept
     {
         if (nullptr == sub_root)
             return preorder_iterator(nullptr, nullptr, true);
@@ -355,7 +355,7 @@ public:
     /**
      * 前序遍历的终止迭代器
      */
-    static preorder_iterator preorder_traversal_end(NODE *sub_root)
+    static preorder_iterator preorder_traversal_end(NODE *sub_root) noexcept
     {
         if (nullptr == sub_root)
             return preorder_iterator(nullptr, nullptr, true);
@@ -373,7 +373,7 @@ public:
      *      / \
      *     B   A
      */
-    static preorder_reverse_iterator preorder_traversal_rbegin(NODE *sub_root)
+    static preorder_reverse_iterator preorder_traversal_rbegin(NODE *sub_root) noexcept
     {
         return preorder_reverse_iterator(preorder_traversal_end(sub_root));
     }
@@ -381,7 +381,7 @@ public:
     /**
      * 逆前序遍历(*异*后序遍历)的终止迭代器
      */
-    static preorder_reverse_iterator preorder_traversal_rend(NODE *sub_root)
+    static preorder_reverse_iterator preorder_traversal_rend(NODE *sub_root) noexcept
     {
         return preorder_reverse_iterator(preorder_traversal_begin(sub_root));
     }
@@ -404,7 +404,7 @@ private:
         typedef NODE*                           pointer;
 
     public:
-        PostorderTraversalIterator(const NODE *parent_of_sub_root, NODE *current, bool eof = false)
+        PostorderTraversalIterator(const NODE *parent_of_sub_root, NODE *current, bool eof = false) noexcept
             : _parent_of_sub_root(parent_of_sub_root), _current(current), _eof(eof)
         {
             assert( (_eof && nullptr == _current) ||
@@ -412,19 +412,19 @@ private:
                 (!_eof && nullptr != _current) );
         }
 
-        NODE& operator*() const
+        NODE& operator*() const noexcept
         {
             assert(!_eof && nullptr != _current);
             return *_current;
         }
 
-        NODE* operator->() const
+        NODE* operator->() const noexcept
         {
             assert(!_eof && nullptr != _current);
             return _current;
         }
 
-        PostorderTraversalIterator& operator++()
+        PostorderTraversalIterator& operator++() noexcept
         {
             assert(nullptr != _current);
             assert(!_eof); // no next
@@ -454,7 +454,7 @@ private:
             return *this;
         }
 
-        PostorderTraversalIterator& operator--()
+        PostorderTraversalIterator& operator--() noexcept
         {
             assert(nullptr != _current);
             if (_eof)
@@ -484,27 +484,27 @@ private:
             return *this;
         }
 
-        PostorderTraversalIterator operator++(int)
+        PostorderTraversalIterator operator++(int) noexcept
         {
             PostorderTraversalIterator ret = *this;
             ++*this;
             return ret;
         }
 
-        PostorderTraversalIterator operator--(int)
+        PostorderTraversalIterator operator--(int) noexcept
         {
             PostorderTraversalIterator ret = *this;
             --*this;
             return ret;
         }
 
-        bool operator==(const PostorderTraversalIterator& i) const
+        bool operator==(const PostorderTraversalIterator& i) const noexcept
         {
             return _parent_of_sub_root == i._parent_of_sub_root &&
                 _current == i._current && _eof == i._eof;
         }
 
-        bool operator!=(const PostorderTraversalIterator& i) const
+        bool operator!=(const PostorderTraversalIterator& i) const noexcept
         {
             return !(*this == i);
         }
@@ -526,7 +526,7 @@ public:
      *      / \
      *     A   B
      */
-    static postorder_iterator postorder_traversal_begin(NODE *sub_root)
+    static postorder_iterator postorder_traversal_begin(NODE *sub_root) noexcept
     {
         if (nullptr == sub_root)
             return postorder_iterator(nullptr, nullptr, true);
@@ -540,7 +540,7 @@ public:
     /**
      * 后序遍历的终止迭代器
      */
-    static postorder_iterator postorder_traversal_end(NODE *sub_root)
+    static postorder_iterator postorder_traversal_end(NODE *sub_root) noexcept
     {
         if (nullptr == sub_root)
             return postorder_iterator(nullptr, nullptr, true);
@@ -554,7 +554,7 @@ public:
      *      / \
      *     C   B
      */
-    static postorder_reverse_iterator postorder_traversal_rbegin(NODE *sub_root)
+    static postorder_reverse_iterator postorder_traversal_rbegin(NODE *sub_root) noexcept
     {
         return postorder_reverse_iterator(postorder_traversal_end(sub_root));
     }
@@ -562,7 +562,7 @@ public:
     /**
      * 逆后序遍历(*异*前序遍历)的终止迭代器
      */
-    static postorder_reverse_iterator postorder_traversal_rend(NODE *sub_root)
+    static postorder_reverse_iterator postorder_traversal_rend(NODE *sub_root) noexcept
     {
         return postorder_reverse_iterator(postorder_traversal_begin(sub_root));
     }
@@ -581,7 +581,7 @@ public:
      *
      * @param delfunc 删除节点的函数(析构、释放内存)
      */
-    static void delete_tree(NODE *sub_root, del_func_type del_func)
+    static void delete_tree(NODE *sub_root, del_func_type del_func) noexcept
     {
         assert(del_func);
         if (nullptr == sub_root)

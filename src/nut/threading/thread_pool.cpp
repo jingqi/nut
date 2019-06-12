@@ -8,11 +8,11 @@
 namespace nut
 {
 
-ThreadPool::ThreadPool(size_t max_thread_number, unsigned max_sleep_seconds)
+ThreadPool::ThreadPool(size_t max_thread_number, unsigned max_sleep_seconds) noexcept
     : _max_thread_number(max_thread_number), _max_sleep_seconds(max_sleep_seconds)
 {}
 
-ThreadPool::~ThreadPool()
+ThreadPool::~ThreadPool() noexcept
 {
     // 为避免内存问题，必须等所有线程退出后再析构
     wait_until_all_idle();
@@ -20,35 +20,35 @@ ThreadPool::~ThreadPool()
     join();
 }
 
-size_t ThreadPool::get_max_thread_number() const
+size_t ThreadPool::get_max_thread_number() const noexcept
 {
     return _max_thread_number;
 }
 
-void ThreadPool::set_max_thread_number(size_t max_thread_number)
+void ThreadPool::set_max_thread_number(size_t max_thread_number) noexcept
 {
     _max_thread_number = max_thread_number;
     _wake_condition.notify_all();
 }
 
-size_t ThreadPool::get_busy_thread_number()
+size_t ThreadPool::get_busy_thread_number() noexcept
 {
     std::lock_guard<std::mutex> guard(_lock);
     return _alive_number - _idle_number;
 }
 
-unsigned ThreadPool::get_max_sleep_seconds() const
+unsigned ThreadPool::get_max_sleep_seconds() const noexcept
 {
     return _max_sleep_seconds;
 }
 
-void ThreadPool::set_max_sleep_seconds(unsigned max_sleep_seconds)
+void ThreadPool::set_max_sleep_seconds(unsigned max_sleep_seconds) noexcept
 {
     _max_sleep_seconds = max_sleep_seconds;
     _wake_condition.notify_all();
 }
 
-bool ThreadPool::add_task(task_type&& task)
+bool ThreadPool::add_task(task_type&& task) noexcept
 {
     assert(task);
 
@@ -75,7 +75,7 @@ bool ThreadPool::add_task(task_type&& task)
     return true;
 }
 
-bool ThreadPool::add_task(const task_type& task)
+bool ThreadPool::add_task(const task_type& task) noexcept
 {
     assert(task);
 
@@ -102,20 +102,20 @@ bool ThreadPool::add_task(const task_type& task)
     return true;
 }
 
-void ThreadPool::wait_until_all_idle()
+void ThreadPool::wait_until_all_idle() noexcept
 {
     std::unique_lock<std::mutex> unique_guard(_lock);
     _all_idle_condition.wait(
         unique_guard, [=] {return _alive_number == _idle_number;});
 }
 
-void ThreadPool::interrupt()
+void ThreadPool::interrupt() noexcept
 {
     _interrupted = true;
     _wake_condition.notify_all();
 }
 
-void ThreadPool::join()
+void ThreadPool::join() noexcept
 {
     for (thread_iter_type iter = _threads.begin(),
              end = _threads.end(); iter != end; ++iter)
@@ -125,7 +125,7 @@ void ThreadPool::join()
     }
 }
 
-void ThreadPool::thread_process()
+void ThreadPool::thread_process() noexcept
 {
     while (true)
     {
@@ -178,13 +178,13 @@ void ThreadPool::thread_process()
     }
 }
 
-void ThreadPool::thread_finalize()
+void ThreadPool::thread_finalize() noexcept
 {
     if (--_alive_number == _idle_number)
         _all_idle_condition.notify_all();
 }
 
-void ThreadPool::clean_dead_threads()
+void ThreadPool::clean_dead_threads() noexcept
 {
     for (thread_iter_type iter = _threads.begin(),
              end =_threads.end(); iter != end;)

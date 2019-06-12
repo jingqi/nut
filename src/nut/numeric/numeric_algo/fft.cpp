@@ -9,7 +9,7 @@ namespace nut
 
 static const double PI = ::acos(-1.0); // 定义Pi的值
 
-static void bit_rev(fft_complex_type *a, unsigned loglen, size_t len)
+static void bit_rev(fft_complex_type *a, unsigned loglen, size_t len) noexcept
 {
     assert(nullptr != a);
     for (size_t i = 0; i < len; ++i)
@@ -30,7 +30,7 @@ static void bit_rev(fft_complex_type *a, unsigned loglen, size_t len)
     }
 }
 
-NUT_API void FFT(fft_complex_type *a, unsigned loglen, size_t len, bool dft)
+NUT_API void FFT(fft_complex_type *a, unsigned loglen, size_t len, bool dft) noexcept
 {
     bit_rev(a, loglen, len);
 

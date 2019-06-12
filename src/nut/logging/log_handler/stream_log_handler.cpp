@@ -5,11 +5,11 @@
 namespace nut
 {
 
-StreamLogHandler::StreamLogHandler(std::ostream& os)
+StreamLogHandler::StreamLogHandler(std::ostream& os) noexcept
     : _os(os)
 {}
 
-void StreamLogHandler::handle_log(const LogRecord& rec)
+void StreamLogHandler::handle_log(const LogRecord& rec) noexcept
 {
     _os << "[" << rec.get_time().format_time("%H:%M:%S.%3f") << "] " <<
          log_level_to_str(rec.get_level()) << " (" <<

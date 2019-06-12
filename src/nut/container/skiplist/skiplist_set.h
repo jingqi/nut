@@ -25,15 +25,15 @@ private:
     class Node
     {
     public:
-        explicit Node(T&& k)
+        explicit Node(T&& k) noexcept
             : _key(std::forward<T>(k))
         {}
 
-        explicit Node(const T& k)
+        explicit Node(const T& k) noexcept
             : _key(k)
         {}
 
-        ~Node()
+        ~Node() noexcept
         {
             if (nullptr != _next)
                 ::free(_next);
@@ -41,17 +41,17 @@ private:
             _level = algo_type::INVALID_LEVEL;
         }
 
-        const T& get_key() const
+        const T& get_key() const noexcept
         {
             return _key;
         }
 
-        int get_level() const
+        int get_level() const noexcept
         {
             return _level;
         }
 
-        void set_level(int lv)
+        void set_level(int lv) noexcept
         {
             assert(lv >= 0);
             if (nullptr != _next)
@@ -70,13 +70,13 @@ private:
             _level = lv;
         }
 
-        Node* get_next(int lv) const
+        Node* get_next(int lv) const noexcept
         {
             assert(nullptr != _next && 0 <= lv && lv <= _level);
             return _next[lv];
         }
 
-        void set_next(int lv, Node *n)
+        void set_next(int lv, Node *n) noexcept
         {
             assert(nullptr != _next && 0 <= lv && lv <= _level);
             _next[lv] = n;
@@ -93,9 +93,9 @@ private:
     };
 
 public:
-    SkipListSet() = default;
+    SkipListSet() noexcept = default;
 
-    SkipListSet(self_type&& x)
+    SkipListSet(self_type&& x) noexcept
         : _level(x._level), _head(x._head), _size(x._size)
     {
         x._level = algo_type::INVALID_LEVEL;
@@ -103,7 +103,7 @@ public:
         x._size = 0;
     }
 
-    SkipListSet(const self_type& x)
+    SkipListSet(const self_type& x) noexcept
     {
         if (x._size == 0)
             return;
@@ -134,7 +134,7 @@ public:
         _size = x._size;
     }
 
-    ~SkipListSet()
+    ~SkipListSet() noexcept
     {
         clear();
         if (nullptr != _head)
@@ -143,7 +143,7 @@ public:
         _level = algo_type::INVALID_LEVEL;
     }
 
-    self_type& operator=(self_type&& x)
+    self_type& operator=(self_type&& x) noexcept
     {
         if (this == &x)
             return *this;
@@ -163,7 +163,7 @@ public:
         return *this;
     }
 
-    self_type& operator=(const self_type& x)
+    self_type& operator=(const self_type& x) noexcept
     {
         if (this == &x)
             return *this;
@@ -210,7 +210,7 @@ public:
         return *this;
     }
 
-    bool operator==(const self_type& x) const
+    bool operator==(const self_type& x) const noexcept
     {
         if (this == &x)
             return true;
@@ -233,32 +233,32 @@ public:
         return true;
     }
 
-    bool operator!=(const self_type& x) const
+    bool operator!=(const self_type& x) const noexcept
     {
         return !(*this == x);
     }
 
-    bool operator<(const self_type& x) const
+    bool operator<(const self_type& x) const noexcept
     {
         return compare(x) < 0;
     }
 
-    bool operator>(const self_type& x) const
+    bool operator>(const self_type& x) const noexcept
     {
         return x < *this;
     }
 
-    bool operator<=(const self_type& x) const
+    bool operator<=(const self_type& x) const noexcept
     {
         return !(x < *this);
     }
 
-    bool operator>=(const self_type& x) const
+    bool operator>=(const self_type& x) const noexcept
     {
         return !(*this < x);
     }
 
-    int compare(const self_type& x) const
+    int compare(const self_type& x) const noexcept
     {
         if (this == &x)
             return 0;
@@ -279,12 +279,12 @@ public:
         return nullptr != current1 ? 1 : (nullptr != current2 ? -1 : 0);
     }
 
-    size_t size() const
+    size_t size() const noexcept
     {
         return _size;
     }
 
-    void clear()
+    void clear() noexcept
     {
         if (0 == _size)
             return;
@@ -302,7 +302,7 @@ public:
         _size = 0;
     }
 
-    bool contains(const T& k) const
+    bool contains(const T& k) const noexcept
     {
         if (0 == _size)
             return false;
@@ -315,7 +315,7 @@ public:
      * @return 插入成功返回 true; 否则表示存在重复数据, 返回 false
      */
     template <typename ...Args>
-    bool emplace(Args&& ...args)
+    bool emplace(Args&& ...args) noexcept
     {
         if (nullptr == _head)
         {
@@ -354,7 +354,7 @@ public:
     /**
      * @return 插入成功返回 true; 否则表示存在重复数据, 返回 false
      */
-    bool add(T&& k)
+    bool add(T&& k) noexcept
     {
         if (nullptr == _head)
         {
@@ -392,7 +392,7 @@ public:
     /**
      * @return 插入成功返回 true; 否则表示存在重复数据, 返回 false
      */
-    bool add(const T& k)
+    bool add(const T& k) noexcept
     {
         if (nullptr == _head)
         {
@@ -430,7 +430,7 @@ public:
     /**
      * @return 删除成功返回 true; 否则表示未找到数据, 返回 false
      */
-    bool remove(const T& k)
+    bool remove(const T& k) noexcept
     {
         if (0 == _size)
             return false;
@@ -455,12 +455,12 @@ public:
     }
 
 private:
-    int get_level() const
+    int get_level() const noexcept
     {
         return _level;
     }
 
-    void set_level(int lv)
+    void set_level(int lv) noexcept
     {
         assert(lv >= 0);
         if (nullptr != _head)
@@ -479,13 +479,13 @@ private:
         _level = lv;
     }
 
-    Node* get_head(int lv) const
+    Node* get_head(int lv) const noexcept
     {
         assert(nullptr != _head && 0 <= lv && lv <= _level);
         return _head[lv];
     }
 
-    void set_head(int lv, Node *n)
+    void set_head(int lv, Node *n) noexcept
     {
         assert(nullptr != _head && 0 <= lv && lv <= _level);
         _head[lv] = n;

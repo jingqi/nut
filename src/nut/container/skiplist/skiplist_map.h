@@ -25,23 +25,23 @@ private:
     class Node
     {
     public:
-        Node(K&& k, V&& v)
+        Node(K&& k, V&& v) noexcept
             : _key(std::forward<K>(k)), _value(std::forward<V>(v))
         {}
 
-        Node(const K& k, V&& v)
+        Node(const K& k, V&& v) noexcept
             : _key(k), _value(std::forward<V>(v))
         {}
 
-        Node(K&& k, const V& v)
+        Node(K&& k, const V& v) noexcept
             : _key(std::forward<K>(k)), _value(v)
         {}
 
-        Node(const K& k, const V& v)
+        Node(const K& k, const V& v) noexcept
             : _key(k), _value(v)
         {}
 
-        ~Node()
+        ~Node() noexcept
         {
             if (nullptr != _next)
                 ::free(_next);
@@ -49,37 +49,37 @@ private:
             _level = algo_type::INVALID_LEVEL;
         }
 
-        const K& get_key() const
+        const K& get_key() const noexcept
         {
             return _key;
         }
 
-        const V& get_value() const
+        const V& get_value() const noexcept
         {
             return _value;
         }
 
-        V& get_value()
+        V& get_value() noexcept
         {
             return _value;
         }
 
-        void set_value(V&& v)
+        void set_value(V&& v) noexcept
         {
             _value = std::forward<V>(v);
         }
 
-        void set_value(const V& v)
+        void set_value(const V& v) noexcept
         {
             _value = v;
         }
 
-        int get_level() const
+        int get_level() const noexcept
         {
             return _level;
         }
 
-        void set_level(int lv)
+        void set_level(int lv) noexcept
         {
             assert(lv >= 0);
             if (nullptr != _next)
@@ -98,13 +98,13 @@ private:
             _level = lv;
         }
 
-        Node* get_next(int lv) const
+        Node* get_next(int lv) const noexcept
         {
             assert(nullptr != _next && 0 <= lv && lv <= _level);
             return _next[lv];
         }
 
-        void set_next(int lv, Node *n)
+        void set_next(int lv, Node *n) noexcept
         {
             assert(nullptr != _next && 0 <= lv && lv <= _level);
             _next[lv] = n;
@@ -122,9 +122,9 @@ private:
     };
 
 public:
-    SkipListMap() = default;
+    SkipListMap() noexcept = default;
 
-    SkipListMap(self_type&& x)
+    SkipListMap(self_type&& x) noexcept
         : _level(x._level), _head(x._head), _size(x._size)
     {
         x._level = algo_type::INVALID_LEVEL;
@@ -132,7 +132,7 @@ public:
         x._size = 0;
     }
 
-    SkipListMap(const self_type& x)
+    SkipListMap(const self_type& x) noexcept
     {
         if (x._size == 0)
             return;
@@ -163,7 +163,7 @@ public:
         _size = x._size;
     }
 
-    ~SkipListMap()
+    ~SkipListMap() noexcept
     {
         clear();
         if (nullptr != _head)
@@ -172,7 +172,7 @@ public:
         _level = algo_type::INVALID_LEVEL;
     }
 
-    self_type& operator=(self_type&& x)
+    self_type& operator=(self_type&& x) noexcept
     {
         if (this == &x)
             return *this;
@@ -192,7 +192,7 @@ public:
         return *this;
     }
 
-    self_type& operator=(const self_type& x)
+    self_type& operator=(const self_type& x) noexcept
     {
         if (this == &x)
             return *this;
@@ -239,7 +239,7 @@ public:
         return *this;
     }
 
-    bool operator==(const self_type& x) const
+    bool operator==(const self_type& x) const noexcept
     {
         if (this == &x)
             return true;
@@ -263,32 +263,32 @@ public:
         return true;
     }
 
-    bool operator!=(const self_type& x) const
+    bool operator!=(const self_type& x) const noexcept
     {
         return !(*this == x);
     }
 
-    bool operator<(const self_type& x) const
+    bool operator<(const self_type& x) const noexcept
     {
         return compare(x) < 0;
     }
 
-    bool operator>(const self_type& x) const
+    bool operator>(const self_type& x) const noexcept
     {
         return x < *this;
     }
 
-    bool operator<=(const self_type& x) const
+    bool operator<=(const self_type& x) const noexcept
     {
         return !(x < *this);
     }
 
-    bool operator>=(const self_type& x) const
+    bool operator>=(const self_type& x) const noexcept
     {
         return !(*this < x);
     }
 
-    V& operator[](K&& k)
+    V& operator[](K&& k) noexcept
     {
         if (nullptr == _head)
         {
@@ -323,7 +323,7 @@ public:
         return n->get_value();
     }
 
-    V& operator[](const K& k)
+    V& operator[](const K& k) noexcept
     {
         if (nullptr == _head)
         {
@@ -358,7 +358,7 @@ public:
         return n->get_value();
     }
 
-    int compare(const self_type& x) const
+    int compare(const self_type& x) const noexcept
     {
         if (this == &x)
             return 0;
@@ -383,12 +383,12 @@ public:
         return nullptr != current1 ? 1 : (nullptr != current2 ? -1 : 0);
     }
 
-    size_t size() const
+    size_t size() const noexcept
     {
         return _size;
     }
 
-    void clear()
+    void clear() noexcept
     {
         if (0 == _size)
             return;
@@ -406,7 +406,7 @@ public:
         _size = 0;
     }
 
-    bool contains_key(const K& k) const
+    bool contains_key(const K& k) const noexcept
     {
         if (0 == _size)
             return false;
@@ -419,7 +419,7 @@ public:
      * @return true, 插入成功
      *         false, 存在重复 key, 插入失败
      */
-    bool insert(K&& k, V&& v)
+    bool insert(K&& k, V&& v) noexcept
     {
         return 0 != put(std::forward<K>(k), std::forward<V>(v), false);
     }
@@ -428,7 +428,7 @@ public:
      * @return true, 插入成功
      *         false, 存在重复 key, 插入失败
      */
-    bool insert(const K& k, V&& v)
+    bool insert(const K& k, V&& v) noexcept
     {
         return 0 != put(k, std::forward<V>(v), false);
     }
@@ -437,7 +437,7 @@ public:
      * @return true, 插入成功
      *         false, 存在重复 key, 插入失败
      */
-    bool insert(K&& k, const V& v)
+    bool insert(K&& k, const V& v) noexcept
     {
         return 0 != put(std::forward<K>(k), v, false);
     }
@@ -446,7 +446,7 @@ public:
      * @return true, 插入成功
      *         false, 存在重复 key, 插入失败
      */
-    bool insert(const K& k, const V& v)
+    bool insert(const K& k, const V& v) noexcept
     {
         return 0 != put(k, v, false);
     }
@@ -456,7 +456,7 @@ public:
      *         0, duplicated key, canceled
      *         1, new data inserted
      */
-    int put(K&& k, V&& v, bool force = true)
+    int put(K&& k, V&& v, bool force = true) noexcept
     {
         if (nullptr == _head)
         {
@@ -499,7 +499,7 @@ public:
      *         0, duplicated key, canceled
      *         1, new data inserted
      */
-    int put(const K& k, V&& v, bool force = true)
+    int put(const K& k, V&& v, bool force = true) noexcept
     {
         if (nullptr == _head)
         {
@@ -542,7 +542,7 @@ public:
      *         0, duplicated key, canceled
      *         1, new data inserted
      */
-    int put(K&& k, const V& v, bool force = true)
+    int put(K&& k, const V& v, bool force = true) noexcept
     {
         if (nullptr == _head)
         {
@@ -585,7 +585,7 @@ public:
      *         0, duplicated key, canceled
      *         1, new data inserted
      */
-    int put(const K& k, const V& v, bool force = true)
+    int put(const K& k, const V& v, bool force = true) noexcept
     {
         if (nullptr == _head)
         {
@@ -627,7 +627,7 @@ public:
      * @return true, 删除成功
      *         false, 未找到键值, 删除失败
      */
-    bool remove(const K& k)
+    bool remove(const K& k) noexcept
     {
         if (0 == _size)
             return false;
@@ -651,7 +651,7 @@ public:
         return true;
     }
 
-    const V* get(const K& k) const
+    const V* get(const K& k) const noexcept
     {
         if (0 == _size)
             return nullptr;
@@ -663,12 +663,12 @@ public:
     }
 
 private:
-    int get_level() const
+    int get_level() const noexcept
     {
         return _level;
     }
 
-    void set_level(int lv)
+    void set_level(int lv) noexcept
     {
         assert(lv >= 0);
         if (nullptr != _head)
@@ -687,13 +687,13 @@ private:
         _level = lv;
     }
 
-    Node* get_head(int lv) const
+    Node* get_head(int lv) const noexcept
     {
         assert(nullptr != _head && 0 <= lv && lv <= _level);
         return _head[lv];
     }
 
-    void set_head(int lv, Node *n)
+    void set_head(int lv, Node *n) noexcept
     {
         assert(nullptr != _head && 0 <= lv && lv <= _level);
         _head[lv] = n;

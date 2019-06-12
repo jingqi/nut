@@ -14,7 +14,7 @@ using namespace nut;
 
 class TestRSA : public TestFixture
 {
-    virtual void register_cases() override
+    virtual void register_cases() noexcept override
     {
         NUT_REGISTER_CASE(test_profile);
         NUT_REGISTER_CASE(test_bugs);

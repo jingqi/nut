@@ -33,27 +33,27 @@
 namespace nut
 {
 
-Logger::~Logger()
+Logger::~Logger() noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
 
     clear_handlers();
 }
 
-Logger* Logger::get_instance()
+Logger* Logger::get_instance() noexcept
 {
     static Logger instance;
     return &instance;
 }
 
-LogFilter& Logger::get_filter()
+LogFilter& Logger::get_filter() noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
 
     return _filter;
 }
 
-void Logger::add_handler(LogHandler *handler)
+void Logger::add_handler(LogHandler *handler) noexcept
 {
     assert(nullptr != handler);
     NUT_DEBUGGING_ASSERT_ALIVE;
@@ -61,7 +61,7 @@ void Logger::add_handler(LogHandler *handler)
     _handlers.push_back(handler);
 }
 
-void Logger::remove_handler(LogHandler *handler)
+void Logger::remove_handler(LogHandler *handler) noexcept
 {
     assert(nullptr != handler);
     NUT_DEBUGGING_ASSERT_ALIVE;
@@ -76,7 +76,7 @@ void Logger::remove_handler(LogHandler *handler)
     }
 }
 
-void Logger::clear_handlers()
+void Logger::clear_handlers() noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
 
@@ -84,7 +84,7 @@ void Logger::clear_handlers()
 }
 
 void Logger::log(enum LogLevel level, const char *tag, const char *file, int line,
-                 const char *func, const char *format, ...) const
+                 const char *func, const char *format, ...) const noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
     assert(nullptr != format);
@@ -135,7 +135,7 @@ void Logger::log(enum LogLevel level, const char *tag, const char *file, int lin
     }
 }
 
-void Logger::load_xml_config(const std::string& config)
+void Logger::load_xml_config(const std::string& config) noexcept
 {
     NUT_DEBUGGING_ASSERT_ALIVE;
 
@@ -155,7 +155,7 @@ void Logger::load_xml_config(const std::string& config)
             _forbidden_levels = 0;
         }
 
-        virtual void handle_attribute(const std::string& name, const std::string& value) override
+        virtual void handle_attribute(const std::string& name, const std::string& value) noexcept override
         {
             if (name == "name")
             {
@@ -181,7 +181,7 @@ void Logger::load_xml_config(const std::string& config)
             }
         }
 
-        virtual void handle_finish() override
+        virtual void handle_finish() noexcept override
         {
             if (0 != _allowed_levels)
                 _filter->allow(_tag_name.c_str(), _allowed_levels);
@@ -211,7 +211,7 @@ void Logger::load_xml_config(const std::string& config)
             _filter = filter;
         }
 
-        virtual XmlElementHandler* handle_child(const std::string& name) override
+        virtual XmlElementHandler* handle_child(const std::string& name) noexcept override
         {
             if (name == "Tag")
             {
@@ -250,7 +250,7 @@ void Logger::load_xml_config(const std::string& config)
             _filter.reset();
         }
 
-        virtual XmlElementHandler* handle_child(const std::string& name) override
+        virtual XmlElementHandler* handle_child(const std::string& name) noexcept override
         {
             if (name == "Filter")
             {
@@ -260,7 +260,7 @@ void Logger::load_xml_config(const std::string& config)
             return nullptr;
         }
 
-        virtual void handle_attribute(const std::string& name, const std::string& value) override
+        virtual void handle_attribute(const std::string& name, const std::string& value) noexcept override
         {
             if (name == "type")
             {
@@ -304,7 +304,7 @@ void Logger::load_xml_config(const std::string& config)
             }
         }
 
-        virtual void handle_finish() override
+        virtual void handle_finish() noexcept override
         {
             if (_type == "stdout")
             {
@@ -392,7 +392,7 @@ void Logger::load_xml_config(const std::string& config)
             assert(nullptr != filter_xml_handler && nullptr != handler_xml_handler);
         }
 
-        virtual XmlElementHandler* handle_child(const std::string& name) override
+        virtual XmlElementHandler* handle_child(const std::string& name) noexcept override
         {
             if (name == "Filter")
             {
@@ -421,7 +421,7 @@ void Logger::load_xml_config(const std::string& config)
             assert(nullptr != logger_xml_handler);
         }
 
-        virtual XmlElementHandler* handle_child(const std::string& name)
+        virtual XmlElementHandler* handle_child(const std::string& name) noexcept
         {
             if (name == "Logger")
                 return _logger_xml_handler;

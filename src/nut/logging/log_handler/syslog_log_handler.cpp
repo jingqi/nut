@@ -11,22 +11,22 @@
 namespace nut
 {
 
-SyslogLogHandler::SyslogLogHandler(bool close_syslog_on_exit)
+SyslogLogHandler::SyslogLogHandler(bool close_syslog_on_exit) noexcept
     : _close_syslog_on_exit(close_syslog_on_exit)
 {}
 
-SyslogLogHandler::~SyslogLogHandler()
+SyslogLogHandler::~SyslogLogHandler() noexcept
 {
     if (_close_syslog_on_exit)
         ::closelog();  // The oposite way is openlog()
 }
 
-void SyslogLogHandler::set_close_syslog_on_exit(bool close_on_exit)
+void SyslogLogHandler::set_close_syslog_on_exit(bool close_on_exit) noexcept
 {
     _close_syslog_on_exit = close_on_exit;
 }
 
-void SyslogLogHandler::handle_log(const LogRecord& rec)
+void SyslogLogHandler::handle_log(const LogRecord& rec) noexcept
 {
     int level = 0;
     switch (rec.get_level())

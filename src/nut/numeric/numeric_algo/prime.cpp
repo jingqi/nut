@@ -13,7 +13,7 @@ namespace nut
  * 参考文献：
  *     [1]潘金贵，顾铁成. 现代计算机常用数据结构和算法[M]. 南京大学出版社. 1994. 582
  */
-bool psedoprime(const BigInteger& n)
+bool psedoprime(const BigInteger& n) noexcept
 {
     const BigInteger mp = pow_mod(BigInteger(2), n - 1, n);
     if (mp != 1)
@@ -22,7 +22,7 @@ bool psedoprime(const BigInteger& n)
 }
 
 #if 0 // unoptimized
-static bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n)
+static bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n) noexcept
 {
     BigInteger d(1), b(n);
     --b;
@@ -48,7 +48,7 @@ static bool _miller_rabin_witness(const BigInteger& a, const BigInteger& n)
 /**
  * 米勒-拉宾(Miller-Rabin)素数测试
  */
-bool miller_rabin(const BigInteger& n, unsigned s)
+bool miller_rabin(const BigInteger& n, unsigned s) noexcept
 {
     assert(s > 0);
 
@@ -104,7 +104,7 @@ bool miller_rabin(const BigInteger& n, unsigned s)
  * 取下一个可能的素数
  * 参见java语言BigInteger.nextProbablePrime()实现
  */
-NUT_API BigInteger next_prime(const BigInteger& n)
+NUT_API BigInteger next_prime(const BigInteger& n) noexcept
 {
     if (n <= 1)
         return BigInteger(2);
@@ -168,7 +168,7 @@ NUT_API BigInteger next_prime(const BigInteger& n)
     }
 }
 
-NUT_API BigInteger inverse_of_coprime_mod(const BigInteger& a, const BigInteger& n)
+NUT_API BigInteger inverse_of_coprime_mod(const BigInteger& a, const BigInteger& n) noexcept
 {
     BigInteger ret;
     extended_euclid(a, n, nullptr, &ret, nullptr);

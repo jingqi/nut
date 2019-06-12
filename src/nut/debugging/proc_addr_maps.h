@@ -31,33 +31,33 @@ public:
                 uint64_t>::type>::type>::type addr_type;
 
 public:
-    static ProcAddrMaps& instance();
+    static ProcAddrMaps& instance() noexcept;
 
     /**
      * 检查结构体是否依然有效
      */
-    bool is_valid() const;
+    bool is_valid() const noexcept;
 
     /**
      * 获取应用程序绝对路径
      */
-    const std::string& get_exec_path() const;
+    const std::string& get_exec_path() const noexcept;
 
     /**
      * 从文件 /proc/xxx/maps 中加载地址的映射
      *
      * @param module_path 只关心指定模块
      */
-    void load(const std::string& module_path = std::string());
+    void load(const std::string& module_path = std::string()) noexcept;
 
     /**
      * 找到某个共享库的起始地址
      */
-    bool find(const std::string& module_path, addr_type *out_addr) const;
+    bool find(const std::string& module_path, addr_type *out_addr) const noexcept;
 
 private:
-    ProcAddrMaps();
-    ~ProcAddrMaps();
+    ProcAddrMaps() noexcept;
+    ~ProcAddrMaps() noexcept;
 
     /**
      * 解析从文件 "/proc/xxx/maps" 中获取的一行的信息，它表示模块在程序虚拟地址
@@ -71,7 +71,7 @@ private:
      * @param module_path 只分析指定模块
      */
     bool parse_line(const std::string& line,
-                    const std::string& module_path = std::string());
+                    const std::string& module_path = std::string()) noexcept;
 
 private:
     // 析构检查字段

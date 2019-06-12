@@ -27,30 +27,30 @@ public:
     };
 
 public:
-    explicit XmlElementHandler(uint8_t mask = 0xff);
-    virtual ~XmlElementHandler() = default;
+    explicit XmlElementHandler(uint8_t mask = 0xff) noexcept;
+    virtual ~XmlElementHandler() noexcept = default;
 
-    void set_name(const std::string& name);
-    const std::string& get_name() const;
+    void set_name(const std::string& name) noexcept;
+    const std::string& get_name() const noexcept;
 
-    uint8_t get_handle_mask() const;
+    uint8_t get_handle_mask() const noexcept;
 
-    void set_busy(bool busy);
-    bool is_busy() const;
+    void set_busy(bool busy) noexcept;
+    bool is_busy() const noexcept;
 
-    virtual void handle_attribute(const std::string& name, const std::string& value);
+    virtual void handle_attribute(const std::string& name, const std::string& value) noexcept;
 
-    virtual void handle_text(const std::string& text);
+    virtual void handle_text(const std::string& text) noexcept;
 
-    virtual void handle_comment(const std::string& comment);
+    virtual void handle_comment(const std::string& comment) noexcept;
 
     // 返回新的 handler
-    virtual XmlElementHandler* handle_child(const std::string& name);
+    virtual XmlElementHandler* handle_child(const std::string& name) noexcept;
 
     // 回收旧的 handler
-    virtual void handle_child_finish(XmlElementHandler *child);
+    virtual void handle_child_finish(XmlElementHandler *child) noexcept;
 
-    virtual void handle_finish();
+    virtual void handle_finish() noexcept;
 
 private:
     // 名称

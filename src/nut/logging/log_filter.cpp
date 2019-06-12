@@ -11,16 +11,16 @@
 namespace nut
 {
 
-LogFilter::Node::Node(hashcode_type h, Node *p)
+LogFilter::Node::Node(hashcode_type h, Node *p) noexcept
     : hash(h), parent(p)
 {}
 
-LogFilter::Node::~Node()
+LogFilter::Node::~Node() noexcept
 {
     clear();
 }
 
-void LogFilter::Node::swap(Node *x)
+void LogFilter::Node::swap(Node *x) noexcept
 {
     assert(nullptr != x);
     if (this == x)
@@ -56,7 +56,7 @@ void LogFilter::Node::swap(Node *x)
         x->children[i]->parent = x;
 }
 
-ssize_t LogFilter::Node::search_child(hashcode_type h) const
+ssize_t LogFilter::Node::search_child(hashcode_type h) const noexcept
 {
     // binary search
     ssize_t left = -1, right = children_size;
@@ -73,7 +73,7 @@ ssize_t LogFilter::Node::search_child(hashcode_type h) const
     return -right - 1;
 }
 
-LogFilter::Node* LogFilter::Node::insert_child(ssize_t pos, hashcode_type h)
+LogFilter::Node* LogFilter::Node::insert_child(ssize_t pos, hashcode_type h) noexcept
 {
     assert(pos < 0);
     pos = -pos - 1;
@@ -91,7 +91,7 @@ LogFilter::Node* LogFilter::Node::insert_child(ssize_t pos, hashcode_type h)
     return children[pos];
 }
 
-void LogFilter::Node::remove_child(Node *child)
+void LogFilter::Node::remove_child(Node *child) noexcept
 {
     assert(nullptr != child);
     size_t pos = 0;
@@ -110,7 +110,7 @@ void LogFilter::Node::remove_child(Node *child)
     --children_size;
 }
 
-void LogFilter::Node::clear()
+void LogFilter::Node::clear() noexcept
 {
     allowed_levels = 0;
     forbidden_levels = 0;
@@ -129,7 +129,7 @@ void LogFilter::Node::clear()
     children_capacity = 0;
 }
 
-void LogFilter::Node::ensure_cap(size_t new_size)
+void LogFilter::Node::ensure_cap(size_t new_size) noexcept
 {
     if (new_size <= children_capacity)
         return;
@@ -142,7 +142,7 @@ void LogFilter::Node::ensure_cap(size_t new_size)
     children_capacity = new_cap;
 }
 
-static std::string levels_to_string(loglevel_mask_type levels)
+static std::string levels_to_string(loglevel_mask_type levels) noexcept
 {
     std::string ret;
     if (0 != (levels & LL_DEBUG))
@@ -158,7 +158,7 @@ static std::string levels_to_string(loglevel_mask_type levels)
     return ret;
 }
 
-std::string LogFilter::Node::to_string(const std::string& tag_prefix) const
+std::string LogFilter::Node::to_string(const std::string& tag_prefix) const noexcept
 {
     std::string tag;
     if (nullptr == parent)
@@ -210,11 +210,11 @@ std::string LogFilter::Node::to_string(const std::string& tag_prefix) const
     return ret;
 }
 
-LogFilter::LogFilter()
+LogFilter::LogFilter() noexcept
     : _root(hash_to_dot(nullptr), nullptr)
 {}
 
-void LogFilter::swap(LogFilter *x)
+void LogFilter::swap(LogFilter *x) noexcept
 {
     assert(nullptr != x);
     if (this == x)
@@ -223,7 +223,7 @@ void LogFilter::swap(LogFilter *x)
     _root.swap(&x->_root);
 }
 
-LogFilter::hashcode_type LogFilter::hash_to_dot(const char *s, size_t *char_accum)
+LogFilter::hashcode_type LogFilter::hash_to_dot(const char *s, size_t *char_accum) noexcept
 {
     // SDBRHash 算法
     hashcode_type hash = 17;
@@ -239,7 +239,7 @@ LogFilter::hashcode_type LogFilter::hash_to_dot(const char *s, size_t *char_accu
     return hash;
 }
 
-void LogFilter::remove_empty_leaves_upway(Node *leaf)
+void LogFilter::remove_empty_leaves_upway(Node *leaf) noexcept
 {
     assert(nullptr != leaf);
 
@@ -253,7 +253,7 @@ void LogFilter::remove_empty_leaves_upway(Node *leaf)
     }
 }
 
-LogFilter::Node* LogFilter::find_or_create_node(const char *tag)
+LogFilter::Node* LogFilter::find_or_create_node(const char *tag) noexcept
 {
     // root
     if (nullptr == tag || 0 == tag[0])
@@ -284,7 +284,7 @@ LogFilter::Node* LogFilter::find_or_create_node(const char *tag)
     return current;
 }
 
-const LogFilter::Node* LogFilter::find_ancestor(const char *tag) const
+const LogFilter::Node* LogFilter::find_ancestor(const char *tag) const noexcept
 {
     // root
     if (nullptr == tag || 0 == tag[0])
@@ -314,7 +314,7 @@ const LogFilter::Node* LogFilter::find_ancestor(const char *tag) const
     return current;
 }
 
-void LogFilter::allow(const char *tag, loglevel_mask_type levels)
+void LogFilter::allow(const char *tag, loglevel_mask_type levels) noexcept
 {
     // dummy operation
     if (0 == levels)
@@ -330,7 +330,7 @@ void LogFilter::allow(const char *tag, loglevel_mask_type levels)
     remove_empty_leaves_upway(n);
 }
 
-void LogFilter::forbid(const char *tag, loglevel_mask_type levels)
+void LogFilter::forbid(const char *tag, loglevel_mask_type levels) noexcept
 {
     // dummy operation
     if (0 == levels)
@@ -346,12 +346,12 @@ void LogFilter::forbid(const char *tag, loglevel_mask_type levels)
     remove_empty_leaves_upway(n);
 }
 
-void LogFilter::reset()
+void LogFilter::reset() noexcept
 {
     _root.clear();
 }
 
-bool LogFilter::is_allowed(const char *tag, enum LogLevel level) const
+bool LogFilter::is_allowed(const char *tag, enum LogLevel level) const noexcept
 {
     const Node *n = find_ancestor(tag);
     while (nullptr != n)
@@ -365,7 +365,7 @@ bool LogFilter::is_allowed(const char *tag, enum LogLevel level) const
     return true;
 }
 
-std::string LogFilter::to_string() const
+std::string LogFilter::to_string() const noexcept
 {
     return _root.to_string("");
 }

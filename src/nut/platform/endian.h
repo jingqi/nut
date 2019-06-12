@@ -102,7 +102,7 @@ namespace nut
 {
 
 // swap endian
-inline uint16_t bswap_uint16(uint16_t val)
+inline uint16_t bswap_uint16(uint16_t val) noexcept
 {
 #if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
     return __builtin_bswap16(val);
@@ -115,7 +115,7 @@ inline uint16_t bswap_uint16(uint16_t val)
 }
 
 // swap endian
-inline int16_t bswap_int16(int16_t val)
+inline int16_t bswap_int16(int16_t val) noexcept
 {
 #if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
     return __builtin_bswap16(val);
@@ -128,7 +128,7 @@ inline int16_t bswap_int16(int16_t val)
 }
 
 // swap endian
-inline uint32_t bswap_uint32(uint32_t val)
+inline uint32_t bswap_uint32(uint32_t val) noexcept
 {
 #if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
     return __builtin_bswap32(val);
@@ -142,7 +142,7 @@ inline uint32_t bswap_uint32(uint32_t val)
 }
 
 // swap endian
-inline int32_t bswap_int32(int32_t val)
+inline int32_t bswap_int32(int32_t val) noexcept
 {
 #if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
     return __builtin_bswap32(val);
@@ -156,7 +156,7 @@ inline int32_t bswap_int32(int32_t val)
 }
 
 // swap endian
-inline uint64_t bswap_uint64(uint64_t val)
+inline uint64_t bswap_uint64(uint64_t val) noexcept
 {
 #if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
     return __builtin_bswap64(val);
@@ -170,7 +170,7 @@ inline uint64_t bswap_uint64(uint64_t val)
 }
 
 // swap endian
-inline int64_t bswap_int64(int64_t val)
+inline int64_t bswap_int64(int64_t val) noexcept
 {
 #if NUT_PLATFORM_CC_GCC || NUT_PLATFORM_CC_MINGW
     return __builtin_bswap64(val);
@@ -185,7 +185,7 @@ inline int64_t bswap_int64(int64_t val)
 
 // Swap word order endian
 template <typename T>
-void wswap(T* dst, size_t size)
+void wswap(T* dst, size_t size) noexcept
 {
     assert(nullptr != dst || 0 == size);
     for (size_t i = 0, round = size / 2; i < round; ++i)
@@ -197,7 +197,7 @@ void wswap(T* dst, size_t size)
 }
 
 // Swap byte order endian
-inline void bswap(void *dst, size_t cb)
+inline void bswap(void *dst, size_t cb) noexcept
 {
     assert(nullptr != dst || 0 == cb);
     wswap<uint8_t>((uint8_t*) dst, cb);

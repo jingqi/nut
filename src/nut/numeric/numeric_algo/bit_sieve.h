@@ -36,14 +36,14 @@ public:
      * candidates. The new sieve begins at the specified base, which must
      * be even.
      */
-    BitSieve(const BigInteger& base, int search_len);
+    BitSieve(const BigInteger& base, int search_len) noexcept;
 
-    ~BitSieve();
+    ~BitSieve() noexcept;
 
     /**
      * Test probable primes in the sieve and return successful candidates.
      */
-    BigInteger retrieve(const BigInteger& init_value, int certainty);
+    BigInteger retrieve(const BigInteger& init_value, int certainty) noexcept;
 
 private:
     BitSieve(const BitSieve&) = delete;
@@ -60,31 +60,31 @@ private:
      * for primality.  The length was chosen experimentally to yield good
      * performance.
      */
-    BitSieve();
+    BitSieve() noexcept;
 
     /**
      * Get the value of the bit at the specified index.
      */
-    bool get(int bit_index);
+    bool get(int bit_index) noexcept;
 
     /**
      * Set the bit at the specified index.
      */
-    void set(int bit_index);
+    void set(int bit_index) noexcept;
 
     /**
      * This method returns the index of the first clear bit in the search
      * array that occurs at or after start. It will not search past the
      * specified limit. It returns -1 if there is no such clear bit.
      */
-    int sieve_search(int limit, int start);
+    int sieve_search(int limit, int start) noexcept;
 
     /**
      * Sieve a single set of multiples out of the sieve. Begin to remove
      * multiples of the specified step starting at the specified start index,
      * up to the specified limit.
      */
-    void sieve_single(int limit, int start, int step);
+    void sieve_single(int limit, int start, int step) noexcept;
 
 private:
     /**

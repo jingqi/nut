@@ -39,10 +39,10 @@ public:
     InputStream& operator>>(std::string& s);
     InputStream& operator>>(std::wstring& s);
 
-    virtual bool is_little_endian() const = 0;
-    virtual void set_little_endian(bool le) = 0;
+    virtual bool is_little_endian() const noexcept = 0;
+    virtual void set_little_endian(bool le) noexcept = 0;
 
-    virtual size_t readable_size() const = 0;
+    virtual size_t readable_size() const noexcept = 0;
 
     virtual size_t read(void *buf, size_t cb) = 0;
 

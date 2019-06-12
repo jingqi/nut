@@ -26,19 +26,19 @@ private:
     typedef Array<T> self_type;
 
 public:
-    explicit Array(size_type init_cap = 16)
+    explicit Array(size_type init_cap = 16) noexcept
     {
         ensure_cap<T>(init_cap);
     }
 
-    Array(size_type sz, const T& fillv)
+    Array(size_type sz, const T& fillv) noexcept
     {
         ensure_cap<T>(sz);
         std::uninitialized_fill(_buf, _buf + sz, fillv);
         _size = sz;
     }
 
-    Array(const T *data, size_type sz)
+    Array(const T *data, size_type sz) noexcept
     {
         ensure_cap<T>(sz);
         std::uninitialized_copy(data, data + sz, _buf);
@@ -46,7 +46,7 @@ public:
     }
 
     template <typename Iter>
-    Array(const Iter& b, const Iter& e)
+    Array(const Iter& b, const Iter& e) noexcept
     {
         assert(b <= e);
         const size_t sz = e - b;
@@ -55,7 +55,7 @@ public:
         _size = sz;
     }
 
-    Array(self_type&& x)
+    Array(self_type&& x) noexcept
         : _buf(x._buf), _size(x._size), _cap(x._cap)
     {
         x._buf = nullptr;
@@ -63,14 +63,14 @@ public:
         x._cap = 0;
     }
 
-    Array(const self_type& x)
+    Array(const self_type& x) noexcept
     {
         ensure_cap<T>(x._size);
         std::uninitialized_copy(x._buf, x._buf + x._size, _buf);
         _size = x._size;
     }
 
-    ~Array()
+    ~Array() noexcept
     {
         clear();
         if (nullptr != _buf)
@@ -79,7 +79,7 @@ public:
         _cap = 0;
     }
 
-    self_type& operator=(self_type&& x)
+    self_type& operator=(self_type&& x) noexcept
     {
         if (this == &x)
             return *this;
@@ -99,7 +99,7 @@ public:
         return *this;
     }
 
-    self_type& operator=(const self_type& x)
+    self_type& operator=(const self_type& x) noexcept
     {
         if (this == &x)
             return *this;
@@ -113,7 +113,7 @@ public:
         return *this;
     }
 
-    bool operator==(const self_type& x) const
+    bool operator==(const self_type& x) const noexcept
     {
         if (this == &x)
             return true;
@@ -127,44 +127,44 @@ public:
         return true;
     }
 
-    bool operator!=(const self_type& x) const
+    bool operator!=(const self_type& x) const noexcept
     {
         return !(*this == x);
     }
 
-    bool operator<(const self_type& x) const
+    bool operator<(const self_type& x) const noexcept
     {
         return compare(x) < 0;
     }
 
-    bool operator>(const self_type& x) const
+    bool operator>(const self_type& x) const noexcept
     {
         return x < *this;
     }
 
-    bool operator<=(const self_type& x) const
+    bool operator<=(const self_type& x) const noexcept
     {
         return !(x < *this);
     }
 
-    bool operator>=(const self_type& x) const
+    bool operator>=(const self_type& x) const noexcept
     {
         return !(*this < x);
     }
 
-    const T& operator[](size_type i) const
+    const T& operator[](size_type i) const noexcept
     {
         assert(i < _size);
         return _buf[i];
     }
 
-    T& operator[](size_type i)
+    T& operator[](size_type i) noexcept
     {
         assert(i < _size);
         return const_cast<T&>(static_cast<const self_type&>(*this)[i]);
     }
 
-    int compare(const self_type& x) const
+    int compare(const self_type& x) const noexcept
     {
         if (this == &x)
             return 0;
@@ -179,71 +179,71 @@ public:
         return i < _size ? 1 : (i < x._size ? -1 : 0);
     }
 
-    const_iterator begin() const
+    const_iterator begin() const noexcept
     {
         return _buf;
     }
 
-    iterator begin()
+    iterator begin() noexcept
     {
         return _buf;
     }
 
-    const_iterator end() const
+    const_iterator end() const noexcept
     {
         return _buf + _size;
     }
 
-    iterator end()
+    iterator end() noexcept
     {
         return _buf + _size;
     }
 
-    size_type size() const
+    size_type size() const noexcept
     {
         return _size;
     }
 
-    size_type capacity() const
+    size_type capacity() const noexcept
     {
         return _cap;
     }
 
-    const T& at(size_type i) const
+    const T& at(size_type i) const noexcept
     {
         assert(i < _size);
         return _buf[i];
     }
 
-    T& at(size_type i)
+    T& at(size_type i) noexcept
     {
         assert(i < _size);
         return const_cast<T&>(static_cast<const self_type&>(*this).at(i));
     }
 
     template <typename ...Args>
-    void emplace_back(Args&& ...args)
+    void emplace_back(Args&& ...args) noexcept
     {
         ensure_cap<T>(_size + 1);
         new (_buf + _size) T(std::forward<Args>(args)...);
         ++_size;
     }
 
-    void push_back(T&& e)
+    void push_back(T&& e) noexcept
     {
         ensure_cap<T>(_size + 1);
         new (_buf + _size) T(std::forward<T>(e));
         ++_size;
     }
 
-    void push_back(const T& e)
+    void push_back(const T& e) noexcept
     {
         ensure_cap<T>(_size + 1);
         new (_buf + _size) T(e);
         ++_size;
     }
 
-    void pop_back()
+    void pop_back() noexcept
     {
         assert(_size > 0);
         --_size;
@@ -251,7 +251,7 @@ public:
     }
 
     template <typename ...Args>
-    void emplace(size_type index, Args&& ...args)
+    void emplace(size_type index, Args&& ...args) noexcept
     {
         assert(index <= _size);
         ensure_cap<T>(_size + 1);
@@ -261,7 +261,7 @@ public:
         ++_size;
     }
 
-    void insert(size_type index, T&& e)
+    void insert(size_type index, T&& e) noexcept
     {
         assert(index <= _size);
         ensure_cap<T>(_size + 1);
@@ -271,7 +271,7 @@ public:
         ++_size;
     }
 
-    void insert(size_type index, const T& e)
+    void insert(size_type index, const T& e) noexcept
     {
         assert(index <= _size);
         ensure_cap<T>(_size + 1);
@@ -282,7 +282,7 @@ public:
     }
 
     template <typename Iter>
-    void insert(size_type index, const Iter& b, const Iter& e)
+    void insert(size_type index, const Iter& b, const Iter& e) noexcept
     {
         assert(index <= _size && b <= e);
         const size_type len = e - b;
@@ -294,12 +294,12 @@ public:
     }
 
     template <typename Iter>
-    void append(const Iter& b, const Iter& e)
+    void append(const Iter& b, const Iter& e) noexcept
     {
         insert(size(), b, e);
     }
 
-    void erase(size_type index)
+    void erase(size_type index) noexcept
     {
         assert(index < _size);
         (_buf + index)->~T();
@@ -308,7 +308,7 @@ public:
         --_size;
     }
 
-    void erase(size_type b, size_type e)
+    void erase(size_type b, size_type e) noexcept
     {
         assert(b <= e && e <= _size);
         for (size_type i = b; i < e; ++i)
@@ -318,7 +318,7 @@ public:
         _size -= e - b;
     }
 
-    void resize(size_type new_size, const T& fill = T())
+    void resize(size_type new_size, const T& fill = T()) noexcept
     {
         ensure_cap<T>(new_size);
         for (size_type i = new_size; i < _size; ++i)
@@ -328,19 +328,19 @@ public:
         _size = new_size;
     }
 
-    void clear()
+    void clear() noexcept
     {
         for (size_type i = 0; i < _size; ++i)
             (_buf + i)->~T();
         _size = 0;
     }
 
-    const T* data() const
+    const T* data() const noexcept
     {
         return _buf;
     }
 
-    T* data()
+    T* data() noexcept
     {
         return const_cast<T*>(static_cast<const self_type&>(*this).data());
     }
@@ -348,7 +348,7 @@ public:
 private:
     template <typename U>
     typename std::enable_if<std::is_trivially_copyable<U>::value, void>::type
-    ensure_cap(size_t new_size)
+    ensure_cap(size_t new_size) noexcept
     {
         if (new_size <= _cap)
             return;
@@ -364,7 +364,7 @@ private:
 
     template <typename U>
     typename std::enable_if<!std::is_trivially_copyable<U>::value, void>::type
-    ensure_cap(size_t new_size)
+    ensure_cap(size_t new_size) noexcept
     {
         if (new_size <= _cap)
             return;
@@ -407,194 +407,194 @@ private:
     typedef COWArray<T>      self_type;
 
 public:
-    COWArray(size_type init_cap = 16)
+    COWArray(size_type init_cap = 16) noexcept
         : _array(rc_new<rcarray_type>(init_cap))
     {}
 
-    COWArray(size_type sz, const T& fillv)
+    COWArray(size_type sz, const T& fillv) noexcept
         : _array(rc_new<rcarray_type>(sz, fillv))
     {}
 
-    COWArray(const T *data, size_type sz)
+    COWArray(const T *data, size_type sz) noexcept
         : _array(rc_new<rcarray_type>(data, sz))
     {}
 
     template <typename Iter>
-    COWArray(const Iter& b, const Iter& e)
+    COWArray(const Iter& b, const Iter& e) noexcept
         : _array(rc_new<rcarray_type>(b, e))
     {}
 
-    COWArray(const self_type& x)
+    COWArray(const self_type& x) noexcept
         : _array(x._array)
     {}
 
-    self_type& operator=(const self_type& x)
+    self_type& operator=(const self_type& x) noexcept
     {
         _array = x._array;
         return *this;
     }
 
-    bool operator==(const self_type& x) const
+    bool operator==(const self_type& x) const noexcept
     {
         return _array->operator==(*x._array);
     }
 
-    bool operator!=(const self_type& x) const
+    bool operator!=(const self_type& x) const noexcept
     {
         return _array->operator!=(*x._array);
     }
 
-    bool operator<(const self_type& x) const
+    bool operator<(const self_type& x) const noexcept
     {
         return _array->operator<(*x._array);
     }
 
-    bool operator>(const self_type& x) const
+    bool operator>(const self_type& x) const noexcept
     {
         return _array->operator>(*x._array);
     }
 
-    bool operator<=(const self_type& x) const
+    bool operator<=(const self_type& x) const noexcept
     {
         return _array->operator<=(*x._array);
     }
 
-    bool operator>=(const self_type& x) const
+    bool operator>=(const self_type& x) const noexcept
     {
         return _array->operator>=(*x._array);
     }
 
-    const T& operator[](size_type i) const
+    const T& operator[](size_type i) const noexcept
     {
         return _array->operator[](i);
     }
 
-    T& operator[](size_type i)
+    T& operator[](size_type i) noexcept
     {
         copy_on_write();
         return _array->operator[](i);
     }
 
-    int compare(const self_type& x) const
+    int compare(const self_type& x) const noexcept
     {
         return _array->compare(*x._array);
     }
 
-    const_iterator begin() const
+    const_iterator begin() const noexcept
     {
         return _array->begin();
     }
 
-    iterator begin()
+    iterator begin() noexcept
     {
         copy_on_write();
         return _array->begin();
     }
 
-    const_iterator end() const
+    const_iterator end() const noexcept
     {
         return _array->end();
     }
 
-    iterator end()
+    iterator end() noexcept
     {
         copy_on_write();
         return _array->end();
     }
 
-    size_type size() const
+    size_type size() const noexcept
     {
         return _array->size();
     }
 
-    const T& at(size_type i) const
+    const T& at(size_type i) const noexcept
     {
         return _array->at(i);
     }
 
-    T& at(size_type i)
+    T& at(size_type i) noexcept
     {
         copy_on_write();
         return _array->at(i);
     }
 
     template <typename ...Args>
-    void emplace_back(Args&& ...args)
+    void emplace_back(Args&& ...args) noexcept
     {
         copy_on_write();
         _array->emplace_back(std::forward<Args>(args)...);
     }
 
-    void push_back(T&& e)
+    void push_back(T&& e) noexcept
     {
         copy_on_write();
         _array->push_back(std::forward<T>(e));
     }
 
-    void push_back(const T& e)
+    void push_back(const T& e) noexcept
     {
         copy_on_write();
         _array->push_back(e);
     }
 
-    void pop_back()
+    void pop_back() noexcept
     {
         copy_on_write();
         _array->pop_back();
     }
 
     template <typename ...Args>
-    void emplace(size_type index, Args&& ...args)
+    void emplace(size_type index, Args&& ...args) noexcept
     {
         copy_on_write();
         _array->emplace(index, std::forward<Args>(args)...);
     }
 
-    void insert(size_type index, T&& e)
+    void insert(size_type index, T&& e) noexcept
     {
         copy_on_write();
         _array->insert(index, std::forward<T>(e));
     }
 
-    void insert(size_type index, const T& e)
+    void insert(size_type index, const T& e) noexcept
     {
         copy_on_write();
         _array->insert(index, e);
     }
 
     template <typename Iter>
-    void insert(size_type index, const Iter& b, const Iter& e)
+    void insert(size_type index, const Iter& b, const Iter& e) noexcept
     {
         copy_on_write();
         _array->insert(index, b, e);
     }
 
     template <typename Iter>
-    void append(const Iter& b, const Iter& e)
+    void append(const Iter& b, const Iter& e) noexcept
     {
         copy_on_write();
         _array->append(b, e);
     }
 
-    void erase(size_type index)
+    void erase(size_type index) noexcept
     {
         copy_on_write();
         _array->erase(index);
     }
 
-    void erase(size_type b, size_type e)
+    void erase(size_type b, size_type e) noexcept
     {
         copy_on_write();
         _array->erase(b, e);
     }
 
-    void resize(size_type new_size, const T& fill = T())
+    void resize(size_type new_size, const T& fill = T()) noexcept
     {
         copy_on_write();
         _array->resize(new_size, fill);
     }
 
-    void clear()
+    void clear() noexcept
     {
         const int rc = _array->get_ref();
         assert(rc >= 1);
@@ -604,12 +604,12 @@ public:
             _array->clear();
     }
 
-    const T* data() const
+    const T* data() const noexcept
     {
         return _array->data();
     }
 
-    T* data()
+    T* data() noexcept
     {
         copy_on_write();
         return _array->data();
@@ -619,7 +619,7 @@ private:
     /**
      * 写时复制
      */
-    void copy_on_write()
+    void copy_on_write() noexcept
     {
         assert(_array.is_not_null());
         const int rc = _array->get_ref();

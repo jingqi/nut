@@ -7,21 +7,21 @@
 namespace nut
 {
 
-XmlWriter::XmlWriter(std::ostream *os)
+XmlWriter::XmlWriter(std::ostream *os) noexcept
     : _os(os)
 {}
 
-std::ostream* XmlWriter::get_output_stream() const
+std::ostream* XmlWriter::get_output_stream() const noexcept
 {
     return _os;
 }
 
-void XmlWriter::set_output_stream(std::ostream *os)
+void XmlWriter::set_output_stream(std::ostream *os) noexcept
 {
     _os = os;
 }
 
-void XmlWriter::start_element(const std::string& name)
+void XmlWriter::start_element(const std::string& name) noexcept
 {
     assert(!name.empty());
 
@@ -38,7 +38,7 @@ void XmlWriter::start_element(const std::string& name)
     write(name);
 }
 
-void XmlWriter::end_element()
+void XmlWriter::end_element() noexcept
 {
     if (_elem_path.empty())
         return;
@@ -57,7 +57,7 @@ void XmlWriter::end_element()
     _elem_path.pop_back();
 }
 
-void XmlWriter::write_attribute(const std::string& name, const std::string& value)
+void XmlWriter::write_attribute(const std::string& name, const std::string& value) noexcept
 {
     assert(!name.empty());
     if (_elem_path.empty())
@@ -72,7 +72,7 @@ void XmlWriter::write_attribute(const std::string& name, const std::string& valu
     write("\"");
 }
 
-void XmlWriter::write_text(const std::string& text)
+void XmlWriter::write_text(const std::string& text) noexcept
 {
     if (!_elem_path.empty())
     {
@@ -85,7 +85,7 @@ void XmlWriter::write_text(const std::string& text)
     write_encode(text.c_str(), text.length());
 }
 
-void XmlWriter::write_comment(const std::string& comment)
+void XmlWriter::write_comment(const std::string& comment) noexcept
 {
     if (!_elem_path.empty())
     {
@@ -100,7 +100,7 @@ void XmlWriter::write_comment(const std::string& comment)
     write("-->");
 }
 
-void XmlWriter::write(const char *s, ssize_t len)
+void XmlWriter::write(const char *s, ssize_t len) noexcept
 {
     if (nullptr == _os)
         return;
@@ -112,12 +112,12 @@ void XmlWriter::write(const char *s, ssize_t len)
         *_os << s[i];
 }
 
-void XmlWriter::write(const std::string& s)
+void XmlWriter::write(const std::string& s) noexcept
 {
     *_os << s;
 }
 
-void XmlWriter::write_encode(const char *s, ssize_t len)
+void XmlWriter::write_encode(const char *s, ssize_t len) noexcept
 {
     for (ssize_t i = 0; (len < 0 || i < len) && '\0' != s[i]; ++i)
     {

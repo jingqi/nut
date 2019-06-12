@@ -25,8 +25,8 @@ public:
     typedef std::function<void(const void*,size_t)> callback_type;
 
 public:
-    void set_callback(callback_type&& cb);
-    void set_callback(const callback_type& cb);
+    void set_callback(callback_type&& cb) noexcept;
+    void set_callback(const callback_type& cb) noexcept;
 
     /**
      * 开始加密
@@ -35,19 +35,19 @@ public:
      * @param key_bits  密钥的比特长度，只能取128, 192, 256
      * @param iv        16字节初始化向量，加密时可随机给出
      */
-    void start_encrypt(const void* key, int key_bits, const void *iv);
+    void start_encrypt(const void* key, int key_bits, const void *iv) noexcept;
 
     /**
      * 加密
      */
-    void update_encrypt(const void *data, size_t data_len);
+    void update_encrypt(const void *data, size_t data_len) noexcept;
 
     /**
      * 填充小节，结束一段加密过程
      *
      * NOTE 如果要复用 key 和当前 iv, 后面可以接着直接 update_encrypt()
      */
-    void finish_encrypt();
+    void finish_encrypt() noexcept;
 
     /**
      * 开始解密
@@ -56,12 +56,12 @@ public:
      * @param key_bits  密钥的比特长度，只能取128, 192, 256
      * @param iv        16字节初始化向量，必须与加密时使用的是相同的
      */
-    void start_decrypt(const void *key, int key_bits, const void *iv);
+    void start_decrypt(const void *key, int key_bits, const void *iv) noexcept;
 
     /**
      * 解密
      */
-    bool update_decrypt(const void *data, size_t data_len);
+    bool update_decrypt(const void *data, size_t data_len) noexcept;
 
     /**
      * 结束一段解密过程
@@ -70,7 +70,7 @@ public:
      *
      * @return 解密失败则返回 false
      */
-    bool finish_decrypt();
+    bool finish_decrypt() noexcept;
 
 private:
     enum class State

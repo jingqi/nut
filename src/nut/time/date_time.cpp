@@ -20,28 +20,28 @@
 namespace nut
 {
 
-DateTime::DateTime()
+DateTime::DateTime() noexcept
     : _seconds(0), _nanoseconds(0), _time_info_dirty(true)
 {}
 
-DateTime::DateTime(double s)
+DateTime::DateTime(double s) noexcept
     : _seconds(s), _nanoseconds((s - (time_t) s) * NSECS_PER_SEC),
       _time_info_dirty(true)
 {}
 
-DateTime::DateTime(time_t s, long ns)
+DateTime::DateTime(time_t s, long ns) noexcept
     : _seconds(s), _nanoseconds(ns), _time_info_dirty(true)
 {
     normalize();
 }
 
 DateTime::DateTime(uint32_t year, uint8_t month, uint8_t day,
-                   uint8_t hour, uint8_t min, uint8_t sec, uint32_t nsec)
+                   uint8_t hour, uint8_t min, uint8_t sec, uint32_t nsec) noexcept
 {
     set(year, month, day, hour, min, sec, nsec);
 }
 
-void DateTime::normalize()
+void DateTime::normalize() noexcept
 {
     if (_nanoseconds >= NSECS_PER_SEC)
     {
@@ -66,7 +66,7 @@ void DateTime::normalize()
     }
 }
 
-void DateTime::check_time_info() const
+void DateTime::check_time_info() const noexcept
 {
     if (!_time_info_dirty)
         return;
@@ -74,44 +74,44 @@ void DateTime::check_time_info() const
     _time_info_dirty = false;
 }
 
-bool DateTime::operator==(const DateTime &x) const
+bool DateTime::operator==(const DateTime &x) const noexcept
 {
     return _seconds == x._seconds && _nanoseconds == x._nanoseconds;
 }
 
-bool DateTime::operator!=(const DateTime &x) const
+bool DateTime::operator!=(const DateTime &x) const noexcept
 {
     return !(*this == x);
 }
 
-bool DateTime::operator<(const DateTime &x) const
+bool DateTime::operator<(const DateTime &x) const noexcept
 {
     return (_seconds < x._seconds ||
             (_seconds == x._seconds && _nanoseconds < x._nanoseconds));
 }
 
-bool DateTime::operator>(const DateTime &x) const
+bool DateTime::operator>(const DateTime &x) const noexcept
 {
     return x < *this;
 }
 
-bool DateTime::operator>=(const DateTime &x) const
+bool DateTime::operator>=(const DateTime &x) const noexcept
 {
     return !(*this < x);
 }
 
-bool DateTime::operator<=(const DateTime &x) const
+bool DateTime::operator<=(const DateTime &x) const noexcept
 {
     return !(x < *this);
 }
 
-DateTime DateTime::operator+(const TimeDiff& diff) const
+DateTime DateTime::operator+(const TimeDiff& diff) const noexcept
 {
     return DateTime(_seconds + diff.get_seconds(),
                     _nanoseconds + diff.get_nanoseconds());
 }
 
-DateTime DateTime::operator+(double seconds) const
+DateTime DateTime::operator+(double seconds) const noexcept
 {
     const time_t int_seconds = (time_t) seconds;
     const double dec_seconds = seconds - int_seconds;
@@ -119,13 +119,13 @@ DateTime DateTime::operator+(double seconds) const
                     _nanoseconds + dec_seconds * NSECS_PER_SEC);
 }
 
-DateTime DateTime::operator-(const TimeDiff& diff) const
+DateTime DateTime::operator-(const TimeDiff& diff) const noexcept
 {
     return DateTime(_seconds - diff.get_seconds(),
                     _nanoseconds - diff.get_nanoseconds());
 }
 
-DateTime DateTime::operator-(double seconds) const
+DateTime DateTime::operator-(double seconds) const noexcept
 {
     const time_t int_seconds = (time_t) seconds;
     const double dec_seconds = seconds - int_seconds;
@@ -133,12 +133,12 @@ DateTime DateTime::operator-(double seconds) const
                     _nanoseconds - dec_seconds * NSECS_PER_SEC);
 }
 
-TimeDiff DateTime::operator-(const DateTime& x) const
+TimeDiff DateTime::operator-(const DateTime& x) const noexcept
 {
     return TimeDiff(_seconds - x._seconds, _nanoseconds - x._nanoseconds);
 }
 
-DateTime& DateTime::operator+=(const TimeDiff& diff)
+DateTime& DateTime::operator+=(const TimeDiff& diff) noexcept
 {
     _seconds += diff.get_seconds();
     _nanoseconds += diff.get_nanoseconds();
@@ -147,7 +147,7 @@ DateTime& DateTime::operator+=(const TimeDiff& diff)
     return *this;
 }
 
-DateTime& DateTime::operator+=(double seconds)
+DateTime& DateTime::operator+=(double seconds) noexcept
 {
     const time_t int_seconds = (time_t) seconds;
     const double dec_seconds = seconds - int_seconds;
@@ -158,7 +158,7 @@ DateTime& DateTime::operator+=(double seconds)
     return *this;
 }
 
-DateTime& DateTime::operator-=(const TimeDiff& diff)
+DateTime& DateTime::operator-=(const TimeDiff& diff) noexcept
 {
     _seconds -= diff.get_seconds();
     _nanoseconds -= diff.get_nanoseconds();
@@ -167,7 +167,7 @@ DateTime& DateTime::operator-=(const TimeDiff& diff)
     return *this;
 }
 
-DateTime& DateTime::operator-=(double seconds)
+DateTime& DateTime::operator-=(double seconds) noexcept
 {
     const time_t int_seconds = (time_t) seconds;
     const double dec_seconds = seconds - int_seconds;
@@ -178,14 +178,14 @@ DateTime& DateTime::operator-=(double seconds)
     return *this;
 }
 
-void DateTime::set(double s)
+void DateTime::set(double s) noexcept
 {
     _seconds = (time_t) s;
     _nanoseconds = (long) ((s - _seconds) * NSECS_PER_SEC);
     _time_info_dirty = true;
 }
 
-void DateTime::set(time_t s, long ns)
+void DateTime::set(time_t s, long ns) noexcept
 {
     _seconds = s;
     _nanoseconds = ns;
@@ -194,7 +194,7 @@ void DateTime::set(time_t s, long ns)
 }
 
 void DateTime::set(uint32_t year, uint8_t month, uint8_t day, uint8_t hour,
-                   uint8_t min, uint8_t sec, uint32_t nsec)
+                   uint8_t min, uint8_t sec, uint32_t nsec) noexcept
 {
     ::memset(&_time_info, 0, sizeof(_time_info));
     _time_info.tm_year = year - 1900;
@@ -214,13 +214,13 @@ void DateTime::set(uint32_t year, uint8_t month, uint8_t day, uint8_t hour,
 }
 
 #if NUT_PLATFORM_OS_WINDOWS
-void DateTime::set(const SYSTEMTIME& wtm)
+void DateTime::set(const SYSTEMTIME& wtm) noexcept
 {
     set(wtm.wYear, wtm.wMonth, wtm.wDay, wtm.wHour, wtm.wMinute, wtm.wSecond,
         wtm.wMilliseconds * NSECS_PER_MSEC);
 }
 
-void DateTime::to_wtm(SYSTEMTIME *wtm) const
+void DateTime::to_wtm(SYSTEMTIME *wtm) const noexcept
 {
     assert(nullptr != wtm);
     check_time_info();
@@ -235,24 +235,24 @@ void DateTime::to_wtm(SYSTEMTIME *wtm) const
     wtm->wMilliseconds = _nanoseconds / NSECS_PER_MSEC;
 }
 #else
-void DateTime::set(const struct timeval &tv)
+void DateTime::set(const struct timeval &tv) noexcept
 {
     set(tv.tv_sec, tv.tv_usec * NSECS_PER_USEC);
 }
 
-void DateTime::set(const struct timespec &tv)
+void DateTime::set(const struct timespec &tv) noexcept
 {
     set(tv.tv_sec, tv.tv_nsec);
 }
 
-void DateTime::to_timeval(struct timeval *tv) const
+void DateTime::to_timeval(struct timeval *tv) const noexcept
 {
     assert(nullptr != tv);
     tv->tv_sec = _seconds;
     tv->tv_usec = _nanoseconds / NSECS_PER_USEC;
 }
 
-void DateTime::to_timespec(struct timespec *tv) const
+void DateTime::to_timespec(struct timespec *tv) const noexcept
 {
     assert(nullptr != tv);
     tv->tv_sec = _seconds;
@@ -263,7 +263,7 @@ void DateTime::to_timespec(struct timespec *tv) const
 /**
  * 获得并存储当前时刻
  */
-void DateTime::set_to_now()
+void DateTime::set_to_now() noexcept
 {
     // NOTE 各个墙上时间函数信息:
     // - time(), POSIX, UTC, 实际精度 1s
@@ -282,7 +282,7 @@ void DateTime::set_to_now()
 #endif
 }
 
-DateTime DateTime::now()
+DateTime DateTime::now() noexcept
 {
     DateTime ret;
     ret.set_to_now();
@@ -294,7 +294,7 @@ DateTime DateTime::now()
  *
  * @return 范围 year number; 2009 for the year of 2009
  */
-uint32_t DateTime::get_year() const
+uint32_t DateTime::get_year() const noexcept
 {
     check_time_info();
     return static_cast<uint32_t>(_time_info.tm_year + 1900);
@@ -305,7 +305,7 @@ uint32_t DateTime::get_year() const
  *
  * @return 范围 [1,12];  1 for Junuary
  */
-uint8_t DateTime::get_month() const
+uint8_t DateTime::get_month() const noexcept
 {
     check_time_info();
     return static_cast<uint8_t>(_time_info.tm_mon + 1);
@@ -316,7 +316,7 @@ uint8_t DateTime::get_month() const
  *
  * @return 范围 [0,365]; 0 for the first day in a year
  */
-uint16_t DateTime::get_yday() const
+uint16_t DateTime::get_yday() const noexcept
 {
     check_time_info();
     return static_cast<uint16_t>(_time_info.tm_yday);
@@ -327,7 +327,7 @@ uint16_t DateTime::get_yday() const
  *
  * @return 范围 [1,31];  1 for the first day in a month
  */
-uint8_t DateTime::get_mday() const
+uint8_t DateTime::get_mday() const noexcept
 {
     check_time_info();
     return static_cast<uint8_t>(_time_info.tm_mday);
@@ -338,7 +338,7 @@ uint8_t DateTime::get_mday() const
  *
  * @return 范围 [0,6];   0 for Sunday
  */
-uint8_t DateTime::get_wday() const
+uint8_t DateTime::get_wday() const noexcept
 {
     check_time_info();
     return static_cast<uint8_t>(_time_info.tm_wday);
@@ -349,7 +349,7 @@ uint8_t DateTime::get_wday() const
  *
  * @return 范围 [0,23]
  */
-uint8_t DateTime::get_hour() const
+uint8_t DateTime::get_hour() const noexcept
 {
     check_time_info();
     return static_cast<uint8_t>(_time_info.tm_hour);
@@ -360,57 +360,57 @@ uint8_t DateTime::get_hour() const
  *
  * @return 范围 [0,59]
  */
-uint8_t DateTime::get_minute() const
+uint8_t DateTime::get_minute() const noexcept
 {
     check_time_info();
     return static_cast<uint8_t>(_time_info.tm_min);
 }
 
-uint8_t DateTime::get_second() const
+uint8_t DateTime::get_second() const noexcept
 {
     check_time_info();
     return static_cast<uint8_t>(_time_info.tm_sec);
 }
 
-uint32_t DateTime::get_nanosecond() const
+uint32_t DateTime::get_nanosecond() const noexcept
 {
     return _nanoseconds;
 }
 
-bool DateTime::is_valid() const
+bool DateTime::is_valid() const noexcept
 {
     return 0 != _seconds || 0 != _nanoseconds;
 }
 
-time_t DateTime::to_integer() const
+time_t DateTime::to_integer() const noexcept
 {
     return _seconds;
 }
 
-double DateTime::to_double() const
+double DateTime::to_double() const noexcept
 {
     return _seconds + _nanoseconds / (double) NSECS_PER_SEC;
 }
 
 // for example : "2007-3-12"
-std::string DateTime::get_date_str() const
+std::string DateTime::get_date_str() const noexcept
 {
     return format_time("%Y-%m-%d");
 }
 
 // for example : "12:34:45.572936192"
-std::string DateTime::get_clock_str() const
+std::string DateTime::get_clock_str() const noexcept
 {
     return format_time("%H:%M:%S.%9f");
 }
 
 // for example : "2007-3-4 8:33:57.762917263"
-std::string DateTime::get_datetime_str() const
+std::string DateTime::get_datetime_str() const noexcept
 {
     return get_date_str() + " " + get_clock_str();
 }
 
-std::string DateTime::to_string() const
+std::string DateTime::to_string() const noexcept
 {
     return get_datetime_str();
 }
@@ -429,7 +429,7 @@ static std::string format_decimal_tail(const char *format, double decimal)
 }
 
 // 格式化浮点，例如 "%3f", 0.1234 -> 123
-static std::string format_decimal_tails(const char *format, double decimal)
+static std::string format_decimal_tails(const char *format, double decimal) noexcept
 {
     assert(nullptr != format);
 
@@ -473,7 +473,7 @@ static std::string format_decimal_tails(const char *format, double decimal)
  * format time string
  * for example : "%m-%d %H:%M" -> "2-28 8:57"
  */
-std::string DateTime::format_time(const char *format) const
+std::string DateTime::format_time(const char *format) const noexcept
 {
     assert(nullptr != format);
     if (0 == format[0])
@@ -506,7 +506,7 @@ std::string DateTime::format_time(const char *format) const
 
 #if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_MINGW
 #   define PTW32_TIMESPEC_TO_FILETIME_OFFSET (LONGLONG)((((LONGLONG) 27111902LL << 32)+(LONGLONG) 3577643008LL ))
-void clock_getrealtime(struct timespec *ts)
+void clock_getrealtime(struct timespec *ts) noexcept
 {
     assert(nullptr != ts);
 

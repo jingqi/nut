@@ -20,13 +20,13 @@
 namespace nut
 {
 
-SaveFile::SaveFile(const std::string& path)
+SaveFile::SaveFile(const std::string& path) noexcept
     : _path(Path::realpath(path))
 {
     _tmp_path = _path + ".tmp";
 }
 
-SaveFile::~SaveFile()
+SaveFile::~SaveFile() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     if (INVALID_HANDLE_VALUE != _handle)
@@ -37,7 +37,7 @@ SaveFile::~SaveFile()
 #endif
 }
 
-bool SaveFile::open()
+bool SaveFile::open() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     assert(INVALID_HANDLE_VALUE == _handle);
@@ -56,7 +56,7 @@ bool SaveFile::open()
 #endif
 }
 
-bool SaveFile::write(const void *buf, size_t len)
+bool SaveFile::write(const void *buf, size_t len) noexcept
 {
     assert(nullptr != buf || 0 == len);
     if (nullptr == buf || 0 == len)
@@ -72,7 +72,7 @@ bool SaveFile::write(const void *buf, size_t len)
 #endif
 }
 
-void SaveFile::cancel()
+void SaveFile::cancel() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     if (INVALID_HANDLE_VALUE == _handle)
@@ -89,7 +89,7 @@ void SaveFile::cancel()
 #endif
 }
 
-bool SaveFile::commit()
+bool SaveFile::commit() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     assert(INVALID_HANDLE_VALUE != _handle);

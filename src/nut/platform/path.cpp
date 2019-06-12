@@ -25,7 +25,7 @@
 namespace nut
 {
 
-std::string Path::get_cwd()
+std::string Path::get_cwd() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     char buf[MAX_PATH + 1];
@@ -40,7 +40,7 @@ std::string Path::get_cwd()
 #endif
 }
 
-std::wstring Path::get_wcwd()
+std::wstring Path::get_wcwd() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     wchar_t buf[MAX_PATH + 1];
@@ -52,7 +52,7 @@ std::wstring Path::get_wcwd()
 #endif
 }
 
-void Path::chdir(const std::string& cwd)
+void Path::chdir(const std::string& cwd) noexcept
 {
     const std::string fullpath = Path::abspath(cwd);
 
@@ -63,7 +63,7 @@ void Path::chdir(const std::string& cwd)
 #endif
 }
 
-void Path::chdir(const std::wstring& cwd)
+void Path::chdir(const std::wstring& cwd) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     ::_wchdir(Path::abspath(cwd).c_str());
@@ -74,14 +74,14 @@ void Path::chdir(const std::wstring& cwd)
 
 #if NUT_PLATFORM_OS_WINDOWS
 template <typename C>
-static constexpr bool is_letter(C c)
+static constexpr bool is_letter(C c) noexcept
 {
     return (int('A') <= c && c <= int('Z')) || (int('a') <= c && c <= int('z'));
 }
 
 // "c:" or "c:/"
 template <typename STR>
-static bool starts_with_win_drive(const STR& path)
+static bool starts_with_win_drive(const STR& path) noexcept
 {
     const size_t len = path.length();
     return len >= 2 && is_letter(path.at(0)) && int(':') == path.at(1) &&
@@ -89,7 +89,7 @@ static bool starts_with_win_drive(const STR& path)
 }
 #endif
 
-bool Path::is_root(const std::string& path)
+bool Path::is_root(const std::string& path) noexcept
 {
     if (path.empty())
         return false;
@@ -104,7 +104,7 @@ bool Path::is_root(const std::string& path)
 #endif
 }
 
-bool Path::is_root(const std::wstring& path)
+bool Path::is_root(const std::wstring& path) noexcept
 {
     if (path.empty())
         return false;
@@ -119,7 +119,7 @@ bool Path::is_root(const std::wstring& path)
 #endif
 }
 
-bool Path::is_abs(const std::string& path)
+bool Path::is_abs(const std::string& path) noexcept
 {
     if (path.empty())
         return false;
@@ -136,7 +136,7 @@ bool Path::is_abs(const std::string& path)
 #endif
 }
 
-bool Path::is_abs(const std::wstring& path)
+bool Path::is_abs(const std::wstring& path) noexcept
 {
     if (path.empty())
         return false;
@@ -153,7 +153,7 @@ bool Path::is_abs(const std::wstring& path)
 #endif
 }
 
-std::string Path::abspath(const std::string& path)
+std::string Path::abspath(const std::string& path) noexcept
 {
     if (path.empty())
         return get_cwd();
@@ -259,7 +259,7 @@ std::string Path::abspath(const std::string& path)
     return result;
 }
 
-std::wstring Path::abspath(const std::wstring& path)
+std::wstring Path::abspath(const std::wstring& path) noexcept
 {
     if (path.empty())
         return get_wcwd();
@@ -365,7 +365,7 @@ std::wstring Path::abspath(const std::wstring& path)
     return result;
 }
 
-std::string Path::realpath(const std::string& path)
+std::string Path::realpath(const std::string& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return Path::abspath(path);
@@ -382,7 +382,7 @@ std::string Path::realpath(const std::string& path)
 #endif
 }
 
-std::wstring Path::realpath(const std::wstring& path)
+std::wstring Path::realpath(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return Path::abspath(path);
@@ -399,7 +399,7 @@ std::wstring Path::realpath(const std::wstring& path)
 #endif
 }
 
-std::string Path::relpath(const std::string& input_path, const std::string& ref_path)
+std::string Path::relpath(const std::string& input_path, const std::string& ref_path) noexcept
 {
     const std::string abs_input_path = Path::abspath(input_path);
     const std::string abs_ref_path = Path::abspath(ref_path);
@@ -470,7 +470,7 @@ std::string Path::relpath(const std::string& input_path, const std::string& ref_
     return result;
 }
 
-std::wstring Path::relpath(const std::wstring& input_path, const std::wstring& ref_path)
+std::wstring Path::relpath(const std::wstring& input_path, const std::wstring& ref_path) noexcept
 {
     std::wstring abs_input_path = Path::abspath(input_path);
     std::wstring abs_ref_path = Path::abspath(ref_path);
@@ -541,35 +541,35 @@ std::wstring Path::relpath(const std::wstring& input_path, const std::wstring& r
     return result;
 }
 
-std::string Path::dirname(const std::string& path)
+std::string Path::dirname(const std::string& path) noexcept
 {
     std::string ret;
     Path::split(path, &ret, nullptr);
     return ret;
 }
 
-std::wstring Path::dirname(const std::wstring& path)
+std::wstring Path::dirname(const std::wstring& path) noexcept
 {
     std::wstring ret;
     Path::split(path, &ret, nullptr);
     return ret;
 }
 
-std::string Path::basename(const std::string& path)
+std::string Path::basename(const std::string& path) noexcept
 {
     std::string ret;
     Path::split(path, nullptr, &ret);
     return ret;
 }
 
-std::wstring Path::basename(const std::wstring& path)
+std::wstring Path::basename(const std::wstring& path) noexcept
 {
     std::wstring ret;
     Path::split(path, nullptr, &ret);
     return ret;
 }
 
-void Path::split(const std::string& path, std::string *dirname, std::string *basename)
+void Path::split(const std::string& path, std::string *dirname, std::string *basename) noexcept
 {
     assert(nullptr != dirname || nullptr != basename);
 
@@ -611,7 +611,7 @@ void Path::split(const std::string& path, std::string *dirname, std::string *bas
         *basename = path.substr(pos + 1);
 }
 
-void Path::split(const std::wstring& path, std::wstring *dirname, std::wstring *basename)
+void Path::split(const std::wstring& path, std::wstring *dirname, std::wstring *basename) noexcept
 {
     assert(nullptr != dirname || nullptr != basename);
 
@@ -653,7 +653,7 @@ void Path::split(const std::wstring& path, std::wstring *dirname, std::wstring *
         *basename = path.substr(pos + 1);
 }
 
-std::vector<std::string> Path::split_entries(const std::string &path)
+std::vector<std::string> Path::split_entries(const std::string &path) noexcept
 {
     std::vector<std::string> result;
     std::string part;
@@ -698,7 +698,7 @@ std::vector<std::string> Path::split_entries(const std::string &path)
     return result;
 }
 
-std::vector<std::wstring> Path::split_entries(const std::wstring &path)
+std::vector<std::wstring> Path::split_entries(const std::wstring &path) noexcept
 {
     std::vector<std::wstring> result;
     std::wstring part;
@@ -743,7 +743,7 @@ std::vector<std::wstring> Path::split_entries(const std::wstring &path)
     return result;
 }
 
-void Path::split_drive(const std::string& path, std::string *drive, std::string *rest)
+void Path::split_drive(const std::string& path, std::string *drive, std::string *rest) noexcept
 {
     assert(nullptr != drive || nullptr != rest);
 
@@ -769,7 +769,7 @@ void Path::split_drive(const std::string& path, std::string *drive, std::string 
 #endif
 }
 
-void Path::split_drive(const std::wstring& path, std::wstring *drive, std::wstring *rest)
+void Path::split_drive(const std::wstring& path, std::wstring *drive, std::wstring *rest) noexcept
 {
     assert(nullptr != drive || nullptr != rest);
 
@@ -795,7 +795,7 @@ void Path::split_drive(const std::wstring& path, std::wstring *drive, std::wstri
 #endif
 }
 
-void Path::split_ext(const std::string& path, std::string *prefix, std::string *ext)
+void Path::split_ext(const std::string& path, std::string *prefix, std::string *ext) noexcept
 {
     assert(nullptr != prefix || nullptr != ext);
 
@@ -828,7 +828,7 @@ void Path::split_ext(const std::string& path, std::string *prefix, std::string *
         *ext = path.substr(pos);
 }
 
-void Path::split_ext(const std::wstring& path, std::wstring *prefix, std::wstring *ext)
+void Path::split_ext(const std::wstring& path, std::wstring *prefix, std::wstring *ext) noexcept
 {
     assert(nullptr != prefix || nullptr != ext);
 
@@ -861,7 +861,7 @@ void Path::split_ext(const std::wstring& path, std::wstring *prefix, std::wstrin
         *ext = path.substr(pos);
 }
 
-std::string Path::join(const std::string& a, const std::string& b)
+std::string Path::join(const std::string& a, const std::string& b) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     // 处理 windows 盘符 + 盘根路径
@@ -882,7 +882,7 @@ std::string Path::join(const std::string& a, const std::string& b)
     return result;
 }
 
-std::wstring Path::join(const std::wstring& a, const std::wstring& b)
+std::wstring Path::join(const std::wstring& a, const std::wstring& b) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     // 处理 windows 盘符 + 盘根路径
@@ -903,41 +903,41 @@ std::wstring Path::join(const std::wstring& a, const std::wstring& b)
     return result;
 }
 
-std::string Path::join(const std::string& a, const std::string& b, const std::string& c)
+std::string Path::join(const std::string& a, const std::string& b, const std::string& c) noexcept
 {
     return Path::join(Path::join(a, b), c);
 }
 
-std::wstring Path::join(const std::wstring& a, const std::wstring& b, const std::wstring& c)
+std::wstring Path::join(const std::wstring& a, const std::wstring& b, const std::wstring& c) noexcept
 {
     return Path::join(Path::join(a, b), c);
 }
 
 std::string Path::join(const std::string& a, const std::string& b, const std::string& c,
-                       const std::string& d)
+                       const std::string& d) noexcept
 {
     return Path::join(Path::join(a, b, c), d);
 }
 
 std::wstring Path::join(const std::wstring& a, const std::wstring& b, const std::wstring& c,
-                        const std::wstring& d)
+                        const std::wstring& d) noexcept
 {
     return Path::join(Path::join(a, b, c), d);
 }
 
 std::string Path::join(const std::string& a, const std::string& b, const std::string& c,
-                       const std::string& d, const std::string& e)
+                       const std::string& d, const std::string& e) noexcept
 {
     return Path::join(Path::join(a, b, c, d), e);
 }
 
 std::wstring Path::join(const std::wstring& a, const std::wstring& b, const std::wstring& c,
-                        const std::wstring& d, const std::wstring& e)
+                        const std::wstring& d, const std::wstring& e) noexcept
 {
     return Path::join(Path::join(a, b, c, d), e);
 }
 
-bool Path::exists(const std::string& path)
+bool Path::exists(const std::string& path) noexcept
 {
     const std::string fullpath = Path::abspath(path);
 
@@ -948,7 +948,7 @@ bool Path::exists(const std::string& path)
 #endif
 }
 
-bool Path::exists(const std::wstring& path)
+bool Path::exists(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return -1 != ::_waccess(Path::abspath(path).c_str(), 0);
@@ -957,7 +957,7 @@ bool Path::exists(const std::wstring& path)
 #endif
 }
 
-bool Path::lexists(const std::string& path)
+bool Path::lexists(const std::string& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return Path::exists(path);
@@ -976,7 +976,7 @@ bool Path::lexists(const std::string& path)
 #endif
 }
 
-bool Path::lexists(const std::wstring& path)
+bool Path::lexists(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return Path::exists(path);
@@ -985,7 +985,7 @@ bool Path::lexists(const std::wstring& path)
 #endif
 }
 
-time_t Path::get_atime(const std::string& path)
+time_t Path::get_atime(const std::string& path) noexcept
 {
     const std::string fullpath = Path::abspath(path);
 
@@ -1001,7 +1001,7 @@ time_t Path::get_atime(const std::string& path)
 #endif
 }
 
-time_t Path::get_atime(const std::wstring& path)
+time_t Path::get_atime(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
@@ -1012,7 +1012,7 @@ time_t Path::get_atime(const std::wstring& path)
 #endif
 }
 
-time_t Path::get_latime(const std::string& path)
+time_t Path::get_latime(const std::string& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return Path::get_atime(path);
@@ -1024,7 +1024,7 @@ time_t Path::get_latime(const std::string& path)
 #endif
 }
 
-time_t Path::get_latime(const std::wstring& path)
+time_t Path::get_latime(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return Path::get_atime(path);
@@ -1033,7 +1033,7 @@ time_t Path::get_latime(const std::wstring& path)
 #endif
 }
 
-time_t Path::get_mtime(const std::string& path)
+time_t Path::get_mtime(const std::string& path) noexcept
 {
     const std::string fullpath = Path::abspath(path);
 
@@ -1049,7 +1049,7 @@ time_t Path::get_mtime(const std::string& path)
 #endif
 }
 
-time_t Path::get_mtime(const std::wstring& path)
+time_t Path::get_mtime(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
@@ -1060,7 +1060,7 @@ time_t Path::get_mtime(const std::wstring& path)
 #endif
 }
 
-time_t Path::get_lmtime(const std::string& path)
+time_t Path::get_lmtime(const std::string& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return Path::get_mtime(path);
@@ -1072,7 +1072,7 @@ time_t Path::get_lmtime(const std::string& path)
 #endif
 }
 
-time_t Path::get_lmtime(const std::wstring& path)
+time_t Path::get_lmtime(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return Path::get_mtime(path);
@@ -1081,7 +1081,7 @@ time_t Path::get_lmtime(const std::wstring& path)
 #endif
 }
 
-time_t Path::get_ctime(const std::string& path)
+time_t Path::get_ctime(const std::string& path) noexcept
 {
     const std::string fullpath = Path::abspath(path);
 
@@ -1097,7 +1097,7 @@ time_t Path::get_ctime(const std::string& path)
 #endif
 }
 
-time_t Path::get_ctime(const std::wstring& path)
+time_t Path::get_ctime(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
@@ -1108,7 +1108,7 @@ time_t Path::get_ctime(const std::wstring& path)
 #endif
 }
 
-time_t Path::get_lctime(const std::string& path)
+time_t Path::get_lctime(const std::string& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return Path::get_ctime(path);
@@ -1120,7 +1120,7 @@ time_t Path::get_lctime(const std::string& path)
 #endif
 }
 
-time_t Path::get_lctime(const std::wstring& path)
+time_t Path::get_lctime(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return Path::get_ctime(path);
@@ -1129,7 +1129,7 @@ time_t Path::get_lctime(const std::wstring& path)
 #endif
 }
 
-long long Path::get_size(const std::string& path)
+long long Path::get_size(const std::string& path) noexcept
 {
     const std::string fullpath = Path::abspath(path);
 
@@ -1145,7 +1145,7 @@ long long Path::get_size(const std::string& path)
 #endif
 }
 
-long long Path::get_size(const std::wstring& path)
+long long Path::get_size(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     struct _stat info;
@@ -1156,7 +1156,7 @@ long long Path::get_size(const std::wstring& path)
 #endif
 }
 
-bool Path::is_link(const std::string& path)
+bool Path::is_link(const std::string& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
@@ -1169,7 +1169,7 @@ bool Path::is_link(const std::string& path)
 #endif
 }
 
-bool Path::is_link(const std::wstring& path)
+bool Path::is_link(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     UNUSED(path);
@@ -1179,7 +1179,7 @@ bool Path::is_link(const std::wstring& path)
 #endif
 }
 
-bool Path::is_dir(const std::string& path)
+bool Path::is_dir(const std::string& path) noexcept
 {
     const std::string fullpath = Path::abspath(path);
 
@@ -1193,7 +1193,7 @@ bool Path::is_dir(const std::string& path)
 #endif
 }
 
-bool Path::is_dir(const std::wstring& path)
+bool Path::is_dir(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return 0 != (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(Path::abspath(path).c_str()));
@@ -1202,7 +1202,7 @@ bool Path::is_dir(const std::wstring& path)
 #endif
 }
 
-bool Path::is_file(const std::string& path)
+bool Path::is_file(const std::string& path) noexcept
 {
     const std::string fullpath = Path::abspath(path);
 
@@ -1216,7 +1216,7 @@ bool Path::is_file(const std::string& path)
 #endif
 }
 
-bool Path::is_file(const std::wstring& path)
+bool Path::is_file(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return 0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(Path::abspath(path).c_str()));

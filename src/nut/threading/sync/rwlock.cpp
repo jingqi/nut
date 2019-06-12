@@ -8,7 +8,7 @@
 namespace nut
 {
 
-RwLock::RwLock()
+RwLock::RwLock() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::InitializeSRWLock(&_rwlock);
@@ -19,7 +19,7 @@ RwLock::RwLock()
 #endif
 }
 
-RwLock::~RwLock()
+RwLock::~RwLock() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     /** SRWLock 无需删除或销毁，系统自动执行清理工作 */
@@ -30,7 +30,7 @@ RwLock::~RwLock()
 #endif
 }
 
-void RwLock::lock_read()
+void RwLock::lock_read() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::AcquireSRWLockShared(&_rwlock);
@@ -41,7 +41,7 @@ void RwLock::lock_read()
 #endif
 }
 
-bool RwLock::try_lock_read()
+bool RwLock::try_lock_read() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     return FALSE != ::TryAcquireSRWLockShared(&_rwlock);
@@ -50,7 +50,7 @@ bool RwLock::try_lock_read()
 #endif
 }
 
-void RwLock::unlock_read()
+void RwLock::unlock_read() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::ReleaseSRWLockShared(&_rwlock);
@@ -61,7 +61,7 @@ void RwLock::unlock_read()
 #endif
 }
 
-void RwLock::lock_write()
+void RwLock::lock_write() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::AcquireSRWLockExclusive(&_rwlock);
@@ -72,7 +72,7 @@ void RwLock::lock_write()
 #endif
 }
 
-bool RwLock::try_lock_write()
+bool RwLock::try_lock_write() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     return FALSE != ::TryAcquireSRWLockExclusive(&_rwlock);
@@ -81,7 +81,7 @@ bool RwLock::try_lock_write()
 #endif
 }
 
-void RwLock::unlock_write()
+void RwLock::unlock_write() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::ReleaseSRWLockExclusive(&_rwlock);

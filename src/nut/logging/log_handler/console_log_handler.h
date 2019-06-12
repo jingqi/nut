@@ -12,9 +12,9 @@ namespace nut
 class NUT_API ConsoleLogHandler : public LogHandler
 {
 public:
-    explicit ConsoleLogHandler(bool abbr_mode = true);
+    explicit ConsoleLogHandler(bool abbr_mode = true) noexcept;
 
-    virtual void handle_log(const LogRecord& l) override;
+    virtual void handle_log(const LogRecord& l) noexcept override;
 
 private:
     bool _in_a_tty = false;

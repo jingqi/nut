@@ -16,15 +16,15 @@ private:
     static constexpr int32_t DESTRUCTED = 0xDEADBEEF; /* magic dead-beaf */
 
 public:
-    DestroyChecker() = default;
+    DestroyChecker() noexcept = default;
 
-    ~DestroyChecker()
+    ~DestroyChecker() noexcept
     {
         assert(CONSTRUCTED == _tag);
         _tag = DESTRUCTED;
     }
 
-    void assert_alive() const
+    void assert_alive() const noexcept
     {
         assert(CONSTRUCTED == _tag);
     }

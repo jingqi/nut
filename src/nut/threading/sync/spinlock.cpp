@@ -8,7 +8,7 @@
 namespace nut
 {
 
-SpinLock::SpinLock()
+SpinLock::SpinLock() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::InitializeCriticalSection(&_critical_section);
@@ -27,7 +27,7 @@ SpinLock::SpinLock()
 #endif
 }
 
-SpinLock::~SpinLock()
+SpinLock::~SpinLock() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::DeleteCriticalSection(&_critical_section);
@@ -43,23 +43,23 @@ SpinLock::~SpinLock()
 }
 
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
-CRITICAL_SECTION* SpinLock::inner_mutex()
+CRITICAL_SECTION* SpinLock::inner_mutex() noexcept
 {
     return &_critical_section;
 }
 #elif NUT_PLATFORM_OS_MACOS
-pthread_mutex_t* SpinLock::inner_mutex()
+pthread_mutex_t* SpinLock::inner_mutex() noexcept
 {
     return &_spinlock;
 }
 #else
-pthread_spinlock_t* SpinLock::inner_mutex()
+pthread_spinlock_t* SpinLock::inner_mutex() noexcept
 {
     return &_spinlock;
 }
 #endif
 
-void SpinLock::lock()
+void SpinLock::lock() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::EnterCriticalSection(&_critical_section);
@@ -74,7 +74,7 @@ void SpinLock::lock()
 #endif
 }
 
-bool SpinLock::trylock()
+bool SpinLock::trylock() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     return FALSE != ::TryEnterCriticalSection(&_critical_section);
@@ -85,7 +85,7 @@ bool SpinLock::trylock()
 #endif
 }
 
-void SpinLock::unlock()
+void SpinLock::unlock() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     ::LeaveCriticalSection(&_critical_section);

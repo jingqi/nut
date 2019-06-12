@@ -20,15 +20,15 @@ private:
     static constexpr unsigned MAX_FREE_NUM = 50; // 最多缓存的空闲块数
 
 public:
-    explicit lengthfixed_stmp(size_t granularity, memory_allocator *ma = nullptr);
-    virtual ~lengthfixed_stmp();
+    explicit lengthfixed_stmp(size_t granularity, memory_allocator *ma = nullptr) noexcept;
+    virtual ~lengthfixed_stmp() noexcept override;
 
-    bool is_empty() const;
-    void clear();
+    bool is_empty() const noexcept;
+    void clear() noexcept;
 
-    virtual void* alloc(size_t sz) override;
-    virtual void* realloc(void *p, size_t old_sz, size_t new_sz) override;
-    virtual void free(void *p, size_t sz) override;
+    virtual void* alloc(size_t sz) noexcept override;
+    virtual void* realloc(void *p, size_t old_sz, size_t new_sz) noexcept override;
+    virtual void free(void *p, size_t sz) noexcept override;
 
 private:
     lengthfixed_stmp(const lengthfixed_stmp&) = delete;
@@ -50,15 +50,15 @@ private:
     static constexpr unsigned MAX_FREE_NUM = 50; // 最多缓存的空闲块数
 
 public:
-    explicit lengthfixed_mtmp(size_t granularity, memory_allocator *ma = nullptr);
-    virtual ~lengthfixed_mtmp();
+    explicit lengthfixed_mtmp(size_t granularity, memory_allocator *ma = nullptr) noexcept;
+    virtual ~lengthfixed_mtmp() noexcept override;
 
-    bool is_empty() const;
-    void clear();
+    bool is_empty() const noexcept;
+    void clear() noexcept;
 
-    virtual void* alloc(size_t sz) override;
-    virtual void* realloc(void *p, size_t old_sz, size_t new_sz) override;
-    virtual void free(void *p, size_t sz) override;
+    virtual void* alloc(size_t sz) noexcept override;
+    virtual void* realloc(void *p, size_t old_sz, size_t new_sz) noexcept override;
+    virtual void free(void *p, size_t sz) noexcept override;
 
 private:
     lengthfixed_mtmp(const lengthfixed_mtmp&) = delete;

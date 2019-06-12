@@ -60,7 +60,7 @@ private:
     struct Entry
     {
     public:
-        void construct_plump(K&& k, V&& v, hash_type rh)
+        void construct_plump(K&& k, V&& v, hash_type rh) noexcept
         {
             assert(0 != (rh & 0x01)); // Not dummy
 
@@ -70,7 +70,7 @@ private:
             const_cast<hash_type&>(reversed_hash) = rh;
         }
 
-        void construct_plump(const K& k, V&& v, hash_type rh)
+        void construct_plump(const K& k, V&& v, hash_type rh) noexcept
         {
             assert(0 != (rh & 0x01)); // Not dummy
 
@@ -80,7 +80,7 @@ private:
             const_cast<hash_type&>(reversed_hash) = rh;
         }
 
-        void construct_plump(K& k, const V& v, hash_type rh)
+        void construct_plump(K& k, const V& v, hash_type rh) noexcept
         {
             assert(0 != (rh & 0x01)); // Not dummy
 
@@ -90,7 +90,7 @@ private:
             const_cast<hash_type&>(reversed_hash) = rh;
         }
 
-        void construct_plump(const K& k, const V& v, hash_type rh)
+        void construct_plump(const K& k, const V& v, hash_type rh) noexcept
         {
             assert(0 != (rh & 0x01)); // Not dummy
 
@@ -100,7 +100,7 @@ private:
             const_cast<hash_type&>(reversed_hash) = rh;
         }
 
-        void construct_dummy(hash_type rh, Entry *n)
+        void construct_dummy(hash_type rh, Entry *n) noexcept
         {
             assert(0 == (rh & 0x01)); // Dummy
 
@@ -108,7 +108,7 @@ private:
             const_cast<hash_type&>(reversed_hash) = rh;
         }
 
-        void destruct()
+        void destruct() noexcept
         {
             (&next)->~AtomicStampedPtr();
             if (!is_dummy())
@@ -119,19 +119,19 @@ private:
         }
 
         // Only used by 'HPRetireList'
-        static void delete_entry(void *n)
+        static void delete_entry(void *n) noexcept
         {
             assert(nullptr != n);
             ((Entry*) n)->destruct();
             ::free(n);
         }
 
-        bool is_dummy() const
+        bool is_dummy() const noexcept
         {
             return 0 == (reversed_hash & 0x01);
         }
 
-        bool is_retired() const
+        bool is_retired() const noexcept
         {
             return IS_RETIRED(next.load(std::memory_order_relaxed).stamp);
         }
@@ -151,7 +151,7 @@ private:
     };
 
 public:
-    ConcurrentHashMap()
+    ConcurrentHashMap() noexcept
     {
         ::memset(_trunks, 0, sizeof(Entry**) * TRUNK_COUNT);
 
@@ -170,7 +170,7 @@ public:
         }
     }
 
-    ~ConcurrentHashMap()
+    ~ConcurrentHashMap() noexcept
     {
         Entry *p = _trunks[0]; // Head of link
         while (nullptr != p)
@@ -190,17 +190,17 @@ public:
             ::free(_trunks[i]);
     }
 
-    size_t size() const
+    size_t size() const noexcept
     {
         return _size.load(std::memory_order_relaxed);
     }
 
-    bool contains_key(const K& k) const
+    bool contains_key(const K& k) const noexcept
     {
         return get(k, nullptr);
     }
 
-    bool get(const K& k, V *v) const
+    bool get(const K& k, V *v) const noexcept
     {
         // Locate bucket
         const hash_type h = (hash_type) _hash(k);
@@ -215,7 +215,7 @@ public:
     /**
      * @return true if insert success, else old data found
      */
-    bool insert(const K& k, V&& v)
+    bool insert(const K& k, V&& v) noexcept
     {
         // Locate bucket
         const hash_type h = (hash_type) _hash(k);
@@ -278,7 +278,7 @@ public:
         return false;
     }
 
-    bool insert(const K& k, const V& v)
+    bool insert(const K& k, const V& v) noexcept
     {
         // Locate bucket
         const hash_type h = (hash_type) _hash(k);
@@ -344,7 +344,7 @@ public:
     /**
      * @return true if data removed, else nothing happened
      */
-    bool remove(const K& k, V *v = nullptr)
+    bool remove(const K& k, V *v = nullptr) noexcept
     {
         // Locate bucket
         const hash_type h = (hash_type) _hash(k);
@@ -374,7 +374,7 @@ public:
         return false;
     }
 
-    void clear()
+    void clear() noexcept
     {
         Entry *head = _trunks[0]; // Head of link
         while (true)
@@ -397,7 +397,7 @@ private:
     ConcurrentHashMap(const ConcurrentHashMap&) = delete;
     ConcurrentHashMap& operator=(const ConcurrentHashMap&) = delete;
 
-    Entry *get_bucket(hash_type h) const
+    Entry *get_bucket(hash_type h) const noexcept
     {
         const size_t bss = _bucket_size_shift.load(std::memory_order_acquire);
         const hash_type mask = ~(~((hash_type) 0) << bss);// Lower bits mask, eg. 0x0f
@@ -418,7 +418,7 @@ private:
      *        的值，表明 prev 是 retired
      */
     bool search_link(Entry *head, const K *key, hash_type rh, Entry **pprev = nullptr,
-                     StampedPtr<Entry> *pitem = nullptr, V *pvalue = nullptr) const
+                     StampedPtr<Entry> *pitem = nullptr, V *pvalue = nullptr) const noexcept
     {
         assert(nullptr != head && head->is_dummy());
         assert(nullptr != key || nullptr == pvalue);
@@ -489,7 +489,7 @@ private:
      *        的值，表明 prev 是 retired
      */
     bool get_first_removeable(Entry *head, Entry **phead, Entry **pprev,
-                              StampedPtr<Entry> *pitem) const
+                              StampedPtr<Entry> *pitem) const noexcept
     {
         assert(nullptr != head && head->is_dummy());
         assert(nullptr != phead && nullptr != pprev && nullptr != pitem);
@@ -546,7 +546,7 @@ private:
      *         0, failed
      *         -1, retry
      */
-    int remove_item(Entry *prev, const StampedPtr<Entry>& item, V *pvalue = nullptr)
+    int remove_item(Entry *prev, const StampedPtr<Entry>& item, V *pvalue = nullptr) noexcept
     {
         if (IS_RETIRED(item.stamp))
             return -1; // 'prev' is deleted by some other thread, please retry
@@ -598,7 +598,7 @@ private:
         }
     }
 
-    bool insert_dummy_entry(Entry *head, Entry *new_item)
+    bool insert_dummy_entry(Entry *head, Entry *new_item) noexcept
     {
         assert(nullptr != head && head->is_dummy());
         assert(nullptr != new_item && new_item->is_dummy());
@@ -645,7 +645,7 @@ private:
         return false;
     }
 
-    void rehash(size_t expect_bss)
+    void rehash(size_t expect_bss) noexcept
     {
         if (!_rehash_lock.trylock())
             return;

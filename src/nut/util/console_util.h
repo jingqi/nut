@@ -27,21 +27,21 @@ class NUT_API ConsoleUtil
 {
 public:
     // 判断是否运行在终端中
-    static bool isatty();
+    static bool isatty() noexcept;
 
     // 设置终端文字前景色
     static void set_text_color(ConsoleColor forecolor = ConsoleColor::Default,
-                               ConsoleColor backcolor = ConsoleColor::Default);
+                               ConsoleColor backcolor = ConsoleColor::Default) noexcept;
 
     // 设置终端文字背景色
     static void set_back_ground_color(ConsoleColor forecolor = ConsoleColor::Default,
-                                      ConsoleColor backcolor = ConsoleColor::Default);
+                                      ConsoleColor backcolor = ConsoleColor::Default) noexcept;
 
     // 暂停，等待用户按键
-    static void pause();
+    static void pause() noexcept;
 
     // 从终端中读取密码
-    static std::string get_password();
+    static std::string get_password() noexcept;
 
 private:
     ConsoleUtil() = delete;

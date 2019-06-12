@@ -26,9 +26,9 @@ public:
      * @param circle_size 循环周期(最多日志文件数)
      */
     CircleFileByTimeLogHandler(const std::string& dir_path,
-                               const std::string& prefix, size_t circle_size);
+                               const std::string& prefix, size_t circle_size) noexcept;
 
-    virtual void handle_log(const LogRecord& rec) override;
+    virtual void handle_log(const LogRecord& rec) noexcept override;
 
 private:
     CircleFileByTimeLogHandler(const CircleFileByTimeLogHandler&) = delete;

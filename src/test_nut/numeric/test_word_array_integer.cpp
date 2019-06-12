@@ -10,7 +10,7 @@ using namespace nut;
 
 class TestWordArrayInteger : public TestFixture
 {
-    virtual void register_cases() override
+    virtual void register_cases() noexcept override
     {
         NUT_REGISTER_CASE(test_bit_count);
         NUT_REGISTER_CASE(test_reverse_bits);

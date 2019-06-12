@@ -18,26 +18,26 @@ class NUT_API memory_allocator
     NUT_REF_COUNTABLE
 
 public:
-    memory_allocator() = default;
-    virtual ~memory_allocator() = default;
+    memory_allocator() noexcept = default;
+    virtual ~memory_allocator() noexcept = default;
 
     /**
      * @param sz Should greater than 0
      */
-    virtual void* alloc(size_t sz) = 0;
+    virtual void* alloc(size_t sz) noexcept = 0;
 
     /**
      * @param p Should not be nullptr
      * @param new_sz Should greater then 0
      * @param old_sz Should greater then 0
      */
-    virtual void* realloc(void *p, size_t old_sz, size_t new_sz) = 0;
+    virtual void* realloc(void *p, size_t old_sz, size_t new_sz) noexcept = 0;
 
     /**
      * @param p Should not be nullptr
      * @param sz Should greater then 0
      */
-    virtual void free(void *p, size_t sz) = 0;
+    virtual void free(void *p, size_t sz) noexcept = 0;
 
 private:
     memory_allocator(const memory_allocator&) = delete;
@@ -45,7 +45,7 @@ private:
 };
 
 
-inline void* ma_alloc(memory_allocator *ma, size_t sz)
+inline void* ma_alloc(memory_allocator *ma, size_t sz) noexcept
 {
     assert(sz > 0);
     if (nullptr == ma)
@@ -53,7 +53,7 @@ inline void* ma_alloc(memory_allocator *ma, size_t sz)
     return ma->alloc(sz);
 }
 
-inline void* ma_realloc(memory_allocator *ma, void *p, size_t old_sz, size_t new_sz)
+inline void* ma_realloc(memory_allocator *ma, void *p, size_t old_sz, size_t new_sz) noexcept
 {
     assert(nullptr != p && old_sz > 0 && new_sz > 0);
     if (nullptr == ma)
@@ -61,7 +61,7 @@ inline void* ma_realloc(memory_allocator *ma, void *p, size_t old_sz, size_t new
     return ma->realloc(p, old_sz, new_sz);
 }
 
-inline void ma_free(memory_allocator *ma, void *p, size_t sz)
+inline void ma_free(memory_allocator *ma, void *p, size_t sz) noexcept
 {
     assert(nullptr != p && sz > 0);
     if (nullptr == ma)

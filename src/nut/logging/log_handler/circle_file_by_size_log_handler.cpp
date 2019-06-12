@@ -19,7 +19,7 @@ namespace nut
 {
 
 CircleFileBySizeLogHandler::CircleFileBySizeLogHandler(const std::string& dir_path,
-        const std::string& prefix, size_t circle_size, size_t max_file_size, bool cross_file)
+        const std::string& prefix, size_t circle_size, size_t max_file_size, bool cross_file) noexcept
     : _dir_path(dir_path), _file_prefix(prefix), _circle_size(circle_size),
       _max_file_size(max_file_size), _cross_file(cross_file)
 {
@@ -27,7 +27,7 @@ CircleFileBySizeLogHandler::CircleFileBySizeLogHandler(const std::string& dir_pa
     circle_once();
 }
 
-void CircleFileBySizeLogHandler::reopen(const char *file)
+void CircleFileBySizeLogHandler::reopen(const char *file) noexcept
 {
     assert(nullptr != file);
 
@@ -50,7 +50,7 @@ void CircleFileBySizeLogHandler::reopen(const char *file)
     _file_size += ::strlen(first_msg);
 }
 
-void CircleFileBySizeLogHandler::circle_once()
+void CircleFileBySizeLogHandler::circle_once() noexcept
 {
     // 关闭之前打开的文件, 强制刷新磁盘, 避免获取文件大小的结果不准确
     _ofs.close();
@@ -139,7 +139,7 @@ void CircleFileBySizeLogHandler::circle_once()
     reopen(full_path.c_str());
 }
 
-void CircleFileBySizeLogHandler::handle_log(const LogRecord& rec)
+void CircleFileBySizeLogHandler::handle_log(const LogRecord& rec) noexcept
 {
     // Write log record
     const std::string msg = rec.to_string();

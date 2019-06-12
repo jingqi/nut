@@ -17,32 +17,32 @@ namespace nut
 class NUT_API XmlWriter
 {
 public:
-    explicit XmlWriter(std::ostream *os = nullptr);
+    explicit XmlWriter(std::ostream *os = nullptr) noexcept;
 
-    std::ostream* get_output_stream() const;
-    void set_output_stream(std::ostream *os);
+    std::ostream* get_output_stream() const noexcept;
+    void set_output_stream(std::ostream *os) noexcept;
 
-    void start_element(const std::string& name);
-    void end_element();
+    void start_element(const std::string& name) noexcept;
+    void end_element() noexcept;
 
-    void write_attribute(const std::string& name, const std::string& value);
-    void write_text(const std::string& text);
-    void write_comment(const std::string& comment);
+    void write_attribute(const std::string& name, const std::string& value) noexcept;
+    void write_text(const std::string& text) noexcept;
+    void write_comment(const std::string& comment) noexcept;
 
 private:
-    void write(const char *s, ssize_t len = -1);
-    void write(const std::string& s);
-    void write_encode(const char *s, ssize_t len = -1);
+    void write(const char *s, ssize_t len = -1) noexcept;
+    void write(const std::string& s) noexcept;
+    void write_encode(const char *s, ssize_t len = -1) noexcept;
 
 private:
     class ElemState
     {
     public:
-        explicit ElemState(std::string&& n)
+        explicit ElemState(std::string&& n) noexcept
             : name(std::forward<std::string>(n))
         {}
 
-        explicit ElemState(const std::string& n)
+        explicit ElemState(const std::string& n) noexcept
             : name(n)
         {}
 

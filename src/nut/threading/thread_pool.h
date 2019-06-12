@@ -33,45 +33,45 @@ public:
      * @param max_sleep_seconds 线程空闲多长时间后自我终止; 0 表示无限长时间
      */
     explicit ThreadPool(size_t max_thread_number = 0,
-                        unsigned max_sleep_seconds = 300);
-    ~ThreadPool();
+                        unsigned max_sleep_seconds = 300) noexcept;
+    ~ThreadPool() noexcept;
 
-    size_t get_max_thread_number() const;
-    void set_max_thread_number(size_t max_thread_number);
+    size_t get_max_thread_number() const noexcept;
+    void set_max_thread_number(size_t max_thread_number) noexcept;
 
-    size_t get_busy_thread_number();
+    size_t get_busy_thread_number() noexcept;
 
-    unsigned get_max_sleep_seconds() const;
-    void set_max_sleep_seconds(unsigned max_sleep_seconds);
+    unsigned get_max_sleep_seconds() const noexcept;
+    void set_max_sleep_seconds(unsigned max_sleep_seconds) noexcept;
 
     /**
      * 添加一个任务; 可能会启动新线程
      */
-    bool add_task(task_type&& task);
-    bool add_task(const task_type& task);
+    bool add_task(task_type&& task) noexcept;
+    bool add_task(const task_type& task) noexcept;
 
     /**
      * 阻塞，直到所有线程都空闲
      */
-    void wait_until_all_idle();
+    void wait_until_all_idle() noexcept;
 
     /**
      * 给所有线程发送中断信号
      */
-    void interrupt();
+    void interrupt() noexcept;
 
     /**
      * 等待所有线程退出
      */
-    void join();
+    void join() noexcept;
 
 private:
     ThreadPool(const ThreadPool& x) = delete;
     ThreadPool& operator=(const ThreadPool& x) = delete;
 
-    void thread_process();
-    void thread_finalize();
-    void clean_dead_threads();
+    void thread_process() noexcept;
+    void thread_finalize() noexcept;
+    void clean_dead_threads() noexcept;
 
 private:
     // 最大线程数，0 表示无限

@@ -64,23 +64,23 @@ public:
         : ptr(p), stamp(s)
     {}
 
-    bool operator==(const StampedPtr<T>& x) const
+    bool operator==(const StampedPtr<T>& x) const noexcept
     {
         return ptr == x.ptr && stamp == x.stamp;
     }
 
-    bool operator!=(const StampedPtr<T>& x) const
+    bool operator!=(const StampedPtr<T>& x) const noexcept
     {
         return !(*this == x);
     }
 
-    void clear()
+    void clear() noexcept
     {
         ptr = nullptr;
         stamp = 0;
     }
 
-    void set(T *p, stamp_type s)
+    void set(T *p, stamp_type s) noexcept
     {
         ptr = p;
         stamp = s;
@@ -117,10 +117,10 @@ template <typename T>
 class alignas(sizeof(StampedPtr<void>)) AtomicStampedPtr
 {
 public:
-    AtomicStampedPtr()
+    AtomicStampedPtr() noexcept
     {}
 
-    AtomicStampedPtr(T *p, typename StampedPtr<T>::stamp_type s)
+    AtomicStampedPtr(T *p, typename StampedPtr<T>::stamp_type s) noexcept
     {
         assert(sizeof(AtomicStampedPtr<T>) == sizeof(StampedPtr<T>));
         reinterpret_cast<StampedPtr<T>*>(this)->set(p, s);
@@ -194,7 +194,7 @@ public:
 
 private:
     static bool atomic_cas(int64_t volatile* dest, int64_t *expected,
-                           int64_t low_desired, int64_t high_desired)
+                           int64_t low_desired, int64_t high_desired) noexcept
     {
         assert(nullptr != dest && nullptr != expected);
 
@@ -238,10 +238,10 @@ private:
     static_assert(sizeof(cas_type) == sizeof(T*) * 2, "cas_type size error");
 
 public:
-    AtomicStampedPtr()
+    AtomicStampedPtr() noexcept
     {}
 
-    AtomicStampedPtr(T *p, typename StampedPtr<T>::stamp_type s)
+    AtomicStampedPtr(T *p, typename StampedPtr<T>::stamp_type s) noexcept
     {
         assert(sizeof(AtomicStampedPtr<T>) == sizeof(StampedPtr<T>));
         reinterpret_cast<StampedPtr<T>*>(this)->set(p, s);
@@ -317,7 +317,7 @@ public:
     }
 
 private:
-    static int to_builtin_memorder(std::memory_order order)
+    static int to_builtin_memorder(std::memory_order order) noexcept
     {
         switch (order)
         {
@@ -357,12 +357,12 @@ template <typename T>
 class alignas(sizeof(StampedPtr<void>)) AtomicStampedPtr
 {
 public:
-    AtomicStampedPtr()
+    AtomicStampedPtr() noexcept
     {
         assert(_stamped_ptr.is_lock_free());
     }
 
-    AtomicStampedPtr(T *p, typename StampedPtr<T>::stamp_type s)
+    AtomicStampedPtr(T *p, typename StampedPtr<T>::stamp_type s) noexcept
         : _stamped_ptr(StampedPtr<T>(p, s))
     {
         assert(_stamped_ptr.is_lock_free());

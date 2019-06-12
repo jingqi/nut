@@ -57,17 +57,17 @@ static const uint16_t crc_table[256] = {
 };
 #endif
 
-void CRC16::reset()
+void CRC16::reset() noexcept
 {
     _crc16 = 0;
 }
 
-void CRC16::update(uint8_t byte)
+void CRC16::update(uint8_t byte) noexcept
 {
     update(&byte, 1);
 }
 
-void CRC16::update(const void *data, size_t cb)
+void CRC16::update(const void *data, size_t cb) noexcept
 {
     assert(nullptr != data);
 
@@ -112,7 +112,7 @@ void CRC16::update(const void *data, size_t cb)
 #endif
 }
 
-uint16_t CRC16::get_result() const
+uint16_t CRC16::get_result() const noexcept
 {
     return _crc16;
 }

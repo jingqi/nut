@@ -14,7 +14,7 @@
 namespace nut
 {
 
-void BitStream::_ensure_cap(size_t new_bit_size)
+void BitStream::_ensure_cap(size_t new_bit_size) noexcept
 {
     // XXX 常量运算留给编译器来优化
     const size_t new_word_size = (new_bit_size + sizeof(word_type) * 8 - 1) / (sizeof(word_type) * 8);
@@ -30,12 +30,12 @@ void BitStream::_ensure_cap(size_t new_bit_size)
     _word_cap = new_word_cap;
 }
 
-size_t BitStream::_word_size() const
+size_t BitStream::_word_size() const noexcept
 {
     return (_bit_size + sizeof(word_type) * 8 - 1) / (sizeof(word_type) * 8);
 }
 
-BitStream::BitStream(size_t bit_size, int fill_bit)
+BitStream::BitStream(size_t bit_size, int fill_bit) noexcept
 {
     assert(0 == fill_bit || 1 == fill_bit);
     if (0 == bit_size)
@@ -46,7 +46,7 @@ BitStream::BitStream(size_t bit_size, int fill_bit)
     _bit_size = bit_size;
 }
 
-BitStream::BitStream(const void *buf, size_t bit_size)
+BitStream::BitStream(const void *buf, size_t bit_size) noexcept
 {
     assert(nullptr != buf || 0 == bit_size);
     if (0 == bit_size)
@@ -57,7 +57,7 @@ BitStream::BitStream(const void *buf, size_t bit_size)
     _bit_size = bit_size;
 }
 
-BitStream::BitStream(const std::string& s)
+BitStream::BitStream(const std::string& s) noexcept
 {
     _ensure_cap(s.length());
     for (size_t i = 0, len = s.length(); i < len; ++i)
@@ -74,7 +74,7 @@ BitStream::BitStream(const std::string& s)
     }
 }
 
-BitStream::BitStream(const std::wstring& s)
+BitStream::BitStream(const std::wstring& s) noexcept
 {
     _ensure_cap(s.length());
     for (size_t i = 0, len = s.length(); i < len; ++i)
@@ -91,7 +91,7 @@ BitStream::BitStream(const std::wstring& s)
     }
 }
 
-BitStream::BitStream(BitStream&& x)
+BitStream::BitStream(BitStream&& x) noexcept
     : _buf(x._buf), _word_cap(x._word_cap), _bit_size(x._bit_size)
 {
     x._buf = nullptr;
@@ -99,7 +99,7 @@ BitStream::BitStream(BitStream&& x)
     x._bit_size = 0;
 }
 
-BitStream::BitStream(const BitStream& x)
+BitStream::BitStream(const BitStream& x) noexcept
 {
     if (0 == x._bit_size)
         return;
@@ -109,7 +109,7 @@ BitStream::BitStream(const BitStream& x)
     _bit_size = x._bit_size;
 }
 
-BitStream::~BitStream()
+BitStream::~BitStream() noexcept
 {
     if (nullptr != _buf)
         ::free(_buf);
@@ -118,7 +118,7 @@ BitStream::~BitStream()
     _bit_size = 0;
 }
 
-void BitStream::_normalize_tail()
+void BitStream::_normalize_tail() noexcept
 {
     const size_t tail_bitlen = _bit_size % (sizeof(word_type) * 8);
     if (0 != tail_bitlen)
@@ -128,7 +128,7 @@ void BitStream::_normalize_tail()
     }
 }
 
-BitStream& BitStream::operator=(BitStream&& x)
+BitStream& BitStream::operator=(BitStream&& x) noexcept
 {
     if (this == &x)
         return *this;
@@ -147,7 +147,7 @@ BitStream& BitStream::operator=(BitStream&& x)
     return *this;
 }
 
-BitStream& BitStream::operator=(const BitStream& x)
+BitStream& BitStream::operator=(const BitStream& x) noexcept
 {
     if (this == &x)
         return *this;
@@ -158,7 +158,7 @@ BitStream& BitStream::operator=(const BitStream& x)
     return *this;
 }
 
-bool BitStream::operator==(const BitStream& x) const
+bool BitStream::operator==(const BitStream& x) const noexcept
 {
     if (this == &x)
         return true;
@@ -179,32 +179,32 @@ bool BitStream::operator==(const BitStream& x) const
     return true;
 }
 
-bool BitStream::operator!=(const BitStream& x) const
+bool BitStream::operator!=(const BitStream& x) const noexcept
 {
     return !(*this == x);
 }
 
-bool BitStream::operator<(const BitStream& x) const
+bool BitStream::operator<(const BitStream& x) const noexcept
 {
     return compare(x) < 0;
 }
 
-bool BitStream::operator>(const BitStream& x) const
+bool BitStream::operator>(const BitStream& x) const noexcept
 {
     return x < *this;
 }
 
-bool BitStream::operator<=(const BitStream& x) const
+bool BitStream::operator<=(const BitStream& x) const noexcept
 {
     return !(x < *this);
 }
 
-bool BitStream::operator>=(const BitStream& x) const
+bool BitStream::operator>=(const BitStream& x) const noexcept
 {
     return !(*this < x);
 }
 
-BitStream BitStream::operator+(const BitStream& x) const
+BitStream BitStream::operator+(const BitStream& x) const noexcept
 {
     BitStream ret;
     ret._ensure_cap(_bit_size + x._bit_size);
@@ -213,13 +213,13 @@ BitStream BitStream::operator+(const BitStream& x) const
     return ret;
 }
 
-BitStream& BitStream::operator+=(const BitStream& x)
+BitStream& BitStream::operator+=(const BitStream& x) noexcept
 {
     append(x);
     return *this;
 }
 
-BitStream BitStream::operator&(const BitStream& x) const
+BitStream BitStream::operator&(const BitStream& x) const noexcept
 {
     BitStream rs;
     const size_t new_bit_size = std::max(_bit_size, x._bit_size);
@@ -245,7 +245,7 @@ BitStream BitStream::operator&(const BitStream& x) const
     return rs;
 }
 
-BitStream& BitStream::operator&=(const BitStream& x)
+BitStream& BitStream::operator&=(const BitStream& x) noexcept
 {
     const size_t new_bit_size = std::max(_bit_size, x._bit_size);
     _ensure_cap(new_bit_size);
@@ -270,7 +270,7 @@ BitStream& BitStream::operator&=(const BitStream& x)
     return *this;
 }
 
-BitStream BitStream::operator|(const BitStream& x) const
+BitStream BitStream::operator|(const BitStream& x) const noexcept
 {
     BitStream rs;
     const size_t new_bit_size = std::max(_bit_size, x._bit_size);
@@ -296,7 +296,7 @@ BitStream BitStream::operator|(const BitStream& x) const
     return rs;
 }
 
-BitStream& BitStream::operator|=(const BitStream& x)
+BitStream& BitStream::operator|=(const BitStream& x) noexcept
 {
     const size_t new_bit_size = std::max(_bit_size, x._bit_size);
     _ensure_cap(new_bit_size);
@@ -321,7 +321,7 @@ BitStream& BitStream::operator|=(const BitStream& x)
     return *this;
 }
 
-BitStream BitStream::operator^(const BitStream& x) const
+BitStream BitStream::operator^(const BitStream& x) const noexcept
 {
     BitStream rs;
     const size_t new_bit_size = std::max(_bit_size, x._bit_size);
@@ -347,7 +347,7 @@ BitStream BitStream::operator^(const BitStream& x) const
     return rs;
 }
 
-BitStream& BitStream::operator^=(const BitStream& x)
+BitStream& BitStream::operator^=(const BitStream& x) noexcept
 {
     const size_t new_bit_size = std::max(_bit_size, x._bit_size);
     _ensure_cap(new_bit_size);
@@ -372,12 +372,12 @@ BitStream& BitStream::operator^=(const BitStream& x)
     return *this;
 }
 
-int BitStream::operator[](size_t i) const
+int BitStream::operator[](size_t i) const noexcept
 {
     return bit_at(i);
 }
 
-int BitStream::compare(const BitStream& x) const
+int BitStream::compare(const BitStream& x) const noexcept
 {
     if (this == &x)
         return 0;
@@ -400,12 +400,12 @@ int BitStream::compare(const BitStream& x) const
     return _bit_size < x._bit_size ? -1 : (_bit_size > x._bit_size ? 1 : 0);
 }
 
-size_t BitStream::size() const
+size_t BitStream::size() const noexcept
 {
     return _bit_size;
 }
 
-void BitStream::resize(size_t new_bit_size, int fill_bit)
+void BitStream::resize(size_t new_bit_size, int fill_bit) noexcept
 {
     assert(0 == fill_bit || 1 == fill_bit);
 
@@ -421,18 +421,18 @@ void BitStream::resize(size_t new_bit_size, int fill_bit)
     fill_bits(old_bit_size, new_bit_size - old_bit_size, fill_bit);
 }
 
-void BitStream::clear()
+void BitStream::clear() noexcept
 {
     _bit_size = 0;
 }
 
-int BitStream::bit_at(size_t i) const
+int BitStream::bit_at(size_t i) const noexcept
 {
     assert(i < _bit_size);
     return (_buf[i / (sizeof(word_type) * 8)] >> (i % (sizeof(word_type) * 8))) & 0x01;
 }
 
-void BitStream::set_bit(size_t i, int bit)
+void BitStream::set_bit(size_t i, int bit) noexcept
 {
     assert(i < _bit_size && (0 == bit || 1 == bit));
     if (0 == bit)
@@ -441,7 +441,7 @@ void BitStream::set_bit(size_t i, int bit)
         _buf[i / (sizeof(word_type) * 8)] |= 1 << (i % (sizeof(word_type) * 8));
 }
 
-void BitStream::fill_bits(size_t i, size_t nbit, int bit)
+void BitStream::fill_bits(size_t i, size_t nbit, int bit) noexcept
 {
     assert(i + nbit <= _bit_size && (0 == bit || 1 == bit));
     const size_t end = i + nbit;
@@ -463,7 +463,7 @@ void BitStream::fill_bits(size_t i, size_t nbit, int bit)
     }
 }
 
-void BitStream::append_bit(int bit)
+void BitStream::append_bit(int bit) noexcept
 {
     assert(0 == bit || 1 == bit);
     _ensure_cap(_bit_size + 1);
@@ -471,7 +471,7 @@ void BitStream::append_bit(int bit)
     set_bit(_bit_size - 1, bit);
 }
 
-void BitStream::append(const BitStream& x)
+void BitStream::append(const BitStream& x) noexcept
 {
     _ensure_cap(_bit_size + x._bit_size);
     const size_t old_bit_size = _bit_size; // XXX 这里需要保证及时是 this==&x 也是正确的
@@ -480,7 +480,7 @@ void BitStream::append(const BitStream& x)
         set_bit(i, x.bit_at(i - old_bit_size));
 }
 
-BitStream BitStream::substream(size_t i, size_t nbit)
+BitStream BitStream::substream(size_t i, size_t nbit) noexcept
 {
     assert(i + nbit < _bit_size);
     BitStream ret;
@@ -491,7 +491,7 @@ BitStream BitStream::substream(size_t i, size_t nbit)
     return ret;
 }
 
-size_t BitStream::bit1_count()
+size_t BitStream::bit1_count() noexcept
 {
     const size_t word_count = _bit_size / (sizeof(word_type) * 8);
     size_t ret = 0;
@@ -502,12 +502,12 @@ size_t BitStream::bit1_count()
     return ret;
 }
 
-size_t BitStream::bit0_count()
+size_t BitStream::bit0_count() noexcept
 {
     return _bit_size - bit1_count();
 }
 
-std::string BitStream::to_string()
+std::string BitStream::to_string() noexcept
 {
     std::string s;
     for (size_t i = 0; i < _bit_size; ++i)
@@ -515,7 +515,7 @@ std::string BitStream::to_string()
     return s;
 }
 
-std::wstring BitStream::to_wstring()
+std::wstring BitStream::to_wstring() noexcept
 {
     std::wstring s;
     for (size_t i = 0; i < _bit_size; ++i)

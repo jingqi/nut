@@ -13,7 +13,7 @@ using namespace nut;
 
 class TestFFT : public TestFixture
 {
-    virtual void register_cases() final override
+    virtual void register_cases() noexcept final override
     {
         NUT_REGISTER_CASE(test_smoke);
         NUT_REGISTER_CASE(test_profile);

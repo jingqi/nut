@@ -13,12 +13,12 @@ namespace nut
 std::atomic<HPRecord*> HPRecord::_head = ATOMIC_VAR_INIT(nullptr);
 std::atomic<size_t> HPRecord::_list_size = ATOMIC_VAR_INIT(0);
 
-HPRecord::HPRecord(size_t v)
+HPRecord::HPRecord(size_t v) noexcept
 {
     _version.store(v, std::memory_order_relaxed);
 }
 
-HPRecord* HPRecord::acquire()
+HPRecord* HPRecord::acquire() noexcept
 {
     // Try to reuse a retired HP record
     const size_t version = HPRetireList::_global_version.load(std::memory_order_relaxed);
@@ -49,7 +49,7 @@ HPRecord* HPRecord::acquire()
     return new_rec;
 }
 
-void HPRecord::release(HPRecord *rec)
+void HPRecord::release(HPRecord *rec) noexcept
 {
     assert(nullptr != rec);
 
@@ -57,14 +57,14 @@ void HPRecord::release(HPRecord *rec)
     rec->_valid.store(false, std::memory_order_relaxed);
 }
 
-void HPRecord::reacquire()
+void HPRecord::reacquire() noexcept
 {
     assert(_valid.load(std::memory_order_relaxed));
     const size_t version = HPRetireList::_global_version.load(std::memory_order_relaxed);
     _version.store(version, std::memory_order_release);
 }
 
-void HPRecord::clear()
+void HPRecord::clear() noexcept
 {
     HPRecord *rec = _head.exchange(nullptr, std::memory_order_relaxed);
     while (nullptr != rec)
@@ -77,21 +77,21 @@ void HPRecord::clear()
     }
 }
 
-HPGuard::HPGuard(HPRecord *rec)
+HPGuard::HPGuard(HPRecord *rec) noexcept
     : _record(rec)
 {
     if (nullptr == rec)
         _record = HPRecord::acquire();
 }
 
-HPGuard::~HPGuard()
+HPGuard::~HPGuard() noexcept
 {
     assert(nullptr != _record);
     HPRecord::release(_record);
     _record = nullptr;
 }
 
-void HPGuard::reacquire()
+void HPGuard::reacquire() noexcept
 {
     _record->reacquire();
 }

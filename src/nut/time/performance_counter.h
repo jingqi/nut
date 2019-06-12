@@ -22,18 +22,18 @@ namespace nut
 class NUT_API PerformanceCounter
 {
 public:
-    PerformanceCounter();
+    PerformanceCounter() noexcept;
 
-    double operator-(const PerformanceCounter& x) const;
+    double operator-(const PerformanceCounter& x) const noexcept;
 
-    void set_to_now();
+    void set_to_now() noexcept;
 
-    static PerformanceCounter now();
+    static PerformanceCounter now() noexcept;
 
     /**
      * 是否是有效状态
      */
-    bool is_valid() const;
+    bool is_valid() const noexcept;
 
 private:
 #if NUT_PLATFORM_OS_WINDOWS

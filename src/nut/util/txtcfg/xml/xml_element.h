@@ -30,9 +30,9 @@ private:
     class Comment
     {
     public:
-        Comment() = default;
+        Comment() noexcept = default;
 
-        Comment(size_t _pos, const std::string& _text)
+        Comment(size_t _pos, const std::string& _text) noexcept
             : pos(_pos), text(_text)
         {}
 
@@ -44,70 +44,70 @@ private:
 public:
     XmlElement() = default;
 
-    explicit XmlElement(const std::string& name);
+    explicit XmlElement(const std::string& name) noexcept;
 
-    bool is_dirty() const;
-    void set_dirty(bool dirty);
+    bool is_dirty() const noexcept;
+    void set_dirty(bool dirty) noexcept;
 
-    const std::string& get_name() const;
-    void set_name(const std::string& name);
+    const std::string& get_name() const noexcept;
+    void set_name(const std::string& name) noexcept;
 
-    const std::string& get_text() const;
-    void set_text(const std::string& text);
+    const std::string& get_text() const noexcept;
+    void set_text(const std::string& text) noexcept;
 
-    size_t get_children_count() const;
+    size_t get_children_count() const noexcept;
 
-    rc_ptr<XmlElement> get_child(size_t i) const;
-    rc_ptr<XmlElement> get_child(const std::string& name) const;
+    rc_ptr<XmlElement> get_child(size_t i) const noexcept;
+    rc_ptr<XmlElement> get_child(const std::string& name) const noexcept;
 
-    void append_child(rc_ptr<XmlElement> child);
-    void insert_child(size_t pos, rc_ptr<XmlElement> child);
-    void remove_child(size_t pos);
+    void append_child(rc_ptr<XmlElement> child) noexcept;
+    void insert_child(size_t pos, rc_ptr<XmlElement> child) noexcept;
+    void remove_child(size_t pos) noexcept;
 
-    void clear_children();
+    void clear_children() noexcept;
 
     /**
      * 获取属性
      *
      * @return 如果属性不存在，会返回 nullptr
      */
-    const std::string* get_attribute(const std::string& name) const;
+    const std::string* get_attribute(const std::string& name) const noexcept;
 
     /**
      * 添加属性
      *
      * @return 是否成功，如果属性已经存在，则添加失败
      */
-    bool add_attribute(const std::string& name, const std::string& value);
+    bool add_attribute(const std::string& name, const std::string& value) noexcept;
 
     /**
      * 存在属性则设置属性值，否则添加新属性
      */
-    void set_attribute(const std::string& name, const std::string& value);
+    void set_attribute(const std::string& name, const std::string& value) noexcept;
 
-    bool remove_attribute(const std::string& name);
+    bool remove_attribute(const std::string& name) noexcept;
 
-    void clear_attributes();
+    void clear_attributes() noexcept;
 
-    void add_comment(size_t pos, const std::string& text);
-    void remove_comment(size_t pos);
+    void add_comment(size_t pos, const std::string& text) noexcept;
+    void remove_comment(size_t pos) noexcept;
 
-    void clear();
+    void clear() noexcept;
 
-    const_attr_iter_type attr_const_begin() const;
-    const_attr_iter_type attr_const_end() const;
+    const_attr_iter_type attr_const_begin() const noexcept;
+    const_attr_iter_type attr_const_end() const noexcept;
 
-    attr_iter_type attr_begin();
-    attr_iter_type attr_end();
+    attr_iter_type attr_begin() noexcept;
+    attr_iter_type attr_end() noexcept;
 
-    void parse(const std::string& s, size_t start_index = 0, bool ignore_text_blank = true);
+    void parse(const std::string& s, size_t start_index = 0, bool ignore_text_blank = true) noexcept;
 
     /**
      * @param format 格式化输出，以便于阅读
      */
-    std::string serielize(bool format = true) const;
+    std::string serielize(bool format = true) const noexcept;
 
-    void serielize(XmlWriter &writer, int tab) const;
+    void serielize(XmlWriter &writer, int tab) const noexcept;
 
 private:
     std::string _name, _text;

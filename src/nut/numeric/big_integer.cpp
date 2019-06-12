@@ -19,7 +19,7 @@ namespace nut
 {
 
 #if NUT_ENDIAN_BIG_BYTE
-BigInteger::BigInteger(cast_int_type v)
+BigInteger::BigInteger(cast_int_type v) noexcept
     : _significant_len((sizeof(cast_int_type) / sizeof(word_type)) << 1), _inner_integer(v)
 {
     wswap<word_type>((const word_type*)&_inner_integer, sizeof(v) / sizeof(word_type)); // Word order to little-endian
@@ -27,13 +27,13 @@ BigInteger::BigInteger(cast_int_type v)
 }
 #endif
 
-BigInteger::BigInteger(const void *buf, size_type cb, bool with_sign)
+BigInteger::BigInteger(const void *buf, size_type cb, bool with_sign) noexcept
 {
     assert(nullptr != buf && cb > 0);
     set(buf, cb, with_sign);
 }
 
-BigInteger::BigInteger(BigInteger&& x)
+BigInteger::BigInteger(BigInteger&& x) noexcept
     : _significant_len(x._significant_len)
 {
     ::memcpy(_inner_data, x._inner_data, INNER_BYTE_SIZE);
@@ -41,7 +41,7 @@ BigInteger::BigInteger(BigInteger&& x)
     x._significant_len = 0;
 }
 
-BigInteger::BigInteger(const BigInteger& x)
+BigInteger::BigInteger(const BigInteger& x) noexcept
 {
     const size_type x_siglen = x.significant_words_length();
     ensure_cap(x_siglen);
@@ -49,14 +49,14 @@ BigInteger::BigInteger(const BigInteger& x)
     set_significant_len(x_siglen);
 }
 
-BigInteger::~BigInteger()
+BigInteger::~BigInteger() noexcept
 {
     if (is_using_heap())
         ::free(_heap.data);
     _significant_len = 0;
 }
 
-void BigInteger::ensure_cap(size_type new_size)
+void BigInteger::ensure_cap(size_type new_size) noexcept
 {
     // Small memory
     if (new_size <= INNER_CAPACITY)
@@ -97,7 +97,7 @@ void BigInteger::ensure_cap(size_type new_size)
 /**
  * 确保有效字节长度足够长，不够长则进行符号扩展
  */
-void BigInteger::ensure_significant_len(size_type new_siglen)
+void BigInteger::ensure_significant_len(size_type new_siglen) noexcept
 {
     assert(new_siglen > 0);
     const size_type old_siglen = significant_words_length();
@@ -110,13 +110,13 @@ void BigInteger::ensure_significant_len(size_type new_siglen)
     set_significant_len(new_siglen);
 }
 
-void BigInteger::minimize_significant_len()
+void BigInteger::minimize_significant_len() noexcept
 {
     const size_type new_siglen = nut::signed_significant_size(data(), significant_words_length());
     set_significant_len(new_siglen);
 }
 
-BigInteger& BigInteger::operator=(BigInteger&& x)
+BigInteger& BigInteger::operator=(BigInteger&& x) noexcept
 {
     if (this == &x)
         return *this;
@@ -132,7 +132,7 @@ BigInteger& BigInteger::operator=(BigInteger&& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator=(const BigInteger& x)
+BigInteger& BigInteger::operator=(const BigInteger& x) noexcept
 {
     if (this == &x)
         return *this;
@@ -145,7 +145,7 @@ BigInteger& BigInteger::operator=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator=(cast_int_type v)
+BigInteger& BigInteger::operator=(cast_int_type v) noexcept
 {
     const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
@@ -160,14 +160,14 @@ BigInteger& BigInteger::operator=(cast_int_type v)
     return *this;
 }
 
-bool BigInteger::operator==(const BigInteger& x) const
+bool BigInteger::operator==(const BigInteger& x) const noexcept
 {
     if (this == &x)
         return true;
     return signed_compare(data(), significant_words_length(), x.data(), x.significant_words_length()) == 0;
 }
 
-bool BigInteger::operator==(cast_int_type v) const
+bool BigInteger::operator==(cast_int_type v) const noexcept
 {
     const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
@@ -177,22 +177,22 @@ bool BigInteger::operator==(cast_int_type v) const
     return signed_compare(data(), significant_words_length(), (const word_type*)&v, v_siglen) == 0;
 }
 
-bool BigInteger::operator!=(const BigInteger& x) const
+bool BigInteger::operator!=(const BigInteger& x) const noexcept
 {
     return !(*this == x);
 }
 
-bool BigInteger::operator!=(cast_int_type v) const
+bool BigInteger::operator!=(cast_int_type v) const noexcept
 {
     return !(*this == v);
 }
 
-bool BigInteger::operator<(const BigInteger& x) const
+bool BigInteger::operator<(const BigInteger& x) const noexcept
 {
     return signed_compare(data(), significant_words_length(), x.data(), x.significant_words_length()) < 0;
 }
 
-bool BigInteger::operator<(cast_int_type v) const
+bool BigInteger::operator<(cast_int_type v) const noexcept
 {
     const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
@@ -202,12 +202,12 @@ bool BigInteger::operator<(cast_int_type v) const
     return signed_compare(data(), significant_words_length(), (const word_type*)&v, v_siglen) < 0;
 }
 
-bool BigInteger::operator>(const BigInteger& x) const
+bool BigInteger::operator>(const BigInteger& x) const noexcept
 {
     return x < *this;
 }
 
-bool BigInteger::operator>(cast_int_type v) const
+bool BigInteger::operator>(cast_int_type v) const noexcept
 {
     const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
@@ -217,27 +217,27 @@ bool BigInteger::operator>(cast_int_type v) const
     return signed_compare((const word_type*)&v, v_siglen, data(), significant_words_length()) < 0;
 }
 
-bool BigInteger::operator<=(const BigInteger& x) const
+bool BigInteger::operator<=(const BigInteger& x) const noexcept
 {
     return !(x < *this);
 }
 
-bool BigInteger::operator<=(cast_int_type v) const
+bool BigInteger::operator<=(cast_int_type v) const noexcept
 {
     return !(*this > v);
 }
 
-bool BigInteger::operator>=(const BigInteger& x) const
+bool BigInteger::operator>=(const BigInteger& x) const noexcept
 {
     return !(*this < x);
 }
 
-bool BigInteger::operator>=(cast_int_type v) const
+bool BigInteger::operator>=(cast_int_type v) const noexcept
 {
     return !(*this < v);
 }
 
-BigInteger BigInteger::operator+(const BigInteger& x) const
+BigInteger BigInteger::operator+(const BigInteger& x) const noexcept
 {
     BigInteger ret;
     const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
@@ -249,7 +249,7 @@ BigInteger BigInteger::operator+(const BigInteger& x) const
     return ret;
 }
 
-BigInteger BigInteger::operator+(cast_int_type v) const
+BigInteger BigInteger::operator+(cast_int_type v) const noexcept
 {
     const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
@@ -265,7 +265,7 @@ BigInteger BigInteger::operator+(cast_int_type v) const
     return ret;
 }
 
-BigInteger BigInteger::operator-(const BigInteger& x) const
+BigInteger BigInteger::operator-(const BigInteger& x) const noexcept
 {
     BigInteger ret;
     const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
@@ -277,7 +277,7 @@ BigInteger BigInteger::operator-(const BigInteger& x) const
     return ret;
 }
 
-BigInteger BigInteger::operator-(cast_int_type v) const
+BigInteger BigInteger::operator-(cast_int_type v) const noexcept
 {
     const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
@@ -293,7 +293,7 @@ BigInteger BigInteger::operator-(cast_int_type v) const
     return ret;
 }
 
-BigInteger BigInteger::operator-() const
+BigInteger BigInteger::operator-() const noexcept
 {
     BigInteger ret;
     const size_type siglen = significant_words_length(), ret_siglen = siglen + 1;
@@ -304,7 +304,7 @@ BigInteger BigInteger::operator-() const
     return ret;
 }
 
-BigInteger BigInteger::operator*(const BigInteger& x) const
+BigInteger BigInteger::operator*(const BigInteger& x) const noexcept
 {
     BigInteger ret;
     const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
@@ -316,7 +316,7 @@ BigInteger BigInteger::operator*(const BigInteger& x) const
     return ret;
 }
 
-BigInteger BigInteger::operator*(cast_int_type v) const
+BigInteger BigInteger::operator*(cast_int_type v) const noexcept
 {
     const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
@@ -332,21 +332,21 @@ BigInteger BigInteger::operator*(cast_int_type v) const
     return ret;
 }
 
-BigInteger BigInteger::operator/(const BigInteger& x) const
+BigInteger BigInteger::operator/(const BigInteger& x) const noexcept
 {
     BigInteger ret;
     BigInteger::divide(*this, x, &ret, nullptr);
     return ret;
 }
 
-BigInteger BigInteger::operator/(cast_int_type v) const
+BigInteger BigInteger::operator/(cast_int_type v) const noexcept
 {
     BigInteger ret;
     BigInteger::divide(*this, BigInteger(v), &ret, nullptr);
     return ret;
 }
 
-BigInteger BigInteger::operator%(const BigInteger& x) const
+BigInteger BigInteger::operator%(const BigInteger& x) const noexcept
 {
     assert(!x.is_zero());
 
@@ -364,7 +364,7 @@ BigInteger BigInteger::operator%(const BigInteger& x) const
     return ret;
 }
 
-BigInteger BigInteger::operator%(cast_int_type v) const
+BigInteger BigInteger::operator%(cast_int_type v) const noexcept
 {
     assert(0 != v);
 
@@ -373,7 +373,7 @@ BigInteger BigInteger::operator%(cast_int_type v) const
     return ret;
 }
 
-BigInteger& BigInteger::operator+=(const BigInteger& x)
+BigInteger& BigInteger::operator+=(const BigInteger& x) noexcept
 {
     const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
         new_siglen = std::max(siglen, x_siglen) + 1;
@@ -385,7 +385,7 @@ BigInteger& BigInteger::operator+=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator+=(cast_int_type v)
+BigInteger& BigInteger::operator+=(cast_int_type v) noexcept
 {
     const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
@@ -401,7 +401,7 @@ BigInteger& BigInteger::operator+=(cast_int_type v)
     return *this;
 }
 
-BigInteger& BigInteger::operator-=(const BigInteger& x)
+BigInteger& BigInteger::operator-=(const BigInteger& x) noexcept
 {
     const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
         new_siglen = std::max(siglen, x_siglen) + 1;
@@ -413,7 +413,7 @@ BigInteger& BigInteger::operator-=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator-=(cast_int_type v)
+BigInteger& BigInteger::operator-=(cast_int_type v) noexcept
 {
     const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
@@ -429,7 +429,7 @@ BigInteger& BigInteger::operator-=(cast_int_type v)
     return *this;
 }
 
-BigInteger& BigInteger::operator*=(const BigInteger& x)
+BigInteger& BigInteger::operator*=(const BigInteger& x) noexcept
 {
     const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
         new_siglen = siglen + x_siglen;
@@ -441,7 +441,7 @@ BigInteger& BigInteger::operator*=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator*=(cast_int_type v)
+BigInteger& BigInteger::operator*=(cast_int_type v) noexcept
 {
     const size_type v_siglen = sizeof(v) / sizeof(word_type);
 #if NUT_ENDIAN_BIG_BYTE
@@ -457,19 +457,19 @@ BigInteger& BigInteger::operator*=(cast_int_type v)
     return *this;
 }
 
-BigInteger& BigInteger::operator/=(const BigInteger& x)
+BigInteger& BigInteger::operator/=(const BigInteger& x) noexcept
 {
     BigInteger::divide(*this, x, this, nullptr);
     return *this;
 }
 
-BigInteger& BigInteger::operator/=(cast_int_type v)
+BigInteger& BigInteger::operator/=(cast_int_type v) noexcept
 {
     BigInteger::divide(*this, BigInteger(v), this, nullptr);
     return *this;
 }
 
-BigInteger& BigInteger::operator%=(const BigInteger& x)
+BigInteger& BigInteger::operator%=(const BigInteger& x) noexcept
 {
     assert(!x.is_zero());
 
@@ -486,14 +486,14 @@ BigInteger& BigInteger::operator%=(const BigInteger& x)
     return *this;
 }
 
-BigInteger& BigInteger::operator%=(cast_int_type v)
+BigInteger& BigInteger::operator%=(cast_int_type v) noexcept
 {
     assert(0 != v);
     BigInteger::divide(*this, BigInteger(v), nullptr, this);
     return *this;
 }
 
-BigInteger& BigInteger::operator++()
+BigInteger& BigInteger::operator++() noexcept
 {
     const size_type new_siglen = significant_words_length() + 1;
     ensure_significant_len(new_siglen);
@@ -502,14 +502,14 @@ BigInteger& BigInteger::operator++()
     return *this;
 }
 
-BigInteger BigInteger::operator++(int)
+BigInteger BigInteger::operator++(int) noexcept
 {
     BigInteger ret(*this);
     ++*this;
     return ret;
 }
 
-BigInteger& BigInteger::operator--()
+BigInteger& BigInteger::operator--() noexcept
 {
     const size_type new_siglen = significant_words_length() + 1;
     ensure_significant_len(new_siglen);
@@ -518,14 +518,14 @@ BigInteger& BigInteger::operator--()
     return *this;
 }
 
-BigInteger BigInteger::operator--(int)
+BigInteger BigInteger::operator--(int) noexcept
 {
     BigInteger ret(*this);
     --*this;
     return ret;
 }
 
-BigInteger BigInteger::operator<<(size_type count) const
+BigInteger BigInteger::operator<<(size_type count) const noexcept
 {
     if (0 == count)
         return *this;
@@ -543,7 +543,7 @@ BigInteger BigInteger::operator<<(size_type count) const
 /**
  * 符号扩展的右移
  */
-BigInteger BigInteger::operator>>(size_type count) const
+BigInteger BigInteger::operator>>(size_type count) const noexcept
 {
     if (0 == count)
         return *this;
@@ -557,7 +557,7 @@ BigInteger BigInteger::operator>>(size_type count) const
     return ret;
 }
 
-BigInteger& BigInteger::operator<<=(size_type count)
+BigInteger& BigInteger::operator<<=(size_type count) noexcept
 {
     if (0 == count)
         return *this;
@@ -572,7 +572,7 @@ BigInteger& BigInteger::operator<<=(size_type count)
     return *this;
 }
 
-BigInteger& BigInteger::operator>>=(size_type count)
+BigInteger& BigInteger::operator>>=(size_type count) noexcept
 {
     if (0 == count)
         return *this;
@@ -585,7 +585,7 @@ BigInteger& BigInteger::operator>>=(size_type count)
 }
 
 void BigInteger::divide(const BigInteger& a, const BigInteger& b,
-                        BigInteger *result, BigInteger *remainder)
+                        BigInteger *result, BigInteger *remainder) noexcept
 {
     assert(nullptr != result || nullptr != remainder);
     assert(!b.is_zero());
@@ -612,34 +612,34 @@ void BigInteger::divide(const BigInteger& a, const BigInteger& b,
     }
 }
 
-int BigInteger::compare(const BigInteger& x) const
+int BigInteger::compare(const BigInteger& x) const noexcept
 {
     return signed_compare(data(), significant_words_length(), x.data(), x.significant_words_length());
 }
 
-void BigInteger::set_zero()
+void BigInteger::set_zero() noexcept
 {
     assert(significant_words_length() > 0);
     data()[0] = 0;
     set_significant_len(1);
 }
 
-bool BigInteger::is_zero() const
+bool BigInteger::is_zero() const noexcept
 {
     return nut::is_zero(data(), significant_words_length());
 }
 
-bool BigInteger::is_positive() const
+bool BigInteger::is_positive() const noexcept
 {
     return nut::is_positive(data(), significant_words_length());
 }
 
-bool BigInteger::is_negative() const
+bool BigInteger::is_negative() const noexcept
 {
     return nut::is_negative(data(), significant_words_length());
 }
 
-void BigInteger::set(const void *buf, size_type cb, bool with_sign)
+void BigInteger::set(const void *buf, size_type cb, bool with_sign) noexcept
 {
     assert(nullptr != buf && cb > 0);
 
@@ -662,14 +662,14 @@ void BigInteger::set(const void *buf, size_type cb, bool with_sign)
     minimize_significant_len();
 }
 
-void BigInteger::resize(size_type n)
+void BigInteger::resize(size_type n) noexcept
 {
     assert(n > 0);
     ensure_significant_len(n);
     set_significant_len(n);
 }
 
-void BigInteger::limit_positive_bits_to(size_type bit_len)
+void BigInteger::limit_positive_bits_to(size_type bit_len) noexcept
 {
     assert(bit_len > 0);
 
@@ -715,7 +715,7 @@ void BigInteger::limit_positive_bits_to(size_type bit_len)
 #endif
 }
 
-void BigInteger::multiply_to_len(const BigInteger& a, size_type bit_len)
+void BigInteger::multiply_to_len(const BigInteger& a, size_type bit_len) noexcept
 {
     const size_type new_siglen = (bit_len + 8 * sizeof(word_type) - 1) / (8 * sizeof(word_type));
     ensure_cap(new_siglen);
@@ -727,32 +727,32 @@ void BigInteger::multiply_to_len(const BigInteger& a, size_type bit_len)
     limit_positive_bits_to(bit_len);
 }
 
-BigInteger::size_type BigInteger::significant_words_length() const
+BigInteger::size_type BigInteger::significant_words_length() const noexcept
 {
     return _significant_len >> 1;
 }
 
-bool BigInteger::is_using_heap() const
+bool BigInteger::is_using_heap() const noexcept
 {
     return 0 != (_significant_len & 0x01);
 }
 
-void BigInteger::set_significant_len(size_type len)
+void BigInteger::set_significant_len(size_type len) noexcept
 {
     _significant_len = (len << 1) | (_significant_len & 0x01);
 }
 
-const BigInteger::word_type* BigInteger::data() const
+const BigInteger::word_type* BigInteger::data() const noexcept
 {
     return is_using_heap() ? _heap.data : _inner_data;
 }
 
-BigInteger::word_type* BigInteger::data()
+BigInteger::word_type* BigInteger::data() noexcept
 {
     return const_cast<word_type*>(static_cast<const BigInteger&>(*this).data());
 }
 
-int BigInteger::bit_at(size_type i) const
+int BigInteger::bit_at(size_type i) const noexcept
 {
     const size_t siglen = significant_words_length();
     const word_type *const raw_data = data();
@@ -761,7 +761,7 @@ int BigInteger::bit_at(size_type i) const
     return (raw_data[i / (8 * sizeof(word_type))] >> (i % (8 * sizeof(word_type)))) & 0x01;
 }
 
-BigInteger::word_type BigInteger::word_at(size_type i) const
+BigInteger::word_type BigInteger::word_at(size_type i) const noexcept
 {
     if (i >= significant_words_length())
         return BigInteger::is_positive() ? 0 : ~(word_type)0;
@@ -771,7 +771,7 @@ BigInteger::word_type BigInteger::word_at(size_type i) const
 /**
  * @param v 0 or 1
  */
-void BigInteger::set_bit(size_type i, int v)
+void BigInteger::set_bit(size_type i, int v) noexcept
 {
     assert(v == 0 || v == 1);
     ensure_significant_len((i + 1) / (8 * sizeof(word_type)) + 1); // 避免符号位被覆盖
@@ -782,13 +782,13 @@ void BigInteger::set_bit(size_type i, int v)
         raw_data[i / (8 * sizeof(word_type))] |= ((word_type)1) << (i % (8 * sizeof(word_type)));
 }
 
-void BigInteger::set_word(size_type i, word_type v)
+void BigInteger::set_word(size_type i, word_type v) noexcept
 {
     ensure_significant_len(i + 1 + 1); // NOTE 多加一个 1 是为了避免符号位被覆盖
     data()[i] = v;
 }
 
-BigInteger::size_type BigInteger::bit_length() const
+BigInteger::size_type BigInteger::bit_length() const noexcept
 {
     if (BigInteger::is_positive())
         return nut::bit1_length(data(), significant_words_length());
@@ -799,7 +799,7 @@ BigInteger::size_type BigInteger::bit_length() const
 /**
  * 正数返回 bit 1 计数，负数则返回 bit 0 计数
  */
-BigInteger::size_type BigInteger::bit_count() const
+BigInteger::size_type BigInteger::bit_count() const noexcept
 {
     const size_type siglen = significant_words_length(),
         bc = nut::bit1_count((uint8_t*) data(), sizeof(word_type) * siglen);
@@ -808,7 +808,7 @@ BigInteger::size_type BigInteger::bit_count() const
     return 8 * sizeof(word_type) * siglen - bc;
 }
 
-ssize_t BigInteger::lowest_bit() const
+ssize_t BigInteger::lowest_bit() const noexcept
 {
     return nut::lowest_bit1(data(), significant_words_length());
 }
@@ -816,7 +816,7 @@ ssize_t BigInteger::lowest_bit() const
 /**
  * 取 [a, b) 范围内的随机数
  */
-BigInteger BigInteger::rand_between(const BigInteger& a, const BigInteger& b)
+BigInteger BigInteger::rand_between(const BigInteger& a, const BigInteger& b) noexcept
 {
     assert(a != b);
 
@@ -842,7 +842,7 @@ BigInteger BigInteger::rand_between(const BigInteger& a, const BigInteger& b)
     return ret;
 }
 
-BigInteger BigInteger::rand_positive(size_t bit_len, bool ensure_highest_bit)
+BigInteger BigInteger::rand_positive(size_t bit_len, bool ensure_highest_bit) noexcept
 {
     assert(bit_len > 0);
 
@@ -880,7 +880,7 @@ BigInteger BigInteger::rand_positive(size_t bit_len, bool ensure_highest_bit)
 /**
  * 值交换
  */
-void BigInteger::swap(BigInteger *a, BigInteger *b)
+void BigInteger::swap(BigInteger *a, BigInteger *b) noexcept
 {
     assert(nullptr != a && nullptr != b);
 
@@ -895,7 +895,7 @@ void BigInteger::swap(BigInteger *a, BigInteger *b)
     ::memcpy(b->_inner_data, tmp_data, INNER_BYTE_SIZE);
 }
 
-BigInteger::cast_int_type BigInteger::to_integer() const
+BigInteger::cast_int_type BigInteger::to_integer() const noexcept
 {
     cast_int_type ret = 0;
     const size_t ret_siglen = sizeof(ret) / sizeof(word_type);
@@ -908,7 +908,7 @@ BigInteger::cast_int_type BigInteger::to_integer() const
     return ret;
 }
 
-std::vector<uint8_t> BigInteger::to_le_bytes() const
+std::vector<uint8_t> BigInteger::to_le_bytes() const noexcept
 {
     const size_t siglen = significant_words_length();
     const word_type *const raw_data = data();
@@ -924,7 +924,7 @@ std::vector<uint8_t> BigInteger::to_le_bytes() const
     return ret;
 }
 
-std::vector<uint8_t> BigInteger::to_be_bytes() const
+std::vector<uint8_t> BigInteger::to_be_bytes() const noexcept
 {
     std::vector<uint8_t> ret = to_le_bytes();
     std::reverse(ret.begin(), ret.end()); // Byte order to big-endian
@@ -933,13 +933,13 @@ std::vector<uint8_t> BigInteger::to_be_bytes() const
 
 #ifndef NDEBUG
 // currently only used in DEBUG mode
-static constexpr bool is_valid_radix(size_t radix)
+static constexpr bool is_valid_radix(size_t radix) noexcept
 {
     return 1 < radix && radix <= 36;
 }
 #endif
 
-std::string BigInteger::to_string(size_type radix) const
+std::string BigInteger::to_string(size_type radix) const noexcept
 {
     assert(is_valid_radix(radix));
 
@@ -979,7 +979,7 @@ std::string BigInteger::to_string(size_type radix) const
     return s;
 }
 
-std::wstring BigInteger::to_wstring(size_type radix) const
+std::wstring BigInteger::to_wstring(size_type radix) const noexcept
 {
     assert(is_valid_radix(radix));
 
@@ -1019,31 +1019,31 @@ std::wstring BigInteger::to_wstring(size_type radix) const
     return s;
 }
 
-static constexpr bool is_blank(char c)
+static constexpr bool is_blank(char c) noexcept
 {
     return ' ' == c || '\t' == c;
 }
 
-static constexpr bool is_blank(wchar_t c)
+static constexpr bool is_blank(wchar_t c) noexcept
 {
     return L' ' == c || L'\t' == c;
 }
 
-static size_t skip_blank(const std::string& s, size_t start)
+static size_t skip_blank(const std::string& s, size_t start) noexcept
 {
     while (start < s.length() && is_blank(s[start]))
         ++start;
     return start;
 }
 
-static size_t skip_blank(const std::wstring& s, size_t start)
+static size_t skip_blank(const std::wstring& s, size_t start) noexcept
 {
     while (start < s.length() && is_blank(s[start]))
         ++start;
     return start;
 }
 
-static bool is_valid_char(char c, size_t radix)
+static bool is_valid_char(char c, size_t radix) noexcept
 {
     assert(is_valid_radix(radix));
     if (radix <= 10)
@@ -1054,7 +1054,7 @@ static bool is_valid_char(char c, size_t radix)
     return 'a' <= c && c <= 'a' + (int) radix - 10 - 1;
 }
 
-static bool is_valid_char(wchar_t c, size_t radix)
+static bool is_valid_char(wchar_t c, size_t radix) noexcept
 {
     assert(is_valid_radix(radix));
     if (radix <= 10)
@@ -1065,7 +1065,7 @@ static bool is_valid_char(wchar_t c, size_t radix)
     return L'a' <= c && c <= L'a' + (int) radix - 10 - 1;
 }
 
-BigInteger BigInteger::value_of(const std::string& s, size_type radix)
+BigInteger BigInteger::value_of(const std::string& s, size_type radix) noexcept
 {
     assert(radix > 1 && radix <= 36);
     BigInteger ret;
@@ -1109,7 +1109,7 @@ BigInteger BigInteger::value_of(const std::string& s, size_type radix)
     return ret;
 }
 
-BigInteger BigInteger::value_of(const std::wstring& s, size_type radix)
+BigInteger BigInteger::value_of(const std::wstring& s, size_type radix) noexcept
 {
     assert(radix > 1 && radix <= 36);
     BigInteger ret;
@@ -1152,42 +1152,42 @@ BigInteger BigInteger::value_of(const std::wstring& s, size_type radix)
     return ret;
 }
 
-bool operator==(BigInteger::cast_int_type a, const BigInteger& b)
+bool operator==(BigInteger::cast_int_type a, const BigInteger& b) noexcept
 {
     return b == a;
 }
 
-bool operator!=(BigInteger::cast_int_type a, const BigInteger& b)
+bool operator!=(BigInteger::cast_int_type a, const BigInteger& b) noexcept
 {
     return b != a;
 }
 
-bool operator<(BigInteger::cast_int_type a, const BigInteger& b)
+bool operator<(BigInteger::cast_int_type a, const BigInteger& b) noexcept
 {
     return b > a;
 }
 
-bool operator>(BigInteger::cast_int_type a, const BigInteger& b)
+bool operator>(BigInteger::cast_int_type a, const BigInteger& b) noexcept
 {
     return b < a;
 }
 
-bool operator<=(BigInteger::cast_int_type a, const BigInteger& b)
+bool operator<=(BigInteger::cast_int_type a, const BigInteger& b) noexcept
 {
     return b >= a;
 }
 
-bool operator>=(BigInteger::cast_int_type a, const BigInteger& b)
+bool operator>=(BigInteger::cast_int_type a, const BigInteger& b) noexcept
 {
     return b <= a;
 }
 
-BigInteger operator+(BigInteger::cast_int_type a, const BigInteger& b)
+BigInteger operator+(BigInteger::cast_int_type a, const BigInteger& b) noexcept
 {
     return b + a;
 }
 
-BigInteger operator-(BigInteger::cast_int_type a, const BigInteger& b)
+BigInteger operator-(BigInteger::cast_int_type a, const BigInteger& b) noexcept
 {
     typedef BigInteger::size_type size_type;
     typedef BigInteger::word_type word_type;
@@ -1207,17 +1207,17 @@ BigInteger operator-(BigInteger::cast_int_type a, const BigInteger& b)
     return ret;
 }
 
-BigInteger operator*(BigInteger::cast_int_type a, const BigInteger& b)
+BigInteger operator*(BigInteger::cast_int_type a, const BigInteger& b) noexcept
 {
     return b * a;
 }
 
-BigInteger operator/(BigInteger::cast_int_type a, const BigInteger& b)
+BigInteger operator/(BigInteger::cast_int_type a, const BigInteger& b) noexcept
 {
     return BigInteger(a) / b;
 }
 
-BigInteger operator%(BigInteger::cast_int_type a, const BigInteger& b)
+BigInteger operator%(BigInteger::cast_int_type a, const BigInteger& b) noexcept
 {
     return BigInteger(a) % b;
 }

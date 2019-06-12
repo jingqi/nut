@@ -8,21 +8,21 @@
 namespace nut
 {
 
-lengthfixed_stmp::lengthfixed_stmp(size_t granularity, memory_allocator *ma)
+lengthfixed_stmp::lengthfixed_stmp(size_t granularity, memory_allocator *ma) noexcept
     : _alloc(ma), _granularity(std::max(granularity, sizeof(void*)))
 {}
 
-lengthfixed_stmp::~lengthfixed_stmp()
+lengthfixed_stmp::~lengthfixed_stmp() noexcept
 {
     clear();
 }
 
-bool lengthfixed_stmp::is_empty() const
+bool lengthfixed_stmp::is_empty() const noexcept
 {
     return 0 == _free_num;
 }
 
-void lengthfixed_stmp::clear()
+void lengthfixed_stmp::clear() noexcept
 {
     void *p = _head;
     while (nullptr != p)
@@ -35,7 +35,7 @@ void lengthfixed_stmp::clear()
     _free_num = 0;
 }
 
-void* lengthfixed_stmp::alloc(size_t sz)
+void* lengthfixed_stmp::alloc(size_t sz) noexcept
 {
     assert(_granularity == std::max(sz, sizeof(void*)));
 
@@ -48,7 +48,7 @@ void* lengthfixed_stmp::alloc(size_t sz)
     return p;
 }
 
-void* lengthfixed_stmp::realloc(void *p, size_t old_sz, size_t new_sz)
+void* lengthfixed_stmp::realloc(void *p, size_t old_sz, size_t new_sz) noexcept
 {
     assert(nullptr != p && _granularity == old_sz && _granularity == new_sz);
     UNUSED(old_sz);
@@ -56,7 +56,7 @@ void* lengthfixed_stmp::realloc(void *p, size_t old_sz, size_t new_sz)
     return p;
 }
 
-void lengthfixed_stmp::free(void *p, size_t sz)
+void lengthfixed_stmp::free(void *p, size_t sz) noexcept
 {
     assert(nullptr != p && _granularity == std::max(sz, sizeof(void*)));
 
@@ -76,21 +76,21 @@ void lengthfixed_stmp::free(void *p, size_t sz)
 namespace nut
 {
 
-lengthfixed_mtmp::lengthfixed_mtmp(size_t granularity, memory_allocator *ma)
+lengthfixed_mtmp::lengthfixed_mtmp(size_t granularity, memory_allocator *ma) noexcept
     : _alloc(ma), _granularity(std::max(granularity, sizeof(void*)))
 {}
 
-lengthfixed_mtmp::~lengthfixed_mtmp()
+lengthfixed_mtmp::~lengthfixed_mtmp() noexcept
 {
     clear();
 }
 
-bool lengthfixed_mtmp::is_empty() const
+bool lengthfixed_mtmp::is_empty() const noexcept
 {
     return 0 == _free_num.load(std::memory_order_relaxed);
 }
 
-void lengthfixed_mtmp::clear()
+void lengthfixed_mtmp::clear() noexcept
 {
     void *p = _head.exchange(nullptr, std::memory_order_relaxed);
     while (nullptr != p)
@@ -102,7 +102,7 @@ void lengthfixed_mtmp::clear()
     }
 }
 
-void* lengthfixed_mtmp::alloc(size_t sz)
+void* lengthfixed_mtmp::alloc(size_t sz) noexcept
 {
     assert(_granularity == std::max(sz, sizeof(void*)));
 
@@ -119,7 +119,7 @@ void* lengthfixed_mtmp::alloc(size_t sz)
     return old_head;
 }
 
-void* lengthfixed_mtmp::realloc(void *p, size_t old_sz, size_t new_sz)
+void* lengthfixed_mtmp::realloc(void *p, size_t old_sz, size_t new_sz) noexcept
 {
     assert(nullptr != p && _granularity == old_sz && _granularity == new_sz);
     UNUSED(old_sz);
@@ -127,7 +127,7 @@ void* lengthfixed_mtmp::realloc(void *p, size_t old_sz, size_t new_sz)
     return p;
 }
 
-void lengthfixed_mtmp::free(void *p, size_t sz)
+void lengthfixed_mtmp::free(void *p, size_t sz) noexcept
 {
     assert(nullptr != p && _granularity == std::max(sz, sizeof(void*)));
 

@@ -31,12 +31,12 @@ static const uint32_t SHA256_K[64] = {
     0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
-SHA2_256::SHA2_256()
+SHA2_256::SHA2_256() noexcept
 {
     reset();
 }
 
-void SHA2_256::reset()
+void SHA2_256::reset() noexcept
 {
     _bit_len = 0;
 
@@ -52,12 +52,12 @@ void SHA2_256::reset()
     ::memset(_result, 0, DIGEST_SIZE);
 }
 
-void SHA2_256::update(uint8_t byte)
+void SHA2_256::update(uint8_t byte) noexcept
 {
     update(&byte, 1);
 }
 
-void SHA2_256::update(const void *data, size_t cb)
+void SHA2_256::update(const void *data, size_t cb) noexcept
 {
     assert(nullptr != data || 0 == cb);
 
@@ -92,7 +92,7 @@ void SHA2_256::update(const void *data, size_t cb)
     ::memcpy(_buffer + index, ((const uint8_t*) data) + i, cb - i);
 }
 
-void SHA2_256::digest()
+void SHA2_256::digest() noexcept
 {
     /* Pad out to 56 mod 64 */
     unsigned index = (_bit_len >> 3) & 0x3f;
@@ -118,17 +118,17 @@ void SHA2_256::digest()
         ((uint32_t*) _result)[i] = htobe32(_state[i]);
 }
 
-const uint8_t* SHA2_256::get_result() const
+const uint8_t* SHA2_256::get_result() const noexcept
 {
     return _result;
 }
 
-std::string SHA2_256::get_hex_result() const
+std::string SHA2_256::get_hex_result() const noexcept
 {
     return hex_encode(_result, DIGEST_SIZE, false);
 }
 
-void SHA2_256::transform512bits(const void *block)
+void SHA2_256::transform512bits(const void *block) noexcept
 {
     uint32_t a, b, c, d, e, f, g, h;
     a = _state[0];

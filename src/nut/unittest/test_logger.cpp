@@ -5,27 +5,28 @@
 namespace nut
 {
 
-size_t ITestLogger::get_count_of_fixtures() const
+size_t ITestLogger::get_count_of_fixtures() const noexcept
 {
     return _count_of_fixtures;
 }
 
-size_t ITestLogger::get_count_of_failed_fixtures() const
+size_t ITestLogger::get_count_of_failed_fixtures() const noexcept
 {
     return _count_of_failed_fixtures;
 }
 
-size_t ITestLogger::get_count_of_cases() const
+size_t ITestLogger::get_count_of_cases() const noexcept
 {
     return _count_of_cases;
 }
 
-size_t ITestLogger::get_count_of_failed_cases() const
+size_t ITestLogger::get_count_of_failed_cases() const noexcept
 {
     return _count_of_failed_cases;
 }
 
-void ITestLogger::start(const char *group_name, const char *fixture_name, const char *case_name)
+void ITestLogger::start(const char *group_name, const char *fixture_name,
+                        const char *case_name) noexcept
 {
     _count_of_fixtures = 0;
     _count_of_failed_fixtures = 0;
@@ -38,12 +39,12 @@ void ITestLogger::start(const char *group_name, const char *fixture_name, const 
     on_start(group_name, fixture_name, case_name);
 }
 
-void ITestLogger::finish()
+void ITestLogger::finish() noexcept
 {
     on_finish();
 }
 
-void ITestLogger::enter_fixture(const char *fixture_name)
+void ITestLogger::enter_fixture(const char *fixture_name) noexcept
 {
     ++_count_of_fixtures;
     _current_fixture_failed = false;
@@ -51,7 +52,7 @@ void ITestLogger::enter_fixture(const char *fixture_name)
     on_enter_fixture(fixture_name);
 }
 
-void ITestLogger::leave_fixture()
+void ITestLogger::leave_fixture() noexcept
 {
     if (_current_fixture_failed)
         ++_count_of_failed_fixtures;
@@ -59,7 +60,7 @@ void ITestLogger::leave_fixture()
     on_leave_fixture();
 }
 
-void ITestLogger::enter_case(const char *case_name)
+void ITestLogger::enter_case(const char *case_name) noexcept
 {
     ++_count_of_cases;
     _current_case_failed = false;
@@ -67,7 +68,7 @@ void ITestLogger::enter_case(const char *case_name)
     on_enter_case(case_name);
 }
 
-void ITestLogger::failed_case(const TestCaseFailureException& e)
+void ITestLogger::failed_case(const TestCaseFailureException& e) noexcept
 {
     _current_case_failed = true;
     _current_fixture_failed = true;
@@ -76,7 +77,7 @@ void ITestLogger::failed_case(const TestCaseFailureException& e)
     on_failed_case(e);
 }
 
-void ITestLogger::leave_case()
+void ITestLogger::leave_case() noexcept
 {
     if (_current_case_failed)
         ++_count_of_failed_cases;

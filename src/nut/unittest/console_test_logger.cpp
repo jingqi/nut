@@ -10,12 +10,13 @@
 namespace nut
 {
 
-ConsoleTestLogger::ConsoleTestLogger()
+ConsoleTestLogger::ConsoleTestLogger() noexcept
 {
     _in_a_tty = ConsoleUtil::isatty();
 }
 
-void ConsoleTestLogger::on_start(const char *group_name, const char *fixture_name, const char *case_name)
+void ConsoleTestLogger::on_start(const char *group_name, const char *fixture_name,
+                                 const char *case_name) noexcept
 {
     std::cout << std::endl;
     if (nullptr != group_name)
@@ -51,7 +52,7 @@ void ConsoleTestLogger::on_start(const char *group_name, const char *fixture_nam
     std::cout << std::endl << std::endl;
 }
 
-void ConsoleTestLogger::on_finish()
+void ConsoleTestLogger::on_finish() noexcept
 {
     std::cout << std::endl << "> total fixtures  : ";
     if (_in_a_tty)
@@ -112,37 +113,38 @@ void ConsoleTestLogger::on_finish()
             const TestCaseFailureException& failure = _failures.at(i);
             if (_in_a_tty)
                 ConsoleUtil::set_text_color(ConsoleColor::Red);
-            std::cout << failure.get_description();
+            std::cout << failure.get_message();
             if (_in_a_tty)
                 ConsoleUtil::set_text_color();
-            std::cout << std::endl << failure.get_file() << " " << failure.get_line() << std::endl << std::endl;
+            std::cout << std::endl << failure.get_source_path() << " " <<
+                failure.get_source_line() << std::endl << std::endl;
         }
     }
 
     std::cout << std::endl;
 }
 
-void ConsoleTestLogger::on_enter_fixture(const char *fixture_name)
+void ConsoleTestLogger::on_enter_fixture(const char *fixture_name) noexcept
 {
     assert(nullptr != fixture_name);
     std::cout << "  + " << fixture_name << std::endl;
 }
 
-void ConsoleTestLogger::on_leave_fixture()
+void ConsoleTestLogger::on_leave_fixture() noexcept
 {
     std::cout << std::endl;
 }
 
-void ConsoleTestLogger::on_enter_case(const char *case_name)
+void ConsoleTestLogger::on_enter_case(const char *case_name) noexcept
 {
     assert(nullptr != case_name);
     std::cout << "    - " << case_name << "()";
 }
 
-void ConsoleTestLogger::on_failed_case(const TestCaseFailureException&)
+void ConsoleTestLogger::on_failed_case(const TestCaseFailureException&) noexcept
 {}
 
-void ConsoleTestLogger::on_leave_case()
+void ConsoleTestLogger::on_leave_case() noexcept
 {
     if (_current_case_failed)
     {

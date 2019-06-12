@@ -13,24 +13,24 @@
 namespace nut
 {
 
-RSA_PKCS1::~RSA_PKCS1()
+RSA_PKCS1::~RSA_PKCS1() noexcept
 {
     if (nullptr != _encryption_block)
         ::free(_encryption_block);
     _encryption_block = nullptr;
 }
 
-void RSA_PKCS1::set_callback(callback_type&& cb)
+void RSA_PKCS1::set_callback(callback_type&& cb) noexcept
 {
     _callback = std::forward<callback_type>(cb);
 }
 
-void RSA_PKCS1::set_callback(const callback_type& cb)
+void RSA_PKCS1::set_callback(const callback_type& cb) noexcept
 {
     _callback = cb;
 }
 
-void RSA_PKCS1::start_public_encrypt(const RSA::PublicKey& key)
+void RSA_PKCS1::start_public_encrypt(const RSA::PublicKey& key) noexcept
 {
     (RSA::PublicKey&) _key = key;
     _use_public_key = true;
@@ -41,7 +41,7 @@ void RSA_PKCS1::start_public_encrypt(const RSA::PublicKey& key)
     _has_error = false;
 }
 
-void RSA_PKCS1::start_private_encrypt(const RSA::PrivateKey& key)
+void RSA_PKCS1::start_private_encrypt(const RSA::PrivateKey& key) noexcept
 {
     _key = key;
     _use_public_key = false;
@@ -52,7 +52,7 @@ void RSA_PKCS1::start_private_encrypt(const RSA::PrivateKey& key)
     _has_error = false;
 }
 
-void RSA_PKCS1::pack_eb(size_t data_len)
+void RSA_PKCS1::pack_eb(size_t data_len) noexcept
 {
     // Fill eb
     if (data_len < _encryption_block_size - MIN_NON_DATA_SIZE)
@@ -88,7 +88,7 @@ void RSA_PKCS1::pack_eb(size_t data_len)
     _input_integer.set(_encryption_block, _encryption_block_size, false);
 }
 
-void RSA_PKCS1::update_encrypt(const void *data_, size_t data_len)
+void RSA_PKCS1::update_encrypt(const void *data_, size_t data_len) noexcept
 {
     assert(nullptr != data_ || 0 == data_len);
     assert(_input_size < _encryption_block_size - MIN_NON_DATA_SIZE);
@@ -150,7 +150,7 @@ void RSA_PKCS1::update_encrypt(const void *data_, size_t data_len)
     assert(_input_size < max_data_size);
 }
 
-void RSA_PKCS1::finish_encrypt()
+void RSA_PKCS1::finish_encrypt() noexcept
 {
     assert(_input_size < _encryption_block_size - MIN_NON_DATA_SIZE);
 
@@ -175,7 +175,7 @@ void RSA_PKCS1::finish_encrypt()
     _input_size = 0;
 }
 
-void RSA_PKCS1::start_public_decrypt(const RSA::PublicKey& key)
+void RSA_PKCS1::start_public_decrypt(const RSA::PublicKey& key) noexcept
 {
     (RSA::PublicKey&) _key = key;
     _use_public_key = true;
@@ -186,7 +186,7 @@ void RSA_PKCS1::start_public_decrypt(const RSA::PublicKey& key)
     _has_error = false;
 }
 
-void RSA_PKCS1::start_private_decrypt(const RSA::PrivateKey& key)
+void RSA_PKCS1::start_private_decrypt(const RSA::PrivateKey& key) noexcept
 {
     _key = key;
     _use_public_key = false;
@@ -197,7 +197,7 @@ void RSA_PKCS1::start_private_decrypt(const RSA::PrivateKey& key)
     _has_error = false;
 }
 
-bool RSA_PKCS1::unpack_eb(const BigInteger& output)
+bool RSA_PKCS1::unpack_eb(const BigInteger& output) noexcept
 {
     // Load from BigInteger
     const size_t sig_bytes_len = std::min(
@@ -239,7 +239,7 @@ bool RSA_PKCS1::unpack_eb(const BigInteger& output)
     return true;
 }
 
-bool RSA_PKCS1::update_decrypt(const void *data_, size_t data_len)
+bool RSA_PKCS1::update_decrypt(const void *data_, size_t data_len) noexcept
 {
     assert(nullptr != data_ || 0 == data_len);
     assert(_input_size < _encryption_block_size);
@@ -300,7 +300,7 @@ bool RSA_PKCS1::update_decrypt(const void *data_, size_t data_len)
     return true;
 }
 
-bool RSA_PKCS1::finish_decrypt()
+bool RSA_PKCS1::finish_decrypt() noexcept
 {
     if (0 != _input_size)
     {

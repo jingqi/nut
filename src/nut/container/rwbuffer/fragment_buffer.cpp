@@ -12,7 +12,7 @@
 namespace nut
 {
 
-FragmentBuffer::FragmentBuffer(FragmentBuffer&& x)
+FragmentBuffer::FragmentBuffer(FragmentBuffer&& x) noexcept
 {
     _read_fragment = x._read_fragment;
     _write_fragment = x._write_fragment;
@@ -25,17 +25,17 @@ FragmentBuffer::FragmentBuffer(FragmentBuffer&& x)
     x._read_available = 0;
 }
 
-FragmentBuffer::FragmentBuffer(const FragmentBuffer& x)
+FragmentBuffer::FragmentBuffer(const FragmentBuffer& x) noexcept
 {
     *this = x;
 }
 
-FragmentBuffer::~FragmentBuffer()
+FragmentBuffer::~FragmentBuffer() noexcept
 {
     clear();
 }
 
-FragmentBuffer& FragmentBuffer::operator=(FragmentBuffer&& x)
+FragmentBuffer& FragmentBuffer::operator=(FragmentBuffer&& x) noexcept
 {
     if (this == &x)
         return *this;
@@ -55,7 +55,7 @@ FragmentBuffer& FragmentBuffer::operator=(FragmentBuffer&& x)
     return *this;
 }
 
-FragmentBuffer& FragmentBuffer::operator=(const FragmentBuffer& x)
+FragmentBuffer& FragmentBuffer::operator=(const FragmentBuffer& x) noexcept
 {
     if (this == &x)
         return *this;
@@ -78,7 +78,7 @@ FragmentBuffer& FragmentBuffer::operator=(const FragmentBuffer& x)
     return *this;
 }
 
-void FragmentBuffer::enqueue(Fragment *frag)
+void FragmentBuffer::enqueue(Fragment *frag) noexcept
 {
     assert(nullptr != frag && frag->capacity >= frag->size);
 
@@ -98,7 +98,7 @@ void FragmentBuffer::enqueue(Fragment *frag)
     }
 }
 
-void FragmentBuffer::clear()
+void FragmentBuffer::clear() noexcept
 {
     Fragment *p = _read_fragment;
     while (nullptr != p)
@@ -113,12 +113,12 @@ void FragmentBuffer::clear()
     _read_available = 0;
 }
 
-size_t FragmentBuffer::readable_size() const
+size_t FragmentBuffer::readable_size() const noexcept
 {
     return _read_available;
 }
 
-size_t FragmentBuffer::read(void *buf, size_t len)
+size_t FragmentBuffer::read(void *buf, size_t len) noexcept
 {
     const size_t can_read = std::min(len, _read_available);
     size_t readed = 0;
@@ -151,7 +151,7 @@ size_t FragmentBuffer::read(void *buf, size_t len)
     return can_read;
 }
 
-size_t FragmentBuffer::look_ahead(void *buf, size_t len) const
+size_t FragmentBuffer::look_ahead(void *buf, size_t len) const noexcept
 {
     const size_t can_read = std::min(len, _read_available);
     size_t readed = 0;
@@ -176,7 +176,7 @@ size_t FragmentBuffer::look_ahead(void *buf, size_t len) const
     return can_read;
 }
 
-size_t FragmentBuffer::skip_read(size_t len)
+size_t FragmentBuffer::skip_read(size_t len) noexcept
 {
     size_t can_skip = std::min(len, _read_available);
     size_t skiped = 0;
@@ -208,7 +208,7 @@ size_t FragmentBuffer::skip_read(size_t len)
 }
 
 size_t FragmentBuffer::readable_pointers(const void **buf_ptrs, size_t *len_ptrs,
-                                         size_t ptr_count) const
+                                         size_t ptr_count) const noexcept
 {
     assert(nullptr != buf_ptrs && nullptr != len_ptrs);
 
@@ -231,7 +231,7 @@ size_t FragmentBuffer::readable_pointers(const void **buf_ptrs, size_t *len_ptrs
     return buf_count;
 }
 
-void FragmentBuffer::write(const void *buf, size_t len)
+void FragmentBuffer::write(const void *buf, size_t len) noexcept
 {
     assert(nullptr != buf || len <= 0);
     if (len <= 0)
@@ -257,7 +257,7 @@ void FragmentBuffer::write(const void *buf, size_t len)
     enqueue(frag);
 }
 
-FragmentBuffer::Fragment* FragmentBuffer::new_fragment(size_t capacity)
+FragmentBuffer::Fragment* FragmentBuffer::new_fragment(size_t capacity) noexcept
 {
     assert(capacity > 0);
     Fragment* p = (Fragment*) ::malloc(sizeof(Fragment) + capacity - 1);
@@ -266,14 +266,14 @@ FragmentBuffer::Fragment* FragmentBuffer::new_fragment(size_t capacity)
     return p;
 }
 
-void FragmentBuffer::delete_fragment(Fragment *frag)
+void FragmentBuffer::delete_fragment(Fragment *frag) noexcept
 {
     assert(nullptr != frag);
     frag->~Fragment();
     ::free(frag);
 }
 
-FragmentBuffer::Fragment* FragmentBuffer::write_fragment(Fragment *frag)
+FragmentBuffer::Fragment* FragmentBuffer::write_fragment(Fragment *frag) noexcept
 {
     assert(nullptr != frag && frag->size <= frag->capacity);
 

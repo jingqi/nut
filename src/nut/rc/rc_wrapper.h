@@ -25,17 +25,17 @@ class RCWrapper final : public T
 {
 public:
     template <typename ...Args>
-    RCWrapper(Args&& ...args)
+    RCWrapper(Args&& ...args) noexcept
         : T(std::forward<Args>(args)...)
     {}
 
-    virtual int add_ref() const override final
+    virtual int add_ref() const noexcept override final
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         return ++_ref_count;
     }
 
-    virtual int release_ref() const override final
+    virtual int release_ref() const noexcept override final
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         const int ret = --_ref_count;
@@ -47,7 +47,7 @@ public:
         return ret;
     }
 
-    virtual int get_ref() const override final
+    virtual int get_ref() const noexcept override final
     {
         NUT_DEBUGGING_ASSERT_ALIVE;
         return _ref_count;

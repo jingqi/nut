@@ -16,17 +16,17 @@ class NUT_API LogHandler
     NUT_REF_COUNTABLE
 
 public:
-    void set_flush_mask(loglevel_mask_type mask)
+    void set_flush_mask(loglevel_mask_type mask) noexcept
     {
         _flush_mask = mask;
     }
 
-    LogFilter& get_filter()
+    LogFilter& get_filter() noexcept
     {
         return _filter;
     }
 
-    virtual void handle_log(const LogRecord& rec) = 0;
+    virtual void handle_log(const LogRecord& rec) noexcept = 0;
 
 protected:
     // 控制哪些日志触发立即刷新到磁盘

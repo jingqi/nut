@@ -9,7 +9,7 @@
 namespace nut
 {
 
-NUT_API void der_write_len(std::vector<uint8_t> *output, size_t len)
+NUT_API void der_write_len(std::vector<uint8_t> *output, size_t len) noexcept
 {
     assert(nullptr != output);
 
@@ -34,7 +34,7 @@ NUT_API void der_write_len(std::vector<uint8_t> *output, size_t len)
         output->push_back(buffer[i]);
 }
 
-NUT_API void der_write_integer(std::vector<uint8_t> *output, const BigInteger& v)
+NUT_API void der_write_integer(std::vector<uint8_t> *output, const BigInteger& v) noexcept
 {
     assert(nullptr != output);
 
@@ -44,7 +44,7 @@ NUT_API void der_write_integer(std::vector<uint8_t> *output, const BigInteger& v
     output->insert(output->end(), bytes.begin(), bytes.end());
 }
 
-NUT_API void der_write_bit_string(std::vector<uint8_t> *output, const std::vector<uint8_t>& bs)
+NUT_API void der_write_bit_string(std::vector<uint8_t> *output, const std::vector<uint8_t>& bs) noexcept
 {
     assert(nullptr != output);
 
@@ -54,7 +54,7 @@ NUT_API void der_write_bit_string(std::vector<uint8_t> *output, const std::vecto
     output->insert(output->end(), bs.begin(), bs.end());
 }
 
-NUT_API void der_write_octet_string(std::vector<uint8_t> *output, const std::vector<uint8_t>& os)
+NUT_API void der_write_octet_string(std::vector<uint8_t> *output, const std::vector<uint8_t>& os) noexcept
 {
     assert(nullptr != output);
 
@@ -63,7 +63,7 @@ NUT_API void der_write_octet_string(std::vector<uint8_t> *output, const std::vec
     output->insert(output->end(), os.begin(), os.end());
 }
 
-NUT_API void der_write_sequence(std::vector<uint8_t> *output, const std::vector<uint8_t>& sq)
+NUT_API void der_write_sequence(std::vector<uint8_t> *output, const std::vector<uint8_t>& sq) noexcept
 {
     assert(nullptr != output);
 
@@ -72,7 +72,7 @@ NUT_API void der_write_sequence(std::vector<uint8_t> *output, const std::vector<
     output->insert(output->end(), sq.begin(), sq.end());
 }
 
-NUT_API void der_write_obj_ident(std::vector<uint8_t> *output, const uint8_t *id_begin, size_t id_size)
+NUT_API void der_write_obj_ident(std::vector<uint8_t> *output, const uint8_t *id_begin, size_t id_size) noexcept
 {
     assert(nullptr != output && nullptr != id_begin);
 
@@ -81,7 +81,7 @@ NUT_API void der_write_obj_ident(std::vector<uint8_t> *output, const uint8_t *id
     output->insert(output->end(), id_begin, id_begin + id_size);
 }
 
-NUT_API void der_write_null(std::vector<uint8_t> *output)
+NUT_API void der_write_null(std::vector<uint8_t> *output) noexcept
 {
     assert(nullptr != output);
     output->push_back(0x05);
@@ -95,7 +95,7 @@ NUT_API void der_write_null(std::vector<uint8_t> *output)
  *   INTEGER -- n
  *   INTEGER -- e
  */
-NUT_API void der_write_pkcs1_public(std::vector<uint8_t> *output, const RSA::PublicKey& pubkey)
+NUT_API void der_write_pkcs1_public(std::vector<uint8_t> *output, const RSA::PublicKey& pubkey) noexcept
 {
     assert(nullptr != output);
     std::vector<uint8_t> sq;
@@ -116,7 +116,7 @@ NUT_API void der_write_pkcs1_public(std::vector<uint8_t> *output, const RSA::Pub
  *       INTEGER -- n
  *       INTEGER -- e
  */
-NUT_API void der_write_pkcs8_public(std::vector<uint8_t> *output, const RSA::PublicKey& pubkey)
+NUT_API void der_write_pkcs8_public(std::vector<uint8_t> *output, const RSA::PublicKey& pubkey) noexcept
 {
     assert(nullptr != output);
 
@@ -150,7 +150,7 @@ NUT_API void der_write_pkcs8_public(std::vector<uint8_t> *output, const RSA::Pub
  *   INTEGER -- (inverse of q) mod p
  *   OtherPrimeInfos OPTIONAL
  */
-NUT_API void der_write_pkcs1_private(std::vector<uint8_t> *output, const RSA::PrivateKey& prikey)
+NUT_API void der_write_pkcs1_private(std::vector<uint8_t> *output, const RSA::PrivateKey& prikey) noexcept
 {
     assert(nullptr != output);
     std::vector<uint8_t> sq;
@@ -190,7 +190,7 @@ NUT_API void der_write_pkcs1_private(std::vector<uint8_t> *output, const RSA::Pr
  *       INTEGER -- (inverse of q) mod p
  *       OtherPrimeInfos OPTIONAL
  */
-NUT_API void der_write_pkcs8_private(std::vector<uint8_t> *output, const RSA::PrivateKey& prikey)
+NUT_API void der_write_pkcs8_private(std::vector<uint8_t> *output, const RSA::PrivateKey& prikey) noexcept
 {
     assert(nullptr != output);
 

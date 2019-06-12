@@ -3,6 +3,7 @@
 #define ___HEADFILE_303F68D8_9542_4BDD_A2C9_69764EE0AC70_
 
 #include <assert.h>
+#include <stdint.h>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,7 @@ private:
     class ElementInfo
     {
     public:
-        ElementInfo(const std::string& n, XmlElementHandler *h)
+        ElementInfo(const std::string& n, XmlElementHandler *h) noexcept
             : name(n), handler(h)
         {}
 
@@ -32,75 +33,53 @@ public:
     /**
      * NODE 根 handler 的删除操作需要外部自己管理
      */
-    explicit XmlParser(XmlElementHandler *root_handler);
+    explicit XmlParser(XmlElementHandler *root_handler) noexcept;
 
-    void reset(XmlElementHandler *root_handler);
-
-    /**
-     * @return false if error
-     */
-    bool input(const char *s, int len = -1);
+    void reset(XmlElementHandler *root_handler) noexcept;
 
     /**
      * @return false if error
      */
-    bool finish();
+    bool input(const char *s, int len = -1) noexcept;
 
-    size_t line() const;
-    size_t column() const;
+    /**
+     * @return false if error
+     */
+    bool finish() noexcept;
 
-    bool has_error() const;
+    size_t line() const noexcept;
+    size_t column() const noexcept;
 
-    std::string error_message() const;
+    bool has_error() const noexcept;
+
+    std::string error_message() const noexcept;
 
 private:
-    bool input(char c);
+    bool input(char c) noexcept;
 
-    bool should_handle_child() const;
-    bool should_handle_attribute() const;
-    bool should_handle_text() const;
-    bool should_handle_comment() const;
+    bool should_handle_child() const noexcept;
+    bool should_handle_attribute() const noexcept;
+    bool should_handle_text() const noexcept;
+    bool should_handle_comment() const noexcept;
 
-    void handle_child();
-    void handle_attribute();
-    void handle_text();
-    void handle_comment();
-    void handle_finish();
-    bool check_finish();
+    void handle_child() noexcept;
+    void handle_attribute() noexcept;
+    void handle_text() noexcept;
+    void handle_comment() noexcept;
+    void handle_finish() noexcept;
+    bool check_finish() noexcept;
 
-    void force_finish();
+    void force_finish() noexcept;
 
 private:
     std::vector<ElementInfo> _elem_path;
 
     size_t _line = 1, _column = 1;
 
-    // 解析状态机定义
-    enum class State
-    {
-        InText, // 在 text 中
-        InTextEncode, // 在 text 的转义符中
-        JustAfterLessSign, // 紧接着 '<'
-        ExpectElemNameFirstChar, // 预期 element 名称的第一个字符
-        InElemName, // 在 element 名称中
-        ExpectSpaceBeforeAttrNameFirstChar, // 在 attribute 名字的第一个字符前，至少匹配一个空格
-        ExpectAttrNameFirstChar, // 预期 attribute 名称的第一个字符
-        InAttrName, // 在 attribute 名称中
-        ExpectEqual, // 预期 '＝' 字符
-        ExpectFirstQuot, // 预期第一个双引号
-        InAttrValue, // 在 attribute 的值中
-        InAttrValueEncode, // 在 attribute 的值中的转义符中
-        ExpectImmediatGreaterSignAndFinishElem, // 预期立即的 '>' 字符，然后结束 element
-        ExpectFirstBar, // 预期注释中的第一个 '-' 符号
-        ExpectSecondBar, // 预期注释中的第二个 '-' 符号
-        InComment, // 在注释中
-        ExpectLastBar, // 预期注释中的最后一个 '-'
-        ExpectGreaterSignAndFinishComment, // 预期 '>' 字符，然后结束注释
-        ExpectElemNameFirstCharAndFinishElem, // 预期第一个字符，然后结束 element
-        InElemNameAndFinishElem, // 在 element 名称中，然后结束 element
-        ExpectGreaterSignAndFinishElem, // 预期 '>' 然后 element 结束
-        InError // 出错
-    } _state;
+    // 解析状态机
+    enum class State : uint8_t;
+
+    State _state;
     std::string _tmp_name, _tmp_value, _tmp_encoded;
 };
 

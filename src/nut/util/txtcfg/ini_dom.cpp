@@ -15,7 +15,7 @@
 namespace nut
 {
 
-static bool contains(const char *s, char c)
+static bool contains(const char *s, char c) noexcept
 {
     assert(nullptr != s);
     for (size_t i = 0; 0 != s[i]; ++i)
@@ -26,11 +26,8 @@ static bool contains(const char *s, char c)
     return false;
 }
 
-/**
- * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
- * @param space_chars 空白字符，其中出现的字符将被视为空白
- */
-rc_ptr<IniDom::Sector> IniDom::Sector::parse_sector_name(const std::string& line, const char *line_comment_chars, const char *space_chars)
+rc_ptr<IniDom::Sector> IniDom::Sector::parse_sector_name(
+    const std::string& line, const char *line_comment_chars, const char *space_chars) noexcept
 {
     const std::string::size_type index1 = line.find_first_of('[');
     const std::string::size_type index2 = line.find_first_of(']');
@@ -93,7 +90,7 @@ rc_ptr<IniDom::Sector> IniDom::Sector::parse_sector_name(const std::string& line
 /**
  * @param le 换行符
  */
-std::string IniDom::Sector::serielize(const char *le)
+std::string IniDom::Sector::serielize(const char *le) noexcept
 {
     assert(nullptr != le);
     std::string ret;
@@ -117,7 +114,7 @@ std::string IniDom::Sector::serielize(const char *le)
  * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
  * @param space_chars 空白字符，其中出现的字符将被视为空白
  */
-void IniDom::parse(const std::string& s, const char *line_comment_chars, const char *space_chars)
+void IniDom::parse(const std::string& s, const char *line_comment_chars, const char *space_chars) noexcept
 {
     assert(nullptr != line_comment_chars && nullptr != space_chars);
 
@@ -164,7 +161,7 @@ void IniDom::parse(const std::string& s, const char *line_comment_chars, const c
 /**
  * @param le 换行符
  */
-std::string IniDom::serielize(const char *le) const
+std::string IniDom::serielize(const char *le) const noexcept
 {
     assert(nullptr != le);
 
@@ -187,24 +184,24 @@ std::string IniDom::serielize(const char *le) const
     return ret;
 }
 
-bool IniDom::is_dirty() const
+bool IniDom::is_dirty() const noexcept
 {
     return _dirty;
 }
 
-void IniDom::set_dirty(bool dirty)
+void IniDom::set_dirty(bool dirty) noexcept
 {
     _dirty = dirty;
 }
 
-void IniDom::clear()
+void IniDom::clear() noexcept
 {
     _anonymous_lines.clear();
     _sectors.clear();
     _dirty = true;
 }
 
-std::vector<std::string> IniDom::list_sectors() const
+std::vector<std::string> IniDom::list_sectors() const noexcept
 {
     std::vector<std::string> ret;
     for (size_t i = 0, sz = _sectors.size(); i < sz; ++i)
@@ -212,7 +209,7 @@ std::vector<std::string> IniDom::list_sectors() const
     return ret;
 }
 
-bool IniDom::has_sector(const std::string& sector) const
+bool IniDom::has_sector(const std::string& sector) const noexcept
 {
     if (sector.empty())
         return true; // anonymous
@@ -224,7 +221,7 @@ bool IniDom::has_sector(const std::string& sector) const
     return false;
 }
 
-bool IniDom::remove_sector(const std::string& sector)
+bool IniDom::remove_sector(const std::string& sector) noexcept
 {
     if (sector.empty())
         return false; // anonymous
@@ -241,7 +238,7 @@ bool IniDom::remove_sector(const std::string& sector)
     return false;
 }
 
-std::vector<std::string> IniDom::list_keys(const std::string& sector) const
+std::vector<std::string> IniDom::list_keys(const std::string& sector) const noexcept
 {
     std::vector<std::string> ret;
     if (sector.empty()) // anonymous
@@ -274,7 +271,7 @@ std::vector<std::string> IniDom::list_keys(const std::string& sector) const
     return ret;
 }
 
-bool IniDom::has_key(const std::string& sector, const std::string& key) const
+bool IniDom::has_key(const std::string& sector, const std::string& key) const noexcept
 {
     const std::vector<rc_ptr<Line>> *lines = nullptr;
     if (sector.empty())
@@ -305,7 +302,7 @@ bool IniDom::has_key(const std::string& sector, const std::string& key) const
     return false;
 }
 
-bool IniDom::remove_key(const std::string& sector, const std::string& key)
+bool IniDom::remove_key(const std::string& sector, const std::string& key) noexcept
 {
     std::vector<rc_ptr<Line> > *lines = nullptr;
     if (sector.empty())
@@ -338,7 +335,8 @@ bool IniDom::remove_key(const std::string& sector, const std::string& key)
     return false;
 }
 
-const char* IniDom::get_string(const std::string& sector, const std::string& key, const char *default_value) const
+const char* IniDom::get_string(const std::string& sector, const std::string& key,
+                               const char *default_value) const noexcept
 {
     const std::vector<rc_ptr<Line> > *lines = nullptr;
     if (sector.empty())
@@ -367,7 +365,7 @@ const char* IniDom::get_string(const std::string& sector, const std::string& key
     return default_value;
 }
 
-bool IniDom::get_bool(const std::string& sector, const std::string& key, bool default_value) const
+bool IniDom::get_bool(const std::string& sector, const std::string& key, bool default_value) const noexcept
 {
     const char *s = get_string(sector, key);
     if (0 == ::strcmp(s, "0") || 0 == stricmp(s, "false") || 0 == stricmp(s, "no"))
@@ -377,7 +375,7 @@ bool IniDom::get_bool(const std::string& sector, const std::string& key, bool de
     return default_value;
 }
 
-long IniDom::get_int(const std::string& sector, const std::string& key, long default_value) const
+long IniDom::get_int(const std::string& sector, const std::string& key, long default_value) const noexcept
 {
     const char *s = get_string(sector, key);
     if (nullptr == s || '\0' == s[0])
@@ -386,7 +384,7 @@ long IniDom::get_int(const std::string& sector, const std::string& key, long def
     return atol(s);
 }
 
-double IniDom::get_decimal(const std::string& sector, const std::string& key, double default_value) const
+double IniDom::get_decimal(const std::string& sector, const std::string& key, double default_value) const noexcept
 {
     const char *s = get_string(sector, key);
     if (nullptr == s || '\0' == s[0])
@@ -395,7 +393,7 @@ double IniDom::get_decimal(const std::string& sector, const std::string& key, do
     return atof(s);
 }
 
-std::vector<std::string> IniDom::get_list(const std::string& sector, const std::string& key, char split_char) const
+std::vector<std::string> IniDom::get_list(const std::string& sector, const std::string& key, char split_char) const noexcept
 {
     std::vector<std::string> ret;
     std::string s = get_string(sector, key);
@@ -413,7 +411,7 @@ std::vector<std::string> IniDom::get_list(const std::string& sector, const std::
     return ret;
 }
 
-void IniDom::set_string(const std::string& sector, const std::string& key, const std::string& value)
+void IniDom::set_string(const std::string& sector, const std::string& key, const std::string& value) noexcept
 {
     std::vector<rc_ptr<Line>> *lines = nullptr;
     if (sector.empty())
@@ -456,12 +454,12 @@ void IniDom::set_string(const std::string& sector, const std::string& key, const
     _dirty = true;
 }
 
-void IniDom::set_bool(const std::string& sector, const std::string& key, bool value)
+void IniDom::set_bool(const std::string& sector, const std::string& key, bool value) noexcept
 {
     set_string(sector, key, (value ? "true" : "false"));
 }
 
-void IniDom::set_int(const std::string& sector, const std::string& key, long value)
+void IniDom::set_int(const std::string& sector, const std::string& key, long value) noexcept
 {
     const int BUF_LEN = 30;
     char buf[BUF_LEN];
@@ -473,7 +471,7 @@ void IniDom::set_int(const std::string& sector, const std::string& key, long val
     set_string(sector, key, buf);
 }
 
-void IniDom::set_decimal(const std::string& sector, const std::string& key, double value)
+void IniDom::set_decimal(const std::string& sector, const std::string& key, double value) noexcept
 {
     const int BUF_LEN = 30;
     char buf[BUF_LEN];
@@ -482,7 +480,7 @@ void IniDom::set_decimal(const std::string& sector, const std::string& key, doub
 }
 
 void IniDom::set_list(const std::string& sector, const std::string& key,
-                      const std::vector<std::string>& values, char split_char)
+                      const std::vector<std::string>& values, char split_char) noexcept
 {
     std::string s;
     if (values.size() > 0)

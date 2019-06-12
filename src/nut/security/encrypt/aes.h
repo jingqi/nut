@@ -16,7 +16,7 @@ namespace nut
 class NUT_API AES
 {
 public:
-    AES();
+    AES() noexcept;
 
     /**
      * AES key scheduling routine
@@ -24,7 +24,7 @@ public:
      * @param nbits Bits of key, should be 128 / 192 / 256
      * @return True if success
      */
-    bool set_key(const void *key, int nbits);
+    bool set_key(const void *key, int nbits) noexcept;
 
     /**
      * AES 128-bit block encryption routine
@@ -32,7 +32,7 @@ public:
      * @param input 16 bytes input data
      * @param output 16 bytes output buffer
      */
-    void encrypt(const void *input, void *output) const;
+    void encrypt(const void *input, void *output) const noexcept;
 
     /**
      * AES 128-bit block decryption routine
@@ -40,7 +40,7 @@ public:
      * @param input 16 bytes input data
      * @param output 16 bytes output buffer
      */
-    void decrypt(const void *input, void *output) const;
+    void decrypt(const void *input, void *output) const noexcept;
 
 private:
     /** Encryption round keys */

@@ -19,12 +19,12 @@ public:
     /**
      * 总长度
      */
-    virtual size_t size() const = 0;
+    virtual size_t size() const noexcept = 0;
 
     /**
      * 读/写位置
      */
-    virtual size_t tell() const = 0;
+    virtual size_t tell() const noexcept = 0;
 
     /**
      * 设置读/写位置

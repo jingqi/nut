@@ -20,8 +20,8 @@
 namespace nut
 {
 
-CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(const std::string& dir_path,
-        const std::string& prefix, size_t circle_size)
+CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(
+        const std::string& dir_path, const std::string& prefix, size_t circle_size) noexcept
 {
     assert(circle_size > 0);
 
@@ -69,7 +69,7 @@ CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(const std::string& dir_pa
     _ofs.open(full_path.c_str(), std::ios::app); // NOTE 'O_APPEND' 模式打开的文件支持并发写
 }
 
-void CircleFileByTimeLogHandler::handle_log(const LogRecord& rec)
+void CircleFileByTimeLogHandler::handle_log(const LogRecord& rec) noexcept
 {
     _ofs << rec.to_string() << std::endl;
 

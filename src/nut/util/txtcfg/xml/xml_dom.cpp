@@ -9,11 +9,11 @@
 namespace nut
 {
 
-XmlDom::XmlDom()
+XmlDom::XmlDom() noexcept
     : _version("1.0"), _encoding("UTF-8")
 {}
 
-bool XmlDom::is_dirty() const
+bool XmlDom::is_dirty() const noexcept
 {
     if (_dirty)
         return true;
@@ -22,7 +22,7 @@ bool XmlDom::is_dirty() const
     return _root->is_dirty();
 }
 
-void XmlDom::set_dirty(bool dirty)
+void XmlDom::set_dirty(bool dirty) noexcept
 {
     if (dirty)
     {
@@ -35,12 +35,12 @@ void XmlDom::set_dirty(bool dirty)
         _root->set_dirty(false);
 }
 
-const std::string& XmlDom::get_version() const
+const std::string& XmlDom::get_version() const noexcept
 {
     return _version;
 }
 
-void XmlDom::set_version(const std::string& version)
+void XmlDom::set_version(const std::string& version) noexcept
 {
     if (version != _version)
     {
@@ -49,12 +49,12 @@ void XmlDom::set_version(const std::string& version)
     }
 }
 
-const std::string& XmlDom::get_encoding() const
+const std::string& XmlDom::get_encoding() const noexcept
 {
     return _encoding;
 }
 
-void XmlDom::set_encoding(const std::string& encoding)
+void XmlDom::set_encoding(const std::string& encoding) noexcept
 {
     if (encoding != _encoding)
     {
@@ -63,12 +63,12 @@ void XmlDom::set_encoding(const std::string& encoding)
     }
 }
 
-rc_ptr<XmlElement> XmlDom::get_root() const
+rc_ptr<XmlElement> XmlDom::get_root() const noexcept
 {
     return _root;
 }
 
-void XmlDom::set_root(rc_ptr<XmlElement> root)
+void XmlDom::set_root(rc_ptr<XmlElement> root) noexcept
 {
     if (root != _root)
     {
@@ -77,7 +77,7 @@ void XmlDom::set_root(rc_ptr<XmlElement> root)
     }
 }
 
-void XmlDom::parse(const std::string& s, bool ignore_text_blank)
+void XmlDom::parse(const std::string& s, bool ignore_text_blank) noexcept
 {
     _version = "1.0";
     _encoding = "UTF-8";
@@ -137,7 +137,7 @@ void XmlDom::parse(const std::string& s, bool ignore_text_blank)
         _root.set_null();
 }
 
-std::string XmlDom::serielize(bool format) const
+std::string XmlDom::serielize(bool format) const noexcept
 {
     // xml header
     std::string ret;

@@ -17,7 +17,7 @@
 namespace nut
 {
 
-void PropertyDom::Line::clear()
+void PropertyDom::Line::clear() noexcept
 {
     _space0.clear();
     _key.clear();
@@ -29,12 +29,8 @@ void PropertyDom::Line::clear()
     _comment.clear();
 }
 
-/**
- * @param line 单行字符串，不包含回车换行
- * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
- * @param space_chars 空白字符，其中出现的字符将被视为空白
- */
-void PropertyDom::Line::parse(const std::string& line, const char *line_comment_chars, const char *space_chars)
+void PropertyDom::Line::parse(const std::string& line, const char *line_comment_chars,
+                              const char *space_chars) noexcept
 {
     assert(nullptr != line_comment_chars && nullptr != space_chars);
     clear();
@@ -117,10 +113,7 @@ void PropertyDom::Line::parse(const std::string& line, const char *line_comment_
     }
 }
 
-/**
- * 序列化，不包含尾部的 '\n'
- */
-std::string PropertyDom::Line::serielize()
+std::string PropertyDom::Line::serielize() noexcept
 {
     std::string ret;
     ret += _space0;
@@ -135,11 +128,8 @@ std::string PropertyDom::Line::serielize()
     return ret;
 }
 
-/**
- * @param line_comment_chars 行注释的起始标记字符，可以有多种行注释，如 ';' 行注释和 '#' 行注释
- * @param space_chars 空白字符，其中出现的字符将被视为空白
- */
-void PropertyDom::parse(const std::string& s, const char *line_comment_chars, const char *space_chars)
+void PropertyDom::parse(const std::string& s, const char *line_comment_chars,
+                        const char *space_chars) noexcept
 {
     assert(nullptr != line_comment_chars && nullptr != space_chars);
 
@@ -173,10 +163,7 @@ void PropertyDom::parse(const std::string& s, const char *line_comment_chars, co
     } while (std::string::npos != start);
 }
 
-/**
- * @param le 换行符
- */
-std::string PropertyDom::serielize(const char *le) const
+std::string PropertyDom::serielize(const char *le) const noexcept
 {
     assert(nullptr != le);
     std::string ret;
@@ -189,23 +176,23 @@ std::string PropertyDom::serielize(const char *le) const
     return ret;
 }
 
-bool PropertyDom::is_dirty() const
+bool PropertyDom::is_dirty() const noexcept
 {
     return _dirty;
 }
 
-void PropertyDom::set_dirty(bool dirty)
+void PropertyDom::set_dirty(bool dirty) noexcept
 {
     _dirty = dirty;
 }
 
-void PropertyDom::clear()
+void PropertyDom::clear() noexcept
 {
     _lines.clear();
     _dirty = true;
 }
 
-std::vector<std::string> PropertyDom::list_keys() const
+std::vector<std::string> PropertyDom::list_keys() const noexcept
 {
     std::vector<std::string> ret;
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
@@ -218,7 +205,7 @@ std::vector<std::string> PropertyDom::list_keys() const
     return ret;
 }
 
-bool PropertyDom::has_key(const std::string& key) const
+bool PropertyDom::has_key(const std::string& key) const noexcept
 {
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
@@ -228,7 +215,7 @@ bool PropertyDom::has_key(const std::string& key) const
     return false;
 }
 
-bool PropertyDom::remove_key(const std::string& key)
+bool PropertyDom::remove_key(const std::string& key) noexcept
 {
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
@@ -242,7 +229,7 @@ bool PropertyDom::remove_key(const std::string& key)
     return false;
 }
 
-const char* PropertyDom::get_string(const std::string& key, const char *default_value) const
+const char* PropertyDom::get_string(const std::string& key, const char *default_value) const noexcept
 {
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
@@ -252,7 +239,7 @@ const char* PropertyDom::get_string(const std::string& key, const char *default_
     return default_value;
 }
 
-bool PropertyDom::get_bool(const std::string& key, bool default_value) const
+bool PropertyDom::get_bool(const std::string& key, bool default_value) const noexcept
 {
     const char *s = get_string(key);
     if (0 == ::strcmp(s, "0") || 0 == stricmp(s, "false") || 0 == stricmp(s, "no"))
@@ -262,7 +249,7 @@ bool PropertyDom::get_bool(const std::string& key, bool default_value) const
     return default_value;
 }
 
-long PropertyDom::get_int(const std::string& key, long default_value) const
+long PropertyDom::get_int(const std::string& key, long default_value) const noexcept
 {
     const char *s = get_string(key);
     if (nullptr == s || '\0' == s[0])
@@ -271,7 +258,7 @@ long PropertyDom::get_int(const std::string& key, long default_value) const
     return ::atol(s);
 }
 
-double PropertyDom::get_decimal(const std::string& key, double default_value) const
+double PropertyDom::get_decimal(const std::string& key, double default_value) const noexcept
 {
     const char *s = get_string(key);
     if (nullptr == s || '\0' == s[0])
@@ -280,7 +267,7 @@ double PropertyDom::get_decimal(const std::string& key, double default_value) co
     return atof(s);
 }
 
-std::vector<std::string> PropertyDom::get_list(const std::string& key, char split_char) const
+std::vector<std::string> PropertyDom::get_list(const std::string& key, char split_char) const noexcept
 {
     std::vector<std::string> ret;
     std::string s = get_string(key);
@@ -298,7 +285,7 @@ std::vector<std::string> PropertyDom::get_list(const std::string& key, char spli
     return ret;
 }
 
-void PropertyDom::set_string(const std::string& key, const std::string& value)
+void PropertyDom::set_string(const std::string& key, const std::string& value) noexcept
 {
     for (size_t i = 0, sz = _lines.size(); i < sz; ++i)
     {
@@ -319,12 +306,12 @@ void PropertyDom::set_string(const std::string& key, const std::string& value)
     _dirty = true;   // tag the need of saving
 }
 
-void PropertyDom::set_bool(const std::string& key, bool value)
+void PropertyDom::set_bool(const std::string& key, bool value) noexcept
 {
     set_string(key, (value ? "true" : "false"));
 }
 
-void PropertyDom::set_int(const std::string& key, long value)
+void PropertyDom::set_int(const std::string& key, long value) noexcept
 {
     const int BUF_LEN = 30;
     char buf[BUF_LEN];
@@ -336,7 +323,7 @@ void PropertyDom::set_int(const std::string& key, long value)
     set_string(key, buf);
 }
 
-void PropertyDom::set_decimal(const std::string& key, double value)
+void PropertyDom::set_decimal(const std::string& key, double value) noexcept
 {
     const int BUF_LEN = 30;
     char buf[BUF_LEN];
@@ -344,7 +331,7 @@ void PropertyDom::set_decimal(const std::string& key, double value)
     set_string(key, buf);
 }
 
-void PropertyDom::set_list(const std::string& key, const std::vector<std::string>& values, char split_char)
+void PropertyDom::set_list(const std::string& key, const std::vector<std::string>& values, char split_char) noexcept
 {
     std::string s;
     if (values.size() > 0)

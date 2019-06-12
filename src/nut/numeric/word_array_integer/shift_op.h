@@ -11,10 +11,10 @@ namespace nut
 {
 
 template <typename T>
-constexpr bool is_positive(const T *a, size_t N);
+constexpr bool is_positive(const T *a, size_t N) noexcept;
 
 template <typename T>
-void _signed_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_count)
+void _signed_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_count) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
@@ -54,7 +54,7 @@ void _signed_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_c
  * x<N> = a<N> << count
  */
 template <typename T>
-void signed_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
+void signed_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
@@ -98,7 +98,7 @@ void signed_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 }
 
 template <typename T>
-void _unsigned_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_count)
+void _unsigned_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word_count) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
@@ -132,7 +132,7 @@ void _unsigned_shift_left_word(const T *a, size_t M, T *x, size_t N, size_t word
  * x<N> = a<N> << count
  */
 template <typename T>
-void unsigned_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
+void unsigned_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
@@ -175,7 +175,7 @@ void unsigned_shift_left(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 }
 
 template <typename T>
-void _signed_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t word_count)
+void _signed_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t word_count) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
@@ -214,7 +214,7 @@ void _signed_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t word_
  * x<N> = a<N> >> count
  */
 template <typename T>
-void signed_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count)
+void signed_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
@@ -252,7 +252,7 @@ void signed_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count)
 }
 
 template <typename T>
-void _unsigned_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t word_count)
+void _unsigned_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t word_count) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
@@ -285,7 +285,7 @@ void _unsigned_shift_right_word(const T *a, size_t M, T *x, size_t N, size_t wor
  * x<N> = a<N> >> count
  */
 template <typename T>
-void unsigned_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count)
+void unsigned_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
@@ -320,7 +320,6 @@ void unsigned_shift_right(const T *a, size_t M, T *x, size_t N, size_t bit_count
         }
     }
 }
-
 
 }
 

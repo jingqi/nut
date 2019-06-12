@@ -50,7 +50,7 @@ namespace nut
  *     ab ac ad ae
  */
 template <typename T>
-void _unsigned_square(const T *a, size_t M, T *x, size_t N)
+void _unsigned_square(const T *a, size_t M, T *x, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
@@ -141,7 +141,7 @@ void _unsigned_square(const T *a, size_t M, T *x, size_t N)
  * x<P> = a<M> * b<N>
  */
 template <typename T>
-void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
+void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
@@ -201,7 +201,7 @@ void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
  * x<P> = a<M> * b<N>
  */
 template <typename T>
-void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
+void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);

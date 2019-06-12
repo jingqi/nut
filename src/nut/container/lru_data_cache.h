@@ -20,7 +20,7 @@ private:
     class Node
     {
     public:
-        Node(K&& k, const void *buf, size_t cb)
+        Node(K&& k, const void *buf, size_t cb) noexcept
             : key(std::forward<K>(k)), size(cb)
         {
             assert(nullptr != buf || 0 == cb);
@@ -32,7 +32,7 @@ private:
             }
         }
 
-        Node(const K& k, const void *buf, size_t cb)
+        Node(const K& k, const void *buf, size_t cb) noexcept
             : key(k), size(cb)
         {
             assert(nullptr != buf || 0 == cb);
@@ -44,12 +44,12 @@ private:
             }
         }
 
-        ~Node()
+        ~Node() noexcept
         {
             clear();
         }
 
-        void copy_from(const void *buf, size_t cb)
+        void copy_from(const void *buf, size_t cb) noexcept
         {
             assert(nullptr != buf || 0 == cb);
             if (cb > 0)
@@ -65,7 +65,7 @@ private:
             }
         }
 
-        void fast_set(void *buf, size_t cb)
+        void fast_set(void *buf, size_t cb) noexcept
         {
             assert(nullptr != buf || 0 == cb);
             clear();
@@ -73,7 +73,7 @@ private:
             size = cb;
         }
 
-        void clear()
+        void clear() noexcept
         {
             if (nullptr != data)
                 ::free(data);
@@ -96,33 +96,33 @@ private:
     typedef std::unordered_map<K,Node*,HASH> map_type;
 
 public:
-    explicit LRUDataCache(size_t bytes_capacity = 2 * 1024 * 1024) // 2M
+    explicit LRUDataCache(size_t bytes_capacity = 8 * 1024 * 1024) noexcept // 8M
         : _bytes_capacity(bytes_capacity)
     {
         assert(bytes_capacity > 0);
     }
 
-    ~LRUDataCache()
+    ~LRUDataCache() noexcept
     {
         clear();
     }
 
-    size_t size() const
+    size_t size() const noexcept
     {
         return _map.size();
     }
 
-    size_t bytes_size() const
+    size_t bytes_size() const noexcept
     {
         return _bytes_size;
     }
 
-    size_t bytes_capacity() const
+    size_t bytes_capacity() const noexcept
     {
         return _bytes_capacity;
     }
 
-    void set_bytes_capacity(size_t bytes_capacity)
+    void set_bytes_capacity(size_t bytes_capacity) noexcept
     {
         assert(bytes_capacity > 0);
         _bytes_capacity = bytes_capacity;
@@ -132,7 +132,7 @@ public:
      * @return -1, old data replaced
      *         1, new data inserted
      */
-    int put(K&& k, const void *buf, size_t cb)
+    int put(K&& k, const void *buf, size_t cb) noexcept
     {
         assert(nullptr != buf || 0 == cb);
 
@@ -187,7 +187,7 @@ public:
      * @return -1, old data replaced
      *         1, new data inserted
      */
-    int put(const K& k, const void *buf, size_t cb)
+    int put(const K& k, const void *buf, size_t cb) noexcept
     {
         assert(nullptr != buf || 0 == cb);
 
@@ -242,7 +242,7 @@ public:
      * @return true, remove succeeded
      *         false, no key found
      */
-    bool remove(const K& k)
+    bool remove(const K& k) noexcept
     {
         typename map_type::iterator const iter = _map.find(k);
         if (iter == _map.end())
@@ -258,12 +258,12 @@ public:
         return true;
     }
 
-    bool has_key(const K& k)
+    bool has_key(const K& k) noexcept
     {
         return _map.find(k) != _map.end();
     }
 
-    bool get(const K& k, const void **pdata, size_t *psize)
+    bool get(const K& k, const void **pdata, size_t *psize) noexcept
     {
         assert(nullptr != pdata && nullptr != psize);
         typename map_type::const_iterator const iter = _map.find(k);
@@ -289,7 +289,7 @@ public:
         return true;
     }
 
-    void clear()
+    void clear() noexcept
     {
         Node *p = _list_head;
         while (nullptr != p)
@@ -315,7 +315,7 @@ private:
     LRUDataCache(const LRUDataCache<K>&) = delete;
     LRUDataCache<K>& operator=(const LRUDataCache<K>&) = delete;
 
-    void remove_from_list(Node *p)
+    void remove_from_list(Node *p) noexcept
     {
         assert(nullptr != p);
         if (nullptr != p->prev)
@@ -329,7 +329,7 @@ private:
             _list_end = p->prev;
     }
 
-    void push_list_head(Node *p)
+    void push_list_head(Node *p) noexcept
     {
         assert(nullptr != p);
         p->next = _list_head;
@@ -341,7 +341,7 @@ private:
         _list_head = p;
     }
 
-    void remove_older_nodes()
+    void remove_older_nodes() noexcept
     {
         while (_bytes_size > _bytes_capacity)
         {

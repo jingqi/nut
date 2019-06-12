@@ -16,17 +16,18 @@ namespace nut
 class NUT_API StreamTestLogger : public ITestLogger
 {
 public:
-    explicit StreamTestLogger(std::ostream *os);
+    explicit StreamTestLogger(std::ostream *os) noexcept;
 
-    virtual void on_start(const char *group_name, const char *fixture_name, const char *case_name) override;
-    virtual void on_finish() override;
+    virtual void on_start(const char *group_name, const char *fixture_name,
+                          const char *case_name) noexcept override;
+    virtual void on_finish() noexcept override;
 
-    virtual void on_enter_fixture(const char *fixture_name) override;
-    virtual void on_leave_fixture() override;
+    virtual void on_enter_fixture(const char *fixture_name) noexcept override;
+    virtual void on_leave_fixture() noexcept override;
 
-    virtual void on_enter_case(const char *case_name) override;
-    virtual void on_failed_case(const TestCaseFailureException& e) override;
-    virtual void on_leave_case() override;
+    virtual void on_enter_case(const char *case_name) noexcept override;
+    virtual void on_failed_case(const TestCaseFailureException& e) noexcept override;
+    virtual void on_leave_case() noexcept override;
 
 private:
     std::ostream *_out_stream = nullptr;

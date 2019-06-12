@@ -8,13 +8,13 @@
 namespace nut
 {
 
-ConsoleLogHandler::ConsoleLogHandler(bool abbr_mode)
+ConsoleLogHandler::ConsoleLogHandler(bool abbr_mode) noexcept
     : _abbr_mode(abbr_mode)
 {
     _in_a_tty = ConsoleUtil::isatty();
 }
 
-void ConsoleLogHandler::handle_log(const LogRecord& rec)
+void ConsoleLogHandler::handle_log(const LogRecord& rec) noexcept
 {
     if (_abbr_mode)
         std::cout << "[" << rec.get_time().format_time("%H:%M:%S.%3f") << "] ";

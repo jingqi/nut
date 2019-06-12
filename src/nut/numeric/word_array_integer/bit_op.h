@@ -26,7 +26,7 @@ namespace nut
  * x<N> = a<N> & b<N>
  */
 template <typename T>
-void bit_and(const T *a, const T *b, T *x, size_t N)
+void bit_and(const T *a, const T *b, T *x, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && nullptr != b && nullptr != x && N > 0);
@@ -73,7 +73,7 @@ void bit_and(const T *a, const T *b, T *x, size_t N)
  * x<N> = a<N> | b<N>
  */
 template <typename T>
-void bit_or(const T *a, const T *b, T *x, size_t N)
+void bit_or(const T *a, const T *b, T *x, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && nullptr != b && nullptr != x && N > 0);
@@ -120,7 +120,7 @@ void bit_or(const T *a, const T *b, T *x, size_t N)
  * x<N> = a<N> ^ b<N>
  */
 template <typename T>
-void bit_xor(const T *a, const T *b, T *x, size_t N)
+void bit_xor(const T *a, const T *b, T *x, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && nullptr != b && nullptr != x && N > 0);
@@ -167,7 +167,7 @@ void bit_xor(const T *a, const T *b, T *x, size_t N)
  * x<N> = ~(a<N> ^ b<N>)
  */
 template <typename T>
-void bit_nxor(const T *a, const T *b, T *x, size_t N)
+void bit_nxor(const T *a, const T *b, T *x, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && nullptr != b && nullptr != x && N > 0);
@@ -214,7 +214,7 @@ void bit_nxor(const T *a, const T *b, T *x, size_t N)
  * x<N> = ~a<N>
  */
 template <typename T>
-void bit_not(const T *a, T *x, size_t N)
+void bit_not(const T *a, T *x, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && nullptr != x && N > 0);
@@ -234,30 +234,30 @@ void bit_not(const T *a, T *x, size_t N)
 /**
  * 统计 bit 1 数目
  */
-NUT_API unsigned bit1_count(uint8_t a);
-NUT_API unsigned bit1_count(uint16_t a);
-NUT_API unsigned bit1_count(uint32_t a);
-NUT_API unsigned bit1_count(uint64_t a);
+NUT_API unsigned bit1_count(uint8_t a) noexcept;
+NUT_API unsigned bit1_count(uint16_t a) noexcept;
+NUT_API unsigned bit1_count(uint32_t a) noexcept;
+NUT_API unsigned bit1_count(uint64_t a) noexcept;
 #if NUT_HAS_INT128
-NUT_API unsigned bit1_count(uint128_t a);
+NUT_API unsigned bit1_count(uint128_t a) noexcept;
 #endif
 
-NUT_API size_t bit1_count(const uint8_t *a, size_t N);
+NUT_API size_t bit1_count(const uint8_t *a, size_t N) noexcept;
 
 /**
  * 统计 bit 0 数目
  */
-NUT_API size_t bit0_count(const uint8_t *a, size_t N);
+NUT_API size_t bit0_count(const uint8_t *a, size_t N) noexcept;
 
 /**
  * bit 逆序化，eg. 10110101 -> 10101101
  */
-NUT_API uint8_t reverse_bits(uint8_t v);
-NUT_API uint16_t reverse_bits(uint16_t v);
-NUT_API uint32_t reverse_bits(uint32_t v);
-NUT_API uint64_t reverse_bits(uint64_t v);
+NUT_API uint8_t reverse_bits(uint8_t v) noexcept;
+NUT_API uint16_t reverse_bits(uint16_t v) noexcept;
+NUT_API uint32_t reverse_bits(uint32_t v) noexcept;
+NUT_API uint64_t reverse_bits(uint64_t v) noexcept;
 #if NUT_HAS_INT128
-NUT_API uint128_t reverse_bits(uint128_t v);
+NUT_API uint128_t reverse_bits(uint128_t v) noexcept;
 #endif
 
 /**
@@ -266,12 +266,12 @@ NUT_API uint128_t reverse_bits(uint128_t v);
  * @return -1 if not found
  *         >=0 if found
  */
-NUT_API int lowest_bit1(uint8_t a);
-NUT_API int lowest_bit1(uint16_t a);
-NUT_API int lowest_bit1(uint32_t a);
-NUT_API int lowest_bit1(uint64_t a);
+NUT_API int lowest_bit1(uint8_t a) noexcept;
+NUT_API int lowest_bit1(uint16_t a) noexcept;
+NUT_API int lowest_bit1(uint32_t a) noexcept;
+NUT_API int lowest_bit1(uint64_t a) noexcept;
 #if NUT_HAS_INT128
-NUT_API int lowest_bit1(uint128_t a);
+NUT_API int lowest_bit1(uint128_t a) noexcept;
 #endif
 
 /**
@@ -284,7 +284,7 @@ NUT_API int lowest_bit1(uint128_t a);
  *         >=0 if found
  */
 template <typename T>
-ssize_t lowest_bit1(const T *a, size_t N)
+ssize_t lowest_bit1(const T *a, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && N > 0);
@@ -306,7 +306,7 @@ ssize_t lowest_bit1(const T *a, size_t N)
  *         >=0 if found
  */
 template <typename T>
-ssize_t lowest_bit0(const T *a, size_t N)
+ssize_t lowest_bit0(const T *a, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && N > 0);
@@ -325,12 +325,12 @@ ssize_t lowest_bit0(const T *a, size_t N)
  * @return -1 if not found
  *         >=0 if found
  */
-NUT_API int highest_bit1(uint8_t a);
-NUT_API int highest_bit1(uint16_t a);
-NUT_API int highest_bit1(uint32_t a);
-NUT_API int highest_bit1(uint64_t a);
+NUT_API int highest_bit1(uint8_t a) noexcept;
+NUT_API int highest_bit1(uint16_t a) noexcept;
+NUT_API int highest_bit1(uint32_t a) noexcept;
+NUT_API int highest_bit1(uint64_t a) noexcept;
 #if NUT_HAS_INT128
-NUT_API int highest_bit1(uint128_t a);
+NUT_API int highest_bit1(uint128_t a) noexcept;
 #endif
 
 /**
@@ -343,7 +343,7 @@ NUT_API int highest_bit1(uint128_t a);
  *         >=0 if found
  */
 template <typename T>
-ssize_t highest_bit1(const T *a, size_t N)
+ssize_t highest_bit1(const T *a, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && N > 0);
@@ -365,7 +365,7 @@ ssize_t highest_bit1(const T *a, size_t N)
  *         >=0 if found
  */
 template <typename T>
-ssize_t highest_bit0(const T *a, size_t N)
+ssize_t highest_bit0(const T *a, size_t N) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && N > 0);
@@ -382,7 +382,7 @@ ssize_t highest_bit0(const T *a, size_t N)
  * 正数 bit1 length, eg 00110100 -> 6
  */
 template <typename T>
-size_t bit1_length(const T *a,  size_t N)
+size_t bit1_length(const T *a,  size_t N) noexcept
 {
     return highest_bit1<T>(a, N) + 1;
 }
@@ -391,7 +391,7 @@ size_t bit1_length(const T *a,  size_t N)
  * 负数 bit0 length, eg 11101000 -> 5
  */
 template <typename T>
-size_t bit0_length(const T *a, size_t N)
+size_t bit0_length(const T *a, size_t N) noexcept
 {
     return highest_bit0<T>(a, N) + 1;
 }

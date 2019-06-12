@@ -8,11 +8,11 @@
 namespace nut
 {
 
-PriorityThreadPool::PriorityThreadPool(size_t max_thread_number, unsigned max_sleep_seconds)
+PriorityThreadPool::PriorityThreadPool(size_t max_thread_number, unsigned max_sleep_seconds) noexcept
     : _max_thread_number(max_thread_number), _max_sleep_seconds(max_sleep_seconds)
 {}
 
-PriorityThreadPool::~PriorityThreadPool()
+PriorityThreadPool::~PriorityThreadPool() noexcept
 {
     // 为避免内存问题，必须等所有线程退出后再析构
     wait_until_all_idle();
@@ -20,35 +20,35 @@ PriorityThreadPool::~PriorityThreadPool()
     join();
 }
 
-size_t PriorityThreadPool::get_max_thread_number() const
+size_t PriorityThreadPool::get_max_thread_number() const noexcept
 {
     return _max_thread_number;
 }
 
-void PriorityThreadPool::set_max_thread_number(size_t max_thread_number)
+void PriorityThreadPool::set_max_thread_number(size_t max_thread_number) noexcept
 {
     _max_thread_number = max_thread_number;
     _wake_condition.notify_all();
 }
 
-size_t PriorityThreadPool::get_busy_thread_number()
+size_t PriorityThreadPool::get_busy_thread_number() noexcept
 {
     std::lock_guard<std::mutex> guard(_lock);
     return _alive_number - _idle_number;
 }
 
-unsigned PriorityThreadPool::get_max_sleep_seconds() const
+unsigned PriorityThreadPool::get_max_sleep_seconds() const noexcept
 {
     return _max_sleep_seconds;
 }
 
-void PriorityThreadPool::set_max_sleep_seconds(unsigned max_sleep_seconds)
+void PriorityThreadPool::set_max_sleep_seconds(unsigned max_sleep_seconds) noexcept
 {
     _max_sleep_seconds = max_sleep_seconds;
     _wake_condition.notify_all();
 }
 
-bool PriorityThreadPool::add_task(task_type&& task, priority_type priority)
+bool PriorityThreadPool::add_task(task_type&& task, priority_type priority) noexcept
 {
     assert(task);
 
@@ -75,7 +75,7 @@ bool PriorityThreadPool::add_task(task_type&& task, priority_type priority)
     return true;
 }
 
-bool PriorityThreadPool::add_task(const task_type& task, priority_type priority)
+bool PriorityThreadPool::add_task(const task_type& task, priority_type priority) noexcept
 {
     assert(task);
 
@@ -102,20 +102,20 @@ bool PriorityThreadPool::add_task(const task_type& task, priority_type priority)
     return true;
 }
 
-void PriorityThreadPool::wait_until_all_idle()
+void PriorityThreadPool::wait_until_all_idle() noexcept
 {
     std::unique_lock<std::mutex> unique_guard(_lock);
     _all_idle_condition.wait(
         unique_guard, [=] {return _alive_number == _idle_number;});
 }
 
-void PriorityThreadPool::interrupt()
+void PriorityThreadPool::interrupt() noexcept
 {
     _interrupted = true;
     _wake_condition.notify_all();
 }
 
-void PriorityThreadPool::join()
+void PriorityThreadPool::join() noexcept
 {
     for (thread_iter_type iter = _threads.begin(),
              end = _threads.end(); iter != end; ++iter)
@@ -125,7 +125,7 @@ void PriorityThreadPool::join()
     }
 }
 
-void PriorityThreadPool::thread_process()
+void PriorityThreadPool::thread_process() noexcept
 {
     while (true)
     {
@@ -178,13 +178,13 @@ void PriorityThreadPool::thread_process()
     }
 }
 
-void PriorityThreadPool::thread_finalize()
+void PriorityThreadPool::thread_finalize() noexcept
 {
     if (--_alive_number == _idle_number)
         _all_idle_condition.notify_all();
 }
 
-void PriorityThreadPool::clean_dead_threads()
+void PriorityThreadPool::clean_dead_threads() noexcept
 {
     for (thread_iter_type iter = _threads.begin(),
              end =_threads.end(); iter != end;)

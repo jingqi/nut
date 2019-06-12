@@ -49,7 +49,7 @@ private:
         static constexpr uint8_t HAS_DATA = 0x02;
 
     public:
-        void construct_plump(ENTRY&& entry, DATA&& data)
+        void construct_plump(ENTRY&& entry, DATA&& data) noexcept
         {
             construct_dummy(std::forward<ENTRY>(entry));
 
@@ -57,7 +57,7 @@ private:
             new (&_data) DATA(std::forward<DATA>(data));
         }
 
-        void construct_plump(const ENTRY& entry, DATA&& data)
+        void construct_plump(const ENTRY& entry, DATA&& data) noexcept
         {
             construct_dummy(entry);
 
@@ -65,7 +65,7 @@ private:
             new (&_data) DATA(std::forward<DATA>(data));
         }
 
-        void construct_plump(ENTRY&& entry, const DATA& data)
+        void construct_plump(ENTRY&& entry, const DATA& data) noexcept
         {
             construct_dummy(std::forward<ENTRY>(entry));
 
@@ -73,7 +73,7 @@ private:
             new (&_data) DATA(data);
         }
 
-        void construct_plump(const ENTRY& entry, const DATA& data)
+        void construct_plump(const ENTRY& entry, const DATA& data) noexcept
         {
             construct_dummy(entry);
 
@@ -81,7 +81,7 @@ private:
             new (&_data) DATA(data);
         }
 
-        void construct_dummy(ENTRY&& entry)
+        void construct_dummy(ENTRY&& entry) noexcept
         {
             _trie_parent = nullptr;
             _child_tree = nullptr;
@@ -93,7 +93,7 @@ private:
             new (const_cast<ENTRY*>(&_entry)) ENTRY(std::forward<ENTRY>(entry));
         }
 
-        void construct_dummy(const ENTRY& entry)
+        void construct_dummy(const ENTRY& entry) noexcept
         {
             _trie_parent = nullptr;
             _child_tree = nullptr;
@@ -105,7 +105,7 @@ private:
             new (const_cast<ENTRY*>(&_entry)) ENTRY(entry);
         }
 
-        void destruct()
+        void destruct() noexcept
         {
             if (has_data())
                 (&_data)->~DATA();
@@ -115,23 +115,23 @@ private:
             clear_trie_children();
         }
 
-        const ENTRY& get_entry() const
+        const ENTRY& get_entry() const noexcept
         {
             return _entry;
         }
 
-        bool has_data() const
+        bool has_data() const noexcept
         {
             return 0 != (_flags & HAS_DATA);
         }
 
-        const DATA& get_data() const
+        const DATA& get_data() const noexcept
         {
             assert(has_data());
             return _data;
         }
 
-        void set_data(DATA&& data)
+        void set_data(DATA&& data) noexcept
         {
             if (has_data())
                 _data = std::forward<DATA>(data);
@@ -140,7 +140,7 @@ private:
             _flags |= HAS_DATA;
         }
 
-        void set_data(const DATA& data)
+        void set_data(const DATA& data) noexcept
         {
             if (has_data())
                 _data = data;
@@ -149,7 +149,7 @@ private:
             _flags |= HAS_DATA;
         }
 
-        void clear_data()
+        void clear_data() noexcept
         {
             if (!has_data())
                 return;
@@ -157,7 +157,7 @@ private:
             _flags &= ~HAS_DATA;
         }
 
-        std::vector<ENTRY> get_path() const
+        std::vector<ENTRY> get_path() const noexcept
         {
             std::vector<ENTRY> path;
             Node *n = this;
@@ -170,40 +170,40 @@ private:
             return path;
         }
 
-        void set_trie_parent(Node *parent)
+        void set_trie_parent(Node *parent) noexcept
         {
             _trie_parent = parent;
         }
 
         // Set rbtree parent
-        void set_parent(Node* n)
+        void set_parent(Node* n) noexcept
         {
             _rb_parent = n;
         }
 
-        Node* get_trie_parent() const
+        Node* get_trie_parent() const noexcept
         {
             return _trie_parent;
         }
 
-        Node* get_trie_child(const ENTRY& entry) const
+        Node* get_trie_child(const ENTRY& entry) const noexcept
         {
             return BSTree<ENTRY,Node>::search(_child_tree, entry);
         }
 
-        Node* get_trie_child_tree() const
+        Node* get_trie_child_tree() const noexcept
         {
             return _child_tree;
         }
 
-        void add_trie_child(Node *n)
+        void add_trie_child(Node *n) noexcept
         {
             _child_tree = RBTree<ENTRY,Node>::insert(_child_tree, n);
             _child_tree->_rb_parent = nullptr;
             n->_trie_parent = this;
         }
 
-        void remove_trie_child(Node *n)
+        void remove_trie_child(Node *n) noexcept
         {
             _child_tree = RBTree<ENTRY,Node>::remove(_child_tree, n);
             if (nullptr != _child_tree)
@@ -212,12 +212,12 @@ private:
             n->_trie_parent = nullptr;
         }
 
-        bool is_trie_leaf() const
+        bool is_trie_leaf() const noexcept
         {
             return nullptr == _child_tree;
         }
 
-        void clear_trie_children()
+        void clear_trie_children() noexcept
         {
             if (nullptr == _child_tree)
                 return;
@@ -249,7 +249,7 @@ private:
             _child_tree = nullptr;
         }
 
-        size_t count_of_data() const
+        size_t count_of_data() const noexcept
         {
             size_t ret = 0;
 
@@ -283,32 +283,32 @@ private:
         friend class BSTree<ENTRY,Node>;
         friend class RBTree<ENTRY,Node>;
 
-        const ENTRY& get_key() const
+        const ENTRY& get_key() const noexcept
         {
             return _entry;
         }
 
-        bool is_red() const
+        bool is_red() const noexcept
         {
             return 0 != (_flags & RB_RED);
         }
 
-        Node* get_parent() const
+        Node* get_parent() const noexcept
         {
             return _rb_parent;
         }
 
-        Node* get_left_child() const
+        Node* get_left_child() const noexcept
         {
             return _rb_left;
         }
 
-        Node* get_right_child() const
+        Node* get_right_child() const noexcept
         {
             return _rb_right;
         }
 
-        void set_red(bool red)
+        void set_red(bool red) noexcept
         {
             if (red)
                 _flags |= RB_RED;
@@ -316,12 +316,12 @@ private:
                 _flags &= ~RB_RED;
         }
 
-        void set_left_child(Node *n)
+        void set_left_child(Node *n) noexcept
         {
             _rb_left = n;
         }
 
-        void set_right_child(Node *n)
+        void set_right_child(Node *n) noexcept
         {
             _rb_right = n;
         }
@@ -347,14 +347,14 @@ private:
     };
 
 public:
-    TrieTree() = default;
+    TrieTree() noexcept = default;
 
-    ~TrieTree()
+    ~TrieTree() noexcept
     {
         clear();
     }
 
-    size_t size() const
+    size_t size() const noexcept
     {
         return _size;
     }
@@ -363,7 +363,7 @@ public:
      * @return true, 插入成功
      *         false, 存在重复 path, 插入失败
      */
-    bool insert(const ENTRY *path, size_t path_len, DATA&& data)
+    bool insert(const ENTRY *path, size_t path_len, DATA&& data) noexcept
     {
         assert(nullptr != path && path_len > 0);
         return 0 != put(path, path_len, std::forward<DATA>(data), false);
@@ -373,7 +373,7 @@ public:
      * @return true, 插入成功
      *         false, 存在重复 path, 插入失败
      */
-    bool insert(const ENTRY *path, size_t path_len, const DATA& data)
+    bool insert(const ENTRY *path, size_t path_len, const DATA& data) noexcept
     {
         assert(nullptr != path && path_len > 0);
         return 0 != put(path, path_len, data, false);
@@ -384,7 +384,7 @@ public:
      *         0, duplicated path, canceled
      *         1, new data inserted
      */
-    int put(const ENTRY *path, size_t path_len, DATA&& data, bool force = true)
+    int put(const ENTRY *path, size_t path_len, DATA&& data, bool force = true) noexcept
     {
         assert(nullptr != path && path_len > 0);
         Node *n = ensure_path(path, path_len);
@@ -404,7 +404,7 @@ public:
      *         0, duplicated path, canceled
      *         1, new data inserted
      */
-    bool put(const ENTRY *path, size_t path_len, const DATA& data, bool force = true)
+    bool put(const ENTRY *path, size_t path_len, const DATA& data, bool force = true) noexcept
     {
         assert(nullptr != path && path_len > 0);
         Node *n = ensure_path(path, path_len);
@@ -422,7 +422,7 @@ public:
     /**
      * 删除数据
      */
-    bool remove(const ENTRY *path, size_t path_len)
+    bool remove(const ENTRY *path, size_t path_len) noexcept
     {
         assert(nullptr != path || 0 == path_len);
         Node *n = find_path(path, path_len);
@@ -440,7 +440,7 @@ public:
      *
      * @return 删除的数据数
      */
-    size_t remove_tree(const ENTRY *path, size_t path_len)
+    size_t remove_tree(const ENTRY *path, size_t path_len) noexcept
     {
         assert(nullptr != path || 0 == path_len);
 
@@ -466,7 +466,7 @@ public:
     /**
      * 获取数据
      */
-    const DATA* get(const ENTRY *path, size_t path_len) const
+    const DATA* get(const ENTRY *path, size_t path_len) const noexcept
     {
         assert(nullptr != path || 0 == path_len);
         const Node *n = find_path(path, path_len);
@@ -478,7 +478,7 @@ public:
     /**
      * 获取子孙节点中的数据(包含指定的节点自身)
      */
-    std::vector<DATA> get_descendants(const ENTRY *path = nullptr, size_t path_len = 0) const
+    std::vector<DATA> get_descendants(const ENTRY *path = nullptr, size_t path_len = 0) const noexcept
     {
         assert(nullptr != path || 0 == path_len);
         std::vector<DATA> ret;
@@ -512,7 +512,7 @@ public:
     /**
      * 获取先祖节点中的数据(包含指定的节点自身)
      */
-    std::vector<DATA> get_ancestors(const ENTRY *path, size_t path_len) const
+    std::vector<DATA> get_ancestors(const ENTRY *path, size_t path_len) const noexcept
     {
         assert(nullptr != path || 0 == path_len);
         const Node *n = find_path(path, path_len, true);
@@ -530,7 +530,7 @@ public:
     /**
      * 清除所有数据
      */
-    void clear()
+    void clear() noexcept
     {
         if (nullptr == _child_tree)
             return;
@@ -551,7 +551,7 @@ private:
      * @param ensure   如果路径不存在, 则创建
      * @param accestor 如果路径不存在, 且 ensure 为 false, 则返回父节点
      */
-    Node* ensure_path(const ENTRY *path, size_t path_len)
+    Node* ensure_path(const ENTRY *path, size_t path_len) noexcept
     {
         assert(nullptr != path || 0 == path_len);
 
@@ -591,7 +591,7 @@ private:
     /**
      * @param accestor 如果路径不存在, 返回缺失节点的父节点而不是 nullptr
      */
-    Node* find_path(const ENTRY *path, size_t path_len, bool ancestor = false) const
+    Node* find_path(const ENTRY *path, size_t path_len, bool ancestor = false) const noexcept
     {
         assert(nullptr != path || 0 == path_len);
 
@@ -619,7 +619,7 @@ private:
     /**
      * 从指定节点到其先祖，剪除无用节点(自身没有数据, 子孙节点也没有数据的节点)
      */
-    void strip_branch(Node *n)
+    void strip_branch(Node *n) noexcept
     {
         while (nullptr != n && n->is_trie_leaf() && !n->has_data())
         {

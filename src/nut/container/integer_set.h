@@ -35,25 +35,25 @@ public:
     class Range
     {
     public:
-        Range() = default;
+        Range() noexcept = default;
 
-        Range(int_type f, int_type l)
+        Range(int_type f, int_type l) noexcept
             : first(f), last(l)
         {
             assert(f <= l);
         }
 
-        bool operator==(const Range& x) const
+        bool operator==(const Range& x) const noexcept
         {
             return first == x.first && last == x.last;
         }
 
-        bool operator!=(const Range& x) const
+        bool operator!=(const Range& x) const noexcept
         {
             return !(*this == x);
         }
 
-        void set(int_type f, int_type l)
+        void set(int_type f, int_type l) noexcept
         {
             first = f;
             last = l;
@@ -73,20 +73,20 @@ public:
         typedef int_type*                       pointer;
 
     public:
-        const_iterator(const self_type *container, int_type value, ssize_t index)
+        const_iterator(const self_type *container, int_type value, ssize_t index) noexcept
             : _container(container), _value(value), _index(index)
         {
             assert(nullptr != _container);
         }
 
-        int_type operator*() const
+        int_type operator*() const noexcept
         {
             assert(nullptr != _container);
             assert(0 <= _index && _index < (ssize_t) _container->_ranges.size());
             return _value;
         }
 
-        const_iterator& operator++()
+        const_iterator& operator++() noexcept
         {
             assert(nullptr != _container);
             assert(0 <= _index && _index < (ssize_t) _container->_ranges.size());
@@ -105,7 +105,7 @@ public:
             return *this;
         }
 
-        const_iterator& operator--()
+        const_iterator& operator--() noexcept
         {
             assert(nullptr != _container);
             assert(0 <= _index && _index < (ssize_t) _container->_ranges.size());
@@ -124,21 +124,21 @@ public:
             return *this;
         }
 
-        const_iterator operator++(int)
+        const_iterator operator++(int) noexcept
         {
             const_iterator ret = *this;
             ++*this;
             return ret;
         }
 
-        const_iterator operator--(int)
+        const_iterator operator--(int) noexcept
         {
             const_iterator ret = *this;
             --*this;
             return ret;
         }
 
-        bool operator==(const const_iterator& x) const
+        bool operator==(const const_iterator& x) const noexcept
         {
             assert(nullptr != _container && _container == x._container);
             if (_index != x._index)
@@ -148,7 +148,7 @@ public:
             return true;
         }
 
-        bool operator!=(const const_iterator& x) const
+        bool operator!=(const const_iterator& x) const noexcept
         {
             return !(*this == x);
         }
@@ -177,22 +177,22 @@ private:
     };
 
 public:
-    IntegerSet() = default;
+    IntegerSet() noexcept = default;
 
-    IntegerSet(IntegerSet&& x)
+    IntegerSet(IntegerSet&& x) noexcept
         : _ranges(std::forward<std::vector<Range>>(x._ranges))
     {}
 
     IntegerSet(const IntegerSet& x) = default;
 
-    IntegerSet& operator=(IntegerSet&& x)
+    IntegerSet& operator=(IntegerSet&& x) noexcept
     {
         _ranges = std::forward<std::vector<Range>>(x._ranges);
     }
 
     IntegerSet& operator=(const IntegerSet& x) = default;
 
-    bool operator==(const self_type& x) const
+    bool operator==(const self_type& x) const noexcept
     {
         if (this == &x)
             return true;
@@ -206,27 +206,27 @@ public:
         return true;
     }
 
-    bool operator!=(const self_type& x) const
+    bool operator!=(const self_type& x) const noexcept
     {
         return !(*this == x);
     }
 
-    bool operator<(const self_type& x) const
+    bool operator<(const self_type& x) const noexcept
     {
         return compare(x) < 0;
     }
 
-    bool operator>(const self_type& x) const
+    bool operator>(const self_type& x) const noexcept
     {
         return x < *this;
     }
 
-    bool operator<=(const self_type& x) const
+    bool operator<=(const self_type& x) const noexcept
     {
         return !(x < *this);
     }
 
-    bool operator>=(const self_type& x) const
+    bool operator>=(const self_type& x) const noexcept
     {
         return !(*this < x);
     }
@@ -234,7 +234,7 @@ public:
     /**
      * 求并集
      */
-    self_type operator+(const self_type& x) const
+    self_type operator+(const self_type& x) const noexcept
     {
         return *this | x;
     }
@@ -244,7 +244,7 @@ public:
      *
      * {...} - {...}
      */
-    self_type operator-(const self_type& x) const
+    self_type operator-(const self_type& x) const noexcept
     {
         self_type ret;
         size_t index1 = 0, index2 = 0;
@@ -347,7 +347,7 @@ public:
     /**
      * 求并集
      */
-    self_type operator|(const self_type& x) const
+    self_type operator|(const self_type& x) const noexcept
     {
         // 状态机基本上和求交集方法中一样
         self_type ret;
@@ -464,7 +464,7 @@ public:
      *   容器 [(2,13),(15,100)]
      *   交集 [(2,3),(5,10),13,(15,24)]
      */
-    self_type operator&(const self_type& x) const
+    self_type operator&(const self_type& x) const noexcept
     {
         self_type ret;
         size_t index1 = 0, index2 = 0;
@@ -551,7 +551,7 @@ public:
     /**
      * 求两集合相互补集的并集，eg. A ^ B = (A - B) | (B - A)
      */
-    self_type operator^(const self_type& x) const
+    self_type operator^(const self_type& x) const noexcept
     {
         self_type ret;
         size_t index1 = 0, index2 = 0;
@@ -669,7 +669,7 @@ public:
     /**
      * 求并集
      */
-    self_type& operator+=(const self_type& x)
+    self_type& operator+=(const self_type& x) noexcept
     {
         *this = *this + x;
         return *this;
@@ -678,7 +678,7 @@ public:
     /**
      * 求补集
      */
-    self_type& operator-=(const self_type& x)
+    self_type& operator-=(const self_type& x) noexcept
     {
         *this = *this - x;
         return *this;
@@ -687,7 +687,7 @@ public:
     /**
      * 求并集
      */
-    self_type& operator|=(const self_type& x)
+    self_type& operator|=(const self_type& x) noexcept
     {
         *this = *this | x;
         return *this;
@@ -696,7 +696,7 @@ public:
     /**
      * 求交集
      */
-    self_type& operator&=(const self_type& x)
+    self_type& operator&=(const self_type& x) noexcept
     {
         *this = *this & x;
         return *this;
@@ -705,13 +705,13 @@ public:
     /**
      * 求两集合相互补集的并集
      */
-    self_type& operator^=(const self_type& x)
+    self_type& operator^=(const self_type& x) noexcept
     {
         *this = *this ^ x;
         return *this;
     }
 
-    int compare(const self_type& x) const
+    int compare(const self_type& x) const noexcept
     {
         if (this == &x)
             return 0;
@@ -732,12 +732,12 @@ public:
         return i < lsz ? 1 : (i < rsz ? -1 : 0);
     }
 
-    void add_value(int_type value)
+    void add_value(int_type value) noexcept
     {
         add_value_range(value, value);
     }
 
-    void add_value_range(int_type first_value, int_type last_value)
+    void add_value_range(int_type first_value, int_type last_value) noexcept
     {
         assert(first_value <= last_value);
 
@@ -797,17 +797,17 @@ public:
     }
 
     // 查询指定整数是否在该容器中
-    bool contains(int_type value)
+    bool contains(int_type value) noexcept
     {
         return binary_search(value) >= 0;
     }
 
-    void remove_value(int_type value)
+    void remove_value(int_type value) noexcept
     {
         remove_value_range(value, value);
     }
 
-    void remove_value_range(int_type first_value, int_type last_value)
+    void remove_value_range(int_type first_value, int_type last_value) noexcept
     {
         assert(first_value <= last_value);
 
@@ -864,12 +864,12 @@ public:
         }
     }
 
-    void clear()
+    void clear() noexcept
     {
         _ranges.clear();
     }
 
-    size_t size_of_values() const
+    size_t size_of_values() const noexcept
     {
         size_t ret = 0;
         for (size_t i = 0, sz = _ranges.size(); i < sz; ++i)
@@ -881,24 +881,24 @@ public:
         return ret;
     }
 
-    bool empty() const
+    bool empty() const noexcept
     {
         return _ranges.empty();
     }
 
-    int_type get_first_value() const
+    int_type get_first_value() const noexcept
     {
         assert(!_ranges.empty());
         return _ranges.at(0).first;
     }
 
-    int_type get_last_value() const
+    int_type get_last_value() const noexcept
     {
         assert(!_ranges.empty());
         return _ranges.at(_ranges.size() - 1).last;
     }
 
-    ssize_t index_of(int_type value) const
+    ssize_t index_of(int_type value) const noexcept
     {
         size_t index = 0;
         for (size_t i = 0, sz = _ranges.size(); i < sz; ++i)
@@ -921,7 +921,7 @@ public:
         return -1;
     }
 
-    int_type value_at(size_t index) const
+    int_type value_at(size_t index) const noexcept
     {
         for (size_t i = 0, sz = _ranges.size(); i < sz; ++i)
         {
@@ -936,19 +936,19 @@ public:
         assert(false);
     }
 
-    const_iterator begin() const
+    const_iterator begin() const noexcept
     {
         if (_ranges.empty())
             return const_iterator(this, 0, 0);
         return const_iterator(this, _ranges.at(0).first, 0);
     }
 
-    const_iterator end() const
+    const_iterator end() const noexcept
     {
         return const_iterator(this, 0, _ranges.size());
     }
 
-    const_iterator value_iterator(int_type value) const
+    const_iterator value_iterator(int_type value) const noexcept
     {
         // 用二分法找到迭代的起止点
         ssize_t left = -1, right = _ranges.size();
@@ -980,17 +980,17 @@ public:
         return const_iterator(this, value, first_range_index);
     }
 
-    size_t size_of_ranges() const
+    size_t size_of_ranges() const noexcept
     {
         return _ranges.size();
     }
 
-    const Range& range_at(size_t index) const
+    const Range& range_at(size_t index) const noexcept
     {
         return _ranges.at(index);
     }
 
-    std::string to_string() const
+    std::string to_string() const noexcept
     {
         std::string s("{");
         for (size_t i = 0, sz = _ranges.size(); i < sz; ++i)
@@ -1015,7 +1015,7 @@ public:
         return s;
     }
 
-    std::wstring to_wstring() const
+    std::wstring to_wstring() const noexcept
     {
         std::wstring s(L"{");
         for (size_t i = 0, sz = _ranges.size(); i < sz; ++i)
@@ -1047,7 +1047,7 @@ private:
      *
      * @return 找到则返回 >=0，否则 <0
      */
-    ssize_t binary_search(int_type value)
+    ssize_t binary_search(int_type value) noexcept
     {
         ssize_t left = -1, right = _ranges.size();
         while (left + 1 < right)

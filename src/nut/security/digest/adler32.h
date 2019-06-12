@@ -16,11 +16,11 @@ class NUT_API Adler32
 public:
     Adler32() = default;
 
-    void reset();
+    void reset() noexcept;
 
-    void update(const void *data, size_t len);
+    void update(const void *data, size_t len) noexcept;
 
-    uint32_t digest() const;
+    uint32_t digest() const noexcept;
 
 private:
     uint32_t _result = 1;
@@ -32,14 +32,14 @@ private:
 class NUT_API RollingAdler32
 {
 public:
-    explicit RollingAdler32(size_t window);
-    ~RollingAdler32();
+    explicit RollingAdler32(size_t window) noexcept;
+    ~RollingAdler32() noexcept;
 
-    void initialize();
+    void initialize() noexcept;
 
-    void update(const void *data, size_t len);
+    void update(const void *data, size_t len) noexcept;
 
-    uint32_t get_result() const;
+    uint32_t get_result() const noexcept;
 
 private:
     uint32_t _result = 1;

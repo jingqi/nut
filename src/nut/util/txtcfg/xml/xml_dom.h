@@ -19,33 +19,33 @@ class NUT_API XmlDom
     NUT_REF_COUNTABLE
 
 public:
-    XmlDom();
+    XmlDom() noexcept;
 
-    bool is_dirty() const;
-    void set_dirty(bool dirty);
+    bool is_dirty() const noexcept;
+    void set_dirty(bool dirty) noexcept;
 
-    const std::string& get_version() const;
-    void set_version(const std::string& version);
+    const std::string& get_version() const noexcept;
+    void set_version(const std::string& version) noexcept;
 
-    const std::string& get_encoding() const;
-    void set_encoding(const std::string& encoding);
+    const std::string& get_encoding() const noexcept;
+    void set_encoding(const std::string& encoding) noexcept;
 
-    rc_ptr<XmlElement> get_root() const;
-    void set_root(rc_ptr<XmlElement> root);
+    rc_ptr<XmlElement> get_root() const noexcept;
+    void set_root(rc_ptr<XmlElement> root) noexcept;
 
     /**
      * 解析文本为 XML DOM
      *
      * @param ignore_text_blank 忽略文本首尾的空白和换行
      */
-    void parse(const std::string& s, bool ignore_text_blank = true);
+    void parse(const std::string& s, bool ignore_text_blank = true) noexcept;
 
     /**
      * 将 XML DOM 序列化为文本
      *
      * @param format 格式化输出，以便于阅读
      */
-    std::string serielize(bool format = true) const;
+    std::string serielize(bool format = true) const noexcept;
 
 private:
     std::string _version;

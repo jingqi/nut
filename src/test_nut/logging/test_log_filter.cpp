@@ -10,7 +10,7 @@ using namespace nut;
 
 class TestLogFilter : public TestFixture
 {
-    virtual void register_cases() override
+    virtual void register_cases() noexcept override
     {
         NUT_REGISTER_CASE(test_parent_mask);
         NUT_REGISTER_CASE(test_reverse_mask);

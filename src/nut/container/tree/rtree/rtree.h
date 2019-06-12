@@ -64,17 +64,17 @@ private:
     class Node
     {
     public:
-        explicit Node(bool tn)
+        explicit Node(bool tn) noexcept
             : _tree_node(tn)
         {}
 
-        Node(bool tn, const area_type& rt)
+        Node(bool tn, const area_type& rt) noexcept
             : area(rt), _tree_node(tn) 
         {}
 
-        virtual ~Node() = default;
+        virtual ~Node() noexcept = default;
 
-        bool is_tree_node() const
+        bool is_tree_node() const noexcept
         {
             return _tree_node;
         }
@@ -93,19 +93,19 @@ private:
     class TreeNode : public Node
     {
     public:
-        TreeNode()
+        TreeNode() noexcept
             : Node(true)
         {
             ::memset(children, 0, sizeof(Node*) * MAX_ENTRY_COUNT);
         }
 
-        Node* child_at(size_t i)
+        Node* child_at(size_t i) noexcept
         {
             assert(i < MAX_ENTRY_COUNT);
             return children[i];
         }
 
-        size_t child_count() const
+        size_t child_count() const noexcept
         {
             // 二分查找
             int left = -1, right = MAX_ENTRY_COUNT;
@@ -120,7 +120,7 @@ private:
             return (size_t) right;
         }
 
-        bool append_child(Node *child, bool set_child_parent = true)
+        bool append_child(Node *child, bool set_child_parent = true) noexcept
         {
             assert(nullptr != child);
 
@@ -132,7 +132,7 @@ private:
             return true;
         }
 
-        bool remove_child(Node *child, bool set_child_parent = true)
+        bool remove_child(Node *child, bool set_child_parent = true) noexcept
         {
             assert(nullptr != child);
             for (size_t i = 0; i < MAX_ENTRY_COUNT && nullptr != children[i]; ++i)
@@ -155,7 +155,7 @@ private:
             return false;
         }
 
-        void clear_children(bool set_child_parent = true)
+        void clear_children(bool set_child_parent = true) noexcept
         {
             for (size_t i = 0; i < MAX_ENTRY_COUNT && nullptr != children[i]; ++i)
             {
@@ -168,7 +168,7 @@ private:
         /**
          * 调整区域，使父节点区域恰好包含所有子节点区域
          */
-        void fit_rect()
+        void fit_rect() noexcept
         {
             assert(nullptr != children[0]);
             area = children[0]->area;
@@ -187,19 +187,19 @@ private:
     class DataNode : public Node
     {
     public:
-        explicit DataNode(data_type&& v)
+        explicit DataNode(data_type&& v) noexcept
             : Node(false), data(std::forward<data_type>(v))
         {}
 
-        explicit DataNode(const data_type& v)
+        explicit DataNode(const data_type& v) noexcept
             : Node(false), data(v)
         {}
 
-        DataNode(const area_type& rt, data_type&& v)
+        DataNode(const area_type& rt, data_type&& v) noexcept
             : Node(false, rt), data(std::forward<data_type>(v))
         {}
 
-        DataNode(const area_type& rt, const data_type& v)
+        DataNode(const area_type& rt, const data_type& v) noexcept
             : Node(false, rt), data(v)
         {}
 
@@ -211,7 +211,7 @@ private:
                   MIN_ENTRY_COUNT> self_type;
 
 public:
-    RTree()
+    RTree() noexcept
     {
         _root = (TreeNode*) ::malloc(sizeof(TreeNode));
         assert(nullptr != _root);
@@ -219,7 +219,7 @@ public:
         _height = 1;
     }
 
-    RTree(RTree&& x)
+    RTree(RTree&& x) noexcept
     {
         _root = x._root;
         _height = x._height;
@@ -230,7 +230,7 @@ public:
         x._size = 0;
     }
 
-    RTree(const RTree& x)
+    RTree(const RTree& x) noexcept
     {
         _root = (TreeNode*) ::malloc(sizeof(TreeNode));
         assert(nullptr != _root);
@@ -240,7 +240,7 @@ public:
         *this = x;
     }
 
-    ~RTree()
+    ~RTree() noexcept
     {
         clear();
         if (nullptr != _root)
@@ -251,7 +251,7 @@ public:
         }
     }
 
-    RTree& operator=(RTree&& x)
+    RTree& operator=(RTree&& x) noexcept
     {
         if (this == &x)
             return *this;
@@ -275,7 +275,7 @@ public:
         return *this;
     }
 
-    RTree& operator=(const RTree& x)
+    RTree& operator=(const RTree& x) noexcept
     {
         if (this == &x)
             return *this;
@@ -334,7 +334,7 @@ public:
     /**
      * 插入数据
      */
-    void insert(const area_type& rect, data_type&& data)
+    void insert(const area_type& rect, data_type&& data) noexcept
     {
         DataNode *data_node = (DataNode*) ::malloc(sizeof(DataNode));
         assert(nullptr != data_node);
@@ -346,7 +346,7 @@ public:
     /**
      * 插入数据
      */
-    void insert(const area_type& rect, const data_type& data)
+    void insert(const area_type& rect, const data_type& data) noexcept
     {
         DataNode *data_node = (DataNode*) ::malloc(sizeof(DataNode));
         assert(nullptr != data_node);
@@ -358,7 +358,7 @@ public:
     /**
      * 移除第一个与给定区域相同的数据
      */
-    bool remove_first(const area_type& rect)
+    bool remove_first(const area_type& rect) noexcept
     {
         // 找到数据节点并删除数据
         DataNode *dn = find_first_data_node(rect);
@@ -395,7 +395,7 @@ public:
     /**
      * 移除指定的映射
      */
-    bool remove(const area_type& rect, const data_type& data)
+    bool remove(const area_type& rect, const data_type& data) noexcept
     {
         // 找到数据节点并删除数据
         DataNode *dn = find_data_node(rect, data);
@@ -432,7 +432,7 @@ public:
     /**
      * 清除所有数据
      */
-    void clear()
+    void clear() noexcept
     {
         if (nullptr == _root)
             return;
@@ -477,8 +477,9 @@ public:
     /**
      * 查找与指定区域相交的数据
      */
-    void search_intersect(const area_type& rect,
-                          std::vector<std::pair<area_type,data_type> > *appended)
+    void search_intersect(
+        const area_type& rect,
+        std::vector<std::pair<area_type,data_type>> *appended) noexcept
     {
         assert(nullptr != appended);
 
@@ -514,8 +515,9 @@ public:
     /**
      * 查找包含在指定区域内的数据
      */
-    void search_contains(const area_type& rect,
-                         std::vector<std::pair<area_type, data_type> > *appended)
+    void search_contains(
+        const area_type& rect,
+        std::vector<std::pair<area_type, data_type> > *appended) noexcept
     {
         assert(nullptr != appended);
 
@@ -551,7 +553,7 @@ public:
     /**
      * 返回所有的数据
      */
-    void get_all(std::vector<data_type> *appended)
+    void get_all(std::vector<data_type> *appended) noexcept
     {
         assert(nullptr != appended);
 
@@ -584,7 +586,7 @@ public:
     /**
      * 元素个数
      */
-    size_t size() const
+    size_t size() const noexcept
     {
         return _size;
     }
@@ -592,7 +594,7 @@ public:
     /**
      * 树高，大于等于1
      */
-    size_t height() const
+    size_t height() const noexcept
     {
         return _height;
     }
@@ -600,7 +602,7 @@ public:
     /**
      * 检查 rtree 结构是否错误
      */
-    bool is_valid(Node *e = nullptr, size_t depth = 1)
+    bool is_valid(Node *e = nullptr, size_t depth = 1) noexcept
     {
         if (nullptr == e)
         {
@@ -641,7 +643,7 @@ private:
     /**
      * 扩展到包容指定的区域所需要扩展的空间
      */
-    static float_type acreage_needed(const area_type& x, const area_type& y)
+    static float_type acreage_needed(const area_type& x, const area_type& y) noexcept
     {
         float_type new_acr = 1;
         for (size_t i = 0; i < DIMENSIONS; ++i)
@@ -655,7 +657,7 @@ private:
     /**
      * 将节点插入深度为 depth 的位置
      */
-    void insert(Node *node, size_t depth)
+    void insert(Node *node, size_t depth) noexcept
     {
         assert(nullptr != node);
 
@@ -679,7 +681,7 @@ private:
     /**
      * 根据目标区域选区适合的节点
      */
-    TreeNode* choose_node(const area_type& rect_to_add, size_t depth)
+    TreeNode* choose_node(const area_type& rect_to_add, size_t depth) noexcept
     {
         TreeNode *ret = _root;
         while (depth > 1)
@@ -713,7 +715,7 @@ private:
      * @param parent The parent node to add a child, (it is full now)
      * @param child The child to be added
      */
-    TreeNode* split_node(TreeNode *parent, Node *child)
+    TreeNode* split_node(TreeNode *parent, Node *child) noexcept
     {
         assert(nullptr != parent && nullptr != child);
 
@@ -789,7 +791,7 @@ private:
     /**
      * 从一堆子节点中选取两个合适的作为种子
      */
-    void liner_pick_seeds(std::list<Node*> *children, Node **pseed1, Node **pseed2)
+    void liner_pick_seeds(std::list<Node*> *children, Node **pseed1, Node **pseed2) noexcept
     {
         assert(nullptr != children && children->size() >= 2 &&
                nullptr != pseed1 && nullptr != pseed2);
@@ -872,7 +874,7 @@ private:
     /**
      * 从剩余的零散节点中找到下一个适合添加到树上的节点
      */
-    Node* pick_next(std::list<Node*> *remained, const area_type& r1, const area_type& r2)
+    Node* pick_next(std::list<Node*> *remained, const area_type& r1, const area_type& r2) noexcept
     {
         assert(nullptr != remained);
 
@@ -904,7 +906,7 @@ private:
      * @param n The parent node which has appended a new child
      * @param nn 可以为 nullptr
      */
-    TreeNode* adjust_tree(TreeNode *n, TreeNode *nn)
+    TreeNode* adjust_tree(TreeNode *n, TreeNode *nn) noexcept
     {
         assert(nullptr != n);
         while (true)
@@ -926,7 +928,7 @@ private:
     /**
      * 找第一个与给定区域相等的数据节点
      */
-    DataNode* find_first_data_node(const area_type& r)
+    DataNode* find_first_data_node(const area_type& r) noexcept
     {
         std::stack<TreeNode*> st;
         st.push(_root);
@@ -956,7 +958,7 @@ private:
     /**
      * 找与给定区域相等且数据也相等的数据节点
      */
-    DataNode* find_data_node(const area_type& r, const data_type& d)
+    DataNode* find_data_node(const area_type& r, const data_type& d) noexcept
     {
         std::stack<TreeNode*> st;
         st.push(_root);
@@ -994,7 +996,7 @@ private:
      *
      * @param l The node whose child has been deleted
      */
-    void condense_tree(TreeNode *l)
+    void condense_tree(TreeNode *l) noexcept
     {
         assert(nullptr != l);
 

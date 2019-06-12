@@ -13,7 +13,7 @@
 namespace nut
 {
 
-Semaphore::Semaphore(unsigned init_value)
+Semaphore::Semaphore(unsigned init_value) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     _sem = ::CreateSemaphoreA(
@@ -31,7 +31,7 @@ Semaphore::Semaphore(unsigned init_value)
 #endif
 }
 
-Semaphore::~Semaphore()
+Semaphore::~Semaphore() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     const BOOL rs = ::CloseHandle(_sem);
@@ -46,7 +46,7 @@ Semaphore::~Semaphore()
 #endif
 }
 
-void Semaphore::post()
+void Semaphore::post() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     const BOOL rs = ::ReleaseSemaphore(_sem, 1, nullptr);
@@ -63,7 +63,7 @@ void Semaphore::post()
 #endif
 }
 
-void Semaphore::wait()
+void Semaphore::wait() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     const DWORD rs = ::WaitForSingleObject(_sem, INFINITE);
@@ -80,7 +80,7 @@ void Semaphore::wait()
 #endif
 }
 
-bool Semaphore::trywait()
+bool Semaphore::trywait() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return WAIT_OBJECT_0 == ::WaitForSingleObject(_sem, 0);
@@ -96,7 +96,7 @@ bool Semaphore::trywait()
 #endif
 }
 
-bool Semaphore::timedwait(unsigned s, unsigned ms)
+bool Semaphore::timedwait(unsigned s, unsigned ms) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     const DWORD dw_milliseconds = s * 1000 + ms;

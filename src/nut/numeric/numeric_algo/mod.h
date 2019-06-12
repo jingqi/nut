@@ -23,7 +23,7 @@ namespace nut
  * @return a * b % n
  */
 template <typename T>
-constexpr T mul_mod(T a, T b, T n)
+constexpr T mul_mod(T a, T b, T n) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     typedef typename StdInt<T>::double_unsigned_type dword_type;
@@ -32,10 +32,10 @@ constexpr T mul_mod(T a, T b, T n)
 
 #if NUT_HAS_INT128
 template <>
-NUT_API uint128_t mul_mod(uint128_t a, uint128_t b, uint128_t n);
+NUT_API uint128_t mul_mod(uint128_t a, uint128_t b, uint128_t n) noexcept;
 #else
 template <>
-NUT_API uint64_t mul_mod(uint64_t a, uint64_t b, uint64_t n);
+NUT_API uint64_t mul_mod(uint64_t a, uint64_t b, uint64_t n) noexcept;
 #endif
 
 
@@ -49,7 +49,7 @@ public:
 
 #if 0 // unoptimized
 
-    ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n)
+    ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n) noexcept
     {
         assert(a.is_positive() && n.is_positive() && a < n); // 一定要保证 a<n ，以便进行模加运算
 
@@ -85,7 +85,7 @@ public:
         }
     }
 
-    ~ModMultiplyPreBuildTable()
+    ~ModMultiplyPreBuildTable() noexcept
     {
         if (nullptr != _table)
         {
@@ -96,7 +96,7 @@ public:
         }
     }
 
-    const BigInteger& at(size_t i, size_t j) const
+    const BigInteger& at(size_t i, size_t j) const noexcept
     {
         assert(i < _height && j < _width);
         return _table[i * _width + j];
@@ -104,7 +104,7 @@ public:
 
 #else
 
-    ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n)
+    ModMultiplyPreBuildTable(const BigInteger& a, const BigInteger& n) noexcept
     {
         assert(a.is_positive() && n.is_positive() && a < n); // 一定要保证 a<n ，以便进行模加运算
 
@@ -121,7 +121,7 @@ public:
         _mod = n;
     }
 
-    ~ModMultiplyPreBuildTable()
+    ~ModMultiplyPreBuildTable() noexcept
     {
         if (nullptr != _table)
         {
@@ -142,7 +142,7 @@ public:
         }
     }
 
-    const BigInteger& at(size_t i, size_t j) const
+    const BigInteger& at(size_t i, size_t j) const noexcept
     {
         assert(i < _height && j < _width);
 
@@ -168,7 +168,7 @@ public:
 
 #endif
 
-    size_t get_height() const
+    size_t get_height() const noexcept
     {
         return _height;
     }
@@ -195,7 +195,7 @@ private:
 *     [1]周玉洁，冯国登. 公开密钥密码算法及其快速实现[M]. 国防工业出版社. 2002. 57
  */
 template <size_t C>
-BigInteger mul_mod(const BigInteger& b, const BigInteger& n, const ModMultiplyPreBuildTable<C>& table)
+BigInteger mul_mod(const BigInteger& b, const BigInteger& n, const ModMultiplyPreBuildTable<C>& table) noexcept
 {
     assert(b.is_positive() && n.is_positive() && b < n); // 一定要保证 b<n ,以便优化模加运算
 
@@ -231,7 +231,7 @@ BigInteger mul_mod(const BigInteger& b, const BigInteger& n, const ModMultiplyPr
  *     [1]潘金贵，顾铁成. 现代计算机常用数据结构和算法[M]. 南京大学出版社. 1994. 576
  */
 template <typename T>
-T pow_mod(T a, T b, T n)
+T pow_mod(T a, T b, T n) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
 
@@ -250,7 +250,7 @@ T pow_mod(T a, T b, T n)
     return ret;
 }
 
-NUT_API BigInteger pow_mod(const BigInteger& a, const BigInteger& b, const BigInteger& n);
+NUT_API BigInteger pow_mod(const BigInteger& a, const BigInteger& b, const BigInteger& n) noexcept;
 
 /**
  * 判定 r 是否是素数 n 的原根
@@ -258,7 +258,7 @@ NUT_API BigInteger pow_mod(const BigInteger& a, const BigInteger& b, const BigIn
  * NOTE 这个操作非常耗时, 只应该在线下使用
  */
 template <typename T>
-bool is_ordm(T r, T n)
+bool is_ordm(T r, T n) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(0 < r && r < n && n >= 2);
@@ -283,7 +283,7 @@ bool is_ordm(T r, T n)
  * NOTE 这个操作非常耗时, 只应该在线下使用
  */
 template <typename T>
-T find_ordm(T n)
+T find_ordm(T n) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
 

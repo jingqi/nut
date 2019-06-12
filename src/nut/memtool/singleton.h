@@ -15,17 +15,17 @@ private:
     class object_creator
     {
     public:
-        object_creator()
+        object_creator() noexcept
         {
             singleton<T>::instance();
         }
 
-        void do_nothing() const
+        void do_nothing() const noexcept
         {}
     };
 
 public:
-    static object_type& instance()
+    static object_type& instance() noexcept
     {
         static object_type obj;
         _create_object.do_nothing();

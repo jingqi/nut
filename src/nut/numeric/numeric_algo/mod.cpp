@@ -12,7 +12,7 @@ namespace nut
 
 #if NUT_HAS_INT128
 template <>
-NUT_API uint128_t mul_mod(uint128_t a, uint128_t b, uint128_t n)
+NUT_API uint128_t mul_mod(uint128_t a, uint128_t b, uint128_t n) noexcept
 {
 #if NUT_ENDIAN_BIG_BYTE
     wswap(reinterpret_cast<uint32_t*>(&a), 4);
@@ -32,7 +32,7 @@ NUT_API uint128_t mul_mod(uint128_t a, uint128_t b, uint128_t n)
 }
 #else
 template <>
-NUT_API uint64_t mul_mod(uint64_t a, uint64_t b, uint64_t n)
+NUT_API uint64_t mul_mod(uint64_t a, uint64_t b, uint64_t n) noexcept
 {
 #if NUT_ENDIAN_BIG_BYTE
     wswap(reinterpret_cast<uint32_t*>(&a), 2);
@@ -56,7 +56,7 @@ NUT_API uint64_t mul_mod(uint64_t a, uint64_t b, uint64_t n)
  * 蒙哥马利算法
  * {t + [(t mod r) * n' mod r] * n} / r
  */
-static BigInteger _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, const BigInteger& nn)
+static BigInteger _montgomery(const BigInteger& t, size_t rlen, const BigInteger& n, const BigInteger& nn) noexcept
 {
     assert(t.is_positive() && rlen > 0 && n.is_positive() && nn.is_positive());
     typedef BigInteger::word_type word_type;
@@ -86,7 +86,7 @@ static BigInteger _montgomery(const BigInteger& t, size_t rlen, const BigInteger
  * 参考文献：
  *      [1]王金荣，周赟，王红霞. Montgomery模平方算法及其应用[J]. 计算机工程，2007，33(24). 155-156
  */
-static BigInteger _montgomery2(const BigInteger& t, const BigInteger& n, BigInteger::word_type nn)
+static BigInteger _montgomery2(const BigInteger& t, const BigInteger& n, BigInteger::word_type nn) noexcept
 {
     assert(t.is_positive() && n.is_positive() && nn > 0);
     typedef BigInteger::word_type word_type;
@@ -158,7 +158,7 @@ static BigInteger _montgomery2(const BigInteger& t, const BigInteger& n, BigInte
  *
  * @note 返回的 rr, nn 都为正数
  */
-static void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *rr, BigInteger *nn)
+static void _mont_extended_euclid(size_t rlen, const BigInteger& n, BigInteger *rr, BigInteger *nn) noexcept
 {
     assert(nullptr != rr || nullptr != nn);
 
@@ -206,7 +206,7 @@ class MontgomeryPreBuildTable
 {
 public:
     MontgomeryPreBuildTable(size_t wnd_sz, const BigInteger& m, size_t rlen,
-            const BigInteger& n, const BigInteger& nn)
+            const BigInteger& n, const BigInteger& nn) noexcept
     {
         assert(0 < wnd_sz && wnd_sz < 16);
 
@@ -219,7 +219,7 @@ public:
             new (_table + i) BigInteger(_montgomery(_table[i - 1] * mm, rlen, n, nn));
     }
 
-    ~MontgomeryPreBuildTable()
+    ~MontgomeryPreBuildTable() noexcept
     {
         if (nullptr != _table)
         {
@@ -231,7 +231,7 @@ public:
         }
     }
 
-    const BigInteger& at(size_t i) const
+    const BigInteger& at(size_t i) const noexcept
     {
         assert(i < _size);
         return _table[i];
@@ -249,7 +249,7 @@ private:
 /**
  * 计算滑动窗口算法的最佳窗口大小
  */
-static unsigned _best_wnd(size_t bit_len)
+static unsigned _best_wnd(size_t bit_len) noexcept
 {
     // 参考 java 的 BigInteger.bnExpModThreshTable
     static const size_t TBL[] = {
@@ -273,7 +273,7 @@ static unsigned _best_wnd(size_t bit_len)
 /**
  * 使用 Montgomery 算法优化
  */
-static BigInteger _odd_pow_mod(const BigInteger& a, const BigInteger& b, const BigInteger& n)
+static BigInteger _odd_pow_mod(const BigInteger& a, const BigInteger& b, const BigInteger& n) noexcept
 {
     assert(a.is_positive() && b.is_positive() && n.is_positive());
     assert(a < n && n.bit_at(0) == 1);
@@ -434,7 +434,7 @@ static BigInteger _odd_pow_mod(const BigInteger& a, const BigInteger& b, const B
 /**
  * 计算 (a ** b) mod (2 ** p)
  */
-static BigInteger _pow_mod_2(const BigInteger& a, const BigInteger& b, size_t p)
+static BigInteger _pow_mod_2(const BigInteger& a, const BigInteger& b, size_t p) noexcept
 {
     assert(a.is_positive() && b.is_positive() && p > 0);
 
@@ -456,7 +456,7 @@ static BigInteger _pow_mod_2(const BigInteger& a, const BigInteger& b, size_t p)
  * 参考文献：
  *      [1]潘金贵，顾铁成. 现代计算机常用数据结构和算法[M]. 南京大学出版社. 1994. 576
  */
-NUT_API BigInteger pow_mod(const BigInteger& a, const BigInteger& b, const BigInteger& n)
+NUT_API BigInteger pow_mod(const BigInteger& a, const BigInteger& b, const BigInteger& n) noexcept
 {
     assert(a.is_positive() && b.is_positive() && n.is_positive());
 

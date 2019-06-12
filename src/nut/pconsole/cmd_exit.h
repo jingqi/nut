@@ -16,15 +16,15 @@ namespace nut
 class NUT_API CmdExit : public ICommand
 {
 public:
-    explicit CmdExit(IConsole *c);
+    explicit CmdExit(IConsole *c) noexcept;
 
-    virtual const char* get_command_name() const override;
+    virtual const char* get_command_name() const noexcept override;
 
-    virtual const char* get_general_info() const override;
+    virtual const char* get_general_info() const noexcept override;
 
-    virtual const char* get_detail_info() const override;
+    virtual const char* get_detail_info() const noexcept override;
 
-    virtual void execute(const char* command_line) override;
+    virtual void execute(const char* command_line) noexcept override;
 
 private:
     IConsole *_console = nullptr;

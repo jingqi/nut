@@ -20,24 +20,24 @@ namespace nut
  * 参考文献：
  *     [1]潘金贵，顾铁成. 现代计算机常用数据结构和算法[M]. 南京大学出版社. 1994. 582
  */
-NUT_API bool psedoprime(const BigInteger& n);
+NUT_API bool psedoprime(const BigInteger& n) noexcept;
 
 /**
  * 米勒-拉宾(Miller-Rabin)素数测试
  */
-NUT_API bool miller_rabin(const BigInteger& n, unsigned s);
+NUT_API bool miller_rabin(const BigInteger& n, unsigned s) noexcept;
 
 /**
  * 取下一个可能的素数
  * 参见java语言BigInteger.nextProbablePrime()实现
  */
-NUT_API BigInteger next_prime(const BigInteger& n);
+NUT_API BigInteger next_prime(const BigInteger& n) noexcept;
 
 /**
  * a, n 互质，计算 a 的乘法逆元 (mod n)
  */
 template <typename T>
-T inverse_of_coprime_mod(T a, T n)
+T inverse_of_coprime_mod(T a, T n) noexcept
 {
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     typedef typename StdInt<T>::signed_type sword_type;
@@ -62,7 +62,7 @@ T inverse_of_coprime_mod(T a, T n)
     return ret;
 }
 
-NUT_API BigInteger inverse_of_coprime_mod(const BigInteger& a, const BigInteger& n);
+NUT_API BigInteger inverse_of_coprime_mod(const BigInteger& a, const BigInteger& n) noexcept;
 
 }
 

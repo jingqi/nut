@@ -19,16 +19,17 @@ class NUT_API IConsole
 
 public:
     /** 打印伪命令行的一般信息 */
-    virtual void print_general_info() const = 0;
+    virtual void print_general_info() const noexcept = 0;
 
     /** 获取所有的命令 */
-    virtual const std::vector<rc_ptr<ICommand> >& get_commands() const = 0;
+    virtual const std::vector<rc_ptr<ICommand> >& get_commands() const noexcept = 0;
 
     /** 退出当前伪命令行 */
-    virtual void exit(int e) = 0;
+    virtual void exit(int e) noexcept = 0;
 
     /** 从指定的命令集中挑选出匹配名称的子集 */
-    static std::vector<rc_ptr<ICommand> > match_commands(const std::vector<rc_ptr<ICommand> >& commands, const std::string& to_match);
+    static std::vector<rc_ptr<ICommand> > match_commands(
+        const std::vector<rc_ptr<ICommand> >& commands, const std::string& to_match) noexcept;
 };
 
 }

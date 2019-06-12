@@ -12,31 +12,31 @@ namespace nut
 class FreeGuard
 {
 public:
-    explicit FreeGuard(void *p = nullptr)
+    explicit FreeGuard(void *p = nullptr) noexcept
         : _ptr(p)
     {}
 
-    ~FreeGuard()
+    ~FreeGuard() noexcept
     {
         release();
     }
 
-    void* get() const
+    void* get() const noexcept
     {
         return _ptr;
     }
 
-    void set(void *p)
+    void set(void *p) noexcept
     {
         _ptr = p;
     }
 
-    void clear()
+    void clear() noexcept
     {
         _ptr = nullptr;
     }
 
-    void release()
+    void release() noexcept
     {
         if (nullptr != _ptr)
             ::free(_ptr);
@@ -55,31 +55,31 @@ template <typename T>
 class DeleteGuard
 {
 public:
-    explicit DeleteGuard(T *p = nullptr)
+    explicit DeleteGuard(T *p = nullptr) noexcept
         : _ptr(p)
     {}
 
-    ~DeleteGuard()
+    ~DeleteGuard() noexcept
     {
         release();
     }
 
-    T* get() const
+    T* get() const noexcept
     {
         return _ptr;
     }
 
-    void set(T *p)
+    void set(T *p) noexcept
     {
         _ptr = p;
     }
 
-    void clear()
+    void clear() noexcept
     {
         _ptr = nullptr;
     }
 
-    void release()
+    void release() noexcept
     {
         if (nullptr != _ptr)
             delete _ptr;

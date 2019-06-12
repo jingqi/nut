@@ -12,12 +12,12 @@
 namespace nut
 {
 
-SHA1::SHA1()
+SHA1::SHA1() noexcept
 {
     reset();
 }
 
-void SHA1::reset()
+void SHA1::reset() noexcept
 {
     _bit_len = 0;
 
@@ -31,12 +31,12 @@ void SHA1::reset()
     ::memset(_result, 0, DIGEST_SIZE);
 }
 
-void SHA1::update(uint8_t byte)
+void SHA1::update(uint8_t byte) noexcept
 {
     update(&byte, 1);
 }
 
-void SHA1::update(const void *data, size_t cb)
+void SHA1::update(const void *data, size_t cb) noexcept
 {
     assert(nullptr != data || 0 == cb);
 
@@ -71,7 +71,7 @@ void SHA1::update(const void *data, size_t cb)
     ::memcpy(_buffer + index, ((const uint8_t*) data) + i, cb - i);
 }
 
-void SHA1::digest()
+void SHA1::digest() noexcept
 {
     /* Pad out to 56 mod 64 */
     unsigned index = (_bit_len >> 3) & 0x3f;
@@ -97,17 +97,17 @@ void SHA1::digest()
         ((uint32_t*) _result)[i] = htobe32(_state[i]);
 }
 
-const uint8_t* SHA1::get_result() const
+const uint8_t* SHA1::get_result() const noexcept
 {
     return _result;
 }
 
-std::string SHA1::get_hex_result() const
+std::string SHA1::get_hex_result() const noexcept
 {
     return hex_encode(_result, DIGEST_SIZE, false);
 }
 
-void SHA1::transform512bits(const void *block)
+void SHA1::transform512bits(const void *block) noexcept
 {
     assert(nullptr != block);
 

@@ -18,24 +18,24 @@ public:
     static constexpr size_t DIGEST_SIZE = 20;
 
 public:
-    SHA1();
+    SHA1() noexcept;
 
-    void reset();
+    void reset() noexcept;
 
-    void update(uint8_t byte);
-    void update(const void *data, size_t cb);
+    void update(uint8_t byte) noexcept;
+    void update(const void *data, size_t cb) noexcept;
 
-    void digest();
+    void digest() noexcept;
 
     /**
      * 返回二进制散列结果
      */
-    const uint8_t* get_result() const;
+    const uint8_t* get_result() const noexcept;
 
-    std::string get_hex_result() const;
+    std::string get_hex_result() const noexcept;
 
 private:
-    void transform512bits(const void *block);
+    void transform512bits(const void *block) noexcept;
 
 private:
     // Length of bits, max (2**64 - 1) bits

@@ -14,12 +14,12 @@ namespace nut
 class RefCounter
 {
 public:
-    int operator++()
+    int operator++() noexcept
     {
         return _ref_count.fetch_add(1, std::memory_order_relaxed) + 1;
     }
 
-    int operator--()
+    int operator--() noexcept
     {
         const int ret = _ref_count.fetch_sub(1, std::memory_order_release) - 1;
         if (0 == ret)
@@ -31,7 +31,7 @@ public:
         return ret;
     }
 
-    operator int() const
+    operator int() const noexcept
     {
         return _ref_count.load(std::memory_order_relaxed);
     }

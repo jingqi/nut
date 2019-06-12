@@ -45,7 +45,7 @@ public:
      *
      * @return 0-based
      */
-    static int random_level()
+    static int random_level() noexcept
     {
         const int r = ::rand();
         int level = 0;
@@ -61,7 +61,7 @@ public:
      * @param sl        跳表本身
      * @param pre_lv    存放返回值，可以是 nullptr. 存放前向节点的返回值数组，长度为 (level+1).
      */
-    static NODE* search_node(const K& key, const SL& sl, NODE **pre_lv)
+    static NODE* search_node(const K& key, const SL& sl, NODE **pre_lv) noexcept
     {
         NODE *ret = nullptr;
         NODE *pre = nullptr;
@@ -116,7 +116,7 @@ public:
      * @param sl        跳表本身
      * @param pre_lv    前向节点数组，长度为 (level+1)
      */
-    static void insert_node(NODE *n, SL& sl, NODE** pre_lv)
+    static void insert_node(NODE *n, SL& sl, NODE** pre_lv) noexcept
     {
         assert(nullptr != n && nullptr != pre_lv);
 
@@ -160,7 +160,7 @@ public:
      * @param sl        跳表本身
      * @param pre_lv    前向节点数组，长度为 (level+1)
      */
-    static void remove_node(NODE *n, SL& sl, NODE **pre_lv)
+    static void remove_node(NODE *n, SL& sl, NODE **pre_lv) noexcept
     {
         assert(nullptr != n && nullptr != pre_lv);
         const int sl_level = sl.get_level(), n_level = n->get_level();

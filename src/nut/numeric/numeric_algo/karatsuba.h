@@ -40,7 +40,7 @@ namespace nut
  * 该算式中乘法总体规模变小了
  */
 template <typename T>
-void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
+void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P) noexcept
 {
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
 
@@ -161,7 +161,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
  * 该算式中乘法总体规模变小了
  */
 template <typename T>
-void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
+void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P) noexcept
 {
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
 
