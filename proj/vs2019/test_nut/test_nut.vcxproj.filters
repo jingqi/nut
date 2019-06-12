@@ -31,9 +31,6 @@
     <Filter Include="test\numeric">
       <UniqueIdentifier>{1683fa83-fda3-41d3-90e8-29de04e7c86a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="test\pconsole">
-      <UniqueIdentifier>{64eebca3-61c9-4a36-8c63-e368c866cabc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="test\platform">
       <UniqueIdentifier>{8cd8587b-a399-4397-bb9b-e2ec6571b7e1}</UniqueIdentifier>
     </Filter>
@@ -116,9 +113,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\test_nut\numeric\test_numeric_algo.cpp">
       <Filter>test\numeric</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\test_nut\pconsole\test_pconsole.cpp">
-      <Filter>test\pconsole</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\test_nut\platform\test_os.cpp">
       <Filter>test\platform</Filter>

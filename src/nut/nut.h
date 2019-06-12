@@ -107,9 +107,6 @@
 #include "unittest/console_test_logger.h"
 #include "unittest/stream_test_logger.h"
 
-// pconsole
-#include "pconsole/pconsole.h"
-
 // logging
 #include "logging/logger.h"
 #include "logging/log_handler/log_handler.h"

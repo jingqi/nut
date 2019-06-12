@@ -1,5 +1,6 @@
 ﻿
 #include <assert.h>
+#include <string.h> // for ::memcpy()
 #include <algorithm> // for std::min()
 
 #include "byte_array_stream.h"

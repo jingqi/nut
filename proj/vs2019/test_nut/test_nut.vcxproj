@@ -165,7 +165,6 @@
     <ClCompile Include="..\..\..\src\test_nut\numeric\test_ntt.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\numeric\test_numeric_algo.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\numeric\test_word_array_integer.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\pconsole\test_pconsole.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\platform\test_endian.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\platform\test_os.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\platform\test_path.cpp" />

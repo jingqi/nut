@@ -32,9 +32,6 @@
     <Filter Include="nut\numeric">
       <UniqueIdentifier>{2077f071-1e22-4224-a162-62c4a945f7fa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="nut\pconsole">
-      <UniqueIdentifier>{ed354856-9424-48fe-a57d-5e5abb8f3501}</UniqueIdentifier>
-    </Filter>
     <Filter Include="nut\platform">
       <UniqueIdentifier>{088efa22-db0d-456f-b96f-1bc7d9e39e24}</UniqueIdentifier>
     </Filter>
@@ -255,21 +252,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\platform\platform.h">
       <Filter>nut\platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\pconsole\cmd_exit.h">
-      <Filter>nut\pconsole</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\pconsole\cmd_help.h">
-      <Filter>nut\pconsole</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\pconsole\icommand.h">
-      <Filter>nut\pconsole</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\pconsole\iconsole.h">
-      <Filter>nut\pconsole</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\pconsole\pconsole.h">
-      <Filter>nut\pconsole</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\numeric\numeric_algo\bit_sieve.h">
       <Filter>nut\numeric\numeric_algo</Filter>
@@ -561,18 +543,6 @@
     <ClCompile Include="..\..\..\src\nut\platform\path.cpp">
       <Filter>nut\platform</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\pconsole\cmd_help.cpp">
-      <Filter>nut\pconsole</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\pconsole\icommand.cpp">
-      <Filter>nut\pconsole</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\pconsole\iconsole.cpp">
-      <Filter>nut\pconsole</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\pconsole\pconsole.cpp">
-      <Filter>nut\pconsole</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\bit_sieve.cpp">
       <Filter>nut\numeric\numeric_algo</Filter>
     </ClCompile>
@@ -623,9 +593,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\debugging\source_location.cpp">
       <Filter>nut\debugging</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\pconsole\cmd_exit.cpp">
-      <Filter>nut\pconsole</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\unittest\test_logger.cpp">
       <Filter>nut\unittest</Filter>

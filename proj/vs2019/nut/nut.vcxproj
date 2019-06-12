@@ -183,11 +183,6 @@
     <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer\word_array_integer.h" />
     <ClInclude Include="..\..\..\src\nut\nut.h" />
     <ClInclude Include="..\..\..\src\nut\nut_config.h" />
-    <ClInclude Include="..\..\..\src\nut\pconsole\cmd_exit.h" />
-    <ClInclude Include="..\..\..\src\nut\pconsole\cmd_help.h" />
-    <ClInclude Include="..\..\..\src\nut\pconsole\icommand.h" />
-    <ClInclude Include="..\..\..\src\nut\pconsole\iconsole.h" />
-    <ClInclude Include="..\..\..\src\nut\pconsole\pconsole.h" />
     <ClInclude Include="..\..\..\src\nut\platform\int_type.h" />
     <ClInclude Include="..\..\..\src\nut\platform\os.h" />
     <ClInclude Include="..\..\..\src\nut\platform\path.h" />
@@ -286,11 +281,6 @@
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\ntt.cpp" />
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\prime.cpp" />
     <ClCompile Include="..\..\..\src\nut\numeric\word_array_integer\bit_op.cpp" />
-    <ClCompile Include="..\..\..\src\nut\pconsole\cmd_exit.cpp" />
-    <ClCompile Include="..\..\..\src\nut\pconsole\cmd_help.cpp" />
-    <ClCompile Include="..\..\..\src\nut\pconsole\icommand.cpp" />
-    <ClCompile Include="..\..\..\src\nut\pconsole\iconsole.cpp" />
-    <ClCompile Include="..\..\..\src\nut\pconsole\pconsole.cpp" />
     <ClCompile Include="..\..\..\src\nut\platform\os.cpp" />
     <ClCompile Include="..\..\..\src\nut\platform\path.cpp" />
     <ClCompile Include="..\..\..\src\nut\platform\savefile.cpp" />
