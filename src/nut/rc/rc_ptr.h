@@ -242,15 +242,15 @@ struct dynamic_rc_ptr_cast : public rc_ptr<typename RCPtrTraits<T>::plain_type>
  * @return 引用计数更改之后的值
  */
 #define NUT_REF_COUNTABLE                                   \
-    virtual int add_ref() const = 0;                        \
-    virtual int release_ref() const = 0;                    \
-    virtual int get_ref() const = 0;                        \
+    virtual int add_ref() const noexcept = 0;               \
+    virtual int release_ref() const noexcept = 0;           \
+    virtual int get_ref() const noexcept = 0;               \
     template <typename ___T> friend class ::nut::rc_ptr;
 
 #define NUT_REF_COUNTABLE_OVERRIDE                          \
-    virtual int add_ref() const override = 0;               \
-    virtual int release_ref() const override = 0;           \
-    virtual int get_ref() const override = 0;               \
+    virtual int add_ref() const noexcept override = 0;      \
+    virtual int release_ref() const noexcept override = 0;  \
+    virtual int get_ref() const noexcept override = 0;      \
     template <typename ___T> friend class ::nut::rc_ptr;
 
 #endif /* head file guarder */

@@ -5,7 +5,6 @@
 #include <nut/unittest/unittest.h>
 
 #include <nut/security/encrypt/rsa_pkcs1.h>
-#include <nut/container/array.h>
 
 using namespace std;
 using namespace nut;

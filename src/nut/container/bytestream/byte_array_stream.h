@@ -3,9 +3,10 @@
 #define ___HEADFILE_27BA84B2_4461_4A06_A9AE_5E2471B5521C_
 
 #include <assert.h>
+#include <stdint.h>
+#include <vector>
 
 #include "../../nut_config.h"
-#include "../array.h"
 #include "input_stream.h"
 #include "output_stream.h"
 #include "random_access_stream.h"
@@ -21,18 +22,17 @@ class NUT_API ByteArrayStream : public InputStream, public OutputStream, public 
 {
     NUT_REF_COUNTABLE_OVERRIDE
 
-private:
-    typedef Array<uint8_t> byte_array_type;
-    typedef enrc<byte_array_type> byte_rcarray_type;
-
 public:
-    ByteArrayStream() noexcept;
-    explicit ByteArrayStream(byte_rcarray_type *arr) noexcept;
+    ByteArrayStream() noexcept = default;
+    explicit ByteArrayStream(std::vector<uint8_t>&& arr) noexcept;
+    explicit ByteArrayStream(const std::vector<uint8_t>& arr) noexcept;
+    ByteArrayStream(const void *data, size_t cb) noexcept;
 
     virtual bool is_little_endian() const noexcept override;
     virtual void set_little_endian(bool le) noexcept override;
 
-    byte_rcarray_type* byte_array() const noexcept;
+    const std::vector<uint8_t>& byte_array() const noexcept;
+    std::vector<uint8_t>& byte_array() noexcept;
 
     virtual size_t size() const noexcept override;
     void resize(size_t new_size) noexcept;
@@ -45,14 +45,14 @@ public:
 
     virtual size_t write(const void *buf, size_t cb) noexcept override;
 
-    size_t write(const byte_array_type& ba) noexcept;
+    size_t write(const std::vector<uint8_t>& ba) noexcept;
 
 private:
     ByteArrayStream(const ByteArrayStream&) = delete;
     ByteArrayStream& operator=(const ByteArrayStream&) = delete;
 
 private:
-    rc_ptr<byte_rcarray_type> _data;
+    std::vector<uint8_t> _data;
     size_t _index = 0;
     bool _little_endian = true;
 };

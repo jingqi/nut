@@ -124,7 +124,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\nut\container\array.h" />
     <ClInclude Include="..\..\..\src\nut\container\bit_stream.h" />
     <ClInclude Include="..\..\..\src\nut\container\bundle.h" />
     <ClInclude Include="..\..\..\src\nut\container\bytestream\byte_array_stream.h" />

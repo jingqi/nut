@@ -36,7 +36,6 @@
 #include "rc/rc_new.h"
 
 // container
-#include "container/array.h"
 #include "container/bundle.h"
 #include "container/integer_set.h"
 #include "container/bit_stream.h"

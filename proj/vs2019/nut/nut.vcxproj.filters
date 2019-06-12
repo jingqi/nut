@@ -124,9 +124,6 @@
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist_set.h">
       <Filter>nut\container\skiplist</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\container\array.h">
-      <Filter>nut\container</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\container\bit_stream.h">
       <Filter>nut\container</Filter>
     </ClInclude>

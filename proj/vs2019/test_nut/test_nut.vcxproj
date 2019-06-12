@@ -144,7 +144,6 @@
     <ClCompile Include="..\..\..\src\test_nut\container\rwbuffer\test_fragment_buffer.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\container\rwbuffer\test_ring_buffer.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\container\skiplist\test_skiplist.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\container\test_array.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\container\test_bitstream.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\container\test_bundle.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\container\test_comparable.cpp" />

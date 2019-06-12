@@ -1,6 +1,7 @@
 ﻿
 #include <nut/unittest/unittest.h>
 
+#include <nut/rc/rc_new.h>
 #include <nut/container/bytestream/byte_array_stream.h>
 
 using namespace std;

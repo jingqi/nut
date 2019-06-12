@@ -1,12 +1,13 @@
 ﻿
 #include <stdio.h>
-
+#include <vector>
 
 #include <nut/unittest/unittest.h>
 
 #include <nut/security/encrypt/aes_cbc_pkcs5.h>
-#include <nut/container/array.h>
 
+
+using namespace std;
 using namespace nut;
 
 class TestAesCbcPkcs5 : public TestFixture
@@ -34,14 +35,14 @@ class TestAesCbcPkcs5 : public TestFixture
         };
 
         AES_CBC_PKCS5 acp_enc, acp_dec;
-        Array<uint8_t> ba1, ba2;
+        vector<uint8_t> ba1, ba2;
         acp_enc.set_callback(
             [&] (const void *data, size_t cb) {
-                ba1.append((const uint8_t*) data, (const uint8_t*) data + cb);
+                ba1.insert(ba1.end(), (const uint8_t*) data, (const uint8_t*) data + cb);
             });
         acp_dec.set_callback(
             [&] (const void *data, size_t cb) {
-                ba2.append((const uint8_t*) data, (const uint8_t*) data + cb);
+                ba2.insert(ba2.end(), (const uint8_t*) data, (const uint8_t*) data + cb);
             });
 
         {
@@ -102,12 +103,12 @@ class TestAesCbcPkcs5 : public TestFixture
         };
 
         AES_CBC_PKCS5 acp_enc, acp_dec;
-        Array<uint8_t> ba1, ba2, ba3, ba4;
+        vector<uint8_t> ba1, ba2, ba3, ba4;
 
         // Encrypt package 1
         acp_enc.set_callback(
             [&] (const void *data, size_t cb) {
-                ba1.append((const uint8_t*) data, (const uint8_t*) data + cb);
+                ba1.insert(ba1.end(), (const uint8_t*) data, (const uint8_t*) data + cb);
             });
         acp_enc.start_encrypt(key, sizeof(key) * 8, iv);
         acp_enc.update_encrypt(data, 27);
@@ -116,7 +117,7 @@ class TestAesCbcPkcs5 : public TestFixture
         // Encrypt package 2
         acp_enc.set_callback(
             [&] (const void *data, size_t cb) {
-                ba2.append((const uint8_t*) data, (const uint8_t*) data + cb);
+                ba2.insert(ba2.end(), (const uint8_t*) data, (const uint8_t*) data + cb);
             });
         acp_enc.update_encrypt(data, 37);
         acp_enc.finish_encrypt();
@@ -124,7 +125,7 @@ class TestAesCbcPkcs5 : public TestFixture
         // Decrypt package 1
         acp_dec.set_callback(
             [&] (const void *data, size_t cb) {
-                ba3.append((const uint8_t*) data, (const uint8_t*) data + cb);
+                ba3.insert(ba3.end(), (const uint8_t*) data, (const uint8_t*) data + cb);
             });
         acp_dec.start_decrypt(key, sizeof(key) * 8, iv);
         acp_dec.update_decrypt(ba1.data(), ba1.size());
@@ -135,7 +136,7 @@ class TestAesCbcPkcs5 : public TestFixture
         // Decrypt package 2
         acp_dec.set_callback(
             [&] (const void *data, size_t cb) {
-                ba4.append((const uint8_t*) data, (const uint8_t*) data + cb);
+                ba4.insert(ba4.end(), (const uint8_t*) data, (const uint8_t*) data + cb);
             });
         acp_dec.update_decrypt(ba2.data(), ba2.size());
         acp_dec.finish_decrypt();
