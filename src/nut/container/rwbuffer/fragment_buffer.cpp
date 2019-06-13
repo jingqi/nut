@@ -120,12 +120,12 @@ size_t FragmentBuffer::readable_size() const noexcept
 
 size_t FragmentBuffer::read(void *buf, size_t len) noexcept
 {
-    const size_t can_read = std::min(len, _read_available);
+    const size_t can_read = std::min<size_t>(len, _read_available);
     size_t readed = 0;
     while (readed < can_read)
     {
         assert(nullptr != _read_fragment && _read_fragment->size >= _read_index);
-        const size_t can_read_once = std::min(_read_fragment->size - _read_index,
+        const size_t can_read_once = std::min<size_t>(_read_fragment->size - _read_index,
                                               can_read - readed);
         const bool full_read = (_read_fragment->size - _read_index <=
                                 can_read - readed);
@@ -153,14 +153,14 @@ size_t FragmentBuffer::read(void *buf, size_t len) noexcept
 
 size_t FragmentBuffer::look_ahead(void *buf, size_t len) const noexcept
 {
-    const size_t can_read = std::min(len, _read_available);
+    const size_t can_read = std::min<size_t>(len, _read_available);
     size_t readed = 0;
     Fragment *p = _read_fragment;
     size_t read_index = _read_index;
     while (readed < can_read)
     {
         assert(nullptr != p && p->size >= read_index);
-        const size_t can_read_once = std::min(p->size - read_index,
+        const size_t can_read_once = std::min<size_t>(p->size - read_index,
                                               can_read - readed);
         const bool full_read = (p->size - read_index <= can_read - readed);
         ::memcpy((uint8_t*) buf + readed, p->buffer + read_index,
@@ -178,12 +178,12 @@ size_t FragmentBuffer::look_ahead(void *buf, size_t len) const noexcept
 
 size_t FragmentBuffer::skip_read(size_t len) noexcept
 {
-    size_t can_skip = std::min(len, _read_available);
+    size_t can_skip = std::min<size_t>(len, _read_available);
     size_t skiped = 0;
     while (skiped < can_skip)
     {
         assert(nullptr != _read_fragment && _read_fragment->size >= _read_index);
-        const size_t can_skip_once = std::min(_read_fragment->size - _read_index,
+        const size_t can_skip_once = std::min<size_t>(_read_fragment->size - _read_index,
                                               can_skip - skiped);
         const bool full_skip = (_read_fragment->size - _read_index <=
                                 can_skip - skiped);
@@ -240,7 +240,7 @@ void FragmentBuffer::write(const void *buf, size_t len) noexcept
     // 先写入一部分
     if (nullptr != _write_fragment && _write_fragment->capacity > _write_fragment->size)
     {
-        const size_t can_write = std::min(_write_fragment->capacity - _write_fragment->size, len);
+        const size_t can_write = std::min<size_t>(_write_fragment->capacity - _write_fragment->size, len);
         ::memcpy(_write_fragment->buffer + _write_fragment->size, buf, can_write);
         _write_fragment->size += can_write;
         _read_available += can_write;
@@ -251,7 +251,7 @@ void FragmentBuffer::write(const void *buf, size_t len) noexcept
         return;
 
     // 写入剩余部分
-    Fragment *frag = new_fragment(std::max(len, (size_t) MIN_FRAGMENT_BUFFER_SIZE));
+    Fragment *frag = new_fragment(std::max<size_t>(len, MIN_FRAGMENT_BUFFER_SIZE));
     ::memcpy(frag->buffer, buf, len);
     frag->size = len;
     enqueue(frag);

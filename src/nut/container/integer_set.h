@@ -674,7 +674,7 @@ public:
         *this = *this + x;
         return *this;
     }
-    
+
     /**
      * 求补集
      */
@@ -692,7 +692,7 @@ public:
         *this = *this | x;
         return *this;
     }
-    
+
     /**
      * 求交集
      */
@@ -787,8 +787,8 @@ public:
 
         if (i1 <= i2)
         {
-            const int_type min_left = std::min(first_value, _ranges.at(i1).first);
-            const int_type max_right = std::max(last_value, _ranges.at(i2).last);
+            const int_type min_left = std::min<int_type>(first_value, _ranges.at(i1).first);
+            const int_type max_right = std::max<int_type>(last_value, _ranges.at(i2).last);
             _ranges.erase(_ranges.begin() + i1, _ranges.begin() + i2 + 1);
             _ranges.emplace(_ranges.begin() + i1, min_left, max_right);
         } else {

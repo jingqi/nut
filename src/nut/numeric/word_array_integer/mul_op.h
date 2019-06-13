@@ -93,7 +93,7 @@ void _unsigned_square(const T *a, size_t M, T *x, size_t N) noexcept
     }
 
     // 再加上另一半
-    const size_t limit = std::min(N, M * 2);
+    const size_t limit = std::min<size_t>(N, M * 2);
     unsigned_shift_left(retx, limit, retx, limit, 1);
 
     // 加上中间对称线

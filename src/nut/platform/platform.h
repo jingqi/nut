@@ -88,7 +88,11 @@
 #endif
 
 /** 模块 API 定义工具 */
-#define EXTERN_C extern "C"
+#ifdef __cplusplus
+#       define EXTERN_C extern "C"
+#else
+#       define EXTERN_C extern
+#endif
 
 #if NUT_PLATFORM_OS_WINDOWS
 #   define DLL_IMPORT __declspec(dllimport)

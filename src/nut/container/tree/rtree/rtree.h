@@ -648,8 +648,8 @@ private:
         float_type new_acr = 1;
         for (size_t i = 0; i < DIMENSIONS; ++i)
         {
-            new_acr *= std::max(x.higher[i], y.higher[i]) -
-                std::min(x.lower[i], y.lower[i]);
+            new_acr *= std::max<num_type>(x.higher[i], y.higher[i]) -
+                std::min<num_type>(x.lower[i], y.lower[i]);
         }
         return new_acr - x.acreage();
     }

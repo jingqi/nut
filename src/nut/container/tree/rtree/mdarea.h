@@ -75,8 +75,8 @@ public:
     {
         for (size_t i = 0; i < DIMENSIONS; ++i)
         {
-            lower[i] = std::min(lower[i], x.lower[i]);
-            higher[i] = std::max(higher[i], x.higher[i]);
+            lower[i] = std::min<num_type>(lower[i], x.lower[i]);
+            higher[i] = std::max<num_type>(higher[i], x.higher[i]);
         }
     }
 

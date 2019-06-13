@@ -1,5 +1,3 @@
 
-/darwin-debug
-/darwin-release
-/linux-debug
-/linux-release
+/*-debug
+/*-release

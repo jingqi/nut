@@ -82,7 +82,7 @@ void ByteArrayStream::skip_read(size_t cb) noexcept
 size_t ByteArrayStream::read(void *buf, size_t cb) noexcept
 {
     assert(nullptr != buf || 0 == cb);
-    size_t ret = std::min(cb, readable_size());
+    size_t ret = std::min<size_t>(cb, readable_size());
     ::memcpy(buf, _data.data() + _index, ret);
     _index += ret;
     return ret;
@@ -92,7 +92,7 @@ size_t ByteArrayStream::write(const void *buf, size_t cb) noexcept
 {
     assert(nullptr != buf || 0 == cb);
     assert(_index <= _data.size());
-    const size_t copy = std::min(cb, _data.size() - _index);
+    const size_t copy = std::min<size_t>(cb, _data.size() - _index);
     ::memcpy(_data.data() + _index, buf, copy);
     _data.insert(_data.end(), reinterpret_cast<const uint8_t*>(buf) + copy,
                  reinterpret_cast<const uint8_t*>(buf) + cb);

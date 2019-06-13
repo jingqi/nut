@@ -114,7 +114,7 @@ size_t _split_base_bits(const T *a, size_t M, const T *b, size_t N,
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 &&
            nullptr != aa && nullptr != bb && nullptr != rs);
 
-    const size_t word_siglen = (sizeof(T) * std::max(M, N) + NUT_NTT_BASE_BYTES - 1) / NUT_NTT_BASE_BYTES;
+    const size_t word_siglen = (sizeof(T) * std::max<size_t>(M, N) + NUT_NTT_BASE_BYTES - 1) / NUT_NTT_BASE_BYTES;
     unsigned wc_bits = highest_bit1((uint64_t) word_siglen); // word_count 必须是 2 的幂次
     if ((1ULL << wc_bits) < word_siglen)
         ++wc_bits;
@@ -126,7 +126,7 @@ size_t _split_base_bits(const T *a, size_t M, const T *b, size_t N,
     *rs = *bb + word_count;
     ::memset(*aa, 0, sizeof(ntt_word_type) * word_count * 2);
 
-    for (size_t i = 0; i < sizeof(T) * std::max(M, N); ++i)
+    for (size_t i = 0; i < sizeof(T) * std::max<size_t>(M, N); ++i)
     {
         const size_t out_byte_index = i / NUT_NTT_BASE_BYTES * sizeof(ntt_word_type) +
             i % NUT_NTT_BASE_BYTES;
@@ -170,7 +170,7 @@ void unsigned_ntt_multiply(const T *a, size_t M, const T *b, size_t N, T *x, siz
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
 
-    assert(can_use_ntt_multiply(8 * sizeof(T) * std::max(M, N)));
+    assert(can_use_ntt_multiply(8 * sizeof(T) * std::max<size_t>(M, N)));
 
     ntt_word_type *aa, *bb, *rs;
     const size_t wc_bits = _split_base_bits(a, M, b, N, &aa, &bb, &rs);

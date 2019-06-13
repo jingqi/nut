@@ -73,7 +73,7 @@ void HPRetireList::scan_retire_list(HPRetireList *rl) noexcept
         // NOTE 即使 version 是错误的(比如：'_valid' 突然被其他线程改为 false),
         //      也不影响正确性，只会影响性能
         const size_t version = rec->_version.load(std::memory_order_relaxed);
-        min_version = std::min(min_version, version);
+        min_version = std::min<size_t>(min_version, version);
     }
 
     // do deleting

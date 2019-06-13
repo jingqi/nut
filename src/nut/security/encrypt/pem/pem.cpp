@@ -106,7 +106,7 @@ NUT_API std::string pem_write_rsa_public(const RSA::PublicKey& pubkey, bool pkcs
     const std::string base64 = base64_encode(der.data(), der.size());
     for (size_t i = 0, len = base64.length(); i < len; i += 64)
     {
-        ret.insert(ret.end(), base64.data() + i, base64.data() + std::min(len, i + 64));
+        ret.insert(ret.end(), base64.data() + i, base64.data() + std::min<size_t>(len, i + 64));
         ret.push_back('\n');
     }
     ret += (pkcs8 ? END_PUBLIC_KEY : END_RSA_PUBLIC_KEY);
@@ -126,7 +126,7 @@ NUT_API std::string pem_write_rsa_private(const RSA::PrivateKey& prikey, bool pk
     const std::string base64 = base64_encode(der.data(), der.size());
     for (size_t i = 0, len = base64.length(); i < len; i += 64)
     {
-        ret.insert(ret.end(), base64.data() + i, base64.data() + std::min(len, i + 64));
+        ret.insert(ret.end(), base64.data() + i, base64.data() + std::min<size_t>(len, i + 64));
         ret.push_back('\n');
     }
     ret += (pkcs8 ? END_PRIVATE_KEY : END_RSA_PRIVATE_KEY);

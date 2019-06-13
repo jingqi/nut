@@ -1,6 +1,5 @@
 Makefile*
 *.pro.user*
 
-/*-*-debug
-/*-*-release
+/out
 /build*

@@ -45,8 +45,8 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     assert(nullptr != a && M > 0 && nullptr != b && N > 0 && nullptr != x && P > 0);
 
     // 去除无效位长
-    M = std::min(unsigned_significant_size(a, M), P);
-    N = std::min(unsigned_significant_size(b, N), P);
+    M = std::min<size_t>(unsigned_significant_size(a, M), P);
+    N = std::min<size_t>(unsigned_significant_size(b, N), P);
 
     // 退化
     if (M < NUT_KARATSUBA_FALLBACK_THRESHOLD || N < NUT_KARATSUBA_FALLBACK_THRESHOLD)
@@ -57,7 +57,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     }
 
     // 准备变量 A、B、C、D
-    const size_t base_len = (std::max(M, N) + 1) / 2;
+    const size_t base_len = (std::max<size_t>(M, N) + 1) / 2;
     const T ZERO = 0;
 
     // a_len = max(0, min(M - base_len, P - base_len))
@@ -72,7 +72,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
 
     // b_len = min(base_len, M)
     const T *B = a;
-    const size_t b_len = std::min(base_len, M);
+    const size_t b_len = std::min<size_t>(base_len, M);
 
     // c_len = max(0, min(N - base_len, P - base_len))
     //       = max(0, N - base_len)                    [since, N <= P]
@@ -86,7 +86,7 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
 
     // d_len = min(base_len, N)
     const T *D = b;
-    const size_t d_len = std::min(base_len, N);
+    const size_t d_len = std::min<size_t>(base_len, N);
 
     // 计算中间结果
     //
@@ -110,12 +110,12 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     // BD = B * D
     // bd_len = min(b_len + d_len, P)
     //
-    const size_t ab_len = std::min(b_len + 1, P - base_len);
-    const size_t cd_len = std::min(d_len + 1, P - base_len);
-    const size_t abcd_len = std::min(b_len + d_len + 1, P - base_len);
-    const size_t ac_len = std::min(a_len + c_len, P - base_len);
+    const size_t ab_len = std::min<size_t>(b_len + 1, P - base_len);
+    const size_t cd_len = std::min<size_t>(d_len + 1, P - base_len);
+    const size_t abcd_len = std::min<size_t>(b_len + d_len + 1, P - base_len);
+    const size_t ac_len = std::min<size_t>(a_len + c_len, P - base_len);
     assert(ac_len <= ab_len + cd_len);
-    const size_t bd_len = std::min(b_len + d_len, P);
+    const size_t bd_len = std::min<size_t>(b_len + d_len, P);
     T *const AB = (T*) ::alloca(sizeof(T) * (ab_len + cd_len + abcd_len));
     T *const CD = AB + ab_len;
     T *const ABCD = CD + cd_len;

@@ -44,7 +44,7 @@ void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T
     const size_t divisor_len = signed_significant_size(b, N);
     const bool dividend_positive = is_positive(a, M); /// 先把变量算出来，避免操作数被破坏
     const bool divisor_positive = is_positive(b, N);
-    const size_t quotient_len = std::min(P, dividend_len);
+    const size_t quotient_len = std::min<size_t>(P, dividend_len);
 
     // 避免输入数据在计算中途被破坏
     const bool alloc_quotient = (nullptr != x &&
@@ -163,7 +163,7 @@ void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
     // 常量
     const size_t dividend_len = unsigned_significant_size(a, M);
     const size_t divisor_len = unsigned_significant_size(b, N);
-    const size_t quotient_len = std::min(P, dividend_len);
+    const size_t quotient_len = std::min<size_t>(P, dividend_len);
 
     // 避免数据在计算中途被破坏
     const bool alloc_quotient = (nullptr != x &&

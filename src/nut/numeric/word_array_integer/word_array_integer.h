@@ -166,7 +166,7 @@ int signed_compare(const T *a, size_t M, const T *b, size_t N) noexcept
 
     // 同号比较
     const T fill = (positive1 ? 0 : ~(T)0);
-    for (ssize_t i = std::max(M, N) - 1; i >= 0; --i)
+    for (ssize_t i = std::max<size_t>(M, N) - 1; i >= 0; --i)
     {
         const T op1 = (i < (ssize_t) M ? a[i] : fill);
         const T op2 = (i < (ssize_t) N ? b[i] : fill);
@@ -189,7 +189,7 @@ int unsigned_compare(const T *a, size_t M, const T *b, size_t N) noexcept
     static_assert(std::is_unsigned<T>::value, "Unexpected integer type");
     assert(nullptr != a && M > 0 && nullptr != b && N > 0);
 
-    for (ssize_t i = std::max(M, N) - 1; i >= 0; --i)
+    for (ssize_t i = std::max<size_t>(M, N) - 1; i >= 0; --i)
     {
         const T op1 = (i < (ssize_t) M ? a[i] : 0);
         const T op2 = (i < (ssize_t) N ? b[i] : 0);
@@ -211,7 +211,7 @@ void signed_expand(const T *a, size_t M, T *x, size_t N) noexcept
 
     const int fill = (is_positive(a, M) ? 0 : 0xff); // NOTE 需要在 memmove() 之前算出来，避免操作数被破坏
     if (x != a)
-        ::memmove(x, a, sizeof(T) * std::min(M, N));
+        ::memmove(x, a, sizeof(T) * std::min<size_t>(M, N));
     if (M < N)
         ::memset(x + M, fill, sizeof(T) * (N - M));
 }
@@ -227,7 +227,7 @@ void unsigned_expand(const T *a, size_t M, T *x, size_t N) noexcept
     assert(nullptr != a && M > 0 && nullptr != x && N > 0);
 
     if (x != a)
-        ::memmove(x, a, sizeof(T) * std::min(M, N));
+        ::memmove(x, a, sizeof(T) * std::min<size_t>(M, N));
     if (M < N)
         ::memset(x + M, 0, sizeof(T) * (N - M));
 }

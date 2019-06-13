@@ -241,7 +241,7 @@ BigInteger BigInteger::operator+(const BigInteger& x) const noexcept
 {
     BigInteger ret;
     const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
-        ret_siglen = std::max(siglen, x_siglen) + 1;
+        ret_siglen = std::max<size_type>(siglen, x_siglen) + 1;
     ret.ensure_cap(ret_siglen);
     signed_add(data(), siglen, x.data(), x_siglen, ret.data(), ret_siglen);
     ret.set_significant_len(ret_siglen);
@@ -257,7 +257,8 @@ BigInteger BigInteger::operator+(cast_int_type v) const noexcept
 #endif
 
     BigInteger ret;
-    const size_type siglen = significant_words_length(), ret_siglen = std::max(siglen, v_siglen) + 1;
+    const size_type siglen = significant_words_length(),
+        ret_siglen = std::max<size_type>(siglen, v_siglen) + 1;
     ret.ensure_cap(ret_siglen);
     signed_add(data(), siglen, (const word_type*)&v, v_siglen, ret.data(), ret_siglen);
     ret.set_significant_len(ret_siglen);
@@ -269,7 +270,7 @@ BigInteger BigInteger::operator-(const BigInteger& x) const noexcept
 {
     BigInteger ret;
     const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
-        ret_siglen = std::max(siglen, x_siglen) + 1;
+        ret_siglen = std::max<size_type>(siglen, x_siglen) + 1;
     ret.ensure_cap(ret_siglen);
     signed_sub(data(), siglen, x.data(), x_siglen, ret.data(), ret_siglen);
     ret.set_significant_len(ret_siglen);
@@ -285,7 +286,8 @@ BigInteger BigInteger::operator-(cast_int_type v) const noexcept
 #endif
 
     BigInteger ret;
-    const size_type siglen = significant_words_length(), ret_siglen = std::max(siglen, v_siglen) + 1;
+    const size_type siglen = significant_words_length(),
+        ret_siglen = std::max<size_type>(siglen, v_siglen) + 1;
     ret.ensure_cap(ret_siglen);
     signed_sub(data(), siglen, (const word_type*)&v, v_siglen, ret.data(), ret_siglen);
     ret.set_significant_len(ret_siglen);
@@ -376,7 +378,7 @@ BigInteger BigInteger::operator%(cast_int_type v) const noexcept
 BigInteger& BigInteger::operator+=(const BigInteger& x) noexcept
 {
     const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
-        new_siglen = std::max(siglen, x_siglen) + 1;
+        new_siglen = std::max<size_type>(siglen, x_siglen) + 1;
     ensure_cap(new_siglen);
     word_type *const raw_data = data();
     signed_add(raw_data, siglen, x.data(), x_siglen, raw_data, new_siglen);
@@ -392,7 +394,8 @@ BigInteger& BigInteger::operator+=(cast_int_type v) noexcept
     wswap<word_type>((word_type*)&v, v_siglen); // Word order to little-endian
 #endif
 
-    const size_type siglen = significant_words_length(), new_siglen = std::max(siglen, v_siglen) + 1;
+    const size_type siglen = significant_words_length(),
+        new_siglen = std::max<size_type>(siglen, v_siglen) + 1;
     ensure_cap(new_siglen);
     word_type *const raw_data = data();
     signed_add(raw_data, siglen, (const word_type*)&v, v_siglen, raw_data, new_siglen);
@@ -404,7 +407,7 @@ BigInteger& BigInteger::operator+=(cast_int_type v) noexcept
 BigInteger& BigInteger::operator-=(const BigInteger& x) noexcept
 {
     const size_type siglen = significant_words_length(), x_siglen = x.significant_words_length(),
-        new_siglen = std::max(siglen, x_siglen) + 1;
+        new_siglen = std::max<size_type>(siglen, x_siglen) + 1;
     ensure_cap(new_siglen);
     word_type *const raw_data = data();
     signed_sub(raw_data, siglen, x.data(), x_siglen, raw_data, new_siglen);
@@ -420,7 +423,8 @@ BigInteger& BigInteger::operator-=(cast_int_type v) noexcept
     wswap<word_type>((word_type*)&v, v_siglen); // Word order to little-endian
 #endif
 
-    const size_type siglen = significant_words_length(), new_siglen = std::max(siglen, v_siglen) + 1;
+    const size_type siglen = significant_words_length(),
+        new_siglen = std::max<size_type>(siglen, v_siglen) + 1;
     ensure_cap(new_siglen);
     word_type *const raw_data = data();
     signed_sub(raw_data, siglen, (const word_type*)&v, v_siglen, raw_data, new_siglen);
@@ -1199,7 +1203,7 @@ BigInteger operator-(BigInteger::cast_int_type a, const BigInteger& b) noexcept
 
     BigInteger ret;
     const size_type b_siglen = b.significant_words_length(),
-        ret_siglen = std::max(a_siglen, b_siglen) + 1;
+        ret_siglen = std::max<size_type>(a_siglen, b_siglen) + 1;
     ret.ensure_cap(ret_siglen);
     signed_sub((const word_type*)&a, a_siglen, b.data(), b_siglen, ret.data(), ret_siglen);
     ret.set_significant_len(ret_siglen);

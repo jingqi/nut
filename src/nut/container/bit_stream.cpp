@@ -222,11 +222,11 @@ BitStream& BitStream::operator+=(const BitStream& x) noexcept
 BitStream BitStream::operator&(const BitStream& x) const noexcept
 {
     BitStream rs;
-    const size_t new_bit_size = std::max(_bit_size, x._bit_size);
+    const size_t new_bit_size = std::max<size_t>(_bit_size, x._bit_size);
     rs._ensure_cap(new_bit_size);
 
     const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
-        new_word_size = std::max(word_size1, word_size2),
+        new_word_size = std::max<size_t>(word_size1, word_size2),
         tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
         tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
     for (size_t i = 0; i < new_word_size; ++i)
@@ -247,11 +247,11 @@ BitStream BitStream::operator&(const BitStream& x) const noexcept
 
 BitStream& BitStream::operator&=(const BitStream& x) noexcept
 {
-    const size_t new_bit_size = std::max(_bit_size, x._bit_size);
+    const size_t new_bit_size = std::max<size_t>(_bit_size, x._bit_size);
     _ensure_cap(new_bit_size);
 
     const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
-        new_word_size = std::max(word_size1, word_size2),
+        new_word_size = std::max<size_t>(word_size1, word_size2),
         tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
         tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
     for (size_t i = 0; i < new_word_size; ++i)
@@ -273,11 +273,11 @@ BitStream& BitStream::operator&=(const BitStream& x) noexcept
 BitStream BitStream::operator|(const BitStream& x) const noexcept
 {
     BitStream rs;
-    const size_t new_bit_size = std::max(_bit_size, x._bit_size);
+    const size_t new_bit_size = std::max<size_t>(_bit_size, x._bit_size);
     rs._ensure_cap(new_bit_size);
 
     const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
-        new_word_size = std::max(word_size1, word_size2),
+        new_word_size = std::max<size_t>(word_size1, word_size2),
         tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
         tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
     for (size_t i = 0; i < new_word_size; ++i)
@@ -298,11 +298,11 @@ BitStream BitStream::operator|(const BitStream& x) const noexcept
 
 BitStream& BitStream::operator|=(const BitStream& x) noexcept
 {
-    const size_t new_bit_size = std::max(_bit_size, x._bit_size);
+    const size_t new_bit_size = std::max<size_t>(_bit_size, x._bit_size);
     _ensure_cap(new_bit_size);
 
     const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
-        new_word_size = std::max(word_size1, word_size2),
+        new_word_size = std::max<size_t>(word_size1, word_size2),
         tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
         tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
     for (size_t i = 0; i < new_word_size; ++i)
@@ -324,11 +324,11 @@ BitStream& BitStream::operator|=(const BitStream& x) noexcept
 BitStream BitStream::operator^(const BitStream& x) const noexcept
 {
     BitStream rs;
-    const size_t new_bit_size = std::max(_bit_size, x._bit_size);
+    const size_t new_bit_size = std::max<size_t>(_bit_size, x._bit_size);
     rs._ensure_cap(new_bit_size);
 
     const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
-        new_word_size = std::max(word_size1, word_size2),
+        new_word_size = std::max<size_t>(word_size1, word_size2),
         tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
         tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
     for (size_t i = 0; i < new_word_size; ++i)
@@ -349,11 +349,11 @@ BitStream BitStream::operator^(const BitStream& x) const noexcept
 
 BitStream& BitStream::operator^=(const BitStream& x) noexcept
 {
-    const size_t new_bit_size = std::max(_bit_size, x._bit_size);
+    const size_t new_bit_size = std::max<size_t>(_bit_size, x._bit_size);
     _ensure_cap(new_bit_size);
 
     const size_t word_size1 = _word_size(), word_size2 = x._word_size(),
-        new_word_size = std::max(word_size1, word_size2),
+        new_word_size = std::max<size_t>(word_size1, word_size2),
         tail_bitlen1 = _bit_size % (sizeof(word_type) * 8),
         tail_bitlen2 = x._bit_size % (sizeof(word_type) * 8);
     for (size_t i = 0; i < new_word_size; ++i)
@@ -382,7 +382,7 @@ int BitStream::compare(const BitStream& x) const noexcept
     if (this == &x)
         return 0;
 
-    const size_t min_bitsz = std::min(_bit_size, x._bit_size);
+    const size_t min_bitsz = std::min<size_t>(_bit_size, x._bit_size);
     const size_t word_count = min_bitsz / (sizeof(word_type) * 8);
     for (size_t i = 0; i < word_count; ++i)
     {

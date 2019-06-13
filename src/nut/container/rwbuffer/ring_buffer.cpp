@@ -115,7 +115,7 @@ size_t RingBuffer::read(void *buf, size_t len) noexcept
 size_t RingBuffer::look_ahead(void *buf, size_t len) const noexcept
 {
     assert(nullptr != buf);
-    const size_t readed = std::min(len, readable_size()),
+    const size_t readed = std::min<size_t>(len, readable_size()),
         trunk_sz = _capacity - _read_index;
     if (trunk_sz >= readed)
     {
@@ -132,7 +132,7 @@ size_t RingBuffer::look_ahead(void *buf, size_t len) const noexcept
 
 size_t RingBuffer::skip_read(size_t len) noexcept
 {
-    const size_t skiped = std::min(len, readable_size());
+    const size_t skiped = std::min<size_t>(len, readable_size());
     _read_index += skiped;
     if (0 != _capacity)
         _read_index %= _capacity;
@@ -209,7 +209,7 @@ void RingBuffer::write(const void *buf, size_t len) noexcept
 
 size_t RingBuffer::skip_write(size_t len) noexcept
 {
-    const size_t skiped = std::min(len, writable_size());
+    const size_t skiped = std::min<size_t>(len, writable_size());
     _write_index += len;
     if (0 != _capacity)
         _write_index %= _capacity;

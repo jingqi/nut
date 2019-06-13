@@ -200,7 +200,7 @@ void RSA_PKCS1::start_private_decrypt(const RSA::PrivateKey& key) noexcept
 bool RSA_PKCS1::unpack_eb(const BigInteger& output) noexcept
 {
     // Load from BigInteger
-    const size_t sig_bytes_len = std::min(
+    const size_t sig_bytes_len = std::min<size_t>(
         _encryption_block_size, output.significant_words_length() * sizeof(BigInteger::word_type));
     ::memcpy(_encryption_block, output.data(), sig_bytes_len);
     if (sig_bytes_len < _encryption_block_size)

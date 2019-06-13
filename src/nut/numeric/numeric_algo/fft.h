@@ -56,7 +56,7 @@ void unsigned_fft_multiply(const T *a, size_t M, const T *b, size_t N, T *x, siz
     wc_len = (1ULL << loglen);
 
     // 准备复数向量
-    const size_t ans_len = std::min(wc_len, (sizeof(T) * P + NUT_FFT_BASE_BYTES - 1) / NUT_FFT_BASE_BYTES);
+    const size_t ans_len = std::min<size_t>(wc_len, (sizeof(T) * P + NUT_FFT_BASE_BYTES - 1) / NUT_FFT_BASE_BYTES);
     fft_complex_type *aa = (fft_complex_type*) ::alloca(sizeof(fft_complex_type) * wc_len * 2 +
                                                         sizeof(fft_word_type) * ans_len);
     fft_complex_type *bb = aa + wc_len;
