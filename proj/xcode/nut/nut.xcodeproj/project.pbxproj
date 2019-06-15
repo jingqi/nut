@@ -31,7 +31,6 @@
 		2E53217122B15ABD00CEC3F7 /* exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E53217022B15ABD00CEC3F7 /* exception.cpp */; };
 		2E538E9E21975A220060FED9 /* comparable.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E538E9D21975A220060FED9 /* comparable.h */; };
 		2E538EA021975A3D0060FED9 /* test_comparable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E538E9F21975A3D0060FED9 /* test_comparable.cpp */; };
-		2E538EA221975A930060FED9 /* lock_guard.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E538EA121975A920060FED9 /* lock_guard.h */; };
 		2E538EA821975AE10060FED9 /* hp_record.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E538EA421975AE10060FED9 /* hp_record.h */; };
 		2E538EA921975AE10060FED9 /* hp_retire_list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E538EA521975AE10060FED9 /* hp_retire_list.cpp */; };
 		2E538EAA21975AE10060FED9 /* hp_retire_list.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E538EA621975AE10060FED9 /* hp_retire_list.h */; };
@@ -326,7 +325,6 @@
 		2E53217022B15ABD00CEC3F7 /* exception.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = exception.cpp; path = ../../../src/nut/debugging/exception.cpp; sourceTree = "<group>"; };
 		2E538E9D21975A220060FED9 /* comparable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = comparable.h; path = ../../../src/nut/container/comparable.h; sourceTree = "<group>"; };
 		2E538E9F21975A3D0060FED9 /* test_comparable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_comparable.cpp; path = ../../../src/test_nut/container/test_comparable.cpp; sourceTree = "<group>"; };
-		2E538EA121975A920060FED9 /* lock_guard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lock_guard.h; path = ../../../src/nut/threading/sync/lock_guard.h; sourceTree = "<group>"; };
 		2E538EA421975AE10060FED9 /* hp_record.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hp_record.h; path = ../../../src/nut/threading/lockfree/hazard_pointer/hp_record.h; sourceTree = "<group>"; };
 		2E538EA521975AE10060FED9 /* hp_retire_list.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = hp_retire_list.cpp; path = ../../../src/nut/threading/lockfree/hazard_pointer/hp_retire_list.cpp; sourceTree = "<group>"; };
 		2E538EA621975AE10060FED9 /* hp_retire_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hp_retire_list.h; path = ../../../src/nut/threading/lockfree/hazard_pointer/hp_retire_list.h; sourceTree = "<group>"; };
@@ -879,7 +877,6 @@
 		2E1927681AD900E100FDFFA6 /* sync */ = {
 			isa = PBXGroup;
 			children = (
-				2E538EA121975A920060FED9 /* lock_guard.h */,
 				2EC93802217A4C73005D5285 /* dummy_lock.h */,
 				2EE083E02146DD6E008E4587 /* rwlock.cpp */,
 				2EE083E42146DD6E008E4587 /* rwlock.h */,
@@ -1344,7 +1341,6 @@
 				2EE083F82146DD80008E4587 /* thread_pool.h in Headers */,
 				2EE084492146DE03008E4587 /* ini_dom.h in Headers */,
 				2EE083C42146DD2B008E4587 /* lengthfixed_mp.h in Headers */,
-				2E538EA221975A930060FED9 /* lock_guard.h in Headers */,
 				2EE083332146DC3A008E4587 /* skiplist_map.h in Headers */,
 				2EE083552146DC92008E4587 /* enrc.h in Headers */,
 				2EE0833E2146DC66008E4587 /* adler32.h in Headers */,

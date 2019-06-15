@@ -43,17 +43,17 @@ SpinLock::~SpinLock() noexcept
 }
 
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
-CRITICAL_SECTION* SpinLock::inner_mutex() noexcept
+CRITICAL_SECTION* SpinLock::native_handle() noexcept
 {
     return &_critical_section;
 }
 #elif NUT_PLATFORM_OS_MACOS
-pthread_mutex_t* SpinLock::inner_mutex() noexcept
+pthread_mutex_t* SpinLock::native_handle() noexcept
 {
     return &_spinlock;
 }
 #else
-pthread_spinlock_t* SpinLock::inner_mutex() noexcept
+pthread_spinlock_t* SpinLock::native_handle() noexcept
 {
     return &_spinlock;
 }
@@ -74,7 +74,7 @@ void SpinLock::lock() noexcept
 #endif
 }
 
-bool SpinLock::trylock() noexcept
+bool SpinLock::try_lock() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
     return FALSE != ::TryEnterCriticalSection(&_critical_section);

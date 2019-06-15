@@ -155,6 +155,7 @@ int main(int argc, char *argv[])
         getch();
     }
 #endif
+    UNUSED(quiet);
 
     return l.get_count_of_failed_cases();
 }

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <mutex>
 
 #include <nut/platform/platform.h>
 
@@ -12,7 +13,6 @@
 #include <nut/unittest/unittest.h>
 #include <nut/threading/lockfree/concurrent_queue.h>
 #include <nut/threading/sync/spinlock.h>
-#include <nut/threading/sync/lock_guard.h>
 #include <nut/util/string/to_string.h>
 #include <nut/util/string/string_utils.h>
 
@@ -68,7 +68,7 @@ class TestConcurrentQueue : public TestFixture
     {
         assert(nullptr != q);
         {
-            LockGuard<SpinLock> g(&msglock);
+            std::lock_guard<SpinLock> g(msglock);
             cout << "producter running" << endl;
         }
 
@@ -85,7 +85,7 @@ class TestConcurrentQueue : public TestFixture
                 q->optimistic_enqueue(to_string(r) + "|" + to_string(r + 3));
             ++count;
         }
-        LockGuard<SpinLock> g(&msglock);
+        std::lock_guard<SpinLock> g(msglock);
         cout << "producted: " << count << endl;
     }
 
@@ -93,7 +93,7 @@ class TestConcurrentQueue : public TestFixture
     {
         assert(nullptr != q);
         {
-            LockGuard<SpinLock> g(&msglock);
+            std::lock_guard<SpinLock> g(msglock);
             cout << "consumer running" << endl;
         }
 
@@ -115,13 +115,13 @@ class TestConcurrentQueue : public TestFixture
                 vector<string> parts = chr_split(s, '|');
                 if (parts.size() != 2)
                 {
-                    LockGuard<SpinLock> g(&msglock);
+                    std::lock_guard<SpinLock> g(msglock);
                     cout << "error \"" << s << "\"" << endl;
                     continue;
                 }
                 if (::atoi(parts[0].c_str()) + 3 != ::atoi(parts[1].c_str()))
                 {
-                    LockGuard<SpinLock> g(&msglock);
+                    std::lock_guard<SpinLock> g(msglock);
                     cout << "error \"" << s << "\"" << endl;
                     continue;
                 }
@@ -129,7 +129,7 @@ class TestConcurrentQueue : public TestFixture
             }
             ++total_count;
         }
-        LockGuard<SpinLock> g(&msglock);
+        std::lock_guard<SpinLock> g(msglock);
         cout << "consumed: " << success_count << "/" << total_count << endl;
     }
 
@@ -146,7 +146,7 @@ class TestConcurrentQueue : public TestFixture
         std::this_thread::sleep_for(std::chrono::milliseconds(10 * 1000));
 
         {
-            LockGuard<SpinLock> g(&msglock);
+            std::lock_guard<SpinLock> g(msglock);
             cout << "interrupting..." << endl;
         }
         interrupt.store(true, std::memory_order_relaxed);

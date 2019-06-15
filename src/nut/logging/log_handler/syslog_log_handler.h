@@ -1,4 +1,15 @@
-﻿
+﻿/**
+ * syslog 接口
+ *
+ * ::openlog()
+ * ::syslog()
+ * ::vsyslog()
+ * ::closelog()
+ *
+ * - 如未调用过 openlog(), 将在首次调用 syslog() / vsyslog() 时自动初始化
+ * - closelog() 关闭与 syslog 守护进程通信的文件描述符, 也是可选的
+ */
+
 #ifndef ___HEADFILE_AF6CB8AD_3974_4914_A35E_B86138464E05_
 #define ___HEADFILE_AF6CB8AD_3974_4914_A35E_B86138464E05_
 
@@ -13,23 +24,19 @@
 namespace nut
 {
 
+/**
+ * syslog 接口适配
+ */
 class NUT_API SyslogLogHandler : public LogHandler
 {
 public:
-    explicit SyslogLogHandler(bool close_syslog_on_exit = false) noexcept;
-
-    ~SyslogLogHandler() noexcept;
-
-    void set_close_syslog_on_exit(bool close_on_exit) noexcept;
+    SyslogLogHandler() = default;
 
     virtual void handle_log(const LogRecord& rec) noexcept override;
 
 private:
     SyslogLogHandler(const SyslogLogHandler&) = delete;
     SyslogLogHandler& operator=(const SyslogLogHandler&) = delete;
-
-private:
-    bool _close_syslog_on_exit = false;
 };
 
 }

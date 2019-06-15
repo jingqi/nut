@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "../../nut_config.h"
+#include "../../threading/sync/spinlock.h"
 #include "log_handler.h"
 
 
@@ -24,6 +25,7 @@ private:
 
 private:
     std::ostream &_os;
+    SpinLock _lock;
 };
 
 

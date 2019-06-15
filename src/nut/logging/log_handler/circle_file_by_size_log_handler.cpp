@@ -1,7 +1,12 @@
 ﻿
-#include <math.h>
-#include <string.h> // for ::strlen()
 #include <algorithm> // for std::sort()
+
+#include "../../platform/platform.h"
+
+#if !NUT_PLATFORM_OS_WINDOWS
+#   include <fcntl.h> // for ::open()
+#   include <unistd.h> // for ::write() / ::close()
+#endif
 
 #include "../../platform/os.h"
 #include "../../platform/path.h"
@@ -51,40 +56,77 @@ static bool is_all_digits(const std::string& s, size_t start, size_t len)
 
 CircleFileBySizeLogHandler::CircleFileBySizeLogHandler(
     const std::string& dir_path, const std::string& prefix, size_t circle_size,
-    size_t max_file_size, bool cross_file) noexcept
+    long long max_file_size, bool cross_file) noexcept
     : _dir_path(dir_path), _file_prefix(prefix), _circle_size(circle_size),
       _max_file_size(max_file_size), _cross_file(cross_file)
 {
     assert(_circle_size > 0);
-    circle_once();
+
+    const size_t digits_len = decimal_digit_count(circle_size - 1);
+    const std::string name = prefix + format_seq(0, digits_len) + ".log";
+    const std::string path = Path::join(dir_path, name);
+    long long filesz = 0;
+    if (Path::exists(path))
+        filesz = Path::get_size(path);
+    _file_size.store(filesz, std::memory_order_relaxed);
+
+    if (filesz >= max_file_size)
+        circle_once();
+    else
+        open_log_file(path);
 }
 
-void CircleFileBySizeLogHandler::open(const char *file) noexcept
+#if !NUT_PLATFORM_OS_WINDOWS
+CircleFileBySizeLogHandler::~CircleFileBySizeLogHandler()
 {
-    assert(nullptr != file);
+    const int fd = _fd.exchange(-1, std::memory_order_relaxed);
+    if (fd >= 0)
+        ::close(fd);
+}
+#endif
 
+void CircleFileBySizeLogHandler::open_log_file(const std::string& file) noexcept
+{
+    long long filesz = 0;
     if (Path::exists(file))
-        _file_size = Path::get_size(file);
-    else
-        _file_size = 0;
+        filesz = Path::get_size(file);
 
-    _ofs.open(file, std::ios::app); // NOTE append 模式打开的文件支持并发写入
+    std::string msg;
+    if (filesz > 0)
+        msg = "\n\n";
+    msg += "------------- ---------------- ---------------\n";
+    filesz += msg.length();
 
-    if (_file_size > 0)
-    {
-        _ofs << "\n\n";
-        _file_size += 2;
-    }
-    const char *first_msg = "------------- ---------------- ---------------\n";
-    _ofs << first_msg;
-    _file_size += ::strlen(first_msg);
+#if NUT_PLATFORM_OS_WINDOWS
+    std::lock_guard<SpinLock> guard(_ofs_lock);
+    _ofs.close();
+    _ofs.clear();
+    _ofs.open(file.c_str(), std::ios::app);
+    _ofs << msg;
+    _file_size.store(filesz, std::memory_order_relaxed);
+#else
+    // NOTE 使用 O_APPEND 标记打开的文件支持 多线程、多进程 并发写入
+    const int fd = ::open(file.c_str(), O_CREAT | O_WRONLY | O_APPEND,
+                          S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH);
+    assert(fd >= 0);
+    ::write(fd, msg.data(), msg.length());
+    const int old_fd = _fd.exchange(fd, std::memory_order_relaxed);
+    _file_size.store(filesz, std::memory_order_relaxed);
+    if (old_fd >= 0)
+        ::close(old_fd);
+#endif
 }
 
 void CircleFileBySizeLogHandler::circle_once() noexcept
 {
-    // 关闭文件, 强制写入到文件系统, 避免 get_size() 的结果不准确
-    _ofs.close();
-    _ofs.clear();
+    // 只需要一个线程来处理
+    std::unique_lock<std::mutex> guard(_fileop_lock, std::try_to_lock);
+    if (!guard.owns_lock())
+        return;
+
+    // Double check
+    if (_file_size.load(std::memory_order_relaxed) < _max_file_size)
+        return;
 
     // 找到目录下所有的日志文件
     const size_t prefix_len = _file_prefix.length();
@@ -111,58 +153,56 @@ void CircleFileBySizeLogHandler::circle_once() noexcept
         logfile_names.push_back(name);
     }
 
-    // 检查 0 号文件是否能够容纳更多日志
-    const std::string name_zero = _file_prefix + format_seq(0, digits_len) + log_suffix;
-    const std::string path_zero = Path::join(_dir_path, name_zero);
-    const bool need_shift = (
-        Path::exists(path_zero) && Path::get_size(path_zero) >= _max_file_size);
-
     // 删除多余的日志文件，重命名日志文件
     std::sort(logfile_names.begin(), logfile_names.end());
     for (ssize_t i = logfile_names.size() - 1; i >= 0; --i)
     {
         const std::string& name = logfile_names.at(i);
         const std::string& ori_path = Path::join(_dir_path, name);
-
-        size_t seq = (size_t) str_to_long(name.substr(prefix_len, digits_len));
-        if (need_shift)
-            ++seq; // Next seq number
+        const size_t seq = (size_t) str_to_long(name.substr(prefix_len, digits_len));
 
         // 删除多余的日志文件
-        if (seq >= _circle_size)
+        if (seq + 1 >= _circle_size)
         {
             OS::removefile(ori_path);
             continue;
         }
 
         // 文件名中的序号加1
-        if (need_shift)
-        {
-            const std::string new_name = _file_prefix + format_seq(seq, digits_len) + log_suffix;
-            OS::rename(ori_path, Path::join(_dir_path, new_name));
-            continue;
-        }
-
-        break;
+        const std::string new_name = _file_prefix + format_seq(seq + 1, digits_len) + log_suffix;
+        OS::rename(ori_path, Path::join(_dir_path, new_name));
     }
 
     // 打开日志文件
-    open(path_zero.c_str());
+    const std::string name = _file_prefix + format_seq(0, digits_len) + log_suffix;
+    const std::string path = Path::join(_dir_path, name);
+    open_log_file(path);
 }
 
 void CircleFileBySizeLogHandler::handle_log(const LogRecord& rec) noexcept
 {
-    // Write log record
-    const std::string msg = rec.to_string();
-    _ofs << msg << std::endl;
-    _file_size += msg.length() + 1;
+    const std::string msg = rec.to_string() + "\n";
+    const size_t msglen = msg.length();
 
-    // Flush to disk if needed
-    if (0 != (_flush_mask & rec.get_level()))
-        _ofs.flush();
+#if NUT_PLATFORM_OS_WINDOWS
+    {
+        std::lock_guard<SpinLock> guard(_ofs_lock);
+        _ofs << msg;
+        if (0 != (_flush_mask & rec.get_level()))
+            _ofs.flush();
+    }
+#else
+    // NOTE
+    // - 使用 O_APPEND 标记打开的文件本身支持并发写入，无需额外加锁
+    // - 内容要一次性完整写入，避免并发穿插
+    // - 因直接向内核写入，故无需 flush
+    ::write(_fd.load(std::memory_order_relaxed), msg.data(), msglen);
+#endif
 
-    // Change to new log file if needed
-    if (_cross_file && _file_size >= _max_file_size)
+    const long long filesz = _file_size.fetch_add(msglen, std::memory_order_relaxed) + msglen;
+
+    // Open a new log file
+    if (_cross_file && filesz >= _max_file_size)
         circle_once();
 }
 

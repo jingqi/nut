@@ -28,15 +28,15 @@ public:
     ~SpinLock() noexcept;
 
     void lock() noexcept;
-    bool trylock() noexcept;
+    bool try_lock() noexcept;
     void unlock() noexcept;
 
 #if NUT_PLATFORM_OS_WINDOWS && !NUT_PLATFORM_CC_MINGW
-    CRITICAL_SECTION* inner_mutex() noexcept;
+    CRITICAL_SECTION* native_handle() noexcept;
 #elif NUT_PLATFORM_OS_MACOS
-    pthread_mutex_t* inner_mutex() noexcept;
+    pthread_mutex_t* native_handle() noexcept;
 #else
-    pthread_spinlock_t* inner_mutex() noexcept;
+    pthread_spinlock_t* native_handle() noexcept;
 #endif
 
 private:

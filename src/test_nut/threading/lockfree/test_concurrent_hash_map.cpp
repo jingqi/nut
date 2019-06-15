@@ -2,11 +2,11 @@
 #include <iostream>
 #include <random>
 #include <thread>
+#include <mutex>
 
 #include <nut/unittest/unittest.h>
 #include <nut/threading/lockfree/concurrent_hash_map.h>
 #include <nut/threading/sync/spinlock.h>
-#include <nut/threading/sync/lock_guard.h>
 #include <nut/util/string/to_string.h>
 
 using namespace std;
@@ -77,7 +77,7 @@ class TestConcurrentHashMap : public TestFixture
         assert(nullptr != m);
 
         {
-            LockGuard<SpinLock> g(&msglock);
+            std::lock_guard<SpinLock> g(msglock);
             cout << "producter running" << endl;
         }
 
@@ -94,7 +94,7 @@ class TestConcurrentHashMap : public TestFixture
             ++total_count;
         }
 
-        LockGuard<SpinLock> g(&msglock);
+        std::lock_guard<SpinLock> g(msglock);
         cout << "producted: " << success_count << "/" << total_count << endl;
     }
 
@@ -102,7 +102,7 @@ class TestConcurrentHashMap : public TestFixture
     {
         assert(nullptr != m);
         {
-            LockGuard<SpinLock> g(&msglock);
+            std::lock_guard<SpinLock> g(msglock);
             cout << "consumer running" << endl;
         }
 
@@ -121,7 +121,7 @@ class TestConcurrentHashMap : public TestFixture
                     ++success_count;
                 if (::atoi(s.c_str()) != r)
                 {
-                    LockGuard<SpinLock> g(&msglock);
+                    std::lock_guard<SpinLock> g(msglock);
                     cout << "error " << r << " \"" << s << "\"" << endl;
                     continue;
                 }
@@ -129,7 +129,7 @@ class TestConcurrentHashMap : public TestFixture
             ++total_count;
         }
 
-        LockGuard<SpinLock> g(&msglock);
+        std::lock_guard<SpinLock> g(msglock);
         cout << "consumed: " << success_count << "/" << total_count << endl;
     }
 
@@ -146,7 +146,7 @@ class TestConcurrentHashMap : public TestFixture
         std::this_thread::sleep_for(std::chrono::milliseconds(10 * 1000));
 
         {
-            LockGuard<SpinLock> g(&msglock);
+            std::lock_guard<SpinLock> g(msglock);
             cout << "interrupting..." << endl;
         }
         interrupt.store(true, std::memory_order_relaxed);

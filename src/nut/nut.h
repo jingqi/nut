@@ -100,7 +100,6 @@
 #include "threading/sync/spinlock.h"
 #include "threading/sync/rwlock.h"
 #include "threading/sync/sem.h"
-#include "threading/sync/lock_guard.h"
 
 // unittest
 #include "unittest/unittest.h"

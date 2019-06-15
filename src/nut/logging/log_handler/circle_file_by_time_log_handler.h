@@ -6,6 +6,8 @@
 #include <fstream>
 
 #include "../../nut_config.h"
+#include "../../platform/platform.h"
+#include "../../threading/sync/spinlock.h"
 #include "log_handler.h"
 
 
@@ -39,7 +41,12 @@ private:
     CircleFileByTimeLogHandler& operator=(const CircleFileByTimeLogHandler&) = delete;
 
 private:
+#if NUT_PLATFORM_OS_WINDOWS
     std::ofstream _ofs;
+    SpinLock _ofs_lock;
+#else
+    int _fd = -1;
+#endif
 };
 
 }

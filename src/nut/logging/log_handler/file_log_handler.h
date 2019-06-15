@@ -3,8 +3,11 @@
 #define ___HEADFILE_62C1DBA1_286E_4BAE_AD7D_FD628348E94C_
 
 #include <fstream>
+#include <mutex>
 
 #include "../../nut_config.h"
+#include "../../platform/platform.h"
+#include "../../threading/sync/spinlock.h"
 #include "log_handler.h"
 
 
@@ -26,7 +29,12 @@ private:
     FileLogHandler& operator=(const FileLogHandler&) = delete;
 
 private:
+#if NUT_PLATFORM_OS_WINDOWS
     std::ofstream _ofs;
+    SpinLock _ofs_lock;
+#else
+    int _fd = -1;
+#endif
 };
 
 

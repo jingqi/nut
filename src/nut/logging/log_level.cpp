@@ -35,27 +35,7 @@ const char* log_level_to_str(enum LogLevel level) noexcept
 
 char log_level_to_char(enum LogLevel level) noexcept
 {
-    // 为了对齐，保持返回字符串长度一致
-    switch (level)
-    {
-    case LL_DEBUG:
-        return 'D';
-
-    case LL_INFO:
-        return 'I';
-
-    case LL_WARN:
-        return 'W';
-
-    case LL_ERROR:
-        return 'E';
-
-    case LL_FATAL:
-        return 'F';
-
-    default:
-        return 'U';
-    }
+    return log_level_to_str(level)[0];
 }
 
 enum LogLevel str_to_log_level(const char *str) noexcept

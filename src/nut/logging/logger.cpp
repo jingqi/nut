@@ -243,7 +243,6 @@ void Logger::load_xml_config(const std::string& config) noexcept
             _file_prefix.clear();
             _time_format = "%Y%m%d-%H%M%S.%3f";
             _trunc = false;
-            _close_syslog_on_exit = false;
             _cross_file = false;
             _circle = 10;
             _max_file_size = 1 * 1024 * 1024;
@@ -303,10 +302,6 @@ void Logger::load_xml_config(const std::string& config) noexcept
             {
                 _cross_file = (value == "true" || value == "1");
             }
-            else if (name == "close_syslog_on_exit")
-            {
-                _close_syslog_on_exit = (value == "true" || value == "1");
-            }
         }
 
         virtual void handle_finish() noexcept override
@@ -364,7 +359,7 @@ void Logger::load_xml_config(const std::string& config) noexcept
 #if NUT_PLATFORM_OS_MACOS || NUT_PLATFORM_OS_LINUX
             else if (_type == "syslog")
             {
-                rc_ptr<SyslogLogHandler> handler = rc_new<SyslogLogHandler>(_close_syslog_on_exit);
+                rc_ptr<SyslogLogHandler> handler = rc_new<SyslogLogHandler>();
                 handler->set_flush_mask(_flush_mask);
                 handler->get_filter().swap(&_filter);
                 Logger::get_instance()->add_handler(handler);
@@ -380,7 +375,6 @@ void Logger::load_xml_config(const std::string& config) noexcept
         std::string _file_prefix;
         std::string _time_format;
         bool _trunc = false;
-        bool _close_syslog_on_exit = false;
         bool _cross_file = true;
         size_t _circle = 10;
         long _max_file_size = 1 * 1024 * 1024;

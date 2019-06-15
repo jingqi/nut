@@ -13,7 +13,7 @@ public:
     void lock() noexcept
     {}
 
-    bool trylock() noexcept
+    bool try_lock() noexcept
     {
         return true;
     }

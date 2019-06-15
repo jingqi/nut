@@ -3,13 +3,12 @@
 #define ___HEADFILE_E7849DBE_E176_427D_A0C1_60B0E4C3A1D0_
 
 #include <assert.h>
-#include <atomic>
 #include <algorithm>
+#include <atomic>
+#include <mutex>
 
 #include "../../numeric/word_array_integer/bit_op.h"
 #include "../../container/comparable.h"
-#include "../sync/spinlock.h"
-#include "../sync/lock_guard.h"
 #include "stamped_ptr.h"
 #include "hazard_pointer/hp_record.h"
 #include "hazard_pointer/hp_retire_list.h"
@@ -647,9 +646,9 @@ private:
 
     void rehash(size_t expect_bss) noexcept
     {
-        if (!_rehash_lock.trylock())
+        std::unique_lock<std::mutex> guard(_rehash_lock, std::try_to_lock);
+        if (!guard.owns_lock())
             return;
-        LockGuard<SpinLock> g(&_rehash_lock, false);
 
         const size_t bss = _bucket_size_shift.load(std::memory_order_relaxed);
         if (bss >= expect_bss)
@@ -688,7 +687,7 @@ private:
     std::atomic<size_t> _bucket_size_shift = ATOMIC_VAR_INIT(FIRST_TRUNK_SIZE_SHIFT);
     std::atomic<size_t> _size = ATOMIC_VAR_INIT(0);
 
-    SpinLock _rehash_lock;
+    std::mutex _rehash_lock;
 };
 
 }
