@@ -21,12 +21,16 @@ public:
     /**
      * 按照创建时间循环
      *
+     * 如果多次运行时生成的文件名相同, 新日志将会附加到文件末尾, 这种特性可以用来
+     * 比如说将同一天的日志存放到同一个文件中.
+     *
      * @param dir_path 日志文件所在的目录
-     * @param prefix 日志文件前缀
+     * @param prefix 日志文件名前缀
+     * @param time_format 日志文件名日期格式, 例如 "%Y%m%d-%H%M%S-%3f"
      * @param circle_size 循环周期(最多日志文件数)
      */
-    CircleFileByTimeLogHandler(const std::string& dir_path,
-                               const std::string& prefix, size_t circle_size) noexcept;
+    CircleFileByTimeLogHandler(const std::string& dir_path, const std::string& prefix,
+                               const char *time_format, size_t circle_size) noexcept;
 
     virtual void handle_log(const LogRecord& rec) noexcept override;
 

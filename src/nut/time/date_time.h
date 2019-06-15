@@ -180,8 +180,18 @@ public:
     std::string to_string() const noexcept;
 
     /**
-     * format time string
-     * for example : "%m-%d %H:%M" -> "2-28 8:57"
+     * 格式化时间
+     *
+     * %Y 年份; 4字符
+     * %y 年份; 2字符
+     * %m 月份; 2字符, 不足2字符时前面补0
+     * %d 月份中的天数; 2字符, 不足2字符时前面补0
+     * %j 年中的天数
+     * %H 24小时制小时数; 2字符, 不足2字符时前面补0
+     * %I 12小时制小时数; 2字符, 不足2字符时前面补0
+     * %M 分钟数; 24小时制; 2字符, 不足2字符时前面补0
+     * %S 秒数; 24小时制; 2字符, 不足2字符时前面补0
+     * %9f 秒数的浮点数部分; 需要指定保留的字符数, 例如 "%3f", 0.1234 -> 123
      */
     std::string format_time(const char *format) const noexcept;
 

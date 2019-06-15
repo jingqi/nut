@@ -241,7 +241,8 @@ void Logger::load_xml_config(const std::string& config) noexcept
             _type.clear();
             _path.clear();
             _file_prefix.clear();
-            _append = false;
+            _time_format = "%Y%m%d-%H%M%S.%3f";
+            _trunc = false;
             _close_syslog_on_exit = false;
             _cross_file = false;
             _circle = 10;
@@ -278,9 +279,9 @@ void Logger::load_xml_config(const std::string& config) noexcept
             {
                 _path = value;
             }
-            else if (name == "append")
+            else if (name == "trunc")
             {
-                _append = (value == "true" || value == "1");
+                _trunc = (value == "true" || value == "1");
             }
             else if (name == "circle")
             {
@@ -289,6 +290,10 @@ void Logger::load_xml_config(const std::string& config) noexcept
             else if (name == "file_prefix")
             {
                 _file_prefix = value;
+            }
+            else if (name == "time_format")
+            {
+                _time_format = value;
             }
             else if (name == "max_file_size")
             {
@@ -331,7 +336,7 @@ void Logger::load_xml_config(const std::string& config) noexcept
             {
                 if (_path.empty())
                     return;
-                rc_ptr<FileLogHandler> handler = rc_new<FileLogHandler>(_path.c_str(), _append);
+                rc_ptr<FileLogHandler> handler = rc_new<FileLogHandler>(_path.c_str(), _trunc);
                 handler->set_flush_mask(_flush_mask);
                 handler->get_filter().swap(&_filter);
                 Logger::get_instance()->add_handler(handler);
@@ -341,7 +346,7 @@ void Logger::load_xml_config(const std::string& config) noexcept
                 if (_path.empty())
                     return;
                 rc_ptr<CircleFileBySizeLogHandler> handler = rc_new<CircleFileBySizeLogHandler>(
-                            _path, _file_prefix, _circle, _max_file_size, _cross_file);
+                    _path, _file_prefix, _circle, _max_file_size, _cross_file);
                 handler->set_flush_mask(_flush_mask);
                 handler->get_filter().swap(&_filter);
                 Logger::get_instance()->add_handler(handler);
@@ -351,7 +356,7 @@ void Logger::load_xml_config(const std::string& config) noexcept
                 if (_path.empty())
                     return;
                 rc_ptr<CircleFileByTimeLogHandler> handler = rc_new<CircleFileByTimeLogHandler>(
-                            _path, _file_prefix, _circle);
+                    _path, _file_prefix, _time_format.c_str(), _circle);
                 handler->set_flush_mask(_flush_mask);
                 handler->get_filter().swap(&_filter);
                 Logger::get_instance()->add_handler(handler);
@@ -373,7 +378,8 @@ void Logger::load_xml_config(const std::string& config) noexcept
         std::string _type;
         std::string _path;
         std::string _file_prefix;
-        bool _append = false;
+        std::string _time_format;
+        bool _trunc = false;
         bool _close_syslog_on_exit = false;
         bool _cross_file = true;
         size_t _circle = 10;
@@ -387,7 +393,7 @@ void Logger::load_xml_config(const std::string& config) noexcept
     public:
         LoggerHandler(FilterHandler *filter_xml_handler, HandlerHandler *handler_xml_handler)
             : XmlElementHandler(HANDLE_CHILD), _filter_xml_handler(filter_xml_handler),
-            _handler_xml_handler(handler_xml_handler)
+              _handler_xml_handler(handler_xml_handler)
         {
             assert(nullptr != filter_xml_handler && nullptr != handler_xml_handler);
         }

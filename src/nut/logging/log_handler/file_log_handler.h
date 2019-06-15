@@ -15,9 +15,9 @@ class NUT_API FileLogHandler : public LogHandler
 {
 public:
     /**
-     * @param append 是否是追加模式。追加模式日志文件支持并发写
+     * @param trunc 先清空日志文件，然后再写入
      */
-    explicit FileLogHandler(const char *file, bool append = true) noexcept;
+    explicit FileLogHandler(const char *file, bool trunc = false) noexcept;
 
     virtual void handle_log(const LogRecord& rec) noexcept override;
 

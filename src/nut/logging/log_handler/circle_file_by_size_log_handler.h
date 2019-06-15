@@ -22,7 +22,7 @@ public:
      * 按照文件大小循环
      *
      * @param dir_path 日志文件所在的目录
-     * @param prefix 日志文件前缀
+     * @param prefix 日志文件名前缀
      * @param circle_size 循环周期(最多日志文件数)
      * @param max_file_size 最大文件大小
      * @param cross_file 单次启动记录的日志允许跨越多个文件
@@ -37,8 +37,8 @@ private:
     CircleFileBySizeLogHandler(const CircleFileBySizeLogHandler&) = delete;
     CircleFileBySizeLogHandler& operator=(const CircleFileBySizeLogHandler&) = delete;
 
-    // 重新打开输出流
-    void reopen(const char *file) noexcept;
+    // 打开文件输出流
+    void open(const char *file) noexcept;
 
     // 新一轮循环
     void circle_once() noexcept;

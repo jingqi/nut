@@ -10,24 +10,56 @@
 #include "circle_file_by_size_log_handler.h"
 
 
-// 数字序列长度
-#define SEQ_NUM_LENGTH 5
-// 数字序列周期
-#define SEQ_ROUND ((long) ::pow(10, SEQ_NUM_LENGTH))
-
 namespace nut
 {
 
-CircleFileBySizeLogHandler::CircleFileBySizeLogHandler(const std::string& dir_path,
-        const std::string& prefix, size_t circle_size, size_t max_file_size, bool cross_file) noexcept
+// 计算十进制数字长度
+static size_t decimal_digit_count(size_t num)
+{
+    size_t ret = 0;
+    while (num > 0)
+    {
+        ++ret;
+        num /= 10;
+    }
+    return 0 == ret ? 1 : ret;
+}
+
+// 格式化序号到指定长度
+//  e.g. format_seq(12, 4) -> "0012"
+static std::string format_seq(size_t seq, size_t len)
+{
+    std::string ret;
+    const std::string s = ulong_to_str(seq);
+    for (size_t i = s.length(); i < len; ++i)
+        ret.push_back('0');
+    ret += s;
+    return ret;
+}
+
+// 判断字串是否全是有数字组成
+static bool is_all_digits(const std::string& s, size_t start, size_t len)
+{
+    for (size_t i = start; i < start + len; ++i)
+    {
+        const char c = s.at(i);
+        if (c < '0' || c > '9')
+            return false;
+    }
+    return true;
+}
+
+CircleFileBySizeLogHandler::CircleFileBySizeLogHandler(
+    const std::string& dir_path, const std::string& prefix, size_t circle_size,
+    size_t max_file_size, bool cross_file) noexcept
     : _dir_path(dir_path), _file_prefix(prefix), _circle_size(circle_size),
       _max_file_size(max_file_size), _cross_file(cross_file)
 {
-    assert(0 < _circle_size && _circle_size <= SEQ_ROUND);
+    assert(_circle_size > 0);
     circle_once();
 }
 
-void CircleFileBySizeLogHandler::reopen(const char *file) noexcept
+void CircleFileBySizeLogHandler::open(const char *file) noexcept
 {
     assert(nullptr != file);
 
@@ -36,9 +68,7 @@ void CircleFileBySizeLogHandler::reopen(const char *file) noexcept
     else
         _file_size = 0;
 
-    _ofs.close();
-    _ofs.clear();
-    _ofs.open(file, std::ios::app);
+    _ofs.open(file, std::ios::app); // NOTE append 模式打开的文件支持并发写入
 
     if (_file_size > 0)
     {
@@ -52,91 +82,72 @@ void CircleFileBySizeLogHandler::reopen(const char *file) noexcept
 
 void CircleFileBySizeLogHandler::circle_once() noexcept
 {
-    // 关闭之前打开的文件, 强制刷新磁盘, 避免获取文件大小的结果不准确
+    // 关闭文件, 强制写入到文件系统, 避免 get_size() 的结果不准确
     _ofs.close();
+    _ofs.clear();
 
-    // 找到相同目录下所有的日志文件
-    const std::string log_suffix(".log");
+    // 找到目录下所有的日志文件
+    const size_t prefix_len = _file_prefix.length();
+    const size_t digits_len = decimal_digit_count(_circle_size - 1);
+    const std::string log_suffix = ".log";
     const std::vector<std::string> file_names = OS::listdir(_dir_path, false, true, true);
     std::vector<std::string> logfile_names;
-    const size_t prefix_len = _file_prefix.length();
     for (size_t i = 0, sz = file_names.size(); i < sz; ++i)
     {
         const std::string& name = file_names.at(i);
 
-        // 前缀、后缀
-        if (!starts_with(name, _file_prefix))
-            continue;
-        if (!ends_with(name, log_suffix))
+        // 名称长度
+        if (name.length() != prefix_len + digits_len + log_suffix.length())
             continue;
 
-        // 名称长度
-        if (name.length() != prefix_len + SEQ_NUM_LENGTH + log_suffix.length())
-            return;
+        // 匹配前缀、后缀
+        if (!starts_with(name, _file_prefix) || !ends_with(name, log_suffix))
+            continue;
 
         // 数字序列验证
-        bool all_num = true;
-        for (size_t j = 0; j < SEQ_NUM_LENGTH; ++j)
-        {
-            const char c = name.at(prefix_len + j);
-            if (c < '0' || c > '9')
-            {
-                all_num = false;
-                break;
-            }
-        }
-        if (!all_num)
+        if (!is_all_digits(name, prefix_len, digits_len))
             continue;
 
         logfile_names.push_back(name);
     }
 
-    // 检查最后一个文件是否能够容纳更多日志
+    // 检查 0 号文件是否能够容纳更多日志
+    const std::string name_zero = _file_prefix + format_seq(0, digits_len) + log_suffix;
+    const std::string path_zero = Path::join(_dir_path, name_zero);
+    const bool need_shift = (
+        Path::exists(path_zero) && Path::get_size(path_zero) >= _max_file_size);
+
+    // 删除多余的日志文件，重命名日志文件
     std::sort(logfile_names.begin(), logfile_names.end());
-    long next_seq = 0;
-    std::string next_file_name; // If non-empty, use the last file
-    if (!logfile_names.empty())
+    for (ssize_t i = logfile_names.size() - 1; i >= 0; --i)
     {
-        const std::string& last_name = *logfile_names.rbegin();
-        next_seq = str_to_long(last_name.substr(prefix_len, SEQ_NUM_LENGTH)) + 1;
+        const std::string& name = logfile_names.at(i);
+        const std::string& ori_path = Path::join(_dir_path, name);
 
-        const long long filesz = Path::get_size(Path::join(_dir_path, last_name));
-        if (filesz < _max_file_size)
-            next_file_name = last_name;
-    }
+        size_t seq = (size_t) str_to_long(name.substr(prefix_len, digits_len));
+        if (need_shift)
+            ++seq; // Next seq number
 
-    // 删除多余的日志文件
-    size_t keep_count = _circle_size - (next_file_name.empty() ? 1 : 0);
-    if (next_seq >= SEQ_ROUND)
-    {
-        // 超过了最大数目，全部清空
-        keep_count = 0;
-        next_seq = 0;
-    }
-    if (logfile_names.size() > keep_count)
-    {
-        for (size_t i = 0, del_count = logfile_names.size() - keep_count;
-             i < del_count; ++i)
+        // 删除多余的日志文件
+        if (seq >= _circle_size)
         {
-            const std::string full_path = Path::join(_dir_path, logfile_names.at(i));
-            OS::removefile(full_path);
+            OS::removefile(ori_path);
+            continue;
         }
-    }
 
-    // 构建日志文件名
-    if (next_file_name.empty())
-    {
-        next_file_name = _file_prefix;
-        const std::string seq_num = long_to_str(next_seq);
-        for (size_t i = seq_num.length(); i < SEQ_NUM_LENGTH; ++i)
-            next_file_name += '0';
-        next_file_name += seq_num;
-        next_file_name += log_suffix;
+        // 文件名中的序号加1
+        if (need_shift)
+        {
+            const std::string new_name = _file_prefix + format_seq(seq, digits_len) + log_suffix;
+            OS::rename(ori_path, Path::join(_dir_path, new_name));
+            continue;
+        }
+
+        break;
     }
 
     // 打开日志文件
-    const std::string full_path = Path::join(_dir_path, next_file_name);
-    reopen(full_path.c_str());
+    open(path_zero.c_str());
 }
 
 void CircleFileBySizeLogHandler::handle_log(const LogRecord& rec) noexcept

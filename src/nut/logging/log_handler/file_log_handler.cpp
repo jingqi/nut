@@ -1,22 +1,29 @@
 ﻿
 #include "../../platform/path.h"
+#include "../../platform/os.h"
 #include "file_log_handler.h"
 
 
 namespace nut
 {
 
-FileLogHandler::FileLogHandler(const char *file, bool append) noexcept
-    : _ofs(file, (append ? std::ios::app : std::ios::trunc))
+FileLogHandler::FileLogHandler(const char *file, bool trunc) noexcept
 {
-    if (append)
+    assert(nullptr != file);
+
+    const bool exists = Path::exists(file);
+    const bool need_newline = (!trunc && exists && Path::get_size(file) > 0);
+
+    if (trunc && exists)
+        OS::removefile(file);
+
+    // NOTE 'O_APPEND' 模式打开的文件支持并发写
+    _ofs.open(file, std::ios::app);
+
+    if (!trunc)
     {
-        if (Path::exists(file))
-        {
-            const long long file_size = Path::get_size(file);
-            if (file_size > 0)
-                _ofs << "\n\n";
-        }
+        if (need_newline)
+            _ofs << "\n\n";
         _ofs << "------------- ---------------- ---------------\n";
     }
 }

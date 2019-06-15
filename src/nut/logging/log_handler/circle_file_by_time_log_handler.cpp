@@ -1,14 +1,6 @@
 ﻿
 #include <algorithm> // for std::sort()
 
-#include "../../platform/platform.h"
-
-#if NUT_PLATFORM_OS_WINDOWS
-#   include <windows.h> // for GetCurrentProcessId()
-#else
-#   include <unistd.h> // for getpid()
-#endif
-
 #include "../../platform/os.h"
 #include "../../platform/path.h"
 #include "../../time/date_time.h"
@@ -21,11 +13,12 @@ namespace nut
 {
 
 CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(
-        const std::string& dir_path, const std::string& prefix, size_t circle_size) noexcept
+    const std::string& dir_path, const std::string& prefix,
+    const char *time_format, size_t circle_size) noexcept
 {
-    assert(circle_size > 0);
+    assert(nullptr != time_format && circle_size > 0);
 
-    // 找到相同目录下所有的日志文件
+    // 找到目录下所有的日志文件
     const std::string log_suffix(".log");
     const std::vector<std::string> file_names = OS::listdir(dir_path, false, true, true);
     std::vector<std::string> logfile_names;
@@ -33,10 +26,8 @@ CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(
     {
         const std::string& name = file_names.at(i);
 
-        // 前缀、后缀
-        if (!starts_with(name, prefix))
-            continue;
-        if (!ends_with(name, log_suffix))
+        // 匹配前缀、后缀
+        if (!starts_with(name, prefix) || !ends_with(name, log_suffix))
             continue;
 
         logfile_names.push_back(name);
@@ -56,13 +47,7 @@ CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(
 
     // 构建日志文件名
     std::string file_name(prefix);
-    file_name += DateTime::now().format_time("%Y%m%d-%H%M%S-");
-#if NUT_PLATFORM_OS_WINDOWS
-    long pid = ::GetCurrentProcessId();
-#else
-    pid_t pid = ::getpid();
-#endif
-    file_name += llong_to_str(pid);
+    file_name += DateTime::now().format_time(time_format);
     file_name += log_suffix;
 
     const std::string full_path = Path::join(dir_path, file_name);

@@ -260,9 +260,6 @@ void DateTime::to_timespec(struct timespec *tv) const noexcept
 }
 #endif
 
-/**
- * 获得并存储当前时刻
- */
 void DateTime::set_to_now() noexcept
 {
     // NOTE 各个墙上时间函数信息:
@@ -289,77 +286,42 @@ DateTime DateTime::now() noexcept
     return ret;
 }
 
-/**
- * 获得年份
- *
- * @return 范围 year number; 2009 for the year of 2009
- */
 uint32_t DateTime::get_year() const noexcept
 {
     check_time_info();
     return static_cast<uint32_t>(_time_info.tm_year + 1900);
 }
 
-/**
- * 获得月数
- *
- * @return 范围 [1,12];  1 for Junuary
- */
 uint8_t DateTime::get_month() const noexcept
 {
     check_time_info();
     return static_cast<uint8_t>(_time_info.tm_mon + 1);
 }
 
-/**
- * 获得一年中的天数
- *
- * @return 范围 [0,365]; 0 for the first day in a year
- */
 uint16_t DateTime::get_yday() const noexcept
 {
     check_time_info();
     return static_cast<uint16_t>(_time_info.tm_yday);
 }
 
-/**
- * 获得月之中的日子数
- *
- * @return 范围 [1,31];  1 for the first day in a month
- */
 uint8_t DateTime::get_mday() const noexcept
 {
     check_time_info();
     return static_cast<uint8_t>(_time_info.tm_mday);
 }
 
-/**
- * 获得星期中的天数
- *
- * @return 范围 [0,6];   0 for Sunday
- */
 uint8_t DateTime::get_wday() const noexcept
 {
     check_time_info();
     return static_cast<uint8_t>(_time_info.tm_wday);
 }
 
-/**
- * 获得小时数
- *
- * @return 范围 [0,23]
- */
 uint8_t DateTime::get_hour() const noexcept
 {
     check_time_info();
     return static_cast<uint8_t>(_time_info.tm_hour);
 }
 
-/**
- * 获得分钟数
- *
- * @return 范围 [0,59]
- */
 uint8_t DateTime::get_minute() const noexcept
 {
     check_time_info();
@@ -469,10 +431,6 @@ static std::string format_decimal_tails(const char *format, double decimal) noex
     return ret;
 }
 
-/**
- * format time string
- * for example : "%m-%d %H:%M" -> "2-28 8:57"
- */
 std::string DateTime::format_time(const char *format) const noexcept
 {
     assert(nullptr != format);
