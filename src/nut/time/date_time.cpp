@@ -36,9 +36,9 @@ DateTime::DateTime(time_t s, long ns) noexcept
 }
 
 DateTime::DateTime(uint32_t year, uint8_t month, uint8_t day,
-                   uint8_t hour, uint8_t min, uint8_t sec, uint32_t nsec) noexcept
+                   uint8_t hour, uint8_t min, uint8_t sec, uint32_t nsec, bool utc) noexcept
 {
-    set(year, month, day, hour, min, sec, nsec);
+    set(year, month, day, hour, min, sec, nsec, utc);
 }
 
 void DateTime::normalize() noexcept
@@ -66,11 +66,24 @@ void DateTime::normalize() noexcept
     }
 }
 
-void DateTime::check_time_info() const noexcept
+void DateTime::ensure_time_info(bool utc) const noexcept
 {
-    if (!_time_info_dirty)
+    if (!_time_info_dirty && _time_info_utc == utc)
         return;
-    _time_info = *::localtime(&_seconds);
+
+#if NUT_PLATFORM_OS_WINDOWS
+    if (utc)
+        ::gmtime_s(&_time_info, &_seconds);
+    else
+        ::localtime_s(&_time_info, &_seconds);
+#else
+    if (utc)
+        ::gmtime_r(&_seconds, &_time_info);
+    else
+        ::localtime_r(&_seconds, &_time_info);
+#endif
+
+    _time_info_utc = utc;
     _time_info_dirty = false;
 }
 
@@ -194,7 +207,7 @@ void DateTime::set(time_t s, long ns) noexcept
 }
 
 void DateTime::set(uint32_t year, uint8_t month, uint8_t day, uint8_t hour,
-                   uint8_t min, uint8_t sec, uint32_t nsec) noexcept
+                   uint8_t min, uint8_t sec, uint32_t nsec, bool utc) noexcept
 {
     ::memset(&_time_info, 0, sizeof(_time_info));
     _time_info.tm_year = year - 1900;
@@ -204,9 +217,18 @@ void DateTime::set(uint32_t year, uint8_t month, uint8_t day, uint8_t hour,
     _time_info.tm_min = min;
     _time_info.tm_sec = sec + nsec / NSECS_PER_SEC;
     _time_info.tm_isdst = -1;
+    _time_info_utc = utc;
     _time_info_dirty = false;
 
-    _seconds = ::mktime(&_time_info); /* '_time_info' is normalized also */
+    if (utc)
+#if NUT_PLATFORM_OS_WINDOWS
+        _seconds = ::_mkgmtime(&_time_info);
+#else
+        _seconds = ::timegm(&_time_info); /* '_time_info' is normalized also */
+#endif
+    else
+        _seconds = ::mktime(&_time_info);
+
     _nanoseconds = nsec % NSECS_PER_SEC;
 
     /* 检查处理输入的结果 */
@@ -214,16 +236,16 @@ void DateTime::set(uint32_t year, uint8_t month, uint8_t day, uint8_t hour,
 }
 
 #if NUT_PLATFORM_OS_WINDOWS
-void DateTime::set(const SYSTEMTIME& wtm) noexcept
+void DateTime::set(const SYSTEMTIME& wtm, bool utc) noexcept
 {
     set(wtm.wYear, wtm.wMonth, wtm.wDay, wtm.wHour, wtm.wMinute, wtm.wSecond,
-        wtm.wMilliseconds * NSECS_PER_MSEC);
+        wtm.wMilliseconds * NSECS_PER_MSEC, utc);
 }
 
-void DateTime::to_wtm(SYSTEMTIME *wtm) const noexcept
+void DateTime::to_wtm(SYSTEMTIME *wtm, bool utc) const noexcept
 {
     assert(nullptr != wtm);
-    check_time_info();
+    ensure_time_info(utc);
     ::memset(wtm, 0, sizeof(SYSTEMTIME));
     wtm->wYear = _time_info.tm_year + 1900;
     wtm->wMonth = _time_info.tm_mon + 1;
@@ -271,7 +293,7 @@ void DateTime::set_to_now() noexcept
 #if NUT_PLATFORM_OS_WINDOWS
     SYSTEMTIME wtm;
     ::GetLocalTime(&wtm);
-    set(wtm);
+    set(wtm, false);
 #else
     struct timespec tv;
     ::clock_gettime(CLOCK_REALTIME, &tv);
@@ -286,51 +308,51 @@ DateTime DateTime::now() noexcept
     return ret;
 }
 
-uint32_t DateTime::get_year() const noexcept
+uint32_t DateTime::get_year(bool utc) const noexcept
 {
-    check_time_info();
+    ensure_time_info(utc);
     return static_cast<uint32_t>(_time_info.tm_year + 1900);
 }
 
-uint8_t DateTime::get_month() const noexcept
+uint8_t DateTime::get_month(bool utc) const noexcept
 {
-    check_time_info();
+    ensure_time_info(utc);
     return static_cast<uint8_t>(_time_info.tm_mon + 1);
 }
 
-uint16_t DateTime::get_yday() const noexcept
+uint16_t DateTime::get_yday(bool utc) const noexcept
 {
-    check_time_info();
+    ensure_time_info(utc);
     return static_cast<uint16_t>(_time_info.tm_yday);
 }
 
-uint8_t DateTime::get_mday() const noexcept
+uint8_t DateTime::get_mday(bool utc) const noexcept
 {
-    check_time_info();
+    ensure_time_info(utc);
     return static_cast<uint8_t>(_time_info.tm_mday);
 }
 
-uint8_t DateTime::get_wday() const noexcept
+uint8_t DateTime::get_wday(bool utc) const noexcept
 {
-    check_time_info();
+    ensure_time_info(utc);
     return static_cast<uint8_t>(_time_info.tm_wday);
 }
 
-uint8_t DateTime::get_hour() const noexcept
+uint8_t DateTime::get_hour(bool utc) const noexcept
 {
-    check_time_info();
+    ensure_time_info(utc);
     return static_cast<uint8_t>(_time_info.tm_hour);
 }
 
-uint8_t DateTime::get_minute() const noexcept
+uint8_t DateTime::get_minute(bool utc) const noexcept
 {
-    check_time_info();
+    ensure_time_info(utc);
     return static_cast<uint8_t>(_time_info.tm_min);
 }
 
-uint8_t DateTime::get_second() const noexcept
+uint8_t DateTime::get_second(bool utc) const noexcept
 {
-    check_time_info();
+    ensure_time_info(utc);
     return static_cast<uint8_t>(_time_info.tm_sec);
 }
 
@@ -355,26 +377,26 @@ double DateTime::to_double() const noexcept
 }
 
 // for example : "2007-3-12"
-std::string DateTime::get_date_str() const noexcept
+std::string DateTime::get_date_str(bool utc) const noexcept
 {
-    return format_time("%Y-%m-%d");
+    return format_time("%Y-%m-%d", utc);
 }
 
 // for example : "12:34:45.572936192"
-std::string DateTime::get_clock_str() const noexcept
+std::string DateTime::get_clock_str(bool utc) const noexcept
 {
-    return format_time("%H:%M:%S.%9f");
+    return format_time("%H:%M:%S.%9f", utc);
 }
 
 // for example : "2007-3-4 8:33:57.762917263"
-std::string DateTime::get_datetime_str() const noexcept
+std::string DateTime::get_datetime_str(bool utc) const noexcept
 {
-    return get_date_str() + " " + get_clock_str();
+    return get_date_str(utc) + " " + get_clock_str(utc);
 }
 
 std::string DateTime::to_string() const noexcept
 {
-    return get_datetime_str();
+    return get_datetime_str(false);
 }
 
 // 获取浮点数小数部分，例如 "%.3f", 0.1234 -> 123
@@ -431,13 +453,13 @@ static std::string format_decimal_tails(const char *format, double decimal) noex
     return ret;
 }
 
-std::string DateTime::format_time(const char *format) const noexcept
+std::string DateTime::format_time(const char *format, bool utc) const noexcept
 {
     assert(nullptr != format);
     if (0 == format[0])
         return "";
 
-    check_time_info();
+    ensure_time_info(utc);
 
     // 先格式化浮点数部分，因为 mac 下的 strftime() 会错误处理 %f
     const double f = _nanoseconds / (double) NSECS_PER_SEC;

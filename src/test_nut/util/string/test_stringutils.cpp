@@ -37,23 +37,15 @@ class TestStringUtils : public TestFixture
 
     void test_format()
     {
-        // std::string tmp = format("%d,%s,%c,%f", 1, "am", 's', 1.23);
-        // NUT_TA(tmp == "1,am,s,1.230000");
-
         NUT_TA(format("%d,%s,%c,%f", 1, "am", 's', 1.23) == "1,am,s,1.230000");
 
-        // std::wstring wtmp;
-        // wcout << format(L"%d,%S,%c,%f", 1, L"am", L's', 1.23) << endl;
-#if NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MACOS
-        //wtmp = format(L"%d,%S,%C,%f", 1, L"am", L's', 1.23);
-        //NUT_TA(wtmp == L"1,am,s,1.230000");
-
+#if NUT_PLATFORM_CC_VC
+        NUT_TA(format(L"%d,%s,%c,%f", 1, L"am", L's', 1.23) == L"1,am,s,1.230000");
+#elif NUT_PLATFORM_OS_LINUX || NUT_PLATFORM_OS_MACOS
+        // wchar_t 格式化字符串要用 %S， 格式化字符要用 %C
         NUT_TA(format(L"%d,%S,%C,%f", 1, L"am", L's', 1.23) == L"1,am,s,1.230000");
 #else
-        // wtmp = format(L"%d,%ls,%c,%f", 1, L"am", L's', 1.23);
-        // NUT_TA(wtmp == L"1,am,s,1.230000");
-
-        // wchar_t* 格式化要用 %S 或者 %ls
+        // wchar_t 格式化字符串要用 %S 或者 %ls
         NUT_TA(format(L"%d,%S,%c,%f", 1, L"am", L's', 1.23) == L"1,am,s,1.230000");
 #endif
     }
