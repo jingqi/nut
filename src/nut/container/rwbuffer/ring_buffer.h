@@ -66,7 +66,7 @@ public:
     size_t skip_read(size_t len) noexcept;
 
     /**
-     * 返回可读指针
+     * 获取可读数据的指针
      *
      * @return 0 所有指针都无效, readable_size() == 0
      *         1 第一个指针有效
@@ -101,7 +101,7 @@ public:
     size_t skip_write(size_t len) noexcept;
 
     /**
-     * 返回可写指针
+     * 获取可写数据的指针
      *
      * @return 0 所有指针都无效, writable_size() == 0
      *         1 第一个指针有效

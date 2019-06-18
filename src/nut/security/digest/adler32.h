@@ -18,6 +18,7 @@ public:
 
     void reset() noexcept;
 
+    void update(uint8_t byte) noexcept;
     void update(const void *data, size_t len) noexcept;
 
     uint32_t digest() const noexcept;
@@ -37,9 +38,29 @@ public:
 
     void initialize() noexcept;
 
+    void update(uint8_t byte) noexcept;
     void update(const void *data, size_t len) noexcept;
 
     uint32_t get_result() const noexcept;
+
+    /**
+     * 总数据数
+     */
+    size_t get_data_size() const noexcept;
+
+    /**
+     * 获取滚动窗口中的数据
+     *
+     * @param data_ptr1 第一段数据
+     * @param len_ptr1  第一段数据长度
+     * @param data_ptr2 第二段数据
+     * @param len_ptr2  第二段数据长度
+     * @return 0 没有数据
+     *         1 仅第一个段数据有效
+     *         2 第一段、第二段数据都有效
+     */
+    size_t get_window_data(const void **data_ptr1, size_t *len_ptr1,
+                           const void **data_ptr2, size_t *len_ptr2) const noexcept;
 
 private:
     uint32_t _result = 1;

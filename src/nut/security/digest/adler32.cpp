@@ -16,6 +16,11 @@ void Adler32::reset() noexcept
     _result = 1;
 }
 
+void Adler32::update(uint8_t byte) noexcept
+{
+    update(&byte, 1);
+}
+
 void Adler32::update(const void *data, size_t len) noexcept
 {
     assert(nullptr != data || len <= 0);
@@ -54,6 +59,11 @@ void RollingAdler32::initialize() noexcept
     _count = 0;
 }
 
+void RollingAdler32::update(uint8_t byte) noexcept
+{
+    update(&byte, 1);
+}
+
 void RollingAdler32::update(const void *data, size_t len) noexcept
 {
     assert(nullptr != data || len <= 0);
@@ -80,6 +90,50 @@ void RollingAdler32::update(const void *data, size_t len) noexcept
 uint32_t RollingAdler32::get_result() const noexcept
 {
     return _result;
+}
+
+size_t RollingAdler32::get_data_size() const noexcept
+{
+    return _count;
+}
+
+size_t RollingAdler32::get_window_data(const void **data_ptr1, size_t *len_ptr1,
+                                       const void **data_ptr2, size_t *len_ptr2) const noexcept
+{
+    if (nullptr != data_ptr1)
+        *data_ptr1 = nullptr;
+    if (nullptr != len_ptr1)
+        *len_ptr1 = 0;
+    if (nullptr != data_ptr2)
+        *data_ptr2 = nullptr;
+    if (nullptr != len_ptr2)
+        *len_ptr2 = 0;
+
+    if (0 == _count)
+        return 0;
+
+    if (_count <= _window_size)
+    {
+        if (nullptr != data_ptr1)
+            *data_ptr1 = _buf;
+        if (nullptr != len_ptr1)
+            *len_ptr1 = _count;
+        return 1;
+    }
+
+    const size_t rpos = _count % _window_size;
+    if (nullptr != data_ptr1)
+        *data_ptr1 = _buf + rpos;
+    if (nullptr != len_ptr1)
+        *len_ptr1 = _window_size - rpos;
+    if (0 == rpos)
+        return 1;
+
+    if (nullptr != data_ptr2)
+        *data_ptr2 = _buf;
+    if (nullptr != len_ptr2)
+        *len_ptr2 = rpos;
+    return 2;
 }
 
 }
