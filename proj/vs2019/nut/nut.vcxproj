@@ -217,7 +217,7 @@
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\stamped_ptr.h" />
     <ClInclude Include="..\..\..\src\nut\threading\priority_thread_pool.h" />
     <ClInclude Include="..\..\..\src\nut\threading\sync\dummy_lock.h" />
-    <ClInclude Include="..\..\..\src\nut\threading\sync\guard.h" />
+    <ClInclude Include="..\..\..\src\nut\threading\sync\nanolock.h" />
     <ClInclude Include="..\..\..\src\nut\threading\sync\rwlock.h" />
     <ClInclude Include="..\..\..\src\nut\threading\sync\sem.h" />
     <ClInclude Include="..\..\..\src\nut\threading\sync\spinlock.h" />
@@ -302,6 +302,7 @@
     <ClCompile Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_record.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_retire_list.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\priority_thread_pool.cpp" />
+    <ClCompile Include="..\..\..\src\nut\threading\sync\nanolock.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\sync\rwlock.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\sync\sem.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\sync\spinlock.cpp" />

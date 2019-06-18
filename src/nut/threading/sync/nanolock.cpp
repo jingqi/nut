@@ -1,0 +1,43 @@
+﻿
+#include <assert.h>
+
+#include "../../platform/platform.h"
+#if NUT_PLATFORM_OS_WINDOWS
+#   include <windows.h> // for ::Sleep()
+#else
+#   include <unistd.h> // for ::usleep()
+#endif
+
+#include "nanolock.h"
+
+
+namespace nut
+{
+
+void NanoLock::lock() noexcept
+{
+    unsigned trycount = 0;
+    while (_locked.test_and_set(std::memory_order_acquire))
+    {
+        // 多次尝试失败，则放弃当前 CPU 时间片
+        ++trycount;
+        if (0 == (trycount & 0x0f))
+#if NUT_PLATFORM_OS_WINDOWS
+            ::Sleep(0);
+#else
+            ::usleep(0);
+#endif
+    }
+}
+
+bool NanoLock::try_lock() noexcept
+{
+    return !_locked.test_and_set(std::memory_order_acquire);
+}
+
+void NanoLock::unlock() noexcept
+{
+    _locked.clear(std::memory_order_release);
+}
+
+}

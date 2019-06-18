@@ -24,8 +24,8 @@ public:
         const int ret = _ref_count.fetch_sub(1, std::memory_order_release) - 1;
         if (0 == ret)
         {
-            // NOTE Object will be deleted, ensure all modificiations in other
-            //      threads of the object is visible in current thread
+            // NOTE Object is going to be deleted, ensure all modificiations in
+            //      other threads are visible for current thread
             std::atomic_thread_fence(std::memory_order_acquire);
         }
         return ret;

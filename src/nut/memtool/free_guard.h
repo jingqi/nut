@@ -31,11 +31,6 @@ public:
         _ptr = p;
     }
 
-    void clear() noexcept
-    {
-        _ptr = nullptr;
-    }
-
     void release() noexcept
     {
         if (nullptr != _ptr)
@@ -72,11 +67,6 @@ public:
     void set(T *p) noexcept
     {
         _ptr = p;
-    }
-
-    void clear() noexcept
-    {
-        _ptr = nullptr;
     }
 
     void release() noexcept

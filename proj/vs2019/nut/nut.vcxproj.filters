@@ -199,9 +199,6 @@
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_stack.h">
       <Filter>nut\threading\lockfree</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\threading\sync\guard.h">
-      <Filter>nut\threading\sync</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\threading\sync\rwlock.h">
       <Filter>nut\threading\sync</Filter>
     </ClInclude>
@@ -469,6 +466,9 @@
     <ClInclude Include="..\..\..\src\nut\container\tree\trie_tree.h">
       <Filter>nut\container\tree</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\sync\nanolock.h">
+      <Filter>nut\threading\sync</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">
@@ -710,6 +710,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\debugging\exception.cpp">
       <Filter>nut\debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\threading\sync\nanolock.cpp">
+      <Filter>nut\threading\sync</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

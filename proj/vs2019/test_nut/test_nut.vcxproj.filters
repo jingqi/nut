@@ -70,6 +70,9 @@
     <Filter Include="test\time">
       <UniqueIdentifier>{6ef1dc66-03cb-4847-944f-a8a5966f06c8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="test\threading\sync">
+      <UniqueIdentifier>{25093e5b-e53b-46bc-93c1-a4f5a60d352e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\test_nut\container\bytestream\test_bytearraystream.cpp">
@@ -257,6 +260,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\test_nut\container\tree\test_rbtree.cpp">
       <Filter>test\container\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_nut\threading\sync\test_nanolock.cpp">
+      <Filter>test\threading\sync</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

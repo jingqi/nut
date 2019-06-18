@@ -28,6 +28,9 @@
 		2E3EA4C0219DBCEB00E55D46 /* test_stamped_ptr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E3EA4BC219DBCEB00E55D46 /* test_stamped_ptr.cpp */; };
 		2E3EA4C1219DBCEB00E55D46 /* test_concurrent_stack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E3EA4BD219DBCEB00E55D46 /* test_concurrent_stack.cpp */; };
 		2E3EA4C2219DBCEB00E55D46 /* test_concurrent_queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E3EA4BE219DBCEB00E55D46 /* test_concurrent_queue.cpp */; };
+		2E449EB622B951C4002F3058 /* nanolock.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E449EB422B951C4002F3058 /* nanolock.h */; };
+		2E449EB722B951C4002F3058 /* nanolock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E449EB522B951C4002F3058 /* nanolock.cpp */; };
+		2E449EBA22B95202002F3058 /* test_nanolock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E449EB922B95202002F3058 /* test_nanolock.cpp */; };
 		2E53217122B15ABD00CEC3F7 /* exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E53217022B15ABD00CEC3F7 /* exception.cpp */; };
 		2E538E9E21975A220060FED9 /* comparable.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E538E9D21975A220060FED9 /* comparable.h */; };
 		2E538EA021975A3D0060FED9 /* test_comparable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E538E9F21975A3D0060FED9 /* test_comparable.cpp */; };
@@ -321,6 +324,9 @@
 		2E3EA4BC219DBCEB00E55D46 /* test_stamped_ptr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_stamped_ptr.cpp; path = ../../../src/test_nut/threading/lockfree/test_stamped_ptr.cpp; sourceTree = "<group>"; };
 		2E3EA4BD219DBCEB00E55D46 /* test_concurrent_stack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_concurrent_stack.cpp; path = ../../../src/test_nut/threading/lockfree/test_concurrent_stack.cpp; sourceTree = "<group>"; };
 		2E3EA4BE219DBCEB00E55D46 /* test_concurrent_queue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_concurrent_queue.cpp; path = ../../../src/test_nut/threading/lockfree/test_concurrent_queue.cpp; sourceTree = "<group>"; };
+		2E449EB422B951C4002F3058 /* nanolock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = nanolock.h; path = ../../../src/nut/threading/sync/nanolock.h; sourceTree = "<group>"; };
+		2E449EB522B951C4002F3058 /* nanolock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = nanolock.cpp; path = ../../../src/nut/threading/sync/nanolock.cpp; sourceTree = "<group>"; };
+		2E449EB922B95202002F3058 /* test_nanolock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_nanolock.cpp; path = ../../../src/test_nut/threading/sync/test_nanolock.cpp; sourceTree = "<group>"; };
 		2E5217852146E52F009F80AC /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = nut/Info.plist; sourceTree = "<group>"; };
 		2E53217022B15ABD00CEC3F7 /* exception.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = exception.cpp; path = ../../../src/nut/debugging/exception.cpp; sourceTree = "<group>"; };
 		2E538E9D21975A220060FED9 /* comparable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = comparable.h; path = ../../../src/nut/container/comparable.h; sourceTree = "<group>"; };
@@ -877,6 +883,8 @@
 		2E1927681AD900E100FDFFA6 /* sync */ = {
 			isa = PBXGroup;
 			children = (
+				2E449EB522B951C4002F3058 /* nanolock.cpp */,
+				2E449EB422B951C4002F3058 /* nanolock.h */,
 				2EC93802217A4C73005D5285 /* dummy_lock.h */,
 				2EE083E02146DD6E008E4587 /* rwlock.cpp */,
 				2EE083E42146DD6E008E4587 /* rwlock.h */,
@@ -1019,6 +1027,7 @@
 		2E1928051AD902BA00FDFFA6 /* threading */ = {
 			isa = PBXGroup;
 			children = (
+				2E449EB822B951E4002F3058 /* sync */,
 				2E1928081AD902CA00FDFFA6 /* lockfree */,
 				2E047C92217F5D8B00C10E14 /* test_priority_threadpool.cpp */,
 				2EE084BE2146DFF9008E4587 /* test_threading.cpp */,
@@ -1174,6 +1183,14 @@
 				2EE084802146DF07008E4587 /* test_skiplist.cpp */,
 			);
 			name = skiplist;
+			sourceTree = "<group>";
+		};
+		2E449EB822B951E4002F3058 /* sync */ = {
+			isa = PBXGroup;
+			children = (
+				2E449EB922B95202002F3058 /* test_nanolock.cpp */,
+			);
+			name = sync;
 			sourceTree = "<group>";
 		};
 		2E4D988B1DBF8EA900757198 /* rwbuffer */ = {
@@ -1333,6 +1350,7 @@
 				2EE083CE2146DD3D008E4587 /* free_guard.h in Headers */,
 				2EE083CB2146DD2B008E4587 /* sys_ma.h in Headers */,
 				2EE083072146DBA8008E4587 /* ring_buffer.h in Headers */,
+				2E449EB622B951C4002F3058 /* nanolock.h in Headers */,
 				2EE083CF2146DD3D008E4587 /* singleton.h in Headers */,
 				2EE0832B2146DC0C008E4587 /* lru_cache.h in Headers */,
 				2EE0843E2146DDF2008E4587 /* xml_dom.h in Headers */,
@@ -1608,6 +1626,7 @@
 				2EE084952146DF5D008E4587 /* test_logging.cpp in Sources */,
 				2E538EA021975A3D0060FED9 /* test_comparable.cpp in Sources */,
 				2E72DEE222900A460083E17E /* test_fft.cpp in Sources */,
+				2E449EBA22B95202002F3058 /* test_nanolock.cpp in Sources */,
 				2EE0848C2146DF3B008E4587 /* test_lru_cache.cpp in Sources */,
 				2EE084AF2146DFC4008E4587 /* test_adler32.cpp in Sources */,
 				2EE084A82146DF9F008E4587 /* test_endian.cpp in Sources */,
@@ -1662,6 +1681,7 @@
 				2EE0840A2146DDA2008E4587 /* prime.cpp in Sources */,
 				2EE083B42146DD0D008E4587 /* syslog_log_handler.cpp in Sources */,
 				2EE083A12146DCF0008E4587 /* log_record.cpp in Sources */,
+				2E449EB722B951C4002F3058 /* nanolock.cpp in Sources */,
 				2EE083482146DC7A008E4587 /* aes_cbc_pkcs5.cpp in Sources */,
 				2EE083C62146DD2B008E4587 /* scoped_gc.cpp in Sources */,
 				2EE0839A2146DCF0008E4587 /* logger.cpp in Sources */,

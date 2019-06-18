@@ -187,6 +187,7 @@
     <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_concurrent_queue.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_concurrent_stack.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_stamped_ptr.cpp" />
+    <ClCompile Include="..\..\..\src\test_nut\threading\sync\test_nanolock.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\threading\test_priority_threadpool.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\threading\test_threading.cpp" />
     <ClCompile Include="..\..\..\src\test_nut\threading\test_threadpool.cpp" />

@@ -9,6 +9,7 @@
 
 #include "../../numeric/word_array_integer/bit_op.h"
 #include "../../container/comparable.h"
+#include "../sync/nanolock.h"
 #include "stamped_ptr.h"
 #include "hazard_pointer/hp_record.h"
 #include "hazard_pointer/hp_retire_list.h"
@@ -646,7 +647,7 @@ private:
 
     void rehash(size_t expect_bss) noexcept
     {
-        std::unique_lock<std::mutex> guard(_rehash_lock, std::try_to_lock);
+        std::unique_lock<NanoLock> guard(_rehash_lock, std::try_to_lock);
         if (!guard.owns_lock())
             return;
 
@@ -687,7 +688,7 @@ private:
     std::atomic<size_t> _bucket_size_shift = ATOMIC_VAR_INIT(FIRST_TRUNK_SIZE_SHIFT);
     std::atomic<size_t> _size = ATOMIC_VAR_INIT(0);
 
-    std::mutex _rehash_lock;
+    NanoLock _rehash_lock;
 };
 
 }

@@ -9,6 +9,7 @@
 
 #include "../../nut_config.h"
 #include "../../platform/platform.h"
+#include "../../threading/sync/nanolock.h"
 #include "../../threading/sync/spinlock.h"
 #include "log_handler.h"
 
@@ -66,7 +67,7 @@ private:
     std::atomic<long long> _file_size = ATOMIC_VAR_INIT(0);
 
     // 文件操作锁
-    std::mutex _fileop_lock;
+    NanoLock _fileop_lock;
 
     // 输出目录
     const std::string _dir_path;

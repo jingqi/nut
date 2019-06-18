@@ -120,7 +120,7 @@ void CircleFileBySizeLogHandler::open_log_file(const std::string& file) noexcept
 void CircleFileBySizeLogHandler::circle_once() noexcept
 {
     // 只需要一个线程来处理
-    std::unique_lock<std::mutex> guard(_fileop_lock, std::try_to_lock);
+    std::unique_lock<NanoLock> guard(_fileop_lock, std::try_to_lock);
     if (!guard.owns_lock())
         return;
 
