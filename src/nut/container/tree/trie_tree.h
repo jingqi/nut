@@ -8,6 +8,7 @@
 #include <algorithm> // for std::reverse()
 #include <stack>
 #include <vector>
+#include <iterator>
 
 #include "../../platform/int_type.h" // for ssize_t in Windows
 #include "../comparable.h"
@@ -84,7 +85,7 @@ private:
         void construct_dummy(ENTRY&& entry) noexcept
         {
             _trie_parent = nullptr;
-            _child_tree = nullptr;
+            _children_tree = nullptr;
             _rb_parent = nullptr;
             _rb_left = nullptr;
             _rb_right = nullptr;
@@ -96,7 +97,7 @@ private:
         void construct_dummy(const ENTRY& entry) noexcept
         {
             _trie_parent = nullptr;
-            _child_tree = nullptr;
+            _children_tree = nullptr;
             _rb_parent = nullptr;
             _rb_left = nullptr;
             _rb_right = nullptr;
@@ -131,6 +132,11 @@ private:
             return _data;
         }
 
+        DATA& get_data() noexcept
+        {
+            return const_cast<DATA&>(static_cast<const Node&>(*this).get_data());
+        }
+
         void set_data(DATA&& data) noexcept
         {
             if (has_data())
@@ -160,7 +166,7 @@ private:
         std::vector<ENTRY> get_path() const noexcept
         {
             std::vector<ENTRY> path;
-            Node *n = this;
+            const Node *n = this;
             while (nullptr != n)
             {
                 path.push_back(n->_entry);
@@ -188,43 +194,43 @@ private:
 
         Node* get_trie_child(const ENTRY& entry) const noexcept
         {
-            return BSTree<ENTRY,Node>::search(_child_tree, entry);
+            return BSTree<ENTRY,Node>::search(_children_tree, entry);
         }
 
-        Node* get_trie_child_tree() const noexcept
+        Node* get_trie_children_tree() const noexcept
         {
-            return _child_tree;
+            return _children_tree;
         }
 
         void add_trie_child(Node *n) noexcept
         {
-            _child_tree = RBTree<ENTRY,Node>::insert(_child_tree, n);
-            _child_tree->_rb_parent = nullptr;
+            _children_tree = RBTree<ENTRY,Node>::insert(_children_tree, n);
+            _children_tree->_rb_parent = nullptr;
             n->_trie_parent = this;
         }
 
         void remove_trie_child(Node *n) noexcept
         {
-            _child_tree = RBTree<ENTRY,Node>::remove(_child_tree, n);
-            if (nullptr != _child_tree)
-                _child_tree->_rb_parent = nullptr;
+            _children_tree = RBTree<ENTRY,Node>::remove(_children_tree, n);
+            if (nullptr != _children_tree)
+                _children_tree->_rb_parent = nullptr;
             n->_rb_parent = nullptr;
             n->_trie_parent = nullptr;
         }
 
-        bool is_trie_leaf() const noexcept
+        bool has_trie_children() const noexcept
         {
-            return nullptr == _child_tree;
+            return nullptr != _children_tree;
         }
 
         void clear_trie_children() noexcept
         {
-            if (nullptr == _child_tree)
+            if (nullptr == _children_tree)
                 return;
 
             // 遍历红黑树子节点、字典树子节点
             std::stack<Node*> s;
-            s.push(_child_tree);
+            s.push(_children_tree);
             while (!s.empty())
             {
                 Node *n = s.top();
@@ -235,20 +241,23 @@ private:
                     s.push(n->_rb_left);
                 if (nullptr != n->_rb_right)
                     s.push(n->_rb_right);
-                if (nullptr != n->_child_tree)
-                    s.push(n->_child_tree);
+                if (nullptr != n->_children_tree)
+                    s.push(n->_children_tree);
 
                 // NOTE 避免 destruct() 递归调用 clear_trie_children() 时重复析构
                 n->_rb_left = nullptr;
                 n->_rb_right = nullptr;
-                n->_child_tree = nullptr;
+                n->_children_tree = nullptr;
 
                 n->destruct();
                 ::free(n);
             }
-            _child_tree = nullptr;
+            _children_tree = nullptr;
         }
 
+        /**
+         * 统计子孙节点(包含自身)的数据数
+         */
         size_t count_of_data() const noexcept
         {
             size_t ret = 0;
@@ -264,8 +273,8 @@ private:
                 if (n->has_data())
                     ++ret;
 
-                for (auto iter = BinaryTree<Node>::inorder_traversal_begin(n->_child_tree),
-                         end = BinaryTree<Node>::inorder_traversal_end(n->_child_tree);
+                for (auto iter = BinaryTree<Node>::inorder_traversal_begin(n->_children_tree),
+                         end = BinaryTree<Node>::inorder_traversal_end(n->_children_tree);
                      iter != end; ++iter)
                 {
                     Node *child = &*iter;
@@ -335,7 +344,7 @@ private:
     public:
         // 字典树属性
         Node *_trie_parent = nullptr;
-        Node *_child_tree = nullptr; // 子节点构成另一颗红黑树
+        Node *_children_tree = nullptr; // 子节点构成另一颗红黑树
 
         // 红黑树属性
         Node *_rb_parent = nullptr, *_rb_left = nullptr, *_rb_right = nullptr;
@@ -345,6 +354,128 @@ private:
 
         uint8_t _flags = 0;
     };
+
+public:
+    class Iterator
+    {
+    public:
+        typedef std::bidirectional_iterator_tag iterator_category;
+        typedef DATA                            value_type;
+        typedef ptrdiff_t                       difference_type;
+        typedef DATA&                           reference;
+        typedef DATA*                           pointer;
+
+    public:
+        Iterator(const Node *sub_root, Node *current, bool eof = false) noexcept
+            : _sub_root(sub_root), _current(current), _eof(eof)
+        {
+            assert((_eof && nullptr == _current) ||
+                   (_eof && nullptr != _current && nullptr == _current->get_trie_children_tree()) ||
+                   (!_eof && nullptr != _current));
+        }
+
+        DATA& operator*() const noexcept
+        {
+            assert(!_eof && nullptr != _current && _current->has_data());
+            return _current->get_data();
+        }
+
+        DATA* operator->() const noexcept
+        {
+            assert(!_eof && nullptr != _current && _current->has_data());
+            return &_current->get_data();
+        }
+
+        Iterator& operator++() noexcept
+        {
+            do
+            {
+                if (nullptr != _current->get_trie_children_tree())
+                {
+                    _current = BSTree<ENTRY,Node>::minimum(_current->get_trie_children_tree());
+                    continue;
+                }
+
+                Node *n = _current;
+                while (n != _sub_root && nullptr == BSTree<ENTRY,Node>::successor(n))
+                    n = n->get_trie_parent();
+
+                if (n == _sub_root)
+                    _eof = true;
+                else
+                    _current = BSTree<ENTRY,Node>::successor(n);
+            } while (!_eof && !_current->has_data());
+            return *this;
+        }
+
+        Iterator& operator--() noexcept
+        {
+            do
+            {
+                if (_eof)
+                {
+                    _eof = false;
+                    continue;
+                }
+
+                assert(_sub_root != _current);
+                if (nullptr == BSTree<ENTRY,Node>::predecessor(_current))
+                {
+                    _current = _current->get_trie_parent();
+                    continue;
+                }
+
+                _current = BSTree<ENTRY,Node>::predecessor(_current);
+                while (nullptr != _current->get_trie_children_tree())
+                    _current = BSTree<ENTRY,Node>::minimum(_current->get_trie_children_tree());
+            } while (!_current->has_data());
+            return *this;
+        }
+
+        Iterator operator++(int) noexcept
+        {
+            Iterator ret = *this;
+            ++*this;
+            return ret;
+        }
+
+        Iterator operator--(int) noexcept
+        {
+            Iterator ret = *this;
+            --*this;
+            return ret;
+        }
+
+        bool operator==(const Iterator& i) const noexcept
+        {
+            return _sub_root == i._sub_root && _current == i._current && _eof == i._eof;
+        }
+
+        bool operator!=(const Iterator& i) const noexcept
+        {
+            return !(*this == i);
+        }
+
+        std::vector<ENTRY> get_path() const noexcept
+        {
+            assert(!_eof && nullptr != _current);
+            return _current->get_path();
+        }
+
+        bool has_children() const
+        {
+            assert(!_eof && nullptr != _current);
+            return _current->has_trie_children();
+        }
+
+    private:
+        const Node *_sub_root = nullptr;
+        Node *_current = nullptr;
+        bool _eof = false;
+    };
+
+    typedef Iterator iterator;
+    typedef std::reverse_iterator<Iterator> reverse_iterator;
 
 public:
     TrieTree() = default;
@@ -476,7 +607,22 @@ public:
     }
 
     /**
-     * 获取子孙节点中的数据(包含指定的节点自身)
+     * 自身以及其子孙节点中是否存在数据
+     */
+    bool has_descendants(const ENTRY *path = nullptr, size_t path_len = 0) const noexcept
+    {
+        assert(nullptr != path || 0 == path_len);
+        if (0 == path_len)
+            return nullptr != _children_tree;
+
+        const Node *n = find_path(path, path_len);
+        if (nullptr == n)
+            return false;
+        return n->has_data() || n->has_trie_children();
+    }
+
+    /**
+     * 获取自身及其子孙节点中的数据
      */
     std::vector<DATA> get_descendants(const ENTRY *path = nullptr, size_t path_len = 0) const noexcept
     {
@@ -496,7 +642,7 @@ public:
             if (nullptr != n && n->has_data())
                 ret.push_back(n->get_data());
 
-            Node *const root = (nullptr == n ? _child_tree : n->get_trie_child_tree());
+            Node *const root = (nullptr == n ? _children_tree : n->get_trie_children_tree());
             for (auto iter = BinaryTree<Node>::inorder_traversal_rbegin(root),
                      end = BinaryTree<Node>::inorder_traversal_rend(root);
                  iter != end; ++iter)
@@ -510,7 +656,23 @@ public:
     }
 
     /**
-     * 获取先祖节点中的数据(包含指定的节点自身)
+     * 自身以及其先祖节点中是否存在数据
+     */
+    bool has_ancestors(const ENTRY *path, size_t path_len) const noexcept
+    {
+        assert(nullptr != path || 0 == path_len);
+        const Node *n = find_path(path, path_len, true);
+        while (nullptr != n)
+        {
+            if (n->has_data())
+                return true;
+            n = n->get_trie_parent();
+        }
+        return false;
+    }
+
+    /**
+     * 获取自身及其先祖节点中的数据
      */
     std::vector<DATA> get_ancestors(const ENTRY *path, size_t path_len) const noexcept
     {
@@ -532,15 +694,103 @@ public:
      */
     void clear() noexcept
     {
-        if (nullptr == _child_tree)
+        if (nullptr == _children_tree)
             return;
 
-        BinaryTree<Node>::delete_tree(_child_tree, [] (Node *n) {
+        BinaryTree<Node>::delete_tree(_children_tree, [] (Node *n) {
             n->destruct();
             ::free(n);
         });
-        _child_tree = nullptr;
+        _children_tree = nullptr;
         _size = 0;
+    }
+
+    iterator begin(const ENTRY *path, size_t path_len) noexcept
+    {
+        assert(nullptr != path || 0 == path_len);
+
+        if (0 == path_len)
+        {
+            if (nullptr == _children_tree)
+                return iterator(nullptr, nullptr, true);
+
+            Node *current = BSTree<ENTRY,Node>::minimum(_children_tree);
+            while (!current->has_data())
+            {
+                assert(nullptr != current->get_trie_children_tree());
+                current = BSTree<ENTRY,Node>::minimum(current->get_trie_children_tree());
+            }
+            return iterator(nullptr, current, false);
+        }
+
+        Node *sub_root = find_path(path, path_len);
+        if (nullptr == sub_root)
+            return iterator(nullptr, nullptr, true);
+
+        Node *current = sub_root;
+        while (!current->has_data())
+        {
+            assert(nullptr != current->get_trie_children_tree());
+            current = BSTree<ENTRY,Node>::minimum(current->get_trie_children_tree());
+        }
+        return iterator(sub_root, current, false);
+    }
+
+    iterator begin() noexcept
+    {
+        return begin(nullptr, 0);
+    }
+
+    iterator end(const ENTRY *path, size_t path_len) noexcept
+    {
+        assert(nullptr != path || 0 == path_len);
+
+        if (0 == path_len)
+        {
+            if (nullptr == _children_tree)
+                return iterator(nullptr, nullptr, true);
+
+            Node *current = BSTree<ENTRY,Node>::maximum(_children_tree);
+            while (nullptr != current->get_trie_children_tree())
+                current = BSTree<ENTRY,Node>::maximum(current->get_trie_children_tree());
+            assert(current->has_data());
+            return iterator(nullptr, current, true);
+        }
+
+        Node *sub_root = find_path(path, path_len);
+        if (nullptr == sub_root)
+            return iterator(nullptr, nullptr, true);
+
+        Node *current = sub_root;
+        while (nullptr != current->get_trie_children_tree())
+            current = BSTree<ENTRY,Node>::maximum(current->get_trie_children_tree());
+        assert(current->has_data());
+        return iterator(sub_root, current, true);
+    }
+
+    iterator end() noexcept
+    {
+        return end(nullptr, 0);
+    }
+
+    reverse_iterator rbegin(const ENTRY *path, size_t path_len) noexcept
+    {
+        return reverse_iterator(end(path, path_len));
+    }
+
+    reverse_iterator rbegin() noexcept
+    {
+        return rbegin(nullptr, 0);
+    }
+
+    reverse_iterator rend(const ENTRY *path, size_t path_len) noexcept
+    {
+        return reverse_iterator(begin(path, path_len));
+    }
+
+    reverse_iterator rend() noexcept
+    {
+        return rend(nullptr, 0);
     }
 
 private:
@@ -561,7 +811,7 @@ private:
             assert(0 == i || nullptr != n);
             Node *child;
             if (0 == i)
-                child = BSTree<ENTRY,Node>::search(_child_tree, path[i]);
+                child = BSTree<ENTRY,Node>::search(_children_tree, path[i]);
             else
                 child = n->get_trie_child(path[i]);
 
@@ -575,8 +825,8 @@ private:
             new_node->construct_dummy(path[i]);
             if (0 == i)
             {
-                _child_tree = RBTree<ENTRY,Node>::insert(_child_tree, new_node);
-                _child_tree->set_parent(nullptr);
+                _children_tree = RBTree<ENTRY,Node>::insert(_children_tree, new_node);
+                _children_tree->set_parent(nullptr);
                 new_node->set_trie_parent(nullptr);
             }
             else
@@ -601,7 +851,7 @@ private:
             assert(0 == i || nullptr != n);
             Node *child;
             if (0 == i)
-                child = BSTree<ENTRY,Node>::search(_child_tree, path[i]);
+                child = BSTree<ENTRY,Node>::search(_children_tree, path[i]);
             else
                 child = n->get_trie_child(path[i]);
 
@@ -621,14 +871,14 @@ private:
      */
     void strip_branch(Node *n) noexcept
     {
-        while (nullptr != n && n->is_trie_leaf() && !n->has_data())
+        while (nullptr != n && !n->has_trie_children() && !n->has_data())
         {
             Node *const parent = n->get_trie_parent();
             if (nullptr == parent)
             {
-                _child_tree = RBTree<ENTRY,Node>::remove(_child_tree, n);
-                if (nullptr != _child_tree)
-                    _child_tree->set_parent(nullptr);
+                _children_tree = RBTree<ENTRY,Node>::remove(_children_tree, n);
+                if (nullptr != _children_tree)
+                    _children_tree->set_parent(nullptr);
                 n->set_parent(nullptr);
                 n->set_trie_parent(nullptr);
             }
@@ -643,7 +893,7 @@ private:
     }
 
 public:
-    Node *_child_tree = nullptr;
+    Node *_children_tree = nullptr;
     size_t _size = 0;
 };
 

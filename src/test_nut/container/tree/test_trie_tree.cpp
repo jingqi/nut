@@ -19,6 +19,7 @@ class TestTrieTree : public TestFixture
         NUT_REGISTER_CASE(test_remove_tree);
         NUT_REGISTER_CASE(test_get_descendants);
         NUT_REGISTER_CASE(test_get_ancestors);
+        NUT_REGISTER_CASE(test_iterator);
     }
 
     TrieTree<char,std::string> trie;
@@ -95,26 +96,66 @@ class TestTrieTree : public TestFixture
     void test_get_descendants()
     {
         // ab abc abde af
+        NUT_TA(trie.has_descendants("", 0));
         NUT_TA(trie.get_descendants("", 0) == vector<string>({"b", "c", "e", "f"}));
 
         // ab abc abde
+        NUT_TA(trie.has_descendants("ab", 2));
         NUT_TA(trie.get_descendants("ab", 2) == vector<string>({"b", "c", "e"}));
 
         // abde
+        NUT_TA(trie.has_descendants("abd", 3));
         NUT_TA(trie.get_descendants("abd", 3) == vector<string>({"e"}));
+
+        NUT_TA(trie.has_descendants("abde", 4));
+        NUT_TA(!trie.has_descendants("abdef", 5));
     }
 
     void test_get_ancestors()
     {
         // ab
+        NUT_TA(trie.has_ancestors("abd", 3));
         NUT_TA(trie.get_ancestors("abd", 3) == vector<string>({"b"}));
 
         // abde ab
+        NUT_TA(trie.has_ancestors("abde", 4));
         NUT_TA(trie.get_ancestors("abde", 4) == vector<string>({"e", "b"}));
+        NUT_TA(trie.has_ancestors("abdegh", 6));
         NUT_TA(trie.get_ancestors("abdegh", 6) == vector<string>({"e", "b"}));
 
         // abc ab
-        NUT_TA(trie.get_ancestors("abc", 6) == vector<string>({"c", "b"}));
+        NUT_TA(trie.has_ancestors("abc", 3));
+        NUT_TA(trie.get_ancestors("abc", 3) == vector<string>({"c", "b"}));
+
+        NUT_TA(!trie.has_ancestors("mf", 2));
+    }
+
+    void test_iterator()
+    {
+        // 迭代整棵树
+        const char *seq[] = {"b", "c", "e", "f"};
+        size_t i = 0;
+        for (auto iter = trie.begin(), end = trie.end(); iter != end; ++iter)
+        {
+            NUT_TA(*iter == seq[i++]);
+        }
+        NUT_TA(4 == i);
+
+        // 迭代子树
+        const char *seq2[] = {"b", "c", "e"};
+        i = 0;
+        for (auto iter = trie.begin("ab", 2), end = trie.end("ab", 2);
+             iter != end; ++iter)
+        {
+            NUT_TA(*iter == seq2[i++]);
+        }
+        NUT_TA(3 == i);
+
+        // 语法糖
+        i = 0;
+        for (const string& s : trie)
+            NUT_TA(s == seq[i++]);
+        NUT_TA(4 == i);
     }
 };
 

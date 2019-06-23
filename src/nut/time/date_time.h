@@ -79,9 +79,6 @@ public:
              uint8_t min = 0, uint8_t sec = 0, uint32_t nsec = 0, bool utc = false) noexcept;
 
 #if NUT_PLATFORM_OS_WINDOWS
-    /**
-     * NOTE SYSTEMTIME 表示的是永远是本地时间，不会是 UTC 时间
-     */
     void set(const SYSTEMTIME& wtm, bool utc = false) noexcept;
     void to_wtm(SYSTEMTIME *wtm, bool utc = false) const noexcept;
 #else

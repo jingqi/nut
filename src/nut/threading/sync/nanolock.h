@@ -11,7 +11,7 @@ namespace nut
 {
 
 /**
- * 及其轻量级的自旋锁, 不支持重入
+ * 极其轻量级的自旋锁, 不支持重入
  */
 class NUT_API NanoLock
 {

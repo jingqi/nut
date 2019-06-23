@@ -142,6 +142,9 @@ private:
         }
 
     private:
+        // NOTE 这里记录 parent of sub_root 而不是 sub_root 本身, 这样二叉树发生
+        //      修改(可能导致根节点改变)之后, 只要 current 还在子树范围内, 迭代
+        //      器不会失效
         const NODE *_parent_of_sub_root = nullptr;
         NODE *_current = nullptr;
         bool _eof = false;
@@ -329,6 +332,9 @@ private:
         }
 
     private:
+        // NOTE 这里记录 parent of sub_root 而不是 sub_root 本身, 这样二叉树发生
+        //      修改(可能导致根节点改变)之后, 只要 current 还在子树范围内, 迭代
+        //      器不会失效
         const NODE *_parent_of_sub_root = nullptr;
         NODE *_current = nullptr;
         bool _eof = false;
@@ -510,6 +516,9 @@ private:
         }
 
     private:
+        // NOTE 这里记录 parent of sub_root 而不是 sub_root 本身, 这样二叉树发生
+        //      修改(可能导致根节点改变)之后, 只要 current 还在子树范围内, 迭代
+        //      器不会失效
         const NODE *_parent_of_sub_root = nullptr;
         NODE *_current = nullptr;
         bool _eof = false;
