@@ -17,6 +17,9 @@
 #define NSECS_PER_MSEC 1000000L
 #define NSECS_PER_USEC 1000L
 
+/* time between 1601/1/1 00:00:00 and 1970/1/1 00:00:00 in units of 100 nanoseconds */
+#define TIMESPEC_TO_FILETIME_OFFSET 116444736000000000LL
+
 namespace nut
 {
 
@@ -236,6 +239,23 @@ void DateTime::set(uint32_t year, uint8_t month, uint8_t day, uint8_t hour,
 }
 
 #if NUT_PLATFORM_OS_WINDOWS
+void DateTime::set(const FILETIME& ft) noexcept
+{
+    uint64_t val = (uint64_t(ft.dwHighDateTime) << 32) + ft.dwLowDateTime;
+    assert(val >= TIMESPEC_TO_FILETIME_OFFSET);
+    val -= TIMESPEC_TO_FILETIME_OFFSET;
+    _seconds = (time_t) (val / 10000000LL);
+    _nanoseconds = (long) ((val % 10000000LL) * 100);
+}
+
+void DateTime::to_filetime(FILETIME *ft) const noexcept
+{
+    assert(nullptr != ft);
+    uint64_t val = uint64_t(_seconds) * 10000000LL + _nanoseconds / 100 + TIMESPEC_TO_FILETIME_OFFSET;
+    ft->dwLowDateTime = (DWORD) val;
+    ft->dwHighDateTime = (DWORD) (val >> 32);
+}
+
 void DateTime::set(const SYSTEMTIME& wtm, bool utc) noexcept
 {
     set(wtm.wYear, wtm.wMonth, wtm.wDay, wtm.wHour, wtm.wMinute, wtm.wSecond,
@@ -485,17 +505,20 @@ std::string DateTime::format_time(const char *format, bool utc) const noexcept
 }
 
 #if NUT_PLATFORM_OS_WINDOWS && NUT_PLATFORM_CC_MINGW
-#   define PTW32_TIMESPEC_TO_FILETIME_OFFSET (LONGLONG)((((LONGLONG) 27111902LL << 32)+(LONGLONG) 3577643008LL ))
 void clock_getrealtime(struct timespec *ts) noexcept
 {
     assert(nullptr != ts);
 
     SYSTEMTIME st;
     ::GetSystemTime(&st);
+
     FILETIME ft;
     ::SystemTimeToFileTime(&st, &ft);
-    ts->tv_sec = (int)((*(LONGLONG *)&ft - PTW32_TIMESPEC_TO_FILETIME_OFFSET) / 10000000LL);
-    ts->tv_nsec = (int)((*(LONGLONG *)&ft - PTW32_TIMESPEC_TO_FILETIME_OFFSET - ((LONGLONG)ts->tv_sec * (LONGLONG)10000000LL)) * 100);
+
+    uint64_t val = (uint64_t(ft.dwHighDateTime) << 32) + ft.dwLowDateTime;
+    val -= TIMESPEC_TO_FILETIME_OFFSET;
+    ts->tv_sec = (time_t) (val / 10000000LL);
+    ts->tv_nsec = (long) ((val % 10000000LL) * 100);
 }
 #endif
 

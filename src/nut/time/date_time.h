@@ -28,12 +28,12 @@ public:
     DateTime() noexcept;
 
     /**
-     * @param s 秒，从 1970/1/1 00:00:00 起算的时间
+     * @param s 秒，从 1970/1/1 00:00:00 (UTC) 起算的时间
      */
     explicit DateTime(double s) noexcept;
 
     /**
-     * @param s 秒，从 1970/1/1 00:00:00 起算的时间
+     * @param s 秒，从 1970/1/1 00:00:00 (UTC) 起算的时间
      * @param ns 纳秒
      */
     explicit DateTime(time_t s, long ns) noexcept;
@@ -79,6 +79,13 @@ public:
              uint8_t min = 0, uint8_t sec = 0, uint32_t nsec = 0, bool utc = false) noexcept;
 
 #if NUT_PLATFORM_OS_WINDOWS
+    /**
+     * Windows 下的 FILETIME 结构表示从 1601/1/1 00:00:00 (UTC) 算起的 100ns 为
+     * 单位的时间
+     */
+    void set(const FILETIME& ft) noexcept;
+    void to_filetime(FILETIME *ft) const noexcept;
+
     void set(const SYSTEMTIME& wtm, bool utc = false) noexcept;
     void to_wtm(SYSTEMTIME *wtm, bool utc = false) const noexcept;
 #else
@@ -201,7 +208,7 @@ protected:
     void ensure_time_info(bool utc) const noexcept;
 
 protected:
-    /* 从 1970年1月1日 0时0分0秒 起算的 UTC 时间 */
+    /* 从 1970/1/1 00:00:00 (UTC) 算起的时间 */
     time_t _seconds;
     long _nanoseconds;
 
@@ -211,8 +218,6 @@ protected:
 };
 
 /**
- * time between jan 1, 1601 and jan 1, 1970 in units of 100 nanoseconds
- *
  * mingw 没有定义clock_gettime(), 这里参考其pthread_mutex_timedlock.c ptw32_relmillisecs.c 的实现
  * 相当于 ::clock_gettime(CLOCK_REALTIME, &ts);
  */
