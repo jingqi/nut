@@ -179,6 +179,9 @@ public:
     static std::wstring join(const std::wstring& a, const std::wstring& b, const std::wstring& c,
                              const std::wstring& d, const std::wstring& e) noexcept;
 
+    static std::string join(const std::vector<std::string>& entries) noexcept;
+    static std::wstring join(const std::vector<std::wstring>& entries) noexcept;
+
     /**
      * 检查路径存在性
      */
@@ -233,14 +236,41 @@ public:
     static long long get_size(const std::string& path) noexcept;
     static long long get_size(const std::wstring& path) noexcept;
 
+    /**
+     * 是否是软连接
+     */
     static bool is_link(const std::string& path) noexcept;
     static bool is_link(const std::wstring& path) noexcept;
 
+    /**
+     * 是否是软连接(不解析符号链接)
+     */
+    static bool is_llink(const std::string& path) noexcept;
+    static bool is_llink(const std::wstring& path) noexcept;
+
+    /**
+     * 是否是目录
+     */
     static bool is_dir(const std::string& path) noexcept;
     static bool is_dir(const std::wstring& path) noexcept;
 
+    /**
+     * 是否是目录(不解析符号链接)
+     */
+    static bool is_ldir(const std::string& path) noexcept;
+    static bool is_ldir(const std::wstring& path) noexcept;
+
+    /**
+     * 是否是常规文件
+     */
     static bool is_file(const std::string& path) noexcept;
     static bool is_file(const std::wstring& path) noexcept;
+
+    /**
+     * 是否是常规文件
+     */
+    static bool is_lfile(const std::string& path) noexcept;
+    static bool is_lfile(const std::wstring& path) noexcept;
 
 private:
     Path() = delete;

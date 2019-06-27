@@ -7,7 +7,7 @@
 #if NUT_PLATFORM_OS_WINDOWS
 #   include <windows.h>
 #   include <io.h> // for _access()
-#   include <sys/stat.h> // for stat()
+#   include <sys/stat.h> // for _stat()
 #   include <direct.h> // for getcwd()
 #else
 #   include <unistd.h> // for access(), getcwd()
@@ -937,6 +937,28 @@ std::wstring Path::join(const std::wstring& a, const std::wstring& b, const std:
     return Path::join(Path::join(a, b, c, d), e);
 }
 
+std::string Path::join(const std::vector<std::string>& entries) noexcept
+{
+    std::string ret;
+    if (entries.empty())
+        return ret;
+    ret = entries.at(0);
+    for (size_t i = 1, sz = entries.size(); i < sz; ++i)
+        ret = Path::join(ret, entries.at(i));
+    return ret;
+}
+
+std::wstring Path::join(const std::vector<std::wstring>& entries) noexcept
+{
+    std::wstring ret;
+    if (entries.empty())
+        return ret;
+    ret = entries.at(0);
+    for (size_t i = 1, sz = entries.size(); i < sz; ++i)
+        ret = Path::join(ret, entries.at(i));
+    return ret;
+}
+
 bool Path::exists(const std::string& path) noexcept
 {
     const std::string fullpath = Path::abspath(path);
@@ -1163,7 +1185,7 @@ bool Path::is_link(const std::string& path) noexcept
     return false;
 #else
     struct stat info;
-    if (0 != ::lstat(Path::abspath(path).c_str(), &info))
+    if (0 != ::stat(Path::abspath(path).c_str(), &info))
         return false;
     return S_ISLNK(info.st_mode);
 #endif
@@ -1176,6 +1198,29 @@ bool Path::is_link(const std::wstring& path) noexcept
     return false;
 #else
     return Path::is_link(wstr_to_ascii(path));
+#endif
+}
+
+bool Path::is_llink(const std::string& path) noexcept
+{
+#if NUT_PLATFORM_OS_WINDOWS
+    UNUSED(path);
+    return false;
+#else
+    struct stat info;
+    if (0 != ::lstat(Path::abspath(path).c_str(), &info))
+        return false;
+    return S_ISLNK(info.st_mode);
+#endif
+}
+
+bool Path::is_llink(const std::wstring& path) noexcept
+{
+#if NUT_PLATFORM_OS_WINDOWS
+    UNUSED(path);
+    return false;
+#else
+    return Path::is_llink(wstr_to_ascii(path));
 #endif
 }
 
@@ -1202,6 +1247,29 @@ bool Path::is_dir(const std::wstring& path) noexcept
 #endif
 }
 
+bool Path::is_ldir(const std::string& path) noexcept
+{
+    const std::string fullpath = Path::abspath(path);
+
+#if NUT_PLATFORM_OS_WINDOWS
+    return Path::is_dir(path);
+#else
+    struct stat info;
+    if (0 != ::lstat(fullpath.c_str(), &info))
+        return false;
+    return S_ISDIR(info.st_mode);
+#endif
+}
+
+bool Path::is_ldir(const std::wstring& path) noexcept
+{
+#if NUT_PLATFORM_OS_WINDOWS
+    return Path::is_dir(path);
+#else
+    return Path::is_ldir(wstr_to_ascii(path));
+#endif
+}
+
 bool Path::is_file(const std::string& path) noexcept
 {
     const std::string fullpath = Path::abspath(path);
@@ -1222,6 +1290,29 @@ bool Path::is_file(const std::wstring& path) noexcept
     return 0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(Path::abspath(path).c_str()));
 #else
     return Path::is_file(wstr_to_ascii(path));
+#endif
+}
+
+bool Path::is_lfile(const std::string& path) noexcept
+{
+    const std::string fullpath = Path::abspath(path);
+
+#if NUT_PLATFORM_OS_WINDOWS
+    return Path::is_file(path);
+#else
+    struct stat info;
+    if (0 != ::lstat(fullpath.c_str(), &info))
+        return false;
+    return S_ISREG(info.st_mode); // regular file
+#endif
+}
+
+bool Path::is_lfile(const std::wstring& path) noexcept
+{
+#if NUT_PLATFORM_OS_WINDOWS
+    return Path::is_file(path);
+#else
+    return Path::is_lfile(wstr_to_ascii(path));
 #endif
 }
 

@@ -112,8 +112,7 @@ bool SaveFile::commit() noexcept
         return false;
 
 #if !NUT_PLATFORM_OS_WINDOWS
-    std::string parentdir;
-    Path::split(_path, &parentdir, nullptr);
+    const std::string parentdir = Path::dirname(_path);
     const int dirfd = ::open(parentdir.c_str(), O_DIRECTORY | O_RDONLY);
     ::fsync(dirfd);
     ::close(dirfd);
