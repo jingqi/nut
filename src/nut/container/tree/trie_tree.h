@@ -116,6 +116,7 @@ private:
             clear_trie_children();
         }
 
+    public: // 字典树接口
         const ENTRY& get_entry() const noexcept
         {
             return _entry;
@@ -179,12 +180,6 @@ private:
         void set_trie_parent(Node *parent) noexcept
         {
             _trie_parent = parent;
-        }
-
-        // Set rbtree parent
-        void set_parent(Node* n) noexcept
-        {
-            _rb_parent = n;
         }
 
         Node* get_trie_parent() const noexcept
@@ -286,12 +281,7 @@ private:
             return ret;
         }
 
-    private:
-        // 红黑树接口
-        friend class BinaryTree<Node>;
-        friend class BSTree<ENTRY,Node>;
-        friend class RBTree<ENTRY,Node>;
-
+    public: // 红黑树接口
         const ENTRY& get_key() const noexcept
         {
             return _entry;
@@ -300,6 +290,11 @@ private:
         bool is_red() const noexcept
         {
             return 0 != (_flags & RB_RED);
+        }
+
+        void set_parent(Node* n) noexcept
+        {
+            _rb_parent = n;
         }
 
         Node* get_parent() const noexcept
@@ -604,6 +599,22 @@ public:
         if (nullptr == n || !n->has_data())
             return nullptr;
         return &n->get_data();
+    }
+
+    /**
+     * 返回公共路径
+     */
+    std::vector<ENTRY> get_common_path() const noexcept
+    {
+        std::vector<ENTRY> ret;
+        Node *n = _children_tree;
+        while (nullptr != n && nullptr == n->get_left_child() &&
+               nullptr == n->get_right_child())
+        {
+            ret.push_back(n->get_key());
+            n = n->get_trie_children_tree();
+        }
+        return ret;
     }
 
     /**

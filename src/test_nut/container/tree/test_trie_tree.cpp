@@ -56,6 +56,9 @@ class TestTrieTree : public TestFixture
         NUT_TA(trie.get("a", 1) == nullptr);
         NUT_TA(trie.get("abd", 3) == nullptr);
         NUT_TA(trie.get("afd", 3) == nullptr);
+
+        const std::vector<char> p = trie.get_common_path();
+        NUT_TA(p.size() == 1 && p.at(0) == 'a');
     }
 
     void test_put()
