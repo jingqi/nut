@@ -8,7 +8,7 @@
 #   include <unistd.h> // for ::usleep()
 #endif
 
-#include "nanolock.h"
+#include "nano_lock.h"
 
 
 namespace nut

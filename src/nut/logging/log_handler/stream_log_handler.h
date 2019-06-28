@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "../../nut_config.h"
-#include "../../threading/sync/spinlock.h"
+#include "../../threading/sync/spin_lock.h"
 #include "log_handler.h"
 
 

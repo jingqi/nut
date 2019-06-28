@@ -261,7 +261,7 @@
     <ClCompile Include="..\..\..\src\test_nut\container\tree\test_rbtree.cpp">
       <Filter>test\container\tree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\test_nut\threading\sync\test_nanolock.cpp">
+    <ClCompile Include="..\..\..\src\test_nut\threading\sync\test_nano_lock.cpp">
       <Filter>test\threading\sync</Filter>
     </ClCompile>
   </ItemGroup>

@@ -3,7 +3,7 @@
 #define ___HEADFILE_78125394_FD78_4023_AE0B_E382527514CB_
 
 #include "../../nut_config.h"
-#include "../../threading/sync/spinlock.h"
+#include "../../threading/sync/spin_lock.h"
 #include "log_handler.h"
 
 

@@ -97,9 +97,9 @@
 #include "threading/lockfree/hazard_pointer/hp_record.h"
 #include "threading/lockfree/hazard_pointer/hp_retire_list.h"
 #include "threading/sync/dummy_lock.h"
-#include "threading/sync/nanolock.h"
-#include "threading/sync/spinlock.h"
-#include "threading/sync/rwlock.h"
+#include "threading/sync/nano_lock.h"
+#include "threading/sync/spin_lock.h"
+#include "threading/sync/shared_lock.h"
 #include "threading/sync/sem.h"
 
 // unittest

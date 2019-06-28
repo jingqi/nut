@@ -2,7 +2,7 @@
 #include <assert.h>
 
 #include "../../platform/platform.h"
-#include "spinlock.h"
+#include "spin_lock.h"
 
 
 namespace nut

@@ -40,15 +40,15 @@ double PerformanceCounter::operator-(const PerformanceCounter& x) const noexcept
 void PerformanceCounter::set_to_now() noexcept
 {
     // NOTE 各个可计时函数信息:
-    // - time(), POSIX, 实际精度 1s
-    // - clock(), POSIX, 实际精度 10ms
-    // - times(), POSIX(obsolete), 实际精度 10ms
-    // - timeGetTime(), Windows, 实际精度 1ms
-    // - GetTickCount(), Windows, 实际精度 1ms
-    // - GetLocalTime(), Windows, 实际精度 1ms
-    // - gettimeofday(), POSIX(obsolete), 实际精度 1us
-    // - QueryPerformanceCounter(), Windows, 实际精度 1us
-    // - clock_gettime(CLOCK_MONOTONIC), POSIX, 实际精度 1ns
+    // - time(), POSIX, 数值精度 1s
+    // - clock(), POSIX, 数值精度 10ms
+    // - times(), POSIX(obsolete), 数值精度 10ms
+    // - timeGetTime(), Windows, 数值精度 1ms
+    // - GetTickCount(), Windows, 数值精度 1ms
+    // - GetLocalTime(), Windows, 数值精度 1ms
+    // - gettimeofday(), POSIX(obsolete), 数值精度 1us
+    // - QueryPerformanceCounter(), Windows, 数值精度 1us
+    // - clock_gettime(CLOCK_MONOTONIC), POSIX, 数值精度 1ns
 
 #if NUT_PLATFORM_OS_WINDOWS
     ::QueryPerformanceCounter(&_counter);

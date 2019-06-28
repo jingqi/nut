@@ -305,10 +305,10 @@ void DateTime::to_timespec(struct timespec *tv) const noexcept
 void DateTime::set_to_now() noexcept
 {
     // NOTE 各个墙上时间函数信息:
-    // - time(), POSIX, UTC, 实际精度 1s
-    // - GetLocalTime(), Windows, local tz, 实际精度 1ms
-    // - gettimeofday(), POSIX(obsolete), local tz, 实际精度 1us,
-    // - clock_gettime(CLOCK_REALTIME), POSIX, UTC, 实际精度 1ns
+    // - time(), POSIX, UTC, 数值精度 1s
+    // - GetLocalTime(), Windows, local tz, 数值精度 1ms
+    // - gettimeofday(), POSIX(obsolete), local tz, 数值精度 1us,
+    // - clock_gettime(CLOCK_REALTIME), POSIX, UTC, 数值精度 1ns
 
 #if NUT_PLATFORM_OS_WINDOWS
     SYSTEMTIME wtm;

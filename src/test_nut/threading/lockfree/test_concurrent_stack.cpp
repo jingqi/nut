@@ -14,7 +14,7 @@
 
 #include <nut/unittest/unittest.h>
 #include <nut/threading/lockfree/concurrent_stack.h>
-#include <nut/threading/sync/spinlock.h>
+#include <nut/threading/sync/spin_lock.h>
 #include <nut/util/string/to_string.h>
 #include <nut/util/string/string_utils.h>
 

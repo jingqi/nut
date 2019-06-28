@@ -217,10 +217,10 @@
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\stamped_ptr.h" />
     <ClInclude Include="..\..\..\src\nut\threading\priority_thread_pool.h" />
     <ClInclude Include="..\..\..\src\nut\threading\sync\dummy_lock.h" />
-    <ClInclude Include="..\..\..\src\nut\threading\sync\nanolock.h" />
-    <ClInclude Include="..\..\..\src\nut\threading\sync\rwlock.h" />
+    <ClInclude Include="..\..\..\src\nut\threading\sync\nano_lock.h" />
     <ClInclude Include="..\..\..\src\nut\threading\sync\sem.h" />
-    <ClInclude Include="..\..\..\src\nut\threading\sync\spinlock.h" />
+    <ClInclude Include="..\..\..\src\nut\threading\sync\shared_lock.h" />
+    <ClInclude Include="..\..\..\src\nut\threading\sync\spin_lock.h" />
     <ClInclude Include="..\..\..\src\nut\threading\threading.h" />
     <ClInclude Include="..\..\..\src\nut\threading\thread_pool.h" />
     <ClInclude Include="..\..\..\src\nut\time\date_time.h" />
@@ -302,10 +302,10 @@
     <ClCompile Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_record.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\lockfree\hazard_pointer\hp_retire_list.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\priority_thread_pool.cpp" />
-    <ClCompile Include="..\..\..\src\nut\threading\sync\nanolock.cpp" />
-    <ClCompile Include="..\..\..\src\nut\threading\sync\rwlock.cpp" />
+    <ClCompile Include="..\..\..\src\nut\threading\sync\nano_lock.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\sync\sem.cpp" />
-    <ClCompile Include="..\..\..\src\nut\threading\sync\spinlock.cpp" />
+    <ClCompile Include="..\..\..\src\nut\threading\sync\shared_lock.cpp" />
+    <ClCompile Include="..\..\..\src\nut\threading\sync\spin_lock.cpp" />
     <ClCompile Include="..\..\..\src\nut\threading\thread_pool.cpp" />
     <ClCompile Include="..\..\..\src\nut\time\date_time.cpp" />
     <ClCompile Include="..\..\..\src\nut\time\performance_counter.cpp" />

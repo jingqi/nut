@@ -199,13 +199,7 @@
     <ClInclude Include="..\..\..\src\nut\threading\lockfree\concurrent_stack.h">
       <Filter>nut\threading\lockfree</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\threading\sync\rwlock.h">
-      <Filter>nut\threading\sync</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\threading\sync\sem.h">
-      <Filter>nut\threading\sync</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\threading\sync\spinlock.h">
       <Filter>nut\threading\sync</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\nut\threading\thread_pool.h">
@@ -466,7 +460,13 @@
     <ClInclude Include="..\..\..\src\nut\container\tree\trie_tree.h">
       <Filter>nut\container\tree</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\threading\sync\nanolock.h">
+    <ClInclude Include="..\..\..\src\nut\threading\sync\nano_lock.h">
+      <Filter>nut\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\sync\shared_lock.h">
+      <Filter>nut\threading\sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\threading\sync\spin_lock.h">
       <Filter>nut\threading\sync</Filter>
     </ClInclude>
   </ItemGroup>
@@ -510,13 +510,7 @@
     <ClCompile Include="..\..\..\src\nut\util\console_util.cpp">
       <Filter>nut\util</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\threading\sync\rwlock.cpp">
-      <Filter>nut\threading\sync</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\nut\threading\sync\sem.cpp">
-      <Filter>nut\threading\sync</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\threading\sync\spinlock.cpp">
       <Filter>nut\threading\sync</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\threading\thread_pool.cpp">
@@ -711,7 +705,13 @@
     <ClCompile Include="..\..\..\src\nut\debugging\exception.cpp">
       <Filter>nut\debugging</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\threading\sync\nanolock.cpp">
+    <ClCompile Include="..\..\..\src\nut\threading\sync\nano_lock.cpp">
+      <Filter>nut\threading\sync</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\threading\sync\shared_lock.cpp">
+      <Filter>nut\threading\sync</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\threading\sync\spin_lock.cpp">
       <Filter>nut\threading\sync</Filter>
     </ClCompile>
   </ItemGroup>

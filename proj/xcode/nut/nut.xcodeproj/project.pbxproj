@@ -28,9 +28,6 @@
 		2E3EA4C0219DBCEB00E55D46 /* test_stamped_ptr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E3EA4BC219DBCEB00E55D46 /* test_stamped_ptr.cpp */; };
 		2E3EA4C1219DBCEB00E55D46 /* test_concurrent_stack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E3EA4BD219DBCEB00E55D46 /* test_concurrent_stack.cpp */; };
 		2E3EA4C2219DBCEB00E55D46 /* test_concurrent_queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E3EA4BE219DBCEB00E55D46 /* test_concurrent_queue.cpp */; };
-		2E449EB622B951C4002F3058 /* nanolock.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E449EB422B951C4002F3058 /* nanolock.h */; };
-		2E449EB722B951C4002F3058 /* nanolock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E449EB522B951C4002F3058 /* nanolock.cpp */; };
-		2E449EBA22B95202002F3058 /* test_nanolock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E449EB922B95202002F3058 /* test_nanolock.cpp */; };
 		2E53217122B15ABD00CEC3F7 /* exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E53217022B15ABD00CEC3F7 /* exception.cpp */; };
 		2E538E9E21975A220060FED9 /* comparable.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E538E9D21975A220060FED9 /* comparable.h */; };
 		2E538EA021975A3D0060FED9 /* test_comparable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E538E9F21975A3D0060FED9 /* test_comparable.cpp */; };
@@ -75,6 +72,13 @@
 		2E73C3482250B7BD008673C6 /* test_time_wheel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E73C3442250B7BD008673C6 /* test_time_wheel.cpp */; };
 		2E73C34B2250B7D1008673C6 /* test_sha2_512.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E73C3492250B7D1008673C6 /* test_sha2_512.cpp */; };
 		2E73C34C2250B7D1008673C6 /* test_sha2_256.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E73C34A2250B7D1008673C6 /* test_sha2_256.cpp */; };
+		2E760D0322C633A500CA9B07 /* nano_lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E760CFD22C633A500CA9B07 /* nano_lock.cpp */; };
+		2E760D0422C633A500CA9B07 /* nano_lock.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E760CFE22C633A500CA9B07 /* nano_lock.h */; };
+		2E760D0522C633A500CA9B07 /* spin_lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E760CFF22C633A500CA9B07 /* spin_lock.cpp */; };
+		2E760D0622C633A500CA9B07 /* shared_lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E760D0022C633A500CA9B07 /* shared_lock.cpp */; };
+		2E760D0722C633A500CA9B07 /* shared_lock.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E760D0122C633A500CA9B07 /* shared_lock.h */; };
+		2E760D0822C633A500CA9B07 /* spin_lock.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E760D0222C633A500CA9B07 /* spin_lock.h */; };
+		2E760D0A22C633D900CA9B07 /* test_nano_lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E760D0922C633D900CA9B07 /* test_nano_lock.cpp */; };
 		2EA1F06122525602007F402B /* timer_heap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EA1F05F22525601007F402B /* timer_heap.cpp */; };
 		2EA1F06222525602007F402B /* timer_heap.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EA1F06022525602007F402B /* timer_heap.h */; };
 		2EC937FE217A4C38005D5285 /* string_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EC937FC217A4C37005D5285 /* string_utils.cpp */; };
@@ -185,12 +189,8 @@
 		2EE083CF2146DD3D008E4587 /* singleton.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083CD2146DD3D008E4587 /* singleton.h */; };
 		2EE083D62146DD58008E4587 /* concurrent_queue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083D12146DD58008E4587 /* concurrent_queue.h */; };
 		2EE083D92146DD58008E4587 /* concurrent_stack.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083D42146DD58008E4587 /* concurrent_stack.h */; };
-		2EE083E52146DD6E008E4587 /* spinlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE083DA2146DD6E008E4587 /* spinlock.cpp */; };
 		2EE083E92146DD6E008E4587 /* sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE083DE2146DD6E008E4587 /* sem.cpp */; };
-		2EE083EB2146DD6E008E4587 /* rwlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE083E02146DD6E008E4587 /* rwlock.cpp */; };
 		2EE083EC2146DD6E008E4587 /* sem.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083E12146DD6E008E4587 /* sem.h */; };
-		2EE083ED2146DD6E008E4587 /* spinlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083E22146DD6E008E4587 /* spinlock.h */; };
-		2EE083EF2146DD6E008E4587 /* rwlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083E42146DD6E008E4587 /* rwlock.h */; };
 		2EE083F52146DD80008E4587 /* threading.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083F02146DD80008E4587 /* threading.h */; };
 		2EE083F72146DD80008E4587 /* thread_pool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EE083F22146DD80008E4587 /* thread_pool.cpp */; };
 		2EE083F82146DD80008E4587 /* thread_pool.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EE083F32146DD80008E4587 /* thread_pool.h */; };
@@ -324,9 +324,6 @@
 		2E3EA4BC219DBCEB00E55D46 /* test_stamped_ptr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_stamped_ptr.cpp; path = ../../../src/test_nut/threading/lockfree/test_stamped_ptr.cpp; sourceTree = "<group>"; };
 		2E3EA4BD219DBCEB00E55D46 /* test_concurrent_stack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_concurrent_stack.cpp; path = ../../../src/test_nut/threading/lockfree/test_concurrent_stack.cpp; sourceTree = "<group>"; };
 		2E3EA4BE219DBCEB00E55D46 /* test_concurrent_queue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_concurrent_queue.cpp; path = ../../../src/test_nut/threading/lockfree/test_concurrent_queue.cpp; sourceTree = "<group>"; };
-		2E449EB422B951C4002F3058 /* nanolock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = nanolock.h; path = ../../../src/nut/threading/sync/nanolock.h; sourceTree = "<group>"; };
-		2E449EB522B951C4002F3058 /* nanolock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = nanolock.cpp; path = ../../../src/nut/threading/sync/nanolock.cpp; sourceTree = "<group>"; };
-		2E449EB922B95202002F3058 /* test_nanolock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_nanolock.cpp; path = ../../../src/test_nut/threading/sync/test_nanolock.cpp; sourceTree = "<group>"; };
 		2E5217852146E52F009F80AC /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = nut/Info.plist; sourceTree = "<group>"; };
 		2E53217022B15ABD00CEC3F7 /* exception.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = exception.cpp; path = ../../../src/nut/debugging/exception.cpp; sourceTree = "<group>"; };
 		2E538E9D21975A220060FED9 /* comparable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = comparable.h; path = ../../../src/nut/container/comparable.h; sourceTree = "<group>"; };
@@ -373,6 +370,13 @@
 		2E73C3442250B7BD008673C6 /* test_time_wheel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_time_wheel.cpp; path = ../../../src/test_nut/time/test_time_wheel.cpp; sourceTree = "<group>"; };
 		2E73C3492250B7D1008673C6 /* test_sha2_512.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_sha2_512.cpp; path = ../../../src/test_nut/security/digest/test_sha2_512.cpp; sourceTree = "<group>"; };
 		2E73C34A2250B7D1008673C6 /* test_sha2_256.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_sha2_256.cpp; path = ../../../src/test_nut/security/digest/test_sha2_256.cpp; sourceTree = "<group>"; };
+		2E760CFD22C633A500CA9B07 /* nano_lock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = nano_lock.cpp; path = ../../../src/nut/threading/sync/nano_lock.cpp; sourceTree = "<group>"; };
+		2E760CFE22C633A500CA9B07 /* nano_lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = nano_lock.h; path = ../../../src/nut/threading/sync/nano_lock.h; sourceTree = "<group>"; };
+		2E760CFF22C633A500CA9B07 /* spin_lock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = spin_lock.cpp; path = ../../../src/nut/threading/sync/spin_lock.cpp; sourceTree = "<group>"; };
+		2E760D0022C633A500CA9B07 /* shared_lock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shared_lock.cpp; path = ../../../src/nut/threading/sync/shared_lock.cpp; sourceTree = "<group>"; };
+		2E760D0122C633A500CA9B07 /* shared_lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shared_lock.h; path = ../../../src/nut/threading/sync/shared_lock.h; sourceTree = "<group>"; };
+		2E760D0222C633A500CA9B07 /* spin_lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = spin_lock.h; path = ../../../src/nut/threading/sync/spin_lock.h; sourceTree = "<group>"; };
+		2E760D0922C633D900CA9B07 /* test_nano_lock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test_nano_lock.cpp; path = ../../../src/test_nut/threading/sync/test_nano_lock.cpp; sourceTree = "<group>"; };
 		2EA1F05F22525601007F402B /* timer_heap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = timer_heap.cpp; path = ../../../src/nut/time/timer_heap.cpp; sourceTree = "<group>"; };
 		2EA1F06022525602007F402B /* timer_heap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = timer_heap.h; path = ../../../src/nut/time/timer_heap.h; sourceTree = "<group>"; };
 		2EC937FC217A4C37005D5285 /* string_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = string_utils.cpp; path = ../../../src/nut/util/string/string_utils.cpp; sourceTree = "<group>"; };
@@ -483,12 +487,8 @@
 		2EE083CD2146DD3D008E4587 /* singleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = singleton.h; path = ../../../src/nut/memtool/singleton.h; sourceTree = "<group>"; };
 		2EE083D12146DD58008E4587 /* concurrent_queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = concurrent_queue.h; path = ../../../src/nut/threading/lockfree/concurrent_queue.h; sourceTree = "<group>"; };
 		2EE083D42146DD58008E4587 /* concurrent_stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = concurrent_stack.h; path = ../../../src/nut/threading/lockfree/concurrent_stack.h; sourceTree = "<group>"; };
-		2EE083DA2146DD6E008E4587 /* spinlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = spinlock.cpp; path = ../../../src/nut/threading/sync/spinlock.cpp; sourceTree = "<group>"; };
 		2EE083DE2146DD6E008E4587 /* sem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sem.cpp; path = ../../../src/nut/threading/sync/sem.cpp; sourceTree = "<group>"; };
-		2EE083E02146DD6E008E4587 /* rwlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rwlock.cpp; path = ../../../src/nut/threading/sync/rwlock.cpp; sourceTree = "<group>"; };
 		2EE083E12146DD6E008E4587 /* sem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sem.h; path = ../../../src/nut/threading/sync/sem.h; sourceTree = "<group>"; };
-		2EE083E22146DD6E008E4587 /* spinlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = spinlock.h; path = ../../../src/nut/threading/sync/spinlock.h; sourceTree = "<group>"; };
-		2EE083E42146DD6E008E4587 /* rwlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rwlock.h; path = ../../../src/nut/threading/sync/rwlock.h; sourceTree = "<group>"; };
 		2EE083F02146DD80008E4587 /* threading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = threading.h; path = ../../../src/nut/threading/threading.h; sourceTree = "<group>"; };
 		2EE083F22146DD80008E4587 /* thread_pool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = thread_pool.cpp; path = ../../../src/nut/threading/thread_pool.cpp; sourceTree = "<group>"; };
 		2EE083F32146DD80008E4587 /* thread_pool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = thread_pool.h; path = ../../../src/nut/threading/thread_pool.h; sourceTree = "<group>"; };
@@ -883,15 +883,15 @@
 		2E1927681AD900E100FDFFA6 /* sync */ = {
 			isa = PBXGroup;
 			children = (
-				2E449EB522B951C4002F3058 /* nanolock.cpp */,
-				2E449EB422B951C4002F3058 /* nanolock.h */,
+				2E760CFD22C633A500CA9B07 /* nano_lock.cpp */,
+				2E760CFE22C633A500CA9B07 /* nano_lock.h */,
+				2E760D0022C633A500CA9B07 /* shared_lock.cpp */,
+				2E760D0122C633A500CA9B07 /* shared_lock.h */,
+				2E760CFF22C633A500CA9B07 /* spin_lock.cpp */,
+				2E760D0222C633A500CA9B07 /* spin_lock.h */,
 				2EC93802217A4C73005D5285 /* dummy_lock.h */,
-				2EE083E02146DD6E008E4587 /* rwlock.cpp */,
-				2EE083E42146DD6E008E4587 /* rwlock.h */,
 				2EE083DE2146DD6E008E4587 /* sem.cpp */,
 				2EE083E12146DD6E008E4587 /* sem.h */,
-				2EE083DA2146DD6E008E4587 /* spinlock.cpp */,
-				2EE083E22146DD6E008E4587 /* spinlock.h */,
 			);
 			name = sync;
 			sourceTree = "<group>";
@@ -1188,7 +1188,7 @@
 		2E449EB822B951E4002F3058 /* sync */ = {
 			isa = PBXGroup;
 			children = (
-				2E449EB922B95202002F3058 /* test_nanolock.cpp */,
+				2E760D0922C633D900CA9B07 /* test_nano_lock.cpp */,
 			);
 			name = sync;
 			sourceTree = "<group>";
@@ -1350,7 +1350,6 @@
 				2EE083CE2146DD3D008E4587 /* free_guard.h in Headers */,
 				2EE083CB2146DD2B008E4587 /* sys_ma.h in Headers */,
 				2EE083072146DBA8008E4587 /* ring_buffer.h in Headers */,
-				2E449EB622B951C4002F3058 /* nanolock.h in Headers */,
 				2EE083CF2146DD3D008E4587 /* singleton.h in Headers */,
 				2EE0832B2146DC0C008E4587 /* lru_cache.h in Headers */,
 				2EE0843E2146DDF2008E4587 /* xml_dom.h in Headers */,
@@ -1377,6 +1376,7 @@
 				2E13800D22567B7500C8ECEB /* rsa_pkcs1.h in Headers */,
 				2EE083B52146DD0D008E4587 /* console_log_handler.h in Headers */,
 				2EE084072146DDA2008E4587 /* prime.h in Headers */,
+				2E760D0422C633A500CA9B07 /* nano_lock.h in Headers */,
 				2EE083B62146DD0D008E4587 /* log_handler.h in Headers */,
 				2EE083902146DCD6008E4587 /* exception.h in Headers */,
 				2E73C3372250B769008673C6 /* text_file.h in Headers */,
@@ -1386,7 +1386,6 @@
 				2EE083B82146DD0D008E4587 /* stream_log_handler.h in Headers */,
 				2E73C3332250B73A008673C6 /* time_diff.h in Headers */,
 				2EE083B72146DD0D008E4587 /* syslog_log_handler.h in Headers */,
-				2EE083EF2146DD6E008E4587 /* rwlock.h in Headers */,
 				2E13801622567B9900C8ECEB /* der_reader.h in Headers */,
 				2EE084102146DDB7008E4587 /* big_integer.h in Headers */,
 				2EE084212146DDD6008E4587 /* testcase_failure_exception.h in Headers */,
@@ -1405,8 +1404,8 @@
 				2EE083C52146DD2B008E4587 /* memory_allocator.h in Headers */,
 				2EE0843D2146DDF2008E4587 /* element_handler.h in Headers */,
 				2E72DEEC22900A860083E17E /* div_op.h in Headers */,
+				2E760D0822C633A500CA9B07 /* spin_lock.h in Headers */,
 				2EE083C92146DD2B008E4587 /* segments_mp.h in Headers */,
-				2EE083ED2146DD6E008E4587 /* spinlock.h in Headers */,
 				2EE083572146DC92008E4587 /* ref_counter.h in Headers */,
 				2EE0836A2146DCA9008E4587 /* platform.h in Headers */,
 				2EE083402146DC66008E4587 /* sha1.h in Headers */,
@@ -1446,6 +1445,7 @@
 				2E047C91217F5D1E00C10E14 /* priority_thread_pool.h in Headers */,
 				2EE084272146DDD6008E4587 /* stream_test_logger.h in Headers */,
 				2EE083B12146DD0D008E4587 /* circle_file_by_time_log_handler.h in Headers */,
+				2E760D0722C633A500CA9B07 /* shared_lock.h in Headers */,
 				2E73C31F2250B6F5008673C6 /* sha2_512.h in Headers */,
 				2E538EAA21975AE10060FED9 /* hp_retire_list.h in Headers */,
 				2EE0843F2146DDF2008E4587 /* xml_writer.h in Headers */,
@@ -1594,6 +1594,7 @@
 				2EE084932146DF4E008E4587 /* test_backtrace.cpp in Sources */,
 				2EE084B72146DFD6008E4587 /* test_rsa.cpp in Sources */,
 				2E3EA4C1219DBCEB00E55D46 /* test_concurrent_stack.cpp in Sources */,
+				2E760D0A22C633D900CA9B07 /* test_nano_lock.cpp in Sources */,
 				2EE0847F2146DEF7008E4587 /* test_bytearraystream.cpp in Sources */,
 				2EE084C12146DFFA008E4587 /* test_threadpool.cpp in Sources */,
 				2EE084CF2146E03D008E4587 /* test_xml_parser.cpp in Sources */,
@@ -1626,7 +1627,6 @@
 				2EE084952146DF5D008E4587 /* test_logging.cpp in Sources */,
 				2E538EA021975A3D0060FED9 /* test_comparable.cpp in Sources */,
 				2E72DEE222900A460083E17E /* test_fft.cpp in Sources */,
-				2E449EBA22B95202002F3058 /* test_nanolock.cpp in Sources */,
 				2EE0848C2146DF3B008E4587 /* test_lru_cache.cpp in Sources */,
 				2EE084AF2146DFC4008E4587 /* test_adler32.cpp in Sources */,
 				2EE084A82146DF9F008E4587 /* test_endian.cpp in Sources */,
@@ -1654,7 +1654,6 @@
 				2EE0842A2146DDD6008E4587 /* testcase_failure_exception.cpp in Sources */,
 				2EE0836D2146DCA9008E4587 /* sys.cpp in Sources */,
 				2EE0843C2146DDF2008E4587 /* xml_element.cpp in Sources */,
-				2EE083E52146DD6E008E4587 /* spinlock.cpp in Sources */,
 				2E73C32F2250B73A008673C6 /* time_wheel.cpp in Sources */,
 				2E13801822567B9900C8ECEB /* der_reader.cpp in Sources */,
 				2EE083B32146DD0D008E4587 /* circle_file_by_size_log_handler.cpp in Sources */,
@@ -1678,14 +1677,13 @@
 				2E73C3202250B6F5008673C6 /* sha2_256.cpp in Sources */,
 				2E3C76BF217B5AE300A5AB3F /* test_fixture.cpp in Sources */,
 				2EE083F72146DD80008E4587 /* thread_pool.cpp in Sources */,
+				2E760D0322C633A500CA9B07 /* nano_lock.cpp in Sources */,
 				2EE0840A2146DDA2008E4587 /* prime.cpp in Sources */,
 				2EE083B42146DD0D008E4587 /* syslog_log_handler.cpp in Sources */,
 				2EE083A12146DCF0008E4587 /* log_record.cpp in Sources */,
-				2E449EB722B951C4002F3058 /* nanolock.cpp in Sources */,
 				2EE083482146DC7A008E4587 /* aes_cbc_pkcs5.cpp in Sources */,
 				2EE083C62146DD2B008E4587 /* scoped_gc.cpp in Sources */,
 				2EE0839A2146DCF0008E4587 /* logger.cpp in Sources */,
-				2EE083EB2146DD6E008E4587 /* rwlock.cpp in Sources */,
 				2E538EAB21975AE10060FED9 /* hp_record.cpp in Sources */,
 				2EE083652146DCA9008E4587 /* path.cpp in Sources */,
 				2EE083E92146DD6E008E4587 /* sem.cpp in Sources */,
@@ -1704,11 +1702,13 @@
 				2EE084222146DDD6008E4587 /* test_logger.cpp in Sources */,
 				2EE084392146DDF2008E4587 /* xml_dom.cpp in Sources */,
 				2EE084462146DE03008E4587 /* ini_dom.cpp in Sources */,
+				2E760D0622C633A500CA9B07 /* shared_lock.cpp in Sources */,
 				2EE083642146DCA9008E4587 /* os.cpp in Sources */,
 				2EE083CA2146DD2B008E4587 /* sys_ma.cpp in Sources */,
 				2EE0836B2146DCA9008E4587 /* savefile.cpp in Sources */,
 				2EE0843B2146DDF2008E4587 /* xml_parser.cpp in Sources */,
 				2EE083BB2146DD0D008E4587 /* file_log_handler.cpp in Sources */,
+				2E760D0522C633A500CA9B07 /* spin_lock.cpp in Sources */,
 				2EE083B92146DD0D008E4587 /* console_log_handler.cpp in Sources */,
 				2EE084732146DE5E008E4587 /* console_util.cpp in Sources */,
 				2EA1F06122525602007F402B /* timer_heap.cpp in Sources */,

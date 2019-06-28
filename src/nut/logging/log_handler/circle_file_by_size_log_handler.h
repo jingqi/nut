@@ -9,8 +9,8 @@
 
 #include "../../nut_config.h"
 #include "../../platform/platform.h"
-#include "../../threading/sync/nanolock.h"
-#include "../../threading/sync/spinlock.h"
+#include "../../threading/sync/nano_lock.h"
+#include "../../threading/sync/spin_lock.h"
 #include "log_handler.h"
 
 

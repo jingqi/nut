@@ -1,6 +1,6 @@
 ﻿
 #include <nut/unittest/unittest.h>
-#include <nut/threading/sync/nanolock.h>
+#include <nut/threading/sync/nano_lock.h>
 
 
 using namespace nut;

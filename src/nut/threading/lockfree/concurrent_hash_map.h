@@ -9,7 +9,7 @@
 
 #include "../../numeric/word_array_integer/bit_op.h"
 #include "../../container/comparable.h"
-#include "../sync/nanolock.h"
+#include "../sync/nano_lock.h"
 #include "stamped_ptr.h"
 #include "hazard_pointer/hp_record.h"
 #include "hazard_pointer/hp_retire_list.h"
