@@ -52,13 +52,17 @@ private:
 
 }
 
-#define NUT_LOG_D(tag, fmt, ...)                                        \
+#ifdef NDEBUG
+#   define NUT_LOG_D(tag, fmt, ...) ((void)0)
+#else
+#   define NUT_LOG_D(tag, fmt, ...)                                     \
     do                                                                  \
     {                                                                   \
         ::nut::Logger::get_instance()->log(                             \
             ::nut::LL_DEBUG, (tag), NUT_SOURCE_LOCATION_ARGS, (fmt),    \
             ##__VA_ARGS__);                                             \
     } while (false)
+#endif
 
 #define NUT_LOG_I(tag, fmt, ...)                                        \
     do                                                                  \
