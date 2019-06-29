@@ -1185,7 +1185,7 @@ bool Path::is_link(const std::string& path) noexcept
     return false;
 #else
     struct stat info;
-    if (0 != ::stat(Path::abspath(path).c_str(), &info))
+    if (0 != ::lstat(Path::abspath(path).c_str(), &info))
         return false;
     return S_ISLNK(info.st_mode);
 #endif
@@ -1198,29 +1198,6 @@ bool Path::is_link(const std::wstring& path) noexcept
     return false;
 #else
     return Path::is_link(wstr_to_ascii(path));
-#endif
-}
-
-bool Path::is_llink(const std::string& path) noexcept
-{
-#if NUT_PLATFORM_OS_WINDOWS
-    UNUSED(path);
-    return false;
-#else
-    struct stat info;
-    if (0 != ::lstat(Path::abspath(path).c_str(), &info))
-        return false;
-    return S_ISLNK(info.st_mode);
-#endif
-}
-
-bool Path::is_llink(const std::wstring& path) noexcept
-{
-#if NUT_PLATFORM_OS_WINDOWS
-    UNUSED(path);
-    return false;
-#else
-    return Path::is_llink(wstr_to_ascii(path));
 #endif
 }
 

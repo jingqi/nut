@@ -87,7 +87,7 @@ public:
     static std::wstring abspath(const std::wstring& path) noexcept;
 
     /**
-     * 解析软连接, 并转换为绝对路径
+     * 解析符号连接, 并转换为绝对路径
      */
     static std::string realpath(const std::string& path) noexcept;
     static std::wstring realpath(const std::wstring& path) noexcept;
@@ -237,16 +237,10 @@ public:
     static long long get_size(const std::wstring& path) noexcept;
 
     /**
-     * 是否是软连接
+     * 是否是符号连接(显然, 不解析符号链接)
      */
     static bool is_link(const std::string& path) noexcept;
     static bool is_link(const std::wstring& path) noexcept;
-
-    /**
-     * 是否是软连接(不解析符号链接)
-     */
-    static bool is_llink(const std::string& path) noexcept;
-    static bool is_llink(const std::wstring& path) noexcept;
 
     /**
      * 是否是目录
