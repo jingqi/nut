@@ -985,6 +985,14 @@ public:
         return _ranges.size();
     }
 
+    /**
+     * @return 找到则返回 >=0，否则 <0
+     */
+    ssize_t range_index_of(int_type value) const noexcept
+    {
+        return binary_search(value);
+    }
+
     const Range& range_at(size_t index) const noexcept
     {
         return _ranges.at(index);
@@ -1047,7 +1055,7 @@ private:
      *
      * @return 找到则返回 >=0，否则 <0
      */
-    ssize_t binary_search(int_type value) noexcept
+    ssize_t binary_search(int_type value) const noexcept
     {
         ssize_t left = -1, right = _ranges.size();
         while (left + 1 < right)
