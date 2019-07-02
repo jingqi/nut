@@ -12,4 +12,7 @@
 #   define NUT_API DLL_IMPORT
 #endif
 
+// 允许最大的 ::alloca() 分配内存大小
+#define NUT_MAX_ALLOCA_SIZE 2048
+
 #endif

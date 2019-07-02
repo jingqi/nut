@@ -15,7 +15,9 @@
 #   include <alloca.h>
 #endif
 
+#include "../../nut_config.h"
 #include "../../platform/int_type.h" // for ssize_t
+#include "../../memtool/free_guard.h"
 #include "kmp.h"
 #include "to_string.h"
 #include "string_utils.h"
@@ -38,7 +40,18 @@ NUT_API std::vector<std::string> str_split(const char *str, const char *sep_str,
     assert(nullptr != str && nullptr != sep_str && 0 != sep_str[0]);
 
     const size_t sep_len = ::strlen(sep_str);
-    int *next = (int*) ::alloca(sizeof(int) * sep_len);
+    const size_t alloc_size = sizeof(int) * sep_len;
+    FreeGuard g;
+    int *next;
+    if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+    {
+        next = (int*) ::alloca(alloc_size);
+    }
+    else
+    {
+        next = (int*) ::malloc(alloc_size);
+        g.set(next);
+    }
     kmp_build_next(sep_str, next, sep_len);
 
     const size_t str_len = ::strlen(str);
@@ -69,7 +82,18 @@ NUT_API std::vector<std::wstring> str_split(
     assert(nullptr != str && nullptr != sep_str && 0 != sep_str[0]);
 
     const size_t sep_len = ::wcslen(sep_str);
-    int *next = (int*) ::alloca(sizeof(int) * sep_len);
+    const size_t alloc_size = sizeof(int) * sep_len;
+    FreeGuard g;
+    int *next;
+    if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+    {
+        next = (int*) ::alloca(alloc_size);
+    }
+    else
+    {
+        next = (int*) ::malloc(alloc_size);
+        g.set(next);
+    }
     kmp_build_next(sep_str, next, sep_len);
 
     const size_t str_len = ::wcslen(str);

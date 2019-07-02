@@ -9,6 +9,8 @@
 #   include <alloca.h>
 #endif
 
+#include "../../nut_config.h"
+#include "../../memtool/free_guard.h"
 #include "kmp.h"
 
 
@@ -29,7 +31,18 @@ namespace nut
  */
 NUT_API int kmp_search(const std::string& src, size_t start, const std::string& target)
 {
-    int *next = (int*) ::alloca(sizeof(int) * target.length());
+    FreeGuard g;
+    const size_t alloc_size = sizeof(int) * target.length();
+    int *next;
+    if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+    {
+        next = (int*) ::alloca(alloc_size);
+    }
+    else
+    {
+        next = (int*) ::malloc(alloc_size);
+        g.set(next);
+    }
     assert(nullptr != next);
     kmp_build_next(target.c_str(), next, target.length());
     const int ret = kmp_search(src.c_str(), src.length(), start, target.c_str(),
@@ -39,7 +52,18 @@ NUT_API int kmp_search(const std::string& src, size_t start, const std::string& 
 
 NUT_API int kmp_search(const std::wstring& src, size_t start, const std::wstring& target)
 {
-    int *next = (int*) ::alloca(sizeof(int) * target.length());
+    FreeGuard g;
+    const size_t alloc_size = sizeof(int) * target.length();
+    int *next;
+    if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+    {
+        next = (int*) ::alloca(alloc_size);
+    }
+    else
+    {
+        next = (int*) ::malloc(alloc_size);
+        g.set(next);
+    }
     assert(nullptr != next);
     kmp_build_next(target.c_str(), next, target.length());
     const int ret = kmp_search(src.c_str(), src.length(), start, target.c_str(),

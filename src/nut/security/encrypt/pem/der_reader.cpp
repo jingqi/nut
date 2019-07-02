@@ -13,7 +13,9 @@
 #   include <alloca.h>
 #endif
 
+#include "../../../nut_config.h"
 #include "../../../platform/endian.h"
+#include "../../../memtool/free_guard.h"
 #include "der_reader.h"
 
 
@@ -58,7 +60,17 @@ NUT_API ssize_t der_read_integer(const uint8_t *data, size_t available, BigInteg
     if (nullptr != rs)
     {
 #if NUT_ENDIAN_LITTLE_BYTE
-        uint8_t *buf = (uint8_t*) ::alloca(len);
+        FreeGuard g;
+        uint8_t *buf;
+        if (len <= NUT_MAX_ALLOCA_SIZE)
+        {
+            buf = (uint8_t*) ::alloca(len);
+        }
+        else
+        {
+            buf = (uint8_t*) ::malloc(len);
+            g.set(buf);
+        }
         ::memcpy(buf, data + 1 + readed, len);
         bswap(buf, len);
         rs->set(buf, len, false);

@@ -12,6 +12,8 @@
 #   include <alloca.h>
 #endif
 
+#include "../../nut_config.h"
+#include "../../memtool/free_guard.h"
 #include "../word_array_integer/word_array_integer.h"
 #include "ntt.h"
 
@@ -116,7 +118,18 @@ void unsigned_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *
     const size_t ac_len = std::min<size_t>(a_len + c_len, P - base_len);
     assert(ac_len <= ab_len + cd_len);
     const size_t bd_len = std::min<size_t>(b_len + d_len, P);
-    T *const AB = (T*) ::alloca(sizeof(T) * (ab_len + cd_len + abcd_len));
+    FreeGuard g;
+    const size_t alloc_size = sizeof(T) * (ab_len + cd_len + abcd_len);
+    T *AB;
+    if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+    {
+        AB = (T*) ::alloca(alloc_size);
+    }
+    else
+    {
+        AB = (T*) ::malloc(alloc_size);
+        g.set(AB);
+    }
     T *const CD = AB + ab_len;
     T *const ABCD = CD + cd_len;
     T *const AC = AB; // 复用 AB + CD 的存储空间
@@ -179,11 +192,21 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
     const bool a_neg = is_negative(a, M), b_neg = is_negative(b, N);
     T *aa = nullptr, *bb = nullptr;
     size_t MM = M, NN = N;
+    FreeGuard g;
     if (a_neg && b_neg)
     {
         ++MM;
         ++NN;
-        aa = (T*) ::alloca(sizeof(T) * (MM + NN));
+        const size_t alloc_size = sizeof(T) * (MM + NN);
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            aa = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            aa = (T*) ::malloc(alloc_size);
+            g.set(aa);
+        }
         bb = aa + MM;
         signed_negate(a, M, aa, MM);
         signed_negate(b, N, bb, NN);
@@ -191,13 +214,31 @@ void signed_karatsuba_multiply(const T *a, size_t M, const T *b, size_t N, T *x,
     else if (a_neg)
     {
         ++MM;
-        aa = (T*) ::alloca(sizeof(T) * MM);
+        const size_t alloc_size = sizeof(T) * MM;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            aa = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            aa = (T*) ::malloc(alloc_size);
+            g.set(aa);
+        }
         signed_negate(a, M, aa, MM);
     }
     else if (b_neg)
     {
         ++NN;
-        bb = (T*) ::alloca(sizeof(T) * NN);
+        const size_t alloc_size = sizeof(T) * NN;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            bb = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            bb = (T*) ::malloc(alloc_size);
+            g.set(bb);
+        }
         signed_negate(b, N, bb, NN);
     }
 

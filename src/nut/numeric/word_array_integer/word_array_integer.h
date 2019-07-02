@@ -27,6 +27,7 @@
 #include "../../nut_config.h"
 #include "../../platform/int_type.h"
 #include "../../platform/endian.h"
+#include "../../memtool/free_guard.h"
 #include "shift_op.h"
 
 
@@ -247,8 +248,20 @@ uint8_t signed_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P) n
 
     // 避免区域交叉覆盖
     T *retx = x;
+    FreeGuard g;
     if ((a < x && x < a + M) || (b < x && x < b + N))
-        retx = (T*) ::alloca(sizeof(T) * P);
+    {
+        const size_t alloc_size = sizeof(T) * P;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
+    }
 
     uint8_t carry = 0;
     const T filla = (is_positive(a, M) ? 0 : ~(T)0),
@@ -290,8 +303,20 @@ uint8_t unsigned_add(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 
     // 避免区域交叉覆盖
     T *retx = x;
+    FreeGuard g;
     if ((a < x && x < a + M) || (b < x && x < b + N))
-        retx = (T*) ::alloca(sizeof(T) * P);
+    {
+        const size_t alloc_size = sizeof(T) * P;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
+    }
 
     uint8_t carry = 0;
     for (size_t i = 0; i < P; ++i)
@@ -362,8 +387,20 @@ uint8_t signed_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P) n
 
     // 避免区域交叉覆盖
     T *retx = x;
+    FreeGuard g;
     if ((a < x && x < a + M) || (b < x && x < b + N))
-        retx = (T*) ::alloca(sizeof(T) * P);
+    {
+        const size_t alloc_size = sizeof(T) * P;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
+    }
 
     const T filla = (is_positive(a, M) ? 0 : ~(T)0),
         fillb = (is_positive(b, N) ? 0 : ~(T)0);
@@ -405,8 +442,20 @@ uint8_t unsigned_sub(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 
     // 避免区域交叉覆盖
     T *retx = x;
+    FreeGuard g;
     if ((a < x && x < a + M) || (b < x && x < b + N))
-        retx = (T*) ::alloca(sizeof(T) * P);
+    {
+        const size_t alloc_size = sizeof(T) * P;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
+    }
 
     uint8_t carry = 1;
     for (size_t i = 0; i < P; ++i)
@@ -477,8 +526,20 @@ uint8_t signed_negate(const T *a, size_t M, T *x, size_t N) noexcept
 
     // 避免区域交叉覆盖
     T *retx = x;
+    FreeGuard g;
     if (a < x && x < a + M)
-        retx = (T*) ::alloca(sizeof(T) * N);
+    {
+        const size_t alloc_size = sizeof(T) * N;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
+    }
 
     uint8_t carry = 1;
     const T fill = (is_positive(a, M) ? 0 : ~(T)0);
@@ -518,8 +579,20 @@ uint8_t unsigned_negate(const T *a, size_t M, T *x, size_t N) noexcept
 
     // 避免区域交叉覆盖
     T *retx = x;
+    FreeGuard g;
     if (a < x && x < a + M)
-        retx = (T*) ::alloca(sizeof(T) * N);
+    {
+        const size_t alloc_size = sizeof(T) * N;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
+    }
 
     uint8_t carry = 1;
     for (size_t i = 0; i < N; ++i)

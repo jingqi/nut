@@ -66,6 +66,7 @@
 #endif
 
 #include "../../nut_config.h"
+#include "../../memtool/free_guard.h"
 #include "../word_array_integer/word_array_integer.h"
 #include "../word_array_integer/bit_op.h"
 
@@ -195,11 +196,21 @@ void signed_ntt_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_
     const bool a_neg = is_negative(a, M), b_neg = is_negative(b, N);
     T *aa = nullptr, *bb = nullptr;
     size_t MM = M, NN = N;
+    FreeGuard g;
     if (a_neg && b_neg)
     {
         ++MM;
         ++NN;
-        aa = (T*) ::alloca(sizeof(T) * (MM + NN));
+        const size_t alloc_size = sizeof(T) * (MM + NN);
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            aa = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            aa = (T*) ::malloc(alloc_size);
+            g.set(aa);
+        }
         bb = aa + MM;
         signed_negate(a, M, aa, MM);
         signed_negate(b, N, bb, NN);
@@ -207,13 +218,31 @@ void signed_ntt_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_
     else if (a_neg)
     {
         ++MM;
-        aa = (T*) ::alloca(sizeof(T) * MM);
+        const size_t alloc_size = sizeof(T) * MM;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            aa = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            aa = (T*) ::malloc(alloc_size);
+            g.set(aa);
+        }
         signed_negate(a, M, aa, MM);
     }
     else if (b_neg)
     {
         ++NN;
-        bb = (T*) ::alloca(sizeof(T) * NN);
+        const size_t alloc_size = sizeof(T) * NN;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            bb = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            bb = (T*) ::malloc(alloc_size);
+            g.set(bb);
+        }
         signed_negate(b, N, bb, NN);
     }
 

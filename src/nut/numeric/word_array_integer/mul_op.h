@@ -15,7 +15,8 @@
 #   include <alloca.h>
 #endif
 
-
+#include "../../nut_config.h"
+#include "../../memtool/free_guard.h"
 #include "../../platform/int_type.h"
 #include "../../platform/endian.h"
 #include "shift_op.h"
@@ -59,8 +60,20 @@ void _unsigned_square(const T *a, size_t M, T *x, size_t N) noexcept
 
     // 避免区域交叉覆盖
     T *retx = x;
+    FreeGuard g;
     if (a - N < x && x < a + M)
-        retx = (T*) ::alloca(sizeof(T) * N);
+    {
+        const size_t alloc_size = sizeof(T) * N;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
+    }
 
     // 先计算一半
     ::memset(retx, 0, sizeof(T) * N);
@@ -155,8 +168,20 @@ void signed_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t P)
 
     // 避免区域交叉覆盖
     T *retx = x;
+    FreeGuard g;
     if ((a - P < x && x < a + M) || (b - P < x && x < b + N))
-        retx = (T*) ::alloca(sizeof(T) * P);
+    {
+        const size_t alloc_size = sizeof(T) * P;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
+    }
 
     // 乘法
     const T filla = (is_positive(a,M) ? 0 : ~(T)0),
@@ -209,8 +234,20 @@ void unsigned_multiply(const T *a, size_t M, const T *b, size_t N, T *x, size_t 
 
     // 避免区域交叉覆盖
     T *retx = x;
+    FreeGuard g;
     if ((a - P < x && x < a + M) || (b - P < x && x < b + N))
-        retx = (T*) ::alloca(sizeof(T) * P);
+    {
+        const size_t alloc_size = sizeof(T) * P;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
+    }
 
     // 乘法
     ::memset(retx, 0, sizeof(T) * P);

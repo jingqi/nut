@@ -15,6 +15,7 @@
 #endif
 
 #include "../../nut_config.h"
+#include "../../memtool/free_guard.h"
 #include "../../platform/int_type.h"
 
 
@@ -34,8 +35,20 @@ void bit_and(const T *a, const T *b, T *x, size_t N) noexcept
 #if 0 // unoptimized
     // 避免区域交叉覆盖
     T *retx = x;
+    FreeGuard g;
     if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (T*) ::alloca(sizeof(T) * N);
+    {
+        const size_t alloc_size = sizeof(T) * N;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
+    }
 
     for (size_t i = 0; i < N; ++i)
         retx[i] = a[i] & b[i];
@@ -57,7 +70,18 @@ void bit_and(const T *a, const T *b, T *x, size_t N) noexcept
     else
     {
         // 避免区域交叉覆盖
-        T *const retx = (T*) ::alloca(sizeof(T) * N);
+        FreeGuard g;
+        T *retx;
+        const size_t alloc_size = sizeof(T) * N;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
 
         for (size_t i = 0; i < N; ++i)
             retx[i] = a[i] & b[i];
@@ -81,8 +105,20 @@ void bit_or(const T *a, const T *b, T *x, size_t N) noexcept
 #if 0 // unoptimized
     // 避免区域交叉覆盖
     T *retx = x;
+    FreeGuard g;
     if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (T*) ::alloca(sizeof(T) * N);
+    {
+        const size_t alloc_size = sizeof(T) * N;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
+    }
 
     for (size_t i = 0; i < N; ++i)
         retx[i] = a[i] | b[i];
@@ -104,7 +140,18 @@ void bit_or(const T *a, const T *b, T *x, size_t N) noexcept
     else
     {
         // 避免区域交叉覆盖
-        T *const retx = (T*) ::alloca(sizeof(T) * N);
+        FreeGuard g;
+        T *retx;
+        const size_t alloc_size = sizeof(T) * N;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
 
         for (size_t i = 0; i < N; ++i)
             retx[i] = a[i] | b[i];
@@ -128,8 +175,20 @@ void bit_xor(const T *a, const T *b, T *x, size_t N) noexcept
 #if 0 // unoptimized
     // 避免区域交叉覆盖
     T *retx = x;
+    FreeGuard g;
     if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (T*) ::alloca(sizeof(T) * N);
+    {
+        const size_t alloc_size = sizeof(T) * N;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
+    }
 
     for (size_t i = 0; i < N; ++i)
         retx[i] = a[i] ^ b[i];
@@ -151,7 +210,18 @@ void bit_xor(const T *a, const T *b, T *x, size_t N) noexcept
     else
     {
         // 避免区域交叉覆盖
-        T *const retx = (T*) ::alloca(sizeof(T) * N);
+        FreeGuard g;
+        const size_t alloc_size = sizeof(T) * N;
+        T *retx;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
 
         for (size_t i = 0; i < N; ++i)
             retx[i] = a[i] ^ b[i];
@@ -175,8 +245,20 @@ void bit_nxor(const T *a, const T *b, T *x, size_t N) noexcept
 #if 0 // unoptimized
     // 避免区域交叉覆盖
     T *retx = x;
+    FreeGuard g;
     if ((a < x && x < a + N) || (b < x && x < b + N))
-        retx = (T*) ::alloca(sizeof(T) * N);
+    {
+        const size_t alloc_size = sizeof(T) * N;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
+    }
 
     for (size_t i = 0; i < N; ++i)
         retx[i] = ~(a[i] ^ b[i]);
@@ -198,7 +280,18 @@ void bit_nxor(const T *a, const T *b, T *x, size_t N) noexcept
     else
     {
         // 避免区域交叉覆盖
-        T *const retx = (T*) ::alloca(sizeof(T) * N);
+        FreeGuard g;
+        const size_t alloc_size = sizeof(T) * N;
+        T *retx;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            retx = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            retx = (T*) ::malloc(alloc_size);
+            g.set(retx);
+        }
 
         for (size_t i = 0; i < N; ++i)
             retx[i] = ~(a[i] ^ b[i]);

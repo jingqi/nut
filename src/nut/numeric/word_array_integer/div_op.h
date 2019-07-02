@@ -15,6 +15,8 @@
 #   include <alloca.h>
 #endif
 
+#include "../../nut_config.h"
+#include "../../memtool/free_guard.h"
 #include "shift_op.h"
 #include "word_array_integer.h"
 
@@ -55,18 +57,46 @@ void signed_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P, T
                                   (b - Q < y && y < b + N));
     T *quotient = x; // 商, 可以为 nullptr
     T *remainder = y; // 余数, 不能为 nullptr
+    FreeGuard g;
     if (alloc_quotient && alloc_remainder)
     {
-        quotient = (T*) ::alloca(sizeof(T) * (quotient_len + divisor_len));
+        const size_t alloc_size = sizeof(T) * (quotient_len + divisor_len);
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            quotient = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            quotient = (T*) ::malloc(alloc_size);
+            g.set(quotient);
+        }
         remainder = quotient + quotient_len;
     }
     else if (alloc_quotient)
     {
-        quotient = (T*) ::alloca(sizeof(T) * (quotient_len));
+        const size_t alloc_size = sizeof(T) * (quotient_len);
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            quotient = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            quotient = (T*) ::malloc(alloc_size);
+            g.set(quotient);
+        }
     }
     else if (alloc_remainder)
     {
-        remainder = (T*) ::alloca(sizeof(T) * divisor_len);
+        const size_t alloc_size = sizeof(T) * divisor_len;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            remainder = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            remainder = (T*) ::malloc(alloc_size);
+            g.set(remainder);
+        }
     }
 
     // 逐位试商
@@ -174,18 +204,46 @@ void unsigned_divide(const T *a, size_t M, const T *b, size_t N, T *x, size_t P,
                                   (b - Q < y && y < b + N));
     T *quotient = x; // 商，可以为 nullptr
     T *remainder = y; // 余数，不能为 nullptr
+    FreeGuard g;
     if (alloc_quotient && alloc_remainder)
     {
-        quotient = (T*) ::alloca(sizeof(T) * (quotient_len + divisor_len));
+        const size_t alloc_size = sizeof(T) * (quotient_len + divisor_len);
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            quotient = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            quotient = (T*) ::malloc(alloc_size);
+            g.set(quotient);
+        }
         remainder = quotient + quotient_len;
     }
     else if (alloc_quotient)
     {
-        quotient = (T*) ::alloca(sizeof(T) * quotient_len);
+        const size_t alloc_size = sizeof(T) * quotient_len;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            quotient = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            quotient = (T*) ::malloc(alloc_size);
+            g.set(quotient);
+        }
     }
     else if (alloc_remainder)
     {
-        remainder = (T*) ::alloca(sizeof(T) * divisor_len);
+        const size_t alloc_size = sizeof(T) * divisor_len;
+        if (alloc_size <= NUT_MAX_ALLOCA_SIZE)
+        {
+            remainder = (T*) ::alloca(alloc_size);
+        }
+        else
+        {
+            remainder = (T*) ::malloc(alloc_size);
+            g.set(remainder);
+        }
     }
 
     // 逐位试商
