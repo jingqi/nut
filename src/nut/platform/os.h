@@ -86,6 +86,12 @@ public:
     static bool rename(const std::string& from, const std::string& to) noexcept;
     static bool rename(const std::wstring& from, const std::wstring& to) noexcept;
 
+    /**
+     * 截断文件
+     */
+    static bool truncate(const std::string& path, long long size) noexcept;
+    static bool truncate(const std::wstring& path, long long size) noexcept;
+
 private:
     OS() = delete;
 };

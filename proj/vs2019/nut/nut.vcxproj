@@ -183,6 +183,7 @@
     <ClInclude Include="..\..\..\src\nut\numeric\word_array_integer\word_array_integer.h" />
     <ClInclude Include="..\..\..\src\nut\nut.h" />
     <ClInclude Include="..\..\..\src\nut\nut_config.h" />
+    <ClInclude Include="..\..\..\src\nut\platform\fd.h" />
     <ClInclude Include="..\..\..\src\nut\platform\int_type.h" />
     <ClInclude Include="..\..\..\src\nut\platform\os.h" />
     <ClInclude Include="..\..\..\src\nut\platform\path.h" />
@@ -281,6 +282,7 @@
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\ntt.cpp" />
     <ClCompile Include="..\..\..\src\nut\numeric\numeric_algo\prime.cpp" />
     <ClCompile Include="..\..\..\src\nut\numeric\word_array_integer\bit_op.cpp" />
+    <ClCompile Include="..\..\..\src\nut\platform\fd.cpp" />
     <ClCompile Include="..\..\..\src\nut\platform\os.cpp" />
     <ClCompile Include="..\..\..\src\nut\platform\path.cpp" />
     <ClCompile Include="..\..\..\src\nut\platform\savefile.cpp" />

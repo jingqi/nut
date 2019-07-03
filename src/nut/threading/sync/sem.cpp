@@ -80,7 +80,7 @@ void Semaphore::wait() noexcept
 #endif
 }
 
-bool Semaphore::trywait() noexcept
+bool Semaphore::try_wait() noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
     return WAIT_OBJECT_0 == ::WaitForSingleObject(_sem, 0);
@@ -96,24 +96,22 @@ bool Semaphore::trywait() noexcept
 #endif
 }
 
-bool Semaphore::timedwait(unsigned s, unsigned ms) noexcept
+bool Semaphore::try_wait_for_ms(uint64_t ms) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
-    const DWORD dw_milliseconds = s * 1000 + ms;
-    return WAIT_OBJECT_0 == ::WaitForSingleObject(_sem, dw_milliseconds);
+    return WAIT_OBJECT_0 == ::WaitForSingleObject(_sem, ms);
 #elif NUT_PLATFORM_OS_MACOS
     std::unique_lock<std::mutex> unique_guard(_lock);
-    const bool ret = _cond.wait_for(
-        unique_guard, std::chrono::seconds(s) + std::chrono::milliseconds(ms),
-        [=] {return _count > 0;});
+    const bool ret = _cond.wait_for(unique_guard, std::chrono::milliseconds(ms),
+                                    [=] {return _count > 0;});
     if (ret)
         --_count;
     return ret;
 #else
     struct timespec abstime;
     ::clock_gettime(CLOCK_REALTIME, &abstime);
-    abstime.tv_sec += s;
-    abstime.tv_nsec += ((long)ms) * 1000 * 1000;
+    abstime.tv_sec += ms / 1000;
+    abstime.tv_nsec += long((ms % 1000) * 1000 * 1000);
     return 0 == ::sem_timedwait(&_sem, &abstime);
 #endif
 }

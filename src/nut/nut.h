@@ -11,6 +11,7 @@
 #include "platform/os.h"
 #include "platform/path.h"
 #include "platform/sys.h"
+#include "platform/fd.h"
 #include "platform/savefile.h"
 
 // debugging

@@ -2,6 +2,9 @@
 #ifndef ___HEADFILE_49083D01_04DA_4385_A1BD_6D1F2902FA7A_
 #define ___HEADFILE_49083D01_04DA_4385_A1BD_6D1F2902FA7A_
 
+#include <stdint.h>
+#include <chrono>
+
 #include "../../platform/platform.h"
 
 #if NUT_PLATFORM_OS_WINDOWS
@@ -28,12 +31,19 @@ public:
     void post() noexcept;
 
     void wait() noexcept;
-    bool trywait() noexcept;
-    bool timedwait(unsigned s, unsigned ms) noexcept;
+    bool try_wait() noexcept;
+
+    template <class Rep, class Period>
+    bool try_wait_for(const std::chrono::duration<Rep,Period>& timeout)
+    {
+        return try_wait_for_ms(std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count());
+    }
 
 private:
     Semaphore(const Semaphore&) = delete;
     Semaphore& operator=(const Semaphore&) = delete;
+
+    bool try_wait_for_ms(uint64_t ms) noexcept;
 
 private:
 #if NUT_PLATFORM_OS_WINDOWS

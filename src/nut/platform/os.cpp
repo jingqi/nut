@@ -484,4 +484,50 @@ bool OS::rename(const std::wstring& from, const std::wstring& to) noexcept
 #endif
 }
 
+bool OS::truncate(const std::string &path, long long size) noexcept
+{
+    assert(size >= 0);
+
+#if NUT_PLATFORM_OS_WINDOWS
+    HANDLE h = ::CreateFileA(Path::abspath(path).c_str(), GENERIC_WRITE,
+                             FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                             nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (INVALID_HANDLE_VALUE == h)
+        return false;
+    if (size != ::SetFilePointer(h, size, nullptr, FILE_BEGIN))
+    {
+        ::CloseHandle(h);
+        return false;
+    }
+    const bool ret = (FALSE != ::SetEndOfFile(h));
+    ::CloseHandle(h);
+    return ret;
+#else
+    return 0 == ::truncate(Path::abspath(path).c_str(), size);
+#endif
+}
+
+bool OS::truncate(const std::wstring &path, long long size) noexcept
+{
+    assert(size >= 0);
+
+#if NUT_PLATFORM_OS_WINDOWS
+    HANDLE h = ::CreateFileW(Path::abspath(path).c_str(), GENERIC_WRITE,
+                             FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                             nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (INVALID_HANDLE_VALUE == h)
+        return false;
+    if (size != ::SetFilePointer(h, size, nullptr, FILE_BEGIN))
+    {
+        ::CloseHandle(h);
+        return false;
+    }
+    const bool ret = (FALSE != ::SetEndOfFile(h));
+    ::CloseHandle(h);
+    return ret;
+#else
+    return OS::truncate(wstr_to_ascii(path), size);
+#endif
+}
+
 }

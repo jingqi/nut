@@ -469,6 +469,9 @@
     <ClInclude Include="..\..\..\src\nut\threading\sync\spin_lock.h">
       <Filter>nut\threading\sync</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\platform\fd.h">
+      <Filter>nut\platform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">
@@ -713,6 +716,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\threading\sync\spin_lock.cpp">
       <Filter>nut\threading\sync</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\platform\fd.cpp">
+      <Filter>nut\platform</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
