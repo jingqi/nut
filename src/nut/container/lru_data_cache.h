@@ -268,12 +268,7 @@ public:
         assert(nullptr != pdata && nullptr != psize);
         typename map_type::const_iterator const iter = _map.find(k);
         if (iter == _map.end())
-        {
-#ifndef NDEBUG
-            ++_miss_count;
-#endif
             return false;
-        }
 
         Node *const p = iter->second;
         assert(nullptr != p);
@@ -281,11 +276,6 @@ public:
         *psize = p->size;
         remove_from_list(p);
         push_list_head(p);
-
-#ifndef NDEBUG
-        ++_hit_count;
-        _hit_size += p->size;
-#endif
         return true;
     }
 
@@ -303,12 +293,6 @@ public:
         _list_end = nullptr;
         _map.clear();
         _bytes_size = 0;
-
-#ifndef NDEBUG
-        _hit_count = 0;
-        _hit_size = 0;
-        _miss_count = 0;
-#endif
     }
 
 private:
@@ -361,10 +345,6 @@ private:
     size_t _bytes_size = 0, _bytes_capacity = 0;
     map_type _map;
     Node *_list_head = nullptr, *_list_end = nullptr;
-
-#ifndef NDEBUG
-    size_t _hit_count = 0, _hit_size = 0, _miss_count = 0;
-#endif
 };
 
 

@@ -41,6 +41,7 @@
 #include "container/integer_set.h"
 #include "container/bit_stream.h"
 #include "container/lru_cache.h"
+#include "container/lru_pool.h"
 #include "container/lru_data_cache.h"
 #include "container/bytestream/input_stream.h"
 #include "container/bytestream/output_stream.h"

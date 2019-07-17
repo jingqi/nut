@@ -14,7 +14,7 @@ namespace nut
  * enable rc_ptr count
  *
  * example:
- *    rc_ptr<enrc<std::string> > v = rc_new<enref<std::string> >("abc");
+ *    rc_ptr<enrc<std::string>> v = rc_new<enrc<std::string>>("abc");
  */
 template <typename T>
 class enrc : public T

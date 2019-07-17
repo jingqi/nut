@@ -32,7 +32,6 @@ class TestLRUCache : public TestFixture
         c.clear();
         NUT_TA(c.get(2) == nullptr);
     }
-
 };
 
 NUT_REGISTER_FIXTURE(TestLRUCache, "container, quiet")

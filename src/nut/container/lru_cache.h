@@ -11,7 +11,7 @@ namespace nut
 {
 
 /**
- * Least-Recently-Used cache
+ * Keyed Least-Recently-Used cache
  */
 template <typename K, typename V, typename HASH = std::hash<K>>
 class LRUCache
@@ -293,26 +293,17 @@ public:
         return _map.find(k) != _map.end();
     }
 
-    const V* get(const K& k) noexcept
+    V* get(const K& k) noexcept
     {
         typename map_type::const_iterator const iter = _map.find(k);
         if (iter == _map.end())
-        {
-#ifndef NDEBUG
-            ++_miss_count;
-#endif
             return nullptr;
-        }
 
         Node *const p = iter->second;
         assert(nullptr != p);
-        const V* const ret = &p->value;
+        V* const ret = &p->value;
         remove_from_list(p);
         push_list_head(p);
-
-#ifndef NDEBUG
-        ++_hit_count;
-#endif
         return ret;
     }
 
@@ -329,16 +320,11 @@ public:
         _list_head = nullptr;
         _list_end = nullptr;
         _map.clear();
-
-#ifndef NDEBUG
-        _hit_count = 0;
-        _miss_count = 0;
-#endif
     }
 
 private:
-    LRUCache(const LRUCache<K,V>&) = delete;
-    LRUCache<K,V>& operator=(const LRUCache<K,V>&) = delete;
+    LRUCache(const LRUCache<K,V,HASH>&) = delete;
+    LRUCache<K,V,HASH>& operator=(const LRUCache<K,V,HASH>&) = delete;
 
     void remove_from_list(Node *p) noexcept
     {
@@ -385,10 +371,6 @@ private:
     size_t _capacity = 0;
     map_type _map;
     Node *_list_head = nullptr, *_list_end = nullptr;
-
-#ifndef NDEBUG
-    size_t _hit_count = 0, _miss_count = 0;
-#endif
 };
 
 }
