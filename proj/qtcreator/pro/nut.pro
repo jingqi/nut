@@ -3,6 +3,6 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     nut \
-    test_nut
+    test-nut
 
-test_nut.depends = nut
+test-nut.depends = nut

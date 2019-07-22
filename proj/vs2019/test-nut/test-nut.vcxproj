@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{92410E97-CAAC-4592-B7E3-79464393EB35}</ProjectGuid>
     <RootNamespace>nut</RootNamespace>
-    <ProjectName>test_nut</ProjectName>
+    <ProjectName>test-nut</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -140,69 +140,70 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\test_nut\container\bytestream\test_bytearraystream.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\container\rwbuffer\test_fragment_buffer.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\container\rwbuffer\test_ring_buffer.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\container\skiplist\test_skiplist.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\container\test_bitstream.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\container\test_bundle.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\container\test_comparable.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\container\test_integer_set.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\container\test_lru_cache.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\container\test_lru_data_cache.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\container\tree\rtree\test_rtree.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\container\tree\test_bstree.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\container\tree\test_rbtree.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\container\tree\test_trie_tree.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\debugging\test_backtrace.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\logging\test_logging.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\main.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\mem\test_lengthfixed_mp.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\mem\test_scoped_gc.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\mem\test_segments_mp.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\numeric\test_biginteger.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\numeric\test_fft.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\numeric\test_ntt.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\numeric\test_numeric_algo.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\numeric\test_word_array_integer.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\platform\test_endian.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\platform\test_os.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\platform\test_path.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\platform\test_savefile.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\platform\test_sys.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\rc\test_rc.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\security\digest\test_adler32.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\security\digest\test_crc16.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\security\digest\test_crc32.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\security\digest\test_md5.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\security\digest\test_sha1.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\security\digest\test_sha2_256.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\security\digest\test_sha2_512.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\security\encrypt\test_aes.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\security\encrypt\test_aes_cbc_pkcs5.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\security\encrypt\test_pem.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\security\encrypt\test_rsa.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\security\encrypt\test_rsa_pkcs1.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_concurrent_hash_map.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_concurrent_queue.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_concurrent_stack.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\threading\lockfree\test_stamped_ptr.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\threading\sync\test_nano_lock.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\threading\test_priority_threadpool.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\threading\test_threading.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\threading\test_threadpool.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\time\test_date_time.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\time\test_performance_counter.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\time\test_time_diff.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\time\test_time_wheel.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\util\string\test_kmp.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\util\string\test_stringutils.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\util\string\test_tostring.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\test_ini_dom.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\test_property_dom.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\xml\test_xml_element.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\xml\test_xml_parser.cpp" />
-    <ClCompile Include="..\..\..\src\test_nut\util\txtcfg\xml\test_xml_writer.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\container\bytestream\test_bytearraystream.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\container\rwbuffer\test_fragment_buffer.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\container\rwbuffer\test_ring_buffer.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\container\skiplist\test_skiplist.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\container\test_bitstream.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\container\test_bundle.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\container\test_comparable.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\container\test_integer_set.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\container\test_lru_cache.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\container\test_lru_data_cache.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\container\test_lru_pool.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\container\tree\rtree\test_rtree.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\container\tree\test_bstree.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\container\tree\test_rbtree.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\container\tree\test_trie_tree.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\debugging\test_backtrace.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\logging\test_logging.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\main.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\mem\test_lengthfixed_mp.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\mem\test_scoped_gc.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\mem\test_segments_mp.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\numeric\test_biginteger.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\numeric\test_fft.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\numeric\test_ntt.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\numeric\test_numeric_algo.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\numeric\test_word_array_integer.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\platform\test_endian.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\platform\test_os.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\platform\test_path.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\platform\test_savefile.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\platform\test_sys.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\rc\test_rc.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\security\digest\test_adler32.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\security\digest\test_crc16.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\security\digest\test_crc32.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\security\digest\test_md5.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\security\digest\test_sha1.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\security\digest\test_sha2_256.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\security\digest\test_sha2_512.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\security\encrypt\test_aes.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\security\encrypt\test_aes_cbc_pkcs5.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\security\encrypt\test_pem.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\security\encrypt\test_rsa.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\security\encrypt\test_rsa_pkcs1.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\threading\lockfree\test_concurrent_hash_map.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\threading\lockfree\test_concurrent_queue.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\threading\lockfree\test_concurrent_stack.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\threading\lockfree\test_stamped_ptr.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\threading\sync\test_nano_lock.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\threading\test_priority_threadpool.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\threading\test_threading.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\threading\test_threadpool.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\time\test_date_time.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\time\test_performance_counter.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\time\test_time_diff.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\time\test_time_wheel.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\util\string\test_kmp.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\util\string\test_stringutils.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\util\string\test_tostring.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\util\txtcfg\test_ini_dom.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\util\txtcfg\test_property_dom.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\util\txtcfg\xml\test_xml_element.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\util\txtcfg\xml\test_xml_parser.cpp" />
+    <ClCompile Include="..\..\..\src\test-nut\util\txtcfg\xml\test_xml_writer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

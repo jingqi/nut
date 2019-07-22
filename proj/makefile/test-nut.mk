@@ -1,6 +1,6 @@
 #!/user/bin/env make
 
-TARGET_NAME = test_nut
+TARGET_NAME = test-nut
 SRC_ROOT = ../../src/${TARGET_NAME}
 
 # Preface rules
@@ -37,8 +37,8 @@ clean:
 
 rebuild:
 	# 顺序执行，不会并行
-	${MAKE} -f test_nut.mk clean
-	${MAKE} -f test_nut.mk all
+	${MAKE} -f test-nut.mk clean
+	${MAKE} -f test-nut.mk all
 
 ${LIB_NUT}: FORCE
 	${MAKE} -f nut.mk

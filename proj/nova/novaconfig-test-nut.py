@@ -11,16 +11,16 @@ from nova.builtin import compile_c, file_op
 CWD = dirname(realpath(__file__))
 
 ns = globals()['namespace']
-ns.set_name('test_nut')
+ns.set_name('test-nut')
 
-ns.get_app().import_namespace(join(CWD, 'novaconfig_nut.py'))
+ns.get_app().import_namespace(join(CWD, 'novaconfig-nut.py'))
 
 ## Vars
-src_root = join(CWD, '../../src/test_nut')
+src_root = join(CWD, '../../src/test-nut')
 out_dir = platform.system().lower() + '-' + ('debug' if ns['DEBUG'] == '1' else 'release')
 out_root = join(CWD, out_dir)
-obj_root = join(out_root, 'obj/test_nut')
-header_root = join(out_root, 'include/test_nut')
+obj_root = join(out_root, 'obj/test-nut')
+header_root = join(out_root, 'include/test-nut')
 
 ## Flags
 ns.append_env_flags('CPPFLAGS', '-I' + realpath(join(out_root, 'include')))
@@ -49,7 +49,7 @@ for src in file_utils.iterfiles(src_root, '.h'):
     ns.set_recipe(ih, file_op.copyfile)
     ns.add_chained_deps('@headers', ih, h)
 
-program = join(out_root, 'test_nut' + ns['PROGRAM_SUFFIX'])
+program = join(out_root, 'test-nut' + ns['PROGRAM_SUFFIX'])
 ns.set_recipe('@read_deps', compile_c.read_deps)
 for src in file_utils.iterfiles(src_root, '.c', '.cpp'):
     c = src

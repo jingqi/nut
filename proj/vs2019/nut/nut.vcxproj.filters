@@ -472,6 +472,9 @@
     <ClInclude Include="..\..\..\src\nut\platform\fd.h">
       <Filter>nut\platform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\container\lru_pool.h">
+      <Filter>nut\container</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">

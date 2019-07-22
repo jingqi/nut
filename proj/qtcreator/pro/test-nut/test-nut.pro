@@ -1,5 +1,5 @@
 
-TARGET = test_nut
+TARGET = test-nut
 TEMPLATE = app
 
 include(../nut_common.pri)
@@ -9,8 +9,8 @@ CONFIG += console
 CONFIG -= app_bundle
 
 # 源代码
-SRC_ROOT = $$PWD/../../../../src/test_nut
-SOURCES += $$files($${SRC_ROOT}/*.c*, true)
+SRC_ROOT = $$PWD/../../../../src/test-nut
+           SOURCES += $$files($${SRC_ROOT}/*.c*, true)
 
 # 链接库
 win32: LIBS += -latomic

@@ -134,6 +134,7 @@
     <ClInclude Include="..\..\..\src\nut\container\integer_set.h" />
     <ClInclude Include="..\..\..\src\nut\container\lru_cache.h" />
     <ClInclude Include="..\..\..\src\nut\container\lru_data_cache.h" />
+    <ClInclude Include="..\..\..\src\nut\container\lru_pool.h" />
     <ClInclude Include="..\..\..\src\nut\container\rwbuffer\fragment_buffer.h" />
     <ClInclude Include="..\..\..\src\nut\container\rwbuffer\ring_buffer.h" />
     <ClInclude Include="..\..\..\src\nut\container\skiplist\skiplist.h" />
