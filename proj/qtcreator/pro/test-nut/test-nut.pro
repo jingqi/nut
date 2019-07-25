@@ -12,11 +12,11 @@ CONFIG -= app_bundle
 SRC_ROOT = $$PWD/../../../../src/test-nut
            SOURCES += $$files($${SRC_ROOT}/*.c*, true)
 
-# 链接库
-win32: LIBS += -latomic
-
 # nut
 INCLUDEPATH += $$PWD/../../../../src
 LIBS += -L$$OUT_PWD/../nut$${OUT_TAIL}
 win32: LIBS += -lnut1
 else: LIBS += -lnut
+
+# 其他链接库
+win32: LIBS += -lDbghelp -latomic

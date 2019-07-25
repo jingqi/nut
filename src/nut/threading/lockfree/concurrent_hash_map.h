@@ -574,7 +574,7 @@ private:
         //   EXTRACT_TAG(prev->next.stamp) 标记改变
         StampedPtr<Entry> old_item = item;
         assert(!IS_RETIRED(old_item.stamp));
-        if (prev->next.compare_exchange_weak(
+        if (prev->next.compare_exchange_strong(
                 &old_item, {inext.ptr, INCREASE_TAG(old_item.stamp)},
                 std::memory_order_relaxed, std::memory_order_relaxed))
         {

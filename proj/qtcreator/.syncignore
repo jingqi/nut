@@ -1,5 +1,5 @@
 Makefile*
 *.pro.user*
 
-/out
 /build
+/dist

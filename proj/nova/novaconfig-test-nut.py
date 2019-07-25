@@ -27,18 +27,18 @@ ns.append_env_flags('CPPFLAGS', '-I' + realpath(join(out_root, 'include')))
 ns.append_env_flags('CFLAGS', '-std=c11')
 ns.append_env_flags('CXXFLAGS', '-std=c++11')
 
+ns.append_env_flags('LDFLAGS', '-L' + out_root, '-lnut')
+
+if platform.system() == 'Linux':
+    ns.append_env_flags('LDFLAGS', '-lpthread', '-latomic')
+elif platform.system() == 'Windows':
+    ns.append_env_flags('LDFLAGS', '-lDbghelp', '-latomic')
+
 if platform.system() == 'Darwin':
     ns.append_env_flags('CXXFLAGS', '-stdlib=libc++')
     ns.append_env_flags('LDFLAGS', '-lc++')
 else:
     ns.append_env_flags('LDFLAGS', '-lstdc++')
-
-if platform.system() == 'Linux':
-    ns.append_env_flags('LDFLAGS', '-lpthread', '-latomic')
-elif platform.system() == 'Windows':
-    ns.append_env_flags('LDFLAGS', '-latomic')
-
-ns.append_env_flags('LDFLAGS', '-L' + out_root, '-lnut')
 
 ## Dependencies
 

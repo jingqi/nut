@@ -81,7 +81,7 @@ public:
 
     /**
      * @param interval 延时间隔，单位毫秒
-     * @param repeat 重复间隔，单位毫秒, 0 表示不延时
+     * @param repeat 重复间隔，单位毫秒, 0 表示不重复
      */
     timer_id_type add_timer(uint64_t interval, uint64_t repeat,
                             timer_task_type&& task) noexcept;

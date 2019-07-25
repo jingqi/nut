@@ -2,5 +2,10 @@
 .DS_Store
 *.tmp
 
+sourcetreeconfig
+tgitchangelist
+tortoisegit.data
+tortoisegit.index
+
 /.dir-locals.el
 /tmp
