@@ -234,6 +234,10 @@ bool OS::removefile(const std::string& path) noexcept
     const std::string abspath = Path::abspath(path);
 
 #if NUT_PLATFORM_OS_WINDOWS
+    // 去掉只读属性, 否则删除操作会失败
+    const DWORD attribs = ::GetFileAttributesA(abspath.c_str());
+    if (0 != (attribs & FILE_ATTRIBUTE_READONLY))
+        ::SetFileAttributesA(abspath.c_str(), attribs & ~(DWORD)FILE_ATTRIBUTE_READONLY);
     return FALSE != ::DeleteFileA(abspath.c_str());
 #else
     return 0 == ::remove(abspath.c_str());
@@ -243,7 +247,12 @@ bool OS::removefile(const std::string& path) noexcept
 bool OS::removefile(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
-    return FALSE != ::DeleteFileW(Path::abspath(path).c_str());
+    // 去掉只读属性, 否则删除操作会失败
+    const std::wstring abspath = Path::abspath(path);
+    const DWORD attribs = ::GetFileAttributesW(abspath.c_str());
+    if (0 != (attribs & FILE_ATTRIBUTE_READONLY))
+        ::SetFileAttributesW(abspath.c_str(), attribs & ~(DWORD)FILE_ATTRIBUTE_READONLY);
+    return FALSE != ::DeleteFileW(abspath.c_str());
 #else
     return OS::removefile(wstr_to_ascii(path));
 #endif
@@ -318,8 +327,13 @@ bool OS::rmtree(const std::string& path) noexcept
     const std::string abspath = Path::abspath(path);
 
 #if NUT_PLATFORM_OS_WINDOWS
+    // 去掉只读属性, 否则删除操作会失败
+    const DWORD attribs = ::GetFileAttributesA(abspath.c_str());
+    if (0 != (attribs & FILE_ATTRIBUTE_READONLY))
+        ::SetFileAttributesA(abspath.c_str(), attribs & ~(DWORD)FILE_ATTRIBUTE_READONLY);
+
     // 删除文件
-    if (0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesA(abspath.c_str())))
+    if (0 == (attribs & FILE_ATTRIBUTE_DIRECTORY))
         return FALSE != ::DeleteFileA(abspath.c_str());
 
     // 遍历文件夹
@@ -389,9 +403,14 @@ bool OS::rmtree(const std::string& path) noexcept
 bool OS::rmtree(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
-    // 删除文件
+    // 去掉只读属性, 否则删除操作会失败
     const std::wstring abspath = Path::abspath(path);
-    if (0 == (FILE_ATTRIBUTE_DIRECTORY & ::GetFileAttributesW(abspath.c_str())))
+    const DWORD attribs = ::GetFileAttributesW(abspath.c_str());
+    if (0 != (attribs & FILE_ATTRIBUTE_READONLY))
+        ::SetFileAttributesW(abspath.c_str(), attribs & ~(DWORD)FILE_ATTRIBUTE_READONLY);
+
+    // 删除文件
+    if (0 == (attribs & FILE_ATTRIBUTE_DIRECTORY))
         return FALSE != ::DeleteFileW(abspath.c_str());
 
     // 遍历文件夹

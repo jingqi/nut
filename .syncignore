@@ -2,6 +2,7 @@
 .DS_Store
 *.tmp
 
+index.lock
 sourcetreeconfig
 tgitchangelist
 tortoisegit.data
