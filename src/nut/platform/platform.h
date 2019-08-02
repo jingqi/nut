@@ -115,4 +115,10 @@
 #   define UNUSED(x) ((void)x)
 #endif
 
+/** 用于展开宏, 然后字符串化 */
+#ifndef CSTR
+#   define __CSTR(x) #x
+#   define CSTR(x) __CSTR(x)
+#endif
+
 #endif /* head file guarder */

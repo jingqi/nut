@@ -10,7 +10,7 @@ CONFIG -= app_bundle
 
 # 源代码
 SRC_ROOT = $$PWD/../../../../src/test-nut
-           SOURCES += $$files($${SRC_ROOT}/*.c*, true)
+SOURCES += $$files($${SRC_ROOT}/*.c*, true)
 
 # nut
 INCLUDEPATH += $$PWD/../../../../src
