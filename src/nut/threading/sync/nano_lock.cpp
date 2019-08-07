@@ -1,12 +1,6 @@
 ﻿
 #include <assert.h>
-
-#include "../../platform/platform.h"
-#if NUT_PLATFORM_OS_WINDOWS
-#   include <windows.h> // for ::Sleep()
-#else
-#   include <unistd.h> // for ::usleep()
-#endif
+#include <thread>
 
 #include "nano_lock.h"
 
@@ -22,11 +16,7 @@ void NanoLock::lock() noexcept
         // 多次尝试失败，则放弃当前 CPU 时间片
         ++trycount;
         if (0 == (trycount & 0x0f))
-#if NUT_PLATFORM_OS_WINDOWS
-            ::Sleep(0);
-#else
-            ::usleep(0);
-#endif
+            std::this_thread::yield();
     }
 }
 

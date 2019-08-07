@@ -25,15 +25,14 @@ HPRetireList::~HPRetireList() noexcept
     if (_retire_list.empty())
         return;
 
-    scan_retire_list(this);
-
-    unsigned long wait = 10;
-    while (!_retire_list.empty())
+    unsigned long wait = 2;
+    while (true)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(wait));
-        wait = std::min<unsigned long>(2000, wait * 3 / 2);
-
         scan_retire_list(this);
+        if (_retire_list.empty())
+            break;
+        std::this_thread::sleep_for(std::chrono::milliseconds(wait)); // 等待其他线程释放 RetireRecord
+        wait = std::min<unsigned long>(1000, wait * 3 / 2);
     }
 }
 

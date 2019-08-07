@@ -1,12 +1,13 @@
 ﻿
 #include <assert.h>
+#include <thread>
 
 #include "../../platform/platform.h"
 
 #if NUT_PLATFORM_OS_WINDOWS
-#   include <windows.h>
+#   include <windows.h> // for QueryPerformanceCounter()
 #else
-#   include <unistd.h>
+#   include <time.h> // for clock_gettime()
 #endif
 
 #include "shared_lock.h"
@@ -98,11 +99,7 @@ bool SharedLock::try_lock_for_ms(uint64_t ms) noexcept
     {
         if (get_ms_counter() >= until)
             return false;
-#if NUT_PLATFORM_OS_WINDOWS
-        ::Sleep(0);
-#else
-        ::usleep(0);
-#endif
+        std::this_thread::yield();
     }
     return true;
 }
@@ -145,11 +142,7 @@ bool SharedLock::try_lock_shared_for_ms(uint64_t ms) noexcept
     {
         if (get_ms_counter() >= until)
             return false;
-#if NUT_PLATFORM_OS_WINDOWS
-        ::Sleep(0);
-#else
-        ::usleep(0);
-#endif
+        std::this_thread::yield();
     }
     return true;
 }

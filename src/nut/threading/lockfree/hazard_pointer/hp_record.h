@@ -21,7 +21,7 @@ namespace nut
  *    A1-1. 读 global_version                     B2. 设置 M 的 retire_mark
  *    A1-2. 添加/修改 version 到 HP_list          B3. 添加 M 到 retire_list
  *  A2. 检查 M 的 retire_mark                       B3-1. 读 global_version, 同时 ++global_version
- *  A3. 根据检查结果使用(放弃使用）这块内存         B3-2. 添加 version 和 M 到 retire_list
+ *  A3. 根据检查结果使用(放弃使用)这块内存          B3-2. 添加 version 和 M 到 retire_list
  *  A4. Release HP                                B4. 扫瞄 HP_list, retire_list
  *                                                  B4-1. 读取 HP_list, retire_list 的 version 信息
  *                                                  B4-2. 根据 version 信息，删除 M
