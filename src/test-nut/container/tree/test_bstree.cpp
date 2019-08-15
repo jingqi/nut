@@ -1,4 +1,5 @@
 ﻿
+#include <vector>
 #include <iostream>
 #include <nut/unittest/unittest.h>
 
@@ -6,6 +7,7 @@
 #include <nut/container/tree/bstree.h>
 
 
+using namespace std;
 using namespace nut;
 
 class TestBSTree : public TestFixture
@@ -16,6 +18,7 @@ class TestBSTree : public TestFixture
         NUT_REGISTER_CASE(test_inorder_iterator);
         NUT_REGISTER_CASE(test_preorder_iterator);
         NUT_REGISTER_CASE(test_postorder_iterator);
+        NUT_REGISTER_CASE(test_bug1);
     }
 
     struct Node
@@ -146,6 +149,33 @@ class TestBSTree : public TestFixture
             NUT_TA(iter->get_key() == order[i]);
         }
         NUT_TA(0 == i);
+    }
+
+    void test_seq(int *data, size_t count)
+    {
+        Node *root = nullptr;
+        vector<Node*> nodes;
+        for (size_t i = 0; i < count; ++i)
+        {
+            Node *n = new Node(data[i]);
+            root = BSTree<int,Node>::insert(root, n);
+            nodes.push_back(n);
+        }
+        for (size_t i = 0; i < count; ++i)
+        {
+            Node *n = nodes.at(i);
+            root = BSTree<int,Node>::remove(root, n);
+            delete n;
+        }
+        NUT_TA(nullptr == root);
+    }
+
+    void test_bug1()
+    {
+        // bug: BSTree::remove() 函数中对于交换 escaper 与 to_be_del 位置的处理
+        //      存在错误，导致数据结构错乱
+        int data[] = {2, 1, 3};
+        test_seq(data, 3);
     }
 };
 

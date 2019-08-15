@@ -200,15 +200,14 @@ private:
         void add_trie_child(Node *n) noexcept
         {
             _children_tree = RBTree<ENTRY,Node>::insert(_children_tree, n);
-            _children_tree->_rb_parent = nullptr;
+            assert(nullptr == _children_tree->_rb_parent);
             n->_trie_parent = this;
         }
 
         void remove_trie_child(Node *n) noexcept
         {
             _children_tree = RBTree<ENTRY,Node>::remove(_children_tree, n);
-            if (nullptr != _children_tree)
-                _children_tree->_rb_parent = nullptr;
+            assert(nullptr == _children_tree || nullptr == _children_tree->_rb_parent);
             n->_rb_parent = nullptr;
             n->_trie_parent = nullptr;
         }
@@ -837,7 +836,7 @@ private:
             if (0 == i)
             {
                 _children_tree = RBTree<ENTRY,Node>::insert(_children_tree, new_node);
-                _children_tree->set_parent(nullptr);
+                assert(nullptr == _children_tree->get_parent());
                 new_node->set_trie_parent(nullptr);
             }
             else
@@ -888,8 +887,7 @@ private:
             if (nullptr == parent)
             {
                 _children_tree = RBTree<ENTRY,Node>::remove(_children_tree, n);
-                if (nullptr != _children_tree)
-                    _children_tree->set_parent(nullptr);
+                assert(nullptr == _children_tree || nullptr == _children_tree->get_parent());
                 n->set_parent(nullptr);
                 n->set_trie_parent(nullptr);
             }

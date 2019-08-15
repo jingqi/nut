@@ -53,7 +53,9 @@ public:
      */
     static NODE* insert(NODE *root, NODE *new_node) noexcept
     {
-        assert(nullptr != new_node);
+        assert(nullptr != new_node && nullptr == new_node->get_left_child() &&
+               nullptr == new_node->get_right_child());
+
         NODE *parent = nullptr;
         bool insert_to_left = true;
         for (NODE *x = root; nullptr != x; )
@@ -88,42 +90,62 @@ public:
      */
     static NODE* remove(NODE *root, NODE *to_be_del) noexcept
     {
-        assert(nullptr != to_be_del);
-        NODE *escaper = nullptr;
+        assert(nullptr != root && nullptr != to_be_del);
+
+        NODE *scapegoat = nullptr;
         if (nullptr == to_be_del->get_left_child() || nullptr == to_be_del->get_right_child())
-            escaper = to_be_del;
+            scapegoat = to_be_del;
         else
-            escaper = successor(to_be_del);
+            scapegoat = successor(to_be_del);
+        assert(nullptr != scapegoat);
 
         NODE *sublink = nullptr;
-        if (nullptr != escaper->get_left_child())
-            sublink = escaper->get_left_child();
+        if (nullptr != scapegoat->get_left_child())
+            sublink = scapegoat->get_left_child();
         else
-            sublink = escaper->get_right_child();
+            sublink = scapegoat->get_right_child();
 
-        NODE *sublink_parent = escaper->get_parent();
+        NODE *const sublink_parent = scapegoat->get_parent();
         if (nullptr != sublink)
             sublink->set_parent(sublink_parent);
 
+        assert((nullptr == sublink_parent) == (root == scapegoat));
         if (nullptr == sublink_parent)
             root = sublink;
-        else if (escaper == sublink_parent->get_left_child())
+        else if (scapegoat == sublink_parent->get_left_child())
             sublink_parent->set_left_child(sublink);
         else
             sublink_parent->set_right_child(sublink);
 
-        if (escaper != to_be_del)
+        if (scapegoat != to_be_del)
         {
-            escaper->set_parent(to_be_del->get_parent());
-            escaper->set_left_child(to_be_del->get_left_child());
-            escaper->set_right_child(to_be_del->get_right_child());
-            if (nullptr == to_be_del->get_parent())
-                root = escaper;
-            else if (to_be_del == to_be_del->get_parent()->get_left_child())
-                to_be_del->get_parent()->set_left_child(escaper);
+            // Replace 'to_be_del' with 'scapegoat'
+            NODE *const x_parent = to_be_del->get_parent(),
+                *const x_left_child = to_be_del->get_left_child(),
+                *const x_right_child = to_be_del->get_right_child();
+
+            scapegoat->set_parent(x_parent);
+            scapegoat->set_left_child(x_left_child);
+            scapegoat->set_right_child(x_right_child);
+
+            assert((nullptr == x_parent) == (root == to_be_del));
+            if (nullptr == x_parent)
+                root = scapegoat;
+            else if (to_be_del == x_parent->get_left_child())
+                x_parent->set_left_child(scapegoat);
             else
-                to_be_del->get_parent()->set_right_child(escaper);
+                x_parent->set_right_child(scapegoat);
+
+            if (nullptr != x_left_child)
+                x_left_child->set_parent(scapegoat);
+            if (nullptr != x_right_child)
+                x_right_child->set_parent(scapegoat);
         }
+
+        to_be_del->set_parent(nullptr);
+        to_be_del->set_left_child(nullptr);
+        to_be_del->set_right_child(nullptr);
+
         return root;
     }
 
