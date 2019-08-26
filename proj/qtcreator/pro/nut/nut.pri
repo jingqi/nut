@@ -7,7 +7,7 @@ include(../nut_common.pri)
 
 QT -= qt
 
-DEFINES += BUILDING_NUT
+DEFINES += EXPORT_NUT_API
 
 # INCLUDE 路径
 SRC_ROOT = $$PWD/../../../../src/nut

@@ -4,11 +4,11 @@
 
 #include "platform/platform.h"
 
-#if defined(USE_STATIC_NUT_LIB)
+#if defined(STATIC_NUT_API)
 #   define NUT_API
-#elif defined(BUILDING_NUT)
+#elif defined(EXPORT_NUT_API)
 #   define NUT_API DLL_EXPORT
-#else
+#else // default IMPORT_NUT_API
 #   define NUT_API DLL_IMPORT
 #endif
 

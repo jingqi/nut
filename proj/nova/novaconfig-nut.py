@@ -20,7 +20,7 @@ obj_root = join(out_root, 'obj/nut')
 header_root = join(out_root, 'include/nut')
 
 ## Flags
-ns.append_env_flags('CPPFLAGS', '-DBUILDING_NUT', '-I' + realpath(join(out_root, 'include')))
+ns.append_env_flags('CPPFLAGS', '-DEXPORT_NUT_API', '-I' + realpath(join(out_root, 'include')))
 ns.append_env_flags('CFLAGS', '-std=c11')
 ns.append_env_flags('CXXFLAGS', '-std=c++11')
 
