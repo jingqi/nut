@@ -90,7 +90,7 @@ void MD5::update(const void *data, size_t cb) noexcept
 {
     assert(nullptr != data || 0 == cb);
 
-    /* Calculate number of bytes mod 64 */
+    /* Compute number of bytes mod 64 */
     unsigned index = (_bit_len >> 3) & 0x3f;
     const unsigned partlen = 64 - index;
 
@@ -177,7 +177,14 @@ void MD5::transform512bits(const void *block) noexcept
     assert(nullptr != block);
 
     uint32_t a = _state[0], b = _state[1], c = _state[2], d = _state[3];
+
+#if NUT_ENDIAN_LITTLE_BYTE
     const uint32_t *x = (const uint32_t*) block;
+#else
+    uint32_t x[16];
+    for (int i = 0; i < 16; ++i)
+        x[i] = le32toh(((const uint32_t*) block)[i]);
+#endif
 
     /* Round 1 */
     __FF__(a, b, c, d, x[ 0], __S11__, 0xd76aa478); /* 1 */

@@ -47,7 +47,7 @@ void MD2::update(uint8_t byte) noexcept
 
 void MD2::update(const void *data, size_t cb) noexcept
 {
-    assert(nullptr != data);
+    assert(nullptr != data || 0 == cb);
 
     const size_t partlen = 16 - _buffer_size;
     size_t i = 0;

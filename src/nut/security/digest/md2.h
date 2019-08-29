@@ -32,9 +32,9 @@ public:
 private:
     void transform128bits(const void *block);
 
-public:
+private:
    uint8_t _buffer[16];
-   size_t _buffer_size;
+   size_t _buffer_size = 0;
 
    uint8_t _state[48];
    uint8_t _checksum[16];
