@@ -2,7 +2,6 @@
 #include <assert.h>
 #include <string.h> /* for memcpy() */
 
-#include "../../platform/endian.h"
 #include "../../util/string/string_utils.h"
 #include "md5.h"
 
@@ -77,7 +76,9 @@ void MD5::reset() noexcept
     _state[2] = 0x98badcfe;
     _state[3] = 0x10325476;
 
+#if !NUT_ENDIAN_LITTLE_BYTE
     ::memset(_result, 0, DIGEST_SIZE);
+#endif
 }
 
 void MD5::update(uint8_t byte) noexcept
@@ -138,22 +139,37 @@ void MD5::digest() noexcept
     }
 
     /* Append bit length */
+#if NUT_ENDIAN_LITTLE_BYTE
+    *(uint64_t*)(_buffer + 56) = _bit_len;
+#else
     *(uint64_t*)(_buffer + 56) = htole64(_bit_len);
+#endif
+
     transform512bits(_buffer);
 
     /* Collect result */
+#if !NUT_ENDIAN_LITTLE_BYTE
     for (int i = 0; i < 4; ++i)
         ((uint32_t*) _result)[i] = htole32(_state[i]);
+#endif
 }
 
 const uint8_t* MD5::get_result() const noexcept
 {
+#if NUT_ENDIAN_LITTLE_BYTE
+    return (const uint8_t*) _state;
+#else
     return _result;
+#endif
 }
 
 std::string MD5::get_hex_result() const noexcept
 {
+#if NUT_ENDIAN_LITTLE_BYTE
+    return hex_encode(_state, DIGEST_SIZE, false);
+#else
     return hex_encode(_result, DIGEST_SIZE, false);
+#endif
 }
 
 void MD5::transform512bits(const void *block) noexcept

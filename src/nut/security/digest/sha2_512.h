@@ -5,6 +5,7 @@
 #include <string>
 
 #include "../../nut_config.h"
+#include "../../platform/endian.h"
 #include "../../platform/int_type.h"
 
 
@@ -51,8 +52,10 @@ private:
     // Digest state, 512 bits
     uint64_t _state[8];
 
+#if !NUT_ENDIAN_BIG_BYTE
     // Digest result, 512 bits
     uint8_t _result[DIGEST_SIZE];
+#endif
 };
 
 }

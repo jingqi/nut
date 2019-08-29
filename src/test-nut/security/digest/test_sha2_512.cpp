@@ -25,7 +25,7 @@ class TestSHA2_512 : public TestFixture
 
         if (digest.get_hex_result() != rs)
         {
-            cerr << " SHA1: \"" << msg << "\" expect " << rs <<
+            cerr << " SHA2_512: \"" << msg << "\" expect " << rs <<
                 " got " << digest.get_hex_result() << endl;
         }
         NUT_TA(digest.get_hex_result() == rs);

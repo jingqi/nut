@@ -6,6 +6,7 @@
 #include <string>
 
 #include "../../nut_config.h"
+#include "../../platform/endian.h"
 
 
 namespace nut
@@ -47,8 +48,10 @@ private:
     // Digest state ABCD, 128 bits
     uint32_t _state[4];
 
+#if !NUT_ENDIAN_LITTLE_BYTE
     // Digest result, 128 bits
     uint8_t _result[DIGEST_SIZE];
+#endif
 };
 
 }

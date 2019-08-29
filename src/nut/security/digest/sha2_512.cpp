@@ -4,7 +4,6 @@
 #include <limits.h> /* for SIZE_MAX */
 #include <algorithm>
 
-#include "../../platform/endian.h"
 #include "../../util/string/string_utils.h"
 #include "sha2_512.h"
 
@@ -85,7 +84,9 @@ void SHA2_512::reset() noexcept
     _state[6] = 0x1f83d9abfb41bd6bULL;
     _state[7] = 0x5be0cd19137e2179ULL;
 
+#if !NUT_ENDIAN_BIG_BYTE
     ::memset(_result, 0, DIGEST_SIZE);
+#endif
 }
 
 void SHA2_512::update(uint8_t byte) noexcept
@@ -163,28 +164,48 @@ void SHA2_512::digest() noexcept
     }
 
     /* Append bit length */
-#if NUT_HAS_INT128
+#if NUT_ENDIAN_BIG_BYTE
+#   if NUT_HAS_INT128
+    *(uint128_t*)(_buffer + 112) = _bit_len;
+#   else
+    *(uint64_t*)(_buffer + 112) = _bit_len_high;
+    *(uint64_t*)(_buffer + 120) = _bit_len_low;
+#   endif
+#else
+#   if NUT_HAS_INT128
     *(uint64_t*)(_buffer + 112) = htobe64((uint64_t) (_bit_len >> 64));
     *(uint64_t*)(_buffer + 120) = htobe64((uint64_t) _bit_len);
-#else
+#   else
     *(uint64_t*)(_buffer + 112) = htobe64(_bit_len_high);
     *(uint64_t*)(_buffer + 120) = htobe64(_bit_len_low);
+#   endif
 #endif
+
     transform1024bits(_buffer);
 
     /* Collect result */
+#if !NUT_ENDIAN_BIG_BYTE
     for (int i = 0; i < 8; ++i)
         ((uint64_t*) _result)[i] = htobe64(_state[i]);
+#endif
 }
 
 const uint8_t* SHA2_512::get_result() const noexcept
 {
+#if NUT_ENDIAN_BIG_BYTE
+    return (const uint8_t*) _state;
+#else
     return _result;
+#endif
 }
 
 std::string SHA2_512::get_hex_result() const noexcept
 {
+#if NUT_ENDIAN_BIG_BYTE
+    return hex_encode(_state, DIGEST_SIZE, false);
+#else
     return hex_encode(_result, DIGEST_SIZE, false);
+#endif
 }
 
 void SHA2_512::transform1024bits(const void *block) noexcept

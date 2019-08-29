@@ -2,7 +2,6 @@
 #include <assert.h>
 #include <string.h> /* for ::memcpy() */
 
-#include "../../platform/endian.h"
 #include "../../util/string/string_utils.h"
 #include "sha1.h"
 
@@ -28,7 +27,9 @@ void SHA1::reset() noexcept
     _state[3] = 0x10325476;
     _state[4] = 0xc3d2e1f0;
 
+#if !NUT_ENDIAN_BIG_BYTE
     ::memset(_result, 0, DIGEST_SIZE);
+#endif
 }
 
 void SHA1::update(uint8_t byte) noexcept
@@ -89,22 +90,37 @@ void SHA1::digest() noexcept
     }
 
     /* Append bit length */
+#if NUT_ENDIAN_BIG_BYTE
+    *(uint64_t*)(_buffer + 56) = _bit_len;
+#else
     *(uint64_t*)(_buffer + 56) = htobe64(_bit_len);
+#endif
+
     transform512bits(_buffer);
 
     /* Collect result */
+#if !NUT_ENDIAN_BIG_BYTE
     for (int i = 0; i < 5; ++i)
         ((uint32_t*) _result)[i] = htobe32(_state[i]);
+#endif
 }
 
 const uint8_t* SHA1::get_result() const noexcept
 {
+#if NUT_ENDIAN_BIG_BYTE
+    return (const uint8_t*) _state;
+#else
     return _result;
+#endif
 }
 
 std::string SHA1::get_hex_result() const noexcept
 {
+#if NUT_ENDIAN_BIG_BYTE
+    return hex_encode(_state, DIGEST_SIZE, false);
+#else
     return hex_encode(_result, DIGEST_SIZE, false);
+#endif
 }
 
 void SHA1::transform512bits(const void *block) noexcept
