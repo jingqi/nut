@@ -99,7 +99,6 @@ class TestStringUtils : public TestFixture
         std::string a;
         std::wstring b;
 
-#if !NUT_PLATFORM_OS_MACOS // macOS 下目前对 wchar_t 常量字符串转换有问题
         a = wstr_to_ascii(L"c5&汉");
         b = ascii_to_wstr(a);
         //wcout << endl << b << endl;
@@ -109,7 +108,6 @@ class TestStringUtils : public TestFixture
         b = utf8_to_wstr(a);
         //wcout << endl << b << endl;
         NUT_TA(b == L"c5&汉");
-#endif
 
         // NOTE Windows 下
         // - VC 会在 exe 文件中存储的是 ascii(cp936) 字符串

@@ -65,9 +65,15 @@ static void print_help()
 
 int main(int argc, char *argv[])
 {
-#if NUT_PLATFORM_OS_LINUX
-    // 解决 std::wcout 无法显示中文以及 char/wchar_t 相互转换问题
-    ::setlocale(LC_ALL, "zh_CN.UTF8");
+#if !NUT_PLATFORM_OS_WINDOWS
+    // NOTE 在 Linux/Macos 下, 使用操作系统的 locale 设置来设置程序的 locale, 解
+    //      决 std::wcout 无法显示中文以及 char/wchar_t 相互转换失败的问题
+    // - 不设置时，默认 locale 是 "C", 无地域信息
+    // - 第一个参数可以是 LC_ALL / LC_CTYPE, LC_CTYPE 表示 "字符分类和转换"
+    // - 第二个参数为 NULL 时, 仅做查询操作, 此时 locale 保持不变
+    // - 第二个参数为 "" 时, 表示使用操作系统的 locale 设置给当前程序
+    // - 有可能设置会失败(如操作系统并未安装相应语言包), 此时 locale 保持不变
+    ::setlocale(LC_CTYPE, "");
 #endif
 
     ::srand((unsigned) ::time(nullptr));
