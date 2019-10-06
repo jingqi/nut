@@ -234,24 +234,34 @@ bool OS::removefile(const std::string& path) noexcept
     const std::string abspath = Path::abspath(path);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    // 去掉只读属性, 否则删除操作会失败
+    // 不能处理文件夹
     const DWORD attribs = ::GetFileAttributesA(abspath.c_str());
+    if (0 != (attribs & FILE_ATTRIBUTE_DIRECTORY))
+        return false;
+
+    // XXX 去掉只读属性, 否则删除操作会失败
     if (0 != (attribs & FILE_ATTRIBUTE_READONLY))
         ::SetFileAttributesA(abspath.c_str(), attribs & ~(DWORD)FILE_ATTRIBUTE_READONLY);
+
     return FALSE != ::DeleteFileA(abspath.c_str());
 #else
-    return 0 == ::remove(abspath.c_str());
+    return 0 == ::unlink(abspath.c_str());
 #endif
 }
 
 bool OS::removefile(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
-    // 去掉只读属性, 否则删除操作会失败
+    // 不能处理文件夹
     const std::wstring abspath = Path::abspath(path);
     const DWORD attribs = ::GetFileAttributesW(abspath.c_str());
+    if (0 != (attribs & FILE_ATTRIBUTE_DIRECTORY))
+        return false;
+
+    // XXX 去掉只读属性, 否则删除操作会失败
     if (0 != (attribs & FILE_ATTRIBUTE_READONLY))
         ::SetFileAttributesW(abspath.c_str(), attribs & ~(DWORD)FILE_ATTRIBUTE_READONLY);
+
     return FALSE != ::DeleteFileW(abspath.c_str());
 #else
     return OS::removefile(wstr_to_ascii(path));
@@ -322,12 +332,22 @@ bool OS::rmdir(const std::wstring& path) noexcept
 #endif
 }
 
+bool OS::remove(const std::string& path) noexcept
+{
+    return 0 == ::remove(Path::abspath(path).c_str());
+}
+
+bool OS::remove(const std::wstring& path) noexcept
+{
+    return OS::remove(wstr_to_ascii(path));
+}
+
 bool OS::rmtree(const std::string& path) noexcept
 {
     const std::string abspath = Path::abspath(path);
 
 #if NUT_PLATFORM_OS_WINDOWS
-    // 去掉只读属性, 否则删除操作会失败
+    // XXX 去掉只读属性, 否则删除操作会失败
     const DWORD attribs = ::GetFileAttributesA(abspath.c_str());
     if (0 != (attribs & FILE_ATTRIBUTE_READONLY))
         ::SetFileAttributesA(abspath.c_str(), attribs & ~(DWORD)FILE_ATTRIBUTE_READONLY);
@@ -368,7 +388,7 @@ bool OS::rmtree(const std::string& path) noexcept
 
     // 删除文件、软连接
     if (!S_ISDIR(info.st_mode))
-        return 0 == ::unlink(abspath.c_str()); // Same as ::remove(), but won't follow link
+        return 0 == ::unlink(abspath.c_str());
 
     // 遍历文件夹
     DIR *const dir = ::opendir(abspath.c_str());
@@ -403,7 +423,7 @@ bool OS::rmtree(const std::string& path) noexcept
 bool OS::rmtree(const std::wstring& path) noexcept
 {
 #if NUT_PLATFORM_OS_WINDOWS
-    // 去掉只读属性, 否则删除操作会失败
+    // XXX 去掉只读属性, 否则删除操作会失败
     const std::wstring abspath = Path::abspath(path);
     const DWORD attribs = ::GetFileAttributesW(abspath.c_str());
     if (0 != (attribs & FILE_ATTRIBUTE_READONLY))
@@ -486,6 +506,28 @@ bool OS::symlink(const std::wstring& link, const std::wstring& path) noexcept
     return false; // windows 上没有软链接功能
 #else
     return OS::symlink(wstr_to_ascii(link), wstr_to_ascii(path));
+#endif
+}
+
+bool OS::link(const std::string& link, const std::string& path) noexcept
+{
+#if NUT_PLATFORM_OS_WINDOWS
+    UNUSED(link);
+    UNUSED(path);
+    return false; // windows 上没有硬链接功能
+#else
+    return 0 == ::link(link.c_str(), Path::abspath(path).c_str());
+#endif
+}
+
+bool OS::link(const std::wstring& link, const std::wstring& path) noexcept
+{
+#if NUT_PLATFORM_OS_WINDOWS
+    UNUSED(link);
+    UNUSED(path);
+    return false; // windows 上没有硬链接功能
+#else
+    return OS::link(wstr_to_ascii(link), wstr_to_ascii(path));
 #endif
 }
 

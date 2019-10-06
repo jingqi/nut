@@ -37,6 +37,8 @@ public:
 
     /**
      * 删除文件
+     *
+     * 减少文件计数，如果计数减为0，则删除文件
      */
     static bool removefile(const std::string& path) noexcept;
     static bool removefile(const std::wstring& path) noexcept;
@@ -60,7 +62,13 @@ public:
     static bool rmdir(const std::wstring& path) noexcept;
 
     /**
-     * 删除目录树
+     * 对于文件，等同于 removefile(); 对于文件夹等同于 rmdir()
+     */
+    static bool remove(const std::string& path) noexcept;
+    static bool remove(const std::wstring& path) noexcept;
+
+    /**
+     * 递归删除目录树
      */
     static bool rmtree(const std::string& path) noexcept;
     static bool rmtree(const std::wstring& path) noexcept;
@@ -79,6 +87,15 @@ public:
      */
     static bool symlink(const std::string& link, const std::string& path) noexcept;
     static bool symlink(const std::wstring& link, const std::wstring& path) noexcept;
+
+    /**
+     * 创建文件硬链接
+     *
+     * @param link 链接指向的位置
+     * @param path 链接本身所在的位置
+     */
+    static bool link(const std::string& link, const std::string& path) noexcept;
+    static bool link(const std::wstring& link, const std::wstring& path) noexcept;
 
     /**
      * 重命名/移动

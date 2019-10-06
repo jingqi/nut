@@ -183,7 +183,7 @@ public:
     static std::wstring join(const std::vector<std::wstring>& entries) noexcept;
 
     /**
-     * 检查路径存在性
+     * 检查路径存在性(解析符号链接)
      */
     static bool exists(const std::string& path) noexcept;
     static bool exists(const std::wstring& path) noexcept;
@@ -195,7 +195,7 @@ public:
     static bool lexists(const std::wstring& path) noexcept;
 
     /**
-     * 获取最后访问时间
+     * 获取最后访问时间(解析符号链接)
      */
     static time_t get_atime(const std::string& path) noexcept;
     static time_t get_atime(const std::wstring& path) noexcept;
@@ -207,7 +207,7 @@ public:
     static time_t get_latime(const std::wstring& path) noexcept;
 
     /**
-     * 获取最后修改时间
+     * 获取最后修改时间(解析符号链接)
      */
     static time_t get_mtime(const std::string& path) noexcept;
     static time_t get_mtime(const std::wstring& path) noexcept;
@@ -219,7 +219,7 @@ public:
     static time_t get_lmtime(const std::wstring& path) noexcept;
 
     /**
-     * 获取创建时间
+     * 获取创建时间(解析符号链接)
      */
     static time_t get_ctime(const std::string& path) noexcept;
     static time_t get_ctime(const std::wstring& path) noexcept;
@@ -231,7 +231,7 @@ public:
     static time_t get_lctime(const std::wstring& path) noexcept;
 
     /**
-     * 获取文件大小
+     * 获取文件大小(解析符号链接)
      */
     static long long get_size(const std::string& path) noexcept;
     static long long get_size(const std::wstring& path) noexcept;
@@ -243,7 +243,7 @@ public:
     static bool is_link(const std::wstring& path) noexcept;
 
     /**
-     * 是否是目录
+     * 是否是目录(解析符号链接)
      */
     static bool is_dir(const std::string& path) noexcept;
     static bool is_dir(const std::wstring& path) noexcept;
@@ -255,13 +255,13 @@ public:
     static bool is_ldir(const std::wstring& path) noexcept;
 
     /**
-     * 是否是常规文件
+     * 是否是常规文件(解析符号链接)
      */
     static bool is_file(const std::string& path) noexcept;
     static bool is_file(const std::wstring& path) noexcept;
 
     /**
-     * 是否是常规文件
+     * 是否是常规文件(不解析符号链接)
      */
     static bool is_lfile(const std::string& path) noexcept;
     static bool is_lfile(const std::wstring& path) noexcept;
