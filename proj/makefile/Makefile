@@ -1,4 +1,4 @@
-#!/user/bin/env make
+#!/usr/bin/env make
 
 .PHONY: all clean rebuild run valgrind
 
