@@ -1,32 +1,35 @@
 
 ## 通用规则
 
+# C++ standard library
+ifeq (${HOST}, Darwin)
+    LDFLAGS += -lc++
+else
+    LDFLAGS += -lstdc++
+endif
+
 # CFLAGS, CXXFLAGS
 CFLAGS += -Wall
 CXXFLAGS += -Wall
 ifeq (${DEBUG}, 1)
-	CPPFLAGS += -DDEBUG
-	CFLAGS += -g
-	CXXFLAGS += -g
+    CPPFLAGS += -DDEBUG
+    CFLAGS += -g
+    CXXFLAGS += -g
 else
-	CPPFLAGS += -DNDEBUG
-	CFLAGS += -O2
-	CXXFLAGS += -O2
+    CPPFLAGS += -DNDEBUG
+    CFLAGS += -O2
+    CXXFLAGS += -O2
 endif
 ifeq (${HOST}, Darwin)
-	CXXFLAGS += -stdlib=libc++
-else
-	ifeq (${HOST}, Linux)
-		CFLAGS += -rdynamic
-		CXXFLAGS += -rdynamic
-	endif
+    CXXFLAGS += -stdlib=libc++
+else ifeq (${HOST}, Linux)
+    CFLAGS += -rdynamic
+    CXXFLAGS += -rdynamic
 endif
 
-# C++ standard library
-ifeq (${HOST}, Darwin)
-	LDFLAGS += -lc++
-else
-	LDFLAGS += -lstdc++
+# Make dirs
+ifneq (${MAKECMDGOALS},clean)
+    $(call make_dir_structure,${SRC_ROOT},${OBJ_ROOT})
 endif
 
 # Phony target used to mark force executing
@@ -66,7 +69,7 @@ define make-c-dep =
 	@#	sed 去除行首空白
 	@#	sed 行尾添加冒号
 	@sed -e 's/.*://' -e 's/\\$$//' < $@.$$.$$ | fmt -1 | \
-		sed -e 's/^ *//' -e 's/$$/:/' >> $@.$$
+        sed -e 's/^ *//' -e 's/$$/:/' >> $@.$$
 	@# 最后清理
 	@${RM} $@.$$.$$
 	@mv $@.$$ $@
@@ -89,7 +92,7 @@ define make-cxx-dep =
 	@#	sed 去除行首空白
 	@#	sed 行尾添加冒号
 	@sed -e 's/.*://' -e 's/\\$$//' < $@.$$.$$ | fmt -1 | \
-		sed -e 's/^ *//' -e 's/$$/:/' >> $@.$$
+        sed -e 's/^ *//' -e 's/$$/:/' >> $@.$$
 	@# 最后清理
 	@${RM} $@.$$.$$
 	@mv $@.$$ $@
@@ -105,4 +108,6 @@ ${OBJ_ROOT}/%.d: ${SRC_ROOT}/%.cpp
 
 # 引入动态依赖关系
 #	起首的'-'符号表示忽略错误命令(这里忽略不存在的文件，不再打warning)
--include ${DEPS}
+ifneq (${MAKECMDGOALS},clean)
+    -include ${DEPS}
+endif

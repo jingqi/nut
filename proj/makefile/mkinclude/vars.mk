@@ -1,7 +1,7 @@
 
 ## 预定义变量
 
-# Built-in variables
+# 内建变量
 DEBUG ?= 0
 
 MAKE ?= make
@@ -18,31 +18,36 @@ RAGEL ?= ragel
 
 RM ?= rm -f
 
+# 用户应该修改的变量
 CPPFLAGS ?=
 CFLAGS ?=
 CXXFLAGS ?=
+ARFLAGS ?=
+LDFLAGS ?=
+
+SRC_ROOT ?=
+OBJ_ROOT ?=
 OBJS ?=
 DEPS ?=
 LIB_DEPS ?=
-ARFLAGS ?=
-LDFLAGS ?=
+TARGET ?=
 
 # Predefined variables
 HOST := $(shell uname -s)
 ifeq (${HOST}, Linux)
-	DL_SUFFIX := so
+    DL_SUFFIX := so
 else ifeq (${HOST}, Darwin)
-	DL_SUFFIX := dylib
+    DL_SUFFIX := dylib
 else
-	# Windows 下 uname -s 显示比较不规则
-	HOST := Windows
-	DL_SUFFIX := dll
+    # Windows 下 uname -s 显示比较不规则
+    HOST := Windows
+    DL_SUFFIX := dll
 endif
 
 ifeq (${DEBUG}, 1)
-	DEBUG_MODE := debug
+    DEBUG_MODE := debug
 else
-	DEBUG_MODE := release
+    DEBUG_MODE := release
 endif
 
 OUT_DIR_NAME := $(shell echo ${HOST} | tr '[:upper:]' '[:lower:]')-${DEBUG_MODE}

@@ -1,21 +1,33 @@
 #!/usr/bin/env make
 
-.PHONY: all clean rebuild run valgrind
+# Preface
+include mkinclude/vars.mk
 
-all:
+# Targets
+.PHONY: all
+all: nut test-nut
+
+.PHONY: nut
+nut:
 	$(MAKE) -f nut.mk
+
+.PHONY: test-nut
+test-nut: nut
 	$(MAKE) -f test-nut.mk
 
+.PHONY: clean
 clean:
-	$(MAKE) -f nut.mk clean
-	$(MAKE) -f test-nut.mk clean
+	$(RM) -r ${OUT_DIR_NAME}
 
+.PHONY: rebuild
 rebuild:
 	$(MAKE) clean
 	$(MAKE) all
 
-run:
+.PHONY: run
+run: test-nut
 	$(MAKE) -f test-nut.mk run
 
-valgrind:
+.PHONY: valgrind
+valgrind: test-nut
 	$(MAKE) -f test-nut.mk valgrind

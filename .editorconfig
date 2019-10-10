@@ -21,6 +21,3 @@ charset = utf-8
 end_of_line = crlf
 indent_style = space
 indent_size = 4
-
-[{*.mk,Makefile,makefile}]
-indent_style = tab
