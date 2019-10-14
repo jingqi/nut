@@ -20,7 +20,7 @@ namespace nut
 /**
  * 按照单个日志文件大小限制, 自动循环使用一定数量的日志文件来记录
  */
-class NUT_API CircleFileBySizeLogHandler : public LogHandler
+class NUT_API CircleFilesBySizeLogHandler : public LogHandler
 {
 public:
     /**
@@ -32,22 +32,26 @@ public:
      * @param max_file_size 最大文件大小
      * @param cross_file 单次启动记录的日志允许跨越多个文件
      */
-    CircleFileBySizeLogHandler(const std::string& dir_path, const std::string& prefix,
+    CircleFilesBySizeLogHandler(const std::string& dir_path, const std::string& prefix,
                                size_t circle_size, long long max_file_size,
                                bool cross_file = true) noexcept;
 
 #if !NUT_PLATFORM_OS_WINDOWS
-    ~CircleFileBySizeLogHandler();
+    ~CircleFilesBySizeLogHandler();
 #endif
 
     virtual void handle_log(const LogRecord& rec) noexcept override;
 
 private:
-    CircleFileBySizeLogHandler(const CircleFileBySizeLogHandler&) = delete;
-    CircleFileBySizeLogHandler& operator=(const CircleFileBySizeLogHandler&) = delete;
+    CircleFilesBySizeLogHandler(const CircleFilesBySizeLogHandler&) = delete;
+    CircleFilesBySizeLogHandler& operator=(const CircleFilesBySizeLogHandler&) = delete;
 
     // 打开文件输出流
+#if NUT_PLATFORM_OS_WINDOWS
+    void open_log_file(const std::string& file, bool lock = true) noexcept;
+#else
     void open_log_file(const std::string& file) noexcept;
+#endif
 
     // 新一轮循环
     void circle_once() noexcept;

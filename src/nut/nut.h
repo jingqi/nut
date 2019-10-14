@@ -116,8 +116,8 @@
 #include "logging/log_handler/console_log_handler.h"
 #include "logging/log_handler/file_log_handler.h"
 #include "logging/log_handler/syslog_log_handler.h"
-#include "logging/log_handler/circle_file_by_time_log_handler.h"
-#include "logging/log_handler/circle_file_by_size_log_handler.h"
+#include "logging/log_handler/circle_files_by_time_log_handler.h"
+#include "logging/log_handler/circle_files_by_size_log_handler.h"
 
 // time
 #include "time/date_time.h"

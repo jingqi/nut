@@ -12,7 +12,7 @@
 #include "../../platform/path.h"
 #include "../../util/string/to_string.h"
 #include "../../util/string/string_utils.h"
-#include "circle_file_by_size_log_handler.h"
+#include "circle_files_by_size_log_handler.h"
 
 
 namespace nut
@@ -54,7 +54,7 @@ static bool is_all_digits(const std::string& s, size_t start, size_t len)
     return true;
 }
 
-CircleFileBySizeLogHandler::CircleFileBySizeLogHandler(
+CircleFilesBySizeLogHandler::CircleFilesBySizeLogHandler(
     const std::string& dir_path, const std::string& prefix, size_t circle_size,
     long long max_file_size, bool cross_file) noexcept
     : _dir_path(dir_path), _file_prefix(prefix), _circle_size(circle_size),
@@ -77,7 +77,7 @@ CircleFileBySizeLogHandler::CircleFileBySizeLogHandler(
 }
 
 #if !NUT_PLATFORM_OS_WINDOWS
-CircleFileBySizeLogHandler::~CircleFileBySizeLogHandler()
+CircleFilesBySizeLogHandler::~CircleFilesBySizeLogHandler()
 {
     const int fd = _fd.exchange(-1, std::memory_order_relaxed);
     if (fd >= 0)
@@ -85,7 +85,11 @@ CircleFileBySizeLogHandler::~CircleFileBySizeLogHandler()
 }
 #endif
 
-void CircleFileBySizeLogHandler::open_log_file(const std::string& file) noexcept
+#if NUT_PLATFORM_OS_WINDOWS
+void CircleFilesBySizeLogHandler::open_log_file(const std::string& file, bool lock) noexcept
+#else
+void CircleFilesBySizeLogHandler::open_log_file(const std::string& file) noexcept
+#endif
 {
     long long filesz = 0;
     if (Path::exists(file))
@@ -98,12 +102,21 @@ void CircleFileBySizeLogHandler::open_log_file(const std::string& file) noexcept
     filesz += msg.length();
 
 #if NUT_PLATFORM_OS_WINDOWS
-    std::lock_guard<SpinLock> guard(_ofs_lock);
-    _ofs.close();
-    _ofs.clear();
+    if (lock)
+        _ofs_lock.lock();
+
+    if (_ofs)
+    {
+        _ofs.close();
+        _ofs.clear();
+    }
+
     _ofs.open(file.c_str(), std::ios::app);
     _ofs << msg;
     _file_size.store(filesz, std::memory_order_relaxed);
+
+    if (lock)
+        _ofs_lock.unlock();
 #else
     // NOTE 使用 O_APPEND 标记打开的文件支持 多线程、多进程 并发写入
     const int fd = ::open(file.c_str(), O_CREAT | O_WRONLY | O_APPEND,
@@ -117,11 +130,11 @@ void CircleFileBySizeLogHandler::open_log_file(const std::string& file) noexcept
 #endif
 }
 
-void CircleFileBySizeLogHandler::circle_once() noexcept
+void CircleFilesBySizeLogHandler::circle_once() noexcept
 {
     // 只需要一个线程来处理
-    std::unique_lock<NanoLock> guard(_fileop_lock, std::try_to_lock);
-    if (!guard.owns_lock())
+    std::unique_lock<NanoLock> guard1(_fileop_lock, std::try_to_lock);
+    if (!guard1.owns_lock())
         return;
 
     // Double check
@@ -153,6 +166,16 @@ void CircleFileBySizeLogHandler::circle_once() noexcept
         logfile_names.push_back(name);
     }
 
+#if NUT_PLATFORM_OS_WINDOWS
+    // XXX 需要关闭当前日志文件，否则 rename() 会失败
+    std::lock_guard<SpinLock> guard2(_ofs_lock);
+    if (_ofs)
+    {
+        _ofs.close();
+        _ofs.clear();
+    }
+#endif
+
     // 删除多余的日志文件，重命名日志文件
     std::sort(logfile_names.begin(), logfile_names.end());
     for (ssize_t i = logfile_names.size() - 1; i >= 0; --i)
@@ -176,10 +199,14 @@ void CircleFileBySizeLogHandler::circle_once() noexcept
     // 打开日志文件
     const std::string name = _file_prefix + format_seq(0, digits_len) + log_suffix;
     const std::string path = Path::join(_dir_path, name);
+#if NUT_PLATFORM_OS_WINDOWS
+    open_log_file(path, false); // Already in lock, should not lock again
+#else
     open_log_file(path);
+#endif
 }
 
-void CircleFileBySizeLogHandler::handle_log(const LogRecord& rec) noexcept
+void CircleFilesBySizeLogHandler::handle_log(const LogRecord& rec) noexcept
 {
     const std::string msg = rec.to_string() + "\n";
     const size_t msglen = msg.length();

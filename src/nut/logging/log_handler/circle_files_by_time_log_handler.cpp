@@ -14,13 +14,13 @@
 #include "../../time/date_time.h"
 #include "../../util/string/to_string.h"
 #include "../../util/string/string_utils.h"
-#include "circle_file_by_time_log_handler.h"
+#include "circle_files_by_time_log_handler.h"
 
 
 namespace nut
 {
 
-CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(
+CircleFilesByTimeLogHandler::CircleFilesByTimeLogHandler(
     const std::string& dir_path, const std::string& prefix,
     const char *time_format, size_t circle_size) noexcept
 {
@@ -77,7 +77,7 @@ CircleFileByTimeLogHandler::CircleFileByTimeLogHandler(
 #endif
 }
 
-void CircleFileByTimeLogHandler::handle_log(const LogRecord& rec) noexcept
+void CircleFilesByTimeLogHandler::handle_log(const LogRecord& rec) noexcept
 {
     const std::string msg = rec.to_string() + "\n";
 

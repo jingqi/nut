@@ -17,7 +17,7 @@ namespace nut
 /**
  * 按照日志文件创建的时间, 自动循环使用一定数量的日志文件来记录
  */
-class NUT_API CircleFileByTimeLogHandler : public LogHandler
+class NUT_API CircleFilesByTimeLogHandler : public LogHandler
 {
 public:
     /**
@@ -31,14 +31,14 @@ public:
      * @param time_format 日志文件名日期格式, 例如 "%Y%m%d-%H%M%S-%3f"
      * @param circle_size 循环周期(最多日志文件数)
      */
-    CircleFileByTimeLogHandler(const std::string& dir_path, const std::string& prefix,
-                               const char *time_format, size_t circle_size) noexcept;
+    CircleFilesByTimeLogHandler(const std::string& dir_path, const std::string& prefix,
+                                const char *time_format, size_t circle_size) noexcept;
 
     virtual void handle_log(const LogRecord& rec) noexcept override;
 
 private:
-    CircleFileByTimeLogHandler(const CircleFileByTimeLogHandler&) = delete;
-    CircleFileByTimeLogHandler& operator=(const CircleFileByTimeLogHandler&) = delete;
+    CircleFilesByTimeLogHandler(const CircleFilesByTimeLogHandler&) = delete;
+    CircleFilesByTimeLogHandler& operator=(const CircleFilesByTimeLogHandler&) = delete;
 
 private:
 #if NUT_PLATFORM_OS_WINDOWS

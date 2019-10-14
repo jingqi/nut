@@ -313,12 +313,6 @@
     <ClInclude Include="..\..\..\src\nut\nut_config.h">
       <Filter>nut</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\log_handler\circle_file_by_size_log_handler.h">
-      <Filter>nut\logging\log_handler</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\nut\logging\log_handler\circle_file_by_time_log_handler.h">
-      <Filter>nut\logging\log_handler</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\nut\logging\log_handler\console_log_handler.h">
       <Filter>nut\logging\log_handler</Filter>
     </ClInclude>
@@ -475,6 +469,12 @@
     <ClInclude Include="..\..\..\src\nut\container\lru_pool.h">
       <Filter>nut\container</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_handler\circle_files_by_size_log_handler.h">
+      <Filter>nut\logging\log_handler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\nut\logging\log_handler\circle_files_by_time_log_handler.h">
+      <Filter>nut\logging\log_handler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\nut\container\bit_stream.cpp">
@@ -603,12 +603,6 @@
     <ClCompile Include="..\..\..\src\nut\mem\lengthfixed_mp.cpp">
       <Filter>nut\mem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\logging\log_handler\circle_file_by_size_log_handler.cpp">
-      <Filter>nut\logging\log_handler</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\nut\logging\log_handler\circle_file_by_time_log_handler.cpp">
-      <Filter>nut\logging\log_handler</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\nut\logging\log_handler\console_log_handler.cpp">
       <Filter>nut\logging\log_handler</Filter>
     </ClCompile>
@@ -722,6 +716,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\nut\platform\fd.cpp">
       <Filter>nut\platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_handler\circle_files_by_size_log_handler.cpp">
+      <Filter>nut\logging\log_handler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\nut\logging\log_handler\circle_files_by_time_log_handler.cpp">
+      <Filter>nut\logging\log_handler</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

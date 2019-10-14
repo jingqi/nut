@@ -153,8 +153,8 @@
     <ClInclude Include="..\..\..\src\nut\debugging\source_location.h" />
     <ClInclude Include="..\..\..\src\nut\logging\logger.h" />
     <ClInclude Include="..\..\..\src\nut\logging\log_filter.h" />
-    <ClInclude Include="..\..\..\src\nut\logging\log_handler\circle_file_by_size_log_handler.h" />
-    <ClInclude Include="..\..\..\src\nut\logging\log_handler\circle_file_by_time_log_handler.h" />
+    <ClInclude Include="..\..\..\src\nut\logging\log_handler\circle_files_by_size_log_handler.h" />
+    <ClInclude Include="..\..\..\src\nut\logging\log_handler\circle_files_by_time_log_handler.h" />
     <ClInclude Include="..\..\..\src\nut\logging\log_handler\console_log_handler.h" />
     <ClInclude Include="..\..\..\src\nut\logging\log_handler\file_log_handler.h" />
     <ClInclude Include="..\..\..\src\nut\logging\log_handler\log_handler.h" />
@@ -264,8 +264,8 @@
     <ClCompile Include="..\..\..\src\nut\debugging\source_location.cpp" />
     <ClCompile Include="..\..\..\src\nut\logging\logger.cpp" />
     <ClCompile Include="..\..\..\src\nut\logging\log_filter.cpp" />
-    <ClCompile Include="..\..\..\src\nut\logging\log_handler\circle_file_by_size_log_handler.cpp" />
-    <ClCompile Include="..\..\..\src\nut\logging\log_handler\circle_file_by_time_log_handler.cpp" />
+    <ClCompile Include="..\..\..\src\nut\logging\log_handler\circle_files_by_size_log_handler.cpp" />
+    <ClCompile Include="..\..\..\src\nut\logging\log_handler\circle_files_by_time_log_handler.cpp" />
     <ClCompile Include="..\..\..\src\nut\logging\log_handler\console_log_handler.cpp" />
     <ClCompile Include="..\..\..\src\nut\logging\log_handler\file_log_handler.cpp" />
     <ClCompile Include="..\..\..\src\nut\logging\log_handler\stream_log_handler.cpp" />

@@ -26,8 +26,8 @@
 #include "log_handler/console_log_handler.h"
 #include "log_handler/syslog_log_handler.h"
 #include "log_handler/file_log_handler.h"
-#include "log_handler/circle_file_by_size_log_handler.h"
-#include "log_handler/circle_file_by_time_log_handler.h"
+#include "log_handler/circle_files_by_size_log_handler.h"
+#include "log_handler/circle_files_by_time_log_handler.h"
 
 
 namespace nut
@@ -340,7 +340,7 @@ void Logger::load_xml_config(const std::string& config) noexcept
             {
                 if (_path.empty())
                     return;
-                rc_ptr<CircleFileBySizeLogHandler> handler = rc_new<CircleFileBySizeLogHandler>(
+                rc_ptr<CircleFilesBySizeLogHandler> handler = rc_new<CircleFilesBySizeLogHandler>(
                     _path, _file_prefix, _circle, _max_file_size, _cross_file);
                 handler->set_flush_mask(_flush_mask);
                 handler->get_filter().swap(&_filter);
@@ -350,7 +350,7 @@ void Logger::load_xml_config(const std::string& config) noexcept
             {
                 if (_path.empty())
                     return;
-                rc_ptr<CircleFileByTimeLogHandler> handler = rc_new<CircleFileByTimeLogHandler>(
+                rc_ptr<CircleFilesByTimeLogHandler> handler = rc_new<CircleFilesByTimeLogHandler>(
                     _path, _file_prefix, _time_format.c_str(), _circle);
                 handler->set_flush_mask(_flush_mask);
                 handler->get_filter().swap(&_filter);
