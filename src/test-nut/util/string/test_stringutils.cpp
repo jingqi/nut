@@ -24,6 +24,7 @@ class TestStringUtils : public TestFixture
         NUT_REGISTER_CASE(test_hex_encoding);
         NUT_REGISTER_CASE(test_cstyle_encoding);
         NUT_REGISTER_CASE(test_base64_encoding);
+        NUT_REGISTER_CASE(test_bug1);
     }
 
     void test_split()
@@ -183,6 +184,19 @@ class TestStringUtils : public TestFixture
         v = base64_decode("YWJjZGVmZ2g=");
         NUT_TA(v.size() == 8);
         NUT_TA(0 == ::strncmp((const char*)&v[0], "abcdefgh", 8));
+    }
+
+    void test_bug1()
+    {
+        // FIXME Windows 下 UTF-8 对某些字符处理有问题，包括 MSVC 和 Mingw 都无法正确处理
+
+#if 0
+        NUT_TA(0 != ::strcmp("«", "?")); // MSVC bug
+        NUT_TA(0 != ::wcscmp(L"«", L"?"));
+
+        NUT_TA(utf8_to_ascii(ascii_to_utf8("«")) != "?"); // MSVC bug
+        NUT_TA(utf8_to_ascii(wstr_to_utf8(L"«")) != "?"); // MSVC bug
+#endif
     }
 };
 
