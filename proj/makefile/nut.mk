@@ -28,6 +28,11 @@ DEPS = ${OBJS:.o=.d}
 # Other libraries
 ifeq (${HOST}, Linux)
     LDFLAGS += -lpthread -ldl -latomic
+
+    OS_NAME := $(shell sed -n '1p' /etc/os-release | cut -d\" -f 2)
+    ifeq ("${OS_NAME}", "Alpine Linux")
+        LDFLAGS += -lexecinfo
+    endif
 endif
 
 # Targets

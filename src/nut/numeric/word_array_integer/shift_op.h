@@ -6,6 +6,8 @@
 #include <string.h> // for memset(), memcpy(), memmove()
 #include <type_traits>
 
+#include "../../platform/int_type.h" // for ssize_t
+
 
 namespace nut
 {
