@@ -21,3 +21,4 @@ SOURCES += $$files($${SRC_ROOT}/*.c*, true)
 
 # 链接库
 win32: LIBS += -lDbghelp -latomic
+linux: LIBS += -latomic

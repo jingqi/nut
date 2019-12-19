@@ -20,3 +20,4 @@ else: LIBS += -lnut
 
 # 其他链接库
 win32: LIBS += -lDbghelp -latomic
+linux: LIBS += -latomic

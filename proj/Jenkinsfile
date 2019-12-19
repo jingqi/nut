@@ -4,12 +4,228 @@ pipeline {
     agent none
 
     stages {
-        stage ('Build and test') {
-            agent {
-                label 'linux'
-            }
-            steps {
-                sh 'cd proj/makefile; make DEBUG=1 -j$(nproc --all) run'
+        stage ('Multi platforms') {
+            parallel {
+                stage ('Linux make') {
+                    agent {
+                        label 'linux && make'
+                    }
+
+                    stages {
+                        stage ('build') {
+                            steps {
+                                sh '''
+                                   cd proj/makefile
+                                   make DEBUG=1 -j$(nproc --all)
+                                '''
+                            }
+                        }
+
+                        stage ('test') {
+                            steps {
+                                sh '''
+                                   cd proj/makefile
+                                   make DEBUG=1 run
+                                '''
+                            }
+                        }
+                    }
+                }
+
+                stage ('Linux qt') {
+                    agent {
+                        label 'linux && qt'
+                    }
+
+                    stages {
+                        stage ('build') {
+                            steps {
+                                sh '''
+                                   mkdir -p proj/qtcreator/build
+                                   cd proj/qtcreator/build
+
+                                   # qmake ../pro/nut.pro -r -spec linux-g++-32 CONFIG+=debug
+                                   qmake ../pro/nut.pro -r -spec linux-g++-64 CONFIG+=debug
+
+                                   make -j$(nproc --all)
+                                '''
+                            }
+                        }
+
+                        stage ('test') {
+                            steps {
+                                sh '''
+                                   cd proj/qtcreator/build/test-nut
+                                   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../nut
+                                   ./test-nut
+                                '''
+                            }
+                        }
+                    }
+                }
+
+                stage ('MacOS make') {
+                    agent {
+                        label 'macos && make'
+                    }
+
+                    stages {
+                        stage ('build') {
+                            steps {
+                                sh '''
+                                   cd proj/makefile
+                                   gmake DEBUG=1 -j$(sysctl -n hw.ncpu)
+                                '''
+                            }
+                        }
+
+                        stage ('test') {
+                            steps {
+                                sh '''
+                                   cd proj/makefile
+                                   export LANG="zh_CN.UTF-8"
+                                   gmake DEBUG=1 run
+                                '''
+                            }
+                        }
+                    }
+                }
+
+                stage ('MacOS xcode') {
+                    agent {
+                        label 'macos && xcode'
+                    }
+
+                    stages {
+                        stage ('build') {
+                            steps {
+                                sh '''
+                                   cd proj/xcode
+                                   xcodebuild -workspace nut.xcworkspace -scheme test-nut -configuration Debug CODE_SIGNING_REQUIRED=NO -UseModernBuildSystem=YES
+                                '''
+                            }
+                        }
+                    }
+                }
+
+                stage ('MacOS qt') {
+                    agent {
+                        label 'macos && qt'
+                    }
+
+                    stages {
+                        stage ('build') {
+                            steps {
+                                sh '''
+                                   mkdir -p proj/qtcreator/build
+                                   cd proj/qtcreator/build
+
+                                   qmake ../pro/nut.pro -r -spec macx-clang CONFIG+=x86_64 CONFIG+=debug
+
+                                   make -j$(sysctl -n hw.ncpu)
+                                '''
+                            }
+                        }
+
+                        stage ('test') {
+                            steps {
+                                sh '''
+                                   cd proj/qtcreator/build/test-nut
+                                   cp ../nut/*.dylib ./
+                                   export LANG="zh_CN.UTF-8"
+                                   ./test-nut
+                                '''
+                            }
+                        }
+                    }
+                }
+
+                stage ('Windows vs2019 x86') {
+                    agent {
+                        label 'windows && vs2019'
+                    }
+
+                    stages {
+                        stage ('build') {
+                            steps {
+                                bat '''
+                                    cd proj\\vs2019
+                                    msbuild nut.sln /t:build /p:Configuration=Debug /p:Platform=Win32
+                                '''
+                            }
+                        }
+
+                        stage ('test') {
+                            steps {
+                                bat '''
+                                    cd proj\\vs2019\\Debug
+                                    test-nut
+                                '''
+                            }
+                        }
+                    }
+                }
+
+                stage ('Windows vs2019 x64') {
+                    agent {
+                        label 'windows && vs2019'
+                    }
+
+                    stages {
+                        stage ('build') {
+                            steps {
+                                bat '''
+                                    cd proj\\vs2019
+                                    msbuild nut.sln /t:build /p:Configuration=Debug /p:Platform=x64
+                                '''
+                            }
+                        }
+
+                        stage ('test') {
+                            steps {
+                                bat '''
+                                    cd proj\\vs2019\\x64\\Debug
+                                    test-nut
+                                '''
+                            }
+                        }
+                    }
+                }
+
+                stage ('Windows qt') {
+                    agent {
+                        label 'windows && qt'
+                    }
+
+                    stages {
+                        stage ('build') {
+                            steps {
+                                // NOTE
+                                // - mingw-64bit 下 spec 参数值还是 '-spec win32-g++', 与 mingw-32bit 下一样
+                                // - mingw-64bit 下 make 程序名还是 mingw32-make.exe, 与 mingw-32bit 下一样
+                                bat '''
+                                    cd proj\\qtcreator
+                                    if not exist build mkdir build
+                                    cd build
+
+                                    qmake ..\\pro\\nut.pro -r -spec win32-g++ CONFIG+=debug
+
+                                    mingw32-make
+                                '''
+                            }
+                        }
+
+                        stage ('test') {
+                            steps {
+                                bat '''
+                                    cd proj\\qtcreator\\build\\test-nut\\debug
+                                    xcopy /y ..\\..\\nut\\debug\\*.dll .\\
+                                    test-nut
+                                '''
+                            }
+                        }
+                    }
+                }
             }
         }
     }
